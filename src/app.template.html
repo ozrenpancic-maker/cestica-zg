@@ -609,8 +609,8 @@ function render(d){
     h+=`<p class="meta" style="margin-top:0">Vlasnike i terete vidiš u zemljišnoknjižnom izvatku. Online je besplatan.</p>`;
     const zko=esc(p.KATASTARSKA_OPCINA||""), zkc=esc(p.KATASTARSKA_CESTICA||"");
     const dgu=`https://geoportal.dgu.hr/#/?lng=${ll.lng.toFixed(6)}&lat=${ll.lat.toFixed(6)}&zoom=9&layerconfig=17013&mode=2d`;
-    h+=`<div class="kd"><a class="ib" href="${dgu}" target="_blank" rel="noopener">1. Otvori česticu na karti DGU</a></div>`;
-    h+=`<p class="meta">Karta se otvara na ovoj čestici. Dodirni česticu u sredini i u "Informacije o objektu" vidjet ćeš <b>upisane osobe</b> (posjednike iz katastra) i <b>broj ZK uloška</b>. Posjednik iz katastra nije uvijek i vlasnik iz zemljišne knjige, a tereti se tamo ne vide. Zato za kupnju s brojem ZK uloška preuzmi izvadak na OSS-u i učitaj ga ovdje (korak 2).</p>`;
+    h+=`<div class="kd"><a class="ib zkCopy" data-v="${zkc} ${zko}" data-keep="1" href="${dgu}" target="_blank" rel="noopener">1. Otvori česticu na karti DGU</a></div>`;
+    h+=`<p class="meta">Karta se otvara tako da je čestica <b>točno u sredini ekrana</b>. Gumb ujedno kopira "${zkc} ${zko}". Ako je ne vidiš, zalijepi to u polje "Pretraži…" na Geoportalu. Dodirni česticu i u "Informacije o objektu" vidjet ćeš <b>upisane osobe</b> (posjednike iz katastra) i <b>broj ZK uloška</b>. Posjednik iz katastra nije uvijek i vlasnik iz zemljišne knjige, a tereti se tamo ne vide. Zato za kupnju s brojem ZK uloška preuzmi izvadak na OSS-u i učitaj ga ovdje (korak 2).</p>`;
     h+=`<details><summary>Izvadak preko OSS pretrage</summary><div class="kd zkc"><button type="button" class="ib zkCopy" data-v="${zko}">Kopiraj k.o.: <b>${zko}</b></button><button type="button" class="ib zkCopy" data-v="${zkc}">Kopiraj broj: <b>${zkc}</b></button></div>`;
     h+=`<div class="kd"><a class="ib" href="https://oss.uredjenazemlja.hr/public-services/search-cad-parcel" target="_blank" rel="noopener">Otvori pretragu na OSS-u</a></div>`;
     h+=`<ol class="meta zksteps"><li>Upiši prva slova k.o. <b>${zko}</b> i izaberi je s popisa.</li><li>Zalijepi broj <b>${zkc}</b> i pokreni pretragu.</li><li>Otvori ZK uložak i preuzmi izvadak kao PDF.</li></ol><p class="meta">Ako na Geoportalu već imaš broj ZK uloška, na OSS-u traži po zemljišnoj knjizi: izaberi glavnu knjigu (npr. GRAD ZAGREB) i upiši broj uloška.</p></details>`;
@@ -1057,6 +1057,7 @@ const ZK={res:null};
 sheet.addEventListener("click",async e=>{
   const b=e.target.closest&&e.target.closest(".zkCopy"); if(!b) return;
   const v=b.dataset.v, lab=b.innerHTML;
+  if(b.dataset.keep){try{navigator.clipboard.writeText(v)}catch(err){} return;}
   let ok=false; try{await navigator.clipboard.writeText(v); ok=true}catch(err){}
   if(!ok){const t=document.createElement("textarea");t.value=v;document.body.appendChild(t);t.select();try{ok=document.execCommand("copy")}catch(err){}t.remove();}
   b.textContent=ok?"✓ Kopirano: "+v:v; setTimeout(()=>{b.innerHTML=lab},2500);
