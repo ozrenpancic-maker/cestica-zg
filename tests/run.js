@@ -352,7 +352,42 @@ async function infraTests(){
   ok(errs.length===0,"bez JS grešaka u simulatoru: "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(()=>{
+// ---------------- 10. Sunce, elektrana, potres (D2–D4)
+async function sunTests(){
+  const {w,errs}=boot();
+  const sp=w.eval("solarPos"), zd=w.eval("zgDate"), st=w.eval("sunTimes");
+  const maxAlt=d=>{let b=-99; for(let x=10;x<15;x+=1/60) b=Math.max(b,sp(zd(d,x),45.815,15.98).alt); return b};
+  ok(Math.abs(maxAlt("2026-06-21")-67.6)<0.3&&Math.abs(maxAlt("2026-12-21")-20.7)<0.3,"visina Sunca u podne: 67,6° (21. 6.) i 20,7° (21. 12.)");
+  const mins=h=>Math.round(h*60), ref=[["2026-03-21",5*60+56,18*60+9],["2026-06-21",5*60+6,20*60+49],["2026-12-21",7*60+34,16*60+14]];
+  ok(ref.every(([d,r,z])=>{const t=st(d,45.815,15.98); return Math.abs(mins(t.rise)-r)<=3&&Math.abs(mins(t.set)-z)<=3}),"izlazak i zalazak unutar 3 min od tablica za Zagreb (calendar.center)");
+  ok(Math.abs(sp(zd("2026-06-21",9),45.815,15.98).az-90)<25&&Math.abs(sp(zd("2026-06-21",17),45.815,15.98).az-270)<25,"ujutro je Sunce na istoku, popodne na zapadu");
+  // elektrana: zračenje 100 W/m² svaki sat
+  let called=0;
+  w.fetch=(u)=>{called++; const t=[],v=[]; for(const y of [2023,2024,2025]){const n=(y===2024?366:365)*24; for(let i=0;i<n;i++){const d=new Date(Date.UTC(y,0,1)+i*3600e3); t.push(d.toISOString().slice(0,13)+":00"); v.push(100);}}
+    ok(/tilt=30/.test(u)&&/azimuth=0/.test(u)&&/global_tilted_irradiance/.test(u),"zahtjev za zračenje šalje nagib i orijentaciju");
+    return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({hourly:{time:t,global_tilted_irradiance:v}})})};
+  const r=await w.eval("pvFetch")(45.8,15.98,30,0);
+  ok(Math.abs(r.annual-(100*(8760*2+8784)/3/1000))<0.01,"godišnje zračenje = prosjek tri godine");
+  const d=data(w,parcelRect(30,25),"2.2."); w.eval("render")(d);
+  w.document.getElementById("pvKwp").value="5"; w.document.getElementById("pvShade").value="10";
+  called=0; await w.eval("pvRun")(); await w.eval("pvRun")();
+  const E=r.annual*5*0.8*0.9, t=w.document.getElementById("pvOut").textContent;
+  ok(t.includes(w.eval("fmt")(E)+" kWh godišnje"),"proizvodnja = zračenje × kWp × 0,80 × (1 − zasjenjenje)");
+  ok(called===1,"podaci o zračenju se pamte (jedan zahtjev)");
+  w.fetch=()=>Promise.reject(new Error("x"));
+  w.document.getElementById("pvTilt").value="45"; await w.eval("pvRun")();
+  ok(/ne može izračunati/.test(w.document.getElementById("pvOut").textContent)&&!/kWh godišnje/.test(w.document.getElementById("pvOut").textContent),"bez podataka nema procjene proizvodnje");
+  // potres
+  const sh=w.document.getElementById("sheet").textContent;
+  ok(/95 godina/.test(sh)&&/475 godina/.test(sh)&&/Vrijednosti nisu upisane/.test(sh),"potres: objašnjena povratna razdoblja, bez izmišljene vrijednosti");
+  const i=w.document.getElementById("sz475"); i.value="0.26"; i.dispatchEvent(new w.Event("input",{bubbles:true}));
+  w.eval("render")(d);
+  ok(w.document.getElementById("sz475").value==="0.26"&&/2,55 m\/s²/.test(w.document.getElementById("sheet").textContent),"upisana vrijednost a_gR se sprema i preračunava u m/s²");
+  ok(!/serklaž/.test(w.document.getElementById("sheet").textContent),"nema zaključaka o konstrukciji");
+  ok(errs.length===0,"bez JS grešaka (sunce, elektrana, potres): "+errs.join(" | "));
+}
+
+netTests().then(infraTests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
