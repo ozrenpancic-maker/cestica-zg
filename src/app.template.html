@@ -127,6 +127,7 @@ details p{font-size:13.5px;margin:6px 0}
 .spin{display:inline-block;width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:s .8s linear infinite;vertical-align:-1px;margin-right:6px}
 @keyframes s{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.spin{animation:none}}
+.zkc{display:flex;flex-wrap:wrap;gap:6px}.zkc .ib{flex:1 1 140px}.zksteps{padding-left:18px;margin:6px 0}.zksteps li{margin:3px 0}a.ib{text-decoration:none;display:inline-block}
 </style>
 </head>
 <body>
@@ -606,8 +607,11 @@ function render(d){
     h+=`<p class="meta">${fmt(area)} m² (iz geometrije)${p.GRADSKA_CETVRT?" · "+esc(p.GRADSKA_CETVRT):""}</p>`;
     h+=`<details class="acc" data-k="zk"><summary><span>Vlasnici i tereti (ZK izvadak)</span><b id="zkSum">${ZK.res?esc(ZK.res.sum):"provjeri izvadak"}</b></summary><div class="acc-body">`;
     h+=`<p class="meta" style="margin-top:0">Vlasnike i terete vidiš u zemljišnoknjižnom izvatku. Online je besplatan.</p>`;
-    h+=`<div class="kd"><button type="button" class="ib" id="zkOpen" data-ko="${esc(p.KATASTARSKA_OPCINA||"")}" data-kc="${esc(p.KATASTARSKA_CESTICA||"")}">1. Kopiraj k.o. i broj, otvori OSS</button></div>`;
-    h+=`<p class="meta">Na OSS-u izaberi "Zemljišna knjiga", upiši k.o. ${esc(p.KATASTARSKA_OPCINA||"")} i česticu ${esc(p.KATASTARSKA_CESTICA||"")}, pa preuzmi izvadak kao PDF.</p>`;
+    const zko=esc(p.KATASTARSKA_OPCINA||""), zkc=esc(p.KATASTARSKA_CESTICA||"");
+    h+=`<div class="kd zkc"><button type="button" class="ib zkCopy" data-v="${zko}">Kopiraj k.o.: <b>${zko}</b></button><button type="button" class="ib zkCopy" data-v="${zkc}">Kopiraj broj: <b>${zkc}</b></button></div>`;
+    h+=`<div class="kd"><a class="ib" href="https://oss.uredjenazemlja.hr/public-services/search-cad-parcel" target="_blank" rel="noopener">1. Otvori pretragu čestica (OSS)</a></div>`;
+    h+=`<ol class="meta zksteps"><li>U polje za katastarsku općinu upiši prva slova (<b>${zko}</b>) i izaberi je s popisa.</li><li>U polje za broj čestice zalijepi <b>${zkc}</b> i pokreni pretragu.</li><li>U rezultatu otvori zemljišnoknjižni uložak (ZK) i preuzmi izvadak kao PDF.</li></ol>`;
+    h+=`<p class="meta">OSS ne dopušta da mu aplikacija izravno pošalje česticu, pa podatke treba upisati. Ako čestica nije pronađena, na tom je području možda bila nova izmjera, pa je broj drugačiji. Tada je pronađi na karti OSS-a.</p>`;
     h+=`<div class="kd"><label class="ib" for="zkFile" style="cursor:pointer">2. Učitaj PDF izvatka</label><input id="zkFile" type="file" accept="application/pdf,.pdf" hidden></div>`;
     h+=`<div id="zkOut">${ZK.res&&ZK.res.key===favKey(parcel,ll)?ZK.res.html:""}</div>`;
     h+=`<details><summary>Kako čitati izvadak</summary><p><b>A list (posjedovnica)</b>: čestice u uložku, njihov opis i površina.</p><p><b>B list (vlastovnica)</b>: vlasnici i njihovi udjeli (npr. 1/2). Kupoprodajni ugovor moraju potpisati svi suvlasnici.</p><p><b>C list (teretovnica)</b>: hipoteke, služnosti, pravo građenja, zabrane otuđenja i druga prava trećih. Prazan C list znači da nema upisanih tereta.</p><p><b>Plomba</b> znači da je u tijeku neki upis (npr. prodaja ili hipoteka). Dok se ne riješi, izvadak nije konačan.</p></details>`;
@@ -750,7 +754,7 @@ function render(d){
     h+=`<details><summary>Cijeli članak ${esc(rule.clanak)}.</summary>${rule.tekst.map(p=>`<p>${esc(p)}</p>`).join("")}</details>`;
   }
   if(checks) h+=docsHtml(d);
-  h+=`<div class="links"><a href="https://oss.uredjenazemlja.hr/" target="_blank" rel="noopener">Katastar (OSS)</a><a href="https://geoportal.zagreb.hr/Karta" target="_blank" rel="noopener">Geoportal Zagreb</a><a href="https://www.zzpugz.hr/gup-grada-zagreba" target="_blank" rel="noopener">GUP (Zavod)</a><a href="https://www.google.com/maps?q=${ll.lat},${ll.lng}" target="_blank" rel="noopener">Google Maps</a></div>`;
+  h+=`<div class="links"><a href="https://oss.uredjenazemlja.hr/public-services/search-cad-parcel" target="_blank" rel="noopener">Katastar (OSS)</a><a href="https://geoportal.zagreb.hr/Karta" target="_blank" rel="noopener">Geoportal Zagreb</a><a href="https://www.zzpugz.hr/gup-grada-zagreba" target="_blank" rel="noopener">GUP (Zavod)</a><a href="https://www.google.com/maps?q=${ll.lat},${ll.lng}" target="_blank" rel="noopener">Google Maps</a></div>`;
   h+=`<p class="note">Izvori: katastarske čestice Grada Zagreba (2023.), GIS baza planirane namjene (2023.), karta urbanih pravila iz ponovne javne rasprave GUP-a (2024.) i tekst Odluke o GUP-u s izmjenama 2025. Granice pravila u konačnom planu mogu malo odstupati. Procjena je orijentacijska; pravno mjerodavna je lokacijska informacija Gradskog ureda.</p>`;
   restoreMap();
   sheet.innerHTML=h;
@@ -1049,10 +1053,11 @@ sheet.addEventListener("click",e=>{
 // --- zemljišnoknjižni izvadak: otvaranje OSS-a i lokalna provjera učitanog PDF-a
 const ZK={res:null};
 sheet.addEventListener("click",async e=>{
-  const b=e.target.closest&&e.target.closest("#zkOpen"); if(!b) return;
-  const txt=`k.o. ${b.dataset.ko}, k.č. ${b.dataset.kc}`;
-  try{await navigator.clipboard.writeText(txt); b.textContent="Kopirano: "+txt}catch(err){b.textContent=txt}
-  const a=document.createElement("a"); a.href="https://oss.uredjenazemlja.hr/"; a.target="_blank"; a.rel="noopener"; document.body.appendChild(a); a.click(); a.remove();
+  const b=e.target.closest&&e.target.closest(".zkCopy"); if(!b) return;
+  const v=b.dataset.v, lab=b.innerHTML;
+  let ok=false; try{await navigator.clipboard.writeText(v); ok=true}catch(err){}
+  if(!ok){const t=document.createElement("textarea");t.value=v;document.body.appendChild(t);t.select();try{ok=document.execCommand("copy")}catch(err){}t.remove();}
+  b.textContent=ok?"✓ Kopirano: "+v:v; setTimeout(()=>{b.innerHTML=lab},2500);
 });
 function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=()=>rej(new Error("ne mogu učitati čitač PDF-a"));document.head.appendChild(s);});}
 async function pdfText(file){
