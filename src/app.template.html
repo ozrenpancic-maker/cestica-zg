@@ -130,12 +130,14 @@ details p{font-size:13.5px;margin:6px 0}
     </div>
     <section id="sheet" aria-live="polite">
       <p class="eyebrow">Kako radi</p>
+      <p class="meta" id="ver" style="margin:0 0 6px"></p>
       <p class="hint">Dodirni zemljište na karti (zumiraj do razine ulice). Dobit ćeš katastarsku česticu, namjenu iz prostornog plana i urbano pravilo GUP-a s uvjetima gradnje.</p>
     </section>
   </main>
 </div>
 <script>
 const RULES = /*RULES*/null;
+const APP_VERSION = "/*VERSION*/";
 
 const BASE = "https://services8.arcgis.com/Usi0jGQwMmBUpFjr/arcgis/rest/services/";
 const SRC = {
@@ -837,6 +839,22 @@ sheet.addEventListener("click",e=>{
   if(t.dataset&&t.dataset.open!=null){const f=favs()[+t.dataset.open]; if(f){const ll=L.latLng(f.ll.lat,f.ll.lng); map.setView(ll,18); inspect(ll);}}
   if(t.dataset&&t.dataset.del!=null){const a=favs(); a.splice(+t.dataset.del,1); setFavs(a); showFavs();}
 });
+
+// --- verzija i provjera novije verzije (GitHub Pages drži stranicu u predmemoriji do 10 min)
+(function(){
+  const v=document.getElementById("ver"); if(v) v.textContent="Verzija "+APP_VERSION;
+  if(!/^https?:/.test(location.protocol)) return;
+  fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(r=>r.text()).then(t=>{
+    const m=t.match(/const APP_VERSION = "([^"]+)"/);
+    if(m&&m[1]!==APP_VERSION&&!m[1].includes("VERSION")){
+      const b=document.createElement("button"); b.className="ib"; b.id="updBtn";
+      b.textContent="Nova verzija "+m[1]+": osvježi";
+      b.style.cssText="position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 60px);z-index:2000;background:var(--accent);color:#fff;border:0";
+      b.onclick=()=>location.replace(location.pathname+"?v="+Date.now());
+      document.body.appendChild(b);
+    }
+  }).catch(()=>{});
+})();
 
 // --- pretraga adrese (Nominatim, Zagreb)
 async function search(){
