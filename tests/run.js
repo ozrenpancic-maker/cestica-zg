@@ -272,7 +272,42 @@ async function netTests(){
   ok(f.incomplete===true,"dosegnuta granica broja objekata označava rezultat kao nepotpun");
 }
 
-netTests().then(()=>{
+// ---------------- 8. Infrastruktura (C)
+async function infraTests(){
+  const {w,errs}=boot();
+  const pr=parcelRect(30,25), c=pr.geometry.coordinates[0];
+  const off=(m)=>m/110540; // pomak prema sjeveru u stupnjevima
+  const line=(m)=>({type:"LineString",coordinates:[[c[0][0]-0.001,c[2][1]+off(m)],[c[1][0]+0.001,c[2][1]+off(m)]]});
+  w.fetch=(u,o)=>{
+    const ok=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b)});
+    if(/3c_voda_JR_PJR_swipe\/FeatureServer\/26\/query/.test(u)) return ok({type:"FeatureCollection",features:[{type:"Feature",geometry:line(50),properties:{Layer:"Vodoopskrbni cjevovod - postojeci"}}]});
+    if(/GUP_Infrastruktura\/FeatureServer\/14\/query/.test(u)) return ok({type:"FeatureCollection",features:[{type:"Feature",geometry:line(120),properties:{PLINOVOD_OPIS:"Plinovod VT (planirani)"}}]});
+    if(/GUP_Infrastruktura\/FeatureServer\/22\/query/.test(u)) return Promise.resolve({ok:false,status:500,json:()=>Promise.resolve({})});
+    return ok({type:"FeatureCollection",features:[]});
+  };
+  const inf=await w.eval("settle")(w.eval("loadInfra")(pr,{lat:45.84,lng:15.97}));
+  ok(inf.v&&inf.v.vod.ex&&Math.abs(inf.v.vod.ex.d-50)<2,"magistralni vodovod iz GUP-a na oko 50 m");
+  ok(inf.v.plin.pl&&!inf.v.plin.ex&&Math.abs(inf.v.plin.pl.d-120)<3,"planirani VT plinovod na oko 120 m, prepoznat kao planirani");
+  ok(inf.v.top.e,"neuspjeh servisa za toplovod je zabilježen kao greška");
+  const html=w.eval("infraHtml")(inf), t=html.replace(/<[^>]+>/g," ");
+  ok(/Vodovod\s+nema dostupnih podataka/.test(t)&&/Kanalizacija\s+nema dostupnih podataka/.test(t),"vodovod i kanalizacija: 'nema dostupnih podataka', a ne 'nema infrastrukture'");
+  ok(/magistralni vodoopskrbni cjevovod \(postojeći\) oko 50 m/.test(t)&&/ne priključuje izravno/.test(t),"blizina magistralnog voda je navedena uz napomenu da priključak nije izravan");
+  ok(/Plinovod VT \(planirani\) oko 1[12][0-9] m/.test(t),"planirani plinovod prikazan kao planirani");
+  ok(!/Toplovod/.test(t),"za toplovod s greškom nema tvrdnje o (ne)postojanju");
+  ok(/U GUP-u nema dalekovoda, kabela ni trafostanica 110 kV u krugu 300 m/.test(t),"za struju bez vodova u krugu jasno piše da ih nema u podacima GUP-a");
+  // korisnički unos troška priključaka ulazi u model jednom
+  w.eval("render")(data(w,pr,"2.2."));
+  const set=(id,v)=>{const e=w.document.getElementById(id); e.value=v; e.dispatchEvent(new w.Event("input",{bubbles:true}));};
+  set("bArea","150"); w.document.getElementById("kdZone").value="I"; w.document.getElementById("kdZone").dispatchEvent(new w.Event("change",{bubbles:true}));
+  const before=w.__fin.build.naknade;
+  set("kdWorks","4000"); set("kdSeptic","5000");
+  ok(Math.abs(w.__fin.build.naknade-before-9000)<0.01,"radovi na priključcima i sabirna jama ulaze u naknade i priključke jednom");
+  w.eval("render")(data(w,pr,"2.2."));
+  ok(w.document.getElementById("kdWorks").value==="4000","unos radova na priključcima se sprema po čestici");
+  ok(errs.length===0,"bez JS grešaka u infrastrukturi: "+errs.join(" | "));
+}
+
+netTests().then(infraTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

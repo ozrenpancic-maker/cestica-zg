@@ -222,10 +222,10 @@ const CHECKS = [
 ];
 // Koridori infrastrukture (GUP čl. 50: DV 110 kV 20 m, 220 kV 25 m, 400 kV 35 m od osi; čl. 53: magistralni plinovod 30 m, VTP 10 m)
 // moduli koji su u razvoju (faze C i D) i još nisu uključeni
-const FEATURES={infra:false,sun:false,seis:false};
+const FEATURES={infra:true,sun:false,seis:false};
 const INFRA=BASE+"GUP_Infrastruktura/FeatureServer/";
 const corrDist=(f,kind)=>{
-  if(kind==="ee"){const l=String(f.LAYER||"")+String(f.EE_VODOVI_OPIS||""); return /400/.test(l)?35:/220/.test(l)?25:20;}
+  if(kind==="ee"){const l=String(f.LAYER||"")+String(f.EE_VODOVI_OPIS||""); return /400|440/.test(l)?35:/220/.test(l)?25:20;}
   if(kind==="plin"){const l=String(f.LABELA||"")+String(f.PLINOVOD_OPIS||""); return /^MP|magistral/i.test(l)?30:10;}
   return 30;
 };
@@ -236,7 +236,16 @@ CHECKS.push(
   {id:"plin", label:"Plinovod", url:INFRA+"14/query", fields:"LABELA,PLINOVOD_OPIS", sev:"no", corridor:"plin", search:35,
    hit:(f,all)=>"U sigurnosnoj zoni plinovoda: "+[...new Set(all.map(x=>x.PLINOVOD_OPIS||x.LABELA).filter(Boolean))].join(", ")+" (magistralni 30 m, visokotlačni 10 m od osi). Gradnja traži suglasnost Plinacra ili Gradske plinare.",
    none:"Nema magistralnog ni visokotlačnog plinovoda u sigurnosnoj zoni."},
+  {id:"dvSE", label:"Dalekovod", url:INFRA+"13/query", fields:"LAYER,EE_VODOVI_OPIS", sev:"no", corridor:"ee", search:40,
+   hit:(f,all)=>"U koridoru posebnog režima: "+[...new Set(all.map(x=>x.EE_VODOVI_OPIS||x.LAYER).filter(Boolean))].join(", ")+". Unutar koridora (20 m od osi za 110 kV, 25 m za 220 kV, 35 m za 400 kV) nadzemna gradnja nije dopuštena bez posebnih uvjeta HOPS-a ili HEP-a.",
+   none:null},
+  {id:"plinSE", label:"Plinovod", url:INFRA+"15/query", fields:"LABELA,PLINOVOD_OPIS", sev:"no", corridor:"plin", search:35,
+   hit:(f,all)=>"U sigurnosnoj zoni plinovoda: "+[...new Set(all.map(x=>x.PLINOVOD_OPIS||x.LABELA).filter(Boolean))].join(", ")+" (magistralni 30 m, visokotlačni 10 m od osi). Gradnja traži suglasnost Plinacra ili Gradske plinare.",
+   none:null},
   {id:"prod", label:"Produktovod", url:INFRA+"16/query", fields:"PRODUKTOVOD_OPIS", sev:"warn", corridor:"prod", search:35,
+   hit:()=>"Uz česticu prolazi produktovod (naftovod). Udaljenost gradnje određuje upravitelj cjevovoda; računaj s ograničenjem do 30 m od osi.",
+   none:null},
+  {id:"prodSE", label:"Produktovod", url:INFRA+"17/query", fields:"*", sev:"warn", corridor:"prod", search:35,
    hit:()=>"Uz česticu prolazi produktovod (naftovod). Udaljenost gradnje određuje upravitelj cjevovoda; računaj s ograničenjem do 30 m od osi.",
    none:null}
 );
@@ -399,7 +408,7 @@ async function inspect(ll){
     c.corridor?corridorQuery(c,parcel,ll):
     (qGeom?polyQuery(c.url,qGeom,c.fields,!!c.draw):pointQuery(c.url,ll,c.fields,!!c.draw))
   ).then(r=>({c,...r}))));
-  checks.forEach(r=>{if(r.c.corridor&&r.v) r.v.forEach(f=>L.geoJSON(f.geometry,{style:{color:r.c.id==="dv"?"#b3261e":"#a86400",weight:3,dashArray:"8 6"},interactive:false}).addTo(selLayer))});
+  checks.forEach(r=>{if(r.c.corridor&&r.v) r.v.forEach(f=>L.geoJSON(f.geometry,{style:{color:/^dv/.test(r.c.id)?"#b3261e":"#a86400",weight:3,dashArray:"8 6"},interactive:false}).addTo(selLayer))});
   // gradivi dio i nagib terena
   const env2=buildEnvelope(parcel,rows,up);
   if(env2&&env2.geom) L.geoJSON(env2.geom,{style:{color:"#1f6f54",weight:2,dashArray:"4 3",fillColor:"#1f6f54",fillOpacity:.25},interactive:false}).addTo(selLayer);
@@ -414,7 +423,7 @@ async function inspect(ll){
   const envP=settle(loadEnv(ll,parcel)), infP=FEATURES.infra?settle(loadInfra(parcel,ll)):Promise.resolve(null), sunP=FEATURES.sun?settle(loadSun(parcel,ll,env2)):Promise.resolve(null);
   const [infra,sun]=await Promise.all([infP,sunP]);
   if(id!==clickId) return;
-  window.__infra=infra&&infra.v||null;
+  window.__infra=infra&&infra.v||null; infraDraw(infra);
   render({...base,checks,infra,sun});
   const env=await envP;
   if(id!==clickId) return;
@@ -559,60 +568,66 @@ function minDistM(fgeom,parcel,ll){
   return m;
 }
 
-// --- komunalna infrastruktura (otvoreni podaci Grada Zagreba: javna kanalizacija, javni vodovod; plinovodi iz GUP-a)
-const NETS=[
-  {id:"kan",label:"Kanalizacija",svc:"Javna_kanalizacija",re:/.*/},
-  {id:"vod",label:"Vodovod",svc:"Javni_vodovod",re:/.*/},
-  {id:"plinm",label:"Plinska mreža",svc:"GUP_Infrastruktura",re:/plin/i}
+// --- komunalna infrastruktura
+// Što je javno dostupno (provjereno 17. 10. 2026. na ArcGIS servisima Grada Zagreba):
+//  * ulična mreža vodovoda i kanalizacije: NIJE javna. Servisi "Javni_vodovod" i "Javna_kanalizacija" sadrže samo godišnju
+//    statistiku (km mreže, broj priključaka), bez geometrije. "Katastar infrastrukture" (KI_LINIJE) pokriva samo probno
+//    područje od oko 140 × 110 m (2022.).
+//  * niskonaponska mreža struje i distribucijska plinska mreža: nisu javne (HEP ODS, Gradska plinara Zagreb).
+//  * GUP Grada Zagreba (karte 3b i 3c, pročišćeni tekst): magistralni vodoopskrbni cjevovodi, dalekovodi i kabeli 110 kV i jači,
+//    trafostanice 110 kV, magistralni i visokotlačni plinovodi, toplovodi; postojeći i planirani. To su glavni vodovi u mjerilu
+//    plana: blizina ne znači da se kuća na njih može priključiti.
+const INF_R=300;
+const INF_SRC=[
+  {id:"vod",kind:"vod",url:BASE+"3c_voda_JR_PJR_swipe/FeatureServer/26/query",color:"#1e6fd9",desc:p=>"magistralni vodoopskrbni cjevovod"},
+  {id:"ee",kind:"ee",url:INFRA+"12/query",color:"#b3261e",desc:p=>p.EE_VODOVI_OPIS||p.LAYER||"dalekovod ili kabel 110 kV"},
+  {id:"ts",kind:"ee",url:INFRA+"1/query",color:"#b3261e",point:true,filter:p=>/trafostanic|rasklopn/i.test(p.EE_OPIS||""),desc:p=>p.EE_OPIS||"trafostanica 110 kV"},
+  {id:"eeSE",kind:"ee",url:INFRA+"13/query",color:"#b3261e",desc:p=>p.EE_VODOVI_OPIS||p.LAYER||"dalekovod ili kabel"},
+  {id:"tsSE",kind:"ee",url:INFRA+"2/query",color:"#b3261e",point:true,filter:p=>/trafostanic|rasklopn/i.test(p.EE_OPIS||""),desc:p=>p.EE_OPIS||"trafostanica 110 kV"},
+  {id:"plinSE",kind:"plin",url:INFRA+"15/query",color:"#c48a00",desc:p=>p.PLINOVOD_OPIS||p.LABELA||"plinovod"},
+  {id:"plin",kind:"plin",url:INFRA+"14/query",color:"#c48a00",desc:p=>p.PLINOVOD_OPIS||p.LABELA||"plinovod"},
+  {id:"top",kind:"top",url:INFRA+"22/query",color:"#8a3ffc",desc:p=>p.TP_OPIS||"toplovod"}
 ];
-const NET_R=150, LAYERS_CACHE={};
-function svcLayers(svc){
-  if(!LAYERS_CACHE[svc]) LAYERS_CACHE[svc]=getJSON(BASE+svc+"/FeatureServer?f=json").then(j=>{if(j.error) throw new Error(j.error.message||"nema servisa"); return (j.layers||[]).filter(l=>!l.subLayerIds||!l.subLayerIds.length)}).catch(e=>{delete LAYERS_CACHE[svc]; throw e});
-  return LAYERS_CACHE[svc];
-}
-async function loadNet(n,parcel,ll){
-  const layers=(await svcLayers(n.svc)).filter(l=>n.re.test(l.name||"")&&!/Polygon/i.test(l.geometryType||""));
-  if(!layers.length) throw new Error("sloj nije pronađen");
-  const res=await Promise.all(layers.map(l=>settle(distQuery(BASE+n.svc+"/FeatureServer/"+l.id+"/query",parcel,ll,NET_R,"*",200)).then(r=>({l,...r}))));
-  if(res.every(r=>r.e)) throw new Error(res[0].e);
-  let best=null;
-  for(const r of res){ if(!r.v) continue;
-    for(const f of r.v){const d=minDistM(f.geometry,parcel,ll); if(d!=null&&isFinite(d)&&(!best||d<best.d)) best={d,layer:r.l.name,planned:/planiran|budu/i.test(r.l.name)}; } }
-  return best||{none:true};
-}
+const isPlanned=(p,txt)=>/planiran/i.test(txt||"")||/planiran/i.test(Object.values(p||{}).join(" "));
 async function loadInfra(parcel,ll){
   const out={};
-  await Promise.all(NETS.map(n=>settle(loadNet(n,parcel,ll)).then(r=>{out[n.id]=r})));
+  await Promise.all(INF_SRC.map(s=>settle(distQuery(s.url,parcel,ll,INF_R,"*",200)).then(r=>{
+    if(r.e){out[s.id]={e:r.e};return}
+    const fs=(r.v||[]).filter(f=>!s.filter||s.filter(f.properties||{}));
+    let ex=null, pl=null;
+    for(const f of fs){const p=f.properties||{}, d=minDistM(f.geometry,parcel,ll); if(d==null||!isFinite(d)) continue;
+      const desc=s.desc(p), rec={d,desc:String(desc).replace(/\s*\((postojeći|postojeci|planirani|planirana)\)\s*/i,""),geom:f.geometry,color:s.color};
+      if(isPlanned(p,desc)){if(!pl||d<pl.d) pl=rec} else {if(!ex||d<ex.d) ex=rec}}
+    out[s.id]={ex,pl,n:fs.length,incomplete:!!(r.v&&r.v.incomplete)};
+  })));
   return out;
 }
 function infraHtml(inf){
   let h=`<h2>Komunalna infrastruktura</h2>`;
-  if(!inf) return h+`<p class="hint"><span class="spin"></span>Tražim kanalizaciju, vodovod i plin u blizini…</p>`;
-  if(inf.e) return h+`<p class="err">Infrastruktura: ${esc(inf.e)}</p>`;
-  const o=inf.v, li=[];
-  const dtxt=x=>x.d<1?"uz česticu ili kroz nju":"oko "+fmt(Math.max(1,Math.round(x.d)))+" m od čestice";
-  const lay=x=>x.layer?` (sloj: ${esc(x.layer)}${x.planned?", planirano":""})`:"";
-  const one=(k,label,noneTxt,farTxt)=>{
-    const r=o[k]; if(!r) return;
-    if(r.e){li.push(`<li class="chk chk-warn"><b>${label}</b><span>Podatak nije dostupan (${esc(r.e)}).</span></li>`);return}
-    const x=r.v;
-    if(x.none){li.push(`<li class="chk chk-warn"><b>${label}</b><span>${noneTxt}</span></li>`);return}
-    const sev=x.planned?"warn":x.d<=30?"ok":"warn";
-    li.push(`<li class="chk chk-${sev}"><b>${label}</b><span>${x.planned?"Samo planirana mreža, ":""}${dtxt(x)}${lay(x)}.${!x.planned&&x.d>30?" "+farTxt:""}</span></li>`);
+  if(!inf) return h+`<p class="hint"><span class="spin"></span>Tražim vodove iz GUP-a u blizini…</p>`;
+  const o=inf.v||{}, dm=x=>x.d<1?"uz česticu ili kroz nju":"oko "+fmt(Math.max(1,Math.round(x.d)))+" m";
+  const gup=(ids,what)=>{const parts=[]; let err=null;
+    for(const id of ids){const r=o[id]; if(!r) continue; if(r.e){err=r.e;continue}
+      if(r.ex) parts.push(`${esc(r.ex.desc)} (postojeći) ${dm(r.ex)}`);
+      if(r.pl) parts.push(`${esc(r.pl.desc)} (planirani) ${dm(r.pl)}`);}
+    if(parts.length) return "U GUP-u: "+parts.join("; ")+".";
+    if(err) return "Podatak iz GUP-a trenutno nije dostupan ("+esc(err)+").";
+    return `U GUP-u nema ${what} u krugu ${INF_R} m.`;
   };
-  one("kan","Kanalizacija",`Nema javne kanalizacije u krugu ${NET_R} m. Računaj sa sabirnom jamom ili malim pročistačem (procjena 3.000–7.000 €), a u vodozaštitnoj zoni s dodatnim uvjetima.`,"Dulji kućni priključak poskupljuje radove (iskop, cijevi).");
-  one("vod","Vodovod",`Nema javnog vodovoda u krugu ${NET_R} m. Bez vodovoda treba bunar (procjena 3.000–8.000 €) i analiza vode; provjeri planove proširenja kod ViO.`,"Dulji priključak poskupljuje radove.");
-  one("plinm","Plin",`Nema plinovoda iz GUP-a u krugu ${NET_R} m. Za grijanje računaj na dizalicu topline ili drugi izvor.`,"Priključak je moguć, ali je dulji.");
-  h+=`<ul class="checks">${li.join("")}</ul>`;
-  h+=`<p class="meta">Podaci: otvoreni podaci Grada Zagreba (javna kanalizacija, javni vodovod) i infrastrukturni sloj GUP-a. Mreža može biti nepotpuno ucrtana; stvarnu mogućnost priključka potvrđuju Vodoopskrba i odvodnja, Gradska plinara i HEP kroz posebne uvjete. Niskonaponska mreža struje nije javno dostupna, ali HEP priključuje svaku česticu s pristupom.</p>`;
+  const row=(label,status,text)=>`<li class="chk chk-${status==="nedostupno"?"warn":"ok"}"><b>${label} <em class="kind st-${status==="nedostupno"?"muted":"ok"}">${status==="nedostupno"?"nema dostupnih podataka":"podatak iz GUP-a"}</em></b><span>${text}</span></li>`;
+  h+=`<ul class="checks">`;
+  h+=row("Vodovod","nedostupno",`Ulična vodovodna mreža nije javno objavljena. Provjeri kod Vodoopskrbe i odvodnje. ${gup(["vod"],"magistralnih vodoopskrbnih cjevovoda")} Na magistralni cjevovod kuća se ne priključuje izravno.`);
+  h+=row("Kanalizacija","nedostupno","Kanalizacijska mreža nije javno objavljena. Ako u ulici nema kanalizacije, treba sabirna jama ili mali pročistač; u vodozaštitnoj zoni vrijede posebni uvjeti.");
+  h+=row("Struja","nedostupno",`Niskonaponska mreža i trafostanice 10(20)/0,4 kV nisu javno objavljene; uvjete priključenja daje HEP ODS (elektroenergetska suglasnost). ${gup(["ee","ts","eeSE","tsSE"],"dalekovoda, kabela ni trafostanica 110 kV")}`);
+  h+=row("Plin","nedostupno",`Distribucijska plinska mreža nije javno objavljena; provjeri kod Gradske plinare Zagreb. ${gup(["plin","plinSE"],"magistralnih ni visokotlačnih plinovoda")} Na magistralni i visokotlačni plinovod kuća se ne priključuje izravno.`);
+  {const r=o.top; if(r&&!r.e&&(r.ex||r.pl)) h+=row("Toplovod","gup",gup(["top"],"toplovoda"));}
+  h+=`</ul><p class="meta">Blizina voda ne znači da je priključak moguć; to potvrđuju posebni uvjeti priključenja. Vodovi iz GUP-a ucrtani su na karti (plavo voda, crveno struja, žuto plin, ljubičasto toplovod). Izvor: GUP Grada Zagreba, karte 3b i 3c (javna rasprava 2024.), ArcGIS Grada Zagreba.</p>`;
   return h;
 }
-function infraExtra(){ // dodatni troškovi kad nema mreže
-  const o=window.__infra; if(!o) return [];
-  const r=[];
-  if(o.kan&&o.kan.v&&o.kan.v.none) r.push(["Sabirna jama ili pročistač (nema kanalizacije, procjena)",3000,7000]);
-  if(o.vod&&o.vod.v&&o.vod.v.none) r.push(["Bunar (nema vodovoda, procjena)",3000,8000]);
-  return r;
+function infraDraw(inf){
+  if(!inf||!inf.v) return;
+  for(const s of INF_SRC){const r=inf.v[s.id]; if(!r||r.e) continue;
+    for(const x of [r.ex,r.pl]) if(x&&x.geom) L.geoJSON(x.geom,{style:{color:x.color,weight:3,opacity:.8,dashArray:x===r.pl?"2 6":"8 4"},pointToLayer:(f,ll)=>L.circleMarker(ll,{radius:6,color:x.color}),interactive:false}).addTo(selLayer);}
 }
 
 // --- sunce: sjena susjednih zgrada na prostoru za kuću (21. 12. i 21. 3.) i procjena sunčane elektrane
@@ -1071,6 +1086,8 @@ function render(d){
           h+=`<details class="acc" data-k="costs"><summary><span>Priključci i dozvole</span><b id="costSum"></b></summary><div class="acc-body">`;
           h+=`<div class="kd"><label for="kdKw">Priključna snaga struje</label><select id="kdKw" style="font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg)">${[[7.36,"7,36 kW (jednofazno 32 A)"],[11.04,"11,04 kW (trofazno 16 A)"],[17.25,"17,25 kW (trofazno 25 A)"],[22.08,"22,08 kW (trofazno 32 A)"]].map(o=>`<option value="${o[0]}"${o[0]===11.04?" selected":""}>${o[1]}</option>`).join("")}</select></div>`;
           h+=`<div class="kd"><label><input type="checkbox" id="kdGas"> s plinskim priključkom</label></div>`;
+          {const ic=infcGet(favKey(parcel,ll)); const inp=(id,l,ph)=>`<div class="kd"><label for="${id}">${l}</label><input id="${id}" type="number" inputmode="decimal" min="0" step="100" placeholder="${ph}" value="${ic[id]>0?ic[id]:""}"><span>€</span></div>`;
+           h+=`<p class="eyebrow" style="margin-top:8px">Radovi na priključcima (tvoj unos iz ponude)</p>`+inp("kdWorks","Kućni priključci vode, kanalizacije, struje (radovi, okna, ormarić)","ponuda")+inp("kdSeptic","Sabirna jama ili pročistač, ako nema kanalizacije","0")+inp("kdWell","Bunar, ako nema vodovoda","0");}
           h+=`<div id="costs"></div></div></details>`;}
       }
       h+=`<details><summary>Sva detaljna pravila za ovu zonu (${zone.items.length})</summary><ol>${zone.items.map(i=>`<li>${esc(i)}</li>`).join("")}</ol></details>`;
@@ -1141,6 +1158,9 @@ const KD_ZONES=[["I",18.35],["II",18.00],["III",16.00],["IV",12.00],["V",2.00],[
 function kdZone(){try{return localStorage.getItem("kdZone")||""}catch(e){return ""}}
 
 // ulazi kupnje po čestici
+function infcStore(){try{return JSON.parse(localStorage.getItem("infc")||"{}")}catch(e){return {}}}
+function infcGet(k){return infcStore()[k]||{}}
+function infcSave(){const k=window.__cur&&window.__cur.key; if(!k) return; const o={}; for(const id of ["kdWorks","kdSeptic","kdWell"]){const v=numv(id); if(v>0) o[id]=v} try{const s=infcStore(); s[k]=o; localStorage.setItem("infc",JSON.stringify(s))}catch(e){}}
 function buyStore(){try{return JSON.parse(localStorage.getItem("buy")||"{}")}catch(e){return {}}}
 function buyGet(k){const o=buyStore()[k]||{}; if(o.price==null){const lp=landPrice(k); if(lp) o.price=parseFloat(lp)}; return o}
 function buySet(k,o){try{const s=buyStore(); s[k]=o; localStorage.setItem("buy",JSON.stringify(s))}catch(e){}}
@@ -1175,6 +1195,7 @@ function finCompute(){
     P("hep","Priključak struje (HEP)",hep,hep,hep,"propis",`${String(kW).replace(".",",")} kW × ${HEP_EUR_KW} €/kW + 25 % PDV`,"naknade");
     P("vio","Priključak vode i kanalizacije (ViO)",0,0,0,"propis","za kućanstva plaća Grad","naknade");
     if(gas) P("plin","Priključak plina (GPZ)",(GAS_RANGE[0]+GAS_RANGE[1])/2,GAS_RANGE[0],GAS_RANGE[1],"procjena","procjena 800–1.500 €","naknade");
+    for(const [id,l] of [["kdWorks","Radovi na kućnim priključcima"],["kdSeptic","Sabirna jama ili pročistač"],["kdWell","Bunar"]]){const v=numv(id); if(v>0) P(id,l,v,v,v,"unos","iz ponude","naknade");}
     P("prist","Pristojba za građevinsku dozvolu",prist,prist,prist,"propis",hA>600?"0,25 ‰ troškova gradnje, najmanje 132,72 €":"zgrada do 600 m² (e-zahtjev 15 % manje)","naknade");
     if(kd==null) F.warn.push("Komunalni doprinos nije uključen: izaberi zonu.");
     if(yard==null) F.warn.push("Uređenje okoliša nije uključeno: upiši iznos ako ga znaš.");
@@ -1236,8 +1257,8 @@ function finUpdate(){
     let h=`<div class="calc" style="background:var(--panel);margin-top:8px">`+its.map(i=>frow(esc(i.label)+" "+kindTag(i.kind),money(i),{f:i.formula})).join("");
     if(F.house.kd==null) h+=frow("Komunalni doprinos","izaberi zonu");
     const s=F.build.naknadeLo!==F.build.naknadeHi?`${fmt(F.build.naknadeLo)}–${fmt(F.build.naknadeHi)} €`:`${fmt(F.build.naknade)} €`;
-    h+=frow(`Ukupno naknade${F.house.kd==null?" (bez komunalnog)":""}`,s,{bold:true})+`</div>`;
-    h+=`<p class="meta">Isti iznosi ulaze u procjenu gradnje i ukupnu investiciju. Nisu uključeni radovi koje plaćaš izvođačima: vodomjerno okno i kućne instalacije, elektro-ormarić te posebni uvjeti javnopravnih tijela.</p>`;
+    h+=frow(`Ukupno naknade i priključci${F.house.kd==null?" (bez komunalnog)":""}`,s,{bold:true})+`</div>`;
+    h+=`<p class="meta">Isti iznosi ulaze u procjenu gradnje i ukupnu investiciju. Radovi koje plaćaš izvođačima (vodomjerno okno, kućni priključci, elektro-ormarić) ovise o udaljenosti mreže koja nije javno objavljena, pa ih upiši iz ponude.</p>`;
     g("costs").innerHTML=h; if(g("costSum")) g("costSum").textContent=s;
   }
   // gradnja
@@ -1327,6 +1348,7 @@ sheet.addEventListener("input",e=>{
   if(id==="yM2"){const a=window.__cur&&window.__cur.area, p=document.getElementById("yPrice"), v=numv("yM2"); if(p&&a) p.value=v>0?Math.round(v*a):"";}
   if(/^y[A-Z]/.test(id)){buyRead(); finUpdate();}
   if(id==="kdVol"){e.target.dataset.manual="1"; finUpdate();}
+  if(id==="kdWorks"||id==="kdSeptic"||id==="kdWell"){infcSave(); finUpdate();}
   if(id==="kdRate"){const n=numv("kdRate"); try{localStorage.setItem("kdRate",n>0&&n<=40?String(n):"")}catch(err){} finUpdate();}
   if(/^b[A-Z]/.test(id)) finUpdate();
 });
