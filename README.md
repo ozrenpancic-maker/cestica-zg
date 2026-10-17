@@ -19,3 +19,16 @@ Procjene su orijentacijske. Pravno mjerodavna je lokacijska informacija Grada Za
 ## Izmjene
 Uređuje se `src/app.template.html`, a `python3 build.py` sastavlja `index.html`.
 Pravila za Sesvete: `pdfplumber` tekst prvog dijela PDF-a odredbi (bez prikaza izmjena), zatim `python3 src/parse_gup_sesvete.py ses_first.txt src/rules_sesvete.json`.
+
+## Ažuriranje pravila (kad se plan promijeni)
+Pravila su odvojena od aplikacije, u `src/rules.json` (GUP Zagreba), `src/rules_sesvete.json` (GUP Sesveta) i `src/rules_ppgz.json` (PPGZ). Izvor, verzija i status svake datoteke su u `src/rules_meta.json` i prikazuju se u aplikaciji.
+1. Novi tekst odluke pretvori u tekst (`pdftotext -layout` ili `pdfplumber`) i pokreni odgovarajući `src/parse_*.py`.
+2. Ažuriraj `src/rules_meta.json` (verzija, datum, status).
+3. `python3 build.py` provjerava strukturu pravila i prekida ako nešto nedostaje.
+4. `cd tests && node audit.js` ispisuje izvučene parametre za svako pravilo i tip kuće, za usporedbu s tekstom; `node audit.js "GUP 2.2." k` ispisuje i izvorne rečenice.
+5. `cd tests && npm install && npm test` pokreće automatske testove.
+
+## Grane
+- `main`: objavljena verzija (GitHub Pages)
+- `razvoj`: rad u tijeku, objavljuje se tek nakon pregleda
+- `stabilna-2026-10-17`: sigurnosna kopija stabilne verzije

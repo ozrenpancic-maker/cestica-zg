@@ -53,7 +53,7 @@ function setv(w,id,v,ev="input"){const e=$(w,id); if(e.type==="checkbox") e.chec
   // 30 × 25 m = 750 m²
   w.eval("render")(data(w,parcelRect(30,25),"2.2."));
   const s2=w.document.getElementById("sheet").textContent;
-  ok(/ispunjeno/.test(s2)&&!/potrebna dodatna provjera/.test(s2),"2.2: čestica 750 m² ispunjava min. površinu");
+  ok(/nova gradnja\)\s*ispunjeno/.test(s2)&&!/manja od propisane/.test(s2),"2.2: čestica 750 m² ispunjava min. površinu");
   ok(errs.length===0,"bez JS grešaka pri renderiranju pravila: "+errs.join(" | "));
 }
 // pravilo bez posebne odredbe za male čestice ostaje "premala" (provjera da iznimka ne vrijedi posvuda)
@@ -201,5 +201,78 @@ function setv(w,id,v,ev="input"){const e=$(w,id); if(e.type==="checkbox") e.chec
   ok(errs.length===0,"bez JS grešaka: "+errs.join(" | "));
 }
 
-console.log(`\n${pass} prošlo, ${fail} palo`);
-if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
+// ---------------- 6. Parametri pravila (A1)
+{
+  const {w,errs}=boot();
+  const RP=(set,code,tip,area)=>{const R=w.eval(set), z=w.eval("pickZone")(R[code],"Stambena i mješovita"); return w.eval("ruleParams")(z,tip,area)};
+  const get=(P,id)=>P.find(x=>x.id===id)||{};
+  let P=RP("RULES","2.1.","slob",900);
+  ok(get(P,"meda").value==="3,0 m","2.1: udaljenost od međe 3,0 m iz stavke za novu gradnju (ne iz stavke o rekonstrukciji)");
+  ok(get(P,"etaze").num===2,"2.1: najviše dvije nadzemne etaže");
+  ok(get(P,"teren").value==="60 %","2.1: prirodni teren 60 %");
+  ok(get(P,"pravac").value==="najmanje 5,0 m"&&get(P,"pravac").status==="provjera","2.1: građevni pravac 5,0 m, označen za dodatnu provjeru");
+  ok(get(P,"jed").num===3&&/6 PGM/.test(get(P,"pgm").value),"2.1: 3 jedinice i 2 PGM po stanu = 6 PGM");
+  P=RP("RULES","2.7.","slob",800);
+  ok(get(P,"jed").num===8,"2.7: najviše 8 jedinica (1 na 80 m², čestica 800 m²)");
+  P=RP("RULES","2.7.","slob",400);
+  ok(get(P,"jed").num===5,"2.7: na 400 m² najviše 5 jedinica (1 na 80 m²)");
+  P=RP("RULES","1.3.","slob",800);
+  ok(get(P,"sirina").value==="20,0 m"&&get(P,"sirina").status==="provjera","1.3: najmanja širina uz ulicu 20,0 m, za provjeru");
+  P=RP("RULES_PP","PPGZ","polu",400);
+  ok(get(P,"teren").value==="30 %"&&get(P,"meda").hHalf,"PPGZ poluugrađena: teren 30 %, međa h/2");
+  ok(get(P,"etaze").num===3,"PPGZ: tri nadzemne etaže");
+  P=RP("RULES","1.2.","slob",800);
+  ok(get(P,"meda").value==null,"1.2: broj iz rečenice o dubini gradnje (75 m) nije uzet kao udaljenost od međe");
+  // h/2 u prostoru za kuću je označen kao procjena
+  const pr=parcelRect(40,30);
+  const d=data(w,pr,"PPGZ"); d.up={v:[]}; d.rows[0].p.Naziv_plana="Prostorni plan Grada Zagreba";
+  d.envelope=w.eval("buildEnvelope")(pr,d.rows,d.up);
+  ok(d.envelope&&/h\/2/.test(d.envelope.est||""),"PPGZ: prostor za kuću s h/2 označen je kao procjena");
+  w.eval("render")(d);
+  ok(/Udaljenost od međa je procjena/.test(w.document.getElementById("sheet").textContent),"napomena o procjeni udaljenosti od međa je prikazana");
+  // vrsta zahvata
+  const {w:w2,errs:e2}=boot();
+  w2.eval("ZAHVAT='interp'");
+  w2.eval("render")(data(w2,parcelRect(20,22.5),"2.2."));
+  const t2=w2.document.getElementById("sheet").textContent;
+  ok(/interpolacija: potrebna dodatna provjera/.test(t2)&&/manjim od 600 m²/.test(t2),"interpolacija: prikazane posebne odredbe i status provjere");
+  // iznimke: ulica iz OSM-a koja se spominje u iznimci
+  const d3=data(w2,parcelRect(30,25),"2.2."); d3.env={v:{roads:[{name:"Karažnik",hw:"residential",ok:true}],stops:[]}};
+  w2.eval("render")(d3);
+  ok(/iznimku koja spominje ulicu uz ovu česticu \(Karažnik\)/.test(w2.document.getElementById("sheet").textContent),"iznimka za ulicu Karažnik je istaknuta");
+  w2.eval("ZAHVAT='nova'");
+  ok(errs.length===0&&e2.length===0,"bez JS grešaka u pravilima: "+errs.concat(e2).join(" | "));
+}
+
+// ---------------- 7. Mreža: ponovni pokušaj, predmemorija, greške (A3)
+async function netTests(){
+  const {w}=boot();
+  const G=w.eval("getJSON"), NET=w.eval("NET");
+  const resp=(status,body)=>Promise.resolve({ok:status<400,status,json:()=>Promise.resolve(body)});
+  let n=0;
+  w.fetch=()=>{n++; return n===1?resp(503,{}):resp(200,{features:[1]})};
+  let r=await G("https://x.test/arcgis/rest/services/A/FeatureServer/0/query?a=1");
+  ok(n===2&&r.features.length===1,"privremena greška 503: jedan ponovni pokušaj i uspjeh");
+  n=0; w.fetch=()=>{n++; return resp(200,{features:[2]})};
+  r=await G("https://x.test/arcgis/rest/services/A/FeatureServer/0/query?a=1");
+  ok(n===0&&r.features[0]===1,"isti zahtjev se čita iz predmemorije");
+  n=0; w.fetch=()=>{n++; return resp(404,{})};
+  try{await G("https://x.test/b"); ok(false,"404 mora baciti grešku")}catch(e){ok(n===1&&/HTTP 404/.test(e.message),"greška 404 se ne ponavlja i jasno je opisana")}
+  n=0; w.fetch=()=>{n++; return resp(200,{error:{code:400,message:"Invalid query"}})};
+  try{await G("https://x.test/c")}catch(e){ok(n===1&&/servis javlja grešku: Invalid query/.test(e.message),"ArcGIS greška u odgovoru je prepoznata")}
+  n=0; w.fetch=(u,o)=>{n++; return new Promise((_,rej)=>o.signal.addEventListener("abort",()=>{const e=new Error("a");e.name="AbortError";rej(e)}))};
+  try{await G("https://x.test/d",{},300)}catch(e){ok(n===2&&/nema odgovora nakon 0.3 s/.test(e.message),"isteklo vrijeme: ponovljeno jednom, poruka s trajanjem")}
+  // najviše 6 istodobnih zahtjeva
+  let act=0,peak=0; w.fetch=()=>{act++;peak=Math.max(peak,act); return new Promise(res=>setTimeout(()=>{act--;res({ok:true,status:200,json:()=>Promise.resolve({})})},30))};
+  await Promise.all(Array.from({length:15},(_,i)=>G("https://x.test/e?"+i,{},2000,{cache:false})));
+  ok(peak<=6,"najviše 6 istodobnih zahtjeva (vrh "+peak+")");
+  ok(NET.stat["x.test"]&&NET.stat["x.test"].fail>0,"stanje servisa bilježi neuspjehe");
+  // nepotpun rezultat
+  const f=w.eval("featuresOf")({features:[1,2],exceededTransferLimit:true});
+  ok(f.incomplete===true,"dosegnuta granica broja objekata označava rezultat kao nepotpun");
+}
+
+netTests().then(()=>{
+  console.log(`\n${pass} prošlo, ${fail} palo`);
+  if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
+});

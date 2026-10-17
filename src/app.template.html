@@ -144,6 +144,13 @@ details p{font-size:13.5px;margin:6px 0}
 .ck textarea{font:inherit;font-size:13px;width:100%;min-height:2.2em;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg);box-sizing:border-box}
 .ck .rok{color:var(--warn);font-size:12.5px}
 .ck li.done .ckh b{text-decoration:line-through;opacity:.7}
+.rp{border-collapse:collapse;width:100%;font-size:13.5px;margin-top:6px}
+.rp th{text-align:left;font-weight:500;color:var(--muted);padding:6px 8px 6px 0;vertical-align:top;width:38%}
+.rp td{padding:6px 0;vertical-align:top;border-top:1px solid var(--line)} .rp th{border-top:1px solid var(--line)}
+.rp .src{font-style:italic}
+.st-ok{background:var(--ok-bg);color:var(--ok)} .st-warn{background:var(--warn-bg);color:var(--warn)} .st-muted{background:var(--line);color:var(--muted)}
+.exhit{background:var(--warn-bg)}
+ol.zi{font-size:13.5px;padding-left:18px}
 </style>
 </head>
 <body>
@@ -172,6 +179,7 @@ details p{font-size:13.5px;margin:6px 0}
 const RULES = /*RULES*/null;
 const RULES_SE = /*RULES_SE*/null;
 const RULES_PP = /*RULES_PP*/null;
+const RULES_META = /*RULES_META*/null; // izvor, verzija i status svake datoteke pravila (src/rules_meta.json)
 const APP_VERSION = "/*VERSION*/";
 
 const BASE = "https://services8.arcgis.com/Usi0jGQwMmBUpFjr/arcgis/rest/services/";
@@ -273,24 +281,54 @@ const selLayer = L.layerGroup().addTo(map);
 document.getElementById("lyrSat").onchange=e=>{if(e.target.checked){map.removeLayer(osm);sat.addTo(map).bringToBack()}else{map.removeLayer(sat);osm.addTo(map).bringToBack()}};
 document.getElementById("lyrNam").onchange=e=>{if(e.target.checked){namLayer.addTo(map);loadView()}else map.removeLayer(namLayer)};
 
-// --- mreža: svaki zahtjev ima rok, nikad ne visi
-async function getJSON(url,opts={},ms=10000){
+// --- mreža: rok za svaki zahtjev, ponovni pokušaj kod privremenih grešaka, predmemorija, ograničen broj istodobnih zahtjeva
+// i bilježenje stanja servisa. Neuspjeh jednog servisa nikad ne ruši ostatak aplikacije.
+const NET={cache:new Map(),ttl:10*60*1000,max:250,active:0,queue:[],conc:6,stat:{}};
+function netSlot(){return new Promise(r=>{if(NET.active<NET.conc){NET.active++;r()}else NET.queue.push(r)})}
+function netRelease(){NET.active--; const n=NET.queue.shift(); if(n){NET.active++;n()}}
+function svcId(url){const m=String(url).match(/services\/([^/]+)\/FeatureServer(?:\/(\d+))?/); if(m) return m[1]+(m[2]?"/"+m[2]:""); try{return new URL(url).host}catch(e){return String(url).slice(0,40)}}
+function netNote(url,ok,ms,msg){const k=svcId(url), s=NET.stat[k]||(NET.stat[k]={ok:0,fail:0,ms:0,last:null}); ok?s.ok++:s.fail++; s.ms=Math.round(ms); s.last=ok?null:msg; s.t=Date.now();}
+class NetError extends Error{constructor(msg,retry){super(msg);this.retry=retry}}
+async function fetchOnce(url,opts,ms){
   const c=new AbortController(); const t=setTimeout(()=>c.abort(),ms);
   try{
-    const r=await fetch(url,{...opts,signal:c.signal});
-    if(!r.ok) throw new Error("HTTP "+r.status);
-    const j=await r.json(); if(j.error) throw new Error(j.error.message||"greška servisa"); return j;
-  }catch(e){throw new Error(e.name==="AbortError"?"nema odgovora nakon "+ms/1000+" s":(e.message||"greška mreže"))}
-  finally{clearTimeout(t)}
+    let r;
+    try{ r=await fetch(url,{...opts,signal:c.signal}) }
+    catch(e){ throw new NetError(e.name==="AbortError"?"nema odgovora nakon "+ms/1000+" s":"nema veze s poslužiteljem",true) }
+    if(!r.ok) throw new NetError("poslužitelj javlja grešku HTTP "+r.status,r.status>=500||r.status===429);
+    let j; try{ j=await r.json() }catch(e){ throw new NetError("neispravan odgovor poslužitelja",true) }
+    if(j&&j.error){const code=+j.error.code||0; throw new NetError("servis javlja grešku"+(j.error.message?": "+j.error.message:""),code>=500||code===0)}
+    return j;
+  }finally{clearTimeout(t)}
 }
+async function getJSON(url,opts={},ms=10000,{retries=1,cache=true}={}){
+  const key=(opts.method||"GET")+" "+url+" "+(opts.body||"");
+  if(cache){const c=NET.cache.get(key); if(c&&Date.now()-c.t<NET.ttl) return c.v;}
+  let err;
+  for(let a=0;a<=retries;a++){
+    await netSlot(); const t0=(window.performance||Date).now();
+    try{
+      const j=await fetchOnce(url,opts,ms);
+      netNote(url,true,(window.performance||Date).now()-t0);
+      if(cache){NET.cache.set(key,{t:Date.now(),v:j}); if(NET.cache.size>NET.max) NET.cache.delete(NET.cache.keys().next().value);}
+      return j;
+    }catch(e){ err=e; netNote(url,false,(window.performance||Date).now()-t0,e.message); }
+    finally{ netRelease(); }
+    if(!err.retry||a===retries) break;
+    await new Promise(r=>setTimeout(r,700*(a+1)));
+  }
+  throw new Error(err.message);
+}
+// ArcGIS vraća najviše N objekata; ako je granica dosegnuta, rezultat nije potpun
+function featuresOf(g){const f=g&&g.features||[]; if(g&&(g.exceededTransferLimit||(g.properties&&g.properties.exceededTransferLimit))) f.incomplete=true; return f}
 function pointQuery(url,ll,fields="*",geom=true){
   const p=new URLSearchParams({geometry:ll.lng+","+ll.lat,geometryType:"esriGeometryPoint",inSR:"4326",spatialRel:"esriSpatialRelIntersects",outFields:fields,returnGeometry:String(geom),outSR:"4326",f:"geojson"});
-  return getJSON(url+"?"+p.toString()).then(g=>g.features||[]);
+  return getJSON(url+"?"+p.toString()).then(featuresOf);
 }
 function polyQuery(url,geom,fields="*",withGeom=true){
   const rings=geom.type==="Polygon"?geom.coordinates:geom.coordinates.flat();
   const p=new URLSearchParams({geometry:JSON.stringify({rings,spatialReference:{wkid:4326}}),geometryType:"esriGeometryPolygon",inSR:"4326",spatialRel:"esriSpatialRelIntersects",outFields:fields,returnGeometry:String(withGeom),outSR:"4326",f:"geojson"});
-  return getJSON(url,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:p.toString()}).then(g=>g.features||[]);
+  return getJSON(url,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:p.toString()}).then(featuresOf);
 }
 
 // --- namjena u pogledu
@@ -300,7 +338,7 @@ async function loadView(){
   if(map.getZoom()<15){namLayer.clearLayers();return}
   const b=map.getBounds();
   const p=new URLSearchParams({geometry:[b.getWest(),b.getSouth(),b.getEast(),b.getNorth()].join(","),geometryType:"esriGeometryEnvelope",inSR:"4326",spatialRel:"esriSpatialRelIntersects",outFields:"Analitika",returnGeometry:"true",outSR:"4326",geometryPrecision:"6",maxAllowableOffset:"0.00001",f:"geojson"});
-  try{const g=await getJSON(SRC.namjena+"?"+p.toString(),{},12000);namLayer.clearLayers();namLayer.addData(g)}catch(e){}
+  try{const g=await getJSON(SRC.namjena+"?"+p.toString(),{},12000,{retries:0});namLayer.clearLayers();namLayer.addData(g)}catch(e){}
 }
 map.on("moveend",()=>{clearTimeout(viewTimer);viewTimer=setTimeout(loadView,350)});
 
@@ -452,22 +490,25 @@ async function corridorQuery(c,parcel,ll){
 // --- gradivi dio: čestica umanjena za udaljenost od međe, samo u zonama koje dopuštaju gradnju
 function buildEnvelope(parcel,rows,up){
   if(!parcel) return null;
-  let d=3;
+  let d=3, est=null;
   try{
     const {rule}=ruleLookup(up,rows);
     const z=rule&&rows[0]?pickZone(rule,rows[0].p.Analitika):null;
-    const m=z&&(z.key.meda||"").match(/(\d+,\d+|\d+)\s*m\b/); if(m) d=parseFloat(m[1].replace(",","."));
+    if(z){const RP=ruleParams(z,TIP,null), md=RP.find(x=>x.id==="meda"), et=RP.find(x=>x.id==="etaze");
+      if(md&&md.hHalf){const h=(et&&et.num?et.num:3)*3; d=Math.max(3,h/2); est="h/2: uzeto "+String(d).replace(".",",")+" m za visinu oko "+h+" m";}
+      else if(md&&md.num) d=md.num; else est="pravilo ne navodi udaljenost od međe; uzeto 3 m";}
+    else est="pravilo nije određeno; uzeto 3 m";
   }catch(e){}
   try{
     let env=turf.buffer(parcel.geometry,-d/1000,{units:"kilometers"});
-    if(!env||!env.geometry) return {geom:null,area:0,d};
+    if(!env||!env.geometry) return {geom:null,area:0,d,est};
     const bz=rows.filter(r=>BUILDABLE.has(r.p.Analitika)&&r.geom);
     if(bz.length&&bz.length<rows.length){
       let u=null;
       for(const r of bz){const i=turf.intersect(env,{type:"Feature",geometry:r.geom,properties:{}}); if(i) u=u?turf.union(u,i):i;}
       env=u;
     } else if(!bz.length) env=null;
-    return {geom:env?env.geometry:null,area:env?turf.area(env):0,d};
+    return {geom:env?env.geometry:null,area:env?turf.area(env):0,d,est};
   }catch(e){return null}
 }
 // --- nagib terena (Copernicus DEM preko Open-Meteo; rezolucija oko 90 m, orijentacijski)
@@ -519,7 +560,7 @@ function minDistM(fgeom,parcel,ll){
 }
 
 // --- komunalna infrastruktura (otvoreni podaci Grada Zagreba: javna kanalizacija, javni vodovod; plinovodi iz GUP-a)
-const NET=[
+const NETS=[
   {id:"kan",label:"Kanalizacija",svc:"Javna_kanalizacija",re:/.*/},
   {id:"vod",label:"Vodovod",svc:"Javni_vodovod",re:/.*/},
   {id:"plinm",label:"Plinska mreža",svc:"GUP_Infrastruktura",re:/plin/i}
@@ -541,7 +582,7 @@ async function loadNet(n,parcel,ll){
 }
 async function loadInfra(parcel,ll){
   const out={};
-  await Promise.all(NET.map(n=>settle(loadNet(n,parcel,ll)).then(r=>{out[n.id]=r})));
+  await Promise.all(NETS.map(n=>settle(loadNet(n,parcel,ll)).then(r=>{out[n.id]=r})));
   return out;
 }
 function infraHtml(inf){
@@ -663,7 +704,7 @@ way(around:12,${ring})[highway]->.r; .r out tags;
  node(around:1500,${P})[amenity=pharmacy];)->.e; .e out tags center;`;
   // više Overpass servera: prvi koji odgovori pobjeđuje
   const body="data="+encodeURIComponent(q);
-  const ask=u=>getJSON(u+"?"+body,{},20000);
+  const ask=u=>getJSON(u+"?"+body,{},20000,{retries:0});
   const j=await Promise.any(["https://overpass-api.de/api/interpreter","https://overpass.private.coffee/api/interpreter","https://overpass.kumi.systems/api/interpreter","https://maps.mail.ru/osm/tools/overpass/api/interpreter"].map(ask))
     .catch(()=>{throw new Error("serveri za podatke o okolini trenutno ne odgovaraju, pokušaj ponovno za minutu")});
   const here=turf.point(c);
@@ -757,10 +798,99 @@ function ruleLookup(up,rows){
   const rule=set[c]||set[code]||Object.values(set).find(r=>r.tekst.some(x=>x.includes("("+c+")")))||null;
   return {code:c,rule,se};
 }
+// ================= URBANA PRAVILA: odabir stavki i izvlačenje parametara =================
+// Pravila su u zasebnim JSON datotekama (src/rules*.json) koje se ugrađuju pri sastavljanju; ovaj dio samo čita stavke.
+// Za svaki parametar bira se stavka koja ga propisuje za novu gradnju; stavke o rekonstrukciji i iznimkama se ne koriste
+// kao opće pravilo, nego se prikazuju zasebno.
+const KEY_RX={
+  cestica:/najmanj\w* (površin\w*|veličin\w*) građevne čestice|najmanja građevna čestica|veličina građevne čestice/i,
+  sirina:/širin\w* građevne čestice/i,
+  izgradenost:/izgrađenost/i,
+  kis:/\bkisn?\b/i,
+  gbp:/\bGBP\b/,
+  visina:/nadzemn\w* etaž|najveća visina|visina građevin/i,
+  teren:/prirodn\w* teren/i,
+  meda:/od međe/i,
+  pravac:/građevn\w* pravac|građevinski je pravac|građevinski pravac|građevnog pravca glavne građevine od/i,
+  jedinice:/samostaln\w* uporabn\w* jedinic|stambenih jedinica/i,
+  pgm:/\bPGM\b/
+};
+const NOT_GENERAL=/^(rekonstrukc|iznimno|prigodom rekonstrukc|u rekonstrukc|pri gradnji zamjensk)/i;
+function normKeys(zone){
+  if(!zone||zone._nk) return zone&&zone._nk;
+  const out={...(zone.key||{})};
+  for(const [k,rx] of Object.entries(KEY_RX)){
+    let best=null, bs=-Infinity;
+    for(const it of zone.items||[]){
+      const m=it.match(rx); if(!m) continue;
+      let s=0;
+      if(NOT_GENERAL.test(it)) s-=10;
+      if(/\d/.test(it)) s+=2;
+      if(m.index<30) s+=3;
+      if(k==="pravac"&&!/\d+(,\d+)?\s*m\b/.test(it)) s-=5; // "pomoćne građevine su iza građevnog pravca" nije udaljenost
+      if(s>bs){bs=s;best=it}
+    }
+    // postojeći ključ iz parsera zadržava se, osim ako nedostaje ili je stavka o rekonstrukciji/iznimci
+    const cur=out[k];
+    if(best&&bs>-5&&(!cur||NOT_GENERAL.test(cur))) out[k]=best;
+    else if(cur&&NOT_GENERAL.test(cur)&&!(best&&bs>-5)) delete out[k];
+  }
+  zone._nk=out; return out;
+}
+const NUM_W={jedna:1,jedne:1,jednu:1,dvije:2,dva:2,tri:3,"četiri":4,pet:5,"šest":6,sedam:7,osam:8,devet:9,deset:10};
+const wnum=s=>{if(s==null) return null; const t=String(s).toLowerCase(); return NUM_W[t]??(isFinite(parseFloat(t.replace(",",".")))?parseFloat(t.replace(",",".")):null)};
+const NEEDS_CHECK=/iznimno|osim|ovisno|pretežit|lokalnim uvjetima|prema grafičkom|kartografskom|u pravilu/i;
+// strukturirani parametri pravila za izabrani tip kuće; svaki ima vrijednost, izvorni tekst i status
+function ruleParams(zone,tip,area){
+  const key=normKeys(zone), base=parseParams(key,tip), P=[];
+  const add=(id,label,value,txt,extra={})=>P.push({id,label,value,txt:txt||"",status:extra.status||(txt&&NEEDS_CHECK.test(txt)?"provjera":value!=null?"propisano":"nije"),...extra});
+  add("minC","Najmanja čestica",base.minC!=null?fmt(base.minC)+" m²":null,key.cestica);
+  const sw=key.sirina&&pickT(key.sirina,/(\d+(?:,\d+)?)\s*m\b(?![²2])/u,tip);
+  if(sw) add("sirina","Najmanja širina čestice uz ulicu",String(sw)+" m",key.sirina,{status:"provjera",note:"širina nije izmjerena; provjeri na katastarskom planu"});
+  add("izg","Najveća izgrađenost",base.izg!=null?Math.round(base.izg*100)+" %":null,key.izgradenost);
+  add("kis","Najveći kis",base.kis!=null?String(base.kis).replace(".",","):null,key.kis);
+  add("gbp","Najveći GBP",base.gbp!=null?fmt(base.gbp)+" m²":null,base.gbp!=null?key.gbp:"");
+  const vm=(key.visina||"").match(/(jedn\p{L}*|dvije|tri|četiri|pet|šest|sedam|osam|devet|\d+)\s+nadzemn/iu);
+  const et=vm?wnum(vm[1]):null;
+  add("etaze","Najviše nadzemnih etaža",et!=null?String(et)+(/potkrovlje|uvučen/i.test(key.visina||"")?" (zadnja kao potkrovlje ili uvučeni kat)":""):null,key.visina,{num:et});
+  add("teren","Najmanji prirodni teren",base.teren!=null?Math.round(base.teren*100)+" %":null,key.teren);
+  const mt=key.meda||"", hHalf=/h\s*\/\s*2|pola visine/i.test(mt), mm=mt.match(/od međe[^;]{0,60}?(\d+,\d+|\d+)\s*m\b/)||mt.match(/(\d+,\d+|\d+)\s*m\s+od međe/);
+  add("meda","Udaljenost od međe",hHalf?"pola visine građevine (h/2)":mm?mm[1]+" m":null,mt,hHalf?{num:null,hHalf,status:"provjera"}:{num:mm?toNum(mm[1]):null,hHalf});
+  const pm=(key.pravac||"").match(/najmanje\s+(\d+,\d+|\d+)\s*m\b/)||(key.pravac||"").match(/(\d+,\d+|\d+)\s*m\b/);
+  if(key.pravac&&pm) add("pravac","Građevni pravac od ulice (regulacijske linije)","najmanje "+pm[1]+" m",key.pravac,{status:"provjera",note:"nije uračunato u prostor za kuću na karti"});
+  const jt=key.jedinice||"";
+  const jm=jt.match(/najviše\s+(\w+)\s+samostaln/i)||jt.match(/najviše\s+(\d+)\s+samostaln/i);
+  const jper=jt.match(/(\d+)\s*m²\s*građevne čestice\s*\/\s*1/i)||jt.match(/(\d+)\s*m²\s*građevne čestice po/i);
+  let jmax=jm?wnum(jm[1]):null;
+  if(jper&&area){const byA=Math.floor(area/parseFloat(jper[1])); jmax=jmax!=null?Math.min(jmax,byA):byA;}
+  if(jt) add("jed","Najviše samostalnih jedinica",jmax!=null?String(jmax)+(jper?` (1 na ${jper[1]} m² čestice)`:""):null,jt,{num:jmax});
+  const pt=key.pgm||"", pg=pt.match(/(\d+)\s*PGM\s*\/\s*(1\s*)?(stan|stambena jedinica)/i);
+  if(pt) add("pgm","Parkirališna mjesta",pg?`${pg[1]} PGM po stanu${jmax?` · za ${jmax} stana najmanje ${pg[1]*jmax} PGM`:""}`:null,pt,{num:pg?+pg[1]:null});
+  return P;
+}
+// vrste zahvata (Zakon o gradnji: dogradnja i nadogradnja su oblici rekonstrukcije)
+const ZAHVATI=[["nova","nova gradnja"],["dogr","dogradnja"],["nadogr","nadogradnja"],["rek","rekonstrukcija"],["interp","interpolacija"],["zamj","zamjenska građevina"]];
+let ZAHVAT=(()=>{try{return localStorage.getItem("zahvat")||"nova"}catch(e){return "nova"}})();
+const ZAHVAT_RX={dogr:/rekonstrukc|dograd/i,nadogr:/rekonstrukc|nadograd/i,rek:/rekonstrukc/i,interp:/interpolac/i,zamj:/zamjensk/i};
+function zahvatItems(zone,z){
+  if(z==="nova"||!zone) return [];
+  const rx=ZAHVAT_RX[z]; return (zone.items||[]).filter(i=>rx.test(i));
+}
+// iznimke za pojedine ulice ili područja; ako se ime obližnje ulice spominje u iznimci, ističe se
+function exceptionItems(zone,roadNames){
+  const ex=(zone&&zone.items||[]).filter(i=>/^iznimno/i.test(i));
+  const names=(roadNames||[]).filter(Boolean).map(n=>n.replace(/^(ulica|cesta)\s+/i,"").trim()).filter(n=>n.length>3);
+  return ex.map(t=>{
+    const low=t.toLowerCase();
+    const hit=names.find(n=>{const ws=n.split(/\s+/).filter(w=>!/^(ulica|cesta|trg|put|odvojak|prilaz|avenija|aleja|ul\.|novi|nova|gornji|donji)$/i.test(w)); const wd=ws.sort((a,b)=>b.length-a.length)[0]||""; const stem=wd.slice(0,Math.max(4,wd.length-2)).toLowerCase(); return stem.length>=4&&low.includes(stem)});
+    return {t,hit:hit||null};
+  });
+}
+
 // stavka pravila koja dopušta gradnju na česticama manjim od propisane (npr. GUP čl. 69, pravilo 2.2: "...na građevnim česticama manjim od 600 m², uz uvjet...")
 function smallParcelRule(zone){
   if(!zone||!zone.items) return null;
-  return zone.items.find(i=>/čestic\w*\s+manj\w*\s+od\s+(\d|propisan)/i.test(i)&&/rekonstrukc|interpolac|zamjensk/i.test(i))||null;
+  return zone.items.find(i=>(/čestic\w*\s+manj\w*\s+od\s+(\d|propisan)/i.test(i)||/čestice\s+može\s+biti\s+manja/i.test(i))&&/rekonstrukc|interpolac|zamjensk/i.test(i))||null;
 }
 function pickZone(rule,analitika){
   if(!rule||!rule.zone||!rule.zone.length) return null;
@@ -848,49 +978,51 @@ function render(d){
   else if(!rule){h+=`<p><span class="rule-code">${esc(code)}</span>Pravilo nije pronađeno u tekstu odluke.</p>`}
   else{
     h+=`<p class="rule-title"><span class="rule-code">${esc(isPP?"PPGZ":code)}</span>${esc(rule.naziv)}</p><p class="meta">${isPP?"Točka 2.3.1. Odredbi za provedbu Prostornog plana Grada Zagreba (izmjene i dopune 2017.; izmjene 2025. ove uvjete ne mijenjaju). Vrijedi u građevinskim područjima naselja izvan GUP-ova; potvrdi lokacijskom informacijom.":`Članak ${esc(rule.clanak)}. `}${isPP?"":se?"Odluke o GUP-u Sesveta (prijedlog izmjena za ponovnu javnu raspravu, lipanj 2026.)":"Odluke o GUP-u Grada Zagreba (pročišćeni tekst 2025.)"}</p>`;
+    {const M=RULES_META&&RULES_META[isPP?"PP":se?"SE":"GUP"]; if(M) h+=`<p class="meta">Izvor: <a href="${esc(M.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(M.naziv)}</a>, ${esc(M.verzija)} · status: ${esc(M.status)}</p>`;}
     if(!se&&upx.v&&upx.v.length) h+=`<p class="flag">Ovdje vrijedi i iznimka iz urbanih pravila. Pogledaj stavke koje počinju s "iznimno".</p>`;
     const zone=main?pickZone(rule,main.p.Analitika):null;
     if(zone){
       h+=`<p class="meta">Zona: ${esc(zone.zona)}</p>`;
-      const pp=parseParams(zone.key,TIP);
+      const nk=normKeys(zone), pp=parseParams(nk,TIP), RP=ruleParams(zone,TIP,buildArea??area);
       // kratki sažetak u čipovima, detalji u padajućem dijelu
-      const chips=[];
-      const n2=x=>String(x).replace(".",",");
-      if(pp.minC) chips.push(`min. čestica ${fmt(pp.minC)} m²`);
-      if(pp.izg) chips.push(`izgrađenost ${Math.round(pp.izg*100)} %`);
-      if(pp.kis) chips.push(`kis ${n2(pp.kis)}`);
-      if(pp.gbp) chips.push(`GBP do ${fmt(pp.gbp)} m²`);
-      const vm=(zone.key.visina||"").match(/(jedn\p{L}*|dvije|tri|četiri|pet|šest|sedam|osam|devet|\d+)\s+nadzemn/u); if(vm) chips.push(`${vm[1]} nadzemne etaže`);
-      if(pp.teren) chips.push(`prirodni teren ${Math.round(pp.teren*100)} %`);
-      const mm=(zone.key.meda||"").match(/(\d+,\d+|\d+)\s*m\b/); if(mm) chips.push(`od međe ${mm[1]} m`);
+      const chips=RP.filter(x=>x.value&&["minC","izg","kis","gbp","etaze","teren","meda"].includes(x.id)).map(x=>({minC:"min. čestica ",izg:"izgrađenost ",kis:"kis ",gbp:"GBP do ",teren:"prirodni teren "}[x.id]??"")+(x.id==="etaze"?x.num+" nadzemne etaže":x.id==="meda"?(x.hHalf?"od međe h/2":"od međe "+x.value):x.value));
       if(chips.length) h+=`<div class="chips">${chips.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`;
-      const seen=new Map();
-      for(const [k,label] of KEY_LABELS){ const t=zone.key[k]; if(!t) continue; seen.has(t)?seen.get(t).push(label):seen.set(t,[label]); }
-      if(seen.size){
-        h+=`<details><summary>Uvjeti gradnje ${esc(code)} detaljno</summary><dl class="kv">`;
-        for(const [t,labels] of seen) h+=`<dt>${labels.join(" / ")}</dt><dd>${esc(t)}</dd>`;
-        h+=`</dl></details>`;
-      }
+      const ST={propisano:["ok","propisano"],provjera:["warn","potrebna dodatna provjera"],nije:["muted","nije propisano"]};
+      h+=`<details data-k="rparams"><summary>Parametri pravila ${esc(code)} (${TIPOVI.find(t=>t[0]===TIP)[1]})</summary><table class="rp"><tbody>`;
+      for(const x of RP){const st=ST[x.status]||ST.nije;
+        h+=`<tr><th>${esc(x.label)}</th><td><b>${esc(x.value||"–")}</b> <em class="kind st-${st[0]}">${st[1]}</em>${x.note?`<small class="fx">${esc(x.note)}</small>`:""}${x.txt?`<small class="fx src">„${esc(x.txt)}“</small>`:""}</td></tr>`;}
+      h+=`</tbody></table><p class="meta">Vrijednosti su izvučene iz teksta odluke za novu gradnju. "Potrebna dodatna provjera" znači da tekst sadrži uvjet koji aplikacija ne može provjeriti (iznimka, ovisnost o susjednim zgradama ili grafičkom prikazu).</p></details>`;
+      // iznimke za pojedine ulice i područja
+      const roadNames=env&&env.v?env.v.roads.map(r=>r.name):[];
+      const EX=exceptionItems(zone,roadNames), exHit=EX.filter(x=>x.hit);
+      if(exHit.length) h+=`<p class="flag">Pravilo ima iznimku koja spominje ulicu uz ovu česticu (${esc([...new Set(exHit.map(x=>x.hit))].join(", "))}). Iznimka može mijenjati visinu, kis ili druge uvjete; potrebna dodatna provjera.</p>`;
+      if(EX.length) h+=`<details data-k="rex"><summary>Iznimke u pravilu za pojedina područja (${EX.length})</summary><ol>${EX.map(x=>`<li${x.hit?' class="exhit"':""}>${esc(x.t)}${x.hit?` <b>(spominje se ${esc(x.hit)})</b>`:""}</li>`).join("")}</ol><p class="meta">${env&&env.v?"Ulice uz česticu su iz OpenStreetMapa; iznimka može vrijediti i kad ulica nije prepoznata.":"Ulice uz česticu još se učitavaju."}</p></details>`;
       const A=buildArea??area;
       if(A&&(pp.izg||pp.kis||pp.minC||TIP!=="slob")){
         let gbpMax=pp.kis?Math.min(A*pp.kis,pp.gbp||Infinity):(pp.gbp||null), gbpEst=false;
         if(!gbpMax&&pp.izg){gbpMax=A*pp.izg*2.5; gbpEst=true;}
         window.__tl=pp.izg?Math.round(A*pp.izg):null; window.__gbp=gbpMax?Math.round(gbpMax):null;
         // posebne odredbe za čestice manje od propisane (rekonstrukcija, zamjenska građevina, interpolacija)
-        const smallX=pp.minC&&A<pp.minC?smallParcelRule(zone):null;
+        const minCond=RP.find(x=>x.id==="minC"&&x.status==="provjera");
+        const smallX=pp.minC&&A<pp.minC?(smallParcelRule(zone)||(minCond?minCond.txt:null)):null;
         const okC=pp.minC?(A>=pp.minC?"good":A>=pp.minC*0.95||smallX?"":"bad"):"";
         const sumC=[pp.minC?(A>=pp.minC?"čestica dovoljna":A>=pp.minC*0.95?"čestica na granici":smallX?"manja od propisane: potrebna dodatna provjera":"čestica premala"):null,pp.izg?"tlocrt do "+fmt(A*pp.izg)+" m²":null,gbpMax?"GBP do "+fmt(gbpMax)+" m²":null].filter(Boolean).join(" · ");
         h+=`<details class="acc" data-k="calc"><summary><span>Izračun za ovu česticu</span><b class="${okC}">${esc(sumC)}</b></summary><div class="calc">`;
-        h+=`<div class="kd" style="margin:0 0 6px"><label for="tipSel">Tip kuće</label><select id="tipSel" class="bsel">${TIPOVI.map(x=>`<option value="${x[0]}"${x[0]===TIP?" selected":""}>${x[1]}</option>`).join("")}</select><span class="meta">nova gradnja</span></div>`;
+        h+=`<div class="kd" style="margin:0 0 6px"><label for="tipSel">Tip kuće</label><select id="tipSel" class="bsel">${TIPOVI.map(x=>`<option value="${x[0]}"${x[0]===TIP?" selected":""}>${x[1]}</option>`).join("")}</select></div><div class="kd" style="margin:0 0 6px"><label for="zahvatSel">Zahvat</label><select id="zahvatSel" class="bsel">${ZAHVATI.map(x=>`<option value="${x[0]}"${x[0]===ZAHVAT?" selected":""}>${x[1]}</option>`).join("")}</select></div>`;
+        if(ZAHVAT!=="nova"){const zi=zahvatItems(zone,ZAHVAT);
+          h+=`<div class="verdict v-warn" style="margin:4px 0">${esc(ZAHVATI.find(x=>x[0]===ZAHVAT)[1])}: potrebna dodatna provjera. Za taj zahvat vrijede posebne odredbe pravila; brojke ispod su za novu gradnju.</div>`;
+          h+=zi.length?`<ol class="zi">${zi.map(i=>`<li>${esc(i)}</li>`).join("")}</ol>`:`<p class="meta">Pravilo nema posebnih odredbi za ovaj zahvat, pa vrijede pravila za novu gradnju. Dogradnja i nadogradnja smatraju se rekonstrukcijom.</p>`;
+          h+=`<p class="meta">Za rekonstrukciju je potrebna postojeća legalna građevina (dozvola ili rješenje o izvedenom stanju).</p>`;}
         if(!pp.minC&&!pp.izg&&!pp.kis) h+=`<p class="flag">Pravilo ne navodi posebne uvjete za ovaj tip kuće; provjeri detaljna pravila.</p>`;
         if(buildArea!=null&&buildArea<area-1) h+=`<div class="row"><span>Građevinski dio čestice</span><span>${fmt(buildArea)} od ${fmt(area)} m²</span></div>`;
         if(envelope&&envelope.area!=null){const tl=pp.izg?A*pp.izg:null, lim=tl&&envelope.area<tl;
           h+=`<div class="row"><span>Prostor za kuću (${String(envelope.d).replace(".",",")} m od međa, zeleno na karti)</span><span class="${lim?"bad":""}">${fmt(envelope.area)} m²</span></div>`;
+          if(envelope.est) h+=`<p class="meta">Udaljenost od međa je procjena (${esc(envelope.est)}); potrebna dodatna provjera.</p>`;
           if(lim) h+=`<p class="meta">Prostor unutar udaljenosti od međa manji je od dopuštenog tlocrta, pa oblik čestice ograničava tlocrt kuće na najviše ${fmt(envelope.area)} m².</p>`;}
         if(pp.minC){const ok=A>=pp.minC, edge=!ok&&A>=pp.minC*0.95;
           h+=`<div class="row"><span>Min. čestica ${fmt(pp.minC)} m² (nova gradnja)</span><span class="${ok?"good":edge||smallX?"":"bad"}">${ok?"ispunjeno":edge?"na granici":smallX?"potrebna dodatna provjera":"premala"}</span></div>`;
           if(edge) h+=`<p class="meta">Čestica je do 5 % manja od propisane. To je dopušteno samo ako se dio čestice ustupa za ulicu ili pristupni put.</p>`;
-          if(smallX&&!edge) h+=`<p class="flag">Čestica je manja od propisane za novu gradnju, ali pravilo ima posebnu odredbu za manje čestice (rekonstrukcija, zamjenska građevina, interpolacija). Je li gradnja moguća ovisi o tome postoji li građevina i o položaju među susjednim zgradama, pa to potvrđuje lokacijska informacija.</p><p class="meta">Odredba iz pravila: „${esc(smallX)}“</p>`;}
+          if(smallX&&!edge) h+=`<p class="flag">Čestica je manja od propisane za novu gradnju, ali pravilo ima posebnu odredbu za takve čestice (npr. za rekonstrukciju, zamjensku građevinu ili interpolaciju). Je li gradnja moguća ovisi o tome postoji li građevina i o položaju među susjednim zgradama, pa to potvrđuje lokacijska informacija.</p><p class="meta">Odredba iz pravila: „${esc(smallX)}“</p>`;}
         if(pp.izg) h+=`<div class="row"><span>Najveći tlocrt (${Math.round(pp.izg*100)} %)</span><span>${fmt(A*pp.izg)} m²</span></div>`;
         if(gbpMax&&gbpEst) h+=`<div class="row"><span>Najveći GBP (procjena: tlocrt × 2,5 etaže, jer plan ne propisuje kis)</span><span>${fmt(gbpMax)} m²</span></div>`;
         else if(gbpMax) h+=`<div class="row"><span>Najveći GBP${pp.kis?" (kis "+String(pp.kis).replace(".",",")+")":""}${pp.gbp&&pp.kis&&A*pp.kis>pp.gbp?", ograničeno na "+fmt(pp.gbp):""}</span><span>${fmt(gbpMax)} m²</span></div>`;
@@ -977,6 +1109,7 @@ const BUILD={
 const STD={osn:0.85, sred:1.0, vis:1.3};
 const FLOORS={P:{f:1.00,n:1,label:"prizemnica"},PPk:{f:0.96,n:1.6,label:"P + potkrovlje"},P1:{f:0.93,n:2,label:"P + 1"},P1Pk:{f:0.91,n:2.6,label:"P + 1 + Pk"}};
 const PODRUM_EUR={kljuc:850, roh:550}; // procjena po m² podruma
+sheet.addEventListener("change",e=>{ if(e.target.id==="zahvatSel"){ZAHVAT=e.target.value;try{localStorage.setItem("zahvat",ZAHVAT)}catch(err){} OPEN.add("calc"); if(window.__lastData) render(window.__lastData);} });
 sheet.addEventListener("change",e=>{ if(e.target.id==="tipSel"){TIP=e.target.value;try{localStorage.setItem("tip",TIP)}catch(err){} OPEN.add("calc"); if(window.__lastData) render(window.__lastData);} });
 
 // ================= JEDINSTVENI FINANCIJSKI MODEL =================
@@ -1412,9 +1545,42 @@ sheet.addEventListener("click",e=>{
   if(t.dataset&&t.dataset.del!=null){const a=favs(); a.splice(+t.dataset.del,1); setFavs(a); showFavs();}
 });
 
+
+// --- stanje servisa: provjera dostupnosti svih izvora podataka (na zahtjev)
+function serviceList(){
+  const L=[["Katastarske čestice",SRC.cestice],["Planirana namjena",SRC.namjena],["Urbana pravila GUP",SRC.pravila],["Iznimke urbanih pravila",SRC.iznimke],["Urbana pravila Sesvete",SRC.pravilaSE],["Zgrade (topografska osnova)",OBJEKTI]];
+  for(const c of CHECKS) L.push(["Provjera: "+c.label,c.url]);
+  const seen=new Set(), out=[];
+  for(const [n,u] of L){const base=u.replace(/\/query$/,""); if(seen.has(base)) continue; seen.add(base); out.push({n,u:base+"?f=json"});}
+  out.push({n:"OpenStreetMap Overpass (okolina)",u:"https://overpass-api.de/api/status",raw:true});
+  out.push({n:"Open-Meteo (visine terena)",u:"https://api.open-meteo.com/v1/elevation?latitude=45.81&longitude=15.98"});
+  out.push({n:"Nominatim (pretraga adresa)",u:"https://nominatim.openstreetmap.org/status?format=json"});
+  return out;
+}
+async function ping(x){
+  const t0=(window.performance||Date).now();
+  try{
+    if(x.raw){const c=new AbortController(), t=setTimeout(()=>c.abort(),8000); try{const r=await fetch(x.u,{signal:c.signal}); if(!r.ok) throw new Error("HTTP "+r.status)}finally{clearTimeout(t)}}
+    else await getJSON(x.u,{},8000,{retries:0,cache:false});
+    return {ok:true,ms:Math.round((window.performance||Date).now()-t0)};
+  }catch(e){return {ok:false,ms:Math.round((window.performance||Date).now()-t0),e:e.message}}
+}
+async function showStatus(){
+  const L=serviceList();
+  sheet.innerHTML=`<p class="eyebrow">Stanje izvora podataka</p><p class="hint"><span class="spin"></span>Provjeravam ${L.length} servisa…</p>`; sheet.scrollTop=0;
+  const R=await Promise.all(L.map(x=>ping(x).then(r=>({...x,...r}))));
+  const ok=R.filter(r=>r.ok).length;
+  let h=`<p class="eyebrow">Stanje izvora podataka</p><div class="verdict v-${ok===R.length?"ok":ok?"warn":"no"}">${ok} od ${R.length} servisa odgovara.</div><ul class="checks">`;
+  for(const r of R) h+=`<li class="chk chk-${r.ok?(r.ms>4000?"warn":"ok"):"no"}"><b>${esc(r.n)}</b><span>${r.ok?`odgovara (${fmt(r.ms)} ms)${r.ms>4000?", sporo":""}`:esc(r.e)}</span></li>`;
+  h+=`</ul>`;
+  const st=Object.entries(NET.stat);
+  if(st.length) h+=`<details><summary>Zahtjevi u ovoj sesiji (${st.length} servisa)</summary><table class="rp"><tbody>${st.map(([k,v])=>`<tr><th>${esc(k)}</th><td>${v.ok} uspjelo, ${v.fail} neuspjelo${v.last?` · zadnja greška: ${esc(v.last)}`:""}</td></tr>`).join("")}</tbody></table></details>`;
+  h+=`<p class="meta">Odgovori se pamte 10 minuta, pa ponovni dodir iste čestice ne šalje nove zahtjeve. Kod privremenih grešaka (isteklo vrijeme, greška poslužitelja) zahtjev se jednom ponavlja. Istodobno se šalje najviše ${NET.conc} zahtjeva.</p>`;
+  sheet.innerHTML=h;
+}
 // --- verzija i provjera novije verzije (GitHub Pages drži stranicu u predmemoriji do 10 min)
 (function(){
-  const v=document.getElementById("ver"); if(v) v.textContent="Verzija "+APP_VERSION;
+  const v=document.getElementById("ver"); if(v){v.textContent="Verzija "+APP_VERSION+" · "; const a=document.createElement("a"); a.href="#"; a.id="statBtn"; a.textContent="stanje servisa"; a.style.color="var(--accent)"; a.onclick=e=>{e.preventDefault(); showStatus()}; v.appendChild(a);}
   if(!/^https?:/.test(location.protocol)) return;
   fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"}).then(r=>r.text()).then(t=>{
     const m=t.match(/const APP_VERSION = "([^"]+)"/);
