@@ -412,6 +412,43 @@ async function sunTests(){
   ok(errs.length===0,"bez JS grešaka u mobilnom sučelju: "+errs.join(" | "));
 }
 
+// ---------------- 12. Rizici i upozorenja (modul 1)
+{
+  const {w,errs}=boot();
+  const R=()=>w.__risks, cat=c=>R().filter(f=>f.cat===c), find=t=>R().find(f=>f.t.startsWith(t));
+  const road={v:{roads:[{name:"Testna ulica",hw:"residential",ok:true}],roadLines:[],stops:[]}};
+  let d=data(w,parcelRect(30,25),"2.2."); d.env=road; d.slope={v:{h:150,slope:4,down:"jug"}};
+  w.eval("render")(d);
+  ok(cat("potvrdeno").length===0,"čista čestica: nema potvrđenih ograničenja");
+  ok(find("Opasnost od poplava")&&find("Opasnost od poplava").cat==="neprovjereno","poplave: 'nije moguće provjeriti', a ne 'nema rizika'");
+  ok(find("Komunalni priključci").cat==="neprovjereno","priključci: nije moguće provjeriti");
+  ok(find("Pravni status pristupa").cat==="neprovjereno","cesta iz OSM-a ne potvrđuje pravni pristup");
+  ok(R().every(f=>f.src&&f.t&&f.why&&f.imp),"svaki nalaz ima naziv, objašnjenje, izvor i važnost");
+  ok(/Rizici i upozorenja/.test(w.document.getElementById("sheet").textContent)&&/0 potvrđeno/.test(w.document.getElementById("sheet").textContent),"sažetak rizika je prikazan");
+  // klizište i dalekovod
+  d=data(w,parcelRect(30,25),"2.2."); d.env=road;
+  d.checks=w.eval("CHECKS").map(c=>({c,v:c.id==="kliz"?[{properties:{}}]:c.id==="kult"?[{properties:{SUSTAV:"<script>x</script>"}}]:[]}));
+  w.eval("render")(d);
+  ok(find("Klizište").cat==="potvrdeno"&&find("Klizište").imp==="visoka","klizište: potvrđeno ograničenje, visoka važnost");
+  ok(find("Kulturna dobra").cat==="potencijalno","kulturna dobra: potencijalni rizik");
+  ok(!w.document.getElementById("sheet").innerHTML.includes("<script>x</script>"),"tekst iz GIS-a je zaštićen (escape)");
+  // neuspjeli servisi
+  d=data(w,parcelRect(30,25),"2.2."); d.env={e:"x"}; d.checks=w.eval("CHECKS").map(c=>({c,e:"bez mreže"}));
+  w.eval("render")(d);
+  ok(cat("neprovjereno").length>=w.eval("CHECKS").length&&!/Nisu nađena ozbiljna ograničenja/.test(w.document.getElementById("sheet").textContent),"neuspjele provjere: 'nije moguće provjeriti', bez tvrdnje da je sve u redu");
+  ok(find("Pristup javnoj prometnici").cat==="neprovjereno","neuspjeli OSM: pristup nije moguće provjeriti");
+  // mala čestica s posebnom odredbom, uska čestica, postojeća zgrada
+  d=data(w,parcelRect(20,22.5),"2.2."); d.env=road; w.eval("render")(d);
+  ok(find("Čestica manja od propisane")&&find("Čestica manja od propisane").cat==="potencijalno","mala čestica s posebnom odredbom: potencijalni rizik, a ne potvrđena zabrana");
+  d=data(w,parcelRect(9,70),"2.2."); d.env=road; w.eval("render")(d);
+  ok(!!find("Uska ili nepravilna čestica"),"uska čestica 9 × 70 m je prepoznata");
+  d=data(w,parcelRect(30,25),"2.2."); d.env=road; d.zgrade={v:{area:260,n:1,geoms:[]}}; w.eval("render")(d);
+  ok(find("Postojeća građevina").cat==="potencijalno"&&/veći od dopuštenog/.test(find("Postojeća građevina").why),"postojeća zgrada veća od dopuštenog tlocrta: upozorenje za rekonstrukciju");
+  d=data(w,parcelRect(30,25),"2.2."); d.env={v:{roads:[],roadLines:[],stops:[]}}; d.slope={v:{h:200,slope:24,down:"jug"}}; w.eval("render")(d);
+  ok(find("Pristup javnoj prometnici").cat==="potencijalno"&&find("Strm teren").imp==="visoka","bez ceste u OSM-u i strm teren: potencijalni rizici");
+  ok(errs.length===0,"bez JS grešaka u analizi rizika: "+errs.join(" | "));
+}
+
 netTests().then(infraTests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}

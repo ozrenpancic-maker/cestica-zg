@@ -229,6 +229,15 @@ ol.zi{font-size:13.5px;padding-left:18px}
 @media (max-width:899px){.ib{white-space:normal;text-align:center} #sheet,#aux{container-type:inline-size}}
 @container (max-width:330px){.bgrid{grid-template-columns:1fr;gap:2px 0}.bgrid>label{margin-top:6px}.kd .ib,a.ib{max-width:100%}}
 .infk dd{color:var(--muted)}
+.rsum{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+.rb{font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:999px}
+.rb-no{background:var(--no-bg);color:var(--no)} .rb-warn{background:var(--warn-bg);color:var(--warn)} .rb-muted{background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+.st-no{background:var(--no-bg);color:var(--no)}
+ul.risk{list-style:none;margin:0;padding:0}
+ul.risk li{display:flex;flex-direction:column;gap:2px;padding:8px 0 8px 10px;border-top:1px solid var(--line);border-left:3px solid var(--line);font-size:13.5px}
+ul.risk li.risk-no{border-left-color:var(--no)} ul.risk li.risk-warn{border-left-color:var(--warn)}
+ul.risk .rh{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+ul.risk small{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -1274,6 +1283,119 @@ function pickZone(rule,analitika){
   return rule.zone.find(z=>keys.some(k=>z.zona.toLowerCase().includes(k)))||(keys.length?null:null);
 }
 
+// ================= RIZICI I UPOZORENJA =================
+// Objedinjuje nalaze koje aplikacija već dobiva (provjere slojeva, pravila, okolina, nagib, zgrade, infrastruktura).
+// Kategorije: "potvrdeno" = ograničenje iz službenog sloja ili pravila; "potencijalno" = mogući rizik ili procjena;
+// "neprovjereno" = podatak nije dostupan ili servis nije odgovorio (nikad se ne tumači kao "nema rizika").
+const RSRC={
+  upu:["Karta 4b Procedure, GUP Grada Zagreba (ponovna javna rasprava 2024.)","2024."],
+  uan:["Karta 4b Procedure, GUP Grada Zagreba (ponovna javna rasprava 2024.)","2024."],
+  rez:["Karta 4a Urbana pravila, rezervacija proširenja ulica, GUP (2024.)","2024."],
+  kliz:["Baza klizišta Grada Zagreba (ArcGIS Grada Zagreba)",null],
+  kult:["Karta 4d Kultura, GUP Grada Zagreba (2024.)","2024."],
+  prir:["Karta 4c Zaštita prirode, GUP Grada Zagreba (2024.)","2024."],
+  voda:["Karta 3c Vodnogospodarski sustav, vodozaštitne zone, GUP (2024.)","2024."],
+  potok:["Karta 3c Vodnogospodarski sustav, koridori potoka, GUP (2024.)","2024."],
+  popl:["Karta 3c, planirana akumulacija i plavljenje (HE sustav Save), GUP (2024.)","2024."],
+  dv:["GUP Grada Zagreba, energetski sustav (GUP_Infrastruktura)",null], dvSE:["GUP Sesveta, energetski sustav (GUP_Infrastruktura SE)",null],
+  plin:["GUP Grada Zagreba, plinovodi (GUP_Infrastruktura)",null], plinSE:["GUP Sesveta, plinovodi (GUP_Infrastruktura SE)",null],
+  prod:["GUP Grada Zagreba, produktovodi",null], prodSE:["GUP Sesveta, produktovodi",null]
+};
+const RCHECK={
+  upu:"Status urbanističkog plana uređenja kod Zavoda za prostorno uređenje; bez donesenog UPU-a gradnja u pravilu nije moguća.",
+  uan:"Uvjete natječaja i obvezu provedbe kod Gradskog ureda.",
+  rez:"Koliko čestice otpada na proširenje ulice (lokacijska informacija, geodet).",
+  kliz:"Geotehnički pregled terena prije kupnje.",
+  kult:"Posebne uvjete konzervatora (Gradski zavod za zaštitu spomenika kulture i prirode).",
+  prir:"Uvjete zaštite prirode za zahvat.",
+  voda:"Ograničenja za odvodnju i sabirne jame u vodozaštitnoj zoni (Hrvatske vode, ViO).",
+  potok:"Vodopravne uvjete i udaljenost gradnje od vodotoka (Hrvatske vode).",
+  popl:"Status planirane akumulacije i ograničenja gradnje.",
+  dv:"Posebne uvjete HOPS-a ili HEP-a; točan položaj voda geodetskim snimkom.", dvSE:"Posebne uvjete HOPS-a ili HEP-a; točan položaj voda geodetskim snimkom.",
+  plin:"Suglasnost Plinacra ili Gradske plinare; točan položaj plinovoda.", plinSE:"Suglasnost Plinacra ili Gradske plinare; točan položaj plinovoda.",
+  prod:"Uvjete upravitelja produktovoda (JANAF).", prodSE:"Uvjete upravitelja produktovoda (JANAF)."
+};
+function parcelShape(parcel){
+  try{
+    const A=turf.area(parcel.geometry), P=turf.length(turf.polygonToLine(parcel.geometry),{units:"kilometers"})*1000;
+    const pp=4*Math.PI*A/(P*P); // Polsby–Popper: 1 = krug, kvadrat 0,785, uska duga čestica < 0,3
+    const bb=turf.bbox(parcel.geometry), w=turf.distance([bb[0],bb[1]],[bb[2],bb[1]],{units:"kilometers"})*1000, h=turf.distance([bb[0],bb[1]],[bb[0],bb[3]],{units:"kilometers"})*1000;
+    return {A,P,pp,minDim:Math.min(w,h)};
+  }catch(e){return null}
+}
+function riskFindings(d){
+  const {parcel,rows,checks,env,slope,zgrade,envelope,up,upx,nam,ces}=d, F=[];
+  const add=(cat,imp,t,why,src,date,chk)=>F.push({cat,imp,t,why,src,date,chk});
+  // namjena
+  if(nam&&nam.e&&!(rows&&rows.length)) add("neprovjereno","visoka","Namjena zemljišta","Sloj planirane namjene nije odgovorio.","GIS baza planirane namjene Grada Zagreba","2023.","Ponovi provjeru ili traži lokacijsku informaciju.");
+  else if(rows&&rows.length){const v=VERDICT[rows[0].p.Analitika];
+    if(v&&v[0]==="no") add("potvrdeno","visoka","Namjena ne dopušta gradnju",v[1],"GIS baza planirane namjene (prostorni planovi)","2023.","Lokacijsku informaciju; moguće izmjene plana.");
+    else if(v&&v[0]==="warn") add("potencijalno","srednja","Ograničena namjena",v[1],"GIS baza planirane namjene (prostorni planovi)","2023.","Što se točno smije graditi (lokacijska informacija).");
+    if(rows.length>1&&rows[1].share!=null&&rows[1].share>0.05){const nb=rows.filter(r=>!BUILDABLE.has(r.p.Analitika)).reduce((a,r)=>a+(r.share||0),0);
+      if(nb>0.05) add("potvrdeno",nb>0.5?"visoka":"srednja","Dio čestice izvan građevinske namjene",`Oko ${Math.round(nb*100)} % čestice je u namjeni koja ne dopušta gradnju; izračuni koriste samo građevinski dio.`,"GIS baza planirane namjene","2023.","Granicu namjene na čestici (lokacijska informacija).");}
+  } else add("neprovjereno","visoka","Namjena zemljišta","Za lokaciju nema podataka o namjeni (možda je izvan Grada Zagreba).","GIS baza planirane namjene","2023.","Lokacijsku informaciju.");
+  // provjere slojeva
+  if(checks) for(const r of checks){
+    const src=RSRC[r.c.id]||[r.c.label,null];
+    if(r.e){add("neprovjereno","srednja",r.c.label,"Servis nije odgovorio, pa provjera nije napravljena.",src[0],src[1],"Ponovi provjeru.");continue}
+    if(r.v&&r.v.length) add(r.c.sev==="no"?"potvrdeno":"potencijalno",r.c.sev==="no"?"visoka":"srednja",r.c.label,r.c.hit(r.v[0].properties||{},r.v.map(f=>f.properties||{})),src[0],src[1],RCHECK[r.c.id]||"Uvjete nadležnog tijela.");
+  }
+  // poplave: službene karte opasnosti od poplava nisu povezane
+  add("neprovjereno","srednja","Opasnost od poplava","Provjereni su samo slojevi GUP-a (potoci, planirana akumulacija). Službene karte opasnosti od poplava Hrvatskih voda nisu povezane s aplikacijom, pa ovo nije potvrda da poplavnog rizika nema.","Hrvatske vode, karte opasnosti od poplava",null,"Kartu opasnosti od poplava u pregledniku Hrvatskih voda (preglednik.voda.hr) i iskustva susjeda.");
+  // urbano pravilo
+  const {code,rule}=ruleLookup(up,rows||[]);
+  if(up&&up.e) add("neprovjereno","visoka","Urbano pravilo","Sloj urbanih pravila nije odgovorio.","Karta 4a Urbana pravila, GUP (2024.)","2024.","Ponovi provjeru.");
+  if(upx&&upx.v&&upx.v.length) add("potencijalno","srednja","Iznimka iz urbanih pravila","Na lokaciji vrijedi iznimka iz urbanih pravila; može mijenjati uvjete gradnje.","Karta 4a Urbana pravila, iznimke (2024.)","2024.","Koja iznimka vrijedi (lokacijska informacija).");
+  const RP=window.__ruleP||[];
+  for(const x of RP) if(x.status==="provjera"&&["sirina","pravac","meda","minC","etaze"].includes(x.id)) add("potencijalno","niska",x.label+" (pravilo "+(code||"")+")",`${x.value?x.value+": ":""}tekst pravila sadrži uvjet koji aplikacija ne može provjeriti.`,RULES_META&&RULES_META.GUP?RULES_META.GUP.naziv:"Odluka o GUP-u",RULES_META&&RULES_META.GUP?RULES_META.GUP.datum:null,"Lokacijsku informaciju"+(x.note?" ("+x.note+")":"")+".");
+  // veličina i oblik čestice
+  if(parcel){
+    const A=d.area, pp=RP.find(x=>x.id==="minC");
+    const minC=pp&&pp.value?toNum(String(pp.value).replace(/[^\d.,]/g,"")):null;
+    if(minC&&A<minC*0.95){const zone=rule&&rows&&rows[0]?pickZone(rule,rows[0].p.Analitika):null, sx=zone?smallParcelRule(zone):null;
+      add(sx?"potencijalno":"potvrdeno","visoka","Čestica manja od propisane",`Površina ${fmt(A)} m², a za novu gradnju treba ${fmt(minC)} m².${sx?" Pravilo ima posebnu odredbu za manje čestice (rekonstrukcija, zamjenska građevina, interpolacija).":""}`,"Odluka o GUP-u i katastarska čestica (2023.)","2023.","Lokacijsku informaciju; mogućnost spajanja sa susjednom česticom.");}
+    const sh=parcelShape(parcel);
+    if(sh&&(sh.pp<0.35||sh.minDim<12)) add("potencijalno",sh.minDim<10?"visoka":"srednja","Uska ili nepravilna čestica",`Oblik čestice (najmanja širina obuhvata oko ${fmt(sh.minDim)} m) može ograničiti tlocrt kuće zbog udaljenosti od međa.`,"Katastarske čestice Grada Zagreba (2023.), izračun aplikacije","2023.","Probni tlocrt u simulatoru; stvarne međe geodetskim snimkom.");
+    if(envelope&&envelope.geom===null) add("potvrdeno","visoka","Nema prostora za kuću","Nakon udaljenosti od međa na građevinskom dijelu čestice ne ostaje prostor za građevinu.","Izračun aplikacije iz pravila i katastarske čestice",null,"Pravila za poluugrađenu ili ugrađenu gradnju; lokacijsku informaciju.");
+  }
+  // pristup
+  if(env&&env.e) add("neprovjereno","visoka","Pristup javnoj prometnici","Podaci o cestama (OpenStreetMap) nisu se učitali.","OpenStreetMap",null,"Zemljišnoknjižni status puta uz česticu.");
+  else if(env&&env.v){const car=env.v.roads.filter(r=>r.ok);
+    if(!env.v.roads.length) add("potencijalno","visoka","Pristup javnoj prometnici","U OpenStreetMapu nema ceste uz česticu.","OpenStreetMap (podaci zajednice, nisu službeni)",null,"Ima li čestica izlaz na javni put ili upisanu služnost prolaza.");
+    else if(!car.length) add("potencijalno","srednja","Pristup javnoj prometnici","Uz česticu je samo staza ili poljski put.","OpenStreetMap (podaci zajednice, nisu službeni)",null,"Status puta (javno dobro ili privatna čestica) i propisanu širinu pristupa.");
+    else add("neprovjereno","niska","Pravni status pristupa",`Uz česticu je cesta (${car[0].name||"bez naziva"}), ali iz podataka se ne vidi je li javno dobro.`,"OpenStreetMap (podaci zajednice, nisu službeni)",null,"Zemljišnoknjižni izvadak čestice ceste.");}
+  else if(checks) add("neprovjereno","niska","Pristup javnoj prometnici","Podaci o cestama još se učitavaju.","OpenStreetMap",null,"");
+  // nagib
+  if(slope&&slope.e) add("neprovjereno","niska","Nagib terena","Podaci o visinama nisu se učitali.","Copernicus DEM (Open-Meteo)",null,"Geodetski snimak terena.");
+  else if(slope&&slope.v){const s=slope.v.slope;
+    if(s>=20) add("potencijalno","visoka","Strm teren",`Nagib u okolini oko ${Math.round(s)} %. Računaj s potpornim zidovima i skupljim temeljenjem.`,"Copernicus DEM, rezolucija oko 90 m (Open-Meteo)",null,"Geodetski snimak i geotehnički pregled; model ne vidi lokalne strmine.");
+    else if(s>=10) add("potencijalno","srednja","Umjereno strm teren",`Nagib u okolini oko ${Math.round(s)} %.`,"Copernicus DEM, rezolucija oko 90 m (Open-Meteo)",null,"Geodetski snimak terena.");}
+  // komunalna infrastruktura
+  add("neprovjereno","srednja","Komunalni priključci","Ulična mreža vodovoda, kanalizacije, struje i plina nije javno objavljena, pa mogućnost priključka nije provjerena.","Grad Zagreb, ViO, HEP ODS, Gradska plinara",null,"Pisani upit Vodoopskrbi i odvodnji; elektroenergetska suglasnost HEP ODS-a; upit Gradskoj plinari.");
+  // postojeće zgrade i rekonstrukcija
+  if(zgrade&&zgrade.e) add("neprovjereno","niska","Postojeće građevine","Sloj zgrada nije odgovorio.","Topografska osnova Grada Zagreba (2018.)","2018.","Obilazak čestice.");
+  else if(zgrade&&zgrade.v&&zgrade.v.n){const zf=zgrade.v.area, tl=window.__tl;
+    add("potencijalno","srednja","Postojeća građevina na čestici",`Ucrtano ${zgrade.v.n===1?"1 zgrada":zgrade.v.n+" zgrade"} (oko ${fmt(zf)} m² tlocrta). Rekonstrukcija ili dogradnja moguća je samo za legalnu građevinu.${tl&&zf>tl?" Postojeći tlocrt je veći od dopuštenog za novu gradnju, pa dogradnja nije moguća bez smanjenja.":""}`,"Topografska osnova Grada Zagreba (2018.)","2018.","Građevinsku i uporabnu dozvolu ili rješenje o izvedenom stanju; upis zgrade u zemljišnu knjigu.");}
+  return F;
+}
+const RCAT={potvrdeno:["no","Potvrđeno ograničenje"],potencijalno:["warn","Potencijalni rizik"],neprovjereno:["muted","Nije moguće provjeriti"]};
+const RIMP={visoka:3,srednja:2,niska:1};
+function riskHtml(d){
+  let h=`<h2 id="sec-rizici">Rizici i upozorenja</h2>`;
+  if(!d.checks) return h+`<p class="hint"><span class="spin"></span>Prikupljam provjere…</p>`;
+  const F=riskFindings(d).sort((a,b)=>(a.cat===b.cat?0:a.cat==="potvrdeno"?-1:b.cat==="potvrdeno"?1:a.cat==="potencijalno"?-1:1)||RIMP[b.imp]-RIMP[a.imp]);
+  window.__risks=F;
+  const n=c=>F.filter(f=>f.cat===c).length, top=F.filter(f=>f.cat!=="neprovjereno"&&f.imp==="visoka").slice(0,3);
+  h+=`<div class="rsum"><span class="rb rb-no">${n("potvrdeno")} potvrđeno</span><span class="rb rb-warn">${n("potencijalno")} potencijalno</span><span class="rb rb-muted">${n("neprovjereno")} nije moguće provjeriti</span></div>`;
+  if(top.length) h+=`<ul class="checks">${top.map(f=>`<li class="chk chk-${RCAT[f.cat][0]==="no"?"no":"warn"}"><b>${esc(f.t)}</b><span>${esc(f.why)}</span></li>`).join("")}</ul>`;
+  else if(!n("potvrdeno")&&!(d.checks||[]).some(r=>r.e)) h+=`<p class="verdict v-ok" style="margin:6px 0">Nisu nađena ozbiljna ograničenja u provjerenim podacima. Dio podataka nije moguće provjeriti, vidi popis.</p>`;
+  h+=`<details class="acc" data-k="risks"><summary><span>Svi nalazi (${F.length})</span><b>${n("potvrdeno")} · ${n("potencijalno")} · ${n("neprovjereno")}</b></summary><div class="acc-body">`;
+  for(const c of ["potvrdeno","potencijalno","neprovjereno"]){const L=F.filter(f=>f.cat===c); if(!L.length) continue;
+    h+=`<p class="eyebrow" style="margin-top:10px">${RCAT[c][1]}</p><ul class="risk">${L.map(f=>`<li class="risk-${RCAT[c][0]}"><div class="rh"><b>${esc(f.t)}</b><em class="kind st-${f.imp==="visoka"?"no":f.imp==="srednja"?"warn":"muted"}">važnost: ${f.imp}</em></div><span>${esc(f.why)}</span><small>Izvor: ${esc(f.src)}${f.date?", "+esc(f.date):""}</small>${f.chk?`<small>Provjeri: ${esc(f.chk)}</small>`:""}</li>`).join("")}</ul>`;}
+  h+=`<p class="meta">"Nije moguće provjeriti" znači da podatak nije dostupan ili servis nije odgovorio; to nije potvrda da rizika nema. Nalazi su informativni; pravno mjerodavna je lokacijska informacija.</p></div></details>`;
+  return h;
+}
+
 // skupine sadržaja za mobilne kartice (Analiza, Troškovi); na računalu su sve vidljive
 let GRP=null;
 function G(g){let s=GRP?"</div>":""; GRP=g; return g?s+`<div class="grp" data-g="${g}">`:s;}
@@ -1336,7 +1458,7 @@ function render(d){
   }
   if(!rows.length) h+=`<div id="sumEnd"></div>`;
   h+=cardsHtml();
-  h+=G("analiza")+zkH;
+  h+=G("analiza")+"%%RISK%%"+zkH;
   // Provjere za kupca
   h+=`<h2 id="sec-provjere">Provjere</h2>`;
   if(!checks){h+=`<p class="hint"><span class="spin"></span>Provjeravam UPU, klizišta, zaštitu i vodu…</p>`}
@@ -1472,6 +1594,7 @@ function render(d){
   h+=`<div class="links"><a href="https://oss.uredjenazemlja.hr/public-services/search-cad-parcel" target="_blank" rel="noopener">Katastar (OSS)</a><a href="https://geoportal.zagreb.hr/Karta" target="_blank" rel="noopener">Geoportal Zagreb</a><a href="https://geoportal.dgu.hr/#/?lng=${ll.lng.toFixed(6)}&lat=${ll.lat.toFixed(6)}&zoom=9&layerconfig=17013&mode=2d" target="_blank" rel="noopener">Geoportal DGU</a><a href="https://www.zzpugz.hr/gup-grada-zagreba" target="_blank" rel="noopener">GUP (Zavod)</a><a href="https://www.google.com/maps?q=${ll.lat},${ll.lng}" target="_blank" rel="noopener">Google Maps</a></div>`;
   h+=`<p class="note">Izvori: katastarske čestice Grada Zagreba (2023.), GIS baza planirane namjene (2023.), karta urbanih pravila iz ponovne javne rasprave GUP-a (2024.) i tekst Odluke o GUP-u s izmjenama 2025. Granice pravila u konačnom planu mogu malo odstupati. Procjena je orijentacijska; pravno mjerodavna je lokacijska informacija Gradskog ureda.</p>`;
   h+=G(null);
+  {let rh=""; try{rh=parcel||rows.length?riskHtml(d):""}catch(err){console.error(err); rh=`<p class="err">Analiza rizika nije uspjela: ${esc(err.message)}</p>`} h=h.replace("%%RISK%%",rh);}
   restoreMap();
   sheet.innerHTML=h;
   restoreInputs(snap);
@@ -2033,7 +2156,7 @@ document.getElementById("tabs").addEventListener("click",e=>{const b=e.target.cl
 })();
 // kartice sažetka (otvaraju skupinu i odjeljak)
 function cardsHtml(){
-  const C=[["sec-uvjeti","analiza","Gradnja","Pravila i tlocrt","⌂"],["sec-novac","troskovi","Novac i kupnja","Troškovi i koraci","€"],["sec-provjere","analiza","Infrastruktura","Ograničenja i mreže","≋"],["sec-sunce","analiza","Sunce i okolina","Sjena i energija","☼"]];
+  const C=[["sec-uvjeti","analiza","Gradnja","Pravila i tlocrt","⌂"],["sec-novac","troskovi","Novac i kupnja","Troškovi i koraci","€"],["sec-rizici","analiza","Rizici","Ograničenja i upozorenja","!"],["sec-sunce","analiza","Sunce i okolina","Sjena i energija","☼"]];
   return `<div class="cards m-only">${C.map(([id,tab,t,s,ic],i)=>`<button type="button" class="card" data-go="${id}" data-tab="${tab}"><span class="ci" aria-hidden="true">${ic}</span><b>${t}</b><small id="card${i}">${s}</small></button>`).join("")}</div>`;
 }
 function cardsUpdate(){
@@ -2042,7 +2165,7 @@ function cardsUpdate(){
   const c=window.__cur||{};
   set(0,c.code?(window.__tl?`pravilo ${c.code} · tlocrt do ${fmt(window.__tl)} m²`:`pravilo ${c.code}`):c.namjena||"");
   const F=window.__fin; set(1,F&&F.buy&&F.total?`ukupno ${fmt(F.total.lo)}–${fmt(F.total.hi)} €`:F&&F.build?`gradnja ${fmt(F.build.lo)}–${fmt(F.build.hi)} €, upiši cijenu zemljišta`:"upiši cijenu i kuću");
-  if(d.checks){const n=d.checks.filter(r=>r.v&&r.v.length).length, e=d.checks.filter(r=>r.e).length; set(2,n?`${n} ${n===1?"ograničenje":"ograničenja"}`:e?"dio provjera nije uspio":"bez ograničenja");}
+  if(d.checks&&window.__risks){const R=window.__risks, a=R.filter(f=>f.cat==="potvrdeno").length, b=R.filter(f=>f.cat==="potencijalno").length; set(2,`${a} potvrđeno · ${b} potencijalno`);}
   else set(2,"provjeravam…");
   if(d.env&&d.env.v){const s=d.env.v.stops[0]; set(3,s?`stanica ${s.d} m · Sunce i sjena`:"Sunce, sjena, okolina");}
 }
