@@ -154,6 +154,7 @@ details p{font-size:13.5px;margin:6px 0}
 <script>
 const RULES = /*RULES*/null;
 const RULES_SE = /*RULES_SE*/null;
+const RULES_PP = /*RULES_PP*/null;
 const APP_VERSION = "/*VERSION*/";
 
 const BASE = "https://services8.arcgis.com/Usi0jGQwMmBUpFjr/arcgis/rest/services/";
@@ -429,7 +430,7 @@ function buildEnvelope(parcel,rows,up){
   if(!parcel) return null;
   let d=3;
   try{
-    const {rule}=ruleLookup(up);
+    const {rule}=ruleLookup(up,rows);
     const z=rule&&rows[0]?pickZone(rule,rows[0].p.Analitika):null;
     const m=z&&(z.key.meda||"").match(/(\d+,\d+|\d+)\s*m\b/); if(m) d=parseFloat(m[1].replace(",","."));
   }catch(e){}
@@ -527,6 +528,7 @@ const toNum=s=>parseFloat(String(s).replace(/\.(?=\d{3}\b)/g,"").replace(",","."
 const TIPOVI=[["slob","slobodnostojeća"],["polu","poluugrađena (dvojna)"],["ugr","ugrađena (u nizu)"]];
 function stemsIn(s){
   const r=[]; if(/slobodnostoje|samostoje/iu.test(s)) r.push("slob"); if(/poluugrađ|dvojn/iu.test(s)) r.push("polu");
+  if(/skupn/iu.test(s)) r.push("ugr");
   if(/ugrađ/iu.test(s.replace(/poluugrađ\p{L}*/giu,""))) r.push("ugr"); return r;
 }
 // tekst se dijeli na dijelove (zarez koji nije decimalni, točka-zarez, "a", "te"); broj pripada tipu iz istog ili prethodnog dijela
@@ -550,7 +552,7 @@ function pickT(text,unit,tip){
   return null;
 }
 function parseParams(key,tip="slob"){
-  const out={}, M2=/(\d[\d.]*)\s*m²/u, PCT=/(\d+)\s*%/u, DEC=/(\d+,\d+)/u;
+  const out={}, M2=/(\d[\d.]*)\s*m[²2](?![\d])/u, PCT=/(\d+)\s*%/u, DEC=/(\d+,\d+)/u;
   let v=pickT(key.cestica,M2,tip); if(v!=null) out.minC=toNum(v);
   v=pickT(key.izgradenost,PCT,tip); if(v!=null) out.izg=toNum(v)/100;
   v=pickT(key.kis,DEC,tip); if(v!=null) out.kis=toNum(v);
@@ -561,8 +563,13 @@ function parseParams(key,tip="slob"){
 }
 let TIP=(()=>{try{return localStorage.getItem("tip")||"slob"}catch(e){return "slob"}})();
 // pravilo za lokaciju: Zagreb ili Sesvete; više pravila u istom članku nađe se po oznaci u tekstu
-function ruleLookup(up){
-  const p=up&&up.v&&up.v[0]?up.v[0].properties:null; if(!p) return {code:null,rule:null,se:false};
+function ruleLookup(up,rows){
+  const p=up&&up.v&&up.v[0]?up.v[0].properties:null;
+  if(!p){ // izvan oba GUP-a: Prostorni plan Grada Zagreba za građevinska područja naselja
+    const r0=rows&&rows[0]; const plan=r0?String(r0.p.Naziv_plana||""):"";
+    if(r0&&BUILDABLE.has(r0.p.Analitika)&&!/generalni urbanisti/i.test(plan)) return {code:"PPGZ",rule:RULES_PP.PPGZ,se:false,pp:true};
+    return {code:null,rule:null,se:false};
+  }
   const code=String(p.BROJ_UP||"").trim(), se=p.SRC==="SE", set=se?RULES_SE:RULES;
   const c=code.endsWith(".")?code:code+".";
   const rule=set[c]||set[code]||Object.values(set).find(r=>r.tekst.some(x=>x.includes("("+c+")")))||null;
@@ -587,7 +594,7 @@ function render(d){
   const rezHit=!!(checks&&checks.find(r=>r.c.id==="rez"&&r.v&&r.v.length));
   window.__lastLL=ll;
   window.__cur={key:favKey(parcel,ll),ll:{lat:ll.lat,lng:ll.lng},ces:parcel?parcel.properties.KATASTARSKA_CESTICA:null,ko:parcel?parcel.properties.KATASTARSKA_OPCINA:null,area,buildArea,
-    code:(()=>{const r=ruleLookup(up);return r.code?(r.se?"SE ":"")+r.code:null})(),namjena:rows[0]?(rows[0].p.Namjena||rows[0].p.Analitika):null,analitika:rows[0]?rows[0].p.Analitika:null,
+    code:(()=>{const r=ruleLookup(up,rows);return r.code?(r.se?"SE ":"")+r.code:null})(),namjena:rows[0]?(rows[0].p.Namjena||rows[0].p.Analitika):null,analitika:rows[0]?rows[0].p.Analitika:null,
     risks:checks?checks.filter(r=>r.v&&r.v.length).map(r=>r.c.label):null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:envelope?Math.round(envelope.area):null};
   let h=`<p id="printHead" class="print-only"></p><div id="printMap"></div>`;
   if(checks) h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(favKey(parcel,ll))?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="shareBtn">Podijeli</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button></div>`;
@@ -633,12 +640,12 @@ function render(d){
   if(checks) h+=envHtml(env);
   // Urbano pravilo
   h+=`<h2>Uvjeti gradnje</h2>`;
-  const {code,rule,se}=ruleLookup(up);
+  const {code,rule,se,pp:isPP}=ruleLookup(up,rows);
   if(up.e){h+=`<p class="err">Urbana pravila: ${esc(up.e)}</p>`}
   else if(!code){h+=`<p class="hint">Lokacija nije u obuhvatu urbanih pravila GUP-a Zagreba ni GUP-a Sesveta. Vrijedi Prostorni plan Grada Zagreba, čiji uvjeti još nisu u aplikaciji; traži lokacijsku informaciju.</p>`}
   else if(!rule){h+=`<p><span class="rule-code">${esc(code)}</span>Pravilo nije pronađeno u tekstu odluke.</p>`}
   else{
-    h+=`<p class="rule-title"><span class="rule-code">${esc(code)}</span>${esc(rule.naziv)}</p><p class="meta">Članak ${esc(rule.clanak)}. ${se?"Odluke o GUP-u Sesveta (prijedlog izmjena za ponovnu javnu raspravu, lipanj 2026.)":"Odluke o GUP-u Grada Zagreba (pročišćeni tekst 2025.)"}</p>`;
+    h+=`<p class="rule-title"><span class="rule-code">${esc(isPP?"PPGZ":code)}</span>${esc(rule.naziv)}</p><p class="meta">${isPP?"Točka 2.3.1. Odredbi za provedbu Prostornog plana Grada Zagreba (izmjene i dopune 2017.; izmjene 2025. ove uvjete ne mijenjaju). Vrijedi u građevinskim područjima naselja izvan GUP-ova; potvrdi lokacijskom informacijom.":`Članak ${esc(rule.clanak)}. `}${isPP?"":se?"Odluke o GUP-u Sesveta (prijedlog izmjena za ponovnu javnu raspravu, lipanj 2026.)":"Odluke o GUP-u Grada Zagreba (pročišćeni tekst 2025.)"}</p>`;
     if(!se&&upx.v&&upx.v.length) h+=`<p class="flag">Ovdje vrijedi i iznimka iz urbanih pravila. Pogledaj stavke koje počinju s "iznimno".</p>`;
     const zone=main?pickZone(rule,main.p.Analitika):null;
     if(zone){
@@ -664,7 +671,8 @@ function render(d){
       }
       const A=buildArea??area;
       if(A&&(pp.izg||pp.kis||pp.minC||TIP!=="slob")){
-        const gbpMax=pp.kis?Math.min(A*pp.kis,pp.gbp||Infinity):(pp.gbp||null);
+        let gbpMax=pp.kis?Math.min(A*pp.kis,pp.gbp||Infinity):(pp.gbp||null), gbpEst=false;
+        if(!gbpMax&&pp.izg){gbpMax=A*pp.izg*2.5; gbpEst=true;}
         const okC=pp.minC?(A>=pp.minC?"good":A>=pp.minC*0.95?"":"bad"):"";
         const sumC=[pp.minC?(A>=pp.minC?"čestica dovoljna":A>=pp.minC*0.95?"čestica na granici":"čestica premala"):null,pp.izg?"tlocrt do "+fmt(A*pp.izg)+" m²":null,gbpMax?"GBP do "+fmt(gbpMax)+" m²":null].filter(Boolean).join(" · ");
         h+=`<details class="acc" data-k="calc"><summary><span>Izračun za ovu česticu</span><b class="${okC}">${esc(sumC)}</b></summary><div class="calc">`;
@@ -678,7 +686,8 @@ function render(d){
           h+=`<div class="row"><span>Min. čestica ${fmt(pp.minC)} m²</span><span class="${ok?"good":edge?"":"bad"}">${ok?"ispunjeno":edge?"na granici":"premala"}</span></div>`;
           if(edge) h+=`<p class="meta">Čestica je do 5 % manja od propisane. To je dopušteno samo ako se dio čestice ustupa za ulicu ili pristupni put.</p>`;}
         if(pp.izg) h+=`<div class="row"><span>Najveći tlocrt (${Math.round(pp.izg*100)} %)</span><span>${fmt(A*pp.izg)} m²</span></div>`;
-        if(gbpMax) h+=`<div class="row"><span>Najveći GBP${pp.kis?" (kis "+String(pp.kis).replace(".",",")+")":""}${pp.gbp&&pp.kis&&A*pp.kis>pp.gbp?", ograničeno na "+fmt(pp.gbp):""}</span><span>${fmt(gbpMax)} m²</span></div>`;
+        if(gbpMax&&gbpEst) h+=`<div class="row"><span>Najveći GBP (procjena: tlocrt × 2,5 etaže, jer plan ne propisuje kis)</span><span>${fmt(gbpMax)} m²</span></div>`;
+        else if(gbpMax) h+=`<div class="row"><span>Najveći GBP${pp.kis?" (kis "+String(pp.kis).replace(".",",")+")":""}${pp.gbp&&pp.kis&&A*pp.kis>pp.gbp?", ograničeno na "+fmt(pp.gbp):""}</span><span>${fmt(gbpMax)} m²</span></div>`;
         if(pp.teren) h+=`<div class="row"><span>Min. prirodni teren (${Math.round(pp.teren*100)} %)</span><span>${fmt(A*pp.teren)} m²</span></div>`;
         if(zgrade&&zgrade.v&&zgrade.v.n){const zf=zgrade.v.area;
           h+=`</div><div class="calc" style="border-top:1px solid var(--line)"><p class="eyebrow">Postojeće zgrade i dogradnja</p>`;
