@@ -116,6 +116,8 @@ details p{font-size:13.5px;margin:6px 0}
 .acc .calc{border:0;border-radius:0;margin:0}
 .acc-body{padding:10px 14px 12px}
 @media (prefers-reduced-motion:reduce){.acc>summary>span::before{transition:none}}
+.t-handle{background:#1565c0;border:3px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.choices{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
 .chk-ok{background:var(--ok-bg);color:var(--ok)}
 .kd{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:14px}
 .kd input{width:6em;font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg)}
@@ -131,7 +133,7 @@ details p{font-size:13.5px;margin:6px 0}
 <div id="app">
   <header>
     <h1>Čestica ZG</h1>
-    <input id="q" type="search" placeholder="Adresa, npr. Ilica 200" autocomplete="off">
+    <input id="q" type="search" placeholder="Adresa ili čestica, npr. Šestine 4027/1" autocomplete="off">
     <button class="ib" id="go" type="button">Traži</button>
     <button class="ib" id="me" type="button" aria-label="Moja lokacija">◎</button>
     <button class="ib" id="favBtn" type="button" aria-label="Spremljene čestice">★</button>
@@ -292,7 +294,7 @@ sheet.addEventListener("toggle",e=>{const k=e.target.dataset&&e.target.dataset.k
 map.on("click",e=>inspect(e.latlng));
 async function inspect(ll){
   const id=++clickId;
-  selLayer.clearLayers();
+  selLayer.clearLayers(); TL.layer=null; TL.marker=null; TL.center=null;
   L.circleMarker(ll,{radius:5,color:"#000",weight:2,fillColor:"#fff",fillOpacity:1}).addTo(selLayer);
   sheet.innerHTML='<p class="hint"><span class="spin"></span>Tražim česticu, namjenu i urbano pravilo…</p>';
   const [ces,nam,up,upx,gn]=await Promise.all([
@@ -325,6 +327,7 @@ async function inspect(ll){
   let qGeom=null;
   if(parcel){try{const b=turf.buffer(parcel.geometry,-0.0008,{units:"kilometers"});qGeom=b&&b.geometry?b.geometry:parcel.geometry}catch(e){qGeom=parcel.geometry}}
   const slopeP=settle(loadSlope(parcel,ll));
+  const zgradeP=parcel?settle(loadZgrade(parcel)):null;
   const checks=await Promise.all(CHECKS.map(c=>settle(
     c.corridor?corridorQuery(c,parcel,ll):
     (qGeom?polyQuery(c.url,qGeom,c.fields,!!c.draw):pointQuery(c.url,ll,c.fields,!!c.draw))
@@ -334,6 +337,9 @@ async function inspect(ll){
   const env2=buildEnvelope(parcel,rows,up);
   if(env2&&env2.geom) L.geoJSON(env2.geom,{style:{color:"#1f6f54",weight:2,dashArray:"4 3",fillColor:"#1f6f54",fillOpacity:.25},interactive:false}).addTo(selLayer);
   base.envelope=env2;
+  window.__env=env2;
+  base.zgrade=parcel?await zgradeP:null;
+  if(base.zgrade&&base.zgrade.v) base.zgrade.v.geoms.forEach(gm=>L.geoJSON(gm,{style:{color:"#444",weight:1.5,fillColor:"#666",fillOpacity:.35},interactive:false}).addTo(selLayer));
   base.slope=await slopeP;
   if(id!==clickId) return;
   checks.forEach(r=>{if(r.c.draw&&r.v) r.v.forEach(f=>f.geometry&&L.geoJSON(f.geometry,{style:{color:r.c.draw,weight:2,dashArray:"5 4",fillOpacity:.15},interactive:false}).addTo(selLayer))});
@@ -341,6 +347,59 @@ async function inspect(ll){
   const env=await settle(loadEnv(ll,parcel));
   if(id!==clickId) return;
   render({...base,checks,env});
+}
+
+// --- probni tlocrt: pravokutnik koji se pomiče i okreće unutar prostora za kuću
+const TL={w:12,d:9,rot:0,center:null,layer:null,marker:null};
+function tRect(){
+  const c=TL.center; if(!c) return null;
+  const lat=c[1]*Math.PI/180, dx=TL.w/2/(111320*Math.cos(lat)), dy=TL.d/2/110540;
+  const r=turf.polygon([[[c[0]-dx,c[1]-dy],[c[0]+dx,c[1]-dy],[c[0]+dx,c[1]+dy],[c[0]-dx,c[1]+dy],[c[0]-dx,c[1]-dy]]]);
+  return TL.rot?turf.transformRotate(r,TL.rot,{pivot:c}):r;
+}
+function withinEnv(rect,env){
+  if(!env) return false;
+  const polys=env.type==="MultiPolygon"?env.coordinates.map(c=>turf.polygon(c)):[turf.polygon(env.coordinates)];
+  return polys.some(pg=>turf.booleanWithin(rect,pg));
+}
+function tDraw(){
+  const env=window.__env&&window.__env.geom; if(!env) return;
+  if(!TL.center){const c=turf.centroid({type:"Feature",geometry:env,properties:{}}).geometry.coordinates; TL.center=c;}
+  const rect=tRect(); if(!rect) return;
+  const fits=withinEnv(rect,env);
+  const grid=document.getElementById("tGrid"), tl=grid?+grid.dataset.tl||null:null, pa=grid?+grid.dataset.area||0:0;
+  const a=TL.w*TL.d, overTl=tl!=null&&a>tl;
+  const col=fits&&!overTl?"#1565c0":"#b3261e";
+  if(TL.layer) selLayer.removeLayer(TL.layer);
+  TL.layer=L.geoJSON(rect,{style:{color:col,weight:2,fillColor:col,fillOpacity:.35},interactive:false}).addTo(selLayer);
+  if(!TL.marker){
+    TL.marker=L.marker([TL.center[1],TL.center[0]],{draggable:true,icon:L.divIcon({className:"t-handle",iconSize:[22,22]})}).addTo(selLayer);
+    TL.marker.on("drag",e=>{const p=e.target.getLatLng(); TL.center=[p.lng,p.lat]; tDraw();});
+  }
+  const o=document.getElementById("tOut"), s=document.getElementById("tSum");
+  const msg=!fits?"ne stane unutar udaljenosti od međa":overTl?`tlocrt ${fmt(a)} m² veći je od dopuštenih ${fmt(tl)} m²`:"stane";
+  if(o) o.innerHTML=`<div class="row"><span>Tlocrt kuće</span><span>${fmt(a)} m²</span></div><div class="row"><span>Provjera</span><span class="${fits&&!overTl?"good":"bad"}">${msg}</span></div>${pa?`<div class="row"><span>Ostaje za dvorište i vrt</span><span>${fmt(Math.max(0,pa-a))} m²</span></div>`:""}`;
+  if(s){s.textContent=`${String(TL.w).replace(".",",")} × ${String(TL.d).replace(".",",")} m: ${fits&&!overTl?"stane":"ne stane"}`; s.className=fits&&!overTl?"":"bad";}
+}
+function tReset(){ if(TL.layer) selLayer.removeLayer(TL.layer); if(TL.marker) selLayer.removeLayer(TL.marker); TL.layer=null; TL.marker=null; TL.center=null; }
+sheet.addEventListener("input",e=>{
+  const id=e.target.id; if(!/^t(W|D|Rot)$/.test(id)) return;
+  const v=parseFloat(String(e.target.value).replace(",","."));
+  if(id==="tW"&&v>0) TL.w=v; if(id==="tD"&&v>0) TL.d=v; if(id==="tRot"){TL.rot=v||0; const o=document.getElementById("tRotV"); if(o) o.textContent=TL.rot+"°";}
+  if(TL.layer) tDraw();
+});
+sheet.addEventListener("click",e=>{
+  if(e.target.id==="tPlace"){ tDraw(); if(TL.center) map.panTo([TL.center[1],TL.center[0]]); }
+  if(e.target.id==="tCenterBtn"){ if(TL.marker) selLayer.removeLayer(TL.marker); TL.marker=null; TL.center=null; tDraw(); }
+});
+
+// --- postojeće zgrade na čestici (Topografska osnova Grada Zagreba 2018., tlocrti)
+const OBJEKTI=BASE+"Objekti/FeatureServer/1/query";
+async function loadZgrade(parcel){
+  const f=await polyQuery(OBJEKTI,parcel.geometry,"OBJECTID,Area",true);
+  let a=0; const geoms=[];
+  for(const x of f){ try{const i=turf.intersect({type:"Feature",geometry:parcel.geometry,properties:{}},x); if(i){const ar=turf.area(i); if(ar>4){a+=ar; geoms.push(i.geometry)}}}catch(e){} }
+  return {area:a,n:geoms.length,geoms};
 }
 
 // --- koridori: dohvat linija u krugu i provjera stvarne udaljenosti
@@ -455,26 +514,44 @@ function envHtml(env,gbp){
   return h;
 }
 
-// --- izvlačenje brojeva iz teksta pravila (za slobodnostojeću građevinu)
+// --- izvlačenje brojeva iz teksta pravila, po tipu građevine (slob = slobodnostojeća, polu = poluugrađena, ugr = ugrađena)
 const toNum=s=>parseFloat(String(s).replace(/\.(?=\d{3}\b)/g,"").replace(",","."));
-function parseParams(key){
-  const out={};
-  const c=key.cestica||"";
-  let m=c.match(/(\d[\d.]*)\s*m²\s*za\s+slobodnostoje/u)||c.match(/slobodnostoje\p{L}*(?:\s+građevin\p{L}*)?(?:\s+je)?\s+(\d[\d.]*)\s*m²/u)||c.match(/(\d[\d.]*)\s*m²/u);
-  if(m) out.minC=toNum(m[1]);
-  const iz=key.izgradenost||"";
-  m=iz.match(/(\d+)\s*%\s*za\s+slobodnostoje/u)||iz.match(/slobodnostoje\p{L}*[^%;]*?(\d+)\s*%/u)||iz.match(/(\d+)\s*%/u);
-  if(m) out.izg=toNum(m[1])/100;
-  const k=key.kis||"";
-  m=k.match(/kisn?\s+(?:za\s+slobodnostoje\p{L}*(?:\s+građevin\p{L}*)?\s+)?(?:je\s+)?(\d+,\d+)/u);
-  if(m) out.kis=toNum(m[1]);
-  const g=(key.gbp||"")+" "+k;
-  m=g.match(/GBP\s+(?:je\s+)?(\d[\d.]*)\s*m²/);
-  if(m) out.gbp=toNum(m[1]);
-  m=(key.teren||"").match(/(\d+)\s*%/);
-  if(m) out.teren=toNum(m[1])/100;
+const TIPOVI=[["slob","slobodnostojeća"],["polu","poluugrađena (dvojna)"],["ugr","ugrađena (u nizu)"]];
+function stemsIn(s){
+  const r=[]; if(/slobodnostoje/iu.test(s)) r.push("slob"); if(/poluugrađ/iu.test(s)) r.push("polu");
+  if(/ugrađ/iu.test(s.replace(/poluugrađ\p{L}*/giu,""))) r.push("ugr"); return r;
+}
+// tekst se dijeli na dijelove (zarez koji nije decimalni, točka-zarez, "a", "te"); broj pripada tipu iz istog ili prethodnog dijela
+function byType(text,unit){
+  const res={};
+  for(const clause of String(text||"").split(";")){ // tip se prenosi samo unutar iste rečenice
+    let last=null;
+    for(const s of clause.split(/,(?!\d)|\sa\s|\ste\s|\si\s(?=\d)/u)){
+      const n=s.match(unit), st=stemsIn(s);
+      if(n){ const tgt=st.length?st:(last||["gen"]); for(const x of tgt) if(res[x]==null) res[x]=n[1]; if(st.length) last=st; }
+      else if(st.length) last=st;
+    }
+  }
+  return res;
+}
+function pickT(text,unit,tip){
+  const r=byType(text,unit); if(r[tip]!=null) return r[tip];
+  const typed=["slob","polu","ugr"].some(x=>r[x]!=null);
+  if(!typed&&r.gen!=null) return r.gen;
+  if(!typed){const m=String(text||"").match(unit); return m?m[1]:null}
+  return null;
+}
+function parseParams(key,tip="slob"){
+  const out={}, M2=/(\d[\d.]*)\s*m²/u, PCT=/(\d+)\s*%/u, DEC=/(\d+,\d+)/u;
+  let v=pickT(key.cestica,M2,tip); if(v!=null) out.minC=toNum(v);
+  v=pickT(key.izgradenost,PCT,tip); if(v!=null) out.izg=toNum(v)/100;
+  v=pickT(key.kis,DEC,tip); if(v!=null) out.kis=toNum(v);
+  const gtxt=((key.gbp||"")+"; "+(key.kis||"")).replace(/^.*?(?=GBP)/s,"");
+  v=pickT(gtxt.replace(/kisn?[^;]*?\d+,\d+/gu,""),M2,tip); if(v!=null&&/GBP/.test(gtxt)) out.gbp=toNum(v);
+  v=pickT(key.teren,PCT,tip); if(v!=null) out.teren=toNum(v)/100;
   return out;
 }
+let TIP=(()=>{try{return localStorage.getItem("tip")||"slob"}catch(e){return "slob"}})();
 function pickZone(rule,analitika){
   if(!rule||!rule.zone||!rule.zone.length) return null;
   const keys=ZONE_KEYS[analitika]||[];
@@ -482,7 +559,8 @@ function pickZone(rule,analitika){
 }
 
 function render(d){
-  const {ll,parcel,area,rows,ces,nam,up,upx,gn,checks,env,envelope,slope}=d;
+  window.__lastData=d;
+  const {ll,parcel,area,rows,ces,nam,up,upx,gn,checks,env,envelope,slope,zgrade}=d;
   const keepScroll=checks?sheet.scrollTop:0;
   // dio čestice u namjeni koja dopušta gradnju
   let buildArea=null;
@@ -496,7 +574,7 @@ function render(d){
     code:(up.v&&up.v[0]?String(up.v[0].properties.BROJ_UP||"").trim():null),namjena:rows[0]?(rows[0].p.Namjena||rows[0].p.Analitika):null,analitika:rows[0]?rows[0].p.Analitika:null,
     risks:checks?checks.filter(r=>r.v&&r.v.length).map(r=>r.c.label):null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:envelope?Math.round(envelope.area):null};
   let h=`<p id="printHead" class="print-only"></p><div id="printMap"></div>`;
-  if(checks) h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(favKey(parcel,ll))?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button></div>`;
+  if(checks) h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(favKey(parcel,ll))?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="shareBtn">Podijeli</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button></div>`;
   // Čestica
   if(parcel){
     const p=parcel.properties;
@@ -550,7 +628,7 @@ function render(d){
     const zone=main?pickZone(rule,main.p.Analitika):null;
     if(zone){
       h+=`<p class="meta">Zona: ${esc(zone.zona)}</p>`;
-      const pp=parseParams(zone.key);
+      const pp=parseParams(zone.key,TIP);
       // kratki sažetak u čipovima, detalji u padajućem dijelu
       const chips=[];
       const n2=x=>String(x).replace(".",",");
@@ -570,11 +648,13 @@ function render(d){
         h+=`</dl></details>`;
       }
       const A=buildArea??area;
-      if(A&&(pp.izg||pp.kis||pp.minC)){
+      if(A&&(pp.izg||pp.kis||pp.minC||TIP!=="slob")){
         const gbpMax=pp.kis?Math.min(A*pp.kis,pp.gbp||Infinity):(pp.gbp||null);
         const okC=pp.minC?(A>=pp.minC?"good":A>=pp.minC*0.95?"":"bad"):"";
         const sumC=[pp.minC?(A>=pp.minC?"čestica dovoljna":A>=pp.minC*0.95?"čestica na granici":"čestica premala"):null,pp.izg?"tlocrt do "+fmt(A*pp.izg)+" m²":null,gbpMax?"GBP do "+fmt(gbpMax)+" m²":null].filter(Boolean).join(" · ");
-        h+=`<details class="acc" data-k="calc"><summary><span>Izračun za ovu česticu</span><b class="${okC}">${esc(sumC)}</b></summary><div class="calc"><p class="eyebrow">Slobodnostojeća kuća, nova gradnja</p>`;
+        h+=`<details class="acc" data-k="calc"><summary><span>Izračun za ovu česticu</span><b class="${okC}">${esc(sumC)}</b></summary><div class="calc">`;
+        h+=`<div class="kd" style="margin:0 0 6px"><label for="tipSel">Tip kuće</label><select id="tipSel" class="bsel">${TIPOVI.map(x=>`<option value="${x[0]}"${x[0]===TIP?" selected":""}>${x[1]}</option>`).join("")}</select><span class="meta">nova gradnja</span></div>`;
+        if(!pp.minC&&!pp.izg&&!pp.kis) h+=`<p class="flag">Pravilo ne navodi posebne uvjete za ovaj tip kuće; provjeri detaljna pravila.</p>`;
         if(buildArea!=null&&buildArea<area-1) h+=`<div class="row"><span>Građevinski dio čestice</span><span>${fmt(buildArea)} od ${fmt(area)} m²</span></div>`;
         if(envelope&&envelope.area!=null){const tl=pp.izg?A*pp.izg:null, lim=tl&&envelope.area<tl;
           h+=`<div class="row"><span>Prostor za kuću (${String(envelope.d).replace(".",",")} m od međa, zeleno na karti)</span><span class="${lim?"bad":""}">${fmt(envelope.area)} m²</span></div>`;
@@ -585,7 +665,23 @@ function render(d){
         if(pp.izg) h+=`<div class="row"><span>Najveći tlocrt (${Math.round(pp.izg*100)} %)</span><span>${fmt(A*pp.izg)} m²</span></div>`;
         if(gbpMax) h+=`<div class="row"><span>Najveći GBP${pp.kis?" (kis "+String(pp.kis).replace(".",",")+")":""}${pp.gbp&&pp.kis&&A*pp.kis>pp.gbp?", ograničeno na "+fmt(pp.gbp):""}</span><span>${fmt(gbpMax)} m²</span></div>`;
         if(pp.teren) h+=`<div class="row"><span>Min. prirodni teren (${Math.round(pp.teren*100)} %)</span><span>${fmt(A*pp.teren)} m²</span></div>`;
-        h+=`<p class="meta" style="margin-top:6px">Računato na građevinskom dijelu čestice${rezHit?", bez odbitka za proširenje ulice (vidi upozorenje)":""}. Za poluugrađene i ugrađene građevine vrijede drugi iznosi.</p></div></details>`;
+        if(zgrade&&zgrade.v&&zgrade.v.n){const zf=zgrade.v.area;
+          h+=`</div><div class="calc" style="border-top:1px solid var(--line)"><p class="eyebrow">Postojeće zgrade i dogradnja</p>`;
+          h+=`<div class="row"><span>Postojeći tlocrt (${zgrade.v.n} ${zgrade.v.n===1?"zgrada":"zgrade"}, sivo na karti)</span><span>${fmt(zf)} m²</span></div>`;
+          h+=`<div class="kd"><label for="eFloors">Etaža postojeće kuće</label><input id="eFloors" type="number" inputmode="decimal" min="1" max="9" step="0.5" value="2"><span>(npr. P+1 = 2, P+1+Pk = 2,5)</span></div>`;
+          h+=`<div id="dogOut" data-zf="${Math.round(zf)}" data-tl="${pp.izg?Math.round(A*pp.izg):""}" data-gbp="${gbpMax?Math.round(gbpMax):""}"></div>`;
+          h+=`<p class="meta">Tlocrti su iz Topografske osnove Grada Zagreba (2018.); novije zgrade i dogradnje možda nisu ucrtane. Postojeći GBP je procjena: tlocrt × broj etaža.</p>`;
+        }
+        h+=`<p class="meta" style="margin-top:6px">Računato na građevinskom dijelu čestice${rezHit?", bez odbitka za proširenje ulice (vidi upozorenje)":""}. Za druge tipove kuće izaberi tip gore.</p></div></details>`;
+        if(envelope&&envelope.geom){
+          h+=`<details class="acc" data-k="tloc"><summary><span>Probni tlocrt kuće</span><b id="tSum">stane li kuća?</b></summary><div class="acc-body">`;
+          h+=`<div class="bgrid" id="tGrid" data-tl="${pp.izg?Math.round(A*pp.izg):""}" data-area="${Math.round(area)}">`;
+          h+=`<label for="tW">Širina</label><span><input id="tW" type="number" inputmode="decimal" min="3" step="0.5" value="${TL.w}"> m</span>`;
+          h+=`<label for="tD">Dubina</label><span><input id="tD" type="number" inputmode="decimal" min="3" step="0.5" value="${TL.d}"> m</span>`;
+          h+=`<label for="tRot">Okret</label><span><input id="tRot" type="range" min="0" max="179" step="1" value="${TL.rot}" style="width:10em;vertical-align:middle"> <output id="tRotV">${TL.rot}°</output></span>`;
+          h+=`</div><div class="kd"><button type="button" class="ib" id="tPlace">Postavi na kartu</button><button type="button" class="ib" id="tCenterBtn">Vrati u sredinu</button></div><div id="tOut"></div>`;
+          h+=`<p class="meta">Pravokutnik (plavo na karti) možeš pomicati povlačenjem okrugle oznake u sredini. Zeleno iscrtkano je prostor u kojem kuća smije stajati (udaljenosti od međa). Udaljenost od ulice (građevni pravac) nije uključena.</p></div></details>`;
+        }
         if(gbpMax){const V=Math.round(gbpMax*3);
           h+=`<details class="acc" data-k="kd"><summary><span>Komunalni doprinos</span><b id="kdSum">izaberi zonu</b></summary><div class="acc-body">`;
           h+=`<div class="kd"><label for="kdVol">Obujam kuće</label><input id="kdVol" type="number" inputmode="decimal" min="0" step="1" value="${V}"><span>m³</span></div>`;
@@ -629,6 +725,8 @@ function render(d){
   sheet.querySelectorAll("details[data-k]").forEach(dd=>{if(OPEN.has(dd.dataset.k)) dd.open=true});
   sheet.scrollTop=keepScroll;
   if(document.getElementById("costs")) kdUpdate();
+  dogUpdate();
+  if(TL.layer) tDraw();
 }
 
 // --- kalkulator komunalnog doprinosa (iznos pamti samo ovaj preglednik)
@@ -716,8 +814,21 @@ function buildUpdate(){
   h+=`</div><p class="meta">Tržišne cijene za okolicu Zagreba, 2026. (izvori: trebam.hr, montazneidrvenekuce.info Q1 2026, reporter.hr). ${t==="mont"?"Montažna cijena uključuje temeljnu ploču (procjena 90 €/m² tlocrta). ":""}Podrum je procjena. Cijena zemljišta, uređenje okoliša i namještaj nisu uključeni. Za stvarnu cijenu traži barem tri ponude.</p>`;
   out.innerHTML=h;
 }
+sheet.addEventListener("change",e=>{ if(e.target.id==="tipSel"){TIP=e.target.value;try{localStorage.setItem("tip",TIP)}catch(err){} OPEN.add("calc"); if(window.__lastData) render(window.__lastData);} });
 sheet.addEventListener("input",e=>{ if(/^b[A-Z]/.test(e.target.id)) buildUpdate(); if(e.target.id==="bLand"&&window.__cur) setLand(window.__cur.key,e.target.value); });
 sheet.addEventListener("change",e=>{ if(/^b[A-Z]/.test(e.target.id)) buildUpdate(); });
+
+function dogUpdate(){
+  const o=document.getElementById("dogOut"); if(!o) return;
+  const zf=+o.dataset.zf, tl=+o.dataset.tl||null, gbp=+o.dataset.gbp||null;
+  const n=parseFloat(String(document.getElementById("eFloors").value).replace(",","."))||0;
+  const eg=zf*n, r=[];
+  r.push(["Postojeći GBP (procjena)",fmt(eg)+" m²"]);
+  if(tl!=null) r.push(["Preostali tlocrt za dogradnju",tl-zf>0?fmt(tl-zf)+" m²":`<span class="bad">nema (već ${fmt(zf-tl)} m² iznad)</span>`]);
+  if(gbp!=null) r.push(["Preostali GBP (dogradnja i nadogradnja)",gbp-eg>0?fmt(gbp-eg)+" m²":`<span class="bad">nema (već ${fmt(eg-gbp)} m² iznad)</span>`]);
+  o.innerHTML=r.map(([a,b])=>`<div class="row"><span>${a}</span><span>${b}</span></div>`).join("")+(gbp!=null&&eg>gbp?`<p class="meta">Postojeća kuća je veća od onoga što pravilo danas dopušta za novu gradnju. Kod rekonstrukcije se postojeći parametri smiju zadržati, ali ne povećavati.</p>`:"");
+}
+sheet.addEventListener("input",e=>{ if(e.target.id==="eFloors") dogUpdate(); });
 
 function kdUpdate(){
   const v=document.getElementById("kdVol").value, r=document.getElementById("kdRate").value;
@@ -903,9 +1014,55 @@ sheet.addEventListener("click",e=>{
   }).catch(()=>{});
 })();
 
+// --- dijeljenje: link otvara točno ovu česticu
+function shareUrl(){const ll=window.__lastLL; return location.origin+location.pathname+"?c="+ll.lat.toFixed(6)+","+ll.lng.toFixed(6);}
+sheet.addEventListener("click",async e=>{
+  if(e.target.id!=="shareBtn"||!window.__lastLL) return;
+  const url=shareUrl(), c=window.__cur, title="Čestica "+(c&&c.ces?c.ces+", k.o. "+c.ko:"Zagreb");
+  try{ if(navigator.share){await navigator.share({title,url});return} }catch(err){ if(err&&err.name==="AbortError") return; }
+  try{await navigator.clipboard.writeText(url); e.target.textContent="Link kopiran"}catch(err){ prompt?0:0; e.target.textContent="Kopiraj: "+url; }
+  setTimeout(()=>{const b=document.getElementById("shareBtn"); if(b) b.textContent="Podijeli"},4000);
+});
+(function(){ // otvaranje dijeljenog linka
+  const c=new URLSearchParams(location.search).get("c"); if(!c) return;
+  const [la,lo]=c.split(",").map(Number); if(!isFinite(la)||!isFinite(lo)) return;
+  const ll=L.latLng(la,lo); map.setView(ll,18); setTimeout(()=>inspect(ll),300);
+})();
+
+// --- pretraga po broju katastarske čestice (npr. "Šestine 4027/1" ili "kč 123 Sesvete")
+const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/gi,"d").toUpperCase().replace(/[^A-Z0-9 ]/g," ").replace(/\s+/g," ").trim();
+function parcelQuery(q){
+  const isParcel=/\d+\/\d+/.test(q)||/^\s*(k\.?\s*č\.?|kc|kč|čest|cest)/i.test(q)||/k\.\s*o\./i.test(q);
+  if(!isParcel) return null;
+  const m=q.match(/(\d+(?:\/\d+)?)/); if(!m) return null;
+  const ko=q.replace(m[0]," ").replace(/k\.?\s*č\.?|\bkc\b|\bkč\b|čestica|cestica|k\.\s*o\.|\bko\b/gi," ").trim();
+  return {kc:m[1],ko};
+}
+async function searchParcel(pq){
+  sheet.innerHTML='<p class="hint"><span class="spin"></span>Tražim česticu '+esc(pq.kc)+'…</p>';
+  const p=new URLSearchParams({where:"KATASTARSKA_CESTICA='"+pq.kc.replace(/'/g,"")+"'",outFields:"KATASTARSKA_OPCINA,KATASTARSKA_CESTICA",returnGeometry:"true",outSR:"4326",f:"geojson",resultRecordCount:"200"});
+  const g=await getJSON(SRC.cestice+"?"+p.toString());
+  let f=g.features||[];
+  if(pq.ko){const k=norm(pq.ko); const ff=f.filter(x=>norm(x.properties.KATASTARSKA_OPCINA).includes(k)); if(ff.length) f=ff; else if(f.length){sheet.innerHTML=`<p class="err">Čestica ${esc(pq.kc)} nije nađena u k.o. ${esc(pq.ko)}. Postoji u: ${esc([...new Set(f.map(x=>x.properties.KATASTARSKA_OPCINA))].join(", "))}.</p>`;return}}
+  if(!f.length){sheet.innerHTML=`<p class="err">Čestica ${esc(pq.kc)} nije nađena u katastru Grada Zagreba (stanje 2023.). Provjeri broj ili upiši i katastarsku općinu.</p>`;return}
+  if(f.length>1){
+    window.__choices=f;
+    sheet.innerHTML=`<p class="eyebrow">Čestica ${esc(pq.kc)} postoji u više katastarskih općina</p><div class="choices">${f.map((x,i)=>`<button type="button" class="ib" data-pick="${i}">k.o. ${esc(x.properties.KATASTARSKA_OPCINA)}</button>`).join("")}</div><p class="meta">Sljedeći put upiši i k.o., npr. "Šestine ${esc(pq.kc)}".</p>`;
+    return;
+  }
+  goToFeature(f[0]);
+}
+function goToFeature(feat){
+  const b=L.geoJSON(feat.geometry).getBounds(); map.fitBounds(b,{padding:[40,40],maxZoom:19});
+  const c=turf.pointOnFeature(feat).geometry.coordinates; inspect(L.latLng(c[1],c[0]));
+}
+sheet.addEventListener("click",e=>{const i=e.target.dataset&&e.target.dataset.pick; if(i!=null&&window.__choices) goToFeature(window.__choices[+i]);});
+
 // --- pretraga adrese (Nominatim, Zagreb)
 async function search(){
   const q=document.getElementById("q").value.trim(); if(!q) return;
+  const pq=parcelQuery(q);
+  if(pq){try{await searchParcel(pq)}catch(e){sheet.innerHTML='<p class="err">Pretraga čestice nije uspjela: '+esc(e.message)+'</p>'} return;}
   sheet.innerHTML='<p class="hint"><span class="spin"></span>Tražim adresu…</p>';
   try{
     const p=new URLSearchParams({q:q+", Zagreb",format:"json",limit:"1",countrycodes:"hr",viewbox:"15.75,46.0,16.25,45.6",bounded:"1"});
