@@ -13,9 +13,32 @@ Mobilna web aplikacija: dodirneš zemljište u Zagrebu i dobiješ katastarsku č
 - Odluka o izmjenama i dopuni Odluke o komunalnom doprinosu (Gradska skupština, 13. 12. 2023.)
 - HERA, naknada za priključenje (NN 45/2026); Uredba o Tarifi upravnih pristojbi (NN 156/2022)
 - OpenStreetMap (Overpass) za ceste i sadržaje u okolini
+- GUP Grada Zagreba, karte 3b (energetski sustav) i 3c (vodnogospodarski sustav) te sloj GUP_Infrastruktura: magistralni vodovod, dalekovodi i kabeli 110 kV+, trafostanice 110 kV, magistralni i VT plinovodi, toplovodi (postojeći i planirani). Ulična mreža vodovoda, kanalizacije, NN struje i distribucijskog plina nije javno objavljena (servisi Javni_vodovod i Javna_kanalizacija su samo statistika; KI_LINIJE je probno područje)
 
 Procjene su orijentacijske. Pravno mjerodavna je lokacijska informacija Grada Zagreba.
 
 ## Izmjene
 Uređuje se `src/app.template.html`, a `python3 build.py` sastavlja `index.html`.
 Pravila za Sesvete: `pdfplumber` tekst prvog dijela PDF-a odredbi (bez prikaza izmjena), zatim `python3 src/parse_gup_sesvete.py ses_first.txt src/rules_sesvete.json`.
+
+## Ažuriranje pravila (kad se plan promijeni)
+Pravila su odvojena od aplikacije, u `src/rules.json` (GUP Zagreba), `src/rules_sesvete.json` (GUP Sesveta) i `src/rules_ppgz.json` (PPGZ). Izvor, verzija i status svake datoteke su u `src/rules_meta.json` i prikazuju se u aplikaciji.
+1. Novi tekst odluke pretvori u tekst (`pdftotext -layout` ili `pdfplumber`) i pokreni odgovarajući `src/parse_*.py`.
+2. Ažuriraj `src/rules_meta.json` (verzija, datum, status).
+3. `python3 build.py` provjerava strukturu pravila i prekida ako nešto nedostaje.
+4. `cd tests && node audit.js` ispisuje izvučene parametre za svako pravilo i tip kuće, za usporedbu s tekstom; `node audit.js "GUP 2.2." k` ispisuje i izvorne rečenice.
+5. `cd tests && npm install && npm test` pokreće automatske testove.
+
+## Grane
+- `main`: objavljena verzija (GitHub Pages)
+- `razvoj`: rad u tijeku, objavljuje se tek nakon pregleda
+- `stabilna-2026-10-17`: sigurnosna kopija stabilne verzije
+
+## Mobilno sučelje (faza M)
+Ispod 900 px: karta preko cijelog ekrana, donji panel s tri stanja (sažetak, pola, cijeli ekran), donja navigacija Karta · Analiza · Troškovi · Spremljeno. Sadržaj je podijeljen u skupine (`.grp[data-g]`: sažetak, analiza, troškovi) koje se samo skrivaju i prikazuju, pa se unosi ne gube. Na računalu je raspored kao prije.
+
+Provjere u pregledniku (Chromium, Playwright):
+```
+cd tests && node mobile/make_local.js && python3 mobile/layout.py && python3 mobile/interaction.py
+```
+Ručno na uređaju (automatski testovi to ne zamjenjuju): Android Chrome i iPhone Safari; povlačenje panela, pomicanje i okretanje kuće prstom, tipkovnica kod unosa cijene, okomito i vodoravno, veliki sustavski font, ispis u PDF.
