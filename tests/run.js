@@ -19,7 +19,11 @@ function boot(){
   vc.on("jsdomError",e=>errs.push(String(e.message||e))); vc.on("error",e=>errs.push(String(e)));
   const dom=new JSDOM(html,{runScripts:"dangerously",pretendToBeVisual:true,url:"https://example.org/cestica-zg/",virtualConsole:vc,
     beforeParse(w){ w.fetch=()=>Promise.reject(new Error("bez mreže u testu")); w.print=()=>{}; w.scrollTo=()=>{};
-      w.HTMLElement.prototype.scrollIntoView=function(){}; }});
+      w.HTMLElement.prototype.scrollIntoView=function(){};
+      // jsdom nema canvas: Leaflet crta na lažni kontekst koji prihvaća sve pozive
+      const ctx=new Proxy({},{get:(t,k)=>k in t?t[k]:(()=>{}),set:(t,k,v)=>(t[k]=v,true)});
+      w.HTMLCanvasElement.prototype.getContext=function(){return ctx};
+      w.SVGElement.prototype.createSVGRect=function(){return {}}; }});
   return {w:dom.window, errs};
 }
 // pravokutna čestica w × d metara
@@ -305,6 +309,47 @@ async function infraTests(){
   w.eval("render")(data(w,pr,"2.2."));
   ok(w.document.getElementById("kdWorks").value==="4000","unos radova na priključcima se sprema po čestici");
   ok(errs.length===0,"bez JS grešaka u infrastrukturi: "+errs.join(" | "));
+}
+
+// ---------------- 9. Simulator kuće (D1)
+{
+  const {w,errs}=boot();
+  const pr=parcelRect(30,25), c=pr.geometry.coordinates[0];
+  const d=data(w,pr,"2.2.");
+  // ulica uz južni rub čestice, 4 m južnije
+  const y=c[0][1]-4/110540; d.env={v:{roads:[{name:"Test",hw:"residential",ok:true}],roadLines:[{ok:true,geom:[[c[0][0]-0.001,y],[c[1][0]+0.001,y]]}],stops:[]}};
+  w.__env=d.envelope; w.eval("OPEN").add("tloc"); w.eval("render")(d);
+  const TL=w.eval("TL"), tDraw=w.eval("tDraw");
+  tDraw(); let R=w.__sim;
+  ok(R&&R.inEnv,"kuća 12 × 9 m u sredini je unutar udaljenosti od međa");
+  const row=l=>R.C.find(x=>x.label.startsWith(l))||{};
+  const tlx=w.eval("fmt")(Math.round(d.area*0.3)); ok(row("Tlocrt").st==="ok"&&row("Tlocrt").val.startsWith("108 od najviše "+tlx),"tlocrt 108 m² od dopuštenih "+tlx+" m² (30 % površine)");
+  ok(row("GBP").st==="ok"&&/108 od najviše 400/.test(row("GBP").val),"GBP prizemnice 108 m², granica 400 m²");
+  ok(row("Prirodni teren").st==="warn","prirodni teren: zadovoljen samo ako ostatak nije popločen (potrebna provjera)");
+  ok(TL.zones&&TL.zones.orange&&row("Građevni pravac").st==="ok","prepoznata ulica uz južni rub; kuća u sredini je izvan pojasa građevnog pravca");
+  // pomak prema ulici
+  const c0=TL.center.slice(); TL.center=[c0[0],c[0][1]+8/110540]; tDraw(); R=w.__sim;
+  ok(row("Građevni pravac").st==="warn","kuća u pojasu uz ulicu: potrebna provjera (narančasto)");
+  TL.center=c0;
+  // prevelika kuća
+  TL.w=28; tDraw(); R=w.__sim;
+  ok(!R.inEnv&&R.st==="no","kuća šira od prostora za gradnju je crvena (ne zadovoljava)");
+  TL.w=20; TL.d=15; tDraw(); R=w.__sim;
+  ok(row("Tlocrt").st==="no","tlocrt 300 m² prelazi dopušteni tlocrt");
+  // etaže i potkrovlje
+  TL.w=12; TL.d=9; TL.fl="2.5"; tDraw(); R=w.__sim;
+  ok(Math.abs(R.gbpN-(108*2+108*0.75))<0.01&&row("Nadzemne etaže").st==="ok","P+1+Pk: GBP = 2 × 108 + 75 % × 108, tri etaže dopuštene");
+  TL.fl="3"; TL.w=14; TL.d=11; tDraw(); R=w.__sim;
+  ok(row("GBP").st==="no","P+2 s 154 m² tlocrta: GBP 462 m² prelazi 400 m²");
+  // garaža
+  TL.fl="1"; TL.w=12; TL.d=9; TL.gar=true; TL.gw=3.5; TL.gd=6; tDraw(); R=w.__sim;
+  ok(Math.abs(R.tl-(108+21))<0.01,"garaža 3,5 × 6 m ulazi u tlocrt");
+  // prijenos u financije
+  TL.gar=false; TL.fl="1.5"; tDraw();
+  w.document.getElementById("tToFin").dispatchEvent(new w.Event("click",{bubbles:true}));
+  ok(+w.document.getElementById("bArea").value===Math.round(108*1.75)&&w.document.getElementById("bFloors").value==="PPk","simulator prenosi GBP i katnost u procjenu troškova");
+  ok(Math.abs(w.__fin.house.foot-108)<0.6,"procjena troškova računa isti tlocrt kao simulator (108 m²)");
+  ok(errs.length===0,"bez JS grešaka u simulatoru: "+errs.join(" | "));
 }
 
 netTests().then(infraTests).then(()=>{
