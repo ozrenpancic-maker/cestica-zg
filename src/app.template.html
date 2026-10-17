@@ -102,6 +102,17 @@ details p{font-size:13.5px;margin:6px 0}
 .cmp tr{border-top:1px solid var(--line)}
 .actions{gap:8px}
 @media print{.noprint{display:none}}
+.acc{margin-top:10px;border:2px solid var(--accent);border-radius:12px;background:var(--panel);overflow:hidden;padding:0}
+.acc>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:var(--ok-bg);cursor:pointer}
+.acc>summary::-webkit-details-marker{display:none}
+.acc>summary>span{font-weight:700;font-size:15px;color:var(--fg)}
+.acc>summary>span::before{content:"▸";display:inline-block;margin-right:8px;color:var(--accent);transition:transform .15s}
+.acc[open]>summary>span::before{transform:rotate(90deg)}
+.acc>summary>b{font-family:var(--f-mono);font-weight:500;font-size:13px;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+.acc>summary>b.bad{color:var(--no)}
+.acc .calc{border:0;border-radius:0;margin:0}
+.acc-body{padding:10px 14px 12px}
+@media (prefers-reduced-motion:reduce){.acc>summary>span::before{transition:none}}
 .chk-ok{background:var(--ok-bg);color:var(--ok)}
 .kd{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:14px}
 .kd input{width:6em;font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg)}
@@ -271,6 +282,8 @@ const fmt=n=>Math.round(n).toLocaleString("hr-HR");
 const settle=p=>p.then(v=>({v}),e=>({e:e.message}));
 
 let clickId=0;
+const OPEN=new Set();
+sheet.addEventListener("toggle",e=>{const k=e.target.dataset&&e.target.dataset.k; if(k){e.target.open?OPEN.add(k):OPEN.delete(k)}},true);
 map.on("click",e=>inspect(e.latlng));
 async function inspect(ll){
   const id=++clickId;
@@ -553,7 +566,9 @@ function render(d){
       const A=buildArea??area;
       if(A&&(pp.izg||pp.kis||pp.minC)){
         const gbpMax=pp.kis?Math.min(A*pp.kis,pp.gbp||Infinity):(pp.gbp||null);
-        h+=`<div class="calc"><p class="eyebrow">Izračun za ovu česticu (slobodnostojeća, nova gradnja)</p>`;
+        const okC=pp.minC?(A>=pp.minC?"good":A>=pp.minC*0.95?"":"bad"):"";
+        const sumC=[pp.minC?(A>=pp.minC?"čestica dovoljna":A>=pp.minC*0.95?"čestica na granici":"čestica premala"):null,pp.izg?"tlocrt do "+fmt(A*pp.izg)+" m²":null,gbpMax?"GBP do "+fmt(gbpMax)+" m²":null].filter(Boolean).join(" · ");
+        h+=`<details class="acc" data-k="calc"><summary><span>Izračun za ovu česticu</span><b class="${okC}">${esc(sumC)}</b></summary><div class="calc"><p class="eyebrow">Slobodnostojeća kuća, nova gradnja</p>`;
         if(buildArea!=null&&buildArea<area-1) h+=`<div class="row"><span>Građevinski dio čestice</span><span>${fmt(buildArea)} od ${fmt(area)} m²</span></div>`;
         if(envelope&&envelope.area!=null){const tl=pp.izg?A*pp.izg:null, lim=tl&&envelope.area<tl;
           h+=`<div class="row"><span>Prostor za kuću (${String(envelope.d).replace(".",",")} m od međa, zeleno na karti)</span><span class="${lim?"bad":""}">${fmt(envelope.area)} m²</span></div>`;
@@ -564,20 +579,22 @@ function render(d){
         if(pp.izg) h+=`<div class="row"><span>Najveći tlocrt (${Math.round(pp.izg*100)} %)</span><span>${fmt(A*pp.izg)} m²</span></div>`;
         if(gbpMax) h+=`<div class="row"><span>Najveći GBP${pp.kis?" (kis "+String(pp.kis).replace(".",",")+")":""}${pp.gbp&&pp.kis&&A*pp.kis>pp.gbp?", ograničeno na "+fmt(pp.gbp):""}</span><span>${fmt(gbpMax)} m²</span></div>`;
         if(pp.teren) h+=`<div class="row"><span>Min. prirodni teren (${Math.round(pp.teren*100)} %)</span><span>${fmt(A*pp.teren)} m²</span></div>`;
+        h+=`<p class="meta" style="margin-top:6px">Računato na građevinskom dijelu čestice${rezHit?", bez odbitka za proširenje ulice (vidi upozorenje)":""}. Za poluugrađene i ugrađene građevine vrijede drugi iznosi.</p></div></details>`;
         if(gbpMax){const V=Math.round(gbpMax*3);
-          h+=`<p class="eyebrow" style="margin-top:12px">Komunalni doprinos</p>`;
+          h+=`<details class="acc" data-k="kd"><summary><span>Komunalni doprinos</span><b id="kdSum">izaberi zonu</b></summary><div class="acc-body">`;
           h+=`<div class="kd"><label for="kdVol">Obujam kuće</label><input id="kdVol" type="number" inputmode="decimal" min="0" step="1" value="${V}"><span>m³</span></div>`;
           const zSel=kdZone();
           h+=`<div class="kd"><label for="kdZone">Zona</label><select id="kdZone" style="font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg)"><option value="">izaberi zonu</option>${KD_ZONES.map(z=>`<option value="${z[0]}"${z[0]===zSel?" selected":""}>${z[0]}. zona · ${z[1].toFixed(2).replace(".",",")} €/m³</option>`).join("")}</select></div>`;
           h+=`<div class="kd"><label for="kdRate">Iznos</label><input id="kdRate" type="number" inputmode="decimal" min="0" step="0.01" placeholder="€/m³" value="${esc(kdRate())}"><span>€/m³</span></div>`;
           h+=`<div class="kd"><span>Ukupno:</span><output id="kdOut">${kdText(V,kdRate())}</output></div>`;
-          h+=`<p class="eyebrow" style="margin-top:14px">Priključci i dozvole</p>`;
+          h+=`<p class="meta">Iznosi po zonama su iz Odluke o izmjenama i dopuni Odluke o komunalnom doprinosu (Gradska skupština, 13. 12. 2023.). Zonu provjeri na <a href="https://geoportal.zagreb.hr/Karta" target="_blank" rel="noopener" style="color:var(--accent)">Geoportalu Zagreba</a> (sloj "Zone komunalnog doprinosa"). Obujam je predložen za najveću dopuštenu kuću (GBP × 3 m); upiši obujam svoje kuće. Službeno se obračunava bruto obujam iz projekta.</p></div></details>`;
+          h+=`<details class="acc" data-k="costs"><summary><span>Priključci i dozvole</span><b id="costSum"></b></summary><div class="acc-body">`;
           h+=`<div class="kd"><label for="kdKw">Priključna snaga struje</label><select id="kdKw" style="font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg)">${[[7.36,"7,36 kW (jednofazno 32 A)"],[11.04,"11,04 kW (trofazno 16 A)"],[17.25,"17,25 kW (trofazno 25 A)"],[22.08,"22,08 kW (trofazno 32 A)"]].map(o=>`<option value="${o[0]}"${o[0]===11.04?" selected":""}>${o[1]}</option>`).join("")}</select></div>`;
           h+=`<div class="kd"><label><input type="checkbox" id="kdGas"> s plinskim priključkom</label></div>`;
-          h+=`<div id="costs" data-gbp="${Math.round(gbpMax)}"></div>`;
+          h+=`<div id="costs" data-gbp="${Math.round(gbpMax)}"></div></div></details>`;
           // Procjena cijene gradnje
           const sel=(id,opts,def)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===def?" selected":""}>${o[1]}</option>`).join("")}</select>`;
-          h+=`<p class="eyebrow" style="margin-top:16px">Procjena cijene gradnje</p>`;
+          h+=`<details class="acc" data-k="build"><summary><span>Procjena cijene gradnje</span><b id="bSum"></b></summary><div class="acc-body">`;
           h+=`<div class="bgrid" data-gbp="${Math.round(gbpMax)}" data-tlocrt="${pp.izg?Math.round(A*pp.izg):""}">`;
           h+=`<label for="bArea">Površina kuće (bruto)</label><span><input id="bArea" type="number" inputmode="decimal" min="20" step="1" value="${Math.min(150,Math.round(gbpMax))}"> m²</span>`;
           h+=`<label for="bFloors">Katnost</label>${sel("bFloors",[["P","prizemnica (P)"],["PPk","P + potkrovlje"],["P1","P + 1 kat"],["P1Pk","P + 1 + potkrovlje"]],"P")}`;
@@ -586,9 +603,7 @@ function render(d){
           h+=`<label for="bPhase">Faza</label>${sel("bPhase",[["kljuc","ključ u ruke"],["roh","roh-bau"]],"kljuc")}`;
           h+=`<label for="bLand">Cijena zemljišta</label><span><input id="bLand" type="number" inputmode="decimal" min="0" step="1000" placeholder="iz oglasa" value="${esc(landPrice(favKey(parcel,ll)))}"> €</span>`;
           h+=`<label for="bBase">Podrum</label><span><input type="checkbox" id="bBase"> s podrumom ispod cijele kuće</span>`;
-          h+=`</div><div id="bOut"></div>`;
-          h+=`<p class="meta">Iznosi po zonama su iz Odluke o izmjenama i dopuni Odluke o komunalnom doprinosu (Gradska skupština, 13. 12. 2023.). Zonu provjeri na <a href="https://geoportal.zagreb.hr/Karta" target="_blank" rel="noopener" style="color:var(--accent)">Geoportalu Zagreba</a> (sloj "Zone komunalnog doprinosa"). Obujam je predložen za najveću dopuštenu kuću (GBP × 3 m); upiši obujam svoje kuće. Službeno se obračunava bruto obujam iz projekta. Uz to se plaća i vodni doprinos.</p>`;}
-        h+=`<p class="meta" style="margin-top:6px">Računato na građevinskom dijelu čestice${rezHit?", bez odbitka za proširenje ulice (vidi upozorenje)":""}. Za poluugrađene i ugrađene građevine vrijede drugi iznosi.</p></div>`;
+          h+=`</div><div id="bOut"></div></div></details>`;}
       }
       h+=`<details><summary>Sva detaljna pravila za ovu zonu (${zone.items.length})</summary><ol>${zone.items.map(i=>`<li>${esc(i)}</li>`).join("")}</ol></details>`;
       const others=rule.zone.filter(z=>z!==zone);
@@ -603,7 +618,9 @@ function render(d){
   if(checks) h+=docsHtml(d);
   h+=`<div class="links"><a href="https://oss.uredjenazemlja.hr/" target="_blank" rel="noopener">Katastar (OSS)</a><a href="https://geoportal.zagreb.hr/Karta" target="_blank" rel="noopener">Geoportal Zagreb</a><a href="https://www.zzpugz.hr/gup-grada-zagreba" target="_blank" rel="noopener">GUP (Zavod)</a><a href="https://www.google.com/maps?q=${ll.lat},${ll.lng}" target="_blank" rel="noopener">Google Maps</a></div>`;
   h+=`<p class="note">Izvori: katastarske čestice Grada Zagreba (2023.), GIS baza planirane namjene (2023.), karta urbanih pravila iz ponovne javne rasprave GUP-a (2024.) i tekst Odluke o GUP-u s izmjenama 2025. Granice pravila u konačnom planu mogu malo odstupati. Procjena je orijentacijska; pravno mjerodavna je lokacijska informacija Gradskog ureda.</p>`;
-  sheet.innerHTML=h; sheet.scrollTop=keepScroll;
+  sheet.innerHTML=h;
+  sheet.querySelectorAll("details[data-k]").forEach(dd=>{if(OPEN.has(dd.dataset.k)) dd.open=true});
+  sheet.scrollTop=keepScroll;
   if(document.getElementById("costs")) kdUpdate();
 }
 
@@ -641,6 +658,7 @@ function costsHtml(){
   const lo=fixed+(gas?800:0), hi=fixed+(gas?1500:0);
   let h=`<div class="calc" style="background:var(--panel);margin-top:8px">`+rows.map(([a,b])=>`<div class="row"><span>${esc(a)}</span><span>${esc(b)}</span></div>`).join("");
   h+=`<div class="row" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px;font-weight:700"><span>Ukupno naknade${kd==null?" (bez komunalnog)":""}</span><span>${gas?fmt(lo)+"–"+fmt(hi):fmt(lo)} €</span></div></div>`;
+  window.__costSum=(gas?fmt(lo)+"–"+fmt(hi):fmt(lo))+" €";
   h+=`<p class="meta">Nisu uključeni radovi koje plaćaš izvođačima: vodomjerno okno i kućne instalacije (za vodu i kanalizaciju obično 2.500–4.500 €), elektro-ormarić, geodetski elaborat i projekti, te posebni uvjeti javnopravnih tijela (oko 200–600 €).</p>`;
   return h;
 }
@@ -673,6 +691,7 @@ function buildUpdate(){
   const land=parseFloat(String(g("bLand")?.value||"").replace(",","."))||0;
   const sub=gradnja+projekti+nadzor+naknade, lo=sub*0.9+land, hi=sub*1.1+land, rez=sub*0.15;
   window.__budget={lo,hi,land,area};
+  const bs=document.getElementById("bSum"); if(bs) bs.textContent=fmt(lo)+" – "+fmt(hi)+" €";
   const gbp=+grid.dataset.gbp||0, tl=+grid.dataset.tlocrt||0;
   const warn=[];
   if(gbp&&area>gbp*1.001) warn.push(`Površina je veća od najvećeg dopuštenog GBP-a na ovoj čestici (${fmt(gbp)} m²).`);
@@ -696,8 +715,10 @@ sheet.addEventListener("change",e=>{ if(/^b[A-Z]/.test(e.target.id)) buildUpdate
 function kdUpdate(){
   const v=document.getElementById("kdVol").value, r=document.getElementById("kdRate").value;
   document.getElementById("kdOut").textContent=kdText(v,r);
+  const ks=document.getElementById("kdSum"); if(ks){const vv=parseFloat(String(v).replace(",",".")), rr=parseFloat(String(r).replace(",",".")); ks.textContent=vv>0&&rr>0&&rr<=40?fmt(vv*rr)+" €":"izaberi zonu";}
   const n=parseFloat(String(r).replace(",","."));try{localStorage.setItem("kdRate",n>0&&n<=40?String(n):"")}catch(err){}
   const c=document.getElementById("costs"); if(c) c.innerHTML=costsHtml();
+  const cs=document.getElementById("costSum"); if(cs) cs.textContent=window.__costSum||"";
   buildUpdate();
 }
 sheet.addEventListener("input",e=>{ if(e.target.id==="kdRate"||e.target.id==="kdVol") kdUpdate(); });
