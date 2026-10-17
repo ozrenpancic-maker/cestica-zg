@@ -686,6 +686,9 @@ const INF_SRC=[
   {id:"plin",kind:"plin",url:INFRA+"14/query",color:"#c48a00",desc:p=>p.PLINOVOD_OPIS||p.LABELA||"plinovod"},
   {id:"top",kind:"top",url:INFRA+"22/query",color:"#8a3ffc",desc:p=>p.TP_OPIS||"toplovod"}
 ];
+// "KABEL 110KV - PLANIRANI" ili "Plinovod VT (postojeći)" -> "kabel 110 kV", "plinovod VT"
+const infDesc=t=>{let x=String(t||"").replace(/\s*[-–]?\s*\(?\b(postoje[ćc]\w*|planiran\w*)\)?\s*$/i,"").trim();
+  if(x===x.toUpperCase()) x=x.toLowerCase().replace(/\bvt\b/g,"VT"); return x.replace(/(\d+)\s*kv\b/gi,"$1 kV");};
 const isPlanned=(p,txt)=>/planiran/i.test(txt||"")||/planiran/i.test(Object.values(p||{}).join(" "));
 async function loadInfra(parcel,ll){
   const out={};
@@ -694,7 +697,7 @@ async function loadInfra(parcel,ll){
     const fs=(r.v||[]).filter(f=>!s.filter||s.filter(f.properties||{}));
     let ex=null, pl=null;
     for(const f of fs){const p=f.properties||{}, d=minDistM(f.geometry,parcel,ll); if(d==null||!isFinite(d)) continue;
-      const desc=s.desc(p), rec={d,desc:String(desc).replace(/\s*\((postojeći|postojeci|planirani|planirana)\)\s*/i,""),geom:f.geometry,color:s.color};
+      const desc=s.desc(p), rec={d,desc:infDesc(desc),geom:f.geometry,color:s.color};
       if(isPlanned(p,desc)){if(!pl||d<pl.d) pl=rec} else {if(!ex||d<ex.d) ex=rec}}
     out[s.id]={ex,pl,n:fs.length,incomplete:!!(r.v&&r.v.incomplete)};
   })));
