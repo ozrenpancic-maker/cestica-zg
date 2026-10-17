@@ -85,8 +85,11 @@ details p{font-size:13.5px;margin:6px 0}
 .docs label{display:flex;gap:6px;align-items:flex-start;font-size:14px}
 .docs small{color:var(--muted)} .docs a{color:var(--accent)}
 .print-only{display:none}
+#printMap{display:none;height:340px;margin:0 0 12px;border:1px solid var(--line);border-radius:8px;overflow:hidden;position:relative}
+#map.in-print{position:absolute;inset:0}
 @media print{
-  header,#map,.layers,.leaflet-control-container,.actions{display:none!important}
+  header,.layers,.leaflet-control-zoom,.actions{display:none!important}
+  #printMap{display:block!important;height:9cm;break-inside:avoid;border-radius:0}
   html,body{height:auto;background:#fff;color:#000}
   #app,main{position:static!important;display:block}
   #sheet{position:static!important;max-height:none!important;overflow:visible!important;width:auto!important;box-shadow:none!important;border:0!important;padding:0!important}
@@ -237,6 +240,7 @@ const KEY_LABELS = [["cestica","Min. čestica"],["izgradenost","Izgrađenost"],[
 
 const map = L.map("map",{zoomControl:false}).setView([45.815,15.982],13);
 L.control.zoom({position:"bottomleft"}).addTo(map);
+L.control.scale({position:"bottomright",imperial:false}).addTo(map);
 const osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:20,maxNativeZoom:19,attribution:"© OpenStreetMap"}).addTo(map);
 const sat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:20,maxNativeZoom:19,attribution:"Esri"});
 const namLayer = L.geoJSON(null,{style:f=>({color:COLORS[f.properties.Analitika]||"#888",weight:.6,fillOpacity:.25}),interactive:false}).addTo(map);
@@ -282,6 +286,7 @@ const fmt=n=>Math.round(n).toLocaleString("hr-HR");
 const settle=p=>p.then(v=>({v}),e=>({e:e.message}));
 
 let clickId=0;
+window.__lastBounds=null;
 const OPEN=new Set();
 sheet.addEventListener("toggle",e=>{const k=e.target.dataset&&e.target.dataset.k; if(k){e.target.open?OPEN.add(k):OPEN.delete(k)}},true);
 map.on("click",e=>inspect(e.latlng));
@@ -302,7 +307,8 @@ async function inspect(ll){
   let zones=nam.v||[], area=null;
   if(parcel){
     area=turf.area(parcel.geometry);
-    L.geoJSON(parcel.geometry,{style:{color:"#111",weight:3,fill:false},interactive:false}).addTo(selLayer);
+    const pl=L.geoJSON(parcel.geometry,{style:{color:"#111",weight:3,fill:false},interactive:false}).addTo(selLayer);
+    window.__lastBounds=pl.getBounds();
     try{zones=await polyQuery(SRC.namjena,parcel.geometry)}catch(e){}
     if(id!==clickId) return;
   }
@@ -489,7 +495,7 @@ function render(d){
   window.__cur={key:favKey(parcel,ll),ll:{lat:ll.lat,lng:ll.lng},ces:parcel?parcel.properties.KATASTARSKA_CESTICA:null,ko:parcel?parcel.properties.KATASTARSKA_OPCINA:null,area,buildArea,
     code:(up.v&&up.v[0]?String(up.v[0].properties.BROJ_UP||"").trim():null),namjena:rows[0]?(rows[0].p.Namjena||rows[0].p.Analitika):null,analitika:rows[0]?rows[0].p.Analitika:null,
     risks:checks?checks.filter(r=>r.v&&r.v.length).map(r=>r.c.label):null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:envelope?Math.round(envelope.area):null};
-  let h=`<p id="printHead" class="print-only"></p>`;
+  let h=`<p id="printHead" class="print-only"></p><div id="printMap"></div>`;
   if(checks) h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(favKey(parcel,ll))?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button></div>`;
   // Čestica
   if(parcel){
@@ -618,6 +624,7 @@ function render(d){
   if(checks) h+=docsHtml(d);
   h+=`<div class="links"><a href="https://oss.uredjenazemlja.hr/" target="_blank" rel="noopener">Katastar (OSS)</a><a href="https://geoportal.zagreb.hr/Karta" target="_blank" rel="noopener">Geoportal Zagreb</a><a href="https://www.zzpugz.hr/gup-grada-zagreba" target="_blank" rel="noopener">GUP (Zavod)</a><a href="https://www.google.com/maps?q=${ll.lat},${ll.lng}" target="_blank" rel="noopener">Google Maps</a></div>`;
   h+=`<p class="note">Izvori: katastarske čestice Grada Zagreba (2023.), GIS baza planirane namjene (2023.), karta urbanih pravila iz ponovne javne rasprave GUP-a (2024.) i tekst Odluke o GUP-u s izmjenama 2025. Granice pravila u konačnom planu mogu malo odstupati. Procjena je orijentacijska; pravno mjerodavna je lokacijska informacija Gradskog ureda.</p>`;
+  restoreMap();
   sheet.innerHTML=h;
   sheet.querySelectorAll("details[data-k]").forEach(dd=>{if(OPEN.has(dd.dataset.k)) dd.open=true});
   sheet.scrollTop=keepScroll;
@@ -810,8 +817,27 @@ sheet.addEventListener("click",e=>{
   sheet.querySelectorAll("details").forEach(d=>d.open=true);
   const ph=document.getElementById("printHead");
   if(ph) ph.textContent="Izvještaj o čestici · "+new Date().toLocaleDateString("hr-HR")+" · "+(window.__lastLL?window.__lastLL.lat.toFixed(5)+", "+window.__lastLL.lng.toFixed(5):"");
-  setTimeout(()=>window.print(),50);
+  preparePrintMap().then(()=>window.print());
 });
+// karta za ispis: premjesti kartu na vrh izvještaja, zumiraj na česticu, pričekaj podloge
+const mapEl=document.getElementById("map"), mapHome=mapEl.parentNode, mapNext=mapEl.nextSibling;
+function preparePrintMap(){
+  const pm=document.getElementById("printMap");
+  if(!pm) return Promise.resolve();
+  pm.style.display="block"; pm.appendChild(mapEl); mapEl.classList.add("in-print");
+  map.invalidateSize();
+  if(window.__lastBounds) map.fitBounds(window.__lastBounds,{padding:[30,30],maxZoom:19});
+  else if(window.__lastLL) map.setView(window.__lastLL,18);
+  const base=map.hasLayer(sat)?sat:osm;
+  return new Promise(res=>{let done=false;const fin=()=>{if(!done){done=true;setTimeout(res,300)}};base.once("load",fin);setTimeout(fin,3000);});
+}
+function restoreMap(){
+  if(!mapEl.classList.contains("in-print")) return;
+  mapEl.classList.remove("in-print"); mapHome.insertBefore(mapEl,mapNext);
+  const pm=document.getElementById("printMap"); if(pm) pm.style.display="none";
+  map.invalidateSize();
+}
+window.addEventListener("afterprint",()=>setTimeout(restoreMap,100));
 
 // --- spremljene čestice (samo u ovom pregledniku)
 const favKey=(parcel,ll)=>parcel?`${parcel.properties.KATASTARSKA_OPCINA}|${parcel.properties.KATASTARSKA_CESTICA}`:`${ll.lat.toFixed(5)},${ll.lng.toFixed(5)}`;
