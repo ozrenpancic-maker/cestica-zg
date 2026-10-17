@@ -1,0 +1,22 @@
+# ČesticaZG AI proxy. Tajne (ANTHROPIC_API_KEY, LOGIN_HASH, LOGIN_PEPPER, SESSION_SECRET) se NE upisuju ovdje,
+# nego naredbom `npx wrangler secret put IME` (vidi docs/ai-postavljanje.md).
+name = "cesticazg-ai"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+AI_ENABLED = "false"            # "true" uključuje AI; "false" ga gasi bez brisanja
+ALLOWED_ORIGINS = "https://ozrenpancic-maker.github.io"
+MONTHLY_LIMIT_USD = "5"
+SESSION_EPOCH = "1"             # promjena broja poništava sve prijave
+
+[[durable_objects.bindings]]
+name = "GUARD"
+class_name = "Guard"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Guard"]   # besplatni plan podržava samo Durable Objecte sa SQLite pohranom
+
+[observability]
+enabled = true                  # log sadrži samo brojke i šifre grešaka

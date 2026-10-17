@@ -14,7 +14,8 @@ Stanje: 17. 10. 2026., grana `razvoj`. Produkcija (`main`) odgovara objavi od 17
 | Jedinstveni financijski model: gradnja, naknade, priključci, kupnja, ukupno, rezerva | gotovo | `finInputs`, `finHouse`, `finCompute` |
 | Modul 1 Rizici, Modul 2 Scenariji, Modul 3 Priprema terena | gotovo | `riskFindings`, `sc*`, `prep*` |
 | Mobilno sučelje (panel u tri stanja, donja navigacija) | gotovo | odjeljak "MOBILNO SUČELJE" |
-| AI-1: kontrolirano sučelje za AI (bez UI-a i bez API-ja) | gotovo, isključeno | `aiCall`, `AI_TOOLS`, `worker/ai-proxy.js` |
+| AI-1: kontrolirano sučelje za AI | gotovo | `aiCall`, `AI_TOOLS` |
+| AI-2: AI panel samo za čitanje, Worker s prijavom i budžetom | kod gotov, API nije aktiviran | `aiAsk`, `worker/` |
 | **Faza 1 ovog plana: jedinstveni projektni model** | **gotovo (ovaj korak)** | `proj*` |
 
 Otvoreno iz ranijih planova: Moduli 4–11 (povijest, optimalni položaj, terenski pregled, buka, klimatski rizici, parcelacija, vrijednost zemljišta, zaključak), faza E (usporedba čestica i izvoz u CSV/Excel), faza G (PDF izvještaj) i AI-2 do AI-5.

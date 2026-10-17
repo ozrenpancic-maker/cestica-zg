@@ -1,7 +1,7 @@
 # AI asistent ČesticaZG: tehnički plan (etapa AI-1)
 
 Stanje: listopad 2026., grana `razvoj`. Etapa AI-1 dodaje samo programsko sučelje i testove sa simuliranim modelom.
-Plaćeni API nije aktiviran, a u aplikaciji se ništa ne vidi (`FEATURES.ai=false`).
+Plaćeni API nije aktiviran. **Dopuna (AI-2):** sučelje samo za čitanje, Worker s prijavom i atomskim budžetom te upute za postavljanje opisani su u `docs/ai-postavljanje.md`; ovaj dokument ostaje kao izvorni plan.
 
 ## 1. Postojeće funkcije koje AI može koristiti
 
@@ -59,10 +59,10 @@ Model nikad ne dobiva pristup JavaScriptu, DOM-u ni lokalnoj pohrani. Vidi samo 
 - Izvor: platform.claude.com/docs/en/about-claude/pricing (provjereno 17. 10. 2026.).
 - OpenAI je također moguć (npr. GPT-5.6 Luna 0,20 $ / 1,20 $). Worker bi se samo malo promijenio, ali za jedan backend predlažem jednog dobavljača.
 
-**Backend: Cloudflare Worker** (`worker/ai-proxy.js`, kostur):
+**Backend: Cloudflare Worker** (`worker/src/index.js`; u AI-2 zamijenio je prvi kostur):
 - Besplatna razina: 100.000 zahtjeva dnevno, a KV pohrana za brojanje potrošnje 1.000 upisa dnevno. Za jednog korisnika to je daleko iznad potrebe.
 - Ključ je spremljen kao tajna Workera. Nije u HTML-u, JavaScriptu, Gitu ni pregledniku.
-- **Pristup Workeru**: osobni pristupni token (dugi nasumični niz) koji vlasnik jednom upiše na svom uređaju. Worker čuva samo njegov SHA-256 sažetak. Token nije API ključ, može se opozvati u minuti, a šteta od krađe ograničena je budžetom i limitom poziva.
+- **Pristup Workeru (izvorni prijedlog, u AI-2 zamijenjen prijavom lozinkom i tokenom od 12 sati u sessionStorage):** osobni pristupni token (dugi nasumični niz) koji vlasnik jednom upiše na svom uređaju. Worker čuva samo njegov SHA-256 sažetak. Token nije API ključ, može se opozvati u minuti, a šteta od krađe ograničena je budžetom i limitom poziva.
   - Alternativa je Cloudflare Access (prijava e-poštom). Njegovi kolačići u Safariju na iPhoneu često ne rade kad se poziva s druge domene (github.io), pa ga ne predlažem za početak.
 - Dodatno: provjera domene (samo `ozrenpancic-maker.github.io`), najviše 12 upita u minuti, najviše 1.200 izlaznih tokena po odgovoru, popis dopuštenih alata na Workeru i fiksne sistemske upute koje aplikacija ne može promijeniti.
 
@@ -110,7 +110,7 @@ Tekst GUP-a, GIS atributi i dokumenti ulaze u rezultate alata kao podaci, ograni
 | Datoteka | Promjena |
 |---|---|
 | `src/app.template.html` | odjeljak "AI ASISTENT: KONTROLIRANO SUČELJE": `aiContext`, `aiValidate`, `AI_TOOLS`, `aiCall`, `aiToolSpecs`, `aiConverse`, privremeno stanje, potvrda, poništavanje, praćenje troškova; `window.__rule`; `FEATURES.ai` |
-| `worker/ai-proxy.js` | kostur Cloudflare Workera (nije objavljen) |
+| `worker/src/index.js`, `worker/wrangler.toml` | Cloudflare Worker s Durable Objectom (AI-2; nije objavljen) |
 | `tests/run.js` | odjeljak 15: 47 testova sa simuliranim modelom, bez troška |
 | `docs/ai-asistent-plan.md` | ovaj plan |
 | AI-2 (kasnije) | AI panel u aplikaciji, `wrangler.toml`, upute za postavljanje Workera u README-u |

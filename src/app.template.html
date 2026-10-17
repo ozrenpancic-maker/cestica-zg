@@ -40,7 +40,7 @@ main{flex:1;position:relative;min-height:0}
 .layers{position:absolute;top:10px;right:max(10px,env(safe-area-inset-right,0px));z-index:900;display:flex;flex-direction:column;gap:6px}
 .layers label{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:13px;display:flex;gap:6px;align-items:center}
 #panel{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;background:var(--panel);border-top:1px solid var(--line);border-radius:14px 14px 0 0;z-index:1001;box-shadow:0 -6px 24px rgba(0,0,0,.12)}
-#sheet,#aux{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:6px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
+#sheet,#aux,#ai{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:6px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
 #grab{flex:none;height:22px;display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none}
 #grab span{width:44px;height:5px;border-radius:3px;background:var(--line)}
 #tabs{display:none}
@@ -52,7 +52,7 @@ main{flex:1;position:relative;min-height:0}
 body.net-busy #netbar{opacity:1}
 @keyframes nb{from{background-position:-40% 0}to{background-position:140% 0}}
 @media (prefers-reduced-motion:reduce){#netbar{animation:none;background:var(--accent)}}
-@media (min-width:900px){#panel{left:auto;top:10px;right:10px;bottom:10px;width:420px;border-radius:12px;border:1px solid var(--line)} #grab{display:none} #sheet,#aux{padding-top:14px} .layers{right:440px}}
+@media (min-width:900px){#panel{left:auto;top:10px;right:10px;bottom:10px;width:420px;border-radius:12px;border:1px solid var(--line)} #grab{display:none} #sheet,#aux,#ai{padding-top:14px} .layers{right:440px}}
 /* mobitel: karta glavna, panel s tri stanja, donja navigacija */
 @media (max-width:899px){
   header h1{display:none}
@@ -154,7 +154,7 @@ details p{font-size:13.5px;margin:6px 0}
 #printMap{display:none;height:340px;margin:0 0 12px;border:1px solid var(--line);border-radius:8px;overflow:hidden;position:relative}
 #map.in-print{position:absolute;inset:0}
 @media print{
-  header,.layers,.leaflet-control-zoom,.actions,#tabs,#grab,#menu,#netbar,.cards,.m-only,#aux{display:none!important}
+  header,.layers,.leaflet-control-zoom,.actions,#tabs,#grab,#menu,#netbar,.cards,.m-only,#aux,#ai,#aiBtn{display:none!important}
   .grp{display:block!important}
   #panel{position:static!important;height:auto!important;display:block!important;box-shadow:none!important;border:0!important}
   #sheet{display:block!important}
@@ -229,7 +229,7 @@ ol.zi{font-size:13.5px;padding-left:18px}
 .pvbars{display:flex;gap:3px;align-items:flex-end;height:80px;margin:8px 0 2px}.pvbars div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}.pvbars span{display:block;width:100%;background:var(--warn);border-radius:3px 3px 0 0}.pvbars small{font-size:10px;color:var(--muted)}
 .favc{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0}
 @media (max-height:500px) and (max-width:899px){#tabs button{min-height:44px;flex-direction:row;gap:6px} #panel.st-half{height:60%}}
-@media (max-width:899px){.ib{white-space:normal;text-align:center} #sheet,#aux{container-type:inline-size}}
+@media (max-width:899px){.ib{white-space:normal;text-align:center} #sheet,#aux,#ai{container-type:inline-size}}
 @container (max-width:330px){.bgrid{grid-template-columns:1fr;gap:2px 0}.bgrid>label{margin-top:6px}.kd .ib,a.ib{max-width:100%}}
 .infk dd{color:var(--muted)}
 .rsum{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
@@ -243,6 +243,28 @@ ul.risk .rh{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
 ul.risk small{color:var(--muted)}
 .scc{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0}.scc .rh{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}.scc .kv{grid-template-columns:9em 1fr}
 @media (min-width:900px){.sccards{display:grid;grid-template-columns:1fr;gap:0}}
+
+/* AI asistent */
+.aion{display:flex;align-items:center;gap:8px;margin-top:8px;min-height:44px;font-size:14px}
+.aihd{display:flex;align-items:center;gap:8px;justify-content:space-between;margin-bottom:4px}
+.aihd b{font-size:16px} .aitag{font:500 11px var(--f-mono);border:1px solid var(--line);border-radius:999px;padding:2px 8px;color:var(--muted)}
+.aimsgs{display:flex;flex-direction:column;gap:10px;margin:8px 0}
+.aiq{align-self:flex-end;background:var(--accent);color:#fff;border-radius:12px 12px 2px 12px;padding:8px 12px;max-width:85%;white-space:pre-wrap;overflow-wrap:anywhere}
+.aia{background:var(--panel);border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:10px 12px;overflow-wrap:anywhere}
+.aia p{margin:0 0 6px} .aia ul{margin:4px 0 0;padding-left:18px} .aia details{margin-top:6px}
+.aia .tools{font-size:12px;color:var(--muted);margin-top:6px}
+.ains{font-size:12px;color:var(--muted);text-align:center;border-top:1px dashed var(--line);padding-top:6px}
+.aierr{border-color:var(--no)}
+.st{font:600 10.5px var(--f-mono);padding:1px 6px;border-radius:4px;border:1px solid currentColor;white-space:nowrap}
+.st-potv{color:var(--ok)} .st-izr{color:var(--accent)} .st-proc{color:#b26a00} .st-nep{color:var(--no)}
+.aichips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.aiqd summary{font-size:13px;color:var(--muted);min-height:32px;display:flex;align-items:center}
+#ai{position:relative}
+.aichips .ib{font-size:13px}
+.aiform{display:flex;gap:6px;align-items:flex-end;position:sticky;bottom:0;background:var(--bg);padding:6px 0}
+.aiform textarea{flex:1;min-height:44px;max-height:140px;font:inherit;font-size:16px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);resize:vertical}
+.aiset input{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);margin:4px 0 8px}
+#aiBtn{font-weight:700}
 </style>
 </head>
 <body>
@@ -255,11 +277,12 @@ ul.risk small{color:var(--muted)}
     <button class="ib" id="favBtn" type="button" aria-label="Spremljene čestice">★</button>
     <button class="ib" id="menuBtn" type="button" aria-label="Izbornik">☰</button>
   </header>
-  <div id="menu" hidden><p class="meta" id="ver" style="margin:0 0 6px"></p><a href="#" id="statBtn2" class="ib">Stanje servisa</a></div>
+  <div id="menu" hidden><p class="meta" id="ver" style="margin:0 0 6px"></p><a href="#" id="statBtn2" class="ib">Stanje servisa</a><label id="aiOnRow" class="aion" hidden><input type="checkbox" id="aiOn"> AI asistent (testno)</label></div>
   <main>
     <div id="map"></div>
     <div class="layers" id="layers">
       <button type="button" class="ib fab" id="lyrBtn" aria-expanded="false" aria-controls="lyrList">Slojevi</button>
+      <button type="button" class="ib fab" id="aiBtn" hidden aria-label="AI asistent">AI</button>
       <div id="lyrList">
         <label><input type="checkbox" id="lyrSat"> Satelit</label>
         <label><input type="checkbox" id="lyrNam" checked> Namjena</label>
@@ -275,6 +298,7 @@ ul.risk small{color:var(--muted)}
         <p class="hint">Dodirni zemljište na karti (zumiraj do razine ulice). Dobit ćeš katastarsku česticu, namjenu iz prostornog plana i urbano pravilo GUP-a s uvjetima gradnje.</p><div id="sumEnd"></div>
       </section>
       <section id="aux" hidden></section>
+      <section id="ai" hidden aria-label="AI asistent"></section>
     </div>
   </main>
   <nav id="tabs" aria-label="Glavna navigacija">
@@ -331,7 +355,7 @@ const CHECKS = [
 ];
 // Koridori infrastrukture (GUP čl. 50: DV 110 kV 20 m, 220 kV 25 m, 400 kV 35 m od osi; čl. 53: magistralni plinovod 30 m, VTP 10 m)
 // moduli koji su u razvoju (faze C i D) i još nisu uključeni
-const FEATURES={infra:true,seis:false,ai:false}; // seis: potresna opasnost, privremeno skrivena; ai: AI asistent (etapa AI-1: samo programsko sučelje, bez prikaza)
+const FEATURES={infra:true,seis:false,ai:true}; // seis: potresna opasnost, privremeno skrivena; ai: AI asistent postoji u ovoj verziji (AI-2, samo čitanje); korisnik ga uključuje u izborniku, a bez postavljenog servisa ne radi ništa
 const INFRA=BASE+"GUP_Infrastruktura/FeatureServer/";
 const corrDist=(f,kind)=>{
   if(kind==="ee"){const l=String(f.LAYER||"")+String(f.EE_VODOVI_OPIS||""); return /400|440/.test(l)?35:/220/.test(l)?25:20;}
@@ -1617,6 +1641,7 @@ function render(d){
   if(TL.layer){TL.zones=null; tDraw();}
   if(OPEN.has("sun")){sunDraw(); sunEnsureNb();}
   cardsUpdate();
+  try{const ae=document.getElementById("ai"); if(ae&&!ae.hidden) aiRenderPanel();}catch(e){}
   if(isMobile()){ if(!UI.hadParcel&&parcel){UI.hadParcel=true; if(UI.state==="peek") setState("half"); else setState(UI.state,{keepScroll:true});} else setState(UI.state,{keepScroll:true}); }
 }
 
@@ -2376,6 +2401,7 @@ function serviceList(){
   out.push({n:"OpenStreetMap Overpass (okolina)",u:"https://overpass-api.de/api/status",raw:true});
   out.push({n:"Open-Meteo (visine terena)",u:"https://api.open-meteo.com/v1/elevation?latitude=45.81&longitude=15.98"});
   out.push({n:"Nominatim (pretraga adresa)",u:"https://nominatim.openstreetmap.org/status?format=json"});
+  out.push({n:"DGU katastar infrastrukture (WMS; provjera može li ga preglednik dohvatiti)",u:"https://ski.dgu.hr/inspire/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",raw:true});
   return out;
 }
 async function ping(x){
@@ -2423,14 +2449,14 @@ function setTab(t,{scrollTo}={}){
   appEl.classList.remove("tab-karta","tab-analiza","tab-troskovi","tab-spremljeno"); appEl.classList.add("tab-"+t);
   document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-current",b.dataset.tab===t?"page":"false"));
   if(t==="spremljeno"){showFavs(); setState(isMobile()?"full":UI.state); return;}
-  auxClose();
+  auxClose(); try{aiCloseP()}catch(e){}
   if(t==="karta"){setState("peek"); return;}
   if(UI.state==="peek") setState("half");
   if(!scrollTo&&t==="troskovi"){const g=sheet.querySelector('.grp[data-g=troskovi]'); if(g) setTimeout(()=>{sheet.scrollTop=Math.max(0,g.offsetTop-8)},isMobile()?240:0);}
   if(!scrollTo&&t==="analiza") sheet.scrollTop=0;
   if(scrollTo){const el=document.getElementById(scrollTo); if(el){ if(isMobile()&&UI.state!=="full") setState("full"); setTimeout(()=>{sheet.scrollTop=el.offsetTop-8},isMobile()?240:0);}}
 }
-function auxOpen(html){aux.innerHTML=`<div class="actions" style="justify-content:flex-start"><button type="button" class="ib" id="auxBack">← Natrag na česticu</button></div>`+html; aux.hidden=false; sheet.hidden=true; aux.scrollTop=0;}
+function auxOpen(html){try{aiCloseP()}catch(e){} aux.innerHTML=`<div class="actions" style="justify-content:flex-start"><button type="button" class="ib" id="auxBack">← Natrag na česticu</button></div>`+html; aux.hidden=false; sheet.hidden=true; aux.scrollTop=0;}
 function auxClose(){aux.hidden=true; sheet.hidden=false;}
 aux.addEventListener("click",e=>{ if(e.target.id==="auxBack"){auxClose(); if(UI.tab==="spremljeno") setTab(UI.hadParcel?"analiza":"karta");} });
 document.getElementById("tabs").addEventListener("click",e=>{const b=e.target.closest("button[data-tab]"); if(b) setTab(b.dataset.tab);});
@@ -2631,7 +2657,7 @@ sheet.addEventListener("click",e=>{const i=e.target.dataset&&e.target.dataset.pi
 // Načini: "read" samo čita; "preview" sprema prijedlog u izolirano privremeno stanje (AI.pending) i ništa ne mijenja;
 // "commit" primjenjuje prijedlog samo ako ga je korisnik odobrio klikom u sučelju (aiApprove nije dostupan modelu).
 // Etapa AI-1 nema korisničko sučelje ni poziv plaćenog modela (FEATURES.ai=false).
-const AI={pending:new Map(),undo:[],log:[],done:new Set(),seq:0,calls:[],LIMIT_PER_MIN:40,UNDO_MAX:20};
+const AI={pending:new Map(),undo:[],log:[],done:new Set(),seq:0,calls:[],LIMIT_PER_MIN:40,UNDO_MAX:20,readOnly:true}; // AI-2: samo čitanje; izmjene se uključuju u AI-3/AI-4
 const AI_STATUS={propisano:"propisano",provjera:"potrebna provjera",nije:"nije dostupno"};
 const AI_ERR=(code,msg,extra)=>({ok:false,error:{code,msg,...(extra||{})}});
 const S_NUM=(min,max,o={})=>({t:"number",min,max,...o}), S_ENUM=(v,o={})=>({t:"enum",v,...o}), S_BOOL=(o={})=>({t:"boolean",...o}), S_STR=(max,o={})=>({t:"string",max,...o});
@@ -2827,7 +2853,7 @@ const AI_TOOLS={
 // opis alata za model (JSON Schema), bez funkcija
 function aiToolSpecs(){
   const js=s=>s.t==="number"?{type:"number",minimum:s.min,maximum:s.max}:s.t==="enum"?{type:"string",enum:s.v}:s.t==="boolean"?{type:"boolean"}:s.t==="array"?{type:"array",items:{type:"string"},maxItems:s.max}:{type:"string",maxLength:s.max};
-  return Object.entries(AI_TOOLS).map(([name,t])=>({name,description:t.d+(t.mode==="read"?" [samo čitanje]":t.mode==="preview"?" [privremeno]":" [traži potvrdu korisnika]"),
+  return Object.entries(AI_TOOLS).filter(([,t])=>!AI.readOnly||t.mode==="read").map(([name,t])=>({name,description:t.d+(t.mode==="read"?" [samo čitanje]":t.mode==="preview"?" [privremeno]":" [traži potvrdu korisnika]"),
     input_schema:{type:"object",additionalProperties:false,properties:Object.fromEntries(Object.entries(t.params).map(([k,s])=>[k,{...js(s),...(s.d?{description:s.d}:{})}])),required:Object.entries(t.params).filter(([,s])=>s.req).map(([k])=>k)}}));
 }
 // jedina ulazna točka za model
@@ -2837,6 +2863,7 @@ function aiCall(name,args){
   AI.calls.push(now);
   const t=Object.prototype.hasOwnProperty.call(AI_TOOLS,name)?AI_TOOLS[name]:null;
   if(!t){AI.log.push({at:now,name:String(name).slice(0,60),ok:false,code:"UNKNOWN_TOOL"}); return AI_ERR("UNKNOWN_TOOL","Nepoznata naredba: "+String(name).slice(0,60));}
+  if(AI.readOnly&&t.mode!=="read"){AI.log.push({at:now,name,ok:false,code:"DISABLED"}); return AI_ERR("DISABLED","U ovoj fazi AI asistent samo čita podatke; izmjene nisu uključene.");}
   const V=aiValidate(t.params,args); if(V.err){AI.log.push({at:now,name,ok:false,code:"BAD_ARGS"}); return AI_ERR("BAD_ARGS",V.err);}
   let r; try{r=t.run(V.v)}catch(e){r=AI_ERR("INTERNAL","Interna greška: "+e.message)}
   AI.log.push({at:now,name,mode:t.mode,ok:r.ok,code:r.ok?null:r.error.code}); if(AI.log.length>200) AI.log.shift();
@@ -2849,9 +2876,9 @@ function aiAddUse(model,inT,outT){const u=aiUse(), p=AI_PRICE[model]||AI_PRICE["
 // --- petlja razgovora s modelom: model je funkcija (pravi backend u etapi AI-2, simulirani model u testovima)
 async function aiConverse(model,userText,history=[],opt={}){
   const u=aiUse(); if(u.usd>=u.limit) return {ok:false,error:{code:"BUDGET",msg:`Mjesečni AI budžet (${u.limit} $) je potrošen. Ostatak aplikacije radi normalno.`}};
-  const startKey=aiCurKey(), msgs=[...history.slice(-8),{role:"user",content:String(userText).slice(0,2000)}], steps=[];
+  const startKey=aiCurKey(), msgs=[...history.slice(-8),{role:"user",content:String(userText).slice(0,2000)}], steps=[], turnId=opt.turnId||("t-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8));
   for(let i=0;i<(opt.maxSteps||6);i++){
-    let res; try{res=await model({messages:msgs,tools:aiToolSpecs(),parcelId:startKey})}catch(e){return {ok:false,error:{code:"AI_UNAVAILABLE",msg:"AI servis trenutno nije dostupan. Svi izračuni u aplikaciji rade i bez njega."},steps}}
+    let res; try{res=await model({messages:msgs,tools:aiToolSpecs(),parcelId:startKey,turnId})}catch(e){return {ok:false,error:e&&e.code?{code:e.code,msg:String(e.message||"").slice(0,300)}:{code:"AI_UNAVAILABLE",msg:"AI servis trenutno nije dostupan. Svi izračuni u aplikaciji rade i bez njega."},steps}}
     if(res&&res.usage) aiAddUse(res.model||"",res.usage.input_tokens||0,res.usage.output_tokens||0);
     if(aiCurKey()!==startKey) return {ok:false,error:{code:"PARCEL_CHANGED",msg:"Čestica je promijenjena tijekom odgovora; prethodni odgovor se odnosio na "+(startKey||"nijednu česticu")+"."},steps};
     const calls=res&&Array.isArray(res.tool_calls)?res.tool_calls.slice(0,4):[];
@@ -2861,6 +2888,130 @@ async function aiConverse(model,userText,history=[],opt={}){
   }
   return {ok:false,error:{code:"TOO_MANY_STEPS",msg:"Zahtjev je prekompliciran za jedan korak; podijeli ga na manja pitanja."},steps};
 }
+
+// ================= AI ASISTENT: SUČELJE (etapa AI-2, samo čitanje) =================
+// Uključuje se u izborniku ("AI asistent (testno)"). Bez adrese AI servisa i prijave ne šalje ništa.
+// Token prijave čuva se samo u sessionStorage (briše se zatvaranjem kartice); lozinka se nigdje ne sprema.
+// Odgovori modela prikazuju se kao tekst (esc), nikad kao HTML.
+const AI_UI={hist:[],msgs:[],busy:false,parcel:null,use:null};
+const AI_QUICK=["Što mogu graditi na ovoj čestici?","Koliko bi koštala kuća koju sam upisao?","Koji su rizici i ograničenja?","Što se zna o komunalnoj infrastrukturi?","Stane li kuća 10 × 12 m na dvije etaže?","Usporedi moje spremljene čestice."];
+const AI_TOOL_HR={getCurrentParcel:"podaci čestice",getUrbanRules:"urbana pravila",getParcelConstraints:"rizici i ograničenja",getInfrastructure:"infrastruktura",listScenarios:"scenariji",calculateInvestment:"izračun investicije",validateHousePlacement:"simulator kuće",compareParcels:"spremljene čestice"};
+function aiOn(){try{return FEATURES.ai&&localStorage.getItem("aiOn")==="1"}catch(e){return false}}
+function aiCfg(){try{const c=JSON.parse(localStorage.getItem("aiCfg")||"{}"); return c&&typeof c==="object"?c:{}}catch(e){return {}}}
+function aiTok(){try{const t=JSON.parse(sessionStorage.getItem("aiTok")||"null"); return t&&t.exp>Date.now()/1000?t.token:null}catch(e){return null}}
+function aiSetTok(t){try{if(t) sessionStorage.setItem("aiTok",JSON.stringify({token:t.token,exp:t.exp})); else sessionStorage.removeItem("aiTok")}catch(e){}}
+// adresa servisa: samo https (ili localhost za lokalno testiranje), bez korisničkog imena i lozinke u adresi
+function aiCleanUrl(u){try{const x=new URL(String(u).trim()); const local=/^(localhost|127\.0\.0\.1)$/.test(x.hostname); if(x.username||x.password) return null; if(x.protocol!=="https:"&&!(local&&x.protocol==="http:")) return null; return x.origin+x.pathname.replace(/\/+$/,"")}catch(e){return null}}
+async function aiFetch(path,opt={}){
+  const c=aiCfg(); if(!c.url) {const e=new Error("Adresa AI servisa nije postavljena."); e.code="NOT_CONFIGURED"; throw e;}
+  const ac=new AbortController(), to=setTimeout(()=>ac.abort(),45000);
+  let r; try{r=await fetch(c.url+path,{...opt,signal:ac.signal,headers:{"content-type":"application/json",...(opt.auth?{authorization:"Bearer "+opt.auth}:{})}})}catch(e){const x=new Error("AI servis nije dostupan (mreža ili servis). Aplikacija radi i bez njega."); x.code="AI_UNAVAILABLE"; throw x}
+  finally{clearTimeout(to)}
+  const j=await r.json().catch(()=>null);
+  if(!r.ok){const e=new Error(j&&j.error&&j.error.msg?j.error.msg:"AI servis je vratio grešku "+r.status+"."); e.code=j&&j.error&&j.error.code||"HTTP_"+r.status; e.status=r.status; throw e;}
+  return j;
+}
+// model preko Workera (pravi poziv); u testovima se zamjenjuje simuliranim modelom
+function aiRemoteModel(){
+  return async({messages,tools,turnId})=>{const tok=aiTok(); if(!tok){const e=new Error("Prijavi se u AI asistenta."); e.code="UNAUTHORIZED"; throw e;}
+    const j=await aiFetch("/chat",{method:"POST",auth:tok,body:JSON.stringify({turnId,messages,tools})});
+    if(j&&j.potrosnja) AI_UI.use=j.potrosnja; return j;};
+}
+let AI_MODEL=null; // null = pravi Worker
+// raščlamba odgovora u dijelove KRATKO / DETALJI / IZVORI / PROVJERITI
+function aiParse(t){
+  t=String(t||""); const out={kratko:"",detalji:"",izvori:[],provjeriti:[]};
+  const re=/^\s*(KRATKO|DETALJI|IZVORI|PROVJERITI)\s*:\s*/gim, idx=[]; let m;
+  while((m=re.exec(t))) idx.push({k:m[1].toUpperCase(),s:m.index,e:re.lastIndex});
+  if(!idx.length){out.kratko=t.trim(); return out}
+  if(idx[0].s>0) out.kratko=t.slice(0,idx[0].s).trim();
+  idx.forEach((x,i)=>{const v=t.slice(x.e,i+1<idx.length?idx[i+1].s:t.length).trim();
+    if(x.k==="KRATKO") out.kratko=(out.kratko?out.kratko+" ":"")+v; else if(x.k==="DETALJI") out.detalji=v;
+    else (x.k==="IZVORI"?out.izvori:out.provjeriti).push(...v.split(/\s*\|\s*|\n+/).map(s=>s.replace(/^[-•*]\s*/,"").trim()).filter(Boolean));});
+  return out;
+}
+// oznake pouzdanosti kao obojeni natpisi (tekst je već escapiran)
+const aiTags=h=>h.replace(/\b(POTVRĐENO|IZRAČUN|PROCJENA|NEPOZNATO)\b/g,(w)=>`<span class="st st-${{"POTVRĐENO":"potv","IZRAČUN":"izr","PROCJENA":"proc","NEPOZNATO":"nep"}[w]}">${w.toLowerCase()}</span>`);
+function aiMsgHtml(m){
+  if(m.t==="q") return `<div class="aiq">${esc(m.text)}</div>`;
+  if(m.t==="note") return `<div class="ains">${esc(m.text)}</div>`;
+  if(m.t==="err") return `<div class="aia aierr"><p>${esc(m.text)}</p></div>`;
+  const P=aiParse(m.text), used=[...new Set((m.steps||[]).filter(s=>s.r&&s.r.ok).map(s=>AI_TOOL_HR[s.name]||s.name))];
+  let h=`<div class="aia"><p>${aiTags(esc(P.kratko||"(bez odgovora)"))}</p>`;
+  if(P.detalji) h+=`<details><summary>Detaljno objašnjenje</summary><p style="white-space:pre-wrap">${aiTags(esc(P.detalji))}</p></details>`;
+  if(P.provjeriti.length) h+=`<details${m.open?" open":""}><summary>Treba provjeriti (${P.provjeriti.length})</summary><ul>${P.provjeriti.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></details>`;
+  if(P.izvori.length) h+=`<details><summary>Izvori (${P.izvori.length})</summary><ul>${P.izvori.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></details>`;
+  h+=`<p class="tools">${used.length?"Korišteni podaci aplikacije: "+esc(used.join(", "))+". ":"Bez podataka iz aplikacije. "}Odgovor je informativan; mjerodavna je lokacijska informacija.</p></div>`;
+  return h;
+}
+function aiParcelLabel(){const c=window.__cur; return c&&c.ces?`${c.ces}, k.o. ${c.ko}`:c?"odabrana lokacija":null}
+function aiRenderPanel(){
+  const el=document.getElementById("ai"); if(!el) return;
+  const c=aiCfg(), tok=aiTok(), pl=aiParcelLabel();
+  let h=`<div class="aihd"><b>AI asistent</b><span class="aitag">samo čitanje · Haiku 5.5</span><button type="button" class="ib" id="aiClose" aria-label="Zatvori AI asistenta">✕</button></div>`;
+  h+=`<p class="meta" style="margin:0">${pl?"Čestica: "+esc(pl):"Nijedna čestica nije odabrana. Dodirni zemljište na karti."}</p>`;
+  if(!c.url){
+    h+=`<div class="aiset"><p class="hint">AI servis još nije postavljen. Upiši adresu svog Cloudflare Workera (vidi upute za postavljanje).</p><label for="aiUrl">Adresa AI servisa</label><input id="aiUrl" type="url" inputmode="url" placeholder="https://cesticazg-ai.….workers.dev" autocomplete="off"><button type="button" class="ib" id="aiUrlSave">Spremi adresu</button><p class="meta" id="aiSetMsg"></p></div>`;
+  } else if(!tok){
+    h+=`<form class="aiset" id="aiLoginF" autocomplete="on"><p class="hint">Prijavi se lozinkom koju si postavio za AI servis. Prijava vrijedi do zatvaranja kartice, najdulje 12 sati.</p><label for="aiPw">Lozinka</label><input id="aiPw" type="password" autocomplete="current-password" minlength="24" required><button type="submit" class="ib" id="aiLogin">Prijavi se</button> <button type="button" class="ib" id="aiUrlReset">Promijeni adresu servisa</button><p class="meta" id="aiSetMsg"></p></form>`;
+  } else {
+    h+=`<div class="aimsgs" id="aiMsgs">${AI_UI.msgs.map(aiMsgHtml).join("")}${AI_UI.busy?`<div class="aia"><p><span class="spin"></span>Razmišljam i čitam podatke aplikacije…</p></div>`:""}</div>`;
+    if(!AI_UI.msgs.length) h+=`<p class="meta">Pitaj o odabranoj čestici, pravilima, rizicima, infrastrukturi, kući u simulatoru, troškovima ili spremljenim česticama. Asistent samo čita podatke i ništa ne mijenja.</p>`;
+    const chips=`<div class="aichips">${AI_QUICK.map((q,i)=>`<button type="button" class="ib" data-aiq="${i}"${AI_UI.busy?" disabled":""}>${esc(q)}</button>`).join("")}</div>`;
+    h+=AI_UI.msgs.length?`<details class="aiqd"><summary>Brza pitanja</summary>${chips}</details>`:chips;
+    h+=`<form class="aiform" id="aiF"><textarea id="aiIn" rows="2" maxlength="1000" placeholder="Pitaj nešto o čestici…" aria-label="Pitanje za AI asistenta"${AI_UI.busy?" disabled":""}></textarea><button type="submit" class="ib" id="aiSend"${AI_UI.busy?" disabled":""}>Pošalji</button></form>`;
+    const u=AI_UI.use; h+=`<p class="meta">${u?`Ovaj mjesec: ${String((u.spent||0).toFixed(3)).replace(".",",")} $ od ${u.limit} $ · ${u.n||0} poziva. `:""}<button type="button" class="ib" id="aiLogout">Odjava</button> <button type="button" class="ib" id="aiClear">Novi razgovor</button></p>`;
+  }
+  el.innerHTML=h;
+  // pomak na početak zadnjeg odgovora (ili na pitanje dok se čeka), da se odgovor čita od početka
+  const all=el.querySelectorAll("#aiMsgs > div"), last=all[all.length-1];
+  if(last) el.scrollTop=Math.max(0,last.offsetTop-(AI_UI.busy?8:(all[all.length-2]?last.offsetTop-all[all.length-2].offsetTop+8:8)));
+}
+function aiOpen(){
+  if(!aiOn()) return; const el=document.getElementById("ai");
+  aux.hidden=true; sheet.hidden=true; el.hidden=false; aiRenderPanel();
+  if(isMobile()&&UI.state!=="full") setState("half");
+}
+function aiCloseP(){const el=document.getElementById("ai"); if(el&&!el.hidden){el.hidden=true; sheet.hidden=false;}}
+function aiSync(){ // uključeno/isključeno u izborniku
+  const on=aiOn(), b=document.getElementById("aiBtn"), row=document.getElementById("aiOnRow"), cb=document.getElementById("aiOn");
+  if(row) row.hidden=!FEATURES.ai; if(cb) cb.checked=on; if(b) b.hidden=!on;
+  if(!on){aiCloseP(); AI_UI.msgs=[]; AI_UI.hist=[];}
+}
+async function aiAsk(q){
+  q=String(q||"").trim().slice(0,1000); if(!q||AI_UI.busy) return;
+  const k=aiCurKey();
+  if(AI_UI.parcel!==k){ if(AI_UI.msgs.length) AI_UI.msgs.push({t:"note",text:k?`Razgovor se sada odnosi na česticu ${aiParcelLabel()}.`:"Nijedna čestica nije odabrana."}); AI_UI.hist=[]; AI_UI.parcel=k; }
+  AI_UI.msgs.push({t:"q",text:q}); AI_UI.busy=true; aiRenderPanel();
+  const r=await aiConverse(AI_MODEL||aiRemoteModel(),q,AI_UI.hist,{});
+  AI_UI.busy=false;
+  if(r.ok){AI_UI.msgs.push({t:"a",text:r.text,steps:r.steps}); AI_UI.hist.push({role:"user",content:q},{role:"assistant",content:String(r.text).slice(0,1500)}); AI_UI.hist=AI_UI.hist.slice(-12);}
+  else{ if(r.error.code==="UNAUTHORIZED") aiSetTok(null);
+    const M={UNAUTHORIZED:"Prijava je istekla. Prijavi se ponovno.",PARCEL_CHANGED:r.error.msg,BUDGET:r.error.msg,BUDGET_CONSOLE:r.error.msg,RATE_LIMIT:"Previše upita u minuti. Pričekaj malo pa pokušaj ponovno.",DISABLED:"AI asistent je isključen na servisu."};
+    AI_UI.msgs.push({t:"err",text:M[r.error.code]||r.error.msg||"Odgovor nije uspio."});}
+  AI_UI.msgs=AI_UI.msgs.slice(-40); aiRenderPanel();
+}
+document.addEventListener("click",e=>{
+  const t=e.target; if(!t||!t.id&&!t.dataset) return;
+  if(t.id==="aiBtn") aiOpen();
+  else if(t.id==="aiClose") aiCloseP();
+  else if(t.id==="aiUrlSave"){const u=aiCleanUrl(document.getElementById("aiUrl").value), m=document.getElementById("aiSetMsg");
+    if(!u){m.textContent="Adresa mora počinjati s https:// i ne smije sadržavati lozinku."; return} try{localStorage.setItem("aiCfg",JSON.stringify({url:u}))}catch(err){} aiRenderPanel();}
+  else if(t.id==="aiUrlReset"){try{localStorage.removeItem("aiCfg")}catch(err){} aiSetTok(null); aiRenderPanel();}
+  else if(t.id==="aiLogout"){aiSetTok(null); AI_UI.msgs=[]; AI_UI.hist=[]; aiRenderPanel();}
+  else if(t.id==="aiClear"){AI_UI.msgs=[]; AI_UI.hist=[]; aiRenderPanel();}
+  else if(t.dataset&&t.dataset.aiq!=null) aiAsk(AI_QUICK[+t.dataset.aiq]);
+});
+document.addEventListener("submit",async e=>{
+  if(e.target.id==="aiF"){e.preventDefault(); const i=document.getElementById("aiIn"); const q=i.value; i.value=""; aiAsk(q);}
+  if(e.target.id==="aiLoginF"){e.preventDefault(); const pw=document.getElementById("aiPw"), m=document.getElementById("aiSetMsg"), v=pw.value; pw.value="";
+    m.textContent="Prijavljujem…";
+    try{const j=await aiFetch("/login",{method:"POST",body:JSON.stringify({lozinka:v})}); aiSetTok(j); try{const s=await aiFetch("/status",{auth:j.token}); AI_UI.use=s.potrosnja}catch(err){} aiRenderPanel();}
+    catch(err){m.textContent=err.message;}}
+});
+document.addEventListener("keydown",e=>{ if(e.target&&e.target.id==="aiIn"&&e.key==="Enter"&&!e.shiftKey){e.preventDefault(); const f=document.getElementById("aiF"); if(f) f.requestSubmit?f.requestSubmit():f.dispatchEvent(new Event("submit",{bubbles:true,cancelable:true}));} });
+document.getElementById("aiOn").addEventListener("change",e=>{try{localStorage.setItem("aiOn",e.target.checked?"1":"0")}catch(err){} aiSync(); if(e.target.checked){document.getElementById("menu").hidden=true; aiOpen();}});
+aiSync();
 
 // --- pretraga adrese (Nominatim, Zagreb)
 async function search(){
