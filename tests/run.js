@@ -449,6 +449,51 @@ async function sunTests(){
   ok(errs.length===0,"bez JS grešaka u analizi rizika: "+errs.join(" | "));
 }
 
+// ---------------- 13. Scenariji investicije (modul 2)
+{
+  const {w,errs}=boot(); try{w.localStorage.clear()}catch(e){}
+  w.confirm=()=>true; w.prompt=()=>"Moja kuća";
+  const d=data(w,parcelRect(30,25),"2.2."); w.eval("render")(d);
+  const $$=id=>w.document.getElementById(id), fire=(el,ev)=>el.dispatchEvent(new w.Event(ev,{bubbles:true}));
+  $$("kdZone").value="I"; fire($$("kdZone"),"change"); $$("bArea").value="150"; fire($$("bArea"),"input");
+  $$("scAdd").dispatchEvent(new w.Event("click",{bubbles:true}));
+  const key=w.__cur.key, L=()=>w.eval("scList")(key);
+  ok(L().length===1&&L()[0].inp.hA===150,"trenutna kuća spremljena kao scenarij");
+  const r0=w.eval("scRow")(L()[0],w.eval("numv")("kdRate"),0);
+  ok(Math.abs(r0.build.base-w.__fin.build.base)<0.01,"scenarij daje isti iznos kao kalkulator (zajednički model)");
+  // promjena kalkulatora ne mijenja spremljeni scenarij
+  $$("bArea").value="210"; fire($$("bArea"),"input");
+  ok(L()[0].inp.hA===150&&Math.abs(w.eval("scRow")(L()[0],w.eval("numv")("kdRate"),0).build.base-r0.build.base)<0.01,"promjena kalkulatora ne mijenja spremljeni scenarij");
+  // primjeri i neovisnost
+  w.localStorage.setItem("scen","{}"); w.eval("scUpdate")();
+  $$("scDemo").dispatchEvent(new w.Event("click",{bubbles:true}));
+  ok(L().length===5&&L().some(x=>x.inp.t==="mont")&&L().some(x=>x.inp.base),"dodano 5 primjera (prizemnica, katnica, podrum, montažna, klasična)");
+  const before=JSON.stringify(L()[1]);
+  w.document.querySelector('[data-scdel="0"]').dispatchEvent(new w.Event("click",{bubbles:true}));
+  ok(L().length===4&&JSON.stringify(L()[0])===before,"brisanje jednog scenarija ne mijenja ostale");
+  w.document.querySelector('[data-scren="0"]').dispatchEvent(new w.Event("click",{bubbles:true}));
+  ok(L()[0].name==="Moja kuća","preimenovanje scenarija");
+  // učitavanje u kalkulator
+  const sc=L()[0]; w.document.querySelector('[data-scload="0"]').dispatchEvent(new w.Event("click",{bubbles:true}));
+  ok(+$$("bArea").value===sc.inp.hA&&$$("bFloors").value===sc.inp.fl,"učitavanje scenarija postavlja kalkulator");
+  ok(Math.abs(w.__fin.build.base-w.eval("scRow")(sc,w.eval("numv")("kdRate"),0).build.base)<0.01,"nakon učitavanja kalkulator i scenarij se slažu");
+  // dopuštenost
+  const A=w.eval("scAllowed");
+  ok(A({hA:180,fl:"P1"}).st==="ok","P+1 180 m² na 755 m² (GBP 400, tlocrt 227): dopušteno");
+  ok(A({hA:450,fl:"P1"}).st==="no"&&A({hA:240,fl:"P"}).st==="no","prevelik GBP ili tlocrt: ne zadovoljava");
+  // ukupna investicija sa zemljištem
+  $$("yPrice").value="100000"; fire($$("yPrice"),"input");
+  const rr=w.eval("scRow")(L()[0],w.eval("numv")("kdRate"),w.__fin.buy.acq);
+  ok(Math.abs(rr.total[0]-(rr.build.lo+w.__fin.buy.acq))<0.01,"ukupna investicija scenarija = gradnja + stjecanje zemljišta");
+  ok(/Ukupna investicija/.test($$("scOut").textContent)&&!/NaN|undefined/.test($$("scOut").textContent),"usporedba prikazana bez NaN/undefined");
+  // spremanje po čestici
+  w.eval("render")(data(w,parcelRect(30,25,{KATASTARSKA_CESTICA:"7/7"}),"2.2."));
+  ok(w.eval("scList")(w.__cur.key).length===0,"druga čestica nema tuđe scenarije");
+  w.eval("render")(d);
+  ok(L().length===4,"scenariji se vraćaju za svoju česticu");
+  ok(errs.length===0,"bez JS grešaka u scenarijima: "+errs.join(" | "));
+}
+
 netTests().then(infraTests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
