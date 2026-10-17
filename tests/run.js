@@ -293,12 +293,11 @@ async function infraTests(){
   ok(inf.v&&inf.v.vod.ex&&Math.abs(inf.v.vod.ex.d-50)<2,"magistralni vodovod iz GUP-a na oko 50 m");
   ok(inf.v.plin.pl&&!inf.v.plin.ex&&Math.abs(inf.v.plin.pl.d-120)<3,"planirani VT plinovod na oko 120 m, prepoznat kao planirani");
   ok(inf.v.top.e,"neuspjeh servisa za toplovod je zabilježen kao greška");
-  const html=w.eval("infraHtml")(inf), t=html.replace(/<[^>]+>/g," ");
-  ok(/Vodovod\s+nema dostupnih podataka/.test(t)&&/Kanalizacija\s+nema dostupnih podataka/.test(t),"vodovod i kanalizacija: 'nema dostupnih podataka', a ne 'nema infrastrukture'");
-  ok(/magistralni vodoopskrbni cjevovod \(postojeći\) oko 50 m/.test(t)&&/ne priključuje izravno/.test(t),"blizina magistralnog voda je navedena uz napomenu da priključak nije izravan");
-  ok(/Plinovod VT \(planirani\) oko 1[12][0-9] m/.test(t),"planirani plinovod prikazan kao planirani");
-  ok(!/Toplovod/.test(t),"za toplovod s greškom nema tvrdnje o (ne)postojanju");
-  ok(/U GUP-u nema dalekovoda, kabela ni trafostanica 110 kV u krugu 300 m/.test(t),"za struju bez vodova u krugu jasno piše da ih nema u podacima GUP-a");
+  const html=w.eval("infraHtml")(inf), t=html.replace(/<[^>]+>/g," ").replace(/\s+/g," ");
+  ok(/Vodovod podaci nisu dostupni/.test(t)&&/Kanalizacija podaci nisu dostupni/.test(t)&&/Struja podaci nisu dostupni/.test(t)&&/Plin podaci nisu dostupni/.test(t),"ulične mreže: kratko 'podaci nisu dostupni'");
+  ok(html.length<1500,"odjeljak je kratak ("+html.length+" znakova)");
+  ok(/magistralni vodoopskrbni cjevovod \(postojeći\) oko 50 m/.test(t)&&/Plinovod VT \(planirani\) oko 1[12][0-9] m/.test(t),"glavni vodovi iz GUP-a navedeni u sklopljenom popisu");
+  ok(/<details>/.test(html),"popis glavnih vodova je sklopljen");
   // korisnički unos troška priključaka ulazi u model jednom
   w.eval("render")(data(w,pr,"2.2."));
   const set=(id,v)=>{const e=w.document.getElementById(id); e.value=v; e.dispatchEvent(new w.Event("input",{bubbles:true}));};

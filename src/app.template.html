@@ -228,6 +228,7 @@ ol.zi{font-size:13.5px;padding-left:18px}
 @media (max-height:500px) and (max-width:899px){#tabs button{min-height:44px;flex-direction:row;gap:6px} #panel.st-half{height:60%}}
 @media (max-width:899px){.ib{white-space:normal;text-align:center} #sheet,#aux{container-type:inline-size}}
 @container (max-width:330px){.bgrid{grid-template-columns:1fr;gap:2px 0}.bgrid>label{margin-top:6px}.kd .ib,a.ib{max-width:100%}}
+.infk dd{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -848,24 +849,16 @@ async function loadInfra(parcel,ll){
 }
 function infraHtml(inf){
   let h=`<h2>Komunalna infrastruktura</h2>`;
-  if(!inf) return h+`<p class="hint"><span class="spin"></span>Tražim vodove iz GUP-a u blizini…</p>`;
-  const o=inf.v||{}, dm=x=>x.d<1?"uz česticu ili kroz nju":"oko "+fmt(Math.max(1,Math.round(x.d)))+" m";
-  const gup=(ids,what)=>{const parts=[]; let err=null;
-    for(const id of ids){const r=o[id]; if(!r) continue; if(r.e){err=r.e;continue}
-      if(r.ex) parts.push(`${esc(r.ex.desc)} (postojeći) ${dm(r.ex)}`);
-      if(r.pl) parts.push(`${esc(r.pl.desc)} (planirani) ${dm(r.pl)}`);}
-    if(parts.length) return "U GUP-u: "+parts.join("; ")+".";
-    if(err) return "Podatak iz GUP-a trenutno nije dostupan ("+esc(err)+").";
-    return `U GUP-u nema ${what} u krugu ${INF_R} m.`;
-  };
-  const row=(label,status,text)=>`<li class="chk chk-${status==="nedostupno"?"warn":"ok"}"><b>${label} <em class="kind st-${status==="nedostupno"?"muted":"ok"}">${status==="nedostupno"?"nema dostupnih podataka":"podatak iz GUP-a"}</em></b><span>${text}</span></li>`;
-  h+=`<ul class="checks">`;
-  h+=row("Vodovod","nedostupno",`Ulična vodovodna mreža nije javno objavljena. Provjeri kod Vodoopskrbe i odvodnje. ${gup(["vod"],"magistralnih vodoopskrbnih cjevovoda")} Na magistralni cjevovod kuća se ne priključuje izravno.`);
-  h+=row("Kanalizacija","nedostupno","Kanalizacijska mreža nije javno objavljena. Ako u ulici nema kanalizacije, treba sabirna jama ili mali pročistač; u vodozaštitnoj zoni vrijede posebni uvjeti.");
-  h+=row("Struja","nedostupno",`Niskonaponska mreža i trafostanice 10(20)/0,4 kV nisu javno objavljene; uvjete priključenja daje HEP ODS (elektroenergetska suglasnost). ${gup(["ee","ts","eeSE","tsSE"],"dalekovoda, kabela ni trafostanica 110 kV")}`);
-  h+=row("Plin","nedostupno",`Distribucijska plinska mreža nije javno objavljena; provjeri kod Gradske plinare Zagreb. ${gup(["plin","plinSE"],"magistralnih ni visokotlačnih plinovoda")} Na magistralni i visokotlačni plinovod kuća se ne priključuje izravno.`);
-  {const r=o.top; if(r&&!r.e&&(r.ex||r.pl)) h+=row("Toplovod","gup",gup(["top"],"toplovoda"));}
-  h+=`</ul><p class="meta">Blizina voda ne znači da je priključak moguć; to potvrđuju posebni uvjeti priključenja. Vodovi iz GUP-a ucrtani su na karti (plavo voda, crveno struja, žuto plin, ljubičasto toplovod). Izvor: GUP Grada Zagreba, karte 3b i 3c (javna rasprava 2024.), ArcGIS Grada Zagreba.</p>`;
+  if(!inf) return h+`<p class="hint"><span class="spin"></span>Učitavam…</p>`;
+  const o=inf.v||{}, dm=x=>x.d<1?"uz česticu":"oko "+fmt(Math.max(1,Math.round(x.d)))+" m";
+  // ulične mreže nisu javni podaci: samo kratka oznaka
+  h+=`<dl class="kv infk">${["Vodovod","Kanalizacija","Struja","Plin"].map(n=>`<dt>${n}</dt><dd>podaci nisu dostupni</dd>`).join("")}</dl>`;
+  // glavni vodovi iz GUP-a, samo ako postoje u blizini, sklopljeno
+  const items=[], errs=[];
+  for(const s of INF_SRC){const r=o[s.id]; if(!r) continue; if(r.e){errs.push(s.id);continue}
+    for(const [x,t] of [[r.ex,"postojeći"],[r.pl,"planirani"]]) if(x) items.push(`<li>${esc(x.desc)} (${t}) ${dm(x)}</li>`);}
+  if(items.length) h+=`<details><summary>Glavni vodovi iz GUP-a u blizini (${items.length})</summary><ul class="zi">${items.join("")}</ul><p class="meta">Na glavne vodove kuća se ne priključuje izravno; ucrtani su na karti. Izvor: GUP Grada Zagreba, karte 3b i 3c.</p></details>`;
+  else if(errs.length) h+=`<p class="meta">Podaci o glavnim vodovima iz GUP-a trenutno nisu dostupni. <button type="button" class="ib retry">Pokušaj ponovno</button></p>`;
   return h;
 }
 function infraDraw(inf){
