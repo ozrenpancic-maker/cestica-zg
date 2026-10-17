@@ -317,7 +317,7 @@ const CHECKS = [
 ];
 // Koridori infrastrukture (GUP čl. 50: DV 110 kV 20 m, 220 kV 25 m, 400 kV 35 m od osi; čl. 53: magistralni plinovod 30 m, VTP 10 m)
 // moduli koji su u razvoju (faze C i D) i još nisu uključeni
-const FEATURES={infra:true};
+const FEATURES={infra:true,seis:false}; // seis: potresna opasnost, privremeno skrivena
 const INFRA=BASE+"GUP_Infrastruktura/FeatureServer/";
 const corrDist=(f,kind)=>{
   if(kind==="ee"){const l=String(f.LAYER||"")+String(f.EE_VODOVI_OPIS||""); return /400|440/.test(l)?35:/220/.test(l)?25:20;}
@@ -1467,7 +1467,7 @@ function render(d){
     h+=`<details><summary>Cijeli članak ${esc(rule.clanak)}.</summary>${rule.tekst.map(p=>`<p>${esc(p)}</p>`).join("")}</details>`;
   }
   if(parcel) h+=G("troskovi")+moneyHtml(favKey(parcel,ll),area)+G("analiza");
-  if(parcel){ h+=`<h2 id="sec-sunce">Sunce i energija</h2>`+sunHtml()+pvHtml(); h+=seisHtml(ll); }
+  if(parcel){ h+=`<h2 id="sec-sunce">Sunce i energija</h2>`+sunHtml()+pvHtml(); if(FEATURES.seis) h+=seisHtml(ll); }
   if(checks) h+=docsHtml(d);
   h+=`<div class="links"><a href="https://oss.uredjenazemlja.hr/public-services/search-cad-parcel" target="_blank" rel="noopener">Katastar (OSS)</a><a href="https://geoportal.zagreb.hr/Karta" target="_blank" rel="noopener">Geoportal Zagreb</a><a href="https://geoportal.dgu.hr/#/?lng=${ll.lng.toFixed(6)}&lat=${ll.lat.toFixed(6)}&zoom=9&layerconfig=17013&mode=2d" target="_blank" rel="noopener">Geoportal DGU</a><a href="https://www.zzpugz.hr/gup-grada-zagreba" target="_blank" rel="noopener">GUP (Zavod)</a><a href="https://www.google.com/maps?q=${ll.lat},${ll.lng}" target="_blank" rel="noopener">Google Maps</a></div>`;
   h+=`<p class="note">Izvori: katastarske čestice Grada Zagreba (2023.), GIS baza planirane namjene (2023.), karta urbanih pravila iz ponovne javne rasprave GUP-a (2024.) i tekst Odluke o GUP-u s izmjenama 2025. Granice pravila u konačnom planu mogu malo odstupati. Procjena je orijentacijska; pravno mjerodavna je lokacijska informacija Gradskog ureda.</p>`;
@@ -2033,7 +2033,7 @@ document.getElementById("tabs").addEventListener("click",e=>{const b=e.target.cl
 })();
 // kartice sažetka (otvaraju skupinu i odjeljak)
 function cardsHtml(){
-  const C=[["sec-uvjeti","analiza","Gradnja","Pravila i tlocrt","⌂"],["sec-novac","troskovi","Novac i kupnja","Troškovi i koraci","€"],["sec-provjere","analiza","Infrastruktura","Ograničenja i mreže","≋"],["sec-sunce","analiza","Sunce i okolina","Sjena, energija, potres","☼"]];
+  const C=[["sec-uvjeti","analiza","Gradnja","Pravila i tlocrt","⌂"],["sec-novac","troskovi","Novac i kupnja","Troškovi i koraci","€"],["sec-provjere","analiza","Infrastruktura","Ograničenja i mreže","≋"],["sec-sunce","analiza","Sunce i okolina","Sjena i energija","☼"]];
   return `<div class="cards m-only">${C.map(([id,tab,t,s,ic],i)=>`<button type="button" class="card" data-go="${id}" data-tab="${tab}"><span class="ci" aria-hidden="true">${ic}</span><b>${t}</b><small id="card${i}">${s}</small></button>`).join("")}</div>`;
 }
 function cardsUpdate(){

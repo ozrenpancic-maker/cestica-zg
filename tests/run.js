@@ -388,13 +388,8 @@ async function sunTests(){
   w.fetch=()=>Promise.reject(new Error("x"));
   w.document.getElementById("pvTilt").value="45"; await w.eval("pvRun")();
   ok(/ne može izračunati/.test(w.document.getElementById("pvOut").textContent)&&!/kWh godišnje/.test(w.document.getElementById("pvOut").textContent),"bez podataka nema procjene proizvodnje");
-  // potres
-  const sh=w.document.getElementById("sheet").textContent;
-  ok(/95 godina/.test(sh)&&/475 godina/.test(sh)&&/Vrijednosti nisu upisane/.test(sh),"potres: objašnjena povratna razdoblja, bez izmišljene vrijednosti");
-  const i=w.document.getElementById("sz475"); i.value="0.26"; i.dispatchEvent(new w.Event("input",{bubbles:true}));
-  w.eval("render")(d);
-  ok(w.document.getElementById("sz475").value==="0.26"&&/2,55 m\/s²/.test(w.document.getElementById("sheet").textContent),"upisana vrijednost a_gR se sprema i preračunava u m/s²");
-  ok(!/serklaž/.test(w.document.getElementById("sheet").textContent),"nema zaključaka o konstrukciji");
+  // potres je privremeno skriven
+  ok(!/Potresna opasnost/.test(w.document.getElementById("sheet").textContent)&&!w.document.getElementById("sz475"),"odjeljak o potresu se ne prikazuje");
   ok(errs.length===0,"bez JS grešaka (sunce, elektrana, potres): "+errs.join(" | "));
 }
 
