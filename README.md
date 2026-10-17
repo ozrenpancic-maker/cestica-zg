@@ -43,5 +43,8 @@ cd tests && node mobile/make_local.js && python3 mobile/layout.py && python3 mob
 ```
 Ručno na uređaju (automatski testovi to ne zamjenjuju): Android Chrome i iPhone Safari; povlačenje panela, pomicanje i okretanje kuće prstom, tipkovnica kod unosa cijene, okomito i vodoravno, veliki sustavski font, ispis u PDF.
 
+## Android aplikacija (PWA)
+`manifest.webmanifest`, `sw.js` (izrađuje ga `build.py` iz `src/sw.template.js`, s verzijom), ikone u `icons/`, knjižnice u `vendor/` (Leaflet 1.9.4, Turf 6.5.0, s licencama). Upute, testovi i ograničenja: `docs/android-pwa.md`. Testovi u Chromiumu: `cd tests && python3 mobile/pwa.py`.
+
 ## AI asistent
-Plan i arhitektura: `docs/ai-asistent-plan.md`. AI-2 (samo čitanje) je u aplikaciji; uključuje se u izborniku i bez postavljenog servisa ne šalje ništa. Backend je u `worker/` (Cloudflare Worker + Durable Object; testovi: `cd worker && npm install && npm test`) i nije objavljen. Postavljanje, limiti, trošak i gašenje: `docs/ai-postavljanje.md`. Ocjenjivanje: `docs/ai-ocjenjivanje.md`. API ključ se nikad ne sprema u repozitorij ni u aplikaciju.
+Plan i arhitektura: `docs/ai-asistent-plan.md`. AI-2 (samo čitanje) je u kodu, ali trenutno isključen (`FEATURES.ai=false`). Backend je u `worker/` (Cloudflare Worker + Durable Object; testovi: `cd worker && npm install && npm test`) i nije objavljen. Postavljanje, limiti, trošak i gašenje: `docs/ai-postavljanje.md`. Ocjenjivanje: `docs/ai-ocjenjivanje.md`. API ključ se nikad ne sprema u repozitorij ni u aplikaciju.

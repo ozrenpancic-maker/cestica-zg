@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Čestica Zagreb</title>
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#1f6f54">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js"></script>
+<link rel="stylesheet" href="vendor/leaflet-1.9.4/leaflet.css">
+<script src="vendor/leaflet-1.9.4/leaflet.js"></script>
+<script src="vendor/turf-6.5.0/turf.min.js"></script>
 <style>
 /* Layout: full-screen map, results in a bottom sheet (side panel on wide screens) */
 :root{
@@ -265,6 +265,12 @@ ul.risk small{color:var(--muted)}
 .aiform textarea{flex:1;min-height:44px;max-height:140px;font:inherit;font-size:16px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);resize:vertical}
 .aiset input{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);margin:4px 0 8px}
 #aiBtn{font-weight:700}
+
+/* Android aplikacija */
+.pwabar{position:absolute;top:calc(env(safe-area-inset-top,0px) + 8px);left:50%;transform:translateX(-50%);z-index:1150;width:min(560px,calc(100% - 24px));box-sizing:border-box;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:10px 12px;box-shadow:0 6px 24px rgba(0,0,0,.18);font-size:14px}
+#netState{border-left-color:#b26a00}
+.pwabar .ib{min-height:40px;margin-top:6px}
+#me[disabled]{opacity:.6}
 </style>
 </head>
 <body>
@@ -273,7 +279,7 @@ ul.risk small{color:var(--muted)}
     <h1>Čestica ZG</h1>
     <input id="q" type="search" placeholder="Adresa ili čestica, npr. Šestine 4027/1" autocomplete="off">
     <button class="ib" id="go" type="button">Traži</button>
-    <button class="ib" id="me" type="button" aria-label="Moja lokacija">◎</button>
+    <button class="ib" id="me" type="button" aria-label="Prikaži moju lokaciju" title="Prikaži moju lokaciju">◎</button>
     <button class="ib" id="favBtn" type="button" aria-label="Spremljene čestice">★</button>
     <button class="ib" id="menuBtn" type="button" aria-label="Izbornik">☰</button>
   </header>
@@ -291,6 +297,8 @@ ul.risk small{color:var(--muted)}
       </div>
     </div>
     <div id="netbar" aria-hidden="true"></div>
+    <div id="netState" class="pwabar" role="status" hidden></div>
+    <div id="updBar" class="pwabar" role="alert" hidden>Dostupna je nova verzija aplikacije. <button type="button" class="ib" id="updYes">Ažuriraj</button> <button type="button" class="ib" id="updNo">Kasnije</button><br><small>Tvoje čestice, scenariji i unosi ostaju spremljeni.</small></div>
     <div id="panel" class="st-peek">
       <div id="grab" role="button" tabindex="0" aria-label="Povećaj panel"><span></span></div>
       <section id="sheet" aria-live="polite">
@@ -355,7 +363,7 @@ const CHECKS = [
 ];
 // Koridori infrastrukture (GUP čl. 50: DV 110 kV 20 m, 220 kV 25 m, 400 kV 35 m od osi; čl. 53: magistralni plinovod 30 m, VTP 10 m)
 // moduli koji su u razvoju (faze C i D) i još nisu uključeni
-const FEATURES={infra:true,seis:false,ai:true}; // seis: potresna opasnost, privremeno skrivena; ai: AI asistent postoji u ovoj verziji (AI-2, samo čitanje); korisnik ga uključuje u izborniku, a bez postavljenog servisa ne radi ništa
+const FEATURES={infra:true,seis:false,ai:false}; // seis: potresna opasnost, privremeno skrivena; ai: AI asistent (AI-1/AI-2 kod postoji) privremeno isključen: nema stavke u izborniku i ništa se ne šalje; uključuje se postavljanjem na true
 const INFRA=BASE+"GUP_Infrastruktura/FeatureServer/";
 const corrDist=(f,kind)=>{
   if(kind==="ee"){const l=String(f.LAYER||"")+String(f.EE_VODOVI_OPIS||""); return /400|440/.test(l)?35:/220/.test(l)?25:20;}
@@ -456,6 +464,7 @@ async function fetchOnce(url,opts,ms){
 async function getJSON(url,opts={},ms=10000,{retries=1,cache=true}={}){
   const key=(opts.method||"GET")+" "+url+" "+(opts.body||"");
   if(cache){const c=NET.cache.get(key); if(c&&Date.now()-c.t<NET.ttl) return c.v;
+    if(navigator.onLine===false) throw new Error("Nema internetske veze."); // bez interneta ne koristi se stara predmemorija službenih podataka
     const pc=pcGet(key); if(pc){NET.cache.set(key,{t:Date.now(),v:pc}); return pc;}}
   let err;
   for(let a=0;a<=retries;a++){
@@ -508,6 +517,7 @@ const OPEN=new Set();
 sheet.addEventListener("toggle",e=>{const k=e.target.dataset&&e.target.dataset.k; if(k){e.target.open?OPEN.add(k):OPEN.delete(k)}},true);
 map.on("click",e=>inspect(e.latlng));
 async function inspect(ll){
+  if(isOffline()){pwaOfflineInspect(); return}
   const id=++clickId;
   selLayer.clearLayers(); infLayer.clearLayers(); TL.layer=null; TL.marker=null; TL.rotM=null; TL.center=null; TL.zl=null; TL.zones=null; SUN.nb=null; SUN.layer=null; SUN.nbErr=null; ZK.res=null; window.__infra=null;
   L.circleMarker(ll,{radius:5,color:"#000",weight:2,fillColor:"#fff",fillOpacity:1}).addTo(selLayer);
@@ -1642,6 +1652,7 @@ function render(d){
   if(OPEN.has("sun")){sunDraw(); sunEnsureNb();}
   cardsUpdate();
   try{const ae=document.getElementById("ai"); if(ae&&!ae.hidden) aiRenderPanel();}catch(e){}
+  try{PWA.loadedAt=Date.now(); if(parcel) pwaRememberParcel(); pwaGpsNote(); pwaNetUI();}catch(e){}
   if(isMobile()){ if(!UI.hadParcel&&parcel){UI.hadParcel=true; if(UI.state==="peek") setState("half"); else setState(UI.state,{keepScroll:true});} else setState(UI.state,{keepScroll:true}); }
 }
 
@@ -2363,6 +2374,7 @@ function showFavs(){
     ["Cijena zemljišta",f=>f.land?fmt(f.land)+" €":"–"],
     ["€/m² zemljišta",f=>f.land&&f.area?fmt(f.land/f.area)+" €":"–"],
     ["Ukupni projekt",f=>f.budget?`${fmt(f.budget.lo)} – ${fmt(f.budget.hi)} €`:"–"],
+    ["Scenariji",f=>pwaScenSummary(f.key)],
     ["Spremljeno",f=>esc(f.saved||"")]
   ];
   let h=`<div class="actions"><button type="button" class="ib" id="favPrint">Ispiši / spremi PDF</button></div><p class="eyebrow">Usporedba spremljenih čestica (${a.length})</p>`;
@@ -2381,13 +2393,13 @@ sheet.addEventListener("click",e=>{
   const t=e.target;
   if(t.id==="saveBtn") saveCurrent();
   if(t.id==="favPrint") setTimeout(()=>window.print(),50);
-  if(t.dataset&&t.dataset.open!=null){const f=favs()[+t.dataset.open]; if(f){const ll=L.latLng(f.ll.lat,f.ll.lng); map.setView(ll,18); setTab("analiza"); inspect(ll);}}
+  if(t.dataset&&t.dataset.open!=null){ if(isOffline()){alert("Bez interneta čestica se ne može otvoriti, jer se službeni podaci ne mogu dohvatiti. Spremljeni sažetak i scenariji vidljivi su ovdje."); return} const f=favs()[+t.dataset.open]; if(f){const ll=L.latLng(f.ll.lat,f.ll.lng); map.setView(ll,18); setTab("analiza"); inspect(ll);}}
   if(t.dataset&&t.dataset.del!=null){const a=favs(); a.splice(+t.dataset.del,1); setFavs(a); showFavs();}
 });
 aux.addEventListener("click",e=>{
   const t=e.target;
   if(t.id==="favPrint") setTimeout(()=>window.print(),50);
-  if(t.dataset&&t.dataset.open!=null){const f=favs()[+t.dataset.open]; if(f){const ll=L.latLng(f.ll.lat,f.ll.lng); map.setView(ll,18); setTab("analiza"); inspect(ll);}}
+  if(t.dataset&&t.dataset.open!=null){ if(isOffline()){alert("Bez interneta čestica se ne može otvoriti, jer se službeni podaci ne mogu dohvatiti. Spremljeni sažetak i scenariji vidljivi su ovdje."); return} const f=favs()[+t.dataset.open]; if(f){const ll=L.latLng(f.ll.lat,f.ll.lng); map.setView(ll,18); setTab("analiza"); inspect(ll);}}
   if(t.dataset&&t.dataset.del!=null){const a=favs(); a.splice(+t.dataset.del,1); setFavs(a); showFavs();}
 });
 
@@ -2499,7 +2511,7 @@ document.getElementById("lyrSun").addEventListener("change",e=>{ SUN.on=e.target
 document.getElementById("menuBtn").addEventListener("click",()=>{const m=document.getElementById("menu"); m.hidden=!m.hidden;});
 document.getElementById("menu").addEventListener("click",e=>{ if(e.target.closest("a,button")) document.getElementById("menu").hidden=true; });
 // zapamti položaj karte
-map.on("moveend",()=>{try{const c=map.getCenter(); localStorage.setItem("mapv",JSON.stringify([+c.lat.toFixed(6),+c.lng.toFixed(6),map.getZoom()]))}catch(e){}});
+map.on("moveend",()=>{ if(PWA.gpsMove){PWA.gpsMove=false; return} /* prikaz GPS lokacije ne sprema se */ try{const c=map.getCenter(); localStorage.setItem("mapv",JSON.stringify([+c.lat.toFixed(6),+c.lng.toFixed(6),map.getZoom()]))}catch(e){}});
 // virtualna tipkovnica: panel prati vidljivi dio ekrana, a polje za unos ostaje vidljivo
 if(window.visualViewport){const vv=window.visualViewport; const f=()=>document.documentElement.style.setProperty("--vvh",vv.height+"px"); vv.addEventListener("resize",f); f();}
 panel.addEventListener("focusin",e=>{ if(!isMobile()) return; if(!/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; if(UI.state!=="full") setState("full",{keepScroll:true}); setTimeout(()=>{try{e.target.scrollIntoView({block:"center"})}catch(err){}},260); });
@@ -2621,6 +2633,19 @@ sheet.addEventListener("click",async e=>{
   const [la,lo]=c.split(",").map(Number); if(!isFinite(la)||!isFinite(lo)) return;
   const ll=L.latLng(la,lo); map.setView(ll,18); setTimeout(()=>inspect(ll),300);
 })();
+// ponovno otvaranje zadnje čestice (nakon ažuriranja ili kad Android zatvori aplikaciju u pozadini)
+setTimeout(async()=>{
+  if(new URLSearchParams(location.search).get("c")) return;
+  let r=null; try{r=JSON.parse(sessionStorage.getItem("czgNastavak")||"null"); sessionStorage.removeItem("czgNastavak")}catch(e){}
+  if(!r){try{const z=JSON.parse(localStorage.getItem("zadnjaCestica")||"null"); if(z&&Date.now()-z.t<30*864e5) r={ll:z.ll}}catch(e){}}
+  if(!r||!Array.isArray(r.ll)||!isFinite(r.ll[0])||!isFinite(r.ll[1])) return;
+  pwaNetUI(); if(isOffline()) return;
+  if(window.__cur||clickId>0) return; // korisnik je u međuvremenu sam odabrao česticu ili lokaciju
+  const ll=L.latLng(r.ll[0],r.ll[1]); map.setView(ll,Math.max(map.getZoom(),18));
+  await inspect(ll);
+  if(r.tab&&r.tab!=="karta"&&r.tab!=="spremljeno") setTab(r.tab);
+  if(r.scroll) setTimeout(()=>{sheet.scrollTop=r.scroll},300);
+},350);
 
 // --- pretraga po broju katastarske čestice (npr. "Šestine 4027/1" ili "kč 123 Sesvete")
 const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/gi,"d").toUpperCase().replace(/[^A-Z0-9 ]/g," ").replace(/\s+/g," ").trim();
@@ -3020,6 +3045,146 @@ document.addEventListener("keydown",e=>{ if(e.target&&e.target.id==="aiIn"&&e.ke
 document.getElementById("aiOn").addEventListener("change",e=>{try{localStorage.setItem("aiOn",e.target.checked?"1":"0")}catch(err){} aiSync(); if(e.target.checked){document.getElementById("menu").hidden=true; aiOpen();}});
 aiSync();
 
+// ================= ANDROID APLIKACIJA (PWA) =================
+// Instalacija s početnog zaslona (manifest.webmanifest), rad bez interneta (sw.js), sigurno ažuriranje,
+// sistemska tipka Natrag, vraćanje zadnje čestice i lokacija na terenu.
+const PWA={reg:null,guard:false,ignorePop:false,accepted:false,gpsMove:false,gps:null,loadedAt:null};
+const GPS_OK_M=10; // najveća GPS nesigurnost (m) uz koju aplikacija sama odabire česticu na lokaciji
+const isOffline=()=>navigator.onLine===false;
+const pwaTime=t=>new Date(t).toLocaleTimeString("hr-HR",{hour:"2-digit",minute:"2-digit"});
+
+// --- spremanje unosa i stanja (prije ažuriranja, kad Android pošalje aplikaciju u pozadinu)
+function pwaSaveState(){
+  for(const f of [projSaveHouse,prepSave,infcSave]) try{f()}catch(e){}
+  try{if(document.getElementById("yPrice")) buyRead()}catch(e){}
+  try{const k=aiCurKey(); if(k&&TL.center){const s=projCleanSim({w:TL.w,d:TL.d,rot:TL.rot,fl:TL.fl,fh:TL.fh,podrum:TL.podrum,gar:TL.gar,gw:TL.gw,gd:TL.gd,center:TL.center}); if(s) projPut(k,"sim",s);}}catch(e){}
+  try{const c=window.__cur; if(c) sessionStorage.setItem("czgNastavak",JSON.stringify({ll:pwaParcelPoint(),tab:UI.tab,state:UI.state,scroll:sheet.scrollTop}))}catch(e){}
+}
+// točka unutar odabrane čestice (ne sirova GPS lokacija), za ponovno otvaranje iste čestice
+function pwaParcelPoint(){const d=window.__lastData, c=window.__cur; try{if(d&&d.parcel){const p=turf.pointOnFeature(d.parcel).geometry.coordinates; return [+p[1].toFixed(6),+p[0].toFixed(6)]}}catch(e){} return c?[+c.ll.lat.toFixed(6),+c.ll.lng.toFixed(6)]:null}
+function pwaRememberParcel(){try{const p=pwaParcelPoint(); if(p) localStorage.setItem("zadnjaCestica",JSON.stringify({ll:p,t:Date.now()}))}catch(e){}}
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") pwaSaveState(); });
+window.addEventListener("pagehide",pwaSaveState);
+
+// --- tipka ili gesta Natrag: dok je otvoren izbornik, panel ili prikaz, Natrag ga zatvara; na osnovnom prikazu izlazi
+function pwaIsBase(){
+  const menu=document.getElementById("menu"), lay=document.getElementById("layers"), ai=document.getElementById("ai");
+  return menu.hidden&&!lay.classList.contains("open")&&aux.hidden&&(!ai||ai.hidden)&&(!isMobile()||UI.state==="peek");
+}
+function pwaSyncGuard(){
+  const base=pwaIsBase();
+  if(!base&&!PWA.guard){history.pushState({czg:"sloj"},""); PWA.guard=true;}
+  else if(base&&PWA.guard){PWA.guard=false; PWA.ignorePop=true; history.back();}
+}
+function pwaCloseTop(){
+  const menu=document.getElementById("menu"), lay=document.getElementById("layers"), ai=document.getElementById("ai");
+  if(!menu.hidden){menu.hidden=true; return}
+  if(lay.classList.contains("open")){lay.classList.remove("open"); document.getElementById("lyrBtn").setAttribute("aria-expanded","false"); return}
+  if(ai&&!ai.hidden){aiCloseP(); return}
+  if(!aux.hidden){auxClose(); if(UI.tab==="spremljeno") setTab(UI.hadParcel?"analiza":"karta"); return}
+  if(isMobile()&&UI.state==="full"){setState("half"); return}
+  if(isMobile()&&UI.state==="half"){setTab("karta"); return}
+}
+window.addEventListener("popstate",()=>{
+  if(PWA.ignorePop){PWA.ignorePop=false; return}
+  PWA.guard=false; pwaCloseTop(); setTimeout(pwaSyncGuard,0);
+});
+try{history.replaceState({czg:"osnova"},"")}catch(e){}
+{ // promjene prikaza prate se na samim elementima, pa svako otvaranje (gumb, kartica, kod) dobiva korak Natrag
+  const mo=new MutationObserver(()=>{clearTimeout(PWA.syncT); PWA.syncT=setTimeout(pwaSyncGuard,30)});
+  for(const id of ["menu","layers","aux","ai","panel"]){const el=document.getElementById(id); if(el) mo.observe(el,{attributes:true,attributeFilter:["hidden","class"]});}
+}
+
+// --- bez interneta: jasna oznaka; službeni podaci se ne dohvaćaju ni ne prikazuju iz stare predmemorije
+function pwaNetUI(){
+  const b=document.getElementById("netState"); if(!b) return;
+  if(isOffline()){
+    b.hidden=false;
+    b.innerHTML=`<b>Izvan mreže.</b> Katastar, GUP i ostali službeni podaci ne mogu se dohvatiti ni osvježiti.${window.__cur&&PWA.loadedAt?` Prikazana čestica učitana je u ${pwaTime(PWA.loadedAt)} i nije osvježena.`:""} Spremljene čestice i scenariji su u kartici Spremljeno.`;
+  } else b.hidden=true;
+}
+window.addEventListener("online",pwaNetUI); window.addEventListener("offline",pwaNetUI);
+function pwaOfflineInspect(){
+  sheet.innerHTML=`<p class="eyebrow">Nema interneta</p><p class="hint">Analiza čestice traži službene podatke (katastar, GUP, slojevi Grada Zagreba), a oni se sada ne mogu dohvatiti. Aplikacija ne prikazuje stare podatke kao aktualne.</p><div class="actions" style="justify-content:flex-start"><button type="button" class="ib" id="offFavs">Spremljene čestice i scenariji</button></div><div id="sumEnd"></div>`;
+  if(isMobile()) setState("half");
+}
+sheet.addEventListener("click",e=>{ if(e.target.id==="offFavs") setTab("spremljeno"); });
+
+// sažetak spremljenih scenarija za česticu (radi i bez interneta: računa se lokalno istim modelom)
+function pwaScenSummary(k){
+  const L=scList(k); if(!L.length) return "–";
+  const rate=projKd(k).rate, pr=prepGet(k);
+  return L.map(sc=>{let r=""; try{const H=finHouse({...sc.inp,prep:pr},rate); r=` ${fmt(H.build.lo)}–${fmt(H.build.hi)} €`}catch(e){} return `${esc(sc.name)}:${r}`}).join("<br>")+`<br><small>gradnja s naknadama, bez zemljišta</small>`;
+}
+
+// trajna pohrana: traži od Androida da podatke aplikacije (čestice, scenarije, unose) ne briše kad ponestane prostora
+try{if(navigator.storage&&navigator.storage.persist) navigator.storage.persisted().then(p=>{if(!p) navigator.storage.persist()}).catch(()=>{})}catch(e){}
+// --- nova verzija
+function pwaShowUpdate(){
+  const b=document.getElementById("updBar"); if(!b||!b.hidden) return;
+  b.hidden=false;
+}
+function pwaApplyUpdate(){
+  const w=PWA.reg&&PWA.reg.waiting; if(!w){location.reload(); return}
+  pwaSaveState(); PWA.accepted=true;
+  const b=document.getElementById("updBar"); if(b) b.innerHTML="Ažuriram…";
+  w.postMessage("primijeni-novu-verziju");
+}
+document.addEventListener("click",e=>{
+  if(e.target.id==="updYes") pwaApplyUpdate();
+  if(e.target.id==="updNo"){const b=document.getElementById("updBar"); if(b) b.hidden=true;}
+});
+if("serviceWorker" in navigator&&(location.protocol==="https:"||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))){
+  navigator.serviceWorker.register("sw.js",{scope:"./",updateViaCache:"none"}).then(reg=>{
+    PWA.reg=reg;
+    const check=()=>{ if(reg.waiting&&navigator.serviceWorker.controller) pwaShowUpdate(); };
+    check();
+    reg.addEventListener("updatefound",()=>{const nw=reg.installing; if(nw) nw.addEventListener("statechange",()=>{ if(nw.state==="installed") check(); });});
+    document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible"&&!isOffline()) reg.update().catch(()=>{}); });
+    setInterval(()=>{ if(!isOffline()) reg.update().catch(()=>{}) },30*60000);
+  }).catch(()=>{});
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{ if(PWA.accepted&&!PWA.reloading){PWA.reloading=true; location.reload();} });
+}
+
+// --- lokacija na terenu: prikaz, centriranje, pomoć pri odabiru čestice; ništa se ne sprema ni ne šalje
+const gpsLayer=L.layerGroup().addTo(map);
+function pwaLocate(){
+  const btn=document.getElementById("me");
+  if(!navigator.geolocation){alert("Lokacija nije dostupna na ovom uređaju."); return}
+  btn.disabled=true; btn.setAttribute("aria-busy","true");
+  navigator.geolocation.getCurrentPosition(p=>{
+    btn.disabled=false; btn.removeAttribute("aria-busy");
+    const ll=L.latLng(p.coords.latitude,p.coords.longitude), acc=Math.max(1,Math.round(p.coords.accuracy||999));
+    PWA.gps={ll,acc,t:Date.now()}; // samo u memoriji
+    gpsLayer.clearLayers();
+    L.circle(ll,{radius:acc,color:"#1565c0",weight:1,fillColor:"#1565c0",fillOpacity:.12,interactive:false}).addTo(gpsLayer);
+    L.circleMarker(ll,{radius:7,color:"#fff",weight:2,fillColor:"#1565c0",fillOpacity:1,interactive:false}).addTo(gpsLayer);
+    PWA.gpsMove=true; map.setView(ll,acc<=30?19:acc<=150?17:15);
+    if(acc<=GPS_OK_M&&!isOffline()){ PWA.gpsPending={ll,acc}; inspect(ll); }
+    else{
+      sheet.innerHTML=`<p class="eyebrow">Tvoja lokacija</p><p class="hint">Lokacija je prikazana plavim krugom (preciznost ±${fmt(acc)} m).${acc>GPS_OK_M?` To je više od ${GPS_OK_M} m, pa aplikacija ne može pouzdano odrediti na kojoj si čestici. Dodirni česticu unutar kruga.`:""}${isOffline()?" Bez interneta čestica se ne može učitati.":""}</p>${!isOffline()?`<div class="actions" style="justify-content:flex-start"><button type="button" class="ib" id="gpsUse">Analiziraj česticu u središtu kruga</button></div>`:""}<div id="sumEnd"></div>`;
+      if(isMobile()) setState("peek");
+    }
+  },err=>{
+    btn.disabled=false; btn.removeAttribute("aria-busy");
+    const m=err&&err.code===1?"Pristup lokaciji nije dopušten. Dopuštenje možeš uključiti u postavkama aplikacije ili preglednika.":err&&err.code===3?"Lokacija nije pronađena na vrijeme. Pokušaj na otvorenom ili uključi precizno određivanje lokacije.":"Lokacija trenutno nije dostupna.";
+    sheet.innerHTML=`<p class="err">${m}</p><div id="sumEnd"></div>`;
+  },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+}
+sheet.addEventListener("click",e=>{ if(e.target.id==="gpsUse"&&PWA.gps){ PWA.gpsPending={...PWA.gps,manual:true}; inspect(PWA.gps.ll); } });
+// napomena uz česticu odabranu lokacijom (poziva se nakon prikaza čestice)
+function pwaGpsNote(){
+  const g=PWA.gpsPending, d=window.__lastData; if(!g||!d||!d.parcel) return;
+  if(Math.abs(d.ll.lat-g.ll.lat)>1e-9||Math.abs(d.ll.lng-g.ll.lng)>1e-9) return;
+  let edge=null; try{edge=turf.pointToLineDistance(turf.point([g.ll.lng,g.ll.lat]),turf.polygonToLine(d.parcel),{units:"kilometers"})*1000}catch(e){}
+  const near=edge!=null&&edge<g.acc;
+  const box=document.createElement("p"); box.className=near?"flag":"meta"; box.id="gpsNote";
+  box.textContent=g.manual?`Odabrana je čestica u središtu GPS kruga (preciznost ±${fmt(g.acc)} m). Provjeri na karti je li to prava čestica.`
+    :`Čestica na tvojoj lokaciji (GPS preciznost ±${fmt(g.acc)} m).${near?` Lokacija je ${fmt(Math.round(edge))} m od granice, pa može biti i susjedna čestica; provjeri na karti.`:""}`;
+  const old=document.getElementById("gpsNote"); if(old) old.remove();
+  sheet.insertBefore(box,sheet.firstChild);
+}
+
 // --- pretraga adrese (Nominatim, Zagreb)
 async function search(){
   const q=document.getElementById("q").value.trim(); if(!q) return;
@@ -3035,11 +3200,7 @@ async function search(){
 }
 document.getElementById("go").onclick=search;
 document.getElementById("q").addEventListener("keydown",e=>{if(e.key==="Enter")search()});
-document.getElementById("me").onclick=()=>{
-  if(!navigator.geolocation){sheet.innerHTML='<p class="err">Lokacija nije dostupna u ovom pregledniku.</p>';return}
-  navigator.geolocation.getCurrentPosition(p=>{const ll=L.latLng(p.coords.latitude,p.coords.longitude);map.setView(ll,18);inspect(ll)},
-    ()=>{sheet.innerHTML='<p class="err">Pristup lokaciji je odbijen.</p>'},{enableHighAccuracy:true,timeout:10000});
-};
+document.getElementById("me").onclick=()=>pwaLocate();
 </script>
 </body>
 </html>
