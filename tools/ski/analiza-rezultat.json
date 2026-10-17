@@ -1,0 +1,271 @@
+{
+ "vodovod": {
+  "veze": 108615,
+  "duljina_km": 2977.8,
+  "geometrija": {
+   "LineString": 108615
+  },
+  "srs": {
+   "http://www.opengis.net/def/crs/EPSG/0/3035": 108615
+  },
+  "status": {
+   "functional": 104200,
+   "disused": 4415
+  },
+  "polozaj": {
+   "underground": 108584,
+   "null": 31
+  },
+  "fiktivno": {
+   "false": 108615
+  },
+  "bbox_wgs84": [
+   -25.8129,
+   61.7801,
+   -25.5324,
+   62.2026
+  ],
+  "km2_celija_s_vodom": 517,
+  "cijevi": 108615,
+  "cijevi_bez_geometrije": 0,
+  "atributi": {
+   "currentStatus": {
+    "functional": 104200,
+    "disused": 4415
+   },
+   "validFrom": {
+    "nil:Unpopulated": 53314,
+    "2006-12-31T23:00:00Z": 3623,
+    "2004-12-31T23:00:00Z": 3101,
+    "2005-12-31T23:00:00Z": 3029,
+    "2008-12-31T23:00:00Z": 2775,
+    "2007-12-31T23:00:00Z": 2493,
+    "2003-12-31T23:00:00Z": 2467,
+    "2002-12-31T23:00:00Z": 2301,
+    "2000-12-31T23:00:00Z": 1913,
+    "1994-12-31T23:00:00Z": 1862,
+    "2020-12-31T23:00:00Z": 1809,
+    "1995-12-31T23:00:00Z": 1797
+   },
+   "verticalPosition": {
+    "underground": 108584,
+    "nil:Unpopulated": 31
+   },
+   "warningType": {
+    "nil:Unpopulated": 108615
+   },
+   "pipeDiameter": {
+    "nil:Withheld": 108615
+   },
+   "waterType": {
+    "nil:Unpopulated": 108615
+   }
+  },
+  "duljina_po_vrsti_km": {
+   "nil:Unpopulated": 2977.8
+  },
+  "objekti": 113194,
+  "vrste_objekata": {
+   "zatvarac": 46742,
+   "vodovodnoOknoKomora": 33587,
+   "hydrant": 25677,
+   "ostalo": 6622,
+   "nepoznato": 357,
+   "storageFacility": 58,
+   "vodozahvatVodocrpiliste": 54,
+   "pumpStation": 51,
+   "javnaSlavina": 28,
+   "fitting": 9,
+   "well": 5,
+   "meter": 3,
+   "fountain": 1
+  }
+ },
+ "kanalizacija": {
+  "veze": 36243,
+  "duljina_km": 2297.5,
+  "geometrija": {
+   "LineString": 36243
+  },
+  "srs": {
+   "http://www.opengis.net/def/crs/EPSG/0/3035": 36243
+  },
+  "status": {
+   "functional": 35240,
+   "disused": 1000,
+   "decommissioned": 3
+  },
+  "polozaj": {
+   "underground": 35243,
+   "null": 1000
+  },
+  "fiktivno": {
+   "false": 36243
+  },
+  "bbox_wgs84": [
+   -25.7587,
+   61.8273,
+   -25.5701,
+   62.1652
+  ],
+  "km2_celija_s_vodom": 365,
+  "cijevi": 36249,
+  "cijevi_bez_geometrije": 16,
+  "atributi": {
+   "currentStatus": {
+    "functional": 35246,
+    "disused": 1000,
+    "decommissioned": 3
+   },
+   "validFrom": {
+    "nil:Unpopulated": 11028,
+    "2018-12-31T23:00:00Z": 927,
+    "2020-12-31T23:00:00Z": 842,
+    "1999-12-31T23:00:00Z": 816,
+    "2011-12-31T23:00:00Z": 729,
+    "2017-12-31T23:00:00Z": 694,
+    "2002-12-31T23:00:00Z": 597,
+    "2007-12-31T23:00:00Z": 575,
+    "2019-12-31T23:00:00Z": 561,
+    "2016-12-31T23:00:00Z": 547,
+    "2014-12-31T23:00:00Z": 522,
+    "2005-12-31T23:00:00Z": 467
+   },
+   "verticalPosition": {
+    "underground": 35249,
+    "nil:Unpopulated": 1000
+   },
+   "warningType": {
+    "nil:Unpopulated": 36249
+   },
+   "pipeDiameter": {
+    "nil:Withheld": 36249
+   },
+   "sewerWaterType": {
+    "nil:Withheld": 36249
+   }
+  },
+  "duljina_po_vrsti_km": {
+   "nil:Withheld": 2297.5
+  },
+  "objekti": 70447,
+  "vrste_objekata": {
+   "okno": 65430,
+   "slivnik": 2526,
+   "nepoznato": 1948,
+   "taloznica": 159,
+   "ostalo": 123,
+   "ispust": 97,
+   "kanalizacijskiPrikljucak": 68,
+   "prepumpnaStanica": 60,
+   "retencijskiBazen": 24,
+   "preljevnaIliRasteretnaGradevina": 6,
+   "uredajZaProciscavanje": 6
+  }
+ },
+ "struja": {
+  "veze": 185394,
+  "duljina_km": 9355.6,
+  "geometrija": {
+   "LineString": 185394
+  },
+  "srs": {
+   "http://www.opengis.net/def/crs/EPSG/0/3035": 185394
+  },
+  "status": {
+   "functional": 184348,
+   "unknown": 758,
+   "disused": 276,
+   "decommissioned": 12
+  },
+  "polozaj": {
+   "underground": 119837,
+   "null": 65557
+  },
+  "fiktivno": {
+   "false": 185394
+  },
+  "bbox_wgs84": [
+   -25.8306,
+   61.7762,
+   -25.4903,
+   62.2135
+  ],
+  "km2_celija_s_vodom": 543,
+  "cijevi": 133980,
+  "cijevi_bez_geometrije": 0,
+  "atributi": {
+   "currentStatus": {
+    "functional": 133963,
+    "decommissioned": 11,
+    "disused": 6
+   },
+   "validFrom": {
+    "nil:Unpopulated": 132637,
+    "2001-01-01": 288,
+    "2025-01-01": 261,
+    "2024-01-01": 207,
+    "2010-01-01": 129,
+    "2023-01-01": 120,
+    "2026-01-01": 55,
+    "2021-01-01": 52,
+    "2005-01-01": 45,
+    "2017-01-01": 29,
+    "2014-01-01": 29,
+    "2019-01-01": 20
+   },
+   "verticalPosition": {
+    "underground": 71118,
+    "nil:Unpopulated": 62862
+   },
+   "nominalVoltage": {
+    "04": 118165,
+    "Nepoznato": 14003,
+    "Ostalo": 1373,
+    "20": 249,
+    "1": 95,
+    "110": 65,
+    "35": 18,
+    "400": 8,
+    "10": 2,
+    "220": 2
+   },
+   "operatingVoltage": {
+    "Niski napon": 121327,
+    "Srednji napon": 12534,
+    "Visoki napon": 93,
+    "Ostalo": 19,
+    "Nepoznato": 7
+   },
+   "utilityDeliveryType": {
+    "": 133973,
+    "nil:Unpopulated": 7
+   }
+  },
+  "duljina_po_vrsti_km": {
+   "Niski napon": 4771.0,
+   "Srednji napon": 2510.8,
+   "Visoki napon": 409.7,
+   "Nepoznato": 0.2,
+   "Ostalo": 0.7
+  },
+  "objekti": 236222,
+  "vrste_objekata": {
+   "rasvjetnoMjesto": 113488,
+   "stup": 100361,
+   "nosac": 7675,
+   "elektroOknoZdenac": 4173,
+   "razvodniOrmaric": 3126,
+   "transformatorskaStanica": 2747,
+   "semafor": 1495,
+   "drugiObjektiIElemeniElektroEnergetskeInfrastrukture": 1305,
+   "kabelskaKanalizacija": 1128,
+   "kabelskaSpojnica": 299,
+   "promidzbenoInformativniStupoviSRasvjetom": 125,
+   "ormariSUredajimaZaRegulacijuPrometa": 85,
+   "kabelskaPetlja": 81,
+   "prikljucnoMjesto": 79,
+   "punioniceZaElektricnaVozila": 33
+  }
+ }
+}
