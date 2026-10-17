@@ -293,6 +293,7 @@ ul.risk small{color:var(--muted)}
         <label><input type="checkbox" id="lyrSat"> Satelit</label>
         <label><input type="checkbox" id="lyrNam" checked> Namjena</label>
         <label><input type="checkbox" id="lyrInf" checked> Vodovi iz GUP-a</label>
+        <label><input type="checkbox" id="lyrSki"> Najbliži vodovi (DGU)</label>
         <label><input type="checkbox" id="lyrSun"> Sjene</label>
       </div>
     </div>
@@ -519,7 +520,7 @@ map.on("click",e=>inspect(e.latlng));
 async function inspect(ll){
   if(isOffline()){pwaOfflineInspect(); return}
   const id=++clickId;
-  selLayer.clearLayers(); infLayer.clearLayers(); TL.layer=null; TL.marker=null; TL.rotM=null; TL.center=null; TL.zl=null; TL.zones=null; SUN.nb=null; SUN.layer=null; SUN.nbErr=null; ZK.res=null; window.__infra=null;
+  selLayer.clearLayers(); infLayer.clearLayers(); TL.layer=null; TL.marker=null; TL.rotM=null; TL.center=null; TL.zl=null; TL.zones=null; SUN.nb=null; SUN.layer=null; SUN.nbErr=null; ZK.res=null; window.__infra=null; window.__ski=null; skiLayer.clearLayers();
   L.circleMarker(ll,{radius:5,color:"#000",weight:2,fillColor:"#fff",fillOpacity:1}).addTo(selLayer);
   sheet.innerHTML='<p class="hint"><span class="spin"></span>Tražim česticu, namjenu i urbano pravilo…</p>';
   let [ces,nam,up,upx,gn]=await Promise.all([
@@ -576,14 +577,14 @@ async function inspect(ll){
   if(id!==clickId) return;
   checks.forEach(r=>{if(r.c.draw&&r.v) r.v.forEach(f=>f.geometry&&L.geoJSON(f.geometry,{style:{color:r.c.draw,weight:2,dashArray:"5 4",fillOpacity:.15},interactive:false}).addTo(selLayer))});
   render({...base,checks});
-  const envP=settle(loadEnv(ll,parcel)), infP=FEATURES.infra?settle(loadInfra(parcel,ll)):Promise.resolve(null), sunP=Promise.resolve(null);
-  const [infra,sun]=await Promise.all([infP,sunP]);
+  const envP=settle(loadEnv(ll,parcel)), infP=FEATURES.infra?settle(loadInfra(parcel,ll)):Promise.resolve(null), skiP=FEATURES.infra?settle(loadSki(parcel,ll)):Promise.resolve(null), sunP=Promise.resolve(null);
+  const [infra,sun,ski]=await Promise.all([infP,sunP,skiP]);
   if(id!==clickId) return;
-  window.__infra=infra&&infra.v||null; infraDraw(infra);
-  render({...base,checks,infra,sun});
+  window.__infra=infra&&infra.v||null; window.__ski=ski||null; infraDraw(infra); skiDraw(ski);
+  render({...base,checks,infra,sun,ski});
   const env=await envP;
   if(id!==clickId) return;
-  render({...base,checks,infra,sun,env});
+  render({...base,checks,infra,sun,ski,env});
 }
 
 // --- simulator kuće: pravokutnik kuće (i garaže) koji se pomiče i okreće; provjere prema pravilu
@@ -895,18 +896,86 @@ async function loadInfra(parcel,ll){
   })));
   return out;
 }
-function infraHtml(inf){
+// --- ulične mreže iz katastra infrastrukture (DGU SKI, INSPIRE), pripremljene skriptom tools/ski/pripremi_kvadrate.py
+// Kvadrati od oko 1 km uz aplikaciju (data/ski/). Udaljenost se računa od granice čestice do osi voda (minDistM).
+// Stanja: d (m) = najbliži evidentirani vod u krugu SKI.R; none = u krugu nema evidentiranog voda; e = podaci se nisu učitali.
+const SKI={idx:null,tiles:new Map(),R:500,NETS:[["vodovod","Vodovod","najbliži evidentirani vod","#1e6fd9"],["kanalizacija","Kanalizacija","najbliži evidentirani vod","#7a4a1e"],["struja","Struja","najbliži evidentirani niskonaponski vod","#c23b22"]]};
+async function skiFetch(path,ms=12000){
+  const ac=new AbortController(), t=setTimeout(()=>ac.abort(),ms);
+  try{const r=await fetch(path,{signal:ac.signal}); if(!r.ok) throw new Error("HTTP "+r.status); return await r.json()}
+  finally{clearTimeout(t)}
+}
+async function skiIndex(){
+  if(SKI.idx) return SKI.idx;
+  const j=await skiFetch("data/ski/index.json");
+  if(!j||j.v!==1||!j.mreze) throw new Error("neispravan indeks");
+  j.sets={}; for(const [k,m] of Object.entries(j.mreze)) j.sets[k]=new Set(m.kvadrati);
+  SKI.idx=j; return j;
+}
+async function skiTile(net,key){
+  const k=net+"/"+key; if(SKI.tiles.has(k)) return SKI.tiles.get(k);
+  const p=skiFetch("data/ski/"+k+".json").then(a=>{ if(!Array.isArray(a)) throw new Error("neispravan kvadrat"); return a; });
+  SKI.tiles.set(k,p); p.catch(()=>SKI.tiles.delete(k)); // neuspjelo učitavanje ne ostaje u memoriji
+  if(SKI.tiles.size>80) SKI.tiles.delete(SKI.tiles.keys().next().value);
+  return p;
+}
+async function loadSki(parcel,ll){
+  const I=await skiIndex();
+  const bb=parcel?turf.bbox(parcel):[ll.lng,ll.lat,ll.lng,ll.lat], lat=(bb[1]+bb[3])/2;
+  const dla=SKI.R/110540, dlo=SKI.R/(111320*Math.cos(lat*Math.PI/180));
+  const B=[bb[0]-dlo,bb[1]-dla,bb[2]+dlo,bb[3]+dla];
+  const keys=[]; for(let i=Math.floor(B[1]/I.dlat);i<=Math.floor(B[3]/I.dlat);i++) for(let j=Math.floor(B[0]/I.dlon);j<=Math.floor(B[2]/I.dlon);j++) keys.push(i+"_"+j);
+  const mx=1/(111320*Math.cos(lat*Math.PI/180)), my=1/110540;
+  const out={};
+  await Promise.all(SKI.NETS.map(async([net])=>{
+    try{
+      const ks=keys.filter(k=>I.sets[net]&&I.sets[net].has(k)), arrs=await Promise.all(ks.map(k=>skiTile(net,k)));
+      let best=null; const seen=new Set();
+      for(const arr of arrs) for(const [id,f] of arr){
+        if(seen.has(id)) continue; seen.add(id);
+        let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9; for(let i=0;i<f.length;i+=2){const x=f[i]/1e6,y=f[i+1]/1e6; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y;}
+        // gruba udaljenost obuhvata voda od obuhvata čestice; vod koji je sigurno dalji od dosadašnjeg najbližeg se preskače
+        const gx=Math.max(0,x0-bb[2],bb[0]-x1)/mx, gy=Math.max(0,y0-bb[3],bb[1]-y1)/my, rough=Math.hypot(gx,gy);
+        if(rough>SKI.R||(best&&rough>best.d)) continue;
+        const c=[]; for(let i=0;i<f.length;i+=2) c.push([f[i]/1e6,f[i+1]/1e6]);
+        const geom=c.length>1?{type:"LineString",coordinates:c}:{type:"Point",coordinates:c[0]};
+        const d=minDistM(geom,parcel,ll);
+        if(d!=null&&isFinite(d)&&d<=SKI.R&&(!best||d<best.d)) best={d,geom};
+      }
+      out[net]=best?{d:best.d,geom:best.geom}:{none:true};
+    }catch(err){out[net]={e:err.message||"greška"}}
+  }));
+  return {mreze:out,izvor:I.izvor,preuzeto:I.preuzeto};
+}
+function skiText(r,lbl){
+  if(!r) return {t:"učitavam…",s:""};
+  if(r.e) return {t:"Podaci nisu dostupni",s:"podaci katastra infrastrukture se nisu učitali"};
+  if(r.none) return {t:"Podaci nisu dostupni",s:`u krugu od ${SKI.R} m nema evidentiranog voda`};
+  if(r.d<0.5) return {t:`${lbl}: 0 m`,s:"vod prolazi česticom ili njezinom granicom",cross:true};
+  return {t:`${lbl}: ${r.d<1?"manje od 1":fmt(Math.round(r.d))} m`,s:""};
+}
+const skiLayer=L.layerGroup();
+function skiDraw(ski){
+  skiLayer.clearLayers(); const M=ski&&ski.v&&ski.v.mreze; if(!M) return;
+  for(const [net,,,col] of SKI.NETS){const r=M[net]; if(r&&r.geom) L.geoJSON(r.geom,{style:{color:col,weight:4,opacity:.9},interactive:false}).addTo(skiLayer);}
+}
+function infraHtml(inf,ski){
   let h=`<h2>Komunalna infrastruktura</h2>`;
   if(!inf) return h+`<p class="hint"><span class="spin"></span>Učitavam…</p>`;
   const o=inf.v||{}, dm=x=>x.d<1?"uz česticu":"oko "+fmt(Math.max(1,Math.round(x.d)))+" m";
-  // ulične mreže nisu javni podaci: samo kratka oznaka
-  h+=`<dl class="kv infk">${["Vodovod","Kanalizacija","Struja","Plin"].map(n=>`<dt>${n}</dt><dd>podaci nisu dostupni</dd>`).join("")}</dl>`;
+  // ulične mreže: katastar infrastrukture DGU (vodovod, kanalizacija, niski napon); plin nije objavljen
+  const SM=ski&&ski.v&&ski.v.mreze, SE=ski&&ski.e;
+  const rowsS=SKI.NETS.map(([net,name,lbl])=>{const x=SE?{t:"Podaci nisu dostupni",s:"podaci katastra infrastrukture se nisu učitali"}:skiText(SM?SM[net]:null,lbl); return `<dt>${name}</dt><dd${x.cross?' class="bad"':""}>${esc(x.t)}${x.s?`<small class="fx">${esc(x.s)}</small>`:""}</dd>`}).join("");
+  h+=`<dl class="kv infk">${rowsS}<dt>Plin</dt><dd>Podaci nisu dostupni<small class="fx">DGU ne objavljuje plinsku mrežu za preuzimanje</small></dd></dl>`;
+  if(SM||SE) h+=`<p class="meta">Udaljenost od granice čestice do osi evidentiranog voda. Izvor: Državna geodetska uprava, katastar infrastrukture${ski&&ski.v&&ski.v.preuzeto?" (preuzeto "+esc(ski.v.preuzeto.split("-").reverse().join(". ")+".")+")":""}. Evidencija može biti nepotpuna; promjer i vrsta cijevi nisu objavljeni, a niski napon može uključivati i javnu rasvjetu. Mogućnost i trošak priključenja potvrđuju Vodoopskrba i odvodnja te HEP ODS.</p>`;
   // glavni vodovi iz GUP-a, samo ako postoje u blizini, sklopljeno
   const items=[], errs=[];
   for(const s of INF_SRC){const r=o[s.id]; if(!r) continue; if(r.e){errs.push(s.id);continue}
     for(const [x,t] of [[r.ex,"postojeći"],[r.pl,"planirani"]]) if(x) items.push(`<li>${esc(x.desc)} (${t}) ${dm(x)}</li>`);}
   if(items.length) h+=`<details><summary>Glavni vodovi iz GUP-a u blizini (${items.length})</summary><ul class="zi">${items.join("")}</ul><p class="meta">Na glavne vodove kuća se ne priključuje izravno; ucrtani su na karti. Izvor: GUP Grada Zagreba, karte 3b i 3c.</p></details>`;
   else if(errs.length) h+=`<p class="meta">Podaci o glavnim vodovima iz GUP-a trenutno nisu dostupni. <button type="button" class="ib retry">Pokušaj ponovno</button></p>`;
+  else h+=`<p class="meta">Glavni vodovi iz GUP-a: nijedan u krugu od ${INF_R} m.</p>`;
+  if(items.length&&errs.length) h+=`<p class="meta">Dio slojeva GUP-a nije odgovorio, pa popis glavnih vodova može biti nepotpun.</p>`;
   return h;
 }
 function infraDraw(inf){
@@ -1166,7 +1235,7 @@ function envHtml(env,gbp){
   if(o.school) rows.push(["Škola",`${o.school.n} · ${o.school.d} m`]);
   if(o.shop) rows.push(["Trgovina",`${o.shop.n} · ${o.shop.d} m`]);
   if(o.pharmacy) rows.push(["Ljekarna",`${o.pharmacy.n} · ${o.pharmacy.d} m`]);
-  h+=`<dl class="kv">${rows.map(([a,b])=>`<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join("")}</dl><p class="meta">Udaljenosti zračnom linijom od sredine čestice. Vodovod i kanalizacija nisu javno dostupni kao podaci; provjeri kod Vodoopskrbe i odvodnje.</p>`;
+  h+=`<dl class="kv">${rows.map(([a,b])=>`<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join("")}</dl><p class="meta">Udaljenosti zračnom linijom od sredine čestice. Udaljenosti do vodova su u odjeljku Komunalna infrastruktura.</p>`;
   return h;
 }
 
@@ -1410,7 +1479,11 @@ function riskFindings(d){
     if(s>=20) add("potencijalno","visoka","Strm teren",`Nagib u okolini oko ${Math.round(s)} %. Računaj s potpornim zidovima i skupljim temeljenjem.`,"Copernicus DEM, rezolucija oko 90 m (Open-Meteo)",null,"Geodetski snimak i geotehnički pregled; model ne vidi lokalne strmine.");
     else if(s>=10) add("potencijalno","srednja","Umjereno strm teren",`Nagib u okolini oko ${Math.round(s)} %.`,"Copernicus DEM, rezolucija oko 90 m (Open-Meteo)",null,"Geodetski snimak terena.");}
   // komunalna infrastruktura
-  add("neprovjereno","srednja","Komunalni priključci","Ulična mreža vodovoda, kanalizacije, struje i plina nije javno objavljena, pa mogućnost priključka nije provjerena.","Grad Zagreb, ViO, HEP ODS, Gradska plinara",null,"Pisani upit Vodoopskrbi i odvodnji; elektroenergetska suglasnost HEP ODS-a; upit Gradskoj plinari.");
+  {const SM=d.ski&&d.ski.v&&d.ski.v.mreze, NM={vodovod:"vodovod",kanalizacija:"kanalizacija",struja:"niskonaponski vod"};
+   const known=SM?Object.entries(SM).filter(([,r])=>r&&r.d!=null).map(([k,r])=>`${NM[k]} ${r.d<1?"uz česticu":"oko "+fmt(Math.round(r.d))+" m"}`):[];
+   add("neprovjereno","srednja","Komunalni priključci",(known.length?`Najbliži evidentirani vodovi (katastar infrastrukture DGU): ${known.join(", ")}. Evidentirani vod ne znači da je priključenje moguće ni koliko košta.`:"Za ovu česticu nema podataka o uličnim mrežama.")+" Plinska mreža nije javno objavljena.","DGU katastar infrastrukture; ViO, HEP ODS, Gradska plinara",d.ski&&d.ski.v?d.ski.v.preuzeto:null,"Pisani upit Vodoopskrbi i odvodnji; elektroenergetska suglasnost HEP ODS-a; upit Gradskoj plinari.");
+   const cross=SM?Object.entries(SM).filter(([,r])=>r&&r.d!=null&&r.d<0.5).map(([k])=>NM[k]):[];
+   if(cross.length) add("potencijalno","srednja","Vod prolazi česticom",`Prema katastru infrastrukture česticom ili njezinom granicom prolazi: ${cross.join(", ")}. Iznad voda obično se ne smije graditi, a vod može imati zaštitni pojas ili pravo služnosti.`,"DGU katastar infrastrukture",d.ski.v.preuzeto,"Izvod iz katastra infrastrukture i zemljišne knjige (služnost); uvjeti upravitelja voda.");}
   // postojeće zgrade i rekonstrukcija
   if(zgrade&&zgrade.e) add("neprovjereno","niska","Postojeće građevine","Sloj zgrada nije odgovorio.","Topografska osnova Grada Zagreba (2018.)","2018.","Obilazak čestice.");
   else if(zgrade&&zgrade.v&&zgrade.v.n){const zf=zgrade.v.area, tl=window.__tl;
@@ -1518,7 +1591,7 @@ function render(d){
     if(clear.length) h+=`<details><summary>Što je provjereno i čisto (${clear.length})</summary><ol>${clear.map(t=>`<li>${esc(t)}</li>`).join("")}</ol></details>`;
     if(errs.length) h+=`<p class="err">Nisu odgovorili: ${esc(errs.join(", "))}. <button type="button" class="ib retry">Pokušaj ponovno</button></p>`;
   }
-  if(checks){ if(FEATURES.infra) h+=infraHtml(infra); h+=envHtml(env); }
+  if(checks){ if(FEATURES.infra) h+=infraHtml(infra,d.ski); h+=envHtml(env); }
   // Urbano pravilo
   h+=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>`;
   const {code,rule,se,pp:isPP}=ruleLookup(up,rows);
@@ -1815,7 +1888,7 @@ function finUpdate(){
     if(F.house.kd==null) h+=frow("Komunalni doprinos","izaberi zonu");
     const s=F.build.naknadeLo!==F.build.naknadeHi?`${fmt(F.build.naknadeLo)}–${fmt(F.build.naknadeHi)} €`:`${fmt(F.build.naknade)} €`;
     h+=frow(`Ukupno naknade i priključci${F.house.kd==null?" (bez komunalnog)":""}`,s,{bold:true})+`</div>`;
-    h+=`<p class="meta">Isti iznosi ulaze u procjenu gradnje i ukupnu investiciju. Radovi koje plaćaš izvođačima (vodomjerno okno, kućni priključci, elektro-ormarić) ovise o udaljenosti mreže koja nije javno objavljena, pa ih upiši iz ponude.</p>`;
+    h+=`<p class="meta">Isti iznosi ulaze u procjenu gradnje i ukupnu investiciju. Radovi koje plaćaš izvođačima (vodomjerno okno, kućni priključci, elektro-ormarić) ovise o udaljenosti i stanju mreže, koje potvrđuje distributer, pa ih upiši iz ponude. Udaljenosti evidentiranih vodova su u odjeljku Komunalna infrastruktura.</p>`;
     g("costs").innerHTML=h; if(g("costSum")) g("costSum").textContent=s;
   }
   // gradnja
@@ -2506,6 +2579,7 @@ sheet.addEventListener("click",e=>{const b=e.target.closest(".card[data-go]"); i
 // slojevi: gumb na karti otvara popis bez zatvaranja karte
 document.getElementById("lyrBtn").addEventListener("click",e=>{const l=document.getElementById("layers"), o=l.classList.toggle("open"); e.currentTarget.setAttribute("aria-expanded",o);});
 document.getElementById("lyrInf").addEventListener("change",e=>{ e.target.checked?infLayer.addTo(map):map.removeLayer(infLayer); });
+document.getElementById("lyrSki").addEventListener("change",e=>{ e.target.checked?skiLayer.addTo(map):map.removeLayer(skiLayer); });
 document.getElementById("lyrSun").addEventListener("change",e=>{ SUN.on=e.target.checked; const c=document.getElementById("sunOn"); if(c) c.checked=SUN.on; if(SUN.on&&window.__lastData&&window.__lastData.parcel){sunEnsureNb();} sunDraw(); });
 // izbornik (verzija, stanje servisa)
 document.getElementById("menuBtn").addEventListener("click",()=>{const m=document.getElementById("menu"); m.hidden=!m.hidden;});
@@ -2743,8 +2817,10 @@ function aiContext(){
   };
 }
 function aiInfra(inf){
-  const base={vodovod:"nije dostupno",kanalizacija:"nije dostupno",struja:"nije dostupno",plin:"nije dostupno",
-    napomena:"Javni slojevi ne sadrže ulične mreže; mogućnost priključenja potvrđuje distributer (ViO, HEP ODS, GPZ). Nedostatak podatka ne znači da mreže nema."};
+  const S=window.__ski, M=S&&S.v&&S.v.mreze, one=r=>!S?"nije dostupno":S.e||!r||r.e?"nije dostupno (podaci se nisu učitali)":r.none?`nije dostupno (u krugu od ${SKI.R} m nema evidentiranog voda)`:{udaljenost_od_granice_m:Math.round(r.d*10)/10,status:"evidentirani vod (katastar infrastrukture DGU); ne znači da je priključenje moguće"};
+  const base={vodovod:one(M&&M.vodovod),kanalizacija:one(M&&M.kanalizacija),struja_niski_napon:one(M&&M.struja),plin:"nije dostupno (DGU ne objavljuje plinsku mrežu)",
+    izvor:S&&S.v?`${S.v.izvor}, preuzeto ${S.v.preuzeto}`:null,
+    napomena:"Udaljenost evidentiranog voda nije isto što i mogućnost priključenja; priključenje potvrđuje distributer (ViO, Odvodnja, HEP ODS, GPZ). Evidencija može biti nepotpuna; nedostatak podatka ne znači da mreže nema."};
   if(!inf) return {...base,glavniVodovi:"nije dostupno"};
   const g=[], e=[];
   for(const s of INF_SRC){const r=inf[s.id]; if(!r) continue; if(r.e){e.push(s.id);continue}

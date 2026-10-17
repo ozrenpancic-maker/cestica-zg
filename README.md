@@ -13,6 +13,7 @@ Mobilna web aplikacija: dodirneš zemljište u Zagrebu i dobiješ katastarsku č
 - Odluka o izmjenama i dopuni Odluke o komunalnom doprinosu (Gradska skupština, 13. 12. 2023.)
 - HERA, naknada za priključenje (NN 45/2026); Uredba o Tarifi upravnih pristojbi (NN 156/2022)
 - OpenStreetMap (Overpass) za ceste i sadržaje u okolini
+- Državna geodetska uprava, Sustav katastra infrastrukture (INSPIRE GML, Grad Zagreb): ulični vodovod, kanalizacija i niskonaponska mreža, pripremljeni u `data/ski/` skriptom `tools/ski/pripremi_kvadrate.py` (provjera: `tools/ski/provjeri_kvadrate.py`; analiza: `docs/infrastruktura-dgu-analiza.md`). Plinska mreža nije objavljena.
 - GUP Grada Zagreba, karte 3b (energetski sustav) i 3c (vodnogospodarski sustav) te sloj GUP_Infrastruktura: magistralni vodovod, dalekovodi i kabeli 110 kV+, trafostanice 110 kV, magistralni i VT plinovodi, toplovodi (postojeći i planirani). Ulična mreža vodovoda, kanalizacije, NN struje i distribucijskog plina nije javno objavljena (servisi Javni_vodovod i Javna_kanalizacija su samo statistika; KI_LINIJE je probno područje)
 
 Procjene su orijentacijske. Pravno mjerodavna je lokacijska informacija Grada Zagreba.

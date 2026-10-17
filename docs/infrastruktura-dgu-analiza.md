@@ -48,7 +48,16 @@ Karta obuhvata: `docs/infrastruktura-dgu-obuhvat.png`. Kanalizacija pokriva manj
 4. Napušteni i neaktivni vodovi se isključuju.
 5. Potpunost nije zajamčena. "Nema voda u krugu od X m" nije dokaz da mreže nema.
 
-## 4. Prijedlog integracije (čeka tvoje odobrenje)
+## 4. Integracija (odobreno i napravljeno 17. 10. 2026., grana `razvoj`)
+
+**Stanje:** podaci su uz aplikaciju u `data/ski/` (1.409 kvadrata, 22 MB, 5,7 MB komprimirano), izrađeni skriptom `tools/ski/pripremi_kvadrate.py`.
+
+Provjere:
+- `tools/ski/provjeri_kvadrate.py`: udaljenost iz kvadrata prema izvornim podacima razlikuje se najviše 0,30 m, a 345 od 345 točaka bez voda u 500 m se slaže.
+- Cijeli lanac (kod aplikacije na stvarnim kvadratima, za 12 čestica): najviše 0,71 m razlike od neovisnog izračuna, 3–33 ms po čestici.
+- Kad u krugu od 500 m nema voda, prikazuje se "Podaci nisu dostupni" uz napomenu "u krugu od 500 m nema evidentiranog voda", prema tvom pravilu.
+
+Izvorni prijedlog:
 
 - **Priprema (jednom, skriptom u `tools/ski/`):** samo funkcionalni vodovi, za struju samo niski napon. Pretvorba u WGS84 uz pojednostavljenje do 0,3 m i podjela na kvadrate od 1 km.
 - **Veličina:** vodovod 6,0 MB (1,5 MB komprimirano), kanalizacija 2,3 MB (0,6 MB), struja 10,2 MB (2,4 MB). Najveći pojedinačni kvadrat ima oko 52 kB komprimirano. Aplikacija učita samo 1–4 kvadrata oko čestice. Datoteke idu uz aplikaciju na GitHub Pages, bez novog hostinga i bez ovisnosti o DGU servisu.
@@ -63,9 +72,9 @@ Karta obuhvata: `docs/infrastruktura-dgu-obuhvat.png`. Kanalizacija pokriva manj
 - **Bez podataka** (kvadrat se ne učita, izvan obuhvata): "Podaci nisu dostupni".
 - **Isti podaci idu u:** analizu rizika, kartu (sloj "Vodovi DGU", isključen dok ga ne uključiš), AI kontekst (`getInfrastructure`) i offline način (kvadrati već učitanih čestica).
 
-## 5. Odluke koje trebam od tebe
+## 5. Odluke (stanje)
 
-1. **Integrirati prema prijedlogu?** Repozitorij se time povećava za oko 18 MB, a na mobitel se preuzima samo ono što zatreba.
+1. **Integracija:** odobrena i napravljena.
 2. **Kad u krugu od 500 m nema voda**, što prikazati?
    - **(A)** "Nije evidentiran vod u krugu od 500 m (evidencija može biti nepotpuna)";
    - **(B)** "Podaci nisu dostupni".

@@ -293,11 +293,44 @@ async function infraTests(){
   ok(inf.v&&inf.v.vod.ex&&Math.abs(inf.v.vod.ex.d-50)<2,"magistralni vodovod iz GUP-a na oko 50 m");
   ok(inf.v.plin.pl&&!inf.v.plin.ex&&Math.abs(inf.v.plin.pl.d-120)<3,"planirani VT plinovod na oko 120 m, prepoznat kao planirani");
   ok(inf.v.top.e,"neuspjeh servisa za toplovod je zabilježen kao greška");
-  const html=w.eval("infraHtml")(inf), t=html.replace(/<[^>]+>/g," ").replace(/\s+/g," ");
-  ok(/Vodovod podaci nisu dostupni/.test(t)&&/Kanalizacija podaci nisu dostupni/.test(t)&&/Struja podaci nisu dostupni/.test(t)&&/Plin podaci nisu dostupni/.test(t),"ulične mreže: kratko 'podaci nisu dostupni'");
-  ok(html.length<1500,"odjeljak je kratak ("+html.length+" znakova)");
+  const html=w.eval("infraHtml")(inf,{e:"x"}), t=html.replace(/<[^>]+>/g," ").replace(/\s+/g," ");
+  ok(/Vodovod Podaci nisu dostupni/.test(t)&&/Kanalizacija Podaci nisu dostupni/.test(t)&&/Struja Podaci nisu dostupni/.test(t)&&/Plin Podaci nisu dostupni/.test(t),"bez DGU podataka: kratko 'Podaci nisu dostupni', nikad 0 m");
+  ok(html.length<2500,"odjeljak je kratak ("+html.length+" znakova)");
   ok(/magistralni vodoopskrbni cjevovod \(postojeći\) oko 50 m/.test(t)&&/Plinovod VT \(planirani\) oko 1[12][0-9] m/.test(t),"glavni vodovi iz GUP-a navedeni u sklopljenom popisu");
   ok(/<details>/.test(html),"popis glavnih vodova je sklopljen");
+  // --- ulične mreže iz katastra infrastrukture DGU (pripremljeni kvadrati)
+  {const DLAT=0.009, DLON=0.013, key=(la,lo)=>Math.floor(la/DLAT)+"_"+Math.floor(lo/DLON);
+   const n=c[2][1], e=c[1][0], wv=c[0][0], s=c[0][1], mid=(s+n)/2, enc=pts=>pts.flatMap(([lo,la])=>[Math.round(lo*1e6),Math.round(la*1e6)]);
+   const ks=new Set(); for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++) ks.add(key(mid+i*DLAT,(wv+e)/2+j*DLON));
+   const north40=[[wv-0.0005,n+40/110540],[e+0.0005,n+40/110540]], across=[[wv-0.0002,mid],[e+0.0002,mid]], far=[[wv,n+700/110540],[e,n+700/110540]];
+   const tiles={vodovod:[[1,enc(north40)],[2,enc(far)]],kanalizacija:[[7,enc(across)]]};
+   const idx={v:1,izvor:"DGU test",preuzeto:"2026-10-17",dlat:DLAT,dlon:DLON,mreze:{vodovod:{kvadrati:[...ks]},kanalizacija:{kvadrati:[...ks]},struja:{kvadrati:[]}}};
+   let fail=false, calls=[];
+   w.fetch=(u)=>{u=String(u); calls.push(u); const okj=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b)});
+     if(u.endsWith("data/ski/index.json")) return okj(idx);
+     const m=u.match(/data\/ski\/(\w+)\/(-?\d+_-?\d+)\.json$/); if(m){ if(fail) return Promise.resolve({ok:false,status:500,json:()=>Promise.resolve(null)}); return okj(ks.has(m[2])&&m[2]===key(mid,(wv+e)/2)?tiles[m[1]]||[]:[]); }
+     return okj({type:"FeatureCollection",features:[]});};
+   const sk=await w.eval("settle")(w.eval("loadSki")(pr,{lat:45.84,lng:15.97})), M=sk.v.mreze;
+   ok(Math.abs(M.vodovod.d-40)<0.6,"vodovod 40 m sjeverno od granice: izmjereno "+(M.vodovod.d||0).toFixed(2)+" m (od granice, ne od središta)");
+   ok(M.kanalizacija.d===0,"kanalizacija koja prolazi česticom: 0 m");
+   ok(M.struja.none===true&&!calls.some(u=>/data\/ski\/struja\//.test(u)),"struja bez kvadrata u indeksu: nema voda u krugu, ništa se ne preuzima");
+   const t2=w.eval("infraHtml")(inf,sk).replace(/<[^>]+>/g," ").replace(/\s+/g," ");
+   ok(/Vodovod najbliži evidentirani vod: 40 m/.test(t2),"prikaz: VODOVOD — najbliži evidentirani vod: 40 m");
+   ok(/Kanalizacija najbliži evidentirani vod: 0 m vod prolazi česticom/.test(t2),"prikaz: kanalizacija 0 m uz objašnjenje da vod prolazi česticom");
+   ok(/Struja Podaci nisu dostupni u krugu od 500 m nema evidentiranog voda/.test(t2),"prikaz: struja 'Podaci nisu dostupni' (u krugu od 500 m nema voda), ne 'nema infrastrukture'");
+   ok(/Plin Podaci nisu dostupni/.test(t2)&&/Državna geodetska uprava/.test(t2)&&/potvrđuju/.test(t2),"plin nije dostupan; naveden izvor i da priključak potvrđuje distributer");
+   ok(!/Nema infrastrukture|nema infrastrukture/.test(t2),"nigdje ne piše 'nema infrastrukture'");
+   const rf=w.eval("riskFindings")({...data(w,pr,"2.2."),ski:sk});
+   ok(rf.some(f=>f.t==="Vod prolazi česticom"&&f.cat==="potencijalno")&&rf.some(f=>f.t==="Komunalni priključci"&&/vodovod oko 40 m/.test(f.why)&&f.cat==="neprovjereno"),"analiza rizika: vod kroz česticu je potencijalni rizik, priključci ostaju neprovjereni");
+   fail=true; w.eval("SKI").tiles.clear();
+   const sk2=await w.eval("settle")(w.eval("loadSki")(pr,{lat:45.84,lng:15.97}));
+   ok(sk2.v.mreze.vodovod.e&&sk2.v.mreze.struja.none,"neuspjelo učitavanje kvadrata je greška (ne 'nema voda')");
+   const t3=w.eval("infraHtml")(inf,sk2).replace(/<[^>]+>/g," ").replace(/\s+/g," ");
+   ok(/Vodovod Podaci nisu dostupni podaci katastra infrastrukture se nisu učitali/.test(t3),"prikaz greške: 'Podaci nisu dostupni' uz razlog");
+   ok(w.eval("SKI").tiles.size===0,"neuspjeli kvadrat ne ostaje u memoriji (sljedeći pokušaj ide na mrežu)");
+   w.__ski=sk; const ai=w.eval("aiInfra")(null);
+   ok(Math.abs(ai.vodovod.udaljenost_od_granice_m-40)<0.6&&/ne znači da je priključenje moguće/.test(ai.vodovod.status)&&/nije dostupno/.test(ai.struja_niski_napon),"AI kontekst: udaljenost evidentiranog voda odvojena od mogućnosti priključenja");
+  }
   // korisnički unos troška priključaka ulazi u model jednom
   w.eval("render")(data(w,pr,"2.2."));
   const set=(id,v)=>{const e=w.document.getElementById(id); e.value=v; e.dispatchEvent(new w.Event("input",{bubbles:true}));};
