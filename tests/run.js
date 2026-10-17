@@ -349,6 +349,18 @@ async function infraTests(){
   w.document.getElementById("tToFin").dispatchEvent(new w.Event("click",{bubbles:true}));
   ok(+w.document.getElementById("bArea").value===Math.round(108*1.75)&&w.document.getElementById("bFloors").value==="PPk","simulator prenosi GBP i katnost u procjenu troškova");
   ok(Math.abs(w.__fin.house.foot-108)<0.6,"procjena troškova računa isti tlocrt kao simulator (108 m²)");
+  // udaljenosti od granice i pomak upisom
+  TL.fl="1"; TL.w=12; TL.d=9; TL.rot=0; TL.center=null; tDraw();
+  const S=w.eval("sideDists")();
+  ok(S&&Math.abs(S[1].dist+S[3].dist+12-30)<0.3&&Math.abs(S[0].dist+S[2].dist+9-25)<0.3,"udaljenosti stranica do granice se zbrajaju na širinu i dubinu čestice");
+  w.eval("tMoveSide")(3,4); const S2=w.eval("sideDists")();
+  ok(Math.abs(S2[3].dist-4)<0.2,"upis 4 m lijevo pomakne kuću na 4 m od lijeve granice");
+  // koraci + i −
+  const bw=w.document.querySelector('[data-step="tW"][data-d="0.5"]'); bw.dispatchEvent(new w.Event("click",{bubbles:true}));
+  ok(TL.w===12.5,"gumb + povećava širinu za 0,5 m");
+  const br=w.document.querySelector('[data-step="tRot"][data-d="-5"]'); br.dispatchEvent(new w.Event("click",{bubbles:true}));
+  ok(TL.rot===355,"gumb − okreće za 5° (preko 0° na 355°)");
+  ok(!!TL.rotM,"na karti postoji ručka za okretanje");
   ok(errs.length===0,"bez JS grešaka u simulatoru: "+errs.join(" | "));
 }
 
@@ -385,6 +397,25 @@ async function sunTests(){
   ok(w.document.getElementById("sz475").value==="0.26"&&/2,55 m\/s²/.test(w.document.getElementById("sheet").textContent),"upisana vrijednost a_gR se sprema i preračunava u m/s²");
   ok(!/serklaž/.test(w.document.getElementById("sheet").textContent),"nema zaključaka o konstrukciji");
   ok(errs.length===0,"bez JS grešaka (sunce, elektrana, potres): "+errs.join(" | "));
+}
+
+// ---------------- 11. Mobilno sučelje: unosi se čuvaju pri ponovnom prikazu i promjeni kartice
+{
+  const {w,errs}=boot();
+  const d=data(w,parcelRect(30,25),"2.2."); w.eval("render")(d);
+  const b=w.document.getElementById("bArea"); b.value="177"; b.dispatchEvent(new w.Event("input",{bubbles:true}));
+  w.eval("render")({...d,env:{v:{roads:[],roadLines:[],stops:[]}}});
+  ok(w.document.getElementById("bArea").value==="177","unos površine kuće ostaje nakon ponovnog prikaza iste čestice");
+  w.eval("setTab")("troskovi"); w.eval("setTab")("analiza");
+  ok(w.document.getElementById("bArea").value==="177","unos ostaje nakon promjene kartice");
+  const groups=[...w.document.querySelectorAll("#sheet .grp")].map(g=>g.dataset.g);
+  ok(groups.includes("sum")&&groups.includes("analiza")&&groups.includes("troskovi"),"sadržaj je podijeljen u skupine sažetak, analiza i troškovi");
+  ok(!!w.document.querySelector('.grp[data-g=troskovi] details[data-k="buy"]')&&!!w.document.querySelector('.grp[data-g=troskovi] details[data-k="build"]')&&!!w.document.querySelector('.grp[data-g=analiza] details[data-k="zk"]'),"moduli su u ispravnim skupinama");
+  w.eval("setTab")("spremljeno");
+  ok(!w.document.getElementById("aux").hidden&&w.document.getElementById("sheet").hidden,"Spremljeno se otvara bez brisanja analize");
+  w.document.getElementById("auxBack").dispatchEvent(new w.Event("click",{bubbles:true}));
+  ok(w.document.getElementById("bArea").value==="177"&&!w.document.getElementById("sheet").hidden,"povratak iz Spremljenog vraća analizu s unosima");
+  ok(errs.length===0,"bez JS grešaka u mobilnom sučelju: "+errs.join(" | "));
 }
 
 netTests().then(infraTests).then(sunTests).then(()=>{

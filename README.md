@@ -33,3 +33,12 @@ Pravila su odvojena od aplikacije, u `src/rules.json` (GUP Zagreba), `src/rules_
 - `main`: objavljena verzija (GitHub Pages)
 - `razvoj`: rad u tijeku, objavljuje se tek nakon pregleda
 - `stabilna-2026-10-17`: sigurnosna kopija stabilne verzije
+
+## Mobilno sučelje (faza M)
+Ispod 900 px: karta preko cijelog ekrana, donji panel s tri stanja (sažetak, pola, cijeli ekran), donja navigacija Karta · Analiza · Troškovi · Spremljeno. Sadržaj je podijeljen u skupine (`.grp[data-g]`: sažetak, analiza, troškovi) koje se samo skrivaju i prikazuju, pa se unosi ne gube. Na računalu je raspored kao prije.
+
+Provjere u pregledniku (Chromium, Playwright):
+```
+cd tests && node mobile/make_local.js && python3 mobile/layout.py && python3 mobile/interaction.py
+```
+Ručno na uređaju (automatski testovi to ne zamjenjuju): Android Chrome i iPhone Safari; povlačenje panela, pomicanje i okretanje kuće prstom, tipkovnica kod unosa cijene, okomito i vodoravno, veliki sustavski font, ispis u PDF.
