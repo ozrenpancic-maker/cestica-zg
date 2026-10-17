@@ -127,7 +127,7 @@ h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute
 .calc .row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:14px}
 .calc .row span:last-child{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
 .bgrid>span{min-width:0}
-.bad{color:var(--no)} .good{color:var(--ok)}
+.bad{color:var(--no)} .good{color:var(--ok)} .kv dd.muted{color:var(--muted)}
 details{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
 summary{cursor:pointer;font-weight:500;font-size:14px}
 details ol{padding-left:20px;margin:8px 0 0;font-size:13.5px} details li{margin:4px 0}
@@ -679,7 +679,7 @@ function tDraw(){
     `<table class="rp"><tbody>${R.C.map(c=>`<tr><th>${esc(c.label)}</th><td><b>${esc(c.val)}</b> <em class="kind st-${ST[c.st][0]}">${ST[c.st][1]}</em>${c.note?`<small class="fx">${esc(c.note)}</small>`:""}</td></tr>`).join("")}</tbody></table>`+
     tDistHtml()+`<div class="kd"><button type="button" class="ib" id="tToFin">Prenesi kuću u procjenu troškova</button></div>`;
   if(s){s.textContent=`${String(TL.w).replace(".",",")} × ${String(TL.d).replace(".",",")} m, ${R.F.label}: ${ST[R.st][1]}`; s.className=R.st==="no"?"bad":"";}
-  window.__sim=R;
+  window.__sim=R; projSaveSimSoon();
 }
 function tDistHtml(){
   const S=sideDists(); if(!S) return "";
@@ -1423,6 +1423,7 @@ function render(d){
   window.__cur={key:favKey(parcel,ll),ll:{lat:ll.lat,lng:ll.lng},ces:parcel?parcel.properties.KATASTARSKA_CESTICA:null,ko:parcel?parcel.properties.KATASTARSKA_OPCINA:null,area,buildArea,
     code:(()=>{const r=ruleLookup(up,rows);return r.code?(r.se?"SE ":"")+r.code:null})(),namjena:rows[0]?(rows[0].p.Namjena||rows[0].p.Analitika):null,analitika:rows[0]?rows[0].p.Analitika:null,
     risks:checks?checks.filter(r=>r.v&&r.v.length).map(r=>r.c.label):null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:envelope?Math.round(envelope.area):null};
+  if(!snap&&parcel) projApplySim(window.__cur.key);
   GRP=null; let zkH="";
   let h=G("sum")+`<p id="printHead" class="print-only"></p><div id="printMap"></div>`;
   if(checks) h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(favKey(parcel,ll))?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="shareBtn">Podijeli</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button></div>`;
@@ -1585,6 +1586,7 @@ function render(d){
            h+=`<p class="eyebrow" style="margin-top:8px">Radovi na priključcima (tvoj unos iz ponude)</p>`+inp("kdWorks","Kućni priključci vode, kanalizacije, struje (radovi, okna, ormarić)","ponuda")+inp("kdSeptic","Sabirna jama ili pročistač, ako nema kanalizacije","0")+inp("kdWell","Bunar, ako nema vodovoda","0");}
           h+=`<div id="costs"></div></div></details>`;
           h+=scHtml();
+          h+=projHtml();
           h+=G("analiza");}
       }
       h+=`<details><summary>Sva detaljna pravila za ovu zonu (${zone.items.length})</summary><ol>${zone.items.map(i=>`<li>${esc(i)}</li>`).join("")}</ol></details>`;
@@ -1607,6 +1609,7 @@ function render(d){
   restoreMap();
   sheet.innerHTML=h;
   restoreInputs(snap);
+  if(!snap&&window.__cur) projApplyHouse(window.__cur.key);
   sheet.querySelectorAll("details[data-k]").forEach(dd=>{if(OPEN.has(dd.dataset.k)) dd.open=true});
   sheet.scrollTop=keepScroll;
   try{finUpdate()}catch(err){console.error(err); const o=document.getElementById("bOut")||document.getElementById("buyOut"); if(o) o.innerHTML=`<p class="err">Izračun trenutno nije uspio (${esc(err.message)}). Ostatak aplikacije radi normalno.</p>`}
@@ -1655,9 +1658,9 @@ const REGIMES={
 };
 
 const numv=id=>{const e=document.getElementById(id); if(!e) return null; const v=parseFloat(String(e.value).replace(",",".")); return isFinite(v)?v:null};
-function kdRate(){try{return localStorage.getItem("kdRate")||""}catch(e){return ""}}
+function kdRate(){const r=projKd(window.__cur&&window.__cur.key).rate; return r!=null?String(r):""}
 const KD_ZONES=[["I",18.35],["II",18.00],["III",16.00],["IV",12.00],["V",2.00],["VI",1.50]];
-function kdZone(){try{return localStorage.getItem("kdZone")||""}catch(e){return ""}}
+function kdZone(){return projKd(window.__cur&&window.__cur.key).zone||""}
 
 // ulazi kupnje po čestici
 function infcStore(){try{return JSON.parse(localStorage.getItem("infc")||"{}")}catch(e){return {}}}
@@ -1832,6 +1835,7 @@ function finUpdate(){
   try{cardsUpdate()}catch(e){}
   try{prepUpdate()}catch(e){console.error(e)}
   try{scUpdate()}catch(e){console.error(e)}
+  try{projUpdate()}catch(e){console.error(e)}
   window.__budget=F.total.base?{lo:F.total.lo,hi:F.total.hi,base:F.total.base,land:F.buy?F.buy.price:null,kupnja:F.buy?F.buy.costs:null,acq:F.buy?F.buy.acq:null,build:F.build?{lo:F.build.lo,hi:F.build.hi}:null}:null;
   const fk=window.__cur&&window.__cur.key; if(fk){const a=favs(), f=a.find(x=>x.key===fk); if(f){f.budget=window.__budget; f.land=F.buy?F.buy.price:null; setFavs(a);}}
 }
@@ -1917,6 +1921,109 @@ function prepUpdate(){
 }
 sheet.addEventListener("input",e=>{ if(PREP_IDS.includes(e.target.id)){prepSave(); finUpdate();} });
 sheet.addEventListener("click",e=>{ if(e.target.id==="prepUseHint"){const v=+e.target.dataset.v; for(const id of ["pCut","pFill"]){const el=document.getElementById(id); if(el&&!(numv(id)>0)) el.value=v;} prepSave(); finUpdate();} });
+
+// ================= JEDINSTVENI PROJEKTNI MODEL =================
+// Projekt čestice = sve što korisnik planira za jednu česticu. Dijelovi koji već postoje ostaju u svojim spremištima
+// (buy, prep, infc, scen, ck2), a "proj" dodaje ono što se prije nije spremalo: kuću iz kalkulatora, simulator i zonu
+// komunalnog doprinosa. projGet() sastavlja cijeli projekt na jednom mjestu (za izvještaje, AI, izvoz).
+const PROJ_V=1, PROJ_MAX_BYTES=300000, KW_OPTS=[7.36,11.04,17.25,22.08];
+function projStore(){try{const s=JSON.parse(localStorage.getItem("proj")||"{}"); return s&&typeof s==="object"&&!Array.isArray(s)?s:{}}catch(e){return {}}}
+function projRaw(k){const o=k&&projStore()[k]; return o&&typeof o==="object"?o:{}}
+function projPut(k,part,val){ if(!k) return false;
+  try{const s=projStore(), o=s[k]&&typeof s[k]==="object"?s[k]:{}; if(val==null) delete o[part]; else o[part]=val; o.v=PROJ_V; o.updated=new Date().toISOString(); s[k]=o; localStorage.setItem("proj",JSON.stringify(s)); return true}catch(e){return false} }
+// --- provjera vrijednosti (za spremanje i za uvoz iz datoteke)
+const pNum=(v,min,max)=>{v=typeof v==="string"?parseFloat(v.replace(",",".")):v; return typeof v==="number"&&isFinite(v)&&v>=min&&v<=max?v:null};
+const pEnum=(v,list)=>list.includes(v)?v:null;
+function projCleanHouse(h){ if(!h||typeof h!=="object") return null;
+  const o={hA:pNum(h.hA,0,5000),fl:pEnum(h.fl,Object.keys(FLOORS)),t:pEnum(h.t,Object.keys(BUILD)),std:pEnum(h.std,Object.keys(STD)),ph:pEnum(h.ph,Object.keys(BUILD.klas)),
+    base:h.base===true,yard:pNum(h.yard,0,1e7),kW:pEnum(+h.kW,KW_OPTS),gas:h.gas===true,vol:h.volManual===true?pNum(h.vol,0,1e6):null};
+  o.volManual=o.vol!=null; return o.hA!=null?o:null; }
+function projCleanKd(x){ if(!x||typeof x!=="object") return null; const zone=pEnum(x.zone,KD_ZONES.map(z=>z[0])), rate=pNum(x.rate,0,40); return zone||rate?{zone:zone||"",rate:rate}:null }
+function projCleanSim(x){ if(!x||typeof x!=="object") return null;
+  const o={w:pNum(x.w,3,60),d:pNum(x.d,3,60),rot:pNum(x.rot,0,360),fl:pEnum(x.fl,FLOOR_OPTS.map(f=>f[0])),fh:pNum(x.fh,2.2,5),podrum:x.podrum===true,gar:x.gar===true,gw:pNum(x.gw,2,12),gd:pNum(x.gd,3,15)};
+  const c=Array.isArray(x.center)&&x.center.length===2?[pNum(x.center[0],13,20),pNum(x.center[1],42,47)]:null; o.center=c&&c[0]!=null&&c[1]!=null?c:null;
+  return o.w&&o.d&&o.fl?o:null; }
+// --- kuća iz kalkulatora: spremanje i vraćanje
+function projSaveHouse(){const k=aiCurKey(), I=finInputs(); if(!k||!I) return; const h=projCleanHouse(I); if(h){projPut(k,"house",h); try{projUpdate()}catch(e){}}}
+function projApplyHouse(k){
+  const h=projCleanHouse(projRaw(k).house); if(!h) return false;
+  const set=(id,v)=>{const e=document.getElementById(id); if(!e||v==null) return; if(e.type==="checkbox") e.checked=!!v; else e.value=v;};
+  set("bArea",h.hA); set("bFloors",h.fl); set("bType",h.t); set("bStd",h.std); set("bPhase",h.ph); set("bBase",h.base); set("bYard",h.yard!=null?h.yard:""); set("kdKw",h.kW!=null?String(h.kW):null); set("kdGas",h.gas);
+  const v=document.getElementById("kdVol"); if(v){ if(h.volManual){v.value=h.vol; v.dataset.manual="1"} else v.dataset.manual=""; }
+  return true;
+}
+// --- zona komunalnog doprinosa vrijedi za lokaciju, pa se sprema uz česticu
+function projKd(k){return projCleanKd(projRaw(k).kd)||{zone:"",rate:null}}
+// --- simulator: spremanje (odgođeno) i vraćanje prije crtanja
+let projSimT=null;
+function projSaveSimSoon(){ clearTimeout(projSimT); projSimT=setTimeout(()=>{const k=aiCurKey(); if(!k||!TL.center) return;
+  const s=projCleanSim({w:TL.w,d:TL.d,rot:TL.rot,fl:TL.fl,fh:TL.fh,podrum:TL.podrum,gar:TL.gar,gw:TL.gw,gd:TL.gd,center:TL.center}); if(s){projPut(k,"sim",s); try{projUpdate()}catch(e){}}},400); }
+function projApplySim(k){
+  const s=projCleanSim(projRaw(k).sim); if(!s) return false;
+  for(const f of ["w","d","rot","fl","fh","podrum","gar"]) TL[f]=s[f]; if(s.gw) TL.gw=s.gw; if(s.gd) TL.gd=s.gd;
+  const d=window.__lastData; if(s.center&&d&&d.parcel){try{if(turf.booleanPointInPolygon(turf.point(s.center),d.parcel)) TL.center=s.center}catch(e){}}
+  return true;
+}
+// --- cijeli projekt na jednom mjestu
+function projGet(k){
+  const P=projRaw(k), fav=favs().find(f=>f.key===k)||null, cur=window.__cur&&window.__cur.key===k?window.__cur:null;
+  return {id:k,verzija:PROJ_V,azurirano:P.updated||null,
+    cestica:cur?{broj:cur.ces,ko:cur.ko,povrsina:cur.area,pravilo:cur.code,namjena:cur.namjena}:fav?{broj:fav.ces,ko:fav.ko,povrsina:fav.area,pravilo:fav.code,namjena:fav.namjena}:null,
+    kuca:projCleanHouse(P.house),simulator:projCleanSim(P.sim),komunalniDoprinos:projCleanKd(P.kd),kupnja:buyStore()[k]||null,priprema:prepStore()[k]||null,
+    prikljucci:infcStore()[k]||null,scenariji:scList(k),kontrolnaLista:ckStore()[k]||null,spremljena:!!fav};
+}
+function projParts(k){const p=projGet(k); return [["Kuća u kalkulatoru",!!p.kuca],["Simulator",!!p.simulator],["Zona komunalnog doprinosa",!!(p.komunalniDoprinos&&p.komunalniDoprinos.zone)],["Kupnja zemljišta",!!(p.kupnja&&p.kupnja.price)],["Priprema terena",!!p.priprema],["Radovi na priključcima",!!(p.prikljucci&&Object.keys(p.prikljucci).length)],[`Scenariji (${p.scenariji.length})`,p.scenariji.length>0],["Kontrolna lista",!!(p.kontrolnaLista&&Object.keys(p.kontrolnaLista).length)]]}
+// --- izvoz i uvoz (sigurnosna kopija ili prijenos na drugi uređaj)
+function projExport(k){
+  const c=window.__cur||{};
+  return {app:"ČesticaZG",vrsta:"projekt",verzija:PROJ_V,izvezeno:new Date().toISOString(),cestica:{key:k,broj:c.ces||null,ko:c.ko||null,povrsina:c.area?Math.round(c.area):null},
+    proj:projRaw(k),buy:buyStore()[k]||null,prep:prepStore()[k]||null,infc:infcStore()[k]||null,scen:scList(k),ck:ckStore()[k]||null};
+}
+// vraća {ok,key,data} ili {ok:false,msg}; ništa ne sprema
+function projParseImport(text){
+  if(typeof text!=="string"||text.length>PROJ_MAX_BYTES) return {ok:false,msg:"Datoteka je prevelika ili nije tekst."};
+  let j; try{j=JSON.parse(text)}catch(e){return {ok:false,msg:"Datoteka nije ispravan JSON."}}
+  if(!j||j.app!=="ČesticaZG"||j.vrsta!=="projekt") return {ok:false,msg:"Ovo nije izvoz projekta iz ČesticaZG."};
+  if(j.verzija!==PROJ_V) return {ok:false,msg:"Nepoznata verzija izvoza ("+String(j.verzija).slice(0,10)+")."};
+  const k=j.cestica&&typeof j.cestica.key==="string"&&j.cestica.key.length<=80?j.cestica.key:null; if(!k) return {ok:false,msg:"U datoteci nema oznake čestice."};
+  const P=j.proj||{}, out={proj:{}};
+  const h=projCleanHouse(P.house); if(h) out.proj.house=h; const kd=projCleanKd(P.kd); if(kd) out.proj.kd=kd; const s=projCleanSim(P.sim); if(s) out.proj.sim=s;
+  if(j.buy&&typeof j.buy==="object"){const b=j.buy, o={}; for(const f of ["price","agency","notary","lawyer","geo","other","kapara"]){const v=pNum(b[f],0,1e8); if(v!=null) o[f]=v}
+    o.regime=pEnum(b.regime,Object.keys(REGIMES))||"ppn"; for(const f of ["vatIncl","agencyVat","efile"]) if(typeof b[f]==="boolean") o[f]=b[f]; out.buy=o;}
+  if(j.prep){const c=prepClean(j.prep); if(Object.keys(c).length) out.prep=c;}
+  if(j.infc&&typeof j.infc==="object"){const o={}; for(const f of ["kdWorks","kdSeptic","kdWell"]){const v=pNum(j.infc[f],0,1e7); if(v) o[f]=v} if(Object.keys(o).length) out.infc=o;}
+  if(Array.isArray(j.scen)) out.scen=j.scen.slice(0,SC_MAX).filter(x=>x&&typeof x==="object"&&x.inp).map((x,i)=>({id:String(x.id||i).slice(0,20),name:String(x.name||"Scenarij "+(i+1)).slice(0,80),inp:scClean(x.inp),created:String(x.created||"").slice(0,10)})).filter(x=>x.inp.hA>0);
+  if(j.ck&&typeof j.ck==="object"&&!Array.isArray(j.ck)){const o={}; for(const [a,b] of Object.entries(j.ck).slice(0,100)) if(/^[\w-]{1,40}$/.test(a)&&(typeof b==="boolean"||typeof b==="string"&&b.length<=500)) o[a]=b; out.ck=o;}
+  return {ok:true,key:k,data:out,naziv:j.cestica.broj?`${j.cestica.broj}, k.o. ${j.cestica.ko||""}`:k};
+}
+function projApplyImport(r){
+  const k=r.key, D=r.data, put=(name,v)=>{try{const s=JSON.parse(localStorage.getItem(name)||"{}"); if(v==null) delete s[k]; else s[k]=v; localStorage.setItem(name,JSON.stringify(s))}catch(e){}};
+  try{const s=projStore(); s[k]={...D.proj,v:PROJ_V,updated:new Date().toISOString()}; localStorage.setItem("proj",JSON.stringify(s))}catch(e){return false}
+  put("buy",D.buy||null); put("prep",D.prep||null); put("infc",D.infc||null); put("ck2",D.ck||null); scSave(k,D.scen||[]);
+  if(D.buy&&D.buy.price) setLand(k,String(D.buy.price)); else setLand(k,"");
+  return true;
+}
+function projHtml(){
+  return `<details class="acc" data-k="proj"><summary><span>Projekt čestice</span><b id="projSum"></b></summary><div class="acc-body"><div id="projOut"></div>
+  <div class="kd"><button type="button" class="ib" id="projExp">Izvezi projekt</button><label class="ib" for="projImp" style="display:inline-flex;align-items:center">Uvezi projekt</label><input type="file" id="projImp" accept="application/json,.json" style="position:absolute;width:1px;height:1px;opacity:0"></div>
+  <p class="meta">Projekt se automatski sprema u ovom pregledniku. Izvoz (JSON datoteka) služi kao sigurnosna kopija ili za prijenos na drugi uređaj. Uvoz zamjenjuje projekt te čestice i traži potvrdu.</p></div></details>`;
+}
+function projUpdate(){
+  const o=document.getElementById("projOut"), k=aiCurKey(); if(!o||!k) return;
+  const P=projRaw(k), parts=projParts(k), n=parts.filter(x=>x[1]).length;
+  o.innerHTML=`<dl class="kv">${parts.map(([l,on])=>`<dt>${esc(l)}</dt><dd class="${on?"good":"muted"}">${on?"✓ spremljeno":"nije uneseno"}</dd>`).join("")}</dl>${P.updated?`<p class="meta">Zadnja izmjena: ${esc(new Date(P.updated).toLocaleString("hr-HR"))}</p>`:""}`;
+  const s=document.getElementById("projSum"); if(s) s.textContent=`${n} od ${parts.length} dijelova`;
+}
+sheet.addEventListener("click",e=>{ if(e.target.id!=="projExp") return; const k=aiCurKey(); if(!k) return;
+  const c=window.__cur||{}, blob=new Blob([JSON.stringify(projExport(k),null,1)],{type:"application/json"}), a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download=`cestica-${(c.ko||"").replace(/[^\wčćžšđČĆŽŠĐ-]+/g,"_")}-${(c.ces||"").replace(/[^\w-]+/g,"_")}.json`; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove()},500); });
+sheet.addEventListener("change",e=>{ if(e.target.id!=="projImp") return; const f=e.target.files&&e.target.files[0]; e.target.value=""; if(!f) return;
+  if(f.size>PROJ_MAX_BYTES){alert("Datoteka je prevelika."); return}
+  f.text().then(t=>{const r=projParseImport(t); if(!r.ok){alert("Uvoz nije uspio: "+r.msg); return}
+    const same=r.key===aiCurKey();
+    if(!confirm(`Uvesti projekt za česticu ${r.naziv}?${same?" Postojeći projekt ove čestice bit će zamijenjen.":" Projekt će se spremiti uz tu česticu."}`)) return;
+    projApplyImport(r); if(same&&window.__lastData){const k=r.key; window.__cur=null; render(window.__lastData);} else alert("Projekt je spremljen. Otvori česticu "+r.naziv+" da ga vidiš.");
+  }); });
 
 // ================= SCENARIJI INVESTICIJE =================
 // Više spremljenih varijanti kuće za istu česticu. Svaki scenarij čuva vlastitu kopiju ulaza (isti oblik kao finInputs)
@@ -2030,16 +2137,17 @@ sheet.addEventListener("input",e=>{
   if(/^y[A-Z]/.test(id)){buyRead(); finUpdate();}
   if(id==="kdVol"){e.target.dataset.manual="1"; finUpdate();}
   if(id==="kdWorks"||id==="kdSeptic"||id==="kdWell"){infcSave(); finUpdate();}
-  if(id==="kdRate"){const n=numv("kdRate"); try{localStorage.setItem("kdRate",n>0&&n<=40?String(n):"")}catch(err){} finUpdate();}
+  if(id==="kdRate"){const n=numv("kdRate"), k=aiCurKey(); projPut(k,"kd",projCleanKd({zone:projKd(k).zone,rate:n>0&&n<=40?n:null})); finUpdate();}
   if(/^b[A-Z]/.test(id)) finUpdate();
+  if(/^b[A-Z]/.test(id)||id==="kdVol") projSaveHouse();
 });
 sheet.addEventListener("change",e=>{
   const id=e.target.id||"";
   if(/^y[A-Z]/.test(id)){buyRead(); finUpdate();}
-  if(/^b[A-Z]/.test(id)||id==="kdKw"||id==="kdGas") finUpdate();
-  if(id==="kdZone"){const z=KD_ZONES.find(x=>x[0]===e.target.value); if(z){document.getElementById("kdRate").value=z[1]; try{localStorage.setItem("kdRate",String(z[1]))}catch(err){}} try{localStorage.setItem("kdZone",e.target.value)}catch(err){} finUpdate();}
+  if(/^b[A-Z]/.test(id)||id==="kdKw"||id==="kdGas"){finUpdate(); projSaveHouse();}
+  if(id==="kdZone"){const z=KD_ZONES.find(x=>x[0]===e.target.value), k=aiCurKey(); if(z) document.getElementById("kdRate").value=z[1]; projPut(k,"kd",projCleanKd({zone:e.target.value,rate:z?z[1]:numv("kdRate")})); finUpdate();}
 });
-sheet.addEventListener("click",e=>{ if(e.target.id==="kdVolAuto"){const v=document.getElementById("kdVol"); v.dataset.manual=""; finUpdate();} });
+sheet.addEventListener("click",e=>{ if(e.target.id==="kdVolAuto"){const v=document.getElementById("kdVol"); v.dataset.manual=""; finUpdate(); projSaveHouse();} });
 
 function dogUpdate(){
   const o=document.getElementById("dogOut"); if(!o) return;

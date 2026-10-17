@@ -642,7 +642,53 @@ async function aiTests(){
   ok(errs.length===0,"bez JS grešaka u AI sloju: "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(aiTests).then(sunTests).then(()=>{
+// ---------------- 16. Jedinstveni projektni model (master plan, faza 1)
+async function projTests(){
+  const {w,errs}=boot(); try{w.localStorage.clear()}catch(e){}
+  const E=x=>w.eval(x);
+  const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"3101/2",KATASTARSKA_OPCINA:"REMETE"}), B=parcelRect(30,25,{KATASTARSKA_CESTICA:"5/5",KATASTARSKA_OPCINA:"REMETE"});
+  const dA=data(w,A,"2.2."), dB=data(w,B,"2.2.");
+  const open=d=>{w.__env=d.envelope; E("render")(d);};
+  open(dA); const kA=w.__cur.key;
+  setv(w,"kdZone","II","change"); setv(w,"bArea","180"); setv(w,"bType","mont","change"); setv(w,"bBase",true,"change");
+  const totA=w.__fin.total.base;
+  E("OPEN").add("tloc"); open(dA); E("TL").w=10; E("TL").d=11; E("tDraw")();
+  await new Promise(r=>setTimeout(r,500));
+  open(dB);
+  ok($(w,"kdZone").value===""&&!$(w,"kdRate").value,"zona komunalnog doprinosa ne prelazi na drugu česticu");
+  setv(w,"bArea","120");
+  open(dA);
+  ok(+$(w,"bArea").value===180&&$(w,"bType").value==="mont"&&$(w,"bBase").checked,"kuća iz kalkulatora se pamti uz česticu");
+  ok($(w,"kdZone").value==="II"&&+$(w,"kdRate").value===18,"zona i iznos doprinosa vraćeni za česticu");
+  ok(Math.abs(w.__fin.total.base-totA)<0.01,"ponovno otvaranje daje istu ukupnu investiciju (ništa se ne zbraja dvaput)");
+  ok(E("TL").w===10&&E("TL").d===11&&E("TL").center,"simulator vraća dimenzije i položaj kuće");
+  open(dB); ok(+$(w,"bArea").value===120,"druga čestica ima svoj projekt");
+  open(dA);
+  // cijeli projekt na jednom mjestu
+  setv(w,"yPrice","90000"); setv(w,"pCut","40");
+  const P=E("projGet")(kA);
+  ok(P.kuca.hA===180&&P.simulator.w===10&&P.komunalniDoprinos.zone==="II"&&P.kupnja.price===90000&&P.priprema.pCut===40,"projGet objedinjuje kuću, simulator, zonu, kupnju i pripremu");
+  ok(/dijelova/.test(txt(w,"projSum"))&&/spremljeno/.test(txt(w,"projOut")),"odjeljak Projekt čestice prikazuje što je spremljeno");
+  // izvoz i uvoz
+  const exp=JSON.stringify(E("projExport")(kA)), fin0=w.__fin.total.base;
+  w.localStorage.clear(); open(dB); open(dA);
+  ok(+$(w,"bArea").value!==180||w.__fin.total.base!==fin0,"nakon brisanja pohrane projekt je prazan");
+  const r=E("projParseImport")(exp); ok(r.ok&&r.key===kA,"izvezeni projekt se može pročitati");
+  E("projApplyImport")(r); open(dB); open(dA);
+  ok(+$(w,"bArea").value===180&&$(w,"kdZone").value==="II"&&Math.abs(w.__fin.total.base-fin0)<0.01,"uvoz vraća projekt i isti izračun");
+  // neispravne i zlonamjerne datoteke
+  ok(!E("projParseImport")("nije json").ok&&!E("projParseImport")(JSON.stringify({app:"X"})).ok,"neispravna datoteka se odbija");
+  ok(!E("projParseImport")("x".repeat(400000)).ok,"prevelika datoteka se odbija");
+  const bad=JSON.parse(exp); bad.proj.house.hA=99999; bad.proj.kd.rate=500; bad.buy.price=-5; bad.scen=[{name:"<img src=x onerror=alert(1)>",inp:{hA:150,fl:"P",t:"klas"}}]; bad.ck={"__proto__":true,"ok-1":true}; bad.extra={x:1};
+  const rb=E("projParseImport")(JSON.stringify(bad));
+  ok(rb.ok&&!rb.data.proj.house&&rb.data.proj.kd.rate==null&&rb.data.buy.price==null,"vrijednosti izvan raspona se ne uvoze");
+  E("projApplyImport")(rb); open(dB); open(dA);
+  ok(!w.document.querySelector("#scOut img")&&/&lt;img|<img/.test($(w,"scOut").textContent),"naziv scenarija iz datoteke prikazuje se kao tekst, ne kao HTML");
+  ok(!Object.prototype.hasOwnProperty.call(E("ckStore")()[kA]||{},"__proto__"),"ključ __proto__ iz datoteke se ne uvozi");
+  ok(errs.length===0,"bez JS grešaka u projektnom modelu: "+errs.join(" | "));
+}
+
+netTests().then(infraTests).then(aiTests).then(projTests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
