@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Čestica Zagreb</title>
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#1f6f54">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js"></script>
+<link rel="stylesheet" href="vendor/leaflet-1.9.4/leaflet.css">
+<script src="vendor/leaflet-1.9.4/leaflet.js"></script>
+<script src="vendor/turf-6.5.0/turf.min.js"></script>
 <style>
 /* Layout: full-screen map, results in a bottom sheet (side panel on wide screens) */
 :root{
@@ -40,7 +40,7 @@ main{flex:1;position:relative;min-height:0}
 .layers{position:absolute;top:10px;right:max(10px,env(safe-area-inset-right,0px));z-index:900;display:flex;flex-direction:column;gap:6px}
 .layers label{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:13px;display:flex;gap:6px;align-items:center}
 #panel{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;background:var(--panel);border-top:1px solid var(--line);border-radius:14px 14px 0 0;z-index:1001;box-shadow:0 -6px 24px rgba(0,0,0,.12)}
-#sheet,#aux{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:6px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
+#sheet,#aux,#ai{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:6px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
 #grab{flex:none;height:22px;display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none}
 #grab span{width:44px;height:5px;border-radius:3px;background:var(--line)}
 #tabs{display:none}
@@ -52,7 +52,7 @@ main{flex:1;position:relative;min-height:0}
 body.net-busy #netbar{opacity:1}
 @keyframes nb{from{background-position:-40% 0}to{background-position:140% 0}}
 @media (prefers-reduced-motion:reduce){#netbar{animation:none;background:var(--accent)}}
-@media (min-width:900px){#panel{left:auto;top:10px;right:10px;bottom:10px;width:420px;border-radius:12px;border:1px solid var(--line)} #grab{display:none} #sheet,#aux{padding-top:14px} .layers{right:440px}}
+@media (min-width:900px){#panel{left:auto;top:10px;right:10px;bottom:10px;width:420px;border-radius:12px;border:1px solid var(--line)} #grab{display:none} #sheet,#aux,#ai{padding-top:14px} .layers{right:440px}}
 /* mobitel: karta glavna, panel s tri stanja, donja navigacija */
 @media (max-width:899px){
   header h1{display:none}
@@ -127,7 +127,7 @@ h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute
 .calc .row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:14px}
 .calc .row span:last-child{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
 .bgrid>span{min-width:0}
-.bad{color:var(--no)} .good{color:var(--ok)}
+.bad{color:var(--no)} .good{color:var(--ok)} .kv dd.muted{color:var(--muted)}
 details{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
 summary{cursor:pointer;font-weight:500;font-size:14px}
 details ol{padding-left:20px;margin:8px 0 0;font-size:13.5px} details li{margin:4px 0}
@@ -154,7 +154,7 @@ details p{font-size:13.5px;margin:6px 0}
 #printMap{display:none;height:340px;margin:0 0 12px;border:1px solid var(--line);border-radius:8px;overflow:hidden;position:relative}
 #map.in-print{position:absolute;inset:0}
 @media print{
-  header,.layers,.leaflet-control-zoom,.actions,#tabs,#grab,#menu,#netbar,.cards,.m-only,#aux{display:none!important}
+  header,.layers,.leaflet-control-zoom,.actions,#tabs,#grab,#menu,#netbar,.cards,.m-only,#aux,#ai,#aiBtn{display:none!important}
   .grp{display:block!important}
   #panel{position:static!important;height:auto!important;display:block!important;box-shadow:none!important;border:0!important}
   #sheet{display:block!important}
@@ -195,6 +195,8 @@ details p{font-size:13.5px;margin:6px 0}
 .kd{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:14px}
 .kd input{width:6em;font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg)}
 .kd output{font-family:var(--f-mono);font-weight:500}
+.pr{padding:8px 0;border-bottom:1px solid var(--line)}.pr>b{font-size:14px}.pr .kd{margin-top:4px}.pr .kd label{display:inline-flex;align-items:center;gap:6px}
+.hintbox{background:var(--panel);border:1px dashed var(--line);border-radius:8px;padding:8px 10px;margin:8px 0}
 .chk-no{background:var(--no-bg);color:var(--no)} .chk-warn{background:var(--warn-bg);color:var(--warn)}
 .flag{margin:10px 0 0;padding:8px 10px;border-radius:8px;background:var(--warn-bg);color:var(--warn);font-size:13.5px}
 .spin{display:inline-block;width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:s .8s linear infinite;vertical-align:-1px;margin-right:6px}
@@ -205,7 +207,8 @@ details p{font-size:13.5px;margin:6px 0}
 .kind{font-style:normal;font-size:10.5px;font-weight:600;padding:0 5px;border-radius:8px;margin-left:4px;white-space:nowrap;vertical-align:1px}
 .kind-propis{background:var(--ok-bg);color:var(--ok)} .kind-procjena{background:var(--warn-bg);color:var(--warn)} .kind-unos{background:#e8eefc;color:#2b4a9a}
 @media (prefers-color-scheme:dark){.kind-unos{background:#1e2a44;color:#9fb6ff}}
-.buygrid select{max-width:100%}
+.buygrid select{max-width:100%;width:100%;text-overflow:ellipsis}
+.bgrid>*{min-width:0}
 .ck li{display:block;padding:10px 0;border-top:1px solid var(--line);font-size:13.5px}
 .ck .ckh{display:flex;gap:8px;align-items:flex-start}
 .ck .ckh b{font-size:14px}
@@ -226,9 +229,48 @@ ol.zi{font-size:13.5px;padding-left:18px}
 .pvbars{display:flex;gap:3px;align-items:flex-end;height:80px;margin:8px 0 2px}.pvbars div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}.pvbars span{display:block;width:100%;background:var(--warn);border-radius:3px 3px 0 0}.pvbars small{font-size:10px;color:var(--muted)}
 .favc{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0}
 @media (max-height:500px) and (max-width:899px){#tabs button{min-height:44px;flex-direction:row;gap:6px} #panel.st-half{height:60%}}
-@media (max-width:899px){.ib{white-space:normal;text-align:center} #sheet,#aux{container-type:inline-size}}
+@media (max-width:899px){.ib{white-space:normal;text-align:center} #sheet,#aux,#ai{container-type:inline-size}}
 @container (max-width:330px){.bgrid{grid-template-columns:1fr;gap:2px 0}.bgrid>label{margin-top:6px}.kd .ib,a.ib{max-width:100%}}
 .infk dd{color:var(--muted)}
+.rsum{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+.rb{font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:999px}
+.rb-no{background:var(--no-bg);color:var(--no)} .rb-warn{background:var(--warn-bg);color:var(--warn)} .rb-muted{background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+.st-no{background:var(--no-bg);color:var(--no)}
+ul.risk{list-style:none;margin:0;padding:0}
+ul.risk li{display:flex;flex-direction:column;gap:2px;padding:8px 0 8px 10px;border-top:1px solid var(--line);border-left:3px solid var(--line);font-size:13.5px}
+ul.risk li.risk-no{border-left-color:var(--no)} ul.risk li.risk-warn{border-left-color:var(--warn)}
+ul.risk .rh{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+ul.risk small{color:var(--muted)}
+.scc{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0}.scc .rh{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}.scc .kv{grid-template-columns:9em 1fr}
+@media (min-width:900px){.sccards{display:grid;grid-template-columns:1fr;gap:0}}
+
+/* AI asistent */
+.aion{display:flex;align-items:center;gap:8px;margin-top:8px;min-height:44px;font-size:14px}
+.aihd{display:flex;align-items:center;gap:8px;justify-content:space-between;margin-bottom:4px}
+.aihd b{font-size:16px} .aitag{font:500 11px var(--f-mono);border:1px solid var(--line);border-radius:999px;padding:2px 8px;color:var(--muted)}
+.aimsgs{display:flex;flex-direction:column;gap:10px;margin:8px 0}
+.aiq{align-self:flex-end;background:var(--accent);color:#fff;border-radius:12px 12px 2px 12px;padding:8px 12px;max-width:85%;white-space:pre-wrap;overflow-wrap:anywhere}
+.aia{background:var(--panel);border:1px solid var(--line);border-radius:12px 12px 12px 2px;padding:10px 12px;overflow-wrap:anywhere}
+.aia p{margin:0 0 6px} .aia ul{margin:4px 0 0;padding-left:18px} .aia details{margin-top:6px}
+.aia .tools{font-size:12px;color:var(--muted);margin-top:6px}
+.ains{font-size:12px;color:var(--muted);text-align:center;border-top:1px dashed var(--line);padding-top:6px}
+.aierr{border-color:var(--no)}
+.st{font:600 10.5px var(--f-mono);padding:1px 6px;border-radius:4px;border:1px solid currentColor;white-space:nowrap}
+.st-potv{color:var(--ok)} .st-izr{color:var(--accent)} .st-proc{color:#b26a00} .st-nep{color:var(--no)}
+.aichips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.aiqd summary{font-size:13px;color:var(--muted);min-height:32px;display:flex;align-items:center}
+#ai{position:relative}
+.aichips .ib{font-size:13px}
+.aiform{display:flex;gap:6px;align-items:flex-end;position:sticky;bottom:0;background:var(--bg);padding:6px 0}
+.aiform textarea{flex:1;min-height:44px;max-height:140px;font:inherit;font-size:16px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);resize:vertical}
+.aiset input{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);margin:4px 0 8px}
+#aiBtn{font-weight:700}
+
+/* Android aplikacija */
+.pwabar{position:absolute;top:calc(env(safe-area-inset-top,0px) + 8px);left:50%;transform:translateX(-50%);z-index:1150;width:min(560px,calc(100% - 24px));box-sizing:border-box;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:10px 12px;box-shadow:0 6px 24px rgba(0,0,0,.18);font-size:14px}
+#netState{border-left-color:#b26a00}
+.pwabar .ib{min-height:40px;margin-top:6px}
+#me[disabled]{opacity:.6}
 </style>
 </head>
 <body>
@@ -237,23 +279,27 @@ ol.zi{font-size:13.5px;padding-left:18px}
     <h1>Čestica ZG</h1>
     <input id="q" type="search" placeholder="Adresa ili čestica, npr. Šestine 4027/1" autocomplete="off">
     <button class="ib" id="go" type="button">Traži</button>
-    <button class="ib" id="me" type="button" aria-label="Moja lokacija">◎</button>
+    <button class="ib" id="me" type="button" aria-label="Prikaži moju lokaciju" title="Prikaži moju lokaciju">◎</button>
     <button class="ib" id="favBtn" type="button" aria-label="Spremljene čestice">★</button>
     <button class="ib" id="menuBtn" type="button" aria-label="Izbornik">☰</button>
   </header>
-  <div id="menu" hidden><p class="meta" id="ver" style="margin:0 0 6px"></p><a href="#" id="statBtn2" class="ib">Stanje servisa</a></div>
+  <div id="menu" hidden><p class="meta" id="ver" style="margin:0 0 6px"></p><a href="#" id="statBtn2" class="ib">Stanje servisa</a><label id="aiOnRow" class="aion" hidden><input type="checkbox" id="aiOn"> AI asistent (testno)</label></div>
   <main>
     <div id="map"></div>
     <div class="layers" id="layers">
       <button type="button" class="ib fab" id="lyrBtn" aria-expanded="false" aria-controls="lyrList">Slojevi</button>
+      <button type="button" class="ib fab" id="aiBtn" hidden aria-label="AI asistent">AI</button>
       <div id="lyrList">
         <label><input type="checkbox" id="lyrSat"> Satelit</label>
         <label><input type="checkbox" id="lyrNam" checked> Namjena</label>
         <label><input type="checkbox" id="lyrInf" checked> Vodovi iz GUP-a</label>
+        <label><input type="checkbox" id="lyrSki"> Najbliži vodovi (DGU)</label>
         <label><input type="checkbox" id="lyrSun"> Sjene</label>
       </div>
     </div>
     <div id="netbar" aria-hidden="true"></div>
+    <div id="netState" class="pwabar" role="status" hidden></div>
+    <div id="updBar" class="pwabar" role="alert" hidden>Dostupna je nova verzija aplikacije. <button type="button" class="ib" id="updYes">Ažuriraj</button> <button type="button" class="ib" id="updNo">Kasnije</button><br><small>Tvoje čestice, scenariji i unosi ostaju spremljeni.</small></div>
     <div id="panel" class="st-peek">
       <div id="grab" role="button" tabindex="0" aria-label="Povećaj panel"><span></span></div>
       <section id="sheet" aria-live="polite">
@@ -261,6 +307,7 @@ ol.zi{font-size:13.5px;padding-left:18px}
         <p class="hint">Dodirni zemljište na karti (zumiraj do razine ulice). Dobit ćeš katastarsku česticu, namjenu iz prostornog plana i urbano pravilo GUP-a s uvjetima gradnje.</p><div id="sumEnd"></div>
       </section>
       <section id="aux" hidden></section>
+      <section id="ai" hidden aria-label="AI asistent"></section>
     </div>
   </main>
   <nav id="tabs" aria-label="Glavna navigacija">
@@ -317,7 +364,7 @@ const CHECKS = [
 ];
 // Koridori infrastrukture (GUP čl. 50: DV 110 kV 20 m, 220 kV 25 m, 400 kV 35 m od osi; čl. 53: magistralni plinovod 30 m, VTP 10 m)
 // moduli koji su u razvoju (faze C i D) i još nisu uključeni
-const FEATURES={infra:true,seis:false}; // seis: potresna opasnost, privremeno skrivena
+const FEATURES={infra:true,seis:false,ai:false}; // seis: potresna opasnost, privremeno skrivena; ai: AI asistent (AI-1/AI-2 kod postoji) privremeno isključen: nema stavke u izborniku i ništa se ne šalje; uključuje se postavljanjem na true
 const INFRA=BASE+"GUP_Infrastruktura/FeatureServer/";
 const corrDist=(f,kind)=>{
   if(kind==="ee"){const l=String(f.LAYER||"")+String(f.EE_VODOVI_OPIS||""); return /400|440/.test(l)?35:/220/.test(l)?25:20;}
@@ -418,6 +465,7 @@ async function fetchOnce(url,opts,ms){
 async function getJSON(url,opts={},ms=10000,{retries=1,cache=true}={}){
   const key=(opts.method||"GET")+" "+url+" "+(opts.body||"");
   if(cache){const c=NET.cache.get(key); if(c&&Date.now()-c.t<NET.ttl) return c.v;
+    if(navigator.onLine===false) throw new Error("Nema internetske veze."); // bez interneta ne koristi se stara predmemorija službenih podataka
     const pc=pcGet(key); if(pc){NET.cache.set(key,{t:Date.now(),v:pc}); return pc;}}
   let err;
   for(let a=0;a<=retries;a++){
@@ -470,8 +518,9 @@ const OPEN=new Set();
 sheet.addEventListener("toggle",e=>{const k=e.target.dataset&&e.target.dataset.k; if(k){e.target.open?OPEN.add(k):OPEN.delete(k)}},true);
 map.on("click",e=>inspect(e.latlng));
 async function inspect(ll){
+  if(isOffline()){pwaOfflineInspect(); return}
   const id=++clickId;
-  selLayer.clearLayers(); infLayer.clearLayers(); TL.layer=null; TL.marker=null; TL.rotM=null; TL.center=null; TL.zl=null; TL.zones=null; SUN.nb=null; SUN.layer=null; SUN.nbErr=null; ZK.res=null; window.__infra=null;
+  selLayer.clearLayers(); infLayer.clearLayers(); TL.layer=null; TL.marker=null; TL.rotM=null; TL.center=null; TL.zl=null; TL.zones=null; SUN.nb=null; SUN.layer=null; SUN.nbErr=null; ZK.res=null; window.__infra=null; window.__ski=null; skiLayer.clearLayers();
   L.circleMarker(ll,{radius:5,color:"#000",weight:2,fillColor:"#fff",fillOpacity:1}).addTo(selLayer);
   sheet.innerHTML='<p class="hint"><span class="spin"></span>Tražim česticu, namjenu i urbano pravilo…</p>';
   let [ces,nam,up,upx,gn]=await Promise.all([
@@ -528,14 +577,14 @@ async function inspect(ll){
   if(id!==clickId) return;
   checks.forEach(r=>{if(r.c.draw&&r.v) r.v.forEach(f=>f.geometry&&L.geoJSON(f.geometry,{style:{color:r.c.draw,weight:2,dashArray:"5 4",fillOpacity:.15},interactive:false}).addTo(selLayer))});
   render({...base,checks});
-  const envP=settle(loadEnv(ll,parcel)), infP=FEATURES.infra?settle(loadInfra(parcel,ll)):Promise.resolve(null), sunP=Promise.resolve(null);
-  const [infra,sun]=await Promise.all([infP,sunP]);
+  const envP=settle(loadEnv(ll,parcel)), infP=FEATURES.infra?settle(loadInfra(parcel,ll)):Promise.resolve(null), skiP=FEATURES.infra?settle(loadSki(parcel,ll)):Promise.resolve(null), sunP=Promise.resolve(null);
+  const [infra,sun,ski]=await Promise.all([infP,sunP,skiP]);
   if(id!==clickId) return;
-  window.__infra=infra&&infra.v||null; infraDraw(infra);
-  render({...base,checks,infra,sun});
+  window.__infra=infra&&infra.v||null; window.__ski=ski||null; infraDraw(infra); skiDraw(ski);
+  render({...base,checks,infra,sun,ski});
   const env=await envP;
   if(id!==clickId) return;
-  render({...base,checks,infra,sun,env});
+  render({...base,checks,infra,sun,ski,env});
 }
 
 // --- simulator kuće: pravokutnik kuće (i garaže) koji se pomiče i okreće; provjere prema pravilu
@@ -665,7 +714,7 @@ function tDraw(){
     `<table class="rp"><tbody>${R.C.map(c=>`<tr><th>${esc(c.label)}</th><td><b>${esc(c.val)}</b> <em class="kind st-${ST[c.st][0]}">${ST[c.st][1]}</em>${c.note?`<small class="fx">${esc(c.note)}</small>`:""}</td></tr>`).join("")}</tbody></table>`+
     tDistHtml()+`<div class="kd"><button type="button" class="ib" id="tToFin">Prenesi kuću u procjenu troškova</button></div>`;
   if(s){s.textContent=`${String(TL.w).replace(".",",")} × ${String(TL.d).replace(".",",")} m, ${R.F.label}: ${ST[R.st][1]}`; s.className=R.st==="no"?"bad":"";}
-  window.__sim=R;
+  window.__sim=R; projSaveSimSoon();
 }
 function tDistHtml(){
   const S=sideDists(); if(!S) return "";
@@ -847,18 +896,86 @@ async function loadInfra(parcel,ll){
   })));
   return out;
 }
-function infraHtml(inf){
+// --- ulične mreže iz katastra infrastrukture (DGU SKI, INSPIRE), pripremljene skriptom tools/ski/pripremi_kvadrate.py
+// Kvadrati od oko 1 km uz aplikaciju (data/ski/). Udaljenost se računa od granice čestice do osi voda (minDistM).
+// Stanja: d (m) = najbliži evidentirani vod u krugu SKI.R; none = u krugu nema evidentiranog voda; e = podaci se nisu učitali.
+const SKI={idx:null,tiles:new Map(),R:500,NETS:[["vodovod","Vodovod","najbliži evidentirani vod","#1e6fd9"],["kanalizacija","Kanalizacija","najbliži evidentirani vod","#7a4a1e"],["struja","Struja","najbliži evidentirani niskonaponski vod","#c23b22"]]};
+async function skiFetch(path,ms=12000){
+  const ac=new AbortController(), t=setTimeout(()=>ac.abort(),ms);
+  try{const r=await fetch(path,{signal:ac.signal}); if(!r.ok) throw new Error("HTTP "+r.status); return await r.json()}
+  finally{clearTimeout(t)}
+}
+async function skiIndex(){
+  if(SKI.idx) return SKI.idx;
+  const j=await skiFetch("data/ski/index.json");
+  if(!j||j.v!==1||!j.mreze) throw new Error("neispravan indeks");
+  j.sets={}; for(const [k,m] of Object.entries(j.mreze)) j.sets[k]=new Set(m.kvadrati);
+  SKI.idx=j; return j;
+}
+async function skiTile(net,key){
+  const k=net+"/"+key; if(SKI.tiles.has(k)) return SKI.tiles.get(k);
+  const p=skiFetch("data/ski/"+k+".json").then(a=>{ if(!Array.isArray(a)) throw new Error("neispravan kvadrat"); return a; });
+  SKI.tiles.set(k,p); p.catch(()=>SKI.tiles.delete(k)); // neuspjelo učitavanje ne ostaje u memoriji
+  if(SKI.tiles.size>80) SKI.tiles.delete(SKI.tiles.keys().next().value);
+  return p;
+}
+async function loadSki(parcel,ll){
+  const I=await skiIndex();
+  const bb=parcel?turf.bbox(parcel):[ll.lng,ll.lat,ll.lng,ll.lat], lat=(bb[1]+bb[3])/2;
+  const dla=SKI.R/110540, dlo=SKI.R/(111320*Math.cos(lat*Math.PI/180));
+  const B=[bb[0]-dlo,bb[1]-dla,bb[2]+dlo,bb[3]+dla];
+  const keys=[]; for(let i=Math.floor(B[1]/I.dlat);i<=Math.floor(B[3]/I.dlat);i++) for(let j=Math.floor(B[0]/I.dlon);j<=Math.floor(B[2]/I.dlon);j++) keys.push(i+"_"+j);
+  const mx=1/(111320*Math.cos(lat*Math.PI/180)), my=1/110540;
+  const out={};
+  await Promise.all(SKI.NETS.map(async([net])=>{
+    try{
+      const ks=keys.filter(k=>I.sets[net]&&I.sets[net].has(k)), arrs=await Promise.all(ks.map(k=>skiTile(net,k)));
+      let best=null; const seen=new Set();
+      for(const arr of arrs) for(const [id,f] of arr){
+        if(seen.has(id)) continue; seen.add(id);
+        let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9; for(let i=0;i<f.length;i+=2){const x=f[i]/1e6,y=f[i+1]/1e6; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y;}
+        // gruba udaljenost obuhvata voda od obuhvata čestice; vod koji je sigurno dalji od dosadašnjeg najbližeg se preskače
+        const gx=Math.max(0,x0-bb[2],bb[0]-x1)/mx, gy=Math.max(0,y0-bb[3],bb[1]-y1)/my, rough=Math.hypot(gx,gy);
+        if(rough>SKI.R||(best&&rough>best.d)) continue;
+        const c=[]; for(let i=0;i<f.length;i+=2) c.push([f[i]/1e6,f[i+1]/1e6]);
+        const geom=c.length>1?{type:"LineString",coordinates:c}:{type:"Point",coordinates:c[0]};
+        const d=minDistM(geom,parcel,ll);
+        if(d!=null&&isFinite(d)&&d<=SKI.R&&(!best||d<best.d)) best={d,geom};
+      }
+      out[net]=best?{d:best.d,geom:best.geom}:{none:true};
+    }catch(err){out[net]={e:err.message||"greška"}}
+  }));
+  return {mreze:out,izvor:I.izvor,preuzeto:I.preuzeto};
+}
+function skiText(r,lbl){
+  if(!r) return {t:"učitavam…",s:""};
+  if(r.e) return {t:"Podaci nisu dostupni",s:"podaci katastra infrastrukture se nisu učitali"};
+  if(r.none) return {t:"Podaci nisu dostupni",s:`u krugu od ${SKI.R} m nema evidentiranog voda`};
+  if(r.d<0.5) return {t:`${lbl}: 0 m`,s:"vod prolazi česticom ili njezinom granicom",cross:true};
+  return {t:`${lbl}: ${r.d<1?"manje od 1":fmt(Math.round(r.d))} m`,s:""};
+}
+const skiLayer=L.layerGroup();
+function skiDraw(ski){
+  skiLayer.clearLayers(); const M=ski&&ski.v&&ski.v.mreze; if(!M) return;
+  for(const [net,,,col] of SKI.NETS){const r=M[net]; if(r&&r.geom) L.geoJSON(r.geom,{style:{color:col,weight:4,opacity:.9},interactive:false}).addTo(skiLayer);}
+}
+function infraHtml(inf,ski){
   let h=`<h2>Komunalna infrastruktura</h2>`;
   if(!inf) return h+`<p class="hint"><span class="spin"></span>Učitavam…</p>`;
   const o=inf.v||{}, dm=x=>x.d<1?"uz česticu":"oko "+fmt(Math.max(1,Math.round(x.d)))+" m";
-  // ulične mreže nisu javni podaci: samo kratka oznaka
-  h+=`<dl class="kv infk">${["Vodovod","Kanalizacija","Struja","Plin"].map(n=>`<dt>${n}</dt><dd>podaci nisu dostupni</dd>`).join("")}</dl>`;
+  // ulične mreže: katastar infrastrukture DGU (vodovod, kanalizacija, niski napon); plin nije objavljen
+  const SM=ski&&ski.v&&ski.v.mreze, SE=ski&&ski.e;
+  const rowsS=SKI.NETS.map(([net,name,lbl])=>{const x=SE?{t:"Podaci nisu dostupni",s:"podaci katastra infrastrukture se nisu učitali"}:skiText(SM?SM[net]:null,lbl); return `<dt>${name}</dt><dd${x.cross?' class="bad"':""}>${esc(x.t)}${x.s?`<small class="fx">${esc(x.s)}</small>`:""}</dd>`}).join("");
+  h+=`<dl class="kv infk">${rowsS}<dt>Plin</dt><dd>Podaci nisu dostupni<small class="fx">DGU ne objavljuje plinsku mrežu za preuzimanje</small></dd></dl>`;
+  if(SM||SE) h+=`<p class="meta">Udaljenost od granice čestice do osi evidentiranog voda. Izvor: Državna geodetska uprava, katastar infrastrukture${ski&&ski.v&&ski.v.preuzeto?" (preuzeto "+esc(ski.v.preuzeto.split("-").reverse().join(". ")+".")+")":""}. Evidencija može biti nepotpuna; promjer i vrsta cijevi nisu objavljeni, a niski napon može uključivati i javnu rasvjetu. Mogućnost i trošak priključenja potvrđuju Vodoopskrba i odvodnja te HEP ODS.</p>`;
   // glavni vodovi iz GUP-a, samo ako postoje u blizini, sklopljeno
   const items=[], errs=[];
   for(const s of INF_SRC){const r=o[s.id]; if(!r) continue; if(r.e){errs.push(s.id);continue}
     for(const [x,t] of [[r.ex,"postojeći"],[r.pl,"planirani"]]) if(x) items.push(`<li>${esc(x.desc)} (${t}) ${dm(x)}</li>`);}
   if(items.length) h+=`<details><summary>Glavni vodovi iz GUP-a u blizini (${items.length})</summary><ul class="zi">${items.join("")}</ul><p class="meta">Na glavne vodove kuća se ne priključuje izravno; ucrtani su na karti. Izvor: GUP Grada Zagreba, karte 3b i 3c.</p></details>`;
   else if(errs.length) h+=`<p class="meta">Podaci o glavnim vodovima iz GUP-a trenutno nisu dostupni. <button type="button" class="ib retry">Pokušaj ponovno</button></p>`;
+  else h+=`<p class="meta">Glavni vodovi iz GUP-a: nijedan u krugu od ${INF_R} m.</p>`;
+  if(items.length&&errs.length) h+=`<p class="meta">Dio slojeva GUP-a nije odgovorio, pa popis glavnih vodova može biti nepotpun.</p>`;
   return h;
 }
 function infraDraw(inf){
@@ -1118,7 +1235,7 @@ function envHtml(env,gbp){
   if(o.school) rows.push(["Škola",`${o.school.n} · ${o.school.d} m`]);
   if(o.shop) rows.push(["Trgovina",`${o.shop.n} · ${o.shop.d} m`]);
   if(o.pharmacy) rows.push(["Ljekarna",`${o.pharmacy.n} · ${o.pharmacy.d} m`]);
-  h+=`<dl class="kv">${rows.map(([a,b])=>`<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join("")}</dl><p class="meta">Udaljenosti zračnom linijom od sredine čestice. Vodovod i kanalizacija nisu javno dostupni kao podaci; provjeri kod Vodoopskrbe i odvodnje.</p>`;
+  h+=`<dl class="kv">${rows.map(([a,b])=>`<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join("")}</dl><p class="meta">Udaljenosti zračnom linijom od sredine čestice. Udaljenosti do vodova su u odjeljku Komunalna infrastruktura.</p>`;
   return h;
 }
 
@@ -1274,6 +1391,123 @@ function pickZone(rule,analitika){
   return rule.zone.find(z=>keys.some(k=>z.zona.toLowerCase().includes(k)))||(keys.length?null:null);
 }
 
+// ================= RIZICI I UPOZORENJA =================
+// Objedinjuje nalaze koje aplikacija već dobiva (provjere slojeva, pravila, okolina, nagib, zgrade, infrastruktura).
+// Kategorije: "potvrdeno" = ograničenje iz službenog sloja ili pravila; "potencijalno" = mogući rizik ili procjena;
+// "neprovjereno" = podatak nije dostupan ili servis nije odgovorio (nikad se ne tumači kao "nema rizika").
+const RSRC={
+  upu:["Karta 4b Procedure, GUP Grada Zagreba (ponovna javna rasprava 2024.)","2024."],
+  uan:["Karta 4b Procedure, GUP Grada Zagreba (ponovna javna rasprava 2024.)","2024."],
+  rez:["Karta 4a Urbana pravila, rezervacija proširenja ulica, GUP (2024.)","2024."],
+  kliz:["Baza klizišta Grada Zagreba (ArcGIS Grada Zagreba)",null],
+  kult:["Karta 4d Kultura, GUP Grada Zagreba (2024.)","2024."],
+  prir:["Karta 4c Zaštita prirode, GUP Grada Zagreba (2024.)","2024."],
+  voda:["Karta 3c Vodnogospodarski sustav, vodozaštitne zone, GUP (2024.)","2024."],
+  potok:["Karta 3c Vodnogospodarski sustav, koridori potoka, GUP (2024.)","2024."],
+  popl:["Karta 3c, planirana akumulacija i plavljenje (HE sustav Save), GUP (2024.)","2024."],
+  dv:["GUP Grada Zagreba, energetski sustav (GUP_Infrastruktura)",null], dvSE:["GUP Sesveta, energetski sustav (GUP_Infrastruktura SE)",null],
+  plin:["GUP Grada Zagreba, plinovodi (GUP_Infrastruktura)",null], plinSE:["GUP Sesveta, plinovodi (GUP_Infrastruktura SE)",null],
+  prod:["GUP Grada Zagreba, produktovodi",null], prodSE:["GUP Sesveta, produktovodi",null]
+};
+const RCHECK={
+  upu:"Status urbanističkog plana uređenja kod Zavoda za prostorno uređenje; bez donesenog UPU-a gradnja u pravilu nije moguća.",
+  uan:"Uvjete natječaja i obvezu provedbe kod Gradskog ureda.",
+  rez:"Koliko čestice otpada na proširenje ulice (lokacijska informacija, geodet).",
+  kliz:"Geotehnički pregled terena prije kupnje.",
+  kult:"Posebne uvjete konzervatora (Gradski zavod za zaštitu spomenika kulture i prirode).",
+  prir:"Uvjete zaštite prirode za zahvat.",
+  voda:"Ograničenja za odvodnju i sabirne jame u vodozaštitnoj zoni (Hrvatske vode, ViO).",
+  potok:"Vodopravne uvjete i udaljenost gradnje od vodotoka (Hrvatske vode).",
+  popl:"Status planirane akumulacije i ograničenja gradnje.",
+  dv:"Posebne uvjete HOPS-a ili HEP-a; točan položaj voda geodetskim snimkom.", dvSE:"Posebne uvjete HOPS-a ili HEP-a; točan položaj voda geodetskim snimkom.",
+  plin:"Suglasnost Plinacra ili Gradske plinare; točan položaj plinovoda.", plinSE:"Suglasnost Plinacra ili Gradske plinare; točan položaj plinovoda.",
+  prod:"Uvjete upravitelja produktovoda (JANAF).", prodSE:"Uvjete upravitelja produktovoda (JANAF)."
+};
+function parcelShape(parcel){
+  try{
+    const A=turf.area(parcel.geometry), P=turf.length(turf.polygonToLine(parcel.geometry),{units:"kilometers"})*1000;
+    const pp=4*Math.PI*A/(P*P); // Polsby–Popper: 1 = krug, kvadrat 0,785, uska duga čestica < 0,3
+    const bb=turf.bbox(parcel.geometry), w=turf.distance([bb[0],bb[1]],[bb[2],bb[1]],{units:"kilometers"})*1000, h=turf.distance([bb[0],bb[1]],[bb[0],bb[3]],{units:"kilometers"})*1000;
+    return {A,P,pp,minDim:Math.min(w,h)};
+  }catch(e){return null}
+}
+function riskFindings(d){
+  const {parcel,rows,checks,env,slope,zgrade,envelope,up,upx,nam,ces}=d, F=[];
+  const add=(cat,imp,t,why,src,date,chk)=>F.push({cat,imp,t,why,src,date,chk});
+  // namjena
+  if(nam&&nam.e&&!(rows&&rows.length)) add("neprovjereno","visoka","Namjena zemljišta","Sloj planirane namjene nije odgovorio.","GIS baza planirane namjene Grada Zagreba","2023.","Ponovi provjeru ili traži lokacijsku informaciju.");
+  else if(rows&&rows.length){const v=VERDICT[rows[0].p.Analitika];
+    if(v&&v[0]==="no") add("potvrdeno","visoka","Namjena ne dopušta gradnju",v[1],"GIS baza planirane namjene (prostorni planovi)","2023.","Lokacijsku informaciju; moguće izmjene plana.");
+    else if(v&&v[0]==="warn") add("potencijalno","srednja","Ograničena namjena",v[1],"GIS baza planirane namjene (prostorni planovi)","2023.","Što se točno smije graditi (lokacijska informacija).");
+    if(rows.length>1&&rows[1].share!=null&&rows[1].share>0.05){const nb=rows.filter(r=>!BUILDABLE.has(r.p.Analitika)).reduce((a,r)=>a+(r.share||0),0);
+      if(nb>0.05) add("potvrdeno",nb>0.5?"visoka":"srednja","Dio čestice izvan građevinske namjene",`Oko ${Math.round(nb*100)} % čestice je u namjeni koja ne dopušta gradnju; izračuni koriste samo građevinski dio.`,"GIS baza planirane namjene","2023.","Granicu namjene na čestici (lokacijska informacija).");}
+  } else add("neprovjereno","visoka","Namjena zemljišta","Za lokaciju nema podataka o namjeni (možda je izvan Grada Zagreba).","GIS baza planirane namjene","2023.","Lokacijsku informaciju.");
+  // provjere slojeva
+  if(checks) for(const r of checks){
+    const src=RSRC[r.c.id]||[r.c.label,null];
+    if(r.e){add("neprovjereno","srednja",r.c.label,"Servis nije odgovorio, pa provjera nije napravljena.",src[0],src[1],"Ponovi provjeru.");continue}
+    if(r.v&&r.v.length) add(r.c.sev==="no"?"potvrdeno":"potencijalno",r.c.sev==="no"?"visoka":"srednja",r.c.label,r.c.hit(r.v[0].properties||{},r.v.map(f=>f.properties||{})),src[0],src[1],RCHECK[r.c.id]||"Uvjete nadležnog tijela.");
+  }
+  // poplave: službene karte opasnosti od poplava nisu povezane
+  add("neprovjereno","srednja","Opasnost od poplava","Provjereni su samo slojevi GUP-a (potoci, planirana akumulacija). Službene karte opasnosti od poplava Hrvatskih voda nisu povezane s aplikacijom, pa ovo nije potvrda da poplavnog rizika nema.","Hrvatske vode, karte opasnosti od poplava",null,"Kartu opasnosti od poplava u pregledniku Hrvatskih voda (preglednik.voda.hr) i iskustva susjeda.");
+  // urbano pravilo
+  const {code,rule}=ruleLookup(up,rows||[]);
+  if(up&&up.e) add("neprovjereno","visoka","Urbano pravilo","Sloj urbanih pravila nije odgovorio.","Karta 4a Urbana pravila, GUP (2024.)","2024.","Ponovi provjeru.");
+  if(upx&&upx.v&&upx.v.length) add("potencijalno","srednja","Iznimka iz urbanih pravila","Na lokaciji vrijedi iznimka iz urbanih pravila; može mijenjati uvjete gradnje.","Karta 4a Urbana pravila, iznimke (2024.)","2024.","Koja iznimka vrijedi (lokacijska informacija).");
+  const RP=window.__ruleP||[];
+  for(const x of RP) if(x.status==="provjera"&&["sirina","pravac","meda","minC","etaze"].includes(x.id)) add("potencijalno","niska",x.label+" (pravilo "+(code||"")+")",`${x.value?x.value+": ":""}tekst pravila sadrži uvjet koji aplikacija ne može provjeriti.`,RULES_META&&RULES_META.GUP?RULES_META.GUP.naziv:"Odluka o GUP-u",RULES_META&&RULES_META.GUP?RULES_META.GUP.datum:null,"Lokacijsku informaciju"+(x.note?" ("+x.note+")":"")+".");
+  // veličina i oblik čestice
+  if(parcel){
+    const A=d.area, pp=RP.find(x=>x.id==="minC");
+    const minC=pp&&pp.value?toNum(String(pp.value).replace(/[^\d.,]/g,"")):null;
+    if(minC&&A<minC*0.95){const zone=rule&&rows&&rows[0]?pickZone(rule,rows[0].p.Analitika):null, sx=zone?smallParcelRule(zone):null;
+      add(sx?"potencijalno":"potvrdeno","visoka","Čestica manja od propisane",`Površina ${fmt(A)} m², a za novu gradnju treba ${fmt(minC)} m².${sx?" Pravilo ima posebnu odredbu za manje čestice (rekonstrukcija, zamjenska građevina, interpolacija).":""}`,"Odluka o GUP-u i katastarska čestica (2023.)","2023.","Lokacijsku informaciju; mogućnost spajanja sa susjednom česticom.");}
+    const sh=parcelShape(parcel);
+    if(sh&&(sh.pp<0.35||sh.minDim<12)) add("potencijalno",sh.minDim<10?"visoka":"srednja","Uska ili nepravilna čestica",`Oblik čestice (najmanja širina obuhvata oko ${fmt(sh.minDim)} m) može ograničiti tlocrt kuće zbog udaljenosti od međa.`,"Katastarske čestice Grada Zagreba (2023.), izračun aplikacije","2023.","Probni tlocrt u simulatoru; stvarne međe geodetskim snimkom.");
+    if(envelope&&envelope.geom===null) add("potvrdeno","visoka","Nema prostora za kuću","Nakon udaljenosti od međa na građevinskom dijelu čestice ne ostaje prostor za građevinu.","Izračun aplikacije iz pravila i katastarske čestice",null,"Pravila za poluugrađenu ili ugrađenu gradnju; lokacijsku informaciju.");
+  }
+  // pristup
+  if(env&&env.e) add("neprovjereno","visoka","Pristup javnoj prometnici","Podaci o cestama (OpenStreetMap) nisu se učitali.","OpenStreetMap",null,"Zemljišnoknjižni status puta uz česticu.");
+  else if(env&&env.v){const car=env.v.roads.filter(r=>r.ok);
+    if(!env.v.roads.length) add("potencijalno","visoka","Pristup javnoj prometnici","U OpenStreetMapu nema ceste uz česticu.","OpenStreetMap (podaci zajednice, nisu službeni)",null,"Ima li čestica izlaz na javni put ili upisanu služnost prolaza.");
+    else if(!car.length) add("potencijalno","srednja","Pristup javnoj prometnici","Uz česticu je samo staza ili poljski put.","OpenStreetMap (podaci zajednice, nisu službeni)",null,"Status puta (javno dobro ili privatna čestica) i propisanu širinu pristupa.");
+    else add("neprovjereno","niska","Pravni status pristupa",`Uz česticu je cesta (${car[0].name||"bez naziva"}), ali iz podataka se ne vidi je li javno dobro.`,"OpenStreetMap (podaci zajednice, nisu službeni)",null,"Zemljišnoknjižni izvadak čestice ceste.");}
+  else if(checks) add("neprovjereno","niska","Pristup javnoj prometnici","Podaci o cestama još se učitavaju.","OpenStreetMap",null,"");
+  // nagib
+  if(slope&&slope.e) add("neprovjereno","niska","Nagib terena","Podaci o visinama nisu se učitali.","Copernicus DEM (Open-Meteo)",null,"Geodetski snimak terena.");
+  else if(slope&&slope.v){const s=slope.v.slope;
+    if(s>=20) add("potencijalno","visoka","Strm teren",`Nagib u okolini oko ${Math.round(s)} %. Računaj s potpornim zidovima i skupljim temeljenjem.`,"Copernicus DEM, rezolucija oko 90 m (Open-Meteo)",null,"Geodetski snimak i geotehnički pregled; model ne vidi lokalne strmine.");
+    else if(s>=10) add("potencijalno","srednja","Umjereno strm teren",`Nagib u okolini oko ${Math.round(s)} %.`,"Copernicus DEM, rezolucija oko 90 m (Open-Meteo)",null,"Geodetski snimak terena.");}
+  // komunalna infrastruktura
+  {const SM=d.ski&&d.ski.v&&d.ski.v.mreze, NM={vodovod:"vodovod",kanalizacija:"kanalizacija",struja:"niskonaponski vod"};
+   const known=SM?Object.entries(SM).filter(([,r])=>r&&r.d!=null).map(([k,r])=>`${NM[k]} ${r.d<1?"uz česticu":"oko "+fmt(Math.round(r.d))+" m"}`):[];
+   add("neprovjereno","srednja","Komunalni priključci",(known.length?`Najbliži evidentirani vodovi (katastar infrastrukture DGU): ${known.join(", ")}. Evidentirani vod ne znači da je priključenje moguće ni koliko košta.`:"Za ovu česticu nema podataka o uličnim mrežama.")+" Plinska mreža nije javno objavljena.","DGU katastar infrastrukture; ViO, HEP ODS, Gradska plinara",d.ski&&d.ski.v?d.ski.v.preuzeto:null,"Pisani upit Vodoopskrbi i odvodnji; elektroenergetska suglasnost HEP ODS-a; upit Gradskoj plinari.");
+   const cross=SM?Object.entries(SM).filter(([,r])=>r&&r.d!=null&&r.d<0.5).map(([k])=>NM[k]):[];
+   if(cross.length) add("potencijalno","srednja","Vod prolazi česticom",`Prema katastru infrastrukture česticom ili njezinom granicom prolazi: ${cross.join(", ")}. Iznad voda obično se ne smije graditi, a vod može imati zaštitni pojas ili pravo služnosti.`,"DGU katastar infrastrukture",d.ski.v.preuzeto,"Izvod iz katastra infrastrukture i zemljišne knjige (služnost); uvjeti upravitelja voda.");}
+  // postojeće zgrade i rekonstrukcija
+  if(zgrade&&zgrade.e) add("neprovjereno","niska","Postojeće građevine","Sloj zgrada nije odgovorio.","Topografska osnova Grada Zagreba (2018.)","2018.","Obilazak čestice.");
+  else if(zgrade&&zgrade.v&&zgrade.v.n){const zf=zgrade.v.area, tl=window.__tl;
+    add("potencijalno","srednja","Postojeća građevina na čestici",`Ucrtano ${zgrade.v.n===1?"1 zgrada":zgrade.v.n+" zgrade"} (oko ${fmt(zf)} m² tlocrta). Rekonstrukcija ili dogradnja moguća je samo za legalnu građevinu.${tl&&zf>tl?" Postojeći tlocrt je veći od dopuštenog za novu gradnju, pa dogradnja nije moguća bez smanjenja.":""}`,"Topografska osnova Grada Zagreba (2018.)","2018.","Građevinsku i uporabnu dozvolu ili rješenje o izvedenom stanju; upis zgrade u zemljišnu knjigu.");}
+  return F;
+}
+const RCAT={potvrdeno:["no","Potvrđeno ograničenje"],potencijalno:["warn","Potencijalni rizik"],neprovjereno:["muted","Nije moguće provjeriti"]};
+const RIMP={visoka:3,srednja:2,niska:1};
+function riskHtml(d){
+  let h=`<h2 id="sec-rizici">Rizici i upozorenja</h2>`;
+  if(!d.checks) return h+`<p class="hint"><span class="spin"></span>Prikupljam provjere…</p>`;
+  const F=riskFindings(d).sort((a,b)=>(a.cat===b.cat?0:a.cat==="potvrdeno"?-1:b.cat==="potvrdeno"?1:a.cat==="potencijalno"?-1:1)||RIMP[b.imp]-RIMP[a.imp]);
+  window.__risks=F;
+  const n=c=>F.filter(f=>f.cat===c).length, top=F.filter(f=>f.cat!=="neprovjereno"&&f.imp==="visoka").slice(0,3);
+  h+=`<div class="rsum"><span class="rb rb-no">${n("potvrdeno")} potvrđeno</span><span class="rb rb-warn">${n("potencijalno")} potencijalno</span><span class="rb rb-muted">${n("neprovjereno")} nije moguće provjeriti</span></div>`;
+  if(top.length) h+=`<ul class="checks">${top.map(f=>`<li class="chk chk-${RCAT[f.cat][0]==="no"?"no":"warn"}"><b>${esc(f.t)}</b><span>${esc(f.why)}</span></li>`).join("")}</ul>`;
+  else if(!n("potvrdeno")&&!(d.checks||[]).some(r=>r.e)) h+=`<p class="verdict v-ok" style="margin:6px 0">Nisu nađena ozbiljna ograničenja u provjerenim podacima. Dio podataka nije moguće provjeriti, vidi popis.</p>`;
+  h+=`<details class="acc" data-k="risks"><summary><span>Svi nalazi (${F.length})</span><b>${n("potvrdeno")} · ${n("potencijalno")} · ${n("neprovjereno")}</b></summary><div class="acc-body">`;
+  for(const c of ["potvrdeno","potencijalno","neprovjereno"]){const L=F.filter(f=>f.cat===c); if(!L.length) continue;
+    h+=`<p class="eyebrow" style="margin-top:10px">${RCAT[c][1]}</p><ul class="risk">${L.map(f=>`<li class="risk-${RCAT[c][0]}"><div class="rh"><b>${esc(f.t)}</b><em class="kind st-${f.imp==="visoka"?"no":f.imp==="srednja"?"warn":"muted"}">važnost: ${f.imp}</em></div><span>${esc(f.why)}</span><small>Izvor: ${esc(f.src)}${f.date?", "+esc(f.date):""}</small>${f.chk?`<small>Provjeri: ${esc(f.chk)}</small>`:""}</li>`).join("")}</ul>`;}
+  h+=`<p class="meta">"Nije moguće provjeriti" znači da podatak nije dostupan ili servis nije odgovorio; to nije potvrda da rizika nema. Nalazi su informativni; pravno mjerodavna je lokacijska informacija.</p></div></details>`;
+  return h;
+}
+
 // skupine sadržaja za mobilne kartice (Analiza, Troškovi); na računalu su sve vidljive
 let GRP=null;
 function G(g){let s=GRP?"</div>":""; GRP=g; return g?s+`<div class="grp" data-g="${g}">`:s;}
@@ -1292,10 +1526,11 @@ function render(d){
     buildArea=Math.min(1,s)*area;
   }
   const rezHit=!!(checks&&checks.find(r=>r.c.id==="rez"&&r.v&&r.v.length));
-  window.__lastLL=ll; window.__tl=null; window.__gbp=null; window.__ruleP=null;
+  window.__lastLL=ll; window.__tl=null; window.__gbp=null; window.__ruleP=null; window.__rule=null;
   window.__cur={key:favKey(parcel,ll),ll:{lat:ll.lat,lng:ll.lng},ces:parcel?parcel.properties.KATASTARSKA_CESTICA:null,ko:parcel?parcel.properties.KATASTARSKA_OPCINA:null,area,buildArea,
     code:(()=>{const r=ruleLookup(up,rows);return r.code?(r.se?"SE ":"")+r.code:null})(),namjena:rows[0]?(rows[0].p.Namjena||rows[0].p.Analitika):null,analitika:rows[0]?rows[0].p.Analitika:null,
     risks:checks?checks.filter(r=>r.v&&r.v.length).map(r=>r.c.label):null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:envelope?Math.round(envelope.area):null};
+  if(!snap&&parcel) projApplySim(window.__cur.key);
   GRP=null; let zkH="";
   let h=G("sum")+`<p id="printHead" class="print-only"></p><div id="printMap"></div>`;
   if(checks) h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(favKey(parcel,ll))?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="shareBtn">Podijeli</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button></div>`;
@@ -1336,7 +1571,7 @@ function render(d){
   }
   if(!rows.length) h+=`<div id="sumEnd"></div>`;
   h+=cardsHtml();
-  h+=G("analiza")+zkH;
+  h+=G("analiza")+"%%RISK%%"+zkH;
   // Provjere za kupca
   h+=`<h2 id="sec-provjere">Provjere</h2>`;
   if(!checks){h+=`<p class="hint"><span class="spin"></span>Provjeravam UPU, klizišta, zaštitu i vodu…</p>`}
@@ -1356,10 +1591,11 @@ function render(d){
     if(clear.length) h+=`<details><summary>Što je provjereno i čisto (${clear.length})</summary><ol>${clear.map(t=>`<li>${esc(t)}</li>`).join("")}</ol></details>`;
     if(errs.length) h+=`<p class="err">Nisu odgovorili: ${esc(errs.join(", "))}. <button type="button" class="ib retry">Pokušaj ponovno</button></p>`;
   }
-  if(checks){ if(FEATURES.infra) h+=infraHtml(infra); h+=envHtml(env); }
+  if(checks){ if(FEATURES.infra) h+=infraHtml(infra,d.ski); h+=envHtml(env); }
   // Urbano pravilo
   h+=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>`;
   const {code,rule,se,pp:isPP}=ruleLookup(up,rows);
+  window.__rule={code,clanak:rule?rule.clanak:null,naziv:rule?rule.naziv:null,src:isPP?"PP":se?"SE":"GUP",zona:null};
   if(up.e){h+=`<p class="err">Urbana pravila: ${esc(up.e)}</p>`}
   else if(!code){h+=`<p class="hint">Lokacija nije u obuhvatu urbanih pravila GUP-a Zagreba ni GUP-a Sesveta. Vrijedi Prostorni plan Grada Zagreba, čiji uvjeti još nisu u aplikaciji; traži lokacijsku informaciju.</p>`}
   else if(!rule){h+=`<p><span class="rule-code">${esc(code)}</span>Pravilo nije pronađeno u tekstu odluke.</p>`}
@@ -1370,6 +1606,7 @@ function render(d){
     const zone=main?pickZone(rule,main.p.Analitika):null;
     if(zone){
       h+=`<p class="meta">Zona: ${esc(zone.zona)}</p>`;
+      window.__rule.zona=zone.zona;
       const nk=normKeys(zone), pp=parseParams(nk,TIP), RP=ruleParams(zone,TIP,buildArea??area); window.__ruleP=RP;
       // kratki sažetak u čipovima, detalji u padajućem dijelu
       const chips=RP.filter(x=>x.value&&["minC","izg","kis","gbp","etaze","teren","meda"].includes(x.id)).map(x=>({minC:"min. čestica ",izg:"izgrađenost ",kis:"kis ",gbp:"GBP do ",teren:"prirodni teren "}[x.id]??"")+(x.id==="etaze"?x.num+" nadzemne etaže":x.id==="meda"?(x.hHalf?"od međe h/2":"od međe "+x.value):x.value));
@@ -1438,6 +1675,7 @@ function render(d){
           h+=`<label for="bBase">Podrum</label><span><input type="checkbox" id="bBase"> s podrumom ispod cijele kuće</span>`;
           h+=`<label for="bYard">Uređenje okoliša</label><span><input id="bYard" type="number" inputmode="decimal" min="0" step="500" placeholder="ponuda"> €</span>`;
           h+=`</div><div id="bOut"></div></div></details>`;
+          h+=prepHtml();
           // 2) Komunalni doprinos: obujam se računa iz kuće gore, osim ako ga upišeš ručno
           h+=`<details class="acc" data-k="kd"><summary><span>Komunalni doprinos</span><b id="kdSum">izaberi zonu</b></summary><div class="acc-body">`;
           h+=`<div class="kd"><label for="kdVol">Obujam kuće</label><input id="kdVol" type="number" inputmode="decimal" min="0" step="1" value="${H0*3}"><span>m³</span><button type="button" class="ib" id="kdVolAuto" style="display:none">iz kuće</button></div>`;
@@ -1454,6 +1692,8 @@ function render(d){
           {const ic=infcGet(favKey(parcel,ll)); const inp=(id,l,ph)=>`<div class="kd"><label for="${id}">${l}</label><input id="${id}" type="number" inputmode="decimal" min="0" step="100" placeholder="${ph}" value="${ic[id]>0?ic[id]:""}"><span>€</span></div>`;
            h+=`<p class="eyebrow" style="margin-top:8px">Radovi na priključcima (tvoj unos iz ponude)</p>`+inp("kdWorks","Kućni priključci vode, kanalizacije, struje (radovi, okna, ormarić)","ponuda")+inp("kdSeptic","Sabirna jama ili pročistač, ako nema kanalizacije","0")+inp("kdWell","Bunar, ako nema vodovoda","0");}
           h+=`<div id="costs"></div></div></details>`;
+          h+=scHtml();
+          h+=projHtml();
           h+=G("analiza");}
       }
       h+=`<details><summary>Sva detaljna pravila za ovu zonu (${zone.items.length})</summary><ol>${zone.items.map(i=>`<li>${esc(i)}</li>`).join("")}</ol></details>`;
@@ -1472,9 +1712,11 @@ function render(d){
   h+=`<div class="links"><a href="https://oss.uredjenazemlja.hr/public-services/search-cad-parcel" target="_blank" rel="noopener">Katastar (OSS)</a><a href="https://geoportal.zagreb.hr/Karta" target="_blank" rel="noopener">Geoportal Zagreb</a><a href="https://geoportal.dgu.hr/#/?lng=${ll.lng.toFixed(6)}&lat=${ll.lat.toFixed(6)}&zoom=9&layerconfig=17013&mode=2d" target="_blank" rel="noopener">Geoportal DGU</a><a href="https://www.zzpugz.hr/gup-grada-zagreba" target="_blank" rel="noopener">GUP (Zavod)</a><a href="https://www.google.com/maps?q=${ll.lat},${ll.lng}" target="_blank" rel="noopener">Google Maps</a></div>`;
   h+=`<p class="note">Izvori: katastarske čestice Grada Zagreba (2023.), GIS baza planirane namjene (2023.), karta urbanih pravila iz ponovne javne rasprave GUP-a (2024.) i tekst Odluke o GUP-u s izmjenama 2025. Granice pravila u konačnom planu mogu malo odstupati. Procjena je orijentacijska; pravno mjerodavna je lokacijska informacija Gradskog ureda.</p>`;
   h+=G(null);
+  {let rh=""; try{rh=parcel||rows.length?riskHtml(d):""}catch(err){console.error(err); rh=`<p class="err">Analiza rizika nije uspjela: ${esc(err.message)}</p>`} h=h.replace("%%RISK%%",rh);}
   restoreMap();
   sheet.innerHTML=h;
   restoreInputs(snap);
+  if(!snap&&window.__cur) projApplyHouse(window.__cur.key);
   sheet.querySelectorAll("details[data-k]").forEach(dd=>{if(OPEN.has(dd.dataset.k)) dd.open=true});
   sheet.scrollTop=keepScroll;
   try{finUpdate()}catch(err){console.error(err); const o=document.getElementById("bOut")||document.getElementById("buyOut"); if(o) o.innerHTML=`<p class="err">Izračun trenutno nije uspio (${esc(err.message)}). Ostatak aplikacije radi normalno.</p>`}
@@ -1482,6 +1724,8 @@ function render(d){
   if(TL.layer){TL.zones=null; tDraw();}
   if(OPEN.has("sun")){sunDraw(); sunEnsureNb();}
   cardsUpdate();
+  try{const ae=document.getElementById("ai"); if(ae&&!ae.hidden) aiRenderPanel();}catch(e){}
+  try{PWA.loadedAt=Date.now(); if(parcel) pwaRememberParcel(); pwaGpsNote(); pwaNetUI();}catch(e){}
   if(isMobile()){ if(!UI.hadParcel&&parcel){UI.hadParcel=true; if(UI.state==="peek") setState("half"); else setState(UI.state,{keepScroll:true});} else setState(UI.state,{keepScroll:true}); }
 }
 
@@ -1523,9 +1767,9 @@ const REGIMES={
 };
 
 const numv=id=>{const e=document.getElementById(id); if(!e) return null; const v=parseFloat(String(e.value).replace(",",".")); return isFinite(v)?v:null};
-function kdRate(){try{return localStorage.getItem("kdRate")||""}catch(e){return ""}}
+function kdRate(){const r=projKd(window.__cur&&window.__cur.key).rate; return r!=null?String(r):""}
 const KD_ZONES=[["I",18.35],["II",18.00],["III",16.00],["IV",12.00],["V",2.00],["VI",1.50]];
-function kdZone(){try{return localStorage.getItem("kdZone")||""}catch(e){return ""}}
+function kdZone(){return projKd(window.__cur&&window.__cur.key).zone||""}
 
 // ulazi kupnje po čestici
 function infcStore(){try{return JSON.parse(localStorage.getItem("infc")||"{}")}catch(e){return {}}}
@@ -1535,40 +1779,59 @@ function buyStore(){try{return JSON.parse(localStorage.getItem("buy")||"{}")}cat
 function buyGet(k){const o=buyStore()[k]||{}; if(o.price==null){const lp=landPrice(k); if(lp) o.price=parseFloat(lp)}; return o}
 function buySet(k,o){try{const s=buyStore(); s[k]=o; localStorage.setItem("buy",JSON.stringify(s))}catch(e){}}
 
+// ulazi o kući iz polja kalkulatora (jedan izvor za trenutni prikaz; scenariji spremaju isti oblik objekta)
+const HOUSE_KEYS=["hA","t","std","ph","fl","base","yard","volManual","vol","kW","gas","works","septic","well"];
+function finInputs(){
+  const g=id=>document.getElementById(id);
+  if(!g("bArea")) return null;
+  const pick=(id,obj,def)=>{const v=g(id)&&g(id).value; return obj[v]?v:def};
+  const volEl=g("kdVol");
+  return {hA:numv("bArea")||0,t:pick("bType",BUILD,"klas"),std:pick("bStd",STD,"sred"),ph:pick("bPhase",BUILD.klas,"kljuc"),fl:pick("bFloors",FLOORS,"P"),
+    base:!!(g("bBase")&&g("bBase").checked),yard:numv("bYard"),volManual:!!(volEl&&volEl.dataset.manual==="1"),vol:numv("kdVol"),
+    kW:parseFloat(g("kdKw")?.value||"11.04"),gas:!!g("kdGas")?.checked,works:numv("kdWorks"),septic:numv("kdSeptic"),well:numv("kdWell"),prep:prepGet(window.__cur&&window.__cur.key)};
+}
+// izračun kuće iz objekta ulaza; ne čita ni ne mijenja stranicu, pa se može računati i za spremljene scenarije
+function finHouse(I,rate){
+  const items=[], warn=[];
+  const t=BUILD[I.t]?I.t:"klas", std=STD[I.std]?I.std:"sred", ph=BUILD.klas[I.ph]?I.ph:"kljuc", flK=FLOORS[I.fl]?I.fl:"P", fl=FLOORS[flK], hA=I.hA||0, base=!!I.base;
+  const unit=BUILD[t][ph]*STD[std]*fl.f, foot=hA/fl.n;
+  const gradnja=hA*unit + foot*BUILD[t].temelj + (base?foot*PODRUM_EUR[ph]*STD[std]:0);
+  const autoVol=Math.round((hA+(base?foot:0))*ETAZA_M);
+  const vol=I.volManual?(I.vol||0):autoVol;
+  const kd=rate>0&&rate<=40&&vol>0?vol*rate:null;
+  const kW=I.kW||11.04, gas=!!I.gas, hep=HEP_EUR_KW*kW*PDV;
+  const prist=hA>600?Math.max(PRIST_GD_MIN_BIG,gradnja*0.00025):PRIST_GD;
+  const yard=I.yard;
+  const P=(k,label,b,lo,hi,kind,formula,group)=>items.push({k,label,base:b,lo,hi,kind,formula,group});
+  P("gradnja","Gradnja",gradnja,gradnja*0.9,gradnja*1.1,"procjena",`${fmt(hA)} m² × ${fmt(unit)} €/m²${BUILD[t].temelj?" + temeljna ploča "+fmt(foot)+" m² × "+BUILD[t].temelj+" €":""}${base?" + podrum "+fmt(foot)+" m²":""}; raspon ±10 %`,"gradnja");
+  P("projekti","Projekti i geodezija",gradnja*0.07,gradnja*0.9*0.07,gradnja*1.1*0.07,"procjena","7 % gradnje","gradnja");
+  P("nadzor","Stručni nadzor",gradnja*0.015,gradnja*0.9*0.015,gradnja*1.1*0.015,"procjena","1,5 % gradnje","gradnja");
+  if(yard!=null&&yard>0) P("okolis","Uređenje okoliša",yard,yard,yard,"unos","tvoj upis","gradnja");
+  if(kd!=null) P("kd","Komunalni doprinos",kd,kd,kd,"propis",`${fmt(vol)} m³ × ${String(rate).replace(".",",")} €/m³`,"naknade");
+  P("vodni","Vodni doprinos",0,0,0,"propis","ukinut od 1. 7. 2024.","naknade");
+  P("hep","Priključak struje (HEP)",hep,hep,hep,"propis",`${String(kW).replace(".",",")} kW × ${HEP_EUR_KW} €/kW + 25 % PDV`,"naknade");
+  P("vio","Priključak vode i kanalizacije (ViO)",0,0,0,"propis","za kućanstva plaća Grad","naknade");
+  if(gas) P("plin","Priključak plina (GPZ)",(GAS_RANGE[0]+GAS_RANGE[1])/2,GAS_RANGE[0],GAS_RANGE[1],"procjena","procjena 800–1.500 €","naknade");
+  for(const [k,l] of [["works","Radovi na kućnim priključcima"],["septic","Sabirna jama ili pročistač"],["well","Bunar"]]){const v=I[k]; if(v>0) P({works:"kdWorks",septic:"kdSeptic",well:"kdWell"}[k],l,v,v,v,"unos","iz ponude","naknade");}
+  P("prist","Pristojba za građevinsku dozvolu",prist,prist,prist,"propis",hA>600?"0,25 ‰ troškova gradnje, najmanje 132,72 €":"zgrada do 600 m² (e-zahtjev 15 % manje)","naknade");
+  if(I.prep) for(const it of prepItems(I.prep)) items.push({...it,group:"priprema"});
+  if(kd==null) warn.push("Komunalni doprinos nije uključen: izaberi zonu.");
+  if(yard==null) warn.push("Uređenje okoliša nije uključeno: upiši iznos ako ga znaš.");
+  const house={hA,foot,unit,gradnja,autoVol,vol,rate,kd,kW,gas,hep,prist,base,t,fl,flK,yard,manualVol:!!I.volManual};
+  const sum=(f,grp)=>items.filter(i=>!grp||i.group===grp).reduce((s,i)=>s+f(i),0);
+  const build={base:sum(i=>i.base),lo:sum(i=>i.lo),hi:sum(i=>i.hi),naknade:sum(i=>i.base,"naknade"),naknadeLo:sum(i=>i.lo,"naknade"),naknadeHi:sum(i=>i.hi,"naknade"),priprema:sum(i=>i.base,"priprema"),pripremaLo:sum(i=>i.lo,"priprema"),pripremaHi:sum(i=>i.hi,"priprema"),rez:(sum(i=>i.base,"gradnja")+sum(i=>i.base,"priprema"))*0.15};
+  return {house,items,warn,build};
+}
 function finCompute(){
   const g=id=>document.getElementById(id);
   const F={items:[],warn:[]};
   const area=window.__cur&&window.__cur.area||null;
   // --- kuća
-  const hasHouse=!!g("bArea");
-  if(hasHouse){
-    const pick=(id,obj,def)=>{const v=g(id)&&g(id).value; return obj[v]?v:def};
-    const hA=numv("bArea")||0, t=pick("bType",BUILD,"klas"), std=pick("bStd",STD,"sred"), ph=pick("bPhase",BUILD.klas,"kljuc"), fl=FLOORS[pick("bFloors",FLOORS,"P")], base=!!(g("bBase")&&g("bBase").checked);
-    const unit=BUILD[t][ph]*STD[std]*fl.f, foot=hA/fl.n;
-    const gradnja=hA*unit + foot*BUILD[t].temelj + (base?foot*PODRUM_EUR[ph]*STD[std]:0);
-    const autoVol=Math.round((hA+(base?foot:0))*ETAZA_M);
-    const volEl=g("kdVol"); if(volEl&&volEl.dataset.manual!=="1") volEl.value=autoVol;
-    const vol=numv("kdVol")||0, rate=numv("kdRate");
-    const kd=rate>0&&rate<=40&&vol>0?vol*rate:null;
-    const kW=parseFloat(g("kdKw")?.value||"11.04"), gas=!!g("kdGas")?.checked;
-    const hep=HEP_EUR_KW*kW*PDV;
-    const prist=hA>600?Math.max(PRIST_GD_MIN_BIG,gradnja*0.00025):PRIST_GD;
-    const yard=numv("bYard");
-    F.house={hA,foot,unit,gradnja,autoVol,vol,rate,kd,kW,gas,hep,prist,base,t,fl,yard,manualVol:volEl&&volEl.dataset.manual==="1"};
-    const P=(k,label,base,lo,hi,kind,formula,group)=>F.items.push({k,label,base,lo,hi,kind,formula,group});
-    P("gradnja","Gradnja",gradnja,gradnja*0.9,gradnja*1.1,"procjena",`${fmt(hA)} m² × ${fmt(unit)} €/m²${BUILD[t].temelj?" + temeljna ploča "+fmt(foot)+" m² × "+BUILD[t].temelj+" €":""}${base?" + podrum "+fmt(foot)+" m²":""}; raspon ±10 %`,"gradnja");
-    P("projekti","Projekti i geodezija",gradnja*0.07,gradnja*0.9*0.07,gradnja*1.1*0.07,"procjena","7 % gradnje","gradnja");
-    P("nadzor","Stručni nadzor",gradnja*0.015,gradnja*0.9*0.015,gradnja*1.1*0.015,"procjena","1,5 % gradnje","gradnja");
-    if(yard!=null&&yard>0) P("okolis","Uređenje okoliša",yard,yard,yard,"unos","tvoj upis","gradnja");
-    if(kd!=null) P("kd","Komunalni doprinos",kd,kd,kd,"propis",`${fmt(vol)} m³ × ${String(rate).replace(".",",")} €/m³`,"naknade");
-    P("vodni","Vodni doprinos",0,0,0,"propis","ukinut od 1. 7. 2024.","naknade");
-    P("hep","Priključak struje (HEP)",hep,hep,hep,"propis",`${String(kW).replace(".",",")} kW × ${HEP_EUR_KW} €/kW + 25 % PDV`,"naknade");
-    P("vio","Priključak vode i kanalizacije (ViO)",0,0,0,"propis","za kućanstva plaća Grad","naknade");
-    if(gas) P("plin","Priključak plina (GPZ)",(GAS_RANGE[0]+GAS_RANGE[1])/2,GAS_RANGE[0],GAS_RANGE[1],"procjena","procjena 800–1.500 €","naknade");
-    for(const [id,l] of [["kdWorks","Radovi na kućnim priključcima"],["kdSeptic","Sabirna jama ili pročistač"],["kdWell","Bunar"]]){const v=numv(id); if(v>0) P(id,l,v,v,v,"unos","iz ponude","naknade");}
-    P("prist","Pristojba za građevinsku dozvolu",prist,prist,prist,"propis",hA>600?"0,25 ‰ troškova gradnje, najmanje 132,72 €":"zgrada do 600 m² (e-zahtjev 15 % manje)","naknade");
-    if(kd==null) F.warn.push("Komunalni doprinos nije uključen: izaberi zonu.");
-    if(yard==null) F.warn.push("Uređenje okoliša nije uključeno: upiši iznos ako ga znaš.");
+  const I=finInputs();
+  if(I){
+    const H=finHouse(I,numv("kdRate"));
+    const volEl=g("kdVol"); if(volEl&&!I.volManual) volEl.value=H.house.autoVol;
+    F.house=H.house; F.items=H.items; F.warn=H.warn; F.inputs=I; F._build=H.build;
   }
   // --- kupnja
   const key=window.__cur&&window.__cur.key;
@@ -1597,10 +1860,7 @@ function finCompute(){
     F.buy={price,reg,rows,costs,gross,acq,missing,kap,rest:gross-kap,area,perM2:area?price/area:null,effM2:area?acq/area:null};
   }
   // --- ukupno
-  const sum=f=>F.items.reduce((s,i)=>s+f(i),0);
-  F.house&&(F.build={base:sum(i=>i.base),lo:sum(i=>i.lo),hi:sum(i=>i.hi),naknade:F.items.filter(i=>i.group==="naknade").reduce((s,i)=>s+i.base,0),
-    naknadeLo:F.items.filter(i=>i.group==="naknade").reduce((s,i)=>s+i.lo,0),naknadeHi:F.items.filter(i=>i.group==="naknade").reduce((s,i)=>s+i.hi,0)});
-  if(F.build){const g2=F.items.filter(i=>i.group==="gradnja").reduce((s,i)=>s+i.base,0); F.build.rez=g2*0.15;}
+  if(F._build) F.build=F._build;
   const acq=F.buy?F.buy.acq:0;
   F.total={base:(F.build?F.build.base:0)+acq,lo:(F.build?F.build.lo:0)+acq,hi:(F.build?F.build.hi:0)+acq,rez:F.build?F.build.rez:0,hasBuy:!!F.buy,hasBuild:!!F.build};
   return F;
@@ -1628,7 +1888,7 @@ function finUpdate(){
     if(F.house.kd==null) h+=frow("Komunalni doprinos","izaberi zonu");
     const s=F.build.naknadeLo!==F.build.naknadeHi?`${fmt(F.build.naknadeLo)}–${fmt(F.build.naknadeHi)} €`:`${fmt(F.build.naknade)} €`;
     h+=frow(`Ukupno naknade i priključci${F.house.kd==null?" (bez komunalnog)":""}`,s,{bold:true})+`</div>`;
-    h+=`<p class="meta">Isti iznosi ulaze u procjenu gradnje i ukupnu investiciju. Radovi koje plaćaš izvođačima (vodomjerno okno, kućni priključci, elektro-ormarić) ovise o udaljenosti mreže koja nije javno objavljena, pa ih upiši iz ponude.</p>`;
+    h+=`<p class="meta">Isti iznosi ulaze u procjenu gradnje i ukupnu investiciju. Radovi koje plaćaš izvođačima (vodomjerno okno, kućni priključci, elektro-ormarić) ovise o udaljenosti i stanju mreže, koje potvrđuje distributer, pa ih upiši iz ponude. Udaljenosti evidentiranih vodova su u odjeljku Komunalna infrastruktura.</p>`;
     g("costs").innerHTML=h; if(g("costSum")) g("costSum").textContent=s;
   }
   // gradnja
@@ -1640,8 +1900,9 @@ function finUpdate(){
     h+=`<div class="calc" style="background:var(--panel);margin-top:8px">`;
     for(const i of F.items.filter(i=>i.group==="gradnja")) h+=frow(esc(i.label)+" "+kindTag(i.kind),money(i),{f:i.formula});
     h+=frow("Naknade, priključci i pristojbe "+kindTag("propis"),F.build.naknadeLo!==F.build.naknadeHi?`${fmt(F.build.naknadeLo)}–${fmt(F.build.naknadeHi)} €`:`${fmt(F.build.naknade)} €`,{f:"iz odjeljaka Komunalni doprinos i Priključci i dozvole"});
+    if(F.build.pripremaHi>0) h+=frow("Priprema terena",F.build.pripremaLo!==F.build.pripremaHi?`${fmt(F.build.pripremaLo)}–${fmt(F.build.pripremaHi)} €`:`${fmt(F.build.priprema)} €`,{f:"iz odjeljka Priprema terena"});
     h+=frow("Ukupno gradnja s naknadama",`${fmt(F.build.lo)} – ${fmt(F.build.hi)} €`,{bold:true,f:"osnovni iznos "+fmt(F.build.base)+" €"});
-    h+=frow("Preporučena rezerva",`+ ${fmt(F.build.rez)} €`,{f:"15 % gradnje, projekata, nadzora i okoliša; nije uključena u ukupno"});
+    h+=frow("Preporučena rezerva",`+ ${fmt(F.build.rez)} €`,{f:"15 % gradnje, projekata, nadzora, okoliša i pripreme terena; nije uključena u ukupno"});
     h+=`</div>`;
     if(F.warn.length) h+=`<p class="meta">${F.warn.map(esc).join(" ")}</p>`;
     h+=`<p class="meta">Tržišne cijene za okolicu Zagreba, 2026. (izvori: trebam.hr, montazneidrvenekuce.info Q1 2026, reporter.hr). ${H.t==="mont"?"Montažna cijena uključuje temeljnu ploču (procjena 90 €/m² tlocrta). ":""}Podrum je procjena. Zemljište i troškovi kupnje su u odjeljku "Novac i kupnja". Za stvarnu cijenu traži barem tri ponude.</p>`;
@@ -1673,16 +1934,281 @@ function finUpdate(){
     else h+=frow("Zemljište","nije upisano");
     if(F.build){h+=frow("Gradnja, projekti, nadzor"+(F.items.some(i=>i.k==="okolis")?", okoliš":""),`${fmt(F.items.filter(i=>i.group==="gradnja").reduce((s,i)=>s+i.lo,0))}–${fmt(F.items.filter(i=>i.group==="gradnja").reduce((s,i)=>s+i.hi,0))} €`);
       h+=frow("Naknade, priključci i pristojbe",F.build.naknadeLo!==F.build.naknadeHi?`${fmt(F.build.naknadeLo)}–${fmt(F.build.naknadeHi)} €`:`${fmt(F.build.naknade)} €`);}
+    if(F.build) h+=frow("Priprema terena",F.build.pripremaHi>0?(F.build.pripremaLo!==F.build.pripremaHi?`${fmt(F.build.pripremaLo)}–${fmt(F.build.pripremaHi)} €`:`${fmt(F.build.priprema)} €`):"nije unesena");
     else h+=frow("Gradnja","nema podataka o dopuštenoj kući za ovu česticu");
     h+=frow("Ukupna investicija",T.lo!==T.hi?`${fmt(T.lo)} – ${fmt(T.hi)} €`:`${fmt(T.base)} €`,{bold:true,f:"osnovni iznos "+fmt(T.base)+" €"});
     if(T.rez) h+=frow("S preporučenom rezervom",`do ${fmt(T.hi+T.rez)} €`,{f:"gornja granica + rezerva 15 % ("+fmt(T.rez)+" €)"});
-    h+=`</div><p class="meta">Svaka stavka se računa jednom: naknade iz "Priključci i dozvole", gradnja iz "Procjene cijene gradnje", zemljište iz "Kupnje zemljišta". Raspon dolazi samo od procjena (gradnja ±10 %, plin); iznosi prema propisu i tvoji unosi su točni brojevi.</p>`;
+    h+=`</div><p class="meta">Svaka stavka se računa jednom: naknade iz "Priključci i dozvole", gradnja iz "Procjene cijene gradnje", priprema iz "Pripreme terena", zemljište iz "Kupnje zemljišta". Raspon dolazi samo od procjena (gradnja ±10 %, plin); iznosi prema propisu i tvoji unosi su točni brojevi.</p>`;
     g("totOut").innerHTML=h; if(g("totSum")) g("totSum").textContent=T.lo!==T.hi?`${fmt(T.lo)} – ${fmt(T.hi)} €`:(T.base?fmt(T.base)+" €":"upiši cijenu");
   }
   try{cardsUpdate()}catch(e){}
+  try{prepUpdate()}catch(e){console.error(e)}
+  try{scUpdate()}catch(e){console.error(e)}
+  try{projUpdate()}catch(e){console.error(e)}
   window.__budget=F.total.base?{lo:F.total.lo,hi:F.total.hi,base:F.total.base,land:F.buy?F.buy.price:null,kupnja:F.buy?F.buy.costs:null,acq:F.buy?F.buy.acq:null,build:F.build?{lo:F.build.lo,hi:F.build.hi}:null}:null;
   const fk=window.__cur&&window.__cur.key; if(fk){const a=favs(), f=a.find(x=>x.key===fk); if(f){f.budget=window.__budget; f.land=F.buy?F.buy.price:null; setFavs(a);}}
 }
+
+// ================= PRIPREMA TERENA =================
+// Pripremni radovi za česticu (zajednički za sve scenarije kuće). Količine i cijene upisuje korisnik; ako jedinična cijena
+// nije upisana, koristi se tržišni raspon. Stavke ulaze u jedinstveni financijski model kao skupina "priprema", jednom.
+// Izvori jediničnih cijena (emajstor.hr, cjenici "Iskopi", "Zemljani radovi", "Rušenja", "Potporni zidovi", 2026.):
+// iskop građevinske jame s odvozom 9,60–18,00 €/m³; ispuna tamponom 7–16 €/m³; planiranje i konsolidacija tla 2–3 €/m²;
+// strojno rušenje s odvozom otpada 39,79–79,58 €/m² (prosjek 40–70); potporni zid (priprema, armatura, beton) 150–300 €/m²;
+// čišćenje terena: primjer 1.200 m² za 3.150–5.250 €, tj. oko 2,60–4,40 €/m² (izvedeno iz jednog primjera, slabiji izvor).
+const PREP_SRC="emajstor.hr, cjenici zemljanih radova, iskopa, rušenja i potpornih zidova (2026.)";
+const PREP={
+  clear:{l:"Čišćenje zemljišta (raslinje, otpad)",q:"pClearA",u:"pClearU",unit:"m²",r:[2.6,4.4],note:"izvedeno iz primjera 1.200 m² za 3.150–5.250 €"},
+  demo:{l:"Rušenje postojećih objekata s odvozom",q:"pDemoA",u:"pDemoU",unit:"m² objekta",r:[40,70],note:"strojno rušenje s odvozom na deponij"},
+  cut:{l:"Iskop s odvozom materijala",q:"pCut",u:"pCutU",unit:"m³",r:[9.6,18],note:"iskop građevinske jame s odvozom"},
+  fill:{l:"Nasipavanje (tampon)",q:"pFill",u:"pFillU",unit:"m³",r:[7,16],note:"ispuna tamponom"},
+  wall:{l:"Potporni zid",q:null,u:"pWallU",unit:"m² zida",r:[150,300],note:"armirani beton: priprema, armatura, betoniranje"},
+  level:{l:"Poravnavanje terena",q:"pLevelA",u:"pLevelU",unit:"m²",r:[2,3],note:"planiranje i konsolidacija tla"}
+};
+const PREP_FIX=[["pAccess","access","Privremeni pristup gradilištu"],["pOther","other","Ostali pripremni radovi"]];
+const PREP_IDS=["pClearA","pClearU","pDemoA","pDemoU","pCut","pCutU","pFill","pFillU","pWallL","pWallH","pWallU","pLevelA","pLevelU","pAccess","pOther"];
+const PREP_LIM={pWallH:12,pWallL:2000}; // m
+function prepStore(){try{return JSON.parse(localStorage.getItem("prep")||"{}")}catch(e){return {}}}
+function prepGet(k){const o=k&&prepStore()[k]; return o&&typeof o==="object"?o:{}}
+// samo konačni nenegativni brojevi u razumnim granicama
+function prepClean(o){const r={}; for(const id of PREP_IDS){let v=parseFloat(String(o&&o[id]!=null?o[id]:"").replace(",",".")); if(!isFinite(v)||v<=0) continue; r[id]=Math.min(v,PREP_LIM[id]||1e6)} return r}
+function prepSave(){const k=window.__cur&&window.__cur.key; if(!k) return; const o={}; for(const id of PREP_IDS) o[id]=numv(id);
+  try{const s=prepStore(), c=prepClean(o); if(Object.keys(c).length) s[k]=c; else delete s[k]; localStorage.setItem("prep",JSON.stringify(s))}catch(e){}}
+// stavke pripreme terena iz objekta unosa (bez čitanja stranice)
+function prepItems(P){
+  P=prepClean(P); const out=[];
+  for(const [k,d] of Object.entries(PREP)){
+    const q=k==="wall"?(P.pWallL&&P.pWallH?P.pWallL*P.pWallH:0):P[d.q]||0; if(!(q>0)) continue;
+    const u=P[d.u], qs=k==="wall"?`${fmt(P.pWallL)} m × ${String(P.pWallH).replace(".",",")} m = ${fmt(q)} m²`:`${fmt(q)} ${d.unit}`;
+    if(u>0) out.push({k:"prep_"+k,label:d.l,base:q*u,lo:q*u,hi:q*u,kind:"unos",formula:`${qs} × ${String(u).replace(".",",")} €/${d.unit.split(" ")[0]} (tvoja cijena)`});
+    else out.push({k:"prep_"+k,label:d.l,base:q*(d.r[0]+d.r[1])/2,lo:q*d.r[0],hi:q*d.r[1],kind:"procjena",formula:`${qs} × ${String(d.r[0]).replace(".",",")}–${String(d.r[1]).replace(".",",")} €/${d.unit.split(" ")[0]} (${d.note})`});
+  }
+  for(const [id,k,l] of PREP_FIX) if(P[id]>0) out.push({k:"prep_"+k,label:l,base:P[id],lo:P[id],hi:P[id],kind:"unos",formula:"tvoj upis iz ponude"});
+  return out;
+}
+// orijentacijski iskop i nasip za poravnavanje tlocrta na nagibu (ravnoteža iskop = nasip): V = Š × D × (nagib × D) / 8
+function prepSlopeHint(){
+  const d=window.__lastData, s=d&&d.slope&&d.slope.v; if(!s||!(s.slope>0)) return null;
+  const F=window.__fin, foot=F&&F.house?F.house.foot:0;
+  let W,D,src;
+  if(TL.center){W=TL.w; D=TL.d; src="tlocrt iz simulatora"} else if(foot>0){W=D=Math.sqrt(foot); src="tlocrt iz procjene gradnje (kvadrat)"} else return null;
+  const L=Math.max(W,D), dz=s.slope/100*L, v=Math.round(Math.min(W,D)*L*dz/8);
+  return {slope:s.slope,W,D,L,dz,v,src};
+}
+function prepHtml(){
+  const k=window.__cur&&window.__cur.key, P=prepGet(k);
+  const val=id=>P[id]>0?P[id]:"";
+  const ph=d=>`${String(d.r[0]).replace(".",",")}–${String(d.r[1]).replace(".",",")}`;
+  const row=(d,qHtml)=>`<div class="pr"><b>${d.l}</b><div class="kd">${qHtml}<label>cijena <input id="${d.u}" type="number" inputmode="decimal" min="0" step="0.5" placeholder="${ph(d)}" value="${val(d.u)}"></label><span>€/${d.unit.split(" ")[0]}</span></div></div>`;
+  const q=(id,unit,step=1)=>`<label>količina <input id="${id}" type="number" inputmode="decimal" min="0" step="${step}" value="${val(id)}"></label><span>${unit}</span>`;
+  let h=`<details class="acc" data-k="prep"><summary><span>Priprema terena</span><b id="prepSum">nije uneseno</b></summary><div class="acc-body">`;
+  h+=`<p class="meta">Upiši samo radove koji su potrebni na ovoj čestici. Ako ne upišeš jediničnu cijenu, koristi se tržišni raspon (siva vrijednost u polju). Priprema je zajednička za sve scenarije kuće.</p>`;
+  h+=row(PREP.clear,q("pClearA","m²",10))+row(PREP.demo,q("pDemoA","m²",5));
+  h+=`<div id="prepHint"></div>`;
+  h+=row(PREP.cut,q("pCut","m³",1))+row(PREP.fill,q("pFill","m³",1));
+  h+=row(PREP.wall,`<label>duljina <input id="pWallL" type="number" inputmode="decimal" min="0" step="0.5" value="${val("pWallL")}"></label><span>m</span><label>visina <input id="pWallH" type="number" inputmode="decimal" min="0" max="12" step="0.1" value="${val("pWallH")}"></label><span>m</span>`);
+  h+=row(PREP.level,q("pLevelA","m²",10));
+  for(const [id,,l] of PREP_FIX) h+=`<div class="pr"><b>${l}</b><div class="kd"><label>iznos <input id="${id}" type="number" inputmode="decimal" min="0" step="100" placeholder="ponuda" value="${val(id)}"></label><span>€</span></div></div>`;
+  h+=`<div class="pr"><b>Priprema priključaka</b><p class="meta" id="prepConn" style="margin:2px 0 0">Upisuje se u odjeljku "Priključci i dozvole" (radovi na kućnim priključcima, sabirna jama, bunar), da se ne broji dvaput.</p></div>`;
+  h+=`<div id="prepOut"></div></div></details>`;
+  return h;
+}
+function prepUpdate(){
+  const o=document.getElementById("prepOut"); if(!o) return;
+  const F=window.__fin, its=F&&F.items?F.items.filter(i=>i.group==="priprema"):[];
+  const sum=document.getElementById("prepSum");
+  const lo=its.reduce((s,i)=>s+i.lo,0), hi=its.reduce((s,i)=>s+i.hi,0), r=lo===hi?`${fmt(lo)} €`:`${fmt(lo)}–${fmt(hi)} €`;
+  let h="";
+  if(its.length){h+=`<div class="calc" style="background:var(--panel);margin-top:8px">`+its.map(i=>frow(esc(i.label)+" "+kindTag(i.kind),money(i),{f:i.formula})).join("")+frow("Ukupno priprema terena",r,{bold:true})+`</div>`;}
+  else h+=`<p class="meta">Još nema upisanih radova. Ukupna investicija zasad ne sadrži pripremu terena.</p>`;
+  if(F&&F.house&&F.house.base) h+=`<p class="meta">Iskop za podrum već je u procjeni podruma. Ovdje upiši samo dodatni iskop (npr. zasjecanje terena, pristupna rampa).</p>`;
+  h+=`<p class="meta">Cijene: ${PREP_SRC}. Rasponi su orijentacijski i ovise o tlu, pristupu stroju i udaljenosti deponija. Stvarne količine daje geodetski snimak i projekt, a cijene ponude izvođača.</p>`;
+  o.innerHTML=h; if(sum) sum.textContent=its.length?r:"nije uneseno";
+  const c=document.getElementById("prepConn"); if(c&&F&&F.items){const ci=F.items.filter(i=>["kdWorks","kdSeptic","kdWell"].includes(i.k)), v=ci.reduce((s,i)=>s+i.base,0); c.textContent=`Upisuje se u odjeljku "Priključci i dozvole" (radovi na kućnim priključcima, sabirna jama, bunar), da se ne broji dvaput.${v?" Trenutno upisano: "+fmt(v)+" €.":" Trenutno nije upisano."}`;}
+  const hb=document.getElementById("prepHint"); if(hb){const x=prepSlopeHint();
+    hb.innerHTML=x?`<div class="hintbox"><p class="meta" style="margin:0">Prema nagibu okoline (oko ${Math.round(x.slope)} %) i tlocrtu ${fmt(x.W)} × ${fmt(x.D)} m (${x.src}) visinska razlika preko kuće bila bi oko ${x.dz.toFixed(1).replace(".",",")} m, a poravnavanje bi tražilo oko ${fmt(x.v)} m³ iskopa i isto toliko nasipa. To je gruba orijentacija: model visina ima rezoluciju oko 90 m i ne vidi teren same čestice${x.dz>=1.2?"; uz ovoliku razliku vjerojatno treba i potporni zid":""}.</p><div class="kd"><button type="button" class="ib" id="prepUseHint" data-v="${x.v}">Upiši kao početnu procjenu</button></div></div>`:"";}
+}
+sheet.addEventListener("input",e=>{ if(PREP_IDS.includes(e.target.id)){prepSave(); finUpdate();} });
+sheet.addEventListener("click",e=>{ if(e.target.id==="prepUseHint"){const v=+e.target.dataset.v; for(const id of ["pCut","pFill"]){const el=document.getElementById(id); if(el&&!(numv(id)>0)) el.value=v;} prepSave(); finUpdate();} });
+
+// ================= JEDINSTVENI PROJEKTNI MODEL =================
+// Projekt čestice = sve što korisnik planira za jednu česticu. Dijelovi koji već postoje ostaju u svojim spremištima
+// (buy, prep, infc, scen, ck2), a "proj" dodaje ono što se prije nije spremalo: kuću iz kalkulatora, simulator i zonu
+// komunalnog doprinosa. projGet() sastavlja cijeli projekt na jednom mjestu (za izvještaje, AI, izvoz).
+const PROJ_V=1, PROJ_MAX_BYTES=300000, KW_OPTS=[7.36,11.04,17.25,22.08];
+function projStore(){try{const s=JSON.parse(localStorage.getItem("proj")||"{}"); return s&&typeof s==="object"&&!Array.isArray(s)?s:{}}catch(e){return {}}}
+function projRaw(k){const o=k&&projStore()[k]; return o&&typeof o==="object"?o:{}}
+function projPut(k,part,val){ if(!k) return false;
+  try{const s=projStore(), o=s[k]&&typeof s[k]==="object"?s[k]:{}; if(val==null) delete o[part]; else o[part]=val; o.v=PROJ_V; o.updated=new Date().toISOString(); s[k]=o; localStorage.setItem("proj",JSON.stringify(s)); return true}catch(e){return false} }
+// --- provjera vrijednosti (za spremanje i za uvoz iz datoteke)
+const pNum=(v,min,max)=>{v=typeof v==="string"?parseFloat(v.replace(",",".")):v; return typeof v==="number"&&isFinite(v)&&v>=min&&v<=max?v:null};
+const pEnum=(v,list)=>list.includes(v)?v:null;
+function projCleanHouse(h){ if(!h||typeof h!=="object") return null;
+  const o={hA:pNum(h.hA,0,5000),fl:pEnum(h.fl,Object.keys(FLOORS)),t:pEnum(h.t,Object.keys(BUILD)),std:pEnum(h.std,Object.keys(STD)),ph:pEnum(h.ph,Object.keys(BUILD.klas)),
+    base:h.base===true,yard:pNum(h.yard,0,1e7),kW:pEnum(+h.kW,KW_OPTS),gas:h.gas===true,vol:h.volManual===true?pNum(h.vol,0,1e6):null};
+  o.volManual=o.vol!=null; return o.hA!=null?o:null; }
+function projCleanKd(x){ if(!x||typeof x!=="object") return null; const zone=pEnum(x.zone,KD_ZONES.map(z=>z[0])), rate=pNum(x.rate,0,40); return zone||rate?{zone:zone||"",rate:rate}:null }
+function projCleanSim(x){ if(!x||typeof x!=="object") return null;
+  const o={w:pNum(x.w,3,60),d:pNum(x.d,3,60),rot:pNum(x.rot,0,360),fl:pEnum(x.fl,FLOOR_OPTS.map(f=>f[0])),fh:pNum(x.fh,2.2,5),podrum:x.podrum===true,gar:x.gar===true,gw:pNum(x.gw,2,12),gd:pNum(x.gd,3,15)};
+  const c=Array.isArray(x.center)&&x.center.length===2?[pNum(x.center[0],13,20),pNum(x.center[1],42,47)]:null; o.center=c&&c[0]!=null&&c[1]!=null?c:null;
+  return o.w&&o.d&&o.fl?o:null; }
+// --- kuća iz kalkulatora: spremanje i vraćanje
+function projSaveHouse(){const k=aiCurKey(), I=finInputs(); if(!k||!I) return; const h=projCleanHouse(I); if(h){projPut(k,"house",h); try{projUpdate()}catch(e){}}}
+function projApplyHouse(k){
+  const h=projCleanHouse(projRaw(k).house); if(!h) return false;
+  const set=(id,v)=>{const e=document.getElementById(id); if(!e||v==null) return; if(e.type==="checkbox") e.checked=!!v; else e.value=v;};
+  set("bArea",h.hA); set("bFloors",h.fl); set("bType",h.t); set("bStd",h.std); set("bPhase",h.ph); set("bBase",h.base); set("bYard",h.yard!=null?h.yard:""); set("kdKw",h.kW!=null?String(h.kW):null); set("kdGas",h.gas);
+  const v=document.getElementById("kdVol"); if(v){ if(h.volManual){v.value=h.vol; v.dataset.manual="1"} else v.dataset.manual=""; }
+  return true;
+}
+// --- zona komunalnog doprinosa vrijedi za lokaciju, pa se sprema uz česticu
+function projKd(k){return projCleanKd(projRaw(k).kd)||{zone:"",rate:null}}
+// --- simulator: spremanje (odgođeno) i vraćanje prije crtanja
+let projSimT=null;
+function projSaveSimSoon(){ clearTimeout(projSimT); projSimT=setTimeout(()=>{const k=aiCurKey(); if(!k||!TL.center) return;
+  const s=projCleanSim({w:TL.w,d:TL.d,rot:TL.rot,fl:TL.fl,fh:TL.fh,podrum:TL.podrum,gar:TL.gar,gw:TL.gw,gd:TL.gd,center:TL.center}); if(s){projPut(k,"sim",s); try{projUpdate()}catch(e){}}},400); }
+function projApplySim(k){
+  const s=projCleanSim(projRaw(k).sim); if(!s) return false;
+  for(const f of ["w","d","rot","fl","fh","podrum","gar"]) TL[f]=s[f]; if(s.gw) TL.gw=s.gw; if(s.gd) TL.gd=s.gd;
+  const d=window.__lastData; if(s.center&&d&&d.parcel){try{if(turf.booleanPointInPolygon(turf.point(s.center),d.parcel)) TL.center=s.center}catch(e){}}
+  return true;
+}
+// --- cijeli projekt na jednom mjestu
+function projGet(k){
+  const P=projRaw(k), fav=favs().find(f=>f.key===k)||null, cur=window.__cur&&window.__cur.key===k?window.__cur:null;
+  return {id:k,verzija:PROJ_V,azurirano:P.updated||null,
+    cestica:cur?{broj:cur.ces,ko:cur.ko,povrsina:cur.area,pravilo:cur.code,namjena:cur.namjena}:fav?{broj:fav.ces,ko:fav.ko,povrsina:fav.area,pravilo:fav.code,namjena:fav.namjena}:null,
+    kuca:projCleanHouse(P.house),simulator:projCleanSim(P.sim),komunalniDoprinos:projCleanKd(P.kd),kupnja:buyStore()[k]||null,priprema:prepStore()[k]||null,
+    prikljucci:infcStore()[k]||null,scenariji:scList(k),kontrolnaLista:ckStore()[k]||null,spremljena:!!fav};
+}
+function projParts(k){const p=projGet(k); return [["Kuća u kalkulatoru",!!p.kuca],["Simulator",!!p.simulator],["Zona komunalnog doprinosa",!!(p.komunalniDoprinos&&p.komunalniDoprinos.zone)],["Kupnja zemljišta",!!(p.kupnja&&p.kupnja.price)],["Priprema terena",!!p.priprema],["Radovi na priključcima",!!(p.prikljucci&&Object.keys(p.prikljucci).length)],[`Scenariji (${p.scenariji.length})`,p.scenariji.length>0],["Kontrolna lista",!!(p.kontrolnaLista&&Object.keys(p.kontrolnaLista).length)]]}
+// --- izvoz i uvoz (sigurnosna kopija ili prijenos na drugi uređaj)
+function projExport(k){
+  const c=window.__cur||{};
+  return {app:"ČesticaZG",vrsta:"projekt",verzija:PROJ_V,izvezeno:new Date().toISOString(),cestica:{key:k,broj:c.ces||null,ko:c.ko||null,povrsina:c.area?Math.round(c.area):null},
+    proj:projRaw(k),buy:buyStore()[k]||null,prep:prepStore()[k]||null,infc:infcStore()[k]||null,scen:scList(k),ck:ckStore()[k]||null};
+}
+// vraća {ok,key,data} ili {ok:false,msg}; ništa ne sprema
+function projParseImport(text){
+  if(typeof text!=="string"||text.length>PROJ_MAX_BYTES) return {ok:false,msg:"Datoteka je prevelika ili nije tekst."};
+  let j; try{j=JSON.parse(text)}catch(e){return {ok:false,msg:"Datoteka nije ispravan JSON."}}
+  if(!j||j.app!=="ČesticaZG"||j.vrsta!=="projekt") return {ok:false,msg:"Ovo nije izvoz projekta iz ČesticaZG."};
+  if(j.verzija!==PROJ_V) return {ok:false,msg:"Nepoznata verzija izvoza ("+String(j.verzija).slice(0,10)+")."};
+  const k=j.cestica&&typeof j.cestica.key==="string"&&j.cestica.key.length<=80?j.cestica.key:null; if(!k) return {ok:false,msg:"U datoteci nema oznake čestice."};
+  const P=j.proj||{}, out={proj:{}};
+  const h=projCleanHouse(P.house); if(h) out.proj.house=h; const kd=projCleanKd(P.kd); if(kd) out.proj.kd=kd; const s=projCleanSim(P.sim); if(s) out.proj.sim=s;
+  if(j.buy&&typeof j.buy==="object"){const b=j.buy, o={}; for(const f of ["price","agency","notary","lawyer","geo","other","kapara"]){const v=pNum(b[f],0,1e8); if(v!=null) o[f]=v}
+    o.regime=pEnum(b.regime,Object.keys(REGIMES))||"ppn"; for(const f of ["vatIncl","agencyVat","efile"]) if(typeof b[f]==="boolean") o[f]=b[f]; out.buy=o;}
+  if(j.prep){const c=prepClean(j.prep); if(Object.keys(c).length) out.prep=c;}
+  if(j.infc&&typeof j.infc==="object"){const o={}; for(const f of ["kdWorks","kdSeptic","kdWell"]){const v=pNum(j.infc[f],0,1e7); if(v) o[f]=v} if(Object.keys(o).length) out.infc=o;}
+  if(Array.isArray(j.scen)) out.scen=j.scen.slice(0,SC_MAX).filter(x=>x&&typeof x==="object"&&x.inp).map((x,i)=>({id:String(x.id||i).slice(0,20),name:String(x.name||"Scenarij "+(i+1)).slice(0,80),inp:scClean(x.inp),created:String(x.created||"").slice(0,10)})).filter(x=>x.inp.hA>0);
+  if(j.ck&&typeof j.ck==="object"&&!Array.isArray(j.ck)){const o={}; for(const [a,b] of Object.entries(j.ck).slice(0,100)) if(/^[\w-]{1,40}$/.test(a)&&(typeof b==="boolean"||typeof b==="string"&&b.length<=500)) o[a]=b; out.ck=o;}
+  return {ok:true,key:k,data:out,naziv:j.cestica.broj?`${j.cestica.broj}, k.o. ${j.cestica.ko||""}`:k};
+}
+function projApplyImport(r){
+  const k=r.key, D=r.data, put=(name,v)=>{try{const s=JSON.parse(localStorage.getItem(name)||"{}"); if(v==null) delete s[k]; else s[k]=v; localStorage.setItem(name,JSON.stringify(s))}catch(e){}};
+  try{const s=projStore(); s[k]={...D.proj,v:PROJ_V,updated:new Date().toISOString()}; localStorage.setItem("proj",JSON.stringify(s))}catch(e){return false}
+  put("buy",D.buy||null); put("prep",D.prep||null); put("infc",D.infc||null); put("ck2",D.ck||null); scSave(k,D.scen||[]);
+  if(D.buy&&D.buy.price) setLand(k,String(D.buy.price)); else setLand(k,"");
+  return true;
+}
+function projHtml(){
+  return `<details class="acc" data-k="proj"><summary><span>Projekt čestice</span><b id="projSum"></b></summary><div class="acc-body"><div id="projOut"></div>
+  <div class="kd"><button type="button" class="ib" id="projExp">Izvezi projekt</button><label class="ib" for="projImp" style="display:inline-flex;align-items:center">Uvezi projekt</label><input type="file" id="projImp" accept="application/json,.json" style="position:absolute;width:1px;height:1px;opacity:0"></div>
+  <p class="meta">Projekt se automatski sprema u ovom pregledniku. Izvoz (JSON datoteka) služi kao sigurnosna kopija ili za prijenos na drugi uređaj. Uvoz zamjenjuje projekt te čestice i traži potvrdu.</p></div></details>`;
+}
+function projUpdate(){
+  const o=document.getElementById("projOut"), k=aiCurKey(); if(!o||!k) return;
+  const P=projRaw(k), parts=projParts(k), n=parts.filter(x=>x[1]).length;
+  o.innerHTML=`<dl class="kv">${parts.map(([l,on])=>`<dt>${esc(l)}</dt><dd class="${on?"good":"muted"}">${on?"✓ spremljeno":"nije uneseno"}</dd>`).join("")}</dl>${P.updated?`<p class="meta">Zadnja izmjena: ${esc(new Date(P.updated).toLocaleString("hr-HR"))}</p>`:""}`;
+  const s=document.getElementById("projSum"); if(s) s.textContent=`${n} od ${parts.length} dijelova`;
+}
+sheet.addEventListener("click",e=>{ if(e.target.id!=="projExp") return; const k=aiCurKey(); if(!k) return;
+  const c=window.__cur||{}, blob=new Blob([JSON.stringify(projExport(k),null,1)],{type:"application/json"}), a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download=`cestica-${(c.ko||"").replace(/[^\wčćžšđČĆŽŠĐ-]+/g,"_")}-${(c.ces||"").replace(/[^\w-]+/g,"_")}.json`; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove()},500); });
+sheet.addEventListener("change",e=>{ if(e.target.id!=="projImp") return; const f=e.target.files&&e.target.files[0]; e.target.value=""; if(!f) return;
+  if(f.size>PROJ_MAX_BYTES){alert("Datoteka je prevelika."); return}
+  f.text().then(t=>{const r=projParseImport(t); if(!r.ok){alert("Uvoz nije uspio: "+r.msg); return}
+    const same=r.key===aiCurKey();
+    if(!confirm(`Uvesti projekt za česticu ${r.naziv}?${same?" Postojeći projekt ove čestice bit će zamijenjen.":" Projekt će se spremiti uz tu česticu."}`)) return;
+    projApplyImport(r); if(same&&window.__lastData){const k=r.key; window.__cur=null; render(window.__lastData);} else alert("Projekt je spremljen. Otvori česticu "+r.naziv+" da ga vidiš.");
+  }); });
+
+// ================= SCENARIJI INVESTICIJE =================
+// Više spremljenih varijanti kuće za istu česticu. Svaki scenarij čuva vlastitu kopiju ulaza (isti oblik kao finInputs)
+// i računa se istom funkcijom finHouse; zona komunalnog doprinosa i kupnja zemljišta su zajednički za česticu.
+const SC_MAX=12;
+function scStore(){try{return JSON.parse(localStorage.getItem("scen")||"{}")}catch(e){return {}}}
+function scList(k){const a=scStore()[k]; return Array.isArray(a)?a:[]}
+function scSave(k,a){try{const s=scStore(); s[k]=a.slice(0,SC_MAX); localStorage.setItem("scen",JSON.stringify(s)); return true}catch(e){return false}}
+function scClean(I){const o={}; for(const k of HOUSE_KEYS) o[k]=I[k]; o.hA=Math.max(0,Math.min(5000,+o.hA||0)); return JSON.parse(JSON.stringify(o))}
+function scAutoName(I){const f=FLOORS[I.fl]||FLOORS.P; return `${f.label}, ${fmt(I.hA)} m², ${I.t==="mont"?"montažna":"klasična"}${I.base?", s podrumom":""}`}
+const ET_COUNT={P:1,PPk:2,P1:2,P1Pk:3,P2:3};
+// provjerljiva pravila za scenarij: GBP, tlocrt (izgrađenost), broj etaža
+function scAllowed(I){
+  const out=[], fl=FLOORS[I.fl]||FLOORS.P, foot=I.hA/fl.n, gbp=window.__gbp, tl=window.__tl;
+  const et=(window.__ruleP||[]).find(x=>x.id==="etaze"), etMax=et&&et.num?et.num:null;
+  if(gbp) out.push({l:"GBP",ok:I.hA<=gbp*1.001,t:`${fmt(I.hA)} / ${fmt(gbp)} m²`});
+  if(tl) out.push({l:"Tlocrt",ok:foot<=tl*1.001,t:`${fmt(foot)} / ${fmt(tl)} m²`});
+  if(etMax) out.push({l:"Etaže",ok:(ET_COUNT[I.fl]||1)<=etMax,t:`${ET_COUNT[I.fl]||1} / ${etMax}`});
+  const st=!out.length?"nepoznato":out.every(x=>x.ok)?"ok":"no";
+  return {checks:out,st};
+}
+function scRow(sc,rate,acq,prep){
+  const H=finHouse({...sc.inp,prep:prep||{}},rate), A=scAllowed(sc.inp);
+  const g=H.items.filter(i=>i.group==="gradnja"), gr=H.items.find(i=>i.k==="gradnja"), pn=H.items.filter(i=>i.k==="projekti"||i.k==="nadzor");
+  const fees=H.items.filter(i=>["kd","vodni","prist"].includes(i.k)), conn=H.items.filter(i=>["hep","vio","plin","kdWorks","kdSeptic","kdWell"].includes(i.k));
+  const S=(L,f)=>L.reduce((s,i)=>s+i[f],0);
+  return {sc,H,A,gradnja:[gr.lo,gr.hi],projekti:[S(pn,"lo"),S(pn,"hi")],doprinosi:[S(fees,"lo"),S(fees,"hi")],prikljucci:[S(conn,"lo"),S(conn,"hi")],
+    okolis:H.items.find(i=>i.k==="okolis"),build:H.build,total:[H.build.lo+acq,H.build.hi+acq],rez:H.build.rez,kdMissing:H.house.kd==null,prep:H.items.filter(i=>i.group==="priprema")};
+}
+const rng=(a)=>a[0]===a[1]?fmt(a[0])+" €":`${fmt(a[0])}–${fmt(a[1])} €`;
+function scHtml(){
+  return `<details class="acc" data-k="scen"><summary><span>Scenariji investicije</span><b id="scSum"></b></summary><div class="acc-body"><div id="scOut"></div></div></details>`;
+}
+function scUpdate(){
+  const o=document.getElementById("scOut"); if(!o) return;
+  const k=window.__cur&&window.__cur.key; if(!k){o.innerHTML="";return}
+  const L=scList(k), rate=numv("kdRate"), F=window.__fin, acq=F&&F.buy?F.buy.acq:0;
+  let h=`<div class="kd"><button type="button" class="ib" id="scAdd"${finInputs()?"":" disabled"}>Spremi trenutnu kuću kao scenarij</button>${L.length?"":`<button type="button" class="ib" id="scDemo">Dodaj primjere</button>`}</div>`;
+  if(!finInputs()) h+=`<p class="meta">Scenariji trebaju kalkulator gradnje, koji se prikazuje kad je poznato urbano pravilo za česticu.</p>`;
+  if(!L.length){o.innerHTML=h+`<p class="meta">Spremi nekoliko varijanti (npr. prizemnica 120 m², katnica 180 m², s podrumom, montažna ili klasična) i usporedi ih. Svaki scenarij čuva svoje podatke; promjena jednog ne mijenja druge.</p>`; const s=document.getElementById("scSum"); if(s) s.textContent="nema spremljenih"; return}
+  const pr=prepGet(k), R=L.map(sc=>scRow(sc,rate,acq,pr));
+  const STC={ok:["ok","dopušteno prema provjerljivim pravilima"],no:["no","ne zadovoljava pravilo"],nepoznato:["muted","pravila nisu poznata"]};
+  h+=`<div class="sccards">`;
+  R.forEach((r,i)=>{const st=STC[r.A.st];
+    h+=`<div class="scc" data-sci="${i}"><div class="rh"><b>${esc(r.sc.name)}</b><em class="kind st-${st[0]}">${st[1]}</em></div>`;
+    h+=`<dl class="kv"><dt>Površina</dt><dd>${fmt(r.sc.inp.hA)} m² · tlocrt ${fmt(r.H.house.foot)} m²</dd><dt>Katnost</dt><dd>${esc((FLOORS[r.sc.inp.fl]||FLOORS.P).label)}${r.sc.inp.base?" + podrum":""}</dd>`;
+    if(r.A.checks.length) h+=`<dt>Pravila</dt><dd>${r.A.checks.map(c=>`<span class="${c.ok?"good":"bad"}">${c.l} ${c.t}</span>`).join(" · ")}</dd>`;
+    h+=`<dt>Gradnja</dt><dd>${rng(r.gradnja)}</dd><dt>Priprema terena</dt><dd>${r.prep.length?rng([r.prep.reduce((s,i)=>s+i.lo,0),r.prep.reduce((s,i)=>s+i.hi,0)]):"nije unesena"}</dd><dt>Projekti i nadzor</dt><dd>${rng(r.projekti)}</dd><dt>Doprinosi i pristojbe</dt><dd>${rng(r.doprinosi)}${r.kdMissing?" (bez komunalnog)":""}</dd><dt>Priključci</dt><dd>${rng(r.prikljucci)}</dd>`;
+    if(r.okolis) h+=`<dt>Okoliš</dt><dd>${fmt(r.okolis.base)} €</dd>`;
+    h+=`<dt><b>Ukupna investicija</b></dt><dd><b>${rng(r.total)}</b>${acq?"":" (bez zemljišta)"}</dd><dt>Rezerva 15 %</dt><dd>+ ${fmt(r.rez)} €</dd></dl>`;
+    h+=`<div class="kd"><button type="button" class="ib" data-scload="${i}">Učitaj u kalkulator</button><button type="button" class="ib" data-scren="${i}">Preimenuj</button><button type="button" class="ib" data-scdel="${i}">Obriši</button></div></div>`;
+  });
+  h+=`</div>`;
+  if(R.length>1){const best=R.reduce((a,b)=>b.total[0]<a.total[0]?b:a); h+=`<p class="meta">Najniža procjena: ${esc(best.sc.name)} (${rng(best.total)}). Zona komunalnog doprinosa, priprema terena${acq?" i kupnja zemljišta":""} zajednički su za sve scenarije.</p>`;}
+  h+=`<p class="meta">Iznosi se računaju istim modelom kao "Procjena cijene gradnje". Dopuštenost se odnosi samo na pravila koja se mogu provjeriti (GBP, tlocrt, broj etaža); ostali uvjeti traže lokacijsku informaciju.</p>`;
+  o.innerHTML=h; const s=document.getElementById("scSum"); if(s) s.textContent=`${L.length} ${L.length===1?"scenarij":L.length<5?"scenarija":"scenarija"}`;
+}
+function scLoad(I){
+  const set=(id,v,ev="change")=>{const e=document.getElementById(id); if(!e||v==null) return; if(e.type==="checkbox") e.checked=!!v; else e.value=v; e.dispatchEvent(new Event(ev,{bubbles:true}));};
+  set("bArea",I.hA,"input"); set("bFloors",I.fl); set("bType",I.t); set("bStd",I.std); set("bPhase",I.ph); set("bBase",I.base); set("bYard",I.yard!=null?I.yard:"","input");
+  set("kdKw",String(I.kW)); set("kdGas",I.gas); set("kdWorks",I.works!=null?I.works:"","input"); set("kdSeptic",I.septic!=null?I.septic:"","input"); set("kdWell",I.well!=null?I.well:"","input");
+  const v=document.getElementById("kdVol"); if(v){ if(I.volManual){v.value=I.vol; v.dataset.manual="1"} else v.dataset.manual=""; }
+  finUpdate();
+}
+sheet.addEventListener("click",e=>{
+  const t=e.target, k=window.__cur&&window.__cur.key; if(!k) return;
+  if(t.id==="scAdd"){const I=finInputs(); if(!I) return; const L=scList(k); if(L.length>=SC_MAX){alert(`Najviše ${SC_MAX} scenarija po čestici.`);return}
+    L.push({id:Date.now().toString(36),name:scAutoName(I),inp:scClean(I),created:new Date().toISOString().slice(0,10)}); scSave(k,L); scUpdate();}
+  if(t.id==="scDemo"){const I=finInputs(); if(!I) return; const base=scClean(I);
+    const D=[["Prizemnica 120 m²",{hA:120,fl:"P",t:"klas",base:false}],["Katnica P+1 180 m²",{hA:180,fl:"P1",t:"klas",base:false}],["P+1 180 m² s podrumom",{hA:180,fl:"P1",t:"klas",base:true}],["Montažna P+1 180 m²",{hA:180,fl:"P1",t:"mont",base:false}],["Klasična zidana P+Pk 160 m²",{hA:160,fl:"PPk",t:"klas",base:false}]];
+    scSave(k,D.map(([n,x],i)=>({id:Date.now().toString(36)+i,name:n,inp:scClean({...base,...x,volManual:false,vol:null}),created:new Date().toISOString().slice(0,10)}))); scUpdate();}
+  const ld=t.dataset&&t.dataset.scload, rn=t.dataset&&t.dataset.scren, dl=t.dataset&&t.dataset.scdel;
+  if(ld!=null){const L=scList(k); if(L[+ld]){scLoad(L[+ld].inp); OPEN.add("build"); const b=document.querySelector('details[data-k="build"]'); if(b){b.open=true; b.scrollIntoView({block:"start",behavior:"smooth"});}}}
+  if(rn!=null){const L=scList(k); if(L[+rn]){const n=prompt("Naziv scenarija",L[+rn].name); if(n&&n.trim()){L[+rn].name=n.trim().slice(0,80); scSave(k,L); scUpdate();}}}
+  if(dl!=null){const L=scList(k); if(L[+dl]&&confirm(`Obrisati scenarij "${L[+dl].name}"?`)){L.splice(+dl,1); scSave(k,L); scUpdate();}}
+});
 
 // odjeljak "Novac i kupnja"
 function moneyHtml(key,area){
@@ -1720,16 +2246,17 @@ sheet.addEventListener("input",e=>{
   if(/^y[A-Z]/.test(id)){buyRead(); finUpdate();}
   if(id==="kdVol"){e.target.dataset.manual="1"; finUpdate();}
   if(id==="kdWorks"||id==="kdSeptic"||id==="kdWell"){infcSave(); finUpdate();}
-  if(id==="kdRate"){const n=numv("kdRate"); try{localStorage.setItem("kdRate",n>0&&n<=40?String(n):"")}catch(err){} finUpdate();}
+  if(id==="kdRate"){const n=numv("kdRate"), k=aiCurKey(); projPut(k,"kd",projCleanKd({zone:projKd(k).zone,rate:n>0&&n<=40?n:null})); finUpdate();}
   if(/^b[A-Z]/.test(id)) finUpdate();
+  if(/^b[A-Z]/.test(id)||id==="kdVol") projSaveHouse();
 });
 sheet.addEventListener("change",e=>{
   const id=e.target.id||"";
   if(/^y[A-Z]/.test(id)){buyRead(); finUpdate();}
-  if(/^b[A-Z]/.test(id)||id==="kdKw"||id==="kdGas") finUpdate();
-  if(id==="kdZone"){const z=KD_ZONES.find(x=>x[0]===e.target.value); if(z){document.getElementById("kdRate").value=z[1]; try{localStorage.setItem("kdRate",String(z[1]))}catch(err){}} try{localStorage.setItem("kdZone",e.target.value)}catch(err){} finUpdate();}
+  if(/^b[A-Z]/.test(id)||id==="kdKw"||id==="kdGas"){finUpdate(); projSaveHouse();}
+  if(id==="kdZone"){const z=KD_ZONES.find(x=>x[0]===e.target.value), k=aiCurKey(); if(z) document.getElementById("kdRate").value=z[1]; projPut(k,"kd",projCleanKd({zone:e.target.value,rate:z?z[1]:numv("kdRate")})); finUpdate();}
 });
-sheet.addEventListener("click",e=>{ if(e.target.id==="kdVolAuto"){const v=document.getElementById("kdVol"); v.dataset.manual=""; finUpdate();} });
+sheet.addEventListener("click",e=>{ if(e.target.id==="kdVolAuto"){const v=document.getElementById("kdVol"); v.dataset.manual=""; finUpdate(); projSaveHouse();} });
 
 function dogUpdate(){
   const o=document.getElementById("dogOut"); if(!o) return;
@@ -1920,6 +2447,7 @@ function showFavs(){
     ["Cijena zemljišta",f=>f.land?fmt(f.land)+" €":"–"],
     ["€/m² zemljišta",f=>f.land&&f.area?fmt(f.land/f.area)+" €":"–"],
     ["Ukupni projekt",f=>f.budget?`${fmt(f.budget.lo)} – ${fmt(f.budget.hi)} €`:"–"],
+    ["Scenariji",f=>pwaScenSummary(f.key)],
     ["Spremljeno",f=>esc(f.saved||"")]
   ];
   let h=`<div class="actions"><button type="button" class="ib" id="favPrint">Ispiši / spremi PDF</button></div><p class="eyebrow">Usporedba spremljenih čestica (${a.length})</p>`;
@@ -1938,13 +2466,13 @@ sheet.addEventListener("click",e=>{
   const t=e.target;
   if(t.id==="saveBtn") saveCurrent();
   if(t.id==="favPrint") setTimeout(()=>window.print(),50);
-  if(t.dataset&&t.dataset.open!=null){const f=favs()[+t.dataset.open]; if(f){const ll=L.latLng(f.ll.lat,f.ll.lng); map.setView(ll,18); setTab("analiza"); inspect(ll);}}
+  if(t.dataset&&t.dataset.open!=null){ if(isOffline()){alert("Bez interneta čestica se ne može otvoriti, jer se službeni podaci ne mogu dohvatiti. Spremljeni sažetak i scenariji vidljivi su ovdje."); return} const f=favs()[+t.dataset.open]; if(f){const ll=L.latLng(f.ll.lat,f.ll.lng); map.setView(ll,18); setTab("analiza"); inspect(ll);}}
   if(t.dataset&&t.dataset.del!=null){const a=favs(); a.splice(+t.dataset.del,1); setFavs(a); showFavs();}
 });
 aux.addEventListener("click",e=>{
   const t=e.target;
   if(t.id==="favPrint") setTimeout(()=>window.print(),50);
-  if(t.dataset&&t.dataset.open!=null){const f=favs()[+t.dataset.open]; if(f){const ll=L.latLng(f.ll.lat,f.ll.lng); map.setView(ll,18); setTab("analiza"); inspect(ll);}}
+  if(t.dataset&&t.dataset.open!=null){ if(isOffline()){alert("Bez interneta čestica se ne može otvoriti, jer se službeni podaci ne mogu dohvatiti. Spremljeni sažetak i scenariji vidljivi su ovdje."); return} const f=favs()[+t.dataset.open]; if(f){const ll=L.latLng(f.ll.lat,f.ll.lng); map.setView(ll,18); setTab("analiza"); inspect(ll);}}
   if(t.dataset&&t.dataset.del!=null){const a=favs(); a.splice(+t.dataset.del,1); setFavs(a); showFavs();}
 });
 
@@ -1958,6 +2486,7 @@ function serviceList(){
   out.push({n:"OpenStreetMap Overpass (okolina)",u:"https://overpass-api.de/api/status",raw:true});
   out.push({n:"Open-Meteo (visine terena)",u:"https://api.open-meteo.com/v1/elevation?latitude=45.81&longitude=15.98"});
   out.push({n:"Nominatim (pretraga adresa)",u:"https://nominatim.openstreetmap.org/status?format=json"});
+  out.push({n:"DGU katastar infrastrukture (WMS; provjera može li ga preglednik dohvatiti)",u:"https://ski.dgu.hr/inspire/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",raw:true});
   return out;
 }
 async function ping(x){
@@ -2005,14 +2534,14 @@ function setTab(t,{scrollTo}={}){
   appEl.classList.remove("tab-karta","tab-analiza","tab-troskovi","tab-spremljeno"); appEl.classList.add("tab-"+t);
   document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-current",b.dataset.tab===t?"page":"false"));
   if(t==="spremljeno"){showFavs(); setState(isMobile()?"full":UI.state); return;}
-  auxClose();
+  auxClose(); try{aiCloseP()}catch(e){}
   if(t==="karta"){setState("peek"); return;}
   if(UI.state==="peek") setState("half");
   if(!scrollTo&&t==="troskovi"){const g=sheet.querySelector('.grp[data-g=troskovi]'); if(g) setTimeout(()=>{sheet.scrollTop=Math.max(0,g.offsetTop-8)},isMobile()?240:0);}
   if(!scrollTo&&t==="analiza") sheet.scrollTop=0;
   if(scrollTo){const el=document.getElementById(scrollTo); if(el){ if(isMobile()&&UI.state!=="full") setState("full"); setTimeout(()=>{sheet.scrollTop=el.offsetTop-8},isMobile()?240:0);}}
 }
-function auxOpen(html){aux.innerHTML=`<div class="actions" style="justify-content:flex-start"><button type="button" class="ib" id="auxBack">← Natrag na česticu</button></div>`+html; aux.hidden=false; sheet.hidden=true; aux.scrollTop=0;}
+function auxOpen(html){try{aiCloseP()}catch(e){} aux.innerHTML=`<div class="actions" style="justify-content:flex-start"><button type="button" class="ib" id="auxBack">← Natrag na česticu</button></div>`+html; aux.hidden=false; sheet.hidden=true; aux.scrollTop=0;}
 function auxClose(){aux.hidden=true; sheet.hidden=false;}
 aux.addEventListener("click",e=>{ if(e.target.id==="auxBack"){auxClose(); if(UI.tab==="spremljeno") setTab(UI.hadParcel?"analiza":"karta");} });
 document.getElementById("tabs").addEventListener("click",e=>{const b=e.target.closest("button[data-tab]"); if(b) setTab(b.dataset.tab);});
@@ -2033,7 +2562,7 @@ document.getElementById("tabs").addEventListener("click",e=>{const b=e.target.cl
 })();
 // kartice sažetka (otvaraju skupinu i odjeljak)
 function cardsHtml(){
-  const C=[["sec-uvjeti","analiza","Gradnja","Pravila i tlocrt","⌂"],["sec-novac","troskovi","Novac i kupnja","Troškovi i koraci","€"],["sec-provjere","analiza","Infrastruktura","Ograničenja i mreže","≋"],["sec-sunce","analiza","Sunce i okolina","Sjena i energija","☼"]];
+  const C=[["sec-uvjeti","analiza","Gradnja","Pravila i tlocrt","⌂"],["sec-novac","troskovi","Novac i kupnja","Troškovi i koraci","€"],["sec-rizici","analiza","Rizici","Ograničenja i upozorenja","!"],["sec-sunce","analiza","Sunce i okolina","Sjena i energija","☼"]];
   return `<div class="cards m-only">${C.map(([id,tab,t,s,ic],i)=>`<button type="button" class="card" data-go="${id}" data-tab="${tab}"><span class="ci" aria-hidden="true">${ic}</span><b>${t}</b><small id="card${i}">${s}</small></button>`).join("")}</div>`;
 }
 function cardsUpdate(){
@@ -2042,7 +2571,7 @@ function cardsUpdate(){
   const c=window.__cur||{};
   set(0,c.code?(window.__tl?`pravilo ${c.code} · tlocrt do ${fmt(window.__tl)} m²`:`pravilo ${c.code}`):c.namjena||"");
   const F=window.__fin; set(1,F&&F.buy&&F.total?`ukupno ${fmt(F.total.lo)}–${fmt(F.total.hi)} €`:F&&F.build?`gradnja ${fmt(F.build.lo)}–${fmt(F.build.hi)} €, upiši cijenu zemljišta`:"upiši cijenu i kuću");
-  if(d.checks){const n=d.checks.filter(r=>r.v&&r.v.length).length, e=d.checks.filter(r=>r.e).length; set(2,n?`${n} ${n===1?"ograničenje":"ograničenja"}`:e?"dio provjera nije uspio":"bez ograničenja");}
+  if(d.checks&&window.__risks){const R=window.__risks, a=R.filter(f=>f.cat==="potvrdeno").length, b=R.filter(f=>f.cat==="potencijalno").length; set(2,`${a} potvrđeno · ${b} potencijalno`);}
   else set(2,"provjeravam…");
   if(d.env&&d.env.v){const s=d.env.v.stops[0]; set(3,s?`stanica ${s.d} m · Sunce i sjena`:"Sunce, sjena, okolina");}
 }
@@ -2050,12 +2579,13 @@ sheet.addEventListener("click",e=>{const b=e.target.closest(".card[data-go]"); i
 // slojevi: gumb na karti otvara popis bez zatvaranja karte
 document.getElementById("lyrBtn").addEventListener("click",e=>{const l=document.getElementById("layers"), o=l.classList.toggle("open"); e.currentTarget.setAttribute("aria-expanded",o);});
 document.getElementById("lyrInf").addEventListener("change",e=>{ e.target.checked?infLayer.addTo(map):map.removeLayer(infLayer); });
+document.getElementById("lyrSki").addEventListener("change",e=>{ e.target.checked?skiLayer.addTo(map):map.removeLayer(skiLayer); });
 document.getElementById("lyrSun").addEventListener("change",e=>{ SUN.on=e.target.checked; const c=document.getElementById("sunOn"); if(c) c.checked=SUN.on; if(SUN.on&&window.__lastData&&window.__lastData.parcel){sunEnsureNb();} sunDraw(); });
 // izbornik (verzija, stanje servisa)
 document.getElementById("menuBtn").addEventListener("click",()=>{const m=document.getElementById("menu"); m.hidden=!m.hidden;});
 document.getElementById("menu").addEventListener("click",e=>{ if(e.target.closest("a,button")) document.getElementById("menu").hidden=true; });
 // zapamti položaj karte
-map.on("moveend",()=>{try{const c=map.getCenter(); localStorage.setItem("mapv",JSON.stringify([+c.lat.toFixed(6),+c.lng.toFixed(6),map.getZoom()]))}catch(e){}});
+map.on("moveend",()=>{ if(PWA.gpsMove){PWA.gpsMove=false; return} /* prikaz GPS lokacije ne sprema se */ try{const c=map.getCenter(); localStorage.setItem("mapv",JSON.stringify([+c.lat.toFixed(6),+c.lng.toFixed(6),map.getZoom()]))}catch(e){}});
 // virtualna tipkovnica: panel prati vidljivi dio ekrana, a polje za unos ostaje vidljivo
 if(window.visualViewport){const vv=window.visualViewport; const f=()=>document.documentElement.style.setProperty("--vvh",vv.height+"px"); vv.addEventListener("resize",f); f();}
 panel.addEventListener("focusin",e=>{ if(!isMobile()) return; if(!/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; if(UI.state!=="full") setState("full",{keepScroll:true}); setTimeout(()=>{try{e.target.scrollIntoView({block:"center"})}catch(err){}},260); });
@@ -2177,6 +2707,19 @@ sheet.addEventListener("click",async e=>{
   const [la,lo]=c.split(",").map(Number); if(!isFinite(la)||!isFinite(lo)) return;
   const ll=L.latLng(la,lo); map.setView(ll,18); setTimeout(()=>inspect(ll),300);
 })();
+// ponovno otvaranje zadnje čestice (nakon ažuriranja ili kad Android zatvori aplikaciju u pozadini)
+setTimeout(async()=>{
+  if(new URLSearchParams(location.search).get("c")) return;
+  let r=null; try{r=JSON.parse(sessionStorage.getItem("czgNastavak")||"null"); sessionStorage.removeItem("czgNastavak")}catch(e){}
+  if(!r){try{const z=JSON.parse(localStorage.getItem("zadnjaCestica")||"null"); if(z&&Date.now()-z.t<30*864e5) r={ll:z.ll}}catch(e){}}
+  if(!r||!Array.isArray(r.ll)||!isFinite(r.ll[0])||!isFinite(r.ll[1])) return;
+  pwaNetUI(); if(isOffline()) return;
+  if(window.__cur||clickId>0) return; // korisnik je u međuvremenu sam odabrao česticu ili lokaciju
+  const ll=L.latLng(r.ll[0],r.ll[1]); map.setView(ll,Math.max(map.getZoom(),18));
+  await inspect(ll);
+  if(r.tab&&r.tab!=="karta"&&r.tab!=="spremljeno") setTab(r.tab);
+  if(r.scroll) setTimeout(()=>{sheet.scrollTop=r.scroll},300);
+},350);
 
 // --- pretraga po broju katastarske čestice (npr. "Šestine 4027/1" ili "kč 123 Sesvete")
 const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/gi,"d").toUpperCase().replace(/[^A-Z0-9 ]/g," ").replace(/\s+/g," ").trim();
@@ -2207,6 +2750,517 @@ function goToFeature(feat){
 }
 sheet.addEventListener("click",e=>{const i=e.target.dataset&&e.target.dataset.pick; if(i!=null&&window.__choices) goToFeature(window.__choices[+i]);});
 
+// ================= AI ASISTENT: KONTROLIRANO SUČELJE (etapa AI-1) =================
+// Sloj kroz koji će AI model jedino smjeti pristupati aplikaciji. Model ne izvršava JavaScript: šalje naziv alata i
+// argumente, aplikacija ih provjerava i poziva postojeće funkcije (finHouse, tChecks, ruleParams, riskFindings...).
+// Načini: "read" samo čita; "preview" sprema prijedlog u izolirano privremeno stanje (AI.pending) i ništa ne mijenja;
+// "commit" primjenjuje prijedlog samo ako ga je korisnik odobrio klikom u sučelju (aiApprove nije dostupan modelu).
+// Etapa AI-1 nema korisničko sučelje ni poziv plaćenog modela (FEATURES.ai=false).
+const AI={pending:new Map(),undo:[],log:[],done:new Set(),seq:0,calls:[],LIMIT_PER_MIN:40,UNDO_MAX:20,readOnly:true}; // AI-2: samo čitanje; izmjene se uključuju u AI-3/AI-4
+const AI_STATUS={propisano:"propisano",provjera:"potrebna provjera",nije:"nije dostupno"};
+const AI_ERR=(code,msg,extra)=>({ok:false,error:{code,msg,...(extra||{})}});
+const S_NUM=(min,max,o={})=>({t:"number",min,max,...o}), S_ENUM=(v,o={})=>({t:"enum",v,...o}), S_BOOL=(o={})=>({t:"boolean",...o}), S_STR=(max,o={})=>({t:"string",max,...o});
+const S_PARCEL={parcelId:S_STR(80,{req:true,d:"ključ čestice iz getCurrentParcel (npr. 'REMETE|3101/2')"})};
+const S_HOUSE={w:S_NUM(4,40,{d:"širina kuće (m)"}),d:S_NUM(4,40,{d:"dubina kuće (m)"}),rot:S_NUM(0,359.9,{d:"okret (°)"}),fl:S_ENUM(FLOOR_OPTS.map(o=>o[0]),{d:"katnost: 1=P, 1.5=P+Pk, 2=P+1, 2.5=P+1+Pk, 3=P+2"}),
+  fh:S_NUM(2.4,4.5,{d:"visina etaže (m)"}),podrum:S_BOOL(),gar:S_BOOL(),toward:S_ENUM(["S","J","I","Z"],{d:"pomakni kuću što bliže strani čestice (sjever, jug, istok, zapad) uz dopuštene odmake"})};
+const S_INV={hA:S_NUM(20,2000,{d:"bruto površina kuće (m²)"}),fl:S_ENUM(Object.keys(FLOORS)),t:S_ENUM(Object.keys(BUILD),{d:"klas=zidana, mont=montažna"}),std:S_ENUM(Object.keys(STD)),ph:S_ENUM(Object.keys(BUILD.klas)),base:S_BOOL(),
+  landPrice:S_NUM(0,20000000,{d:"kupoprodajna cijena zemljišta (€), korisnikov unos"}),prepCut:S_NUM(0,100000,{d:"dodatni iskop (m³)"}),prepExtra:S_NUM(0,1000000,{d:"ostali pripremni radovi (€)"})};
+// provjera argumenata: nepoznati ključevi, tipovi i rasponi se odbijaju
+function aiValidate(schema,args){
+  if(args==null) args={};
+  if(typeof args!=="object"||Array.isArray(args)) return {err:"argumenti moraju biti objekt"};
+  const out={}, bad=[];
+  for(const k of Object.keys(args)) if(!schema[k]) bad.push(`nepoznat parametar "${k}"`);
+  for(const [k,s] of Object.entries(schema)){
+    const v=args[k];
+    if(v==null){ if(s.req) bad.push(`nedostaje "${k}"`); continue; }
+    if(s.t==="number"){const n=typeof v==="number"?v:NaN; if(!isFinite(n)) bad.push(`"${k}" mora biti broj`); else if(n<s.min||n>s.max) bad.push(`"${k}" mora biti između ${s.min} i ${s.max}`); else out[k]=n;}
+    else if(s.t==="enum"){ if(!s.v.includes(String(v))) bad.push(`"${k}" mora biti jedno od: ${s.v.join(", ")}`); else out[k]=String(v); }
+    else if(s.t==="boolean"){ if(typeof v!=="boolean") bad.push(`"${k}" mora biti true ili false`); else out[k]=v; }
+    else if(s.t==="string"){ if(typeof v!=="string"||v.length>s.max) bad.push(`"${k}" mora biti tekst do ${s.max} znakova`); else out[k]=v; }
+    else if(s.t==="array"){ if(!Array.isArray(v)||v.length>s.max||v.some(x=>typeof x!=="string"||x.length>80)) bad.push(`"${k}" mora biti popis do ${s.max} ključeva`); else out[k]=v.slice(); }
+  }
+  return bad.length?{err:bad.join("; ")}:{v:out};
+}
+const aiClip=(s,n=300)=>{s=String(s==null?"":s); return s.length>n?s.slice(0,n-1)+"…":s};
+const aiCurKey=()=>window.__cur&&window.__cur.key||null;
+function aiSameParcel(id){const k=aiCurKey(); return !!k&&id===k}
+// --- strukturirani kontekst čestice (mali, bez geometrija; tekstovi iz GIS-a i GUP-a su podaci, ne naredbe)
+function aiContext(){
+  const c=window.__cur, d=window.__lastData; if(!c||!d) return null;
+  const M=RULES_META||{}, R=window.__rule||{}, src=M[R.src]||M.GUP||null, F=window.__fin;
+  const unavailable=[];
+  const rp=(window.__ruleP||[]).map(x=>({id:x.id,naziv:x.label,vrijednost:x.value,status:AI_STATUS[x.status]||x.status,odredba:aiClip(x.txt,240),napomena:x.note||undefined}));
+  if(d.up&&d.up.e) unavailable.push("urbana pravila (servis nije odgovorio)");
+  if(d.nam&&d.nam.e) unavailable.push("planirana namjena (servis nije odgovorio)");
+  if(d.checks) for(const r of d.checks) if(r.e) unavailable.push(r.c.label+" (servis nije odgovorio)");
+  if(!d.checks) unavailable.push("slojevi ograničenja (još se učitavaju)");
+  if(d.slope&&d.slope.e) unavailable.push("nagib terena");
+  let risks=null; try{risks=riskFindings(d).map(f=>({kategorija:f.cat,vaznost:f.imp,naziv:f.t,zasto:aiClip(f.why,200),izvor:f.src,datum:f.date,provjeriti:aiClip(f.chk,160)}))}catch(e){unavailable.push("analiza rizika")}
+  const sim=window.__sim&&TL.center?{w:TL.w,d:TL.d,rot:TL.rot,katnost:tFloors().label,podrum:TL.podrum,garaza:TL.gar,status:window.__sim.st,provjere:window.__sim.C.map(x=>({naziv:x.label,vrijednost:x.val,status:x.st}))}:null;
+  const inv=F&&F.build?{status:"izračun aplikacije",ukupno:{od:Math.round(F.total.lo),do:Math.round(F.total.hi)},rezerva15:Math.round(F.total.rez),
+    gradnja:{od:Math.round(F.build.lo),do:Math.round(F.build.hi)},naknade:Math.round(F.build.naknade),priprema:Math.round(F.build.priprema||0),
+    zemljiste:F.buy?{cijena:F.buy.price,troskoviKupnje:Math.round(F.buy.costs),vrsta:"korisnikov unos"}:null,
+    stavke:F.items.map(i=>({naziv:i.label,od:Math.round(i.lo),do:Math.round(i.hi),vrsta:KIND[i.kind]||i.kind})),
+    ulazi:F.inputs?{hA:F.inputs.hA,fl:F.inputs.fl,t:F.inputs.t,std:F.inputs.std,ph:F.inputs.ph,base:F.inputs.base}:null,upozorenja:F.warn}:null;
+  const inf=window.__infra;
+  return {
+    cestica:{id:c.key,broj:c.ces,ko:c.ko,povrsina_m2:c.area?Math.round(c.area):null,gradiviDio_m2:c.buildArea!=null?Math.round(c.buildArea):null,
+      izvor:"Katastarske čestice Grada Zagreba (GIS, 2023.); službeni podaci su u katastru (OSS)",namjena:c.namjena,analitika:c.analitika},
+    pravila:c.code?{pravilo:c.code,clanak:R.clanak||null,naziv:R.naziv||null,zona:R.zona||null,izvor:src?{naziv:src.naziv,verzija:src.verzija,datum:src.datum,status:src.status,url:src.url}:null,
+      parametri:rp,najveciGBP_m2:window.__gbp?{v:window.__gbp,status:"izračunato iz pravila i površine"}:null,najveciTlocrt_m2:window.__tl?{v:window.__tl,status:"izračunato iz pravila i površine"}:null}:null,
+    simulator:sim,investicija:inv,scenarija:scList(c.key).length,
+    infrastruktura:aiInfra(inf),
+    rizici:risks,nedostupno:unavailable,
+    pouzdanost:"Pravila i namjena su iz GIS-a i teksta GUP-a; pravno mjerodavna je lokacijska informacija. Iznosi su izračun aplikacije (propis, procjena ili korisnikov unos, kako piše uz stavku).",
+    vrijeme:new Date().toISOString()
+  };
+}
+function aiInfra(inf){
+  const S=window.__ski, M=S&&S.v&&S.v.mreze, one=r=>!S?"nije dostupno":S.e||!r||r.e?"nije dostupno (podaci se nisu učitali)":r.none?`nije dostupno (u krugu od ${SKI.R} m nema evidentiranog voda)`:{udaljenost_od_granice_m:Math.round(r.d*10)/10,status:"evidentirani vod (katastar infrastrukture DGU); ne znači da je priključenje moguće"};
+  const base={vodovod:one(M&&M.vodovod),kanalizacija:one(M&&M.kanalizacija),struja_niski_napon:one(M&&M.struja),plin:"nije dostupno (DGU ne objavljuje plinsku mrežu)",
+    izvor:S&&S.v?`${S.v.izvor}, preuzeto ${S.v.preuzeto}`:null,
+    napomena:"Udaljenost evidentiranog voda nije isto što i mogućnost priključenja; priključenje potvrđuje distributer (ViO, Odvodnja, HEP ODS, GPZ). Evidencija može biti nepotpuna; nedostatak podatka ne znači da mreže nema."};
+  if(!inf) return {...base,glavniVodovi:"nije dostupno"};
+  const g=[], e=[];
+  for(const s of INF_SRC){const r=inf[s.id]; if(!r) continue; if(r.e){e.push(s.id);continue}
+    for(const [x,t] of [[r.ex,"postojeći"],[r.pl,"planirani"]]) if(x) g.push({opis:aiClip(x.desc,120),vrsta:t,udaljenost_m:Math.round(x.d),izvor:"GUP Grada Zagreba, karte 3b i 3c"});}
+  return {...base,glavniVodovi:g.length?g.slice(0,10):e.length?"servis nije odgovorio":"nema glavnih vodova u blizini prema GUP-u"};
+}
+// --- pješčanik za simulator: privremeno postavi parametre, pozovi postojeću provjeru, vrati stanje
+function aiSimSandbox(p){
+  if(!document.getElementById("tGrid")) return {err:"simulator nije dostupan za ovu česticu (nema poznatog pravila ili dopuštenog prostora)"};
+  const keep={w:TL.w,d:TL.d,rot:TL.rot,fl:TL.fl,fh:TL.fh,podrum:TL.podrum,gar:TL.gar,center:TL.center&&TL.center.slice()};
+  try{
+    for(const k of ["w","d","rot","fl","fh","podrum","gar"]) if(p[k]!=null) TL[k]=p[k];
+    if(!TL.center&&window.__env&&window.__env.geom) TL.center=turf.centroid({type:"Feature",geometry:window.__env.geom,properties:{}}).geometry.coordinates;
+    if(!TL.zones) TL.zones=tZones();
+    if(p.toward) aiToward(p.toward);
+    const R=tChecks(); if(!R) return {err:"provjera nije uspjela"};
+    return {v:{params:{w:TL.w,d:TL.d,rot:TL.rot,fl:TL.fl,fh:TL.fh,podrum:TL.podrum,gar:TL.gar,center:TL.center.slice()},status:R.st,gbp:Math.round(R.gbpN),tlocrt:Math.round(R.tl),
+      provjere:R.C.map(x=>({naziv:x.label,vrijednost:x.val,status:x.st,napomena:x.note||undefined})),
+      napomena:"Provjeru radi simulator aplikacije; status 'warn' znači da dio uvjeta treba potvrditi. Ovo nije potvrda dopuštenosti."}};
+  }finally{Object.assign(TL,keep);}
+}
+// pomak prema strani čestice: korak po 0,5 m dok kuća ostaje u dopuštenom prostoru (jednostavno pretraživanje, ne jamči optimum)
+function aiToward(dir){
+  const brg={S:0,I:90,J:180,Z:270}[dir], env=window.__env&&window.__env.geom; if(brg==null||!env||!TL.center) return;
+  for(let i=0;i<200;i++){const p=turf.destination(turf.point(TL.center),0.0005,brg,{units:"kilometers"}).geometry.coordinates, old=TL.center; TL.center=p;
+    if(!withinEnv(tFoot(),env)){TL.center=old; break;}}
+}
+// --- izračun investicije postojećim modelom, bez promjene stranice
+function aiInvest(p){
+  const cur=finInputs(); if(!cur) return {err:"kalkulator gradnje nije dostupan za ovu česticu"};
+  const I={...cur}; for(const k of ["hA","fl","t","std","ph","base"]) if(p[k]!=null) I[k]=p[k];
+  if(p.hA!=null&&!I.volManual) I.vol=null;
+  const prep={...(cur.prep||{})}; if(p.prepCut!=null) prep.pCut=p.prepCut; if(p.prepExtra!=null) prep.pOther=p.prepExtra; I.prep=prep;
+  const H=finHouse(I,numv("kdRate")), F=window.__fin;
+  let acq=F&&F.buy?F.buy.acq:0, landNote=F&&F.buy?"iz unosa kupnje":"nije upisano";
+  if(p.landPrice!=null){const b={...buyGet(aiCurKey()),price:p.landPrice}; const tax=(b.regime||"ppn")==="ppn"?p.landPrice*PPN:0; acq=p.landPrice+tax+ZK_PRIJEDLOG*0.5+ZK_RJESENJE; landNote="korisnikova pretpostavka; porez na promet 3 % i pristojbe uračunati, ostali troškovi kupnje nisu";}
+  const sum=g=>H.items.filter(i=>i.group===g).reduce((s,i)=>[s[0]+i.lo,s[1]+i.hi],[0,0]);
+  return {v:{ulazi:{hA:I.hA,fl:I.fl,t:I.t,std:I.std,ph:I.ph,base:I.base},gradnja:sum("gradnja").map(Math.round),naknade:sum("naknade").map(Math.round),priprema:sum("priprema").map(Math.round),
+    zemljiste:{stjecanje:Math.round(acq),napomena:landNote},ukupno:[Math.round(H.build.lo+acq),Math.round(H.build.hi+acq)],rezerva15:Math.round(H.build.rez),upozorenja:H.warn,
+    stavke:H.items.map(i=>({naziv:i.label,od:Math.round(i.lo),do:Math.round(i.hi),vrsta:KIND[i.kind]||i.kind})),
+    izvor:"jedinstveni financijski model aplikacije (finHouse)"},I};
+}
+// --- privremene promjene
+function aiNewChange(kind,parcelKey,payload,summary){
+  const id="ch"+(++AI.seq)+"-"+Date.now().toString(36);
+  const ch={id,kind,parcelKey,payload,summary,approved:false,created:Date.now()}; AI.pending.set(id,ch);
+  for(const [k,v] of AI.pending) if(Date.now()-v.created>3600e3) AI.pending.delete(k); // stari prijedlozi istječu nakon sat vremena
+  return ch;
+}
+// odobrenje dolazi samo iz korisničkog sučelja (klik na "Primijeni"), nikad od modela
+function aiApprove(id){const ch=AI.pending.get(id); if(!ch) return false; if(!aiSameParcel(ch.parcelKey)) return false; ch.approved=true; return true}
+function aiReject(id){return AI.pending.delete(id)}
+function aiSnapshot(kind){
+  const k=aiCurKey();
+  if(kind==="house") return {kind,parcelKey:k,TL:{w:TL.w,d:TL.d,rot:TL.rot,fl:TL.fl,fh:TL.fh,podrum:TL.podrum,gar:TL.gar,center:TL.center&&TL.center.slice()}};
+  return {kind,parcelKey:k,inputs:finInputs(),buy:JSON.stringify(buyStore()[k]||null),prep:JSON.stringify(prepStore()[k]||null),scen:JSON.stringify(scList(k))};
+}
+function aiApplyHouse(P){
+  for(const k of ["w","d","rot","fl","fh","podrum","gar"]) TL[k]=P[k]; TL.center=P.center?P.center.slice():TL.center;
+  const set=(id,v)=>{const e=document.getElementById(id); if(e){if(e.type==="checkbox") e.checked=!!v; else e.value=v}};
+  set("tW",TL.w); set("tD",TL.d); set("tRot",TL.rot); set("tFl",TL.fl); set("tFh",TL.fh); set("tPod",TL.podrum); set("tGar",TL.gar);
+  if(TL.marker) TL.marker.setLatLng([TL.center[1],TL.center[0]]);
+  tDraw();
+}
+function aiApplyInv(I,landPrice,saveAs){
+  const k=aiCurKey();
+  if(I){scLoad(I); if(I.prep){try{const s=prepStore(), c=prepClean(I.prep); if(Object.keys(c).length) s[k]=c; else delete s[k]; localStorage.setItem("prep",JSON.stringify(s))}catch(e){}}}
+  if(landPrice!=null){const b=buyGet(k); b.price=landPrice; buySet(k,b); const y=document.getElementById("yPrice"); if(y) y.value=landPrice;}
+  if(saveAs){const L=scList(k); if(L.length<SC_MAX){L.push({id:Date.now().toString(36),name:aiClip(saveAs,80),inp:scClean(finInputs()),created:new Date().toISOString().slice(0,10),by:"AI prijedlog, potvrdio korisnik"}); scSave(k,L);}}
+  finUpdate();
+}
+function aiRestore(s){
+  if(s.kind==="house"){aiApplyHouse(s.TL); return;}
+  const k=s.parcelKey;
+  try{const b=buyStore(), v=JSON.parse(s.buy); if(v) b[k]=v; else delete b[k]; localStorage.setItem("buy",JSON.stringify(b));
+    const p=prepStore(), q=JSON.parse(s.prep); if(q) p[k]=q; else delete p[k]; localStorage.setItem("prep",JSON.stringify(p));
+    scSave(k,JSON.parse(s.scen));}catch(e){}
+  if(s.inputs) scLoad(s.inputs); else finUpdate();
+  const y=document.getElementById("yPrice"); if(y){const b=buyGet(k); y.value=b.price||"";}
+  finUpdate();
+}
+// --- popis dopuštenih alata
+const AI_TOOLS={
+  getCurrentParcel:{mode:"read",confirm:false,d:"Podaci trenutno odabrane čestice, pravila, rizici, simulator i investicija (strukturirani kontekst).",params:{},
+    run:()=>{const c=aiContext(); return c?{ok:true,data:c}:AI_ERR("NO_PARCEL","Nijedna čestica nije odabrana.")}},
+  getUrbanRules:{mode:"read",confirm:false,d:"Urbanistički parametri s izvorom i statusom provjerenosti.",params:S_PARCEL,
+    run:a=>{if(!aiSameParcel(a.parcelId)) return AI_ERR("PARCEL_MISMATCH","Tražena čestica nije trenutno odabrana."); const c=aiContext(); return c.pravila?{ok:true,data:c.pravila}:AI_ERR("NOT_AVAILABLE","Za ovu česticu urbana pravila nisu dostupna u aplikaciji.",{nedostupno:c.nedostupno})}},
+  getParcelConstraints:{mode:"read",confirm:false,d:"Rizici i ograničenja u tri kategorije (potvrđeno, potencijalno, neprovjereno).",params:S_PARCEL,
+    run:a=>{if(!aiSameParcel(a.parcelId)) return AI_ERR("PARCEL_MISMATCH","Tražena čestica nije trenutno odabrana."); const c=aiContext(); return {ok:true,data:{rizici:c.rizici,nedostupno:c.nedostupno,napomena:"Nedostatak podatka ne znači da rizika nema."}}}},
+  getInfrastructure:{mode:"read",confirm:false,d:"Što je poznato o komunalnoj infrastrukturi.",params:S_PARCEL,
+    run:a=>{if(!aiSameParcel(a.parcelId)) return AI_ERR("PARCEL_MISMATCH","Tražena čestica nije trenutno odabrana."); return {ok:true,data:aiContext().infrastruktura}}},
+  listScenarios:{mode:"read",confirm:false,d:"Spremljeni investicijski scenariji za česticu.",params:S_PARCEL,
+    run:a=>{if(!aiSameParcel(a.parcelId)) return AI_ERR("PARCEL_MISMATCH","Tražena čestica nije trenutno odabrana."); const pr=prepGet(a.parcelId), acq=window.__fin&&window.__fin.buy?window.__fin.buy.acq:0;
+      return {ok:true,data:scList(a.parcelId).map((s,i)=>{const r=scRow(s,numv("kdRate"),acq,pr); return {id:s.id,naziv:s.name,povrsina:s.inp.hA,katnost:s.inp.fl,vrsta:s.inp.t,podrum:s.inp.base,ukupno:r.total.map(Math.round),dopustenost:r.A.st}})}}},
+  calculateInvestment:{mode:"read",confirm:false,d:"Izračun investicije postojećim modelom za zadane parametre; ništa ne mijenja.",params:{...S_PARCEL,...S_INV},
+    run:a=>{if(!aiSameParcel(a.parcelId)) return AI_ERR("PARCEL_MISMATCH","Tražena čestica nije trenutno odabrana."); const r=aiInvest(a); return r.err?AI_ERR("NOT_AVAILABLE",r.err):{ok:true,data:r.v}}},
+  validateHousePlacement:{mode:"read",confirm:false,d:"Provjera položaja i veličine kuće simulatorom; ništa ne mijenja.",params:{...S_PARCEL,...S_HOUSE},
+    run:a=>{if(!aiSameParcel(a.parcelId)) return AI_ERR("PARCEL_MISMATCH","Tražena čestica nije trenutno odabrana."); const r=aiSimSandbox(a); return r.err?AI_ERR("NOT_AVAILABLE",r.err):{ok:true,data:r.v}}},
+  previewHouseChanges:{mode:"preview",confirm:false,d:"Pripremi promjenu kuće u simulatoru (privremeno; primjenjuje se tek nakon korisnikove potvrde).",params:{...S_PARCEL,...S_HOUSE},
+    run:a=>{if(!aiSameParcel(a.parcelId)) return AI_ERR("PARCEL_MISMATCH","Tražena čestica nije trenutno odabrana."); const r=aiSimSandbox(a); if(r.err) return AI_ERR("NOT_AVAILABLE",r.err);
+      const before={w:TL.w,d:TL.d,rot:TL.rot,fl:TL.fl,podrum:TL.podrum,gar:TL.gar};
+      const ch=aiNewChange("house",a.parcelId,{after:r.v.params},{prije:before,poslije:r.v.params,provjere:r.v.provjere,status:r.v.status});
+      return {ok:true,data:{changeId:ch.id,pregled:ch.summary,potrebnaPotvrda:true}}}},
+  previewInvestmentChanges:{mode:"preview",confirm:false,d:"Pripremi promjenu kalkulatora, cijene zemljišta ili novi scenarij (privremeno, do potvrde).",params:{...S_PARCEL,...S_INV,saveAsScenario:S_STR(80,{d:"ako je zadano, nakon potvrde sprema se novi scenarij s tim nazivom"})},
+    run:a=>{if(!aiSameParcel(a.parcelId)) return AI_ERR("PARCEL_MISMATCH","Tražena čestica nije trenutno odabrana."); const r=aiInvest(a); if(r.err) return AI_ERR("NOT_AVAILABLE",r.err);
+      const F=window.__fin, before=F&&F.total?{ukupno:[Math.round(F.total.lo),Math.round(F.total.hi)],ulazi:F.inputs?{hA:F.inputs.hA,fl:F.inputs.fl,t:F.inputs.t,std:F.inputs.std,ph:F.inputs.ph,base:F.inputs.base}:null}:null;
+      const ch=aiNewChange("inv",a.parcelId,{I:r.I,landPrice:a.landPrice,saveAs:a.saveAsScenario},{prije:before,poslije:{ukupno:r.v.ukupno,ulazi:r.v.ulazi,zemljiste:r.v.zemljiste},noviScenarij:a.saveAsScenario||null});
+      return {ok:true,data:{changeId:ch.id,pregled:ch.summary,izracun:r.v,potrebnaPotvrda:true}}}},
+  commitApprovedChanges:{mode:"commit",confirm:true,d:"Primijeni prijedlog koji je korisnik odobrio u sučelju.",params:{changeId:S_STR(40,{req:true})},
+    run:a=>{
+      if(AI.done.has(a.changeId)) return AI_ERR("ALREADY_DONE","Ova promjena je već primijenjena.");
+      const ch=AI.pending.get(a.changeId); if(!ch) return AI_ERR("NOT_FOUND","Prijedlog ne postoji ili je istekao.");
+      if(!aiSameParcel(ch.parcelKey)) return AI_ERR("PARCEL_MISMATCH","Prijedlog je za drugu česticu; nije primijenjen.");
+      if(!ch.approved) return AI_ERR("NEEDS_APPROVAL","Korisnik još nije potvrdio ovu promjenu.");
+      const snap=aiSnapshot(ch.kind);
+      if(ch.kind==="house") aiApplyHouse(ch.payload.after); else aiApplyInv(ch.payload.I,ch.payload.landPrice,ch.payload.saveAs);
+      AI.undo.push({id:ch.id,snap,at:Date.now()}); if(AI.undo.length>AI.UNDO_MAX) AI.undo.shift();
+      AI.done.add(ch.id); AI.pending.delete(ch.id);
+      return {ok:true,data:{primijenjeno:ch.id,mozePonistiti:true}}}},
+  undoLastApprovedChange:{mode:"commit",confirm:true,d:"Poništi zadnju primijenjenu promjenu (nakon potvrde u sučelju).",params:{},
+    run:()=>{const u=AI.undo[AI.undo.length-1]; if(!u) return AI_ERR("NOT_FOUND","Nema promjena za poništavanje.");
+      if(!aiSameParcel(u.snap.parcelKey)) return AI_ERR("PARCEL_MISMATCH","Zadnja promjena je na drugoj čestici; prvo je otvori.");
+      AI.undo.pop(); aiRestore(u.snap); return {ok:true,data:{ponisteno:u.id}}}},
+  compareParcels:{mode:"read",confirm:false,d:"Usporedba spremljenih čestica prema podacima koje aplikacija ima (bez proizvoljnih ocjena).",params:{parcelIds:{t:"array",max:5,req:true}},
+    run:a=>{const all=favs(); const out=a.parcelIds.map(id=>{const f=all.find(x=>x.key===id); return f?{id,broj:f.ces,ko:f.ko,povrsina:f.area?Math.round(f.area):null,pravilo:f.code||null,namjena:f.namjena||null,
+      najveciGBP:null,ogranicenja:f.risks||null,nagib:f.slope,investicija:f.budget?{od:Math.round(f.budget.lo),do:Math.round(f.budget.hi)}:null,zemljiste:f.land||null,spremljeno:f.saved}:{id,greska:"čestica nije spremljena"}});
+      return {ok:true,data:{cestice:out,napomena:"Vrijednosti su zadnje spremljene; 'null' znači da podatak nije poznat."}}}},
+  generateParcelReport:{mode:"commit",confirm:true,d:"Izrada PDF izvještaja iz aktualnih vrijednosti aplikacije.",params:{...S_PARCEL},
+    run:()=>AI_ERR("NOT_AVAILABLE","PDF izvještaj dolazi u fazi G; zasad je dostupan gumb 'Ispiši / spremi PDF'.")}
+};
+// opis alata za model (JSON Schema), bez funkcija
+function aiToolSpecs(){
+  const js=s=>s.t==="number"?{type:"number",minimum:s.min,maximum:s.max}:s.t==="enum"?{type:"string",enum:s.v}:s.t==="boolean"?{type:"boolean"}:s.t==="array"?{type:"array",items:{type:"string"},maxItems:s.max}:{type:"string",maxLength:s.max};
+  return Object.entries(AI_TOOLS).filter(([,t])=>!AI.readOnly||t.mode==="read").map(([name,t])=>({name,description:t.d+(t.mode==="read"?" [samo čitanje]":t.mode==="preview"?" [privremeno]":" [traži potvrdu korisnika]"),
+    input_schema:{type:"object",additionalProperties:false,properties:Object.fromEntries(Object.entries(t.params).map(([k,s])=>[k,{...js(s),...(s.d?{description:s.d}:{})}])),required:Object.entries(t.params).filter(([,s])=>s.req).map(([k])=>k)}}));
+}
+// jedina ulazna točka za model
+function aiCall(name,args){
+  const now=Date.now(); AI.calls=AI.calls.filter(t=>now-t<60000);
+  if(AI.calls.length>=AI.LIMIT_PER_MIN) return AI_ERR("RATE_LIMIT","Previše poziva u minuti.");
+  AI.calls.push(now);
+  const t=Object.prototype.hasOwnProperty.call(AI_TOOLS,name)?AI_TOOLS[name]:null;
+  if(!t){AI.log.push({at:now,name:String(name).slice(0,60),ok:false,code:"UNKNOWN_TOOL"}); return AI_ERR("UNKNOWN_TOOL","Nepoznata naredba: "+String(name).slice(0,60));}
+  if(AI.readOnly&&t.mode!=="read"){AI.log.push({at:now,name,ok:false,code:"DISABLED"}); return AI_ERR("DISABLED","U ovoj fazi AI asistent samo čita podatke; izmjene nisu uključene.");}
+  const V=aiValidate(t.params,args); if(V.err){AI.log.push({at:now,name,ok:false,code:"BAD_ARGS"}); return AI_ERR("BAD_ARGS",V.err);}
+  let r; try{r=t.run(V.v)}catch(e){r=AI_ERR("INTERNAL","Interna greška: "+e.message)}
+  AI.log.push({at:now,name,mode:t.mode,ok:r.ok,code:r.ok?null:r.error.code}); if(AI.log.length>200) AI.log.shift();
+  return r;
+}
+// --- praćenje troškova (procjena iz broja tokena koje vrati backend); stvarna granica je na backendu
+const AI_PRICE={"claude-haiku-5-5":[0.10,0.50],"claude-sonnet-5-5":[2,10]}; // USD po milijun tokena (ulaz, izlaz); platform.claude.com/docs/en/about-claude/pricing, listopad 2026.
+function aiUse(){try{const u=JSON.parse(localStorage.getItem("aiUse")||"{}"), m=new Date().toISOString().slice(0,7); return u.m===m?u:{m,n:0,inT:0,outT:0,usd:0,limit:u.limit||5}}catch(e){return {m:"",n:0,inT:0,outT:0,usd:0,limit:5}}}
+function aiAddUse(model,inT,outT){const u=aiUse(), p=AI_PRICE[model]||AI_PRICE["claude-sonnet-5-5"]; u.n++; u.inT+=inT; u.outT+=outT; u.usd+=(inT*p[0]+outT*p[1])/1e6; try{localStorage.setItem("aiUse",JSON.stringify(u))}catch(e){} return u}
+// --- petlja razgovora s modelom: model je funkcija (pravi backend u etapi AI-2, simulirani model u testovima)
+async function aiConverse(model,userText,history=[],opt={}){
+  const u=aiUse(); if(u.usd>=u.limit) return {ok:false,error:{code:"BUDGET",msg:`Mjesečni AI budžet (${u.limit} $) je potrošen. Ostatak aplikacije radi normalno.`}};
+  const startKey=aiCurKey(), msgs=[...history.slice(-8),{role:"user",content:String(userText).slice(0,2000)}], steps=[], turnId=opt.turnId||("t-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8));
+  for(let i=0;i<(opt.maxSteps||6);i++){
+    let res; try{res=await model({messages:msgs,tools:aiToolSpecs(),parcelId:startKey,turnId,step:i})}catch(e){return {ok:false,error:e&&e.code?{code:e.code,msg:String(e.message||"").slice(0,300)}:{code:"AI_UNAVAILABLE",msg:"AI servis trenutno nije dostupan. Svi izračuni u aplikaciji rade i bez njega."},steps}}
+    if(res&&res.usage) aiAddUse(res.model||"",res.usage.input_tokens||0,res.usage.output_tokens||0);
+    if(aiCurKey()!==startKey) return {ok:false,error:{code:"PARCEL_CHANGED",msg:"Čestica je promijenjena tijekom odgovora; prethodni odgovor se odnosio na "+(startKey||"nijednu česticu")+"."},steps};
+    const calls=res&&Array.isArray(res.tool_calls)?res.tool_calls.slice(0,4):[];
+    if(!calls.length) return {ok:true,text:String(res&&res.text||""),steps,pending:steps.filter(s=>s.r.ok&&s.r.data&&s.r.data.changeId).map(s=>s.r.data.changeId)};
+    msgs.push({role:"assistant",tool_calls:calls});
+    for(const c of calls){const r=aiCall(c.name,c.args); steps.push({name:c.name,r}); msgs.push({role:"tool",tool_use_id:c.id||null,name:c.name,content:JSON.stringify(r).slice(0,12000)});}
+  }
+  return {ok:false,error:{code:"TOO_MANY_STEPS",msg:"Zahtjev je prekompliciran za jedan korak; podijeli ga na manja pitanja."},steps};
+}
+
+// ================= AI ASISTENT: SUČELJE (etapa AI-2, samo čitanje) =================
+// Uključuje se u izborniku ("AI asistent (testno)"). Bez adrese AI servisa i prijave ne šalje ništa.
+// Token prijave čuva se samo u sessionStorage (briše se zatvaranjem kartice); lozinka se nigdje ne sprema.
+// Odgovori modela prikazuju se kao tekst (esc), nikad kao HTML.
+const AI_UI={hist:[],msgs:[],busy:false,parcel:null,use:null,retryMs:1500};
+const AI_QUICK=["Što mogu graditi na ovoj čestici?","Koliko bi koštala kuća koju sam upisao?","Koji su rizici i ograničenja?","Što se zna o komunalnoj infrastrukturi?","Stane li kuća 10 × 12 m na dvije etaže?","Usporedi moje spremljene čestice."];
+const AI_TOOL_HR={getCurrentParcel:"podaci čestice",getUrbanRules:"urbana pravila",getParcelConstraints:"rizici i ograničenja",getInfrastructure:"infrastruktura",listScenarios:"scenariji",calculateInvestment:"izračun investicije",validateHousePlacement:"simulator kuće",compareParcels:"spremljene čestice"};
+function aiOn(){try{return FEATURES.ai&&localStorage.getItem("aiOn")==="1"}catch(e){return false}}
+function aiCfg(){try{const c=JSON.parse(localStorage.getItem("aiCfg")||"{}"); return c&&typeof c==="object"?c:{}}catch(e){return {}}}
+function aiTok(){try{const t=JSON.parse(sessionStorage.getItem("aiTok")||"null"); return t&&t.exp>Date.now()/1000?t.token:null}catch(e){return null}}
+function aiSetTok(t){try{if(t) sessionStorage.setItem("aiTok",JSON.stringify({token:t.token,exp:t.exp})); else sessionStorage.removeItem("aiTok")}catch(e){}}
+// adresa servisa: samo https (ili localhost za lokalno testiranje), bez korisničkog imena i lozinke u adresi
+function aiCleanUrl(u){try{const x=new URL(String(u).trim()); const local=/^(localhost|127\.0\.0\.1)$/.test(x.hostname); if(x.username||x.password) return null; if(x.protocol!=="https:"&&!(local&&x.protocol==="http:")) return null; return x.origin+x.pathname.replace(/\/+$/,"")}catch(e){return null}}
+async function aiFetch(path,opt={}){
+  const c=aiCfg(); if(!c.url) {const e=new Error("Adresa AI servisa nije postavljena."); e.code="NOT_CONFIGURED"; throw e;}
+  const ac=new AbortController(), to=setTimeout(()=>ac.abort(),45000);
+  let r; try{r=await fetch(c.url+path,{...opt,signal:ac.signal,headers:{"content-type":"application/json",...(opt.auth?{authorization:"Bearer "+opt.auth}:{})}})}catch(e){const x=new Error("AI servis nije dostupan (mreža ili servis). Aplikacija radi i bez njega."); x.code="AI_UNAVAILABLE"; x.net=true; throw x}
+  finally{clearTimeout(to)}
+  const j=await r.json().catch(()=>null);
+  if(!r.ok){const e=new Error(j&&j.error&&j.error.msg?j.error.msg:"AI servis je vratio grešku "+r.status+"."); e.code=j&&j.error&&j.error.code||"HTTP_"+r.status; e.status=r.status; throw e;}
+  return j;
+}
+// model preko Workera (pravi poziv); u testovima se zamjenjuje simuliranim modelom
+function aiRemoteModel(){
+  // svaki poziv modela ima oznaku zahtjeva (pitanje + korak). Ako veza pukne, isti zahtjev šalje se još jednom:
+  // Worker tada vrati spremljeni odgovor ili javi da je zahtjev u obradi, pa se isti poziv ne naplaćuje dvaput.
+  return async({messages,tools,turnId,step})=>{const tok=aiTok(); if(!tok){const e=new Error("Prijavi se u AI asistenta."); e.code="UNAUTHORIZED"; throw e;}
+    const body=JSON.stringify({turnId,reqId:`${turnId}-${step||0}`,messages,tools});
+    let j=null;
+    for(let a=0;a<3;a++){
+      try{j=await aiFetch("/chat",{method:"POST",auth:tok,body}); break}
+      catch(e){ const again=a<2&&(e.net&&a===0||e.code==="DUPLICATE_PENDING"); if(!again) throw e; await new Promise(r=>setTimeout(r,AI_UI.retryMs*(a+1))); }
+    }
+    if(j&&j.potrosnja) AI_UI.use=j.potrosnja; return j;};
+}
+let AI_MODEL=null; // null = pravi Worker
+// raščlamba odgovora u dijelove KRATKO / DETALJI / IZVORI / PROVJERITI
+function aiParse(t){
+  t=String(t||""); const out={kratko:"",detalji:"",izvori:[],provjeriti:[]};
+  const re=/^\s*(KRATKO|DETALJI|IZVORI|PROVJERITI)\s*:\s*/gim, idx=[]; let m;
+  while((m=re.exec(t))) idx.push({k:m[1].toUpperCase(),s:m.index,e:re.lastIndex});
+  if(!idx.length){out.kratko=t.trim(); return out}
+  if(idx[0].s>0) out.kratko=t.slice(0,idx[0].s).trim();
+  idx.forEach((x,i)=>{const v=t.slice(x.e,i+1<idx.length?idx[i+1].s:t.length).trim();
+    if(x.k==="KRATKO") out.kratko=(out.kratko?out.kratko+" ":"")+v; else if(x.k==="DETALJI") out.detalji=v;
+    else (x.k==="IZVORI"?out.izvori:out.provjeriti).push(...v.split(/\s*\|\s*|\n+/).map(s=>s.replace(/^[-•*]\s*/,"").trim()).filter(Boolean));});
+  return out;
+}
+// oznake pouzdanosti kao obojeni natpisi (tekst je već escapiran)
+const aiTags=h=>h.replace(/\b(POTVRĐENO|IZRAČUN|PROCJENA|NEPOZNATO)\b/g,(w)=>`<span class="st st-${{"POTVRĐENO":"potv","IZRAČUN":"izr","PROCJENA":"proc","NEPOZNATO":"nep"}[w]}">${w.toLowerCase()}</span>`);
+function aiMsgHtml(m){
+  if(m.t==="q") return `<div class="aiq">${esc(m.text)}</div>`;
+  if(m.t==="note") return `<div class="ains">${esc(m.text)}</div>`;
+  if(m.t==="err") return `<div class="aia aierr"><p>${esc(m.text)}</p></div>`;
+  const P=aiParse(m.text), used=[...new Set((m.steps||[]).filter(s=>s.r&&s.r.ok).map(s=>AI_TOOL_HR[s.name]||s.name))];
+  let h=`<div class="aia"><p>${aiTags(esc(P.kratko||"(bez odgovora)"))}</p>`;
+  if(P.detalji) h+=`<details><summary>Detaljno objašnjenje</summary><p style="white-space:pre-wrap">${aiTags(esc(P.detalji))}</p></details>`;
+  if(P.provjeriti.length) h+=`<details${m.open?" open":""}><summary>Treba provjeriti (${P.provjeriti.length})</summary><ul>${P.provjeriti.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></details>`;
+  if(P.izvori.length) h+=`<details><summary>Izvori (${P.izvori.length})</summary><ul>${P.izvori.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></details>`;
+  h+=`<p class="tools">${used.length?"Korišteni podaci aplikacije: "+esc(used.join(", "))+". ":"Bez podataka iz aplikacije. "}Odgovor je informativan; mjerodavna je lokacijska informacija.</p></div>`;
+  return h;
+}
+function aiParcelLabel(){const c=window.__cur; return c&&c.ces?`${c.ces}, k.o. ${c.ko}`:c?"odabrana lokacija":null}
+function aiRenderPanel(){
+  const el=document.getElementById("ai"); if(!el) return;
+  const c=aiCfg(), tok=aiTok(), pl=aiParcelLabel();
+  let h=`<div class="aihd"><b>AI asistent</b><span class="aitag">samo čitanje · Haiku 5.5</span><button type="button" class="ib" id="aiClose" aria-label="Zatvori AI asistenta">✕</button></div>`;
+  h+=`<p class="meta" style="margin:0">${pl?"Čestica: "+esc(pl):"Nijedna čestica nije odabrana. Dodirni zemljište na karti."}</p>`;
+  if(!c.url){
+    h+=`<div class="aiset"><p class="hint">AI servis još nije postavljen. Upiši adresu svog Cloudflare Workera (vidi upute za postavljanje).</p><label for="aiUrl">Adresa AI servisa</label><input id="aiUrl" type="url" inputmode="url" placeholder="https://cesticazg-ai.….workers.dev" autocomplete="off"><button type="button" class="ib" id="aiUrlSave">Spremi adresu</button><p class="meta" id="aiSetMsg"></p></div>`;
+  } else if(!tok){
+    h+=`<form class="aiset" id="aiLoginF" autocomplete="on"><p class="hint">Prijavi se lozinkom koju si postavio za AI servis. Prijava vrijedi do zatvaranja kartice, najdulje 12 sati.</p><label for="aiPw">Lozinka</label><input id="aiPw" type="password" autocomplete="current-password" minlength="24" required><button type="submit" class="ib" id="aiLogin">Prijavi se</button> <button type="button" class="ib" id="aiUrlReset">Promijeni adresu servisa</button><p class="meta" id="aiSetMsg"></p></form>`;
+  } else {
+    h+=`<div class="aimsgs" id="aiMsgs">${AI_UI.msgs.map(aiMsgHtml).join("")}${AI_UI.busy?`<div class="aia"><p><span class="spin"></span>Razmišljam i čitam podatke aplikacije…</p></div>`:""}</div>`;
+    if(!AI_UI.msgs.length) h+=`<p class="meta">Pitaj o odabranoj čestici, pravilima, rizicima, infrastrukturi, kući u simulatoru, troškovima ili spremljenim česticama. Asistent samo čita podatke i ništa ne mijenja.</p>`;
+    const chips=`<div class="aichips">${AI_QUICK.map((q,i)=>`<button type="button" class="ib" data-aiq="${i}"${AI_UI.busy?" disabled":""}>${esc(q)}</button>`).join("")}</div>`;
+    h+=AI_UI.msgs.length?`<details class="aiqd"><summary>Brza pitanja</summary>${chips}</details>`:chips;
+    h+=`<form class="aiform" id="aiF"><textarea id="aiIn" rows="2" maxlength="1000" placeholder="Pitaj nešto o čestici…" aria-label="Pitanje za AI asistenta"${AI_UI.busy?" disabled":""}></textarea><button type="submit" class="ib" id="aiSend"${AI_UI.busy?" disabled":""}>Pošalji</button></form>`;
+    const u=AI_UI.use; h+=`<p class="meta">${u?`Ovaj mjesec: ${String((u.spent||0).toFixed(3)).replace(".",",")} $ od ${u.limit} $ · ${u.n||0} poziva. `:""}<button type="button" class="ib" id="aiLogout">Odjava</button> <button type="button" class="ib" id="aiClear">Novi razgovor</button></p>`;
+  }
+  el.innerHTML=h;
+  // pomak na početak zadnjeg odgovora (ili na pitanje dok se čeka), da se odgovor čita od početka
+  const all=el.querySelectorAll("#aiMsgs > div"), last=all[all.length-1];
+  if(last) el.scrollTop=Math.max(0,last.offsetTop-(AI_UI.busy?8:(all[all.length-2]?last.offsetTop-all[all.length-2].offsetTop+8:8)));
+}
+function aiOpen(){
+  if(!aiOn()) return; const el=document.getElementById("ai");
+  aux.hidden=true; sheet.hidden=true; el.hidden=false; aiRenderPanel();
+  if(isMobile()&&UI.state!=="full") setState("half");
+}
+function aiCloseP(){const el=document.getElementById("ai"); if(el&&!el.hidden){el.hidden=true; sheet.hidden=false;}}
+function aiSync(){ // uključeno/isključeno u izborniku
+  const on=aiOn(), b=document.getElementById("aiBtn"), row=document.getElementById("aiOnRow"), cb=document.getElementById("aiOn");
+  if(row) row.hidden=!FEATURES.ai; if(cb) cb.checked=on; if(b) b.hidden=!on;
+  if(!on){aiCloseP(); AI_UI.msgs=[]; AI_UI.hist=[];}
+}
+async function aiAsk(q){
+  q=String(q||"").trim().slice(0,1000); if(!q||AI_UI.busy) return;
+  const k=aiCurKey();
+  if(AI_UI.parcel!==k){ if(AI_UI.msgs.length) AI_UI.msgs.push({t:"note",text:k?`Razgovor se sada odnosi na česticu ${aiParcelLabel()}.`:"Nijedna čestica nije odabrana."}); AI_UI.hist=[]; AI_UI.parcel=k; }
+  AI_UI.msgs.push({t:"q",text:q}); AI_UI.busy=true; aiRenderPanel();
+  const r=await aiConverse(AI_MODEL||aiRemoteModel(),q,AI_UI.hist,{});
+  AI_UI.busy=false;
+  if(r.ok){AI_UI.msgs.push({t:"a",text:r.text,steps:r.steps}); AI_UI.hist.push({role:"user",content:q},{role:"assistant",content:String(r.text).slice(0,1500)}); AI_UI.hist=AI_UI.hist.slice(-12);}
+  else{ if(r.error.code==="UNAUTHORIZED") aiSetTok(null);
+    const M={UNAUTHORIZED:"Prijava je istekla. Prijavi se ponovno.",PARCEL_CHANGED:r.error.msg,BUDGET:r.error.msg,BUDGET_CONSOLE:r.error.msg,RATE_LIMIT:"Previše upita u minuti. Pričekaj malo pa pokušaj ponovno.",DISABLED:"AI asistent je isključen na servisu."};
+    AI_UI.msgs.push({t:"err",text:M[r.error.code]||r.error.msg||"Odgovor nije uspio."});}
+  AI_UI.msgs=AI_UI.msgs.slice(-40); aiRenderPanel();
+}
+document.addEventListener("click",e=>{
+  const t=e.target; if(!t||!t.id&&!t.dataset) return;
+  if(t.id==="aiBtn") aiOpen();
+  else if(t.id==="aiClose") aiCloseP();
+  else if(t.id==="aiUrlSave"){const u=aiCleanUrl(document.getElementById("aiUrl").value), m=document.getElementById("aiSetMsg");
+    if(!u){m.textContent="Adresa mora počinjati s https:// i ne smije sadržavati lozinku."; return} try{localStorage.setItem("aiCfg",JSON.stringify({url:u}))}catch(err){} aiRenderPanel();}
+  else if(t.id==="aiUrlReset"){try{localStorage.removeItem("aiCfg")}catch(err){} aiSetTok(null); aiRenderPanel();}
+  else if(t.id==="aiLogout"){aiSetTok(null); AI_UI.msgs=[]; AI_UI.hist=[]; aiRenderPanel();}
+  else if(t.id==="aiClear"){AI_UI.msgs=[]; AI_UI.hist=[]; aiRenderPanel();}
+  else if(t.dataset&&t.dataset.aiq!=null) aiAsk(AI_QUICK[+t.dataset.aiq]);
+});
+document.addEventListener("submit",async e=>{
+  if(e.target.id==="aiF"){e.preventDefault(); const i=document.getElementById("aiIn"); const q=i.value; i.value=""; aiAsk(q);}
+  if(e.target.id==="aiLoginF"){e.preventDefault(); const pw=document.getElementById("aiPw"), m=document.getElementById("aiSetMsg"), v=pw.value; pw.value="";
+    m.textContent="Prijavljujem…";
+    try{const j=await aiFetch("/login",{method:"POST",body:JSON.stringify({lozinka:v})}); aiSetTok(j); try{const s=await aiFetch("/status",{auth:j.token}); AI_UI.use=s.potrosnja}catch(err){} aiRenderPanel();}
+    catch(err){m.textContent=err.message;}}
+});
+document.addEventListener("keydown",e=>{ if(e.target&&e.target.id==="aiIn"&&e.key==="Enter"&&!e.shiftKey){e.preventDefault(); const f=document.getElementById("aiF"); if(f) f.requestSubmit?f.requestSubmit():f.dispatchEvent(new Event("submit",{bubbles:true,cancelable:true}));} });
+document.getElementById("aiOn").addEventListener("change",e=>{try{localStorage.setItem("aiOn",e.target.checked?"1":"0")}catch(err){} aiSync(); if(e.target.checked){document.getElementById("menu").hidden=true; aiOpen();}});
+aiSync();
+
+// ================= ANDROID APLIKACIJA (PWA) =================
+// Instalacija s početnog zaslona (manifest.webmanifest), rad bez interneta (sw.js), sigurno ažuriranje,
+// sistemska tipka Natrag, vraćanje zadnje čestice i lokacija na terenu.
+const PWA={reg:null,guard:false,ignorePop:false,accepted:false,gpsMove:false,gps:null,loadedAt:null};
+const GPS_OK_M=10; // najveća GPS nesigurnost (m) uz koju aplikacija sama odabire česticu na lokaciji
+const isOffline=()=>navigator.onLine===false;
+const pwaTime=t=>new Date(t).toLocaleTimeString("hr-HR",{hour:"2-digit",minute:"2-digit"});
+
+// --- spremanje unosa i stanja (prije ažuriranja, kad Android pošalje aplikaciju u pozadinu)
+function pwaSaveState(){
+  for(const f of [projSaveHouse,prepSave,infcSave]) try{f()}catch(e){}
+  try{if(document.getElementById("yPrice")) buyRead()}catch(e){}
+  try{const k=aiCurKey(); if(k&&TL.center){const s=projCleanSim({w:TL.w,d:TL.d,rot:TL.rot,fl:TL.fl,fh:TL.fh,podrum:TL.podrum,gar:TL.gar,gw:TL.gw,gd:TL.gd,center:TL.center}); if(s) projPut(k,"sim",s);}}catch(e){}
+  try{const c=window.__cur; if(c) sessionStorage.setItem("czgNastavak",JSON.stringify({ll:pwaParcelPoint(),tab:UI.tab,state:UI.state,scroll:sheet.scrollTop}))}catch(e){}
+}
+// točka unutar odabrane čestice (ne sirova GPS lokacija), za ponovno otvaranje iste čestice
+function pwaParcelPoint(){const d=window.__lastData, c=window.__cur; try{if(d&&d.parcel){const p=turf.pointOnFeature(d.parcel).geometry.coordinates; return [+p[1].toFixed(6),+p[0].toFixed(6)]}}catch(e){} return c?[+c.ll.lat.toFixed(6),+c.ll.lng.toFixed(6)]:null}
+function pwaRememberParcel(){try{const p=pwaParcelPoint(); if(p) localStorage.setItem("zadnjaCestica",JSON.stringify({ll:p,t:Date.now()}))}catch(e){}}
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") pwaSaveState(); });
+window.addEventListener("pagehide",pwaSaveState);
+
+// --- tipka ili gesta Natrag: dok je otvoren izbornik, panel ili prikaz, Natrag ga zatvara; na osnovnom prikazu izlazi
+function pwaIsBase(){
+  const menu=document.getElementById("menu"), lay=document.getElementById("layers"), ai=document.getElementById("ai");
+  return menu.hidden&&!lay.classList.contains("open")&&aux.hidden&&(!ai||ai.hidden)&&(!isMobile()||UI.state==="peek");
+}
+function pwaSyncGuard(){
+  const base=pwaIsBase();
+  if(!base&&!PWA.guard){history.pushState({czg:"sloj"},""); PWA.guard=true;}
+  else if(base&&PWA.guard){PWA.guard=false; PWA.ignorePop=true; history.back();}
+}
+function pwaCloseTop(){
+  const menu=document.getElementById("menu"), lay=document.getElementById("layers"), ai=document.getElementById("ai");
+  if(!menu.hidden){menu.hidden=true; return}
+  if(lay.classList.contains("open")){lay.classList.remove("open"); document.getElementById("lyrBtn").setAttribute("aria-expanded","false"); return}
+  if(ai&&!ai.hidden){aiCloseP(); return}
+  if(!aux.hidden){auxClose(); if(UI.tab==="spremljeno") setTab(UI.hadParcel?"analiza":"karta"); return}
+  if(isMobile()&&UI.state==="full"){setState("half"); return}
+  if(isMobile()&&UI.state==="half"){setTab("karta"); return}
+}
+window.addEventListener("popstate",()=>{
+  if(PWA.ignorePop){PWA.ignorePop=false; return}
+  PWA.guard=false; pwaCloseTop(); setTimeout(pwaSyncGuard,0);
+});
+try{history.replaceState({czg:"osnova"},"")}catch(e){}
+{ // promjene prikaza prate se na samim elementima, pa svako otvaranje (gumb, kartica, kod) dobiva korak Natrag
+  const mo=new MutationObserver(()=>{clearTimeout(PWA.syncT); PWA.syncT=setTimeout(pwaSyncGuard,30)});
+  for(const id of ["menu","layers","aux","ai","panel"]){const el=document.getElementById(id); if(el) mo.observe(el,{attributes:true,attributeFilter:["hidden","class"]});}
+}
+
+// --- bez interneta: jasna oznaka; službeni podaci se ne dohvaćaju ni ne prikazuju iz stare predmemorije
+function pwaNetUI(){
+  const b=document.getElementById("netState"); if(!b) return;
+  if(isOffline()){
+    b.hidden=false;
+    b.innerHTML=`<b>Izvan mreže.</b> Katastar, GUP i ostali službeni podaci ne mogu se dohvatiti ni osvježiti.${window.__cur&&PWA.loadedAt?` Prikazana čestica učitana je u ${pwaTime(PWA.loadedAt)} i nije osvježena.`:""} Spremljene čestice i scenariji su u kartici Spremljeno.`;
+  } else b.hidden=true;
+}
+window.addEventListener("online",pwaNetUI); window.addEventListener("offline",pwaNetUI);
+function pwaOfflineInspect(){
+  sheet.innerHTML=`<p class="eyebrow">Nema interneta</p><p class="hint">Analiza čestice traži službene podatke (katastar, GUP, slojevi Grada Zagreba), a oni se sada ne mogu dohvatiti. Aplikacija ne prikazuje stare podatke kao aktualne.</p><div class="actions" style="justify-content:flex-start"><button type="button" class="ib" id="offFavs">Spremljene čestice i scenariji</button></div><div id="sumEnd"></div>`;
+  if(isMobile()) setState("half");
+}
+sheet.addEventListener("click",e=>{ if(e.target.id==="offFavs") setTab("spremljeno"); });
+
+// sažetak spremljenih scenarija za česticu (radi i bez interneta: računa se lokalno istim modelom)
+function pwaScenSummary(k){
+  const L=scList(k); if(!L.length) return "–";
+  const rate=projKd(k).rate, pr=prepGet(k);
+  return L.map(sc=>{let r=""; try{const H=finHouse({...sc.inp,prep:pr},rate); r=` ${fmt(H.build.lo)}–${fmt(H.build.hi)} €`}catch(e){} return `${esc(sc.name)}:${r}`}).join("<br>")+`<br><small>gradnja s naknadama, bez zemljišta</small>`;
+}
+
+// trajna pohrana: traži od Androida da podatke aplikacije (čestice, scenarije, unose) ne briše kad ponestane prostora
+try{if(navigator.storage&&navigator.storage.persist) navigator.storage.persisted().then(p=>{if(!p) navigator.storage.persist()}).catch(()=>{})}catch(e){}
+// --- nova verzija
+function pwaShowUpdate(){
+  const b=document.getElementById("updBar"); if(!b||!b.hidden) return;
+  b.hidden=false;
+}
+function pwaApplyUpdate(){
+  const w=PWA.reg&&PWA.reg.waiting; if(!w){location.reload(); return}
+  pwaSaveState(); PWA.accepted=true;
+  const b=document.getElementById("updBar"); if(b) b.innerHTML="Ažuriram…";
+  w.postMessage("primijeni-novu-verziju");
+}
+document.addEventListener("click",e=>{
+  if(e.target.id==="updYes") pwaApplyUpdate();
+  if(e.target.id==="updNo"){const b=document.getElementById("updBar"); if(b) b.hidden=true;}
+});
+if("serviceWorker" in navigator&&(location.protocol==="https:"||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))){
+  navigator.serviceWorker.register("sw.js",{scope:"./",updateViaCache:"none"}).then(reg=>{
+    PWA.reg=reg;
+    const check=()=>{ if(reg.waiting&&navigator.serviceWorker.controller) pwaShowUpdate(); };
+    check();
+    reg.addEventListener("updatefound",()=>{const nw=reg.installing; if(nw) nw.addEventListener("statechange",()=>{ if(nw.state==="installed") check(); });});
+    document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible"&&!isOffline()) reg.update().catch(()=>{}); });
+    setInterval(()=>{ if(!isOffline()) reg.update().catch(()=>{}) },30*60000);
+  }).catch(()=>{});
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{ if(PWA.accepted&&!PWA.reloading){PWA.reloading=true; location.reload();} });
+}
+
+// --- lokacija na terenu: prikaz, centriranje, pomoć pri odabiru čestice; ništa se ne sprema ni ne šalje
+const gpsLayer=L.layerGroup().addTo(map);
+function pwaLocate(){
+  const btn=document.getElementById("me");
+  if(!navigator.geolocation){alert("Lokacija nije dostupna na ovom uređaju."); return}
+  btn.disabled=true; btn.setAttribute("aria-busy","true");
+  navigator.geolocation.getCurrentPosition(p=>{
+    btn.disabled=false; btn.removeAttribute("aria-busy");
+    const ll=L.latLng(p.coords.latitude,p.coords.longitude), acc=Math.max(1,Math.round(p.coords.accuracy||999));
+    PWA.gps={ll,acc,t:Date.now()}; // samo u memoriji
+    gpsLayer.clearLayers();
+    L.circle(ll,{radius:acc,color:"#1565c0",weight:1,fillColor:"#1565c0",fillOpacity:.12,interactive:false}).addTo(gpsLayer);
+    L.circleMarker(ll,{radius:7,color:"#fff",weight:2,fillColor:"#1565c0",fillOpacity:1,interactive:false}).addTo(gpsLayer);
+    PWA.gpsMove=true; map.setView(ll,acc<=30?19:acc<=150?17:15);
+    if(acc<=GPS_OK_M&&!isOffline()){ PWA.gpsPending={ll,acc}; inspect(ll); }
+    else{
+      sheet.innerHTML=`<p class="eyebrow">Tvoja lokacija</p><p class="hint">Lokacija je prikazana plavim krugom (preciznost ±${fmt(acc)} m).${acc>GPS_OK_M?` To je više od ${GPS_OK_M} m, pa aplikacija ne može pouzdano odrediti na kojoj si čestici. Dodirni česticu unutar kruga.`:""}${isOffline()?" Bez interneta čestica se ne može učitati.":""}</p>${!isOffline()?`<div class="actions" style="justify-content:flex-start"><button type="button" class="ib" id="gpsUse">Analiziraj česticu u središtu kruga</button></div>`:""}<div id="sumEnd"></div>`;
+      if(isMobile()) setState("peek");
+    }
+  },err=>{
+    btn.disabled=false; btn.removeAttribute("aria-busy");
+    const m=err&&err.code===1?"Pristup lokaciji nije dopušten. Dopuštenje možeš uključiti u postavkama aplikacije ili preglednika.":err&&err.code===3?"Lokacija nije pronađena na vrijeme. Pokušaj na otvorenom ili uključi precizno određivanje lokacije.":"Lokacija trenutno nije dostupna.";
+    sheet.innerHTML=`<p class="err">${m}</p><div id="sumEnd"></div>`;
+  },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+}
+sheet.addEventListener("click",e=>{ if(e.target.id==="gpsUse"&&PWA.gps){ PWA.gpsPending={...PWA.gps,manual:true}; inspect(PWA.gps.ll); } });
+// napomena uz česticu odabranu lokacijom (poziva se nakon prikaza čestice)
+function pwaGpsNote(){
+  const g=PWA.gpsPending, d=window.__lastData; if(!g||!d||!d.parcel) return;
+  if(Math.abs(d.ll.lat-g.ll.lat)>1e-9||Math.abs(d.ll.lng-g.ll.lng)>1e-9) return;
+  let edge=null; try{edge=turf.pointToLineDistance(turf.point([g.ll.lng,g.ll.lat]),turf.polygonToLine(d.parcel),{units:"kilometers"})*1000}catch(e){}
+  const near=edge!=null&&edge<g.acc;
+  const box=document.createElement("p"); box.className=near?"flag":"meta"; box.id="gpsNote";
+  box.textContent=g.manual?`Odabrana je čestica u središtu GPS kruga (preciznost ±${fmt(g.acc)} m). Provjeri na karti je li to prava čestica.`
+    :`Čestica na tvojoj lokaciji (GPS preciznost ±${fmt(g.acc)} m).${near?` Lokacija je ${fmt(Math.round(edge))} m od granice, pa može biti i susjedna čestica; provjeri na karti.`:""}`;
+  const old=document.getElementById("gpsNote"); if(old) old.remove();
+  sheet.insertBefore(box,sheet.firstChild);
+}
+
 // --- pretraga adrese (Nominatim, Zagreb)
 async function search(){
   const q=document.getElementById("q").value.trim(); if(!q) return;
@@ -2222,11 +3276,7 @@ async function search(){
 }
 document.getElementById("go").onclick=search;
 document.getElementById("q").addEventListener("keydown",e=>{if(e.key==="Enter")search()});
-document.getElementById("me").onclick=()=>{
-  if(!navigator.geolocation){sheet.innerHTML='<p class="err">Lokacija nije dostupna u ovom pregledniku.</p>';return}
-  navigator.geolocation.getCurrentPosition(p=>{const ll=L.latLng(p.coords.latitude,p.coords.longitude);map.setView(ll,18);inspect(ll)},
-    ()=>{sheet.innerHTML='<p class="err">Pristup lokaciji je odbijen.</p>'},{enableHighAccuracy:true,timeout:10000});
-};
+document.getElementById("me").onclick=()=>pwaLocate();
 </script>
 </body>
 </html>

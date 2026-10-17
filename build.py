@@ -48,4 +48,11 @@ data_pp = json.dumps(rules_pp, ensure_ascii=False).replace("</", "<\\/")
 import datetime
 ver = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=2))).strftime("%d.%m.%Y. %H:%M")
 (root / "index.html").write_text(tpl.replace("/*RULES*/null", data).replace("/*RULES_SE*/null", data_se).replace("/*RULES_PP*/null", data_pp).replace("/*RULES_META*/null", data_meta).replace("/*VERSION*/", ver), encoding="utf-8")
-print("index.html sastavljen")
+# service worker: verzija = sažetak sadržaja stranice i ljuske, pa svaka promjena aplikacije daje novi sw.js
+import hashlib
+h = hashlib.sha256()
+for f in ["index.html", "manifest.webmanifest", "icon.svg", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-192.png", "icons/icon-maskable-512.png", "vendor/leaflet-1.9.4/leaflet.js", "vendor/leaflet-1.9.4/leaflet.css", "vendor/turf-6.5.0/turf.min.js"]:
+    h.update((root / f).read_bytes())
+sw_ver = h.hexdigest()[:12]
+(root / "sw.js").write_text((root / "src/sw.template.js").read_text(encoding="utf-8").replace("/*SW_VERSION*/", sw_ver), encoding="utf-8")
+print("index.html sastavljen; sw.js verzija", sw_ver)

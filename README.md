@@ -13,6 +13,7 @@ Mobilna web aplikacija: dodirneš zemljište u Zagrebu i dobiješ katastarsku č
 - Odluka o izmjenama i dopuni Odluke o komunalnom doprinosu (Gradska skupština, 13. 12. 2023.)
 - HERA, naknada za priključenje (NN 45/2026); Uredba o Tarifi upravnih pristojbi (NN 156/2022)
 - OpenStreetMap (Overpass) za ceste i sadržaje u okolini
+- Državna geodetska uprava, Sustav katastra infrastrukture (INSPIRE GML, Grad Zagreb): ulični vodovod, kanalizacija i niskonaponska mreža, pripremljeni u `data/ski/` skriptom `tools/ski/pripremi_kvadrate.py` (provjera: `tools/ski/provjeri_kvadrate.py`; analiza: `docs/infrastruktura-dgu-analiza.md`). Plinska mreža nije objavljena.
 - GUP Grada Zagreba, karte 3b (energetski sustav) i 3c (vodnogospodarski sustav) te sloj GUP_Infrastruktura: magistralni vodovod, dalekovodi i kabeli 110 kV+, trafostanice 110 kV, magistralni i VT plinovodi, toplovodi (postojeći i planirani). Ulična mreža vodovoda, kanalizacije, NN struje i distribucijskog plina nije javno objavljena (servisi Javni_vodovod i Javna_kanalizacija su samo statistika; KI_LINIJE je probno područje)
 
 Procjene su orijentacijske. Pravno mjerodavna je lokacijska informacija Grada Zagreba.
@@ -42,3 +43,9 @@ Provjere u pregledniku (Chromium, Playwright):
 cd tests && node mobile/make_local.js && python3 mobile/layout.py && python3 mobile/interaction.py
 ```
 Ručno na uređaju (automatski testovi to ne zamjenjuju): Android Chrome i iPhone Safari; povlačenje panela, pomicanje i okretanje kuće prstom, tipkovnica kod unosa cijene, okomito i vodoravno, veliki sustavski font, ispis u PDF.
+
+## Android aplikacija (PWA)
+`manifest.webmanifest`, `sw.js` (izrađuje ga `build.py` iz `src/sw.template.js`, s verzijom), ikone u `icons/`, knjižnice u `vendor/` (Leaflet 1.9.4, Turf 6.5.0, s licencama). Upute, testovi i ograničenja: `docs/android-pwa.md`. Testovi u Chromiumu: `cd tests && python3 mobile/pwa.py`.
+
+## AI asistent
+Plan i arhitektura: `docs/ai-asistent-plan.md`. AI-2 (samo čitanje) je u kodu, ali trenutno isključen (`FEATURES.ai=false`). Backend je u `worker/` (Cloudflare Worker + Durable Object; testovi: `cd worker && npm install && npm test`) i nije objavljen. Postavljanje, limiti, trošak i gašenje: `docs/ai-postavljanje.md`. Ocjenjivanje: `docs/ai-ocjenjivanje.md`. API ključ se nikad ne sprema u repozitorij ni u aplikaciju.
