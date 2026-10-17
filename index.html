@@ -95,6 +95,13 @@ details p{font-size:13.5px;margin:6px 0}
   .docs li,.calc,.chk,.zone{break-inside:avoid}
   :root:not(#_p){--bg:#fff;--fg:#000;--muted:#444;--panel:#fff;--soft:#f2f2f2;--line:#ccc;--accent:#1f6f54;--ok:#1f7a3f;--warn:#8a5200;--no:#b3261e;--ok-bg:#e5f3e9;--warn-bg:#fbefd9;--no-bg:#fbe5e3;color-scheme:light}
 }
+.cmp-wrap{overflow-x:auto;margin-top:6px}
+.cmp{border-collapse:collapse;font-size:13px;min-width:100%}
+.cmp th{text-align:left;color:var(--muted);font-weight:500;padding:6px 8px 6px 0;white-space:nowrap;vertical-align:top;position:sticky;left:0;background:var(--panel)}
+.cmp td{padding:6px 8px;border-left:1px solid var(--line);vertical-align:top;min-width:9em;font-variant-numeric:tabular-nums}
+.cmp tr{border-top:1px solid var(--line)}
+.actions{gap:8px}
+@media print{.noprint{display:none}}
 .chk-ok{background:var(--ok-bg);color:var(--ok)}
 .kd{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:14px}
 .kd input{width:6em;font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg)}
@@ -113,6 +120,7 @@ details p{font-size:13.5px;margin:6px 0}
     <input id="q" type="search" placeholder="Adresa, npr. Ilica 200" autocomplete="off">
     <button class="ib" id="go" type="button">Traži</button>
     <button class="ib" id="me" type="button" aria-label="Moja lokacija">◎</button>
+    <button class="ib" id="favBtn" type="button" aria-label="Spremljene čestice">★</button>
   </header>
   <main>
     <div id="map"></div>
@@ -166,6 +174,24 @@ const CHECKS = [
   {id:"popl", label:"Akumulacija", url:BASE+"3c_voda_JR_PJR_swipe/FeatureServer/28/query", fields:"LAYER", sev:"no",
    hit:()=>"Čestica je u planiranom području akumulacije ili plavljenja (hidroenergetski sustav Save).", none:null}
 ];
+// Koridori infrastrukture (GUP čl. 50: DV 110 kV 20 m, 220 kV 25 m, 400 kV 35 m od osi; čl. 53: magistralni plinovod 30 m, VTP 10 m)
+const INFRA=BASE+"GUP_Infrastruktura/FeatureServer/";
+const corrDist=(f,kind)=>{
+  if(kind==="ee"){const l=String(f.LAYER||"")+String(f.EE_VODOVI_OPIS||""); return /400/.test(l)?35:/220/.test(l)?25:20;}
+  if(kind==="plin"){const l=String(f.LABELA||"")+String(f.PLINOVOD_OPIS||""); return /^MP|magistral/i.test(l)?30:10;}
+  return 30;
+};
+CHECKS.push(
+  {id:"dv", label:"Dalekovod", url:INFRA+"12/query", fields:"LAYER,EE_VODOVI_OPIS", sev:"no", corridor:"ee", search:40,
+   hit:(f,all)=>"U koridoru posebnog režima: "+[...new Set(all.map(x=>x.EE_VODOVI_OPIS||x.LAYER).filter(Boolean))].join(", ")+". Unutar koridora (20 m od osi za 110 kV, 35 m za 400 kV) nadzemna gradnja nije dopuštena bez posebnih uvjeta HOPS-a ili HEP-a.",
+   none:"Nema dalekovoda 110 kV ili jačeg u blizini."},
+  {id:"plin", label:"Plinovod", url:INFRA+"14/query", fields:"LABELA,PLINOVOD_OPIS", sev:"no", corridor:"plin", search:35,
+   hit:(f,all)=>"U sigurnosnoj zoni plinovoda: "+[...new Set(all.map(x=>x.PLINOVOD_OPIS||x.LABELA).filter(Boolean))].join(", ")+" (magistralni 30 m, visokotlačni 10 m od osi). Gradnja traži suglasnost Plinacra ili Gradske plinare.",
+   none:"Nema magistralnog ni visokotlačnog plinovoda u sigurnosnoj zoni."},
+  {id:"prod", label:"Produktovod", url:INFRA+"16/query", fields:"PRODUKTOVOD_OPIS", sev:"warn", corridor:"prod", search:35,
+   hit:()=>"Uz česticu prolazi produktovod (naftovod). Udaljenost gradnje određuje upravitelj cjevovoda; računaj s ograničenjem do 30 m od osi.",
+   none:null}
+);
 const BUILDABLE = new Set(["Stambena i mješovita","Gospodarska","Javna i društvena","Sport i rekreacija","Posebna"]);
 const COLORS = {
   "Gospodarska":"#9966ff","Groblje":"#4a452a","Infrastruktura":"#bdbdbd","Javna i društvena":"#ff5050",
@@ -277,15 +303,73 @@ async function inspect(ll){
   // malo smanjena čestica, da susjedni sloj koji samo dodiruje među ne bude pogodak
   let qGeom=null;
   if(parcel){try{const b=turf.buffer(parcel.geometry,-0.0008,{units:"kilometers"});qGeom=b&&b.geometry?b.geometry:parcel.geometry}catch(e){qGeom=parcel.geometry}}
+  const slopeP=settle(loadSlope(parcel,ll));
   const checks=await Promise.all(CHECKS.map(c=>settle(
+    c.corridor?corridorQuery(c,parcel,ll):
     (qGeom?polyQuery(c.url,qGeom,c.fields,!!c.draw):pointQuery(c.url,ll,c.fields,!!c.draw))
   ).then(r=>({c,...r}))));
+  checks.forEach(r=>{if(r.c.corridor&&r.v) r.v.forEach(f=>L.geoJSON(f.geometry,{style:{color:r.c.id==="dv"?"#b3261e":"#a86400",weight:3,dashArray:"8 6"},interactive:false}).addTo(selLayer))});
+  // gradivi dio i nagib terena
+  const env2=buildEnvelope(parcel,rows,up);
+  if(env2&&env2.geom) L.geoJSON(env2.geom,{style:{color:"#1f6f54",weight:2,dashArray:"4 3",fillColor:"#1f6f54",fillOpacity:.25},interactive:false}).addTo(selLayer);
+  base.envelope=env2;
+  base.slope=await slopeP;
   if(id!==clickId) return;
   checks.forEach(r=>{if(r.c.draw&&r.v) r.v.forEach(f=>f.geometry&&L.geoJSON(f.geometry,{style:{color:r.c.draw,weight:2,dashArray:"5 4",fillOpacity:.15},interactive:false}).addTo(selLayer))});
   render({...base,checks});
   const env=await settle(loadEnv(ll,parcel));
   if(id!==clickId) return;
   render({...base,checks,env});
+}
+
+// --- koridori: dohvat linija u krugu i provjera stvarne udaljenosti
+async function corridorQuery(c,parcel,ll){
+  const geom=parcel?parcel.geometry:{type:"Point",coordinates:[ll.lng,ll.lat]};
+  const p=new URLSearchParams({geometry:geom.type==="Point"?ll.lng+","+ll.lat:JSON.stringify({rings:geom.type==="Polygon"?geom.coordinates:geom.coordinates.flat(),spatialReference:{wkid:4326}}),
+    geometryType:geom.type==="Point"?"esriGeometryPoint":"esriGeometryPolygon",inSR:"4326",spatialRel:"esriSpatialRelIntersects",distance:String(c.search),units:"esriSRUnit_Meter",
+    outFields:c.fields,returnGeometry:"true",outSR:"4326",f:"geojson"});
+  const g=await getJSON(c.url,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:p.toString()});
+  return (g.features||[]).filter(f=>{
+    if(!f.geometry) return false;
+    const d=corrDist(f.properties||{},c.corridor);
+    try{const b=turf.buffer(f.geometry,d/1000,{units:"kilometers"}); return turf.booleanIntersects(b,geom)}catch(e){return true}
+  });
+}
+// --- gradivi dio: čestica umanjena za udaljenost od međe, samo u zonama koje dopuštaju gradnju
+function buildEnvelope(parcel,rows,up){
+  if(!parcel) return null;
+  let d=3;
+  try{
+    const code=up.v&&up.v[0]?String(up.v[0].properties.BROJ_UP||"").trim():null;
+    const rule=code?RULES[code]||RULES[code+"."]:null;
+    const z=rule&&rows[0]?pickZone(rule,rows[0].p.Analitika):null;
+    const m=z&&(z.key.meda||"").match(/(\d+,\d+|\d+)\s*m\b/); if(m) d=parseFloat(m[1].replace(",","."));
+  }catch(e){}
+  try{
+    let env=turf.buffer(parcel.geometry,-d/1000,{units:"kilometers"});
+    if(!env||!env.geometry) return {geom:null,area:0,d};
+    const bz=rows.filter(r=>BUILDABLE.has(r.p.Analitika)&&r.geom);
+    if(bz.length&&bz.length<rows.length){
+      let u=null;
+      for(const r of bz){const i=turf.intersect(env,{type:"Feature",geometry:r.geom,properties:{}}); if(i) u=u?turf.union(u,i):i;}
+      env=u;
+    } else if(!bz.length) env=null;
+    return {geom:env?env.geometry:null,area:env?turf.area(env):0,d};
+  }catch(e){return null}
+}
+// --- nagib terena (Copernicus DEM preko Open-Meteo; rezolucija oko 90 m, orijentacijski)
+async function loadSlope(parcel,ll){
+  const c=parcel?turf.centroid(parcel.geometry).geometry.coordinates:[ll.lng,ll.lat];
+  const pt=turf.point(c), D=0.04; // 40 m na svaku stranu
+  const pts=[0,90,180,270].map(b=>turf.destination(pt,D,b,{units:"kilometers"}).geometry.coordinates);
+  pts.unshift(c);
+  const q=new URLSearchParams({latitude:pts.map(p=>p[1].toFixed(6)).join(","),longitude:pts.map(p=>p[0].toFixed(6)).join(",")});
+  const j=await getJSON("https://api.open-meteo.com/v1/elevation?"+q.toString(),{},10000);
+  const e=j.elevation; if(!e||e.length<5) throw new Error("nema podataka o visini");
+  const dz_ns=(e[1]-e[3]), dz_ew=(e[2]-e[4]);
+  const slope=Math.sqrt(dz_ns*dz_ns+dz_ew*dz_ew)/(2*D*1000)*100;
+  const dirs=["sjever","istok","jug","zapad"], low=[e[1],e[2],e[3],e[4]].indexOf(Math.min(e[1],e[2],e[3],e[4]));
+  return {h:Math.round(e[0]),slope,down:dirs[low]};
 }
 
 // --- pristup i okolina iz OpenStreetMapa (Overpass)
@@ -377,7 +461,7 @@ function pickZone(rule,analitika){
 }
 
 function render(d){
-  const {ll,parcel,area,rows,ces,nam,up,upx,gn,checks,env}=d;
+  const {ll,parcel,area,rows,ces,nam,up,upx,gn,checks,env,envelope,slope}=d;
   const keepScroll=checks?sheet.scrollTop:0;
   // dio čestice u namjeni koja dopušta gradnju
   let buildArea=null;
@@ -387,8 +471,11 @@ function render(d){
   }
   const rezHit=!!(checks&&checks.find(r=>r.c.id==="rez"&&r.v&&r.v.length));
   window.__lastLL=ll;
+  window.__cur={key:favKey(parcel,ll),ll:{lat:ll.lat,lng:ll.lng},ces:parcel?parcel.properties.KATASTARSKA_CESTICA:null,ko:parcel?parcel.properties.KATASTARSKA_OPCINA:null,area,buildArea,
+    code:(up.v&&up.v[0]?String(up.v[0].properties.BROJ_UP||"").trim():null),namjena:rows[0]?(rows[0].p.Namjena||rows[0].p.Analitika):null,analitika:rows[0]?rows[0].p.Analitika:null,
+    risks:checks?checks.filter(r=>r.v&&r.v.length).map(r=>r.c.label):null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:envelope?Math.round(envelope.area):null};
   let h=`<p id="printHead" class="print-only"></p>`;
-  if(checks) h+=`<div class="actions"><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button></div>`;
+  if(checks) h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(favKey(parcel,ll))?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button></div>`;
   // Čestica
   if(parcel){
     const p=parcel.properties;
@@ -423,6 +510,8 @@ function render(d){
     hits.sort((a,b)=>(a.c.sev==="no"?0:1)-(b.c.sev==="no"?0:1));
     h+=`<ul class="checks">`+hits.map(r=>`<li class="chk chk-${r.c.sev}"><b>${esc(r.c.label)}</b><span>${esc(r.c.hit(r.v[0].properties||{},r.v.map(f=>f.properties||{})))}</span></li>`).join("")+`</ul>`;
     if(!hits.length) h+=`<p class="verdict v-ok" style="margin:6px 0">Nisu nađena ograničenja iz provjerenih slojeva.</p>`;
+    if(slope&&slope.v){const s=slope.v, sev=s.slope>=20?"no":s.slope>=10?"warn":"ok";
+      h+=`<ul class="checks" style="margin-top:6px"><li class="chk chk-${sev}"><b>Teren</b><span>Nadmorska visina oko ${s.h} m, nagib u okolini oko ${Math.round(s.slope)} %, pada prema ${s.down}u.${s.slope>=20?" Strm teren: računaj s potpornim zidovima, skupljim temeljima i geotehničkim elaboratom.":s.slope>=10?" Umjereno strm teren: moguć podrum ili suteren, ali i veći trošak iskopa.":""}</span></li></ul><p class="meta">Nagib je iz modela visina rezolucije oko 90 m, pa ne vidi lokalne strmine na samoj čestici.</p>`;}
     if(clear.length) h+=`<details><summary>Što je provjereno i čisto (${clear.length})</summary><ol>${clear.map(t=>`<li>${esc(t)}</li>`).join("")}</ol></details>`;
     if(errs.length) h+=`<p class="err">Nisu odgovorili: ${esc(errs.join(", "))}.</p>`;
   }
@@ -464,6 +553,9 @@ function render(d){
         const gbpMax=pp.kis?Math.min(A*pp.kis,pp.gbp||Infinity):(pp.gbp||null);
         h+=`<div class="calc"><p class="eyebrow">Izračun za ovu česticu (slobodnostojeća, nova gradnja)</p>`;
         if(buildArea!=null&&buildArea<area-1) h+=`<div class="row"><span>Građevinski dio čestice</span><span>${fmt(buildArea)} od ${fmt(area)} m²</span></div>`;
+        if(envelope&&envelope.area!=null){const tl=pp.izg?A*pp.izg:null, lim=tl&&envelope.area<tl;
+          h+=`<div class="row"><span>Prostor za kuću (${String(envelope.d).replace(".",",")} m od međa, zeleno na karti)</span><span class="${lim?"bad":""}">${fmt(envelope.area)} m²</span></div>`;
+          if(lim) h+=`<p class="meta">Prostor unutar udaljenosti od međa manji je od dopuštenog tlocrta, pa oblik čestice ograničava tlocrt kuće na najviše ${fmt(envelope.area)} m².</p>`;}
         if(pp.minC){const ok=A>=pp.minC, edge=!ok&&A>=pp.minC*0.95;
           h+=`<div class="row"><span>Min. čestica ${fmt(pp.minC)} m²</span><span class="${ok?"good":edge?"":"bad"}">${ok?"ispunjeno":edge?"na granici":"premala"}</span></div>`;
           if(edge) h+=`<p class="meta">Čestica je do 5 % manja od propisane. To je dopušteno samo ako se dio čestice ustupa za ulicu ili pristupni put.</p>`;}
@@ -490,6 +582,7 @@ function render(d){
           h+=`<label for="bType">Gradnja</label>${sel("bType",[["klas","klasična (zidana)"],["mont","montažna"]],"klas")}`;
           h+=`<label for="bStd">Standard</label>${sel("bStd",[["osn","osnovni"],["sred","srednji"],["vis","viši"]],"sred")}`;
           h+=`<label for="bPhase">Faza</label>${sel("bPhase",[["kljuc","ključ u ruke"],["roh","roh-bau"]],"kljuc")}`;
+          h+=`<label for="bLand">Cijena zemljišta</label><span><input id="bLand" type="number" inputmode="decimal" min="0" step="1000" placeholder="iz oglasa" value="${esc(landPrice(favKey(parcel,ll)))}"> €</span>`;
           h+=`<label for="bBase">Podrum</label><span><input type="checkbox" id="bBase"> s podrumom ispod cijele kuće</span>`;
           h+=`</div><div id="bOut"></div>`;
           h+=`<p class="meta">Iznosi po zonama su iz Odluke o izmjenama i dopuni Odluke o komunalnom doprinosu (Gradska skupština, 13. 12. 2023.). Zonu provjeri na <a href="https://geoportal.zagreb.hr/Karta" target="_blank" rel="noopener" style="color:var(--accent)">Geoportalu Zagreba</a> (sloj "Zone komunalnog doprinosa"). Obujam je predložen za najveću dopuštenu kuću (GBP × 3 m); upiši obujam svoje kuće. Službeno se obračunava bruto obujam iz projekta. Uz to se plaća i vodni doprinos.</p>`;}
@@ -575,7 +668,9 @@ function buildUpdate(){
   const kd=R>0&&R<=40?vol*R:null;
   const kW=parseFloat(g("kdKw")?.value||"11.04"), gas=!!g("kdGas")?.checked;
   const naknade=(kd||0)+HEP_EUR_KW*kW*PDV+PRIST_GD+(gas?1150:0);
-  const sub=gradnja+projekti+nadzor+naknade, lo=sub*0.9, hi=sub*1.1, rez=sub*0.15;
+  const land=parseFloat(String(g("bLand")?.value||"").replace(",","."))||0;
+  const sub=gradnja+projekti+nadzor+naknade, lo=sub*0.9+land, hi=sub*1.1+land, rez=sub*0.15;
+  window.__budget={lo,hi,land,area};
   const gbp=+grid.dataset.gbp||0, tl=+grid.dataset.tlocrt||0;
   const warn=[];
   if(gbp&&area>gbp*1.001) warn.push(`Površina je veća od najvećeg dopuštenog GBP-a na ovoj čestici (${fmt(gbp)} m²).`);
@@ -587,12 +682,13 @@ function buildUpdate(){
   h+=row("Projekti i geodezija (oko 7 %)",fmt(projekti)+" €");
   h+=row("Stručni nadzor (oko 1,5 %)",fmt(nadzor)+" €");
   h+=row(`Doprinosi, priključci i pristojbe${kd==null?" (bez komunalnog: izaberi zonu)":""}`,fmt(naknade)+" €");
-  h+=row("Ukupno",`${fmt(lo)} – ${fmt(hi)} €`,true);
+  if(land){const pa=window.__cur&&window.__cur.area; h+=row(`Zemljište${pa?" ("+fmt(land/pa)+" €/m²)":""}`,fmt(land)+" €");}
+  h+=row(land?"Ukupno sa zemljištem":"Ukupno (bez zemljišta)",`${fmt(lo)} – ${fmt(hi)} €`,true);
   h+=row("Preporučena rezerva (15 %)",`+ ${fmt(rez)} €`);
   h+=`</div><p class="meta">Tržišne cijene za okolicu Zagreba, 2026. (izvori: trebam.hr, montazneidrvenekuce.info Q1 2026, reporter.hr). ${t==="mont"?"Montažna cijena uključuje temeljnu ploču (procjena 90 €/m² tlocrta). ":""}Podrum je procjena. Cijena zemljišta, uređenje okoliša i namještaj nisu uključeni. Za stvarnu cijenu traži barem tri ponude.</p>`;
   out.innerHTML=h;
 }
-sheet.addEventListener("input",e=>{ if(/^b[A-Z]/.test(e.target.id)) buildUpdate(); });
+sheet.addEventListener("input",e=>{ if(/^b[A-Z]/.test(e.target.id)) buildUpdate(); if(e.target.id==="bLand"&&window.__cur) setLand(window.__cur.key,e.target.value); });
 sheet.addEventListener("change",e=>{ if(/^b[A-Z]/.test(e.target.id)) buildUpdate(); });
 
 function kdUpdate(){
@@ -692,6 +788,54 @@ sheet.addEventListener("click",e=>{
   const ph=document.getElementById("printHead");
   if(ph) ph.textContent="Izvještaj o čestici · "+new Date().toLocaleDateString("hr-HR")+" · "+(window.__lastLL?window.__lastLL.lat.toFixed(5)+", "+window.__lastLL.lng.toFixed(5):"");
   setTimeout(()=>window.print(),50);
+});
+
+// --- spremljene čestice (samo u ovom pregledniku)
+const favKey=(parcel,ll)=>parcel?`${parcel.properties.KATASTARSKA_OPCINA}|${parcel.properties.KATASTARSKA_CESTICA}`:`${ll.lat.toFixed(5)},${ll.lng.toFixed(5)}`;
+function favs(){try{return JSON.parse(localStorage.getItem("favs")||"[]")}catch(e){return []}}
+function setFavs(a){try{localStorage.setItem("favs",JSON.stringify(a))}catch(e){}}
+const isSaved=k=>favs().some(f=>f.key===k);
+function landPrice(k){try{return (JSON.parse(localStorage.getItem("land")||"{}"))[k]||""}catch(e){return ""}}
+function setLand(k,v){try{const o=JSON.parse(localStorage.getItem("land")||"{}");if(v)o[k]=v;else delete o[k];localStorage.setItem("land",JSON.stringify(o))}catch(e){}
+  const a=favs(), f=a.find(x=>x.key===k); if(f){f.land=parseFloat(v)||null; f.budget=window.__budget||f.budget; setFavs(a);}}
+function saveCurrent(){
+  const c=window.__cur; if(!c) return;
+  let a=favs(); const i=a.findIndex(f=>f.key===c.key);
+  if(i>=0){a.splice(i,1)} else {a.push({...c,land:parseFloat(landPrice(c.key))||null,budget:window.__budget||null,saved:new Date().toISOString().slice(0,10)})}
+  setFavs(a);
+  const b=document.getElementById("saveBtn"); if(b) b.textContent=i>=0?"☆ Spremi":"★ Spremljeno";
+}
+function showFavs(){
+  const a=favs();
+  if(!a.length){sheet.innerHTML=`<p class="eyebrow">Spremljene čestice</p><p class="hint">Još nemaš spremljenih čestica. Dodirni česticu na karti i pritisni "☆ Spremi".</p>`;return}
+  const rowsDef=[
+    ["Čestica",f=>f.ces?`${esc(f.ces)}<br><small>k.o. ${esc(f.ko||"")}</small>`:"lokacija"],
+    ["Površina",f=>f.area?fmt(f.area)+" m²":"–"],
+    ["Građevinski dio",f=>f.buildArea!=null?fmt(f.buildArea)+" m²":"–"],
+    ["Prostor za kuću",f=>f.envelope!=null?fmt(f.envelope)+" m²":"–"],
+    ["Namjena",f=>esc(f.namjena||"–")],
+    ["Urbano pravilo",f=>esc(f.code||"–")],
+    ["Ograničenja",f=>f.risks&&f.risks.length?esc(f.risks.join(", ")):"nema"],
+    ["Nagib okoline",f=>f.slope!=null?f.slope+" %":"–"],
+    ["Cijena zemljišta",f=>f.land?fmt(f.land)+" €":"–"],
+    ["€/m² zemljišta",f=>f.land&&f.area?fmt(f.land/f.area)+" €":"–"],
+    ["Ukupni projekt",f=>f.budget?`${fmt(f.budget.lo)} – ${fmt(f.budget.hi)} €`:"–"],
+    ["Spremljeno",f=>esc(f.saved||"")]
+  ];
+  let h=`<div class="actions"><button type="button" class="ib" id="favPrint">Ispiši / spremi PDF</button></div><p class="eyebrow">Usporedba spremljenih čestica (${a.length})</p>`;
+  h+=`<div class="cmp-wrap"><table class="cmp"><tbody>`;
+  for(const [label,fn] of rowsDef) h+=`<tr><th>${label}</th>${a.map(f=>`<td>${fn(f)}</td>`).join("")}</tr>`;
+  h+=`<tr class="noprint"><th></th>${a.map((f,i)=>`<td><button type="button" class="ib" data-open="${i}">Otvori</button> <button type="button" class="ib" data-del="${i}">Ukloni</button></td>`).join("")}</tr>`;
+  h+=`</tbody></table></div><p class="meta">Spremljeno samo u ovom pregledniku. Ukupni projekt je iz kalkulatora u trenutku spremanja ili zadnjeg upisa cijene zemljišta.</p>`;
+  sheet.innerHTML=h; sheet.scrollTop=0;
+}
+document.getElementById("favBtn").onclick=showFavs;
+sheet.addEventListener("click",e=>{
+  const t=e.target;
+  if(t.id==="saveBtn") saveCurrent();
+  if(t.id==="favPrint") setTimeout(()=>window.print(),50);
+  if(t.dataset&&t.dataset.open!=null){const f=favs()[+t.dataset.open]; if(f){const ll=L.latLng(f.ll.lat,f.ll.lng); map.setView(ll,18); inspect(ll);}}
+  if(t.dataset&&t.dataset.del!=null){const a=favs(); a.splice(+t.dataset.del,1); setFavs(a); showFavs();}
 });
 
 // --- pretraga adrese (Nominatim, Zagreb)
