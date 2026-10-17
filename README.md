@@ -42,3 +42,6 @@ Provjere u pregledniku (Chromium, Playwright):
 cd tests && node mobile/make_local.js && python3 mobile/layout.py && python3 mobile/interaction.py
 ```
 Ručno na uređaju (automatski testovi to ne zamjenjuju): Android Chrome i iPhone Safari; povlačenje panela, pomicanje i okretanje kuće prstom, tipkovnica kod unosa cijene, okomito i vodoravno, veliki sustavski font, ispis u PDF.
+
+## AI asistent
+Plan i arhitektura: `docs/ai-asistent-plan.md`. Etapa AI-1 (kontrolirano programsko sučelje) je u aplikaciji, ali isključena (`FEATURES.ai=false`). Kostur backenda je u `worker/ai-proxy.js` i nije objavljen. API ključ se nikad ne sprema u repozitorij ni u aplikaciju.

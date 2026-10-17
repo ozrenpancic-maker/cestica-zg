@@ -331,7 +331,7 @@ const CHECKS = [
 ];
 // Koridori infrastrukture (GUP čl. 50: DV 110 kV 20 m, 220 kV 25 m, 400 kV 35 m od osi; čl. 53: magistralni plinovod 30 m, VTP 10 m)
 // moduli koji su u razvoju (faze C i D) i još nisu uključeni
-const FEATURES={infra:true,seis:false}; // seis: potresna opasnost, privremeno skrivena
+const FEATURES={infra:true,seis:false,ai:false}; // seis: potresna opasnost, privremeno skrivena; ai: AI asistent (etapa AI-1: samo programsko sučelje, bez prikaza)
 const INFRA=BASE+"GUP_Infrastruktura/FeatureServer/";
 const corrDist=(f,kind)=>{
   if(kind==="ee"){const l=String(f.LAYER||"")+String(f.EE_VODOVI_OPIS||""); return /400|440/.test(l)?35:/220/.test(l)?25:20;}
@@ -1419,7 +1419,7 @@ function render(d){
     buildArea=Math.min(1,s)*area;
   }
   const rezHit=!!(checks&&checks.find(r=>r.c.id==="rez"&&r.v&&r.v.length));
-  window.__lastLL=ll; window.__tl=null; window.__gbp=null; window.__ruleP=null;
+  window.__lastLL=ll; window.__tl=null; window.__gbp=null; window.__ruleP=null; window.__rule=null;
   window.__cur={key:favKey(parcel,ll),ll:{lat:ll.lat,lng:ll.lng},ces:parcel?parcel.properties.KATASTARSKA_CESTICA:null,ko:parcel?parcel.properties.KATASTARSKA_OPCINA:null,area,buildArea,
     code:(()=>{const r=ruleLookup(up,rows);return r.code?(r.se?"SE ":"")+r.code:null})(),namjena:rows[0]?(rows[0].p.Namjena||rows[0].p.Analitika):null,analitika:rows[0]?rows[0].p.Analitika:null,
     risks:checks?checks.filter(r=>r.v&&r.v.length).map(r=>r.c.label):null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:envelope?Math.round(envelope.area):null};
@@ -1487,6 +1487,7 @@ function render(d){
   // Urbano pravilo
   h+=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>`;
   const {code,rule,se,pp:isPP}=ruleLookup(up,rows);
+  window.__rule={code,clanak:rule?rule.clanak:null,naziv:rule?rule.naziv:null,src:isPP?"PP":se?"SE":"GUP",zona:null};
   if(up.e){h+=`<p class="err">Urbana pravila: ${esc(up.e)}</p>`}
   else if(!code){h+=`<p class="hint">Lokacija nije u obuhvatu urbanih pravila GUP-a Zagreba ni GUP-a Sesveta. Vrijedi Prostorni plan Grada Zagreba, čiji uvjeti još nisu u aplikaciji; traži lokacijsku informaciju.</p>`}
   else if(!rule){h+=`<p><span class="rule-code">${esc(code)}</span>Pravilo nije pronađeno u tekstu odluke.</p>`}
@@ -1497,6 +1498,7 @@ function render(d){
     const zone=main?pickZone(rule,main.p.Analitika):null;
     if(zone){
       h+=`<p class="meta">Zona: ${esc(zone.zona)}</p>`;
+      window.__rule.zona=zone.zona;
       const nk=normKeys(zone), pp=parseParams(nk,TIP), RP=ruleParams(zone,TIP,buildArea??area); window.__ruleP=RP;
       // kratki sažetak u čipovima, detalji u padajućem dijelu
       const chips=RP.filter(x=>x.value&&["minC","izg","kis","gbp","etaze","teren","meda"].includes(x.id)).map(x=>({minC:"min. čestica ",izg:"izgrađenost ",kis:"kis ",gbp:"GBP do ",teren:"prirodni teren "}[x.id]??"")+(x.id==="etaze"?x.num+" nadzemne etaže":x.id==="meda"?(x.hHalf?"od međe h/2":"od međe "+x.value):x.value));
@@ -2514,6 +2516,243 @@ function goToFeature(feat){
   const c=turf.pointOnFeature(feat).geometry.coordinates; inspect(L.latLng(c[1],c[0]));
 }
 sheet.addEventListener("click",e=>{const i=e.target.dataset&&e.target.dataset.pick; if(i!=null&&window.__choices) goToFeature(window.__choices[+i]);});
+
+// ================= AI ASISTENT: KONTROLIRANO SUČELJE (etapa AI-1) =================
+// Sloj kroz koji će AI model jedino smjeti pristupati aplikaciji. Model ne izvršava JavaScript: šalje naziv alata i
+// argumente, aplikacija ih provjerava i poziva postojeće funkcije (finHouse, tChecks, ruleParams, riskFindings...).
+// Načini: "read" samo čita; "preview" sprema prijedlog u izolirano privremeno stanje (AI.pending) i ništa ne mijenja;
+// "commit" primjenjuje prijedlog samo ako ga je korisnik odobrio klikom u sučelju (aiApprove nije dostupan modelu).
+// Etapa AI-1 nema korisničko sučelje ni poziv plaćenog modela (FEATURES.ai=false).
+const AI={pending:new Map(),undo:[],log:[],done:new Set(),seq:0,calls:[],LIMIT_PER_MIN:40,UNDO_MAX:20};
+const AI_STATUS={propisano:"propisano",provjera:"potrebna provjera",nije:"nije dostupno"};
+const AI_ERR=(code,msg,extra)=>({ok:false,error:{code,msg,...(extra||{})}});
+const S_NUM=(min,max,o={})=>({t:"number",min,max,...o}), S_ENUM=(v,o={})=>({t:"enum",v,...o}), S_BOOL=(o={})=>({t:"boolean",...o}), S_STR=(max,o={})=>({t:"string",max,...o});
+const S_PARCEL={parcelId:S_STR(80,{req:true,d:"ključ čestice iz getCurrentParcel (npr. 'REMETE|3101/2')"})};
+const S_HOUSE={w:S_NUM(4,40,{d:"širina kuće (m)"}),d:S_NUM(4,40,{d:"dubina kuće (m)"}),rot:S_NUM(0,359.9,{d:"okret (°)"}),fl:S_ENUM(FLOOR_OPTS.map(o=>o[0]),{d:"katnost: 1=P, 1.5=P+Pk, 2=P+1, 2.5=P+1+Pk, 3=P+2"}),
+  fh:S_NUM(2.4,4.5,{d:"visina etaže (m)"}),podrum:S_BOOL(),gar:S_BOOL(),toward:S_ENUM(["S","J","I","Z"],{d:"pomakni kuću što bliže strani čestice (sjever, jug, istok, zapad) uz dopuštene odmake"})};
+const S_INV={hA:S_NUM(20,2000,{d:"bruto površina kuće (m²)"}),fl:S_ENUM(Object.keys(FLOORS)),t:S_ENUM(Object.keys(BUILD),{d:"klas=zidana, mont=montažna"}),std:S_ENUM(Object.keys(STD)),ph:S_ENUM(Object.keys(BUILD.klas)),base:S_BOOL(),
+  landPrice:S_NUM(0,20000000,{d:"kupoprodajna cijena zemljišta (€), korisnikov unos"}),prepCut:S_NUM(0,100000,{d:"dodatni iskop (m³)"}),prepExtra:S_NUM(0,1000000,{d:"ostali pripremni radovi (€)"})};
+// provjera argumenata: nepoznati ključevi, tipovi i rasponi se odbijaju
+function aiValidate(schema,args){
+  if(args==null) args={};
+  if(typeof args!=="object"||Array.isArray(args)) return {err:"argumenti moraju biti objekt"};
+  const out={}, bad=[];
+  for(const k of Object.keys(args)) if(!schema[k]) bad.push(`nepoznat parametar "${k}"`);
+  for(const [k,s] of Object.entries(schema)){
+    const v=args[k];
+    if(v==null){ if(s.req) bad.push(`nedostaje "${k}"`); continue; }
+    if(s.t==="number"){const n=typeof v==="number"?v:NaN; if(!isFinite(n)) bad.push(`"${k}" mora biti broj`); else if(n<s.min||n>s.max) bad.push(`"${k}" mora biti između ${s.min} i ${s.max}`); else out[k]=n;}
+    else if(s.t==="enum"){ if(!s.v.includes(String(v))) bad.push(`"${k}" mora biti jedno od: ${s.v.join(", ")}`); else out[k]=String(v); }
+    else if(s.t==="boolean"){ if(typeof v!=="boolean") bad.push(`"${k}" mora biti true ili false`); else out[k]=v; }
+    else if(s.t==="string"){ if(typeof v!=="string"||v.length>s.max) bad.push(`"${k}" mora biti tekst do ${s.max} znakova`); else out[k]=v; }
+    else if(s.t==="array"){ if(!Array.isArray(v)||v.length>s.max||v.some(x=>typeof x!=="string"||x.length>80)) bad.push(`"${k}" mora biti popis do ${s.max} ključeva`); else out[k]=v.slice(); }
+  }
+  return bad.length?{err:bad.join("; ")}:{v:out};
+}
+const aiClip=(s,n=300)=>{s=String(s==null?"":s); return s.length>n?s.slice(0,n-1)+"…":s};
+const aiCurKey=()=>window.__cur&&window.__cur.key||null;
+function aiSameParcel(id){const k=aiCurKey(); return !!k&&id===k}
+// --- strukturirani kontekst čestice (mali, bez geometrija; tekstovi iz GIS-a i GUP-a su podaci, ne naredbe)
+function aiContext(){
+  const c=window.__cur, d=window.__lastData; if(!c||!d) return null;
+  const M=RULES_META||{}, R=window.__rule||{}, src=M[R.src]||M.GUP||null, F=window.__fin;
+  const unavailable=[];
+  const rp=(window.__ruleP||[]).map(x=>({id:x.id,naziv:x.label,vrijednost:x.value,status:AI_STATUS[x.status]||x.status,odredba:aiClip(x.txt,240),napomena:x.note||undefined}));
+  if(d.up&&d.up.e) unavailable.push("urbana pravila (servis nije odgovorio)");
+  if(d.nam&&d.nam.e) unavailable.push("planirana namjena (servis nije odgovorio)");
+  if(d.checks) for(const r of d.checks) if(r.e) unavailable.push(r.c.label+" (servis nije odgovorio)");
+  if(!d.checks) unavailable.push("slojevi ograničenja (još se učitavaju)");
+  if(d.slope&&d.slope.e) unavailable.push("nagib terena");
+  let risks=null; try{risks=riskFindings(d).map(f=>({kategorija:f.cat,vaznost:f.imp,naziv:f.t,zasto:aiClip(f.why,200),izvor:f.src,datum:f.date,provjeriti:aiClip(f.chk,160)}))}catch(e){unavailable.push("analiza rizika")}
+  const sim=window.__sim&&TL.center?{w:TL.w,d:TL.d,rot:TL.rot,katnost:tFloors().label,podrum:TL.podrum,garaza:TL.gar,status:window.__sim.st,provjere:window.__sim.C.map(x=>({naziv:x.label,vrijednost:x.val,status:x.st}))}:null;
+  const inv=F&&F.build?{status:"izračun aplikacije",ukupno:{od:Math.round(F.total.lo),do:Math.round(F.total.hi)},rezerva15:Math.round(F.total.rez),
+    gradnja:{od:Math.round(F.build.lo),do:Math.round(F.build.hi)},naknade:Math.round(F.build.naknade),priprema:Math.round(F.build.priprema||0),
+    zemljiste:F.buy?{cijena:F.buy.price,troskoviKupnje:Math.round(F.buy.costs),vrsta:"korisnikov unos"}:null,
+    stavke:F.items.map(i=>({naziv:i.label,od:Math.round(i.lo),do:Math.round(i.hi),vrsta:KIND[i.kind]||i.kind})),
+    ulazi:F.inputs?{hA:F.inputs.hA,fl:F.inputs.fl,t:F.inputs.t,std:F.inputs.std,ph:F.inputs.ph,base:F.inputs.base}:null,upozorenja:F.warn}:null;
+  const inf=window.__infra;
+  return {
+    cestica:{id:c.key,broj:c.ces,ko:c.ko,povrsina_m2:c.area?Math.round(c.area):null,gradiviDio_m2:c.buildArea!=null?Math.round(c.buildArea):null,
+      izvor:"Katastarske čestice Grada Zagreba (GIS, 2023.); službeni podaci su u katastru (OSS)",namjena:c.namjena,analitika:c.analitika},
+    pravila:c.code?{pravilo:c.code,clanak:R.clanak||null,naziv:R.naziv||null,zona:R.zona||null,izvor:src?{naziv:src.naziv,verzija:src.verzija,datum:src.datum,status:src.status,url:src.url}:null,
+      parametri:rp,najveciGBP_m2:window.__gbp?{v:window.__gbp,status:"izračunato iz pravila i površine"}:null,najveciTlocrt_m2:window.__tl?{v:window.__tl,status:"izračunato iz pravila i površine"}:null}:null,
+    simulator:sim,investicija:inv,scenarija:scList(c.key).length,
+    infrastruktura:aiInfra(inf),
+    rizici:risks,nedostupno:unavailable,
+    pouzdanost:"Pravila i namjena su iz GIS-a i teksta GUP-a; pravno mjerodavna je lokacijska informacija. Iznosi su izračun aplikacije (propis, procjena ili korisnikov unos, kako piše uz stavku).",
+    vrijeme:new Date().toISOString()
+  };
+}
+function aiInfra(inf){
+  const base={vodovod:"nije dostupno",kanalizacija:"nije dostupno",struja:"nije dostupno",plin:"nije dostupno",
+    napomena:"Javni slojevi ne sadrže ulične mreže; mogućnost priključenja potvrđuje distributer (ViO, HEP ODS, GPZ). Nedostatak podatka ne znači da mreže nema."};
+  if(!inf) return {...base,glavniVodovi:"nije dostupno"};
+  const g=[], e=[];
+  for(const s of INF_SRC){const r=inf[s.id]; if(!r) continue; if(r.e){e.push(s.id);continue}
+    for(const [x,t] of [[r.ex,"postojeći"],[r.pl,"planirani"]]) if(x) g.push({opis:aiClip(x.desc,120),vrsta:t,udaljenost_m:Math.round(x.d),izvor:"GUP Grada Zagreba, karte 3b i 3c"});}
+  return {...base,glavniVodovi:g.length?g.slice(0,10):e.length?"servis nije odgovorio":"nema glavnih vodova u blizini prema GUP-u"};
+}
+// --- pješčanik za simulator: privremeno postavi parametre, pozovi postojeću provjeru, vrati stanje
+function aiSimSandbox(p){
+  if(!document.getElementById("tGrid")) return {err:"simulator nije dostupan za ovu česticu (nema poznatog pravila ili dopuštenog prostora)"};
+  const keep={w:TL.w,d:TL.d,rot:TL.rot,fl:TL.fl,fh:TL.fh,podrum:TL.podrum,gar:TL.gar,center:TL.center&&TL.center.slice()};
+  try{
+    for(const k of ["w","d","rot","fl","fh","podrum","gar"]) if(p[k]!=null) TL[k]=p[k];
+    if(!TL.center&&window.__env&&window.__env.geom) TL.center=turf.centroid({type:"Feature",geometry:window.__env.geom,properties:{}}).geometry.coordinates;
+    if(!TL.zones) TL.zones=tZones();
+    if(p.toward) aiToward(p.toward);
+    const R=tChecks(); if(!R) return {err:"provjera nije uspjela"};
+    return {v:{params:{w:TL.w,d:TL.d,rot:TL.rot,fl:TL.fl,fh:TL.fh,podrum:TL.podrum,gar:TL.gar,center:TL.center.slice()},status:R.st,gbp:Math.round(R.gbpN),tlocrt:Math.round(R.tl),
+      provjere:R.C.map(x=>({naziv:x.label,vrijednost:x.val,status:x.st,napomena:x.note||undefined})),
+      napomena:"Provjeru radi simulator aplikacije; status 'warn' znači da dio uvjeta treba potvrditi. Ovo nije potvrda dopuštenosti."}};
+  }finally{Object.assign(TL,keep);}
+}
+// pomak prema strani čestice: korak po 0,5 m dok kuća ostaje u dopuštenom prostoru (jednostavno pretraživanje, ne jamči optimum)
+function aiToward(dir){
+  const brg={S:0,I:90,J:180,Z:270}[dir], env=window.__env&&window.__env.geom; if(brg==null||!env||!TL.center) return;
+  for(let i=0;i<200;i++){const p=turf.destination(turf.point(TL.center),0.0005,brg,{units:"kilometers"}).geometry.coordinates, old=TL.center; TL.center=p;
+    if(!withinEnv(tFoot(),env)){TL.center=old; break;}}
+}
+// --- izračun investicije postojećim modelom, bez promjene stranice
+function aiInvest(p){
+  const cur=finInputs(); if(!cur) return {err:"kalkulator gradnje nije dostupan za ovu česticu"};
+  const I={...cur}; for(const k of ["hA","fl","t","std","ph","base"]) if(p[k]!=null) I[k]=p[k];
+  if(p.hA!=null&&!I.volManual) I.vol=null;
+  const prep={...(cur.prep||{})}; if(p.prepCut!=null) prep.pCut=p.prepCut; if(p.prepExtra!=null) prep.pOther=p.prepExtra; I.prep=prep;
+  const H=finHouse(I,numv("kdRate")), F=window.__fin;
+  let acq=F&&F.buy?F.buy.acq:0, landNote=F&&F.buy?"iz unosa kupnje":"nije upisano";
+  if(p.landPrice!=null){const b={...buyGet(aiCurKey()),price:p.landPrice}; const tax=(b.regime||"ppn")==="ppn"?p.landPrice*PPN:0; acq=p.landPrice+tax+ZK_PRIJEDLOG*0.5+ZK_RJESENJE; landNote="korisnikova pretpostavka; porez na promet 3 % i pristojbe uračunati, ostali troškovi kupnje nisu";}
+  const sum=g=>H.items.filter(i=>i.group===g).reduce((s,i)=>[s[0]+i.lo,s[1]+i.hi],[0,0]);
+  return {v:{ulazi:{hA:I.hA,fl:I.fl,t:I.t,std:I.std,ph:I.ph,base:I.base},gradnja:sum("gradnja").map(Math.round),naknade:sum("naknade").map(Math.round),priprema:sum("priprema").map(Math.round),
+    zemljiste:{stjecanje:Math.round(acq),napomena:landNote},ukupno:[Math.round(H.build.lo+acq),Math.round(H.build.hi+acq)],rezerva15:Math.round(H.build.rez),upozorenja:H.warn,
+    stavke:H.items.map(i=>({naziv:i.label,od:Math.round(i.lo),do:Math.round(i.hi),vrsta:KIND[i.kind]||i.kind})),
+    izvor:"jedinstveni financijski model aplikacije (finHouse)"},I};
+}
+// --- privremene promjene
+function aiNewChange(kind,parcelKey,payload,summary){
+  const id="ch"+(++AI.seq)+"-"+Date.now().toString(36);
+  const ch={id,kind,parcelKey,payload,summary,approved:false,created:Date.now()}; AI.pending.set(id,ch);
+  for(const [k,v] of AI.pending) if(Date.now()-v.created>3600e3) AI.pending.delete(k); // stari prijedlozi istječu nakon sat vremena
+  return ch;
+}
+// odobrenje dolazi samo iz korisničkog sučelja (klik na "Primijeni"), nikad od modela
+function aiApprove(id){const ch=AI.pending.get(id); if(!ch) return false; if(!aiSameParcel(ch.parcelKey)) return false; ch.approved=true; return true}
+function aiReject(id){return AI.pending.delete(id)}
+function aiSnapshot(kind){
+  const k=aiCurKey();
+  if(kind==="house") return {kind,parcelKey:k,TL:{w:TL.w,d:TL.d,rot:TL.rot,fl:TL.fl,fh:TL.fh,podrum:TL.podrum,gar:TL.gar,center:TL.center&&TL.center.slice()}};
+  return {kind,parcelKey:k,inputs:finInputs(),buy:JSON.stringify(buyStore()[k]||null),prep:JSON.stringify(prepStore()[k]||null),scen:JSON.stringify(scList(k))};
+}
+function aiApplyHouse(P){
+  for(const k of ["w","d","rot","fl","fh","podrum","gar"]) TL[k]=P[k]; TL.center=P.center?P.center.slice():TL.center;
+  const set=(id,v)=>{const e=document.getElementById(id); if(e){if(e.type==="checkbox") e.checked=!!v; else e.value=v}};
+  set("tW",TL.w); set("tD",TL.d); set("tRot",TL.rot); set("tFl",TL.fl); set("tFh",TL.fh); set("tPod",TL.podrum); set("tGar",TL.gar);
+  if(TL.marker) TL.marker.setLatLng([TL.center[1],TL.center[0]]);
+  tDraw();
+}
+function aiApplyInv(I,landPrice,saveAs){
+  const k=aiCurKey();
+  if(I){scLoad(I); if(I.prep){try{const s=prepStore(), c=prepClean(I.prep); if(Object.keys(c).length) s[k]=c; else delete s[k]; localStorage.setItem("prep",JSON.stringify(s))}catch(e){}}}
+  if(landPrice!=null){const b=buyGet(k); b.price=landPrice; buySet(k,b); const y=document.getElementById("yPrice"); if(y) y.value=landPrice;}
+  if(saveAs){const L=scList(k); if(L.length<SC_MAX){L.push({id:Date.now().toString(36),name:aiClip(saveAs,80),inp:scClean(finInputs()),created:new Date().toISOString().slice(0,10),by:"AI prijedlog, potvrdio korisnik"}); scSave(k,L);}}
+  finUpdate();
+}
+function aiRestore(s){
+  if(s.kind==="house"){aiApplyHouse(s.TL); return;}
+  const k=s.parcelKey;
+  try{const b=buyStore(), v=JSON.parse(s.buy); if(v) b[k]=v; else delete b[k]; localStorage.setItem("buy",JSON.stringify(b));
+    const p=prepStore(), q=JSON.parse(s.prep); if(q) p[k]=q; else delete p[k]; localStorage.setItem("prep",JSON.stringify(p));
+    scSave(k,JSON.parse(s.scen));}catch(e){}
+  if(s.inputs) scLoad(s.inputs); else finUpdate();
+  const y=document.getElementById("yPrice"); if(y){const b=buyGet(k); y.value=b.price||"";}
+  finUpdate();
+}
+// --- popis dopuštenih alata
+const AI_TOOLS={
+  getCurrentParcel:{mode:"read",confirm:false,d:"Podaci trenutno odabrane čestice, pravila, rizici, simulator i investicija (strukturirani kontekst).",params:{},
+    run:()=>{const c=aiContext(); return c?{ok:true,data:c}:AI_ERR("NO_PARCEL","Nijedna čestica nije odabrana.")}},
+  getUrbanRules:{mode:"read",confirm:false,d:"Urbanistički parametri s izvorom i statusom provjerenosti.",params:S_PARCEL,
+    run:a=>{if(!aiSameParcel(a.parcelId)) return AI_ERR("PARCEL_MISMATCH","Tražena čestica nije trenutno odabrana."); const c=aiContext(); return c.pravila?{ok:true,data:c.pravila}:AI_ERR("NOT_AVAILABLE","Za ovu česticu urbana pravila nisu dostupna u aplikaciji.",{nedostupno:c.nedostupno})}},
+  getParcelConstraints:{mode:"read",confirm:false,d:"Rizici i ograničenja u tri kategorije (potvrđeno, potencijalno, neprovjereno).",params:S_PARCEL,
+    run:a=>{if(!aiSameParcel(a.parcelId)) return AI_ERR("PARCEL_MISMATCH","Tražena čestica nije trenutno odabrana."); const c=aiContext(); return {ok:true,data:{rizici:c.rizici,nedostupno:c.nedostupno,napomena:"Nedostatak podatka ne znači da rizika nema."}}}},
+  getInfrastructure:{mode:"read",confirm:false,d:"Što je poznato o komunalnoj infrastrukturi.",params:S_PARCEL,
+    run:a=>{if(!aiSameParcel(a.parcelId)) return AI_ERR("PARCEL_MISMATCH","Tražena čestica nije trenutno odabrana."); return {ok:true,data:aiContext().infrastruktura}}},
+  listScenarios:{mode:"read",confirm:false,d:"Spremljeni investicijski scenariji za česticu.",params:S_PARCEL,
+    run:a=>{if(!aiSameParcel(a.parcelId)) return AI_ERR("PARCEL_MISMATCH","Tražena čestica nije trenutno odabrana."); const pr=prepGet(a.parcelId), acq=window.__fin&&window.__fin.buy?window.__fin.buy.acq:0;
+      return {ok:true,data:scList(a.parcelId).map((s,i)=>{const r=scRow(s,numv("kdRate"),acq,pr); return {id:s.id,naziv:s.name,povrsina:s.inp.hA,katnost:s.inp.fl,vrsta:s.inp.t,podrum:s.inp.base,ukupno:r.total.map(Math.round),dopustenost:r.A.st}})}}},
+  calculateInvestment:{mode:"read",confirm:false,d:"Izračun investicije postojećim modelom za zadane parametre; ništa ne mijenja.",params:{...S_PARCEL,...S_INV},
+    run:a=>{if(!aiSameParcel(a.parcelId)) return AI_ERR("PARCEL_MISMATCH","Tražena čestica nije trenutno odabrana."); const r=aiInvest(a); return r.err?AI_ERR("NOT_AVAILABLE",r.err):{ok:true,data:r.v}}},
+  validateHousePlacement:{mode:"read",confirm:false,d:"Provjera položaja i veličine kuće simulatorom; ništa ne mijenja.",params:{...S_PARCEL,...S_HOUSE},
+    run:a=>{if(!aiSameParcel(a.parcelId)) return AI_ERR("PARCEL_MISMATCH","Tražena čestica nije trenutno odabrana."); const r=aiSimSandbox(a); return r.err?AI_ERR("NOT_AVAILABLE",r.err):{ok:true,data:r.v}}},
+  previewHouseChanges:{mode:"preview",confirm:false,d:"Pripremi promjenu kuće u simulatoru (privremeno; primjenjuje se tek nakon korisnikove potvrde).",params:{...S_PARCEL,...S_HOUSE},
+    run:a=>{if(!aiSameParcel(a.parcelId)) return AI_ERR("PARCEL_MISMATCH","Tražena čestica nije trenutno odabrana."); const r=aiSimSandbox(a); if(r.err) return AI_ERR("NOT_AVAILABLE",r.err);
+      const before={w:TL.w,d:TL.d,rot:TL.rot,fl:TL.fl,podrum:TL.podrum,gar:TL.gar};
+      const ch=aiNewChange("house",a.parcelId,{after:r.v.params},{prije:before,poslije:r.v.params,provjere:r.v.provjere,status:r.v.status});
+      return {ok:true,data:{changeId:ch.id,pregled:ch.summary,potrebnaPotvrda:true}}}},
+  previewInvestmentChanges:{mode:"preview",confirm:false,d:"Pripremi promjenu kalkulatora, cijene zemljišta ili novi scenarij (privremeno, do potvrde).",params:{...S_PARCEL,...S_INV,saveAsScenario:S_STR(80,{d:"ako je zadano, nakon potvrde sprema se novi scenarij s tim nazivom"})},
+    run:a=>{if(!aiSameParcel(a.parcelId)) return AI_ERR("PARCEL_MISMATCH","Tražena čestica nije trenutno odabrana."); const r=aiInvest(a); if(r.err) return AI_ERR("NOT_AVAILABLE",r.err);
+      const F=window.__fin, before=F&&F.total?{ukupno:[Math.round(F.total.lo),Math.round(F.total.hi)],ulazi:F.inputs?{hA:F.inputs.hA,fl:F.inputs.fl,t:F.inputs.t,std:F.inputs.std,ph:F.inputs.ph,base:F.inputs.base}:null}:null;
+      const ch=aiNewChange("inv",a.parcelId,{I:r.I,landPrice:a.landPrice,saveAs:a.saveAsScenario},{prije:before,poslije:{ukupno:r.v.ukupno,ulazi:r.v.ulazi,zemljiste:r.v.zemljiste},noviScenarij:a.saveAsScenario||null});
+      return {ok:true,data:{changeId:ch.id,pregled:ch.summary,izracun:r.v,potrebnaPotvrda:true}}}},
+  commitApprovedChanges:{mode:"commit",confirm:true,d:"Primijeni prijedlog koji je korisnik odobrio u sučelju.",params:{changeId:S_STR(40,{req:true})},
+    run:a=>{
+      if(AI.done.has(a.changeId)) return AI_ERR("ALREADY_DONE","Ova promjena je već primijenjena.");
+      const ch=AI.pending.get(a.changeId); if(!ch) return AI_ERR("NOT_FOUND","Prijedlog ne postoji ili je istekao.");
+      if(!aiSameParcel(ch.parcelKey)) return AI_ERR("PARCEL_MISMATCH","Prijedlog je za drugu česticu; nije primijenjen.");
+      if(!ch.approved) return AI_ERR("NEEDS_APPROVAL","Korisnik još nije potvrdio ovu promjenu.");
+      const snap=aiSnapshot(ch.kind);
+      if(ch.kind==="house") aiApplyHouse(ch.payload.after); else aiApplyInv(ch.payload.I,ch.payload.landPrice,ch.payload.saveAs);
+      AI.undo.push({id:ch.id,snap,at:Date.now()}); if(AI.undo.length>AI.UNDO_MAX) AI.undo.shift();
+      AI.done.add(ch.id); AI.pending.delete(ch.id);
+      return {ok:true,data:{primijenjeno:ch.id,mozePonistiti:true}}}},
+  undoLastApprovedChange:{mode:"commit",confirm:true,d:"Poništi zadnju primijenjenu promjenu (nakon potvrde u sučelju).",params:{},
+    run:()=>{const u=AI.undo[AI.undo.length-1]; if(!u) return AI_ERR("NOT_FOUND","Nema promjena za poništavanje.");
+      if(!aiSameParcel(u.snap.parcelKey)) return AI_ERR("PARCEL_MISMATCH","Zadnja promjena je na drugoj čestici; prvo je otvori.");
+      AI.undo.pop(); aiRestore(u.snap); return {ok:true,data:{ponisteno:u.id}}}},
+  compareParcels:{mode:"read",confirm:false,d:"Usporedba spremljenih čestica prema podacima koje aplikacija ima (bez proizvoljnih ocjena).",params:{parcelIds:{t:"array",max:5,req:true}},
+    run:a=>{const all=favs(); const out=a.parcelIds.map(id=>{const f=all.find(x=>x.key===id); return f?{id,broj:f.ces,ko:f.ko,povrsina:f.area?Math.round(f.area):null,pravilo:f.code||null,namjena:f.namjena||null,
+      najveciGBP:null,ogranicenja:f.risks||null,nagib:f.slope,investicija:f.budget?{od:Math.round(f.budget.lo),do:Math.round(f.budget.hi)}:null,zemljiste:f.land||null,spremljeno:f.saved}:{id,greska:"čestica nije spremljena"}});
+      return {ok:true,data:{cestice:out,napomena:"Vrijednosti su zadnje spremljene; 'null' znači da podatak nije poznat."}}}},
+  generateParcelReport:{mode:"commit",confirm:true,d:"Izrada PDF izvještaja iz aktualnih vrijednosti aplikacije.",params:{...S_PARCEL},
+    run:()=>AI_ERR("NOT_AVAILABLE","PDF izvještaj dolazi u fazi G; zasad je dostupan gumb 'Ispiši / spremi PDF'.")}
+};
+// opis alata za model (JSON Schema), bez funkcija
+function aiToolSpecs(){
+  const js=s=>s.t==="number"?{type:"number",minimum:s.min,maximum:s.max}:s.t==="enum"?{type:"string",enum:s.v}:s.t==="boolean"?{type:"boolean"}:s.t==="array"?{type:"array",items:{type:"string"},maxItems:s.max}:{type:"string",maxLength:s.max};
+  return Object.entries(AI_TOOLS).map(([name,t])=>({name,description:t.d+(t.mode==="read"?" [samo čitanje]":t.mode==="preview"?" [privremeno]":" [traži potvrdu korisnika]"),
+    input_schema:{type:"object",additionalProperties:false,properties:Object.fromEntries(Object.entries(t.params).map(([k,s])=>[k,{...js(s),...(s.d?{description:s.d}:{})}])),required:Object.entries(t.params).filter(([,s])=>s.req).map(([k])=>k)}}));
+}
+// jedina ulazna točka za model
+function aiCall(name,args){
+  const now=Date.now(); AI.calls=AI.calls.filter(t=>now-t<60000);
+  if(AI.calls.length>=AI.LIMIT_PER_MIN) return AI_ERR("RATE_LIMIT","Previše poziva u minuti.");
+  AI.calls.push(now);
+  const t=Object.prototype.hasOwnProperty.call(AI_TOOLS,name)?AI_TOOLS[name]:null;
+  if(!t){AI.log.push({at:now,name:String(name).slice(0,60),ok:false,code:"UNKNOWN_TOOL"}); return AI_ERR("UNKNOWN_TOOL","Nepoznata naredba: "+String(name).slice(0,60));}
+  const V=aiValidate(t.params,args); if(V.err){AI.log.push({at:now,name,ok:false,code:"BAD_ARGS"}); return AI_ERR("BAD_ARGS",V.err);}
+  let r; try{r=t.run(V.v)}catch(e){r=AI_ERR("INTERNAL","Interna greška: "+e.message)}
+  AI.log.push({at:now,name,mode:t.mode,ok:r.ok,code:r.ok?null:r.error.code}); if(AI.log.length>200) AI.log.shift();
+  return r;
+}
+// --- praćenje troškova (procjena iz broja tokena koje vrati backend); stvarna granica je na backendu
+const AI_PRICE={"claude-haiku-5-5":[0.10,0.50],"claude-sonnet-5-5":[2,10]}; // USD po milijun tokena (ulaz, izlaz); platform.claude.com/docs/en/about-claude/pricing, listopad 2026.
+function aiUse(){try{const u=JSON.parse(localStorage.getItem("aiUse")||"{}"), m=new Date().toISOString().slice(0,7); return u.m===m?u:{m,n:0,inT:0,outT:0,usd:0,limit:u.limit||5}}catch(e){return {m:"",n:0,inT:0,outT:0,usd:0,limit:5}}}
+function aiAddUse(model,inT,outT){const u=aiUse(), p=AI_PRICE[model]||AI_PRICE["claude-sonnet-5-5"]; u.n++; u.inT+=inT; u.outT+=outT; u.usd+=(inT*p[0]+outT*p[1])/1e6; try{localStorage.setItem("aiUse",JSON.stringify(u))}catch(e){} return u}
+// --- petlja razgovora s modelom: model je funkcija (pravi backend u etapi AI-2, simulirani model u testovima)
+async function aiConverse(model,userText,history=[],opt={}){
+  const u=aiUse(); if(u.usd>=u.limit) return {ok:false,error:{code:"BUDGET",msg:`Mjesečni AI budžet (${u.limit} $) je potrošen. Ostatak aplikacije radi normalno.`}};
+  const startKey=aiCurKey(), msgs=[...history.slice(-8),{role:"user",content:String(userText).slice(0,2000)}], steps=[];
+  for(let i=0;i<(opt.maxSteps||6);i++){
+    let res; try{res=await model({messages:msgs,tools:aiToolSpecs(),parcelId:startKey})}catch(e){return {ok:false,error:{code:"AI_UNAVAILABLE",msg:"AI servis trenutno nije dostupan. Svi izračuni u aplikaciji rade i bez njega."},steps}}
+    if(res&&res.usage) aiAddUse(res.model||"",res.usage.input_tokens||0,res.usage.output_tokens||0);
+    if(aiCurKey()!==startKey) return {ok:false,error:{code:"PARCEL_CHANGED",msg:"Čestica je promijenjena tijekom odgovora; prethodni odgovor se odnosio na "+(startKey||"nijednu česticu")+"."},steps};
+    const calls=res&&Array.isArray(res.tool_calls)?res.tool_calls.slice(0,4):[];
+    if(!calls.length) return {ok:true,text:String(res&&res.text||""),steps,pending:steps.filter(s=>s.r.ok&&s.r.data&&s.r.data.changeId).map(s=>s.r.data.changeId)};
+    msgs.push({role:"assistant",tool_calls:calls});
+    for(const c of calls){const r=aiCall(c.name,c.args); steps.push({name:c.name,r}); msgs.push({role:"tool",tool_use_id:c.id||null,name:c.name,content:JSON.stringify(r).slice(0,12000)});}
+  }
+  return {ok:false,error:{code:"TOO_MANY_STEPS",msg:"Zahtjev je prekompliciran za jedan korak; podijeli ga na manja pitanja."},steps};
+}
 
 // --- pretraga adrese (Nominatim, Zagreb)
 async function search(){
