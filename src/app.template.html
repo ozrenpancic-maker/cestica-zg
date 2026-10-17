@@ -297,7 +297,7 @@ sheet.addEventListener("toggle",e=>{const k=e.target.dataset&&e.target.dataset.k
 map.on("click",e=>inspect(e.latlng));
 async function inspect(ll){
   const id=++clickId;
-  selLayer.clearLayers(); TL.layer=null; TL.marker=null; TL.center=null;
+  selLayer.clearLayers(); TL.layer=null; TL.marker=null; TL.center=null; ZK.res=null;
   L.circleMarker(ll,{radius:5,color:"#000",weight:2,fillColor:"#fff",fillOpacity:1}).addTo(selLayer);
   sheet.innerHTML='<p class="hint"><span class="spin"></span>Tražim česticu, namjenu i urbano pravilo…</p>';
   let [ces,nam,up,upx,gn]=await Promise.all([
@@ -604,6 +604,14 @@ function render(d){
     h+=`<p class="eyebrow">Katastarska čestica${p.KATASTARSKA_OPCINA?" · k.o. "+esc(p.KATASTARSKA_OPCINA):""}</p>`;
     h+=`<p class="parcel">${esc(p.KATASTARSKA_CESTICA||p.KC_KO||"?")}</p>`;
     h+=`<p class="meta">${fmt(area)} m² (iz geometrije)${p.GRADSKA_CETVRT?" · "+esc(p.GRADSKA_CETVRT):""}</p>`;
+    h+=`<details class="acc" data-k="zk"><summary><span>Vlasnici i tereti (ZK izvadak)</span><b id="zkSum">${ZK.res?esc(ZK.res.sum):"provjeri izvadak"}</b></summary><div class="acc-body">`;
+    h+=`<p class="meta" style="margin-top:0">Vlasnike i terete vidiš u zemljišnoknjižnom izvatku. Online je besplatan.</p>`;
+    h+=`<div class="kd"><button type="button" class="ib" id="zkOpen" data-ko="${esc(p.KATASTARSKA_OPCINA||"")}" data-kc="${esc(p.KATASTARSKA_CESTICA||"")}">1. Kopiraj k.o. i broj, otvori OSS</button></div>`;
+    h+=`<p class="meta">Na OSS-u izaberi "Zemljišna knjiga", upiši k.o. ${esc(p.KATASTARSKA_OPCINA||"")} i česticu ${esc(p.KATASTARSKA_CESTICA||"")}, pa preuzmi izvadak kao PDF.</p>`;
+    h+=`<div class="kd"><label class="ib" for="zkFile" style="cursor:pointer">2. Učitaj PDF izvatka</label><input id="zkFile" type="file" accept="application/pdf,.pdf" hidden></div>`;
+    h+=`<div id="zkOut">${ZK.res&&ZK.res.key===favKey(parcel,ll)?ZK.res.html:""}</div>`;
+    h+=`<details><summary>Kako čitati izvadak</summary><p><b>A list (posjedovnica)</b>: čestice u uložku, njihov opis i površina.</p><p><b>B list (vlastovnica)</b>: vlasnici i njihovi udjeli (npr. 1/2). Kupoprodajni ugovor moraju potpisati svi suvlasnici.</p><p><b>C list (teretovnica)</b>: hipoteke, služnosti, pravo građenja, zabrane otuđenja i druga prava trećih. Prazan C list znači da nema upisanih tereta.</p><p><b>Plomba</b> znači da je u tijeku neki upis (npr. prodaja ili hipoteka). Dok se ne riješi, izvadak nije konačan.</p></details>`;
+    h+=`<p class="meta">Izvadak se čita samo na ovom uređaju; ništa se ne šalje i ne sprema.</p></div></details>`;
   }else{
     h+=`<p class="eyebrow">Lokacija</p><p class="parcel">${ll.lat.toFixed(5)}, ${ll.lng.toFixed(5)}</p>`;
     h+=ces.e?`<p class="err">Katastar: ${esc(ces.e)}</p>`:`<p class="meta">Ovdje nije pronađena čestica (cesta ili izvan Zagreba).</p>`;
@@ -1037,6 +1045,87 @@ sheet.addEventListener("click",e=>{
     }
   }).catch(()=>{});
 })();
+
+// --- zemljišnoknjižni izvadak: otvaranje OSS-a i lokalna provjera učitanog PDF-a
+const ZK={res:null};
+sheet.addEventListener("click",async e=>{
+  const b=e.target.closest&&e.target.closest("#zkOpen"); if(!b) return;
+  const txt=`k.o. ${b.dataset.ko}, k.č. ${b.dataset.kc}`;
+  try{await navigator.clipboard.writeText(txt); b.textContent="Kopirano: "+txt}catch(err){b.textContent=txt}
+  const a=document.createElement("a"); a.href="https://oss.uredjenazemlja.hr/"; a.target="_blank"; a.rel="noopener"; document.body.appendChild(a); a.click(); a.remove();
+});
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=()=>rej(new Error("ne mogu učitati čitač PDF-a"));document.head.appendChild(s);});}
+async function pdfText(file){
+  if(!window.pdfjsLib){
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
+    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"); // radi i bez zasebnog workera
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  }
+  const doc=await window.pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;
+  const lines=[];
+  for(let i=1;i<=doc.numPages;i++){
+    const tc=await (await doc.getPage(i)).getTextContent(); const rows=new Map();
+    for(const it of tc.items){const y=Math.round(it.transform[5]); const r=rows.get(y)||[]; r.push([it.transform[4],it.str]); rows.set(y,r);}
+    [...rows.entries()].sort((a,b)=>b[0]-a[0]).forEach(([,r])=>lines.push(r.sort((a,b)=>a[0]-b[0]).map(x=>x[1]).join(" ").replace(/\s+/g," ").trim()));
+  }
+  return lines.filter(Boolean).join("\n");
+}
+// analiza teksta izvatka (radi i za stari i za novi oblik)
+function analyzeZK(text,ctx){
+  const T=text.replace(/\u00a0/g," "), low=T.toLowerCase();
+  const idx=(re)=>{const m=low.search(re); return m<0?null:m};
+  const iA=idx(/posjedovnica|\ba\s*list\b/), iB=idx(/vlastovnica|\bb\s*list\b/), iC=idx(/teretovnica|\bc\s*list\b/);
+  const B=iB!=null?T.slice(iB,iC!=null&&iC>iB?iC:undefined):"", C=iC!=null?T.slice(iC):"";
+  const A=iA!=null?T.slice(iA,iB!=null&&iB>iA?iB:undefined):T;
+  const out={flags:[],ok:[],info:[]};
+  // suvlasnici
+  const shares=(B.match(/\b\d{1,3}\s*\/\s*\d{1,4}\b/g)||[]).map(s=>s.replace(/\s/g,"")).filter(s=>{const [a,b]=s.split("/").map(Number);return a>0&&b>0&&a<=b});
+  const nOwn=(B.match(/(su)?vlasni[čc]ki dio|vlasni[čc]ki udio|suvlasni[čc]ki/gi)||[]).length;
+  if(shares.length>1||nOwn>1) out.flags.push(["warn",`Više suvlasnika (${Math.max(shares.length,nOwn)} upisa${shares.length?": "+[...new Set(shares)].slice(0,8).join(", "):""}). Ugovor moraju potpisati svi.`]);
+  else if(iB!=null) out.ok.push("Jedan upisani vlasnik.");
+  if(/etažn/i.test(T)) out.info.push("Upisano je etažno vlasništvo (posebni dijelovi zgrade).");
+  // tereti
+  const C_=C.toLowerCase();
+  const terms=[[/hipotek|založn/,"no","Hipoteka (založno pravo)"],[/služnost/,"warn","Služnost (npr. prolaz, vod)"],[/pravo građenja/,"warn","Pravo građenja"],
+    [/zabran\w* otuđenja|zabrana opterećenja/,"no","Zabrana otuđenja ili opterećenja"],[/ovrh/,"no","Ovrha"],[/spor|tužb/,"no","Zabilježba spora"],
+    [/prvokup/,"warn","Pravo prvokupa"],[/plodouživ/,"warn","Plodouživanje"],[/zakup|najam/,"warn","Zakup ili najam"],[/stečaj/,"no","Stečaj"],[/fiducij/,"no","Fiducijarni prijenos (osiguranje kredita)"]];
+  let any=false; for(const [re,sev,lab] of terms) if(re.test(C_)){out.flags.push([sev,lab+" upisana u C listu."]);any=true}
+  if(iC!=null&&!any){ if(/nema upisa|bez tereta|nema tereta|\btereta nema\b/i.test(C)||C.replace(/teretovnica|c\s*list/ig,"").trim().length<40) out.ok.push("C list (tereti) je prazan."); else out.info.push("C list ima upisa koje nisam prepoznao; pročitaj ga."); }
+  if(/plomb/i.test(T)) out.flags.push(["no","Plomba: u tijeku je neki upis. Pitaj koji, prije bilo kakve uplate."]);
+  if(/neusklađ|nije usklađ|nesuglas/i.test(T)) out.flags.push(["warn","Napomena o neusklađenosti zemljišne knjige i katastra."]);
+  // površina čestice iz A lista
+  if(ctx.kc){
+    const re=new RegExp(ctx.kc.replace("/","\\s*/\\s*")+"\\b[^\\n]*?(\\d{1,3}(?:[.\\s]\\d{3})*|\\d+)\\s*(?:m2|m²|čhv)?\\s*$","im");
+    const lines=A.split("\n").filter(l=>l.includes(ctx.kc.split("/")[0]));
+    let zkA=null; for(const l of lines){const m=l.match(/(\d{1,3}(?:\.\d{3})+|\d+)\s*(?:m2|m²)?\s*$/); if(m&&!l.trim().endsWith(ctx.kc)){zkA=parseInt(m[1].replace(/\./g,"")); break}}
+    if(zkA&&ctx.area){ const d=Math.abs(zkA-ctx.area)/ctx.area;
+      if(d>0.05) out.flags.push(["warn",`Površina u zemljišnoj knjizi (${fmt(zkA)} m²) razlikuje se od katastra (${fmt(ctx.area)} m²) za ${Math.round(d*100)} %. Provjeri s geodetom prije kupnje.`]);
+      else out.ok.push(`Površina u zemljišnoj knjizi (${fmt(zkA)} m²) odgovara katastru.`); }
+    if(!lines.length) out.flags.push(["warn",`Čestica ${ctx.kc} nije nađena u A listu. Je li izvadak za pravu česticu?`]);
+  }
+  if(iA==null&&iB==null&&iC==null) out.flags.push(["warn","Ne prepoznajem strukturu izvatka (A, B, C list). Je li to zemljišnoknjižni izvadak?"]);
+  return out;
+}
+function zkHtml(r){
+  return (r.flags.length?`<ul class="checks">${r.flags.map(([s,t])=>`<li class="chk chk-${s}"><span>${esc(t)}</span></li>`).join("")}</ul>`:"")
+   +(r.ok.length?`<ul class="checks" style="margin-top:6px">${r.ok.map(t=>`<li class="chk chk-ok"><span>${esc(t)}</span></li>`).join("")}</ul>`:"")
+   +(r.info.length?r.info.map(t=>`<p class="meta">${esc(t)}</p>`).join(""):"")
+   +`<p class="meta">Automatska provjera traži ključne riječi; pravno mjerodavan je sam izvadak.</p>`;
+}
+sheet.addEventListener("change",async e=>{
+  if(e.target.id!=="zkFile"||!e.target.files[0]) return;
+  const o=document.getElementById("zkOut"), s=document.getElementById("zkSum"), c=window.__cur||{};
+  o.innerHTML='<p class="hint"><span class="spin"></span>Čitam izvadak…</p>';
+  try{
+    const txt=await pdfText(e.target.files[0]);
+    if(txt.length<50) throw new Error("PDF nema teksta (možda je sken); otvori ga i provjeri ručno");
+    const r=analyzeZK(txt,{kc:c.ces,area:c.area});
+    const sum=r.flags.some(f=>f[0]==="no")?"ima ozbiljnih upisa":r.flags.length?"provjeri upozorenja":"bez upozorenja";
+    ZK.res={key:c.key,html:zkHtml(r),sum};
+    o.innerHTML=ZK.res.html; if(s){s.textContent=sum; s.className=r.flags.some(f=>f[0]==="no")?"bad":"";}
+  }catch(err){o.innerHTML=`<p class="err">Ne mogu pročitati izvadak: ${esc(err.message)}</p>`}
+  e.target.value="";
+});
 
 // --- dijeljenje: link otvara točno ovu česticu
 function shareUrl(){const ll=window.__lastLL; return location.origin+location.pathname+"?c="+ll.lat.toFixed(6)+","+ll.lng.toFixed(6);}
