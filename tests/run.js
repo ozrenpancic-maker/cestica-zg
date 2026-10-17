@@ -696,11 +696,11 @@ async function ai2Tests(){
   const E=x=>w.eval(x), tick=(ms=30)=>new Promise(r=>setTimeout(r,ms)), click=el=>el.dispatchEvent(new w.Event("click",{bubbles:true}));
   const PW="ispravna-lozinka-123456789012345";
   // lažni Worker: bilježi pozive, ponaša se kao worker/src/index.js
-  const W={calls:[],next:null};
+  const W={calls:[],next:[]};
   w.fetch=async(url,opt={})=>{const u=new URL(url), body=opt.body?JSON.parse(opt.body):null, auth=(opt.headers||{}).authorization||"";
     W.calls.push({path:u.pathname,body,auth});
     const R=(st,j)=>({ok:st<300,status:st,json:async()=>j});
-    if(W.next){const n=W.next; W.next=null; if(n==="net") throw new Error("mreža"); return R(n.st,n.j);}
+    if(W.next&&W.next.length){const n=W.next.shift(); if(n==="net") throw new Error("mreža"); return R(n.st,n.j);}
     if(u.pathname==="/login") return body.lozinka===PW?R(200,{token:"tok.abc",exp:Date.now()/1000+3600}):R(401,{error:{code:"UNAUTHORIZED",msg:"Pogrešna lozinka."}});
     if(auth!=="Bearer tok.abc") return R(401,{error:{code:"UNAUTHORIZED",msg:"Prijava je istekla."}});
     if(u.pathname==="/status") return R(200,{potrosnja:{spent:0.01,limit:5,n:3}});
@@ -709,7 +709,7 @@ async function ai2Tests(){
       return R(200,{text:"KRATKO: Vrijedi pravilo 2.2. <img src=x onerror=alert(1)>\nDETALJI: Najveći GBP je IZRAČUN aplikacije. POTVRĐENO: pravilo iz GUP-a.\nIZVORI: Odluka o GUP-u, 2025 | GIS namjena 2023\nPROVJERITI: lokacijska informacija | pristup cesti",tool_calls:[],usage:{input_tokens:5000,output_tokens:200},model:"claude-haiku-5-5",potrosnja:{spent:0.012,limit:5,n:5}});}
     return R(404,{error:{code:"NOT_FOUND",msg:"x"}});};
   const P=parcelRect(30,25,{KATASTARSKA_CESTICA:"3101/2",KATASTARSKA_OPCINA:"REMETE"}), d=data(w,P,"2.2.");
-  w.__env=d.envelope; E("render")(d);
+  w.__env=d.envelope; E("render")(d); E("AI_UI").retryMs=5;
   // uključivanje
   ok(!$(w,"aiOnRow").hidden&&$(w,"aiBtn").hidden,"AI se uključuje u izborniku; zadano je isključen");
   $(w,"aiOn").checked=true; $(w,"aiOn").dispatchEvent(new w.Event("change",{bubbles:true}));
@@ -733,6 +733,7 @@ async function ai2Tests(){
   const n0=W.calls.length; click(w.document.querySelector('[data-aiq="0"]')); await tick(80);
   const chats=W.calls.slice(n0).filter(c=>c.path==="/chat");
   ok(chats.length===2&&chats.every(c=>c.auth==="Bearer tok.abc"&&/^t-[a-z0-9-]+$/.test(c.body.turnId))&&chats[0].body.turnId===chats[1].body.turnId,"jedno pitanje = dva poziva s istom oznakom pitanja i tokenom u zaglavlju");
+  ok(chats[0].body.reqId===chats[0].body.turnId+"-0"&&chats[1].body.reqId===chats[1].body.turnId+"-1","svaki poziv modela ima vlastitu oznaku zahtjeva");
   ok(chats[0].body.tools.every(t=>E("AI_TOOLS")[t.name].mode==="read")&&chats[0].body.tools.length===8,"modelu se nude samo alati za čitanje");
   ok(!JSON.stringify(chats).includes(PW),"lozinka se ne šalje uz pitanja");
   ok(chats[1].body.messages.some(m=>m.role==="tool"&&/2\.2\./.test(m.content)),"rezultat alata (pravila iz aplikacije) ide modelu");
@@ -757,11 +758,20 @@ async function ai2Tests(){
   const c1=W.calls.slice(n1).find(c=>c.path==="/chat");
   ok(/sada odnosi na česticu 5\/5/.test(txt(w,"ai"))&&c1.body.messages.length===1,"nova čestica: jasna oznaka i razgovor kreće ispočetka");
   // greške servisa
-  W.next={st:429,j:{error:{code:"BUDGET",msg:"Mjesečni AI budžet (5 $) je potrošen."}}}; $(w,"aiIn").value="x"; $(w,"aiF").dispatchEvent(new w.Event("submit",{bubbles:true,cancelable:true})); await tick(60);
+  W.next=[{st:429,j:{error:{code:"BUDGET",msg:"Mjesečni AI budžet (5 $) je potrošen."}}}]; $(w,"aiIn").value="x"; $(w,"aiF").dispatchEvent(new w.Event("submit",{bubbles:true,cancelable:true})); await tick(60);
   ok(/budžet \(5 \$\) je potrošen/.test(txt(w,"ai")),"potrošen budžet: jasna poruka");
-  W.next="net"; $(w,"aiIn").value="x"; $(w,"aiF").dispatchEvent(new w.Event("submit",{bubbles:true,cancelable:true})); await tick(60);
-  ok(/nije dostupan/.test(txt(w,"ai"))&&/radi i bez njega/.test(txt(w,"ai")),"nedostupan servis: aplikacija radi dalje");
-  W.next={st:401,j:{error:{code:"UNAUTHORIZED",msg:"x"}}}; $(w,"aiIn").value="x"; $(w,"aiF").dispatchEvent(new w.Event("submit",{bubbles:true,cancelable:true})); await tick(60);
+  // jedan prekid veze: isti zahtjev (ista oznaka) šalje se još jednom i uspijeva
+  let n3=W.calls.length; W.next=["net"]; $(w,"aiIn").value="x"; $(w,"aiF").dispatchEvent(new w.Event("submit",{bubbles:true,cancelable:true})); await tick(120);
+  let cc=W.calls.slice(n3).filter(c=>c.path==="/chat");
+  ok(cc.length===3&&cc[0].body.reqId===cc[1].body.reqId&&/Vrijedi pravilo/.test(w.document.querySelector("#ai .aia:last-of-type").textContent),"prekid veze: isti zahtjev ponovljen jednom s istom oznakom, odgovor stiže");
+  // zahtjev još u obradi na Workeru: klijent pričeka i ponovi istu oznaku
+  n3=W.calls.length; W.next=[{st:409,j:{error:{code:"DUPLICATE_PENDING",msg:"u obradi"}}}]; $(w,"aiIn").value="x"; $(w,"aiF").dispatchEvent(new w.Event("submit",{bubbles:true,cancelable:true})); await tick(120);
+  cc=W.calls.slice(n3).filter(c=>c.path==="/chat"); ok(cc[0].body.reqId===cc[1].body.reqId,"zahtjev u obradi: ponavlja se ista oznaka, ne novi zahtjev");
+  // trajni prekid: najviše jedno ponavljanje, zatim jasna poruka
+  n3=W.calls.length; W.next=["net","net","net"]; $(w,"aiIn").value="x"; $(w,"aiF").dispatchEvent(new w.Event("submit",{bubbles:true,cancelable:true})); await tick(120);
+  ok(W.calls.slice(n3).filter(c=>c.path==="/chat").length===2&&/nije dostupan/.test(txt(w,"ai"))&&/radi i bez njega/.test(txt(w,"ai")),"trajni prekid: najviše jedno ponavljanje, aplikacija radi dalje");
+  W.next=[];
+  W.next=[{st:401,j:{error:{code:"UNAUTHORIZED",msg:"x"}}}]; $(w,"aiIn").value="x"; $(w,"aiF").dispatchEvent(new w.Event("submit",{bubbles:true,cancelable:true})); await tick(60);
   ok(!E("aiTok")()&&!!$(w,"aiPw"),"istekla prijava: token se briše i traži se nova prijava");
   // isključivanje
   $(w,"aiOn").checked=false; $(w,"aiOn").dispatchEvent(new w.Event("change",{bubbles:true}));

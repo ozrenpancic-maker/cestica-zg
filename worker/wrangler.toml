@@ -2,11 +2,11 @@
 # nego naredbom `npx wrangler secret put IME` (vidi docs/ai-postavljanje.md).
 name = "cesticazg-ai"
 main = "src/index.js"
-compatibility_date = "2026-10-01"
+compatibility_date = "2026-08-01"   # mora biti podržan i u lokalnom runtimeu (Miniflare/workerd) za testiranje
 
 [vars]
 AI_ENABLED = "false"            # "true" uključuje AI; "false" ga gasi bez brisanja
-ALLOWED_ORIGINS = "https://ozrenpancic-maker.github.io"
+ALLOWED_ORIGINS = "https://ozrenpancic-maker.github.io,http://localhost:8000"   # localhost: probni pregled grane razvoj na tvom računalu
 MONTHLY_LIMIT_USD = "5"
 SESSION_EPOCH = "1"             # promjena broja poništava sve prijave
 

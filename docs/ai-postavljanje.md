@@ -70,7 +70,7 @@ Očekivani odgovor je `401` i "Pogrešna lozinka". Svaki krivi pokušaj se broji
 3. Upiši adresu Workera i spremi je.
 4. Prijavi se lozinkom iz koraka 3. Prijava vrijedi do zatvaranja kartice, najdulje 12 sati.
 
-Za lokalni pregled (datoteka otvorena s računala) dodaj podrijetlo u `ALLOWED_ORIGINS` samo privremeno. Preporuka je testirati preko GitHub Pages pregleda grane, ako ga uključiš, ili lokalnim poslužiteljem `http://localhost:8000`, koji se dodaje kao `ALLOWED_ORIGINS = "https://ozrenpancic-maker.github.io,http://localhost:8000"`.
+Pregled grane `razvoj` otvara se lokalnim poslužiteljem na `http://localhost:8000` (vidi `docs/ai-upute-windows.md`, korak 21). Ta adresa je već među dopuštenima u `wrangler.toml`.
 
 ## 6. Procjena stvarnog troška testiranja
 
@@ -85,7 +85,8 @@ Cijene Claude Haiku 5.5 (`claude-haiku-5-5`): **0,10 $** po milijun ulaznih i **
 
 Gornje granice:
 - Worker: **5 $ mjesečno**. Trošak se rezervira prije poziva, a istodobni zahtjevi ne mogu zajedno prijeći granicu.
-- Najviše **12 upita u minuti**, **300 dnevno** i **6 poziva modela po pitanju**. Odgovor je najviše 1.200 tokena.
+- Najviše **12 poziva modela u minuti** (podesivo varijablom `RATE_PER_MIN`, najviše 60), **300 dnevno** i **6 poziva po pitanju**. Odgovor je najviše 1.200 tokena.
+- Ponovljeni zahtjev s istom oznakom ne poziva model ponovno. Kad veza pukne, ne zna se je li Anthropic obradio zahtjev, pa se računa najgori slučaj.
 - Claude Console: limit potrošnje 5 $ i uplaćeni kredit bez automatske nadoplate.
 
 Stvarna potrošnja vidi se u aplikaciji (dno AI panela), u Claude Consoleu (**Usage**) i u Cloudflare logu (`npx wrangler tail` prikazuje samo brojke: trošak, trajanje, šifru greške).
@@ -105,7 +106,8 @@ Ako posumnjaš da je ključ procurio: odmah ga obriši u Consoleu, napravi novi 
 
 ## 8. Što je testirano bez objave na produkciju
 
-- **Worker** (`cd worker && npm test`, lokalno u Miniflareu s lažnim Anthropic API-jem, bez troška): 29 testova. Pokrivaju prijavu, zaključavanje, krivotvoreni i istekli token, opoziv, gašenje, istodobne zahtjeve za limit i budžet, filtriranje alata, greške modela i limit iz Consolea.
+- **Worker** (`cd worker && npm test`, lokalno u Miniflareu 4, isti runtime kao Cloudflare, s lažnim Anthropic API-jem, bez troška): 42 testa. Pokrivaju SQLite pohranu, prijavu, zaključavanje, krivotvorene, istekle i opozvane tokene, gašenje, istodobne zahtjeve, ponovljene zahtjeve, prekide veze, istek vremena, nezatvorene rezervacije, samo čitanje i limit iz Consolea.
+- **Cijeli lanac** (aplikacija → Worker → lažni Anthropic): svih 47 ocjenskih pitanja prošlo je kroz pravi Worker bez greške, a obračun potrošnje odgovara izračunu do decimale.
 - **Aplikacija** (`cd tests && npm test`): AI-1 i AI-2 testovi sa simuliranim modelom (panel, prijava, samo čitanje, injekcije, promjena čestice, greške, gašenje).
 - **Ocjenski skup** (`node tests/ai-eval/run-eval.js`): sa simuliranim modelom provjerava samo da ocjenjivanje radi. **Kvaliteta stvarnih odgovora još nije izmjerena**, jer za to treba aktivan API.
 - Ništa nije objavljeno na `main` ni GitHub Pages produkciju.

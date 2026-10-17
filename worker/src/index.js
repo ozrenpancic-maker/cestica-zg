@@ -16,8 +16,11 @@ import { DurableObject } from "cloudflare:workers";
 
 const PRICES = { "claude-haiku-5-5": [0.10, 0.50] }; // USD po milijun tokena (ulaz, izlaz); platform.claude.com/docs/en/about-claude/pricing, provjereno 17. 10. 2026.
 const READ_TOOLS = new Set(["getCurrentParcel","getUrbanRules","getParcelConstraints","getInfrastructure","listScenarios","calculateInvestment","validateHousePlacement","compareParcels"]);
-const MAX_BODY = 80000, MAX_MSGS = 30, MAX_OUT = 1200, SESSION_TTL = 12 * 3600, RES_TTL = 120000;
+const MAX_BODY = 80000, MAX_MSGS = 30, MAX_OUT = 1200, SESSION_TTL = 12 * 3600, REQ_KEEP = 15 * 60000;
+// rezervacija koja nije zatvorena u RES_TTL (npr. Worker je prekinut usred poziva) računa se kao potrošena u punom iznosu
+const RES_TTL = (env) => +env.RES_TTL_MS > 0 ? +env.RES_TTL_MS : 120000, UP_TIMEOUT = (env) => +env.UPSTREAM_TIMEOUT_MS > 0 ? +env.UPSTREAM_TIMEOUT_MS : 30000;
 const LIM = { perMin: 12, perDay: 300, perTurn: 6, fails: 5, failWin: 15 * 60000, lock: 15 * 60000 };
+const perMin = (env) => { const v = parseInt(env.RATE_PER_MIN, 10); return v > 0 && v <= 60 ? v : LIM.perMin; }; // najviše 60, zadano 12
 
 const SYSTEM = (today) => `Ti si asistent aplikacije ČesticaZG za katastarske čestice u Gradu Zagrebu. Danas je ${today}.
 Radiš u načinu SAMO ČITANJE: ništa ne mijenjaš i ne nudiš da ćeš nešto spremiti.
@@ -95,12 +98,17 @@ export class Guard extends DurableObject {
     if (s.month !== m) { s.month = m; s.spent = 0; s.n = 0; }
     if (s.day !== d) { s.day = d; s.dayN = 0; }
     if (s.min !== min) { s.min = min; s.minN = 0; }
-    s.res = s.res || {}; s.turns = s.turns || {};
-    for (const [id, r] of Object.entries(s.res)) if (now - r.at > RES_TTL) { s.spent += r.usd; delete s.res[id]; } // nepotvrđena rezervacija računa se kao potrošena
-    for (const [t, r] of Object.entries(s.turns)) if (now - r.at > 15 * 60000) delete s.turns[t];
+    s.res = s.res || {}; s.turns = s.turns || {}; s.req = s.req || {};
+    const ttl = RES_TTL(this.env), gone = [];
+    for (const [id, r] of Object.entries(s.res)) if (now - r.at > ttl) { s.spent += r.usd; delete s.res[id]; if (r.req && s.req[r.req] && s.req[r.req].st === "pending") s.req[r.req] = { st: "failed", at: now }; }
+    for (const [t, r] of Object.entries(s.turns)) if (now - r.at > REQ_KEEP) delete s.turns[t];
+    for (const [q, r] of Object.entries(s.req)) if (now - r.at > REQ_KEEP && r.st !== "pending") { delete s.req[q]; gone.push("resp:" + q); }
+    return gone;
   }
+  async tidy(gone) { if (gone && gone.length) await this.ctx.storage.delete(gone); }
   limit() { const v = parseFloat(this.env.MONTHLY_LIMIT_USD || "5"); return isFinite(v) && v > 0 ? v : 5; }
-  // sve metode su sinkrone nad stanjem u memoriji, a zatim spremaju; Durable Object ih izvršava jednu po jednu
+  // stanje se mijenja sinkrono u memoriji (bez await između provjere i upisa), pa Durable Object, koji obrađuje
+  // jedan događaj za drugim, ne može dopustiti da dva istodobna zahtjeva prođu istu provjeru
   async loginGate() { const now = Date.now(), f = this.s.fail || { n: 0, first: 0, until: 0 }; return f.until > now ? { locked: true, until: f.until } : { locked: false }; }
   async loginResult(ok) {
     const now = Date.now(); let f = this.s.fail || { n: 0, first: 0, until: 0 };
@@ -108,28 +116,38 @@ export class Guard extends DurableObject {
     else { if (now - f.first > LIM.failWin) f = { n: 0, first: now, until: 0 }; f.n++; if (f.n >= LIM.fails) f.until = now + LIM.lock; }
     this.s.fail = f; await this.save(); return f;
   }
-  async reserve(turnId, usd) {
-    const now = Date.now(); this.norm(now); const s = this.s, lim = this.limit();
+  // reqId = oznaka jednog poziva modela; ponovljeni zahtjev s istom oznakom ne poziva model ni ne naplaćuje se ponovno
+  async reserve(turnId, reqId, usd) {
+    const now = Date.now(), gone = this.norm(now), s = this.s, lim = this.limit();
+    const seen = s.req[reqId];
+    if (seen && seen.st === "done") { const cached = await this.ctx.storage.get("resp:" + reqId); return cached ? { ok: false, code: "DUPLICATE_DONE", cached } : { ok: false, code: "DUPLICATE_GONE" }; }
+    if (seen && seen.st === "pending") return { ok: false, code: "DUPLICATE_PENDING" };
     const pending = Object.values(s.res).reduce((a, r) => a + r.usd, 0);
     if (s.spent + pending + usd > lim) return { ok: false, code: "BUDGET", spent: s.spent, limit: lim };
-    if (s.minN >= LIM.perMin) return { ok: false, code: "RATE_LIMIT" };
+    if (s.minN >= perMin(this.env)) return { ok: false, code: "RATE_LIMIT" };
     if (s.dayN >= LIM.perDay) return { ok: false, code: "DAY_LIMIT" };
     const t = s.turns[turnId] || { n: 0, at: now }; if (t.n >= LIM.perTurn) return { ok: false, code: "TURN_LIMIT" };
     t.n++; t.at = now; s.turns[turnId] = t; s.minN++; s.dayN++; s.n++;
-    const id = crypto.randomUUID(); s.res[id] = { usd, at: now };
-    await this.save(); return { ok: true, id };
+    const id = crypto.randomUUID(); s.res[id] = { usd, at: now, req: reqId }; s.req[reqId] = { st: "pending", at: now };
+    await this.save(); await this.tidy(gone); return { ok: true, id };
   }
-  async settle(id, usd) {
-    const now = Date.now(); this.norm(now); const s = this.s;
-    if (s.res[id]) { delete s.res[id]; s.spent += Math.max(0, usd || 0); await this.save(); }
+  // zatvaranje rezervacije: stvarni trošak; uspješan odgovor sprema se za moguće ponavljanje istog zahtjeva
+  async settle(id, usd, reqId, resp) {
+    const now = Date.now(), gone = this.norm(now), s = this.s;
+    if (s.res[id]) { delete s.res[id]; s.spent += Math.max(0, usd || 0); }
+    if (reqId && s.req[reqId]) s.req[reqId] = { st: resp ? "done" : "failed", at: now };
+    if (resp) await this.ctx.storage.put("resp:" + reqId, resp);
+    await this.save(); await this.tidy(gone);
     return { spent: s.spent, limit: this.limit(), n: s.n };
   }
-  async status() { this.norm(Date.now()); const p = Object.values(this.s.res).reduce((a, r) => a + r.usd, 0); return { month: this.s.month, spent: this.s.spent, pending: p, limit: this.limit(), n: this.s.n || 0 }; }
+  async status() { this.norm(Date.now()); const p = Object.values(this.s.res).reduce((a, r) => a + r.usd, 0);
+    let pohrana; try { this.ctx.storage.sql.exec("SELECT 1"); pohrana = "sqlite"; } catch (e) { pohrana = "kv (nije podržano na besplatnom planu)"; }
+    return { month: this.s.month, spent: this.s.spent, pending: p, limit: this.limit(), n: this.s.n || 0, pohrana }; }
 }
 
 // ---------- glavni Worker
 export default {
-  async fetch(req, env) {
+  async fetch(req, env, ctx) {
     const url = new URL(req.url), origin = req.headers.get("origin") || "", allowed = origins(env).includes(origin) ? origin : null;
     if (req.method === "OPTIONS") return allowed ? new Response(null, { status: 204, headers: corsH(allowed) }) : new Response(null, { status: 403 });
     if (!allowed) return new Response("forbidden", { status: 403 });
@@ -159,7 +177,8 @@ export default {
     const raw = await req.text(); if (raw.length > MAX_BODY) return err("TOO_LARGE", "Zahtjev je prevelik.", 413, allowed);
     let body; try { body = JSON.parse(raw); } catch (e) { return err("BAD_JSON", "Neispravan zahtjev.", 400, allowed); }
     const turnId = typeof body.turnId === "string" && /^[a-z0-9-]{8,40}$/.test(body.turnId) ? body.turnId : null;
-    if (!turnId) return err("BAD_REQUEST", "Nedostaje oznaka pitanja.", 400, allowed);
+    const reqId = turnId && typeof body.reqId === "string" && /^[a-z0-9-]{8,60}$/.test(body.reqId) && body.reqId.startsWith(turnId + "-") ? body.reqId : null;
+    if (!turnId || !reqId) return err("BAD_REQUEST", "Nedostaje oznaka pitanja ili zahtjeva.", 400, allowed);
     if (!Array.isArray(body.messages) || !body.messages.length || body.messages.length > MAX_MSGS) return err("BAD_REQUEST", "Neispravan razgovor.", 400, allowed);
     const model = "claude-haiku-5-5", price = PRICES[model];
     const tools = (Array.isArray(body.tools) ? body.tools : []).filter((t) => t && READ_TOOLS.has(t.name)).slice(0, 12)
@@ -169,30 +188,49 @@ export default {
     const payload = { model, max_tokens: MAX_OUT, system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }], tools, messages };
     // najgori slučaj troška: svi znakovi kao tokeni ÷ 2,5, cache zapis 1,25×, puni izlaz
     const estIn = Math.ceil(JSON.stringify(payload).length / 2.5), est = (estIn * price[0] * 1.25 + MAX_OUT * price[1]) / 1e6;
-    const r = await guard.reserve(turnId, est);
+    const r = await guard.reserve(turnId, reqId, est);
     if (!r.ok) {
-      const M = { BUDGET: [429, `Mjesečni AI budžet (${r.limit} $) je potrošen ili bi ovaj upit prešao granicu.`], RATE_LIMIT: [429, "Previše upita u minuti. Pričekaj malo."], DAY_LIMIT: [429, "Dosegnut je dnevni broj upita."], TURN_LIMIT: [429, "Ovo pitanje traži previše koraka; postavi jednostavnije pitanje."] }[r.code];
+      if (r.code === "DUPLICATE_DONE") { log({ ev: "chat", ok: true, dup: true }); return json({ ...r.cached, ponovljeno: true, potrosnja: await guard.status() }, 200, allowed); }
+      const M = { BUDGET: [429, `Mjesečni AI budžet (${r.limit} $) je potrošen ili bi ovaj upit prešao granicu.`], RATE_LIMIT: [429, "Previše upita u minuti. Pričekaj malo."], DAY_LIMIT: [429, "Dosegnut je dnevni broj upita."], TURN_LIMIT: [429, "Ovo pitanje traži previše koraka; postavi jednostavnije pitanje."],
+        DUPLICATE_PENDING: [409, "Isti zahtjev je još u obradi."], DUPLICATE_GONE: [409, "Ovaj zahtjev je već obrađen; postavi pitanje ponovno."] }[r.code];
       log({ ev: "chat", ok: false, code: r.code }); return err(r.code, M[1], M[0], allowed);
     }
-    const t0 = Date.now(); let resp, j = null, cost = 0;
-    try {
-      const ac = new AbortController(), to = setTimeout(() => ac.abort(), 30000);
-      resp = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", signal: ac.signal, headers: { "x-api-key": env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" }, body: JSON.stringify(payload) });
-      clearTimeout(to);
-      j = await resp.json().catch(() => null);
-      if (j && j.usage) cost = costOf(j.usage, price);
-    } catch (e) { resp = null; }
-    const st = await guard.settle(r.id, cost);
-    log({ ev: "chat", ok: !!(resp && resp.ok), status: resp ? resp.status : 0, cost: +cost.toFixed(6), ms: Date.now() - t0 });
-    if (!resp) return err("AI_UNAVAILABLE", "AI servis nije odgovorio. Aplikacija i svi izračuni rade i bez njega.", 502, allowed);
-    if (!resp.ok) {
-      const m = j && j.error && String(j.error.message || "");
-      if (/specified (workspace )?API usage limits/i.test(m || "")) return err("BUDGET_CONSOLE", "Dosegnut je limit potrošnje postavljen u Claude Consoleu.", 429, allowed);
-      return err("AI_UNAVAILABLE", "AI servis trenutno nije dostupan (" + resp.status + "). Aplikacija radi i bez njega.", 502, allowed);
-    }
-    const text = (j.content || []).filter((b) => b.type === "text").map((b) => b.text).join("\n").slice(0, 8000);
-    const tool_calls = (j.content || []).filter((b) => b.type === "tool_use" && READ_TOOLS.has(b.name)).slice(0, 4).map((b) => ({ id: b.id, name: b.name, args: b.input }));
-    const u = j.usage || {};
-    return json({ text, tool_calls, model, usage: { input_tokens: (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0), output_tokens: u.output_tokens || 0 }, cost, potrosnja: { spent: st.spent, limit: st.limit, n: st.n } }, 200, allowed);
+    // poziv modela i obračun idu u waitUntil: završe i ako preglednik prekine vezu, pa rezervacija ne ostaje otvorena
+    const work = (async () => {
+      const t0 = Date.now(); let resp = null, j = null, cost = 0, failure = null;
+      try {
+        const ac = new AbortController(), to = setTimeout(() => ac.abort(), UP_TIMEOUT(env));
+        try {
+          resp = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", signal: ac.signal, headers: { "x-api-key": env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" }, body: JSON.stringify(payload) });
+          j = await resp.json().catch(() => null);
+        } finally { clearTimeout(to); }
+      } catch (e) { failure = "network"; }
+      // obračun: stvarni trošak iz odgovora; ako veza pukne ili uspješan odgovor nema podatak o potrošnji, računa se
+      // rezervirani najgori slučaj (Anthropic je možda obradio zahtjev)
+      if (failure) cost = est;
+      else if (resp.ok) cost = j && j.usage ? costOf(j.usage, price) : est;
+      // ne naplaćuje se samo kad je odgovor prepoznatljiva greška Anthropica (zahtjev odbijen); ako je grešku vratio posrednik
+      // (npr. 502 bez Anthropicovog oblika greške), zahtjev je možda obrađen, pa se računa najgori slučaj
+      else cost = j && j.usage ? costOf(j.usage, price) : j && j.type === "error" && j.error ? 0 : est;
+      let out = null;
+      if (!failure && resp.ok && j) {
+        const u = j.usage || {};
+        out = { text: (j.content || []).filter((b) => b.type === "text").map((b) => b.text).join("\n").slice(0, 8000),
+          tool_calls: (j.content || []).filter((b) => b.type === "tool_use" && READ_TOOLS.has(b.name)).slice(0, 4).map((b) => ({ id: b.id, name: b.name, args: b.input })),
+          model, usage: { input_tokens: (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0), output_tokens: u.output_tokens || 0 }, cost };
+      }
+      const st = await guard.settle(r.id, cost, reqId, out);
+      log({ ev: "chat", ok: !!out, status: resp ? resp.status : 0, fail: failure, cost: +cost.toFixed(6), ms: Date.now() - t0 });
+      if (failure) return err("AI_UNAVAILABLE", "AI servis nije odgovorio. Aplikacija i svi izračuni rade i bez njega.", 502, allowed);
+      if (!resp.ok) {
+        const m = j && j.error && String(j.error.message || "");
+        if (/specified (workspace )?API usage limits/i.test(m || "")) return err("BUDGET_CONSOLE", "Dosegnut je limit potrošnje postavljen u Claude Consoleu.", 429, allowed);
+        return err("AI_UNAVAILABLE", "AI servis trenutno nije dostupan (" + resp.status + "). Aplikacija radi i bez njega.", 502, allowed);
+      }
+      if (!out) return err("AI_UNAVAILABLE", "Odgovor AI servisa nije potpun. Pokušaj ponovno.", 502, allowed);
+      return json({ ...out, potrosnja: { spent: st.spent, limit: st.limit, n: st.n } }, 200, allowed);
+    })();
+    if (ctx && ctx.waitUntil) ctx.waitUntil(work.catch(() => {}));
+    return work;
   },
 };

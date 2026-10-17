@@ -57,8 +57,8 @@ async function realModel() {
   const r = await fetch(process.env.WORKER_URL.replace(/\/$/, "") + "/login", { method: "POST", headers: { origin: ORIGIN, "content-type": "application/json" }, body: JSON.stringify({ lozinka: process.env.AI_LOZINKA || "" }) });
   const j = await r.json(); if (!r.ok) throw new Error("Prijava nije uspjela: " + (j.error && j.error.msg));
   const tok = j.token;
-  return async ({ messages, tools, turnId }) => {
-    const x = await fetch(process.env.WORKER_URL.replace(/\/$/, "") + "/chat", { method: "POST", headers: { origin: ORIGIN, "content-type": "application/json", authorization: "Bearer " + tok }, body: JSON.stringify({ turnId, messages, tools }) });
+  return async ({ messages, tools, turnId, step }) => {
+    const x = await fetch(process.env.WORKER_URL.replace(/\/$/, "") + "/chat", { method: "POST", headers: { origin: ORIGIN, "content-type": "application/json", authorization: "Bearer " + tok }, body: JSON.stringify({ turnId, reqId: `${turnId}-${step || 0}`, messages, tools }) });
     const y = await x.json(); if (!x.ok) { const e = new Error(y.error ? y.error.msg : "HTTP " + x.status); e.code = y.error && y.error.code; throw e; } return y;
   };
 }
@@ -94,7 +94,9 @@ function score(q, r) {
     const { w, E } = setup(q.kontekst);
     let hist = [];
     if (q.prethodno) { const r0 = await E("aiConverse")(REAL ? model : mockModel({ alati: ["calculateInvestment"] }), q.prethodno, [], {}); if (r0.ok) hist = [{ role: "user", content: q.prethodno }, { role: "assistant", content: r0.text }]; }
-    const r = await E("aiConverse")(REAL ? model : mockModel(q), q.pitanje, hist, {});
+    if (REAL) await new Promise((res) => setTimeout(res, +process.env.EVAL_PAUSE_MS >= 0 && process.env.EVAL_PAUSE_MS !== undefined ? +process.env.EVAL_PAUSE_MS : 12000)); // Worker dopušta 12 poziva modela u minuti; pitanje ima 2–3 poziva
+    let r = await E("aiConverse")(REAL ? model : mockModel(q), q.pitanje, hist, {});
+    if (REAL && !r.ok && r.error.code === "RATE_LIMIT") { process.stdout.write("~"); await new Promise((res) => setTimeout(res, 61000)); r = await E("aiConverse")(model, q.pitanje, hist, {}); }
     const s = score(q, r); out.push({ q, r, ...s });
     process.stdout.write(s.res.ukupno ? "." : "x");
     w.close();

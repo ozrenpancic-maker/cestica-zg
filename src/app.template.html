@@ -2878,7 +2878,7 @@ async function aiConverse(model,userText,history=[],opt={}){
   const u=aiUse(); if(u.usd>=u.limit) return {ok:false,error:{code:"BUDGET",msg:`Mjesečni AI budžet (${u.limit} $) je potrošen. Ostatak aplikacije radi normalno.`}};
   const startKey=aiCurKey(), msgs=[...history.slice(-8),{role:"user",content:String(userText).slice(0,2000)}], steps=[], turnId=opt.turnId||("t-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,8));
   for(let i=0;i<(opt.maxSteps||6);i++){
-    let res; try{res=await model({messages:msgs,tools:aiToolSpecs(),parcelId:startKey,turnId})}catch(e){return {ok:false,error:e&&e.code?{code:e.code,msg:String(e.message||"").slice(0,300)}:{code:"AI_UNAVAILABLE",msg:"AI servis trenutno nije dostupan. Svi izračuni u aplikaciji rade i bez njega."},steps}}
+    let res; try{res=await model({messages:msgs,tools:aiToolSpecs(),parcelId:startKey,turnId,step:i})}catch(e){return {ok:false,error:e&&e.code?{code:e.code,msg:String(e.message||"").slice(0,300)}:{code:"AI_UNAVAILABLE",msg:"AI servis trenutno nije dostupan. Svi izračuni u aplikaciji rade i bez njega."},steps}}
     if(res&&res.usage) aiAddUse(res.model||"",res.usage.input_tokens||0,res.usage.output_tokens||0);
     if(aiCurKey()!==startKey) return {ok:false,error:{code:"PARCEL_CHANGED",msg:"Čestica je promijenjena tijekom odgovora; prethodni odgovor se odnosio na "+(startKey||"nijednu česticu")+"."},steps};
     const calls=res&&Array.isArray(res.tool_calls)?res.tool_calls.slice(0,4):[];
@@ -2893,7 +2893,7 @@ async function aiConverse(model,userText,history=[],opt={}){
 // Uključuje se u izborniku ("AI asistent (testno)"). Bez adrese AI servisa i prijave ne šalje ništa.
 // Token prijave čuva se samo u sessionStorage (briše se zatvaranjem kartice); lozinka se nigdje ne sprema.
 // Odgovori modela prikazuju se kao tekst (esc), nikad kao HTML.
-const AI_UI={hist:[],msgs:[],busy:false,parcel:null,use:null};
+const AI_UI={hist:[],msgs:[],busy:false,parcel:null,use:null,retryMs:1500};
 const AI_QUICK=["Što mogu graditi na ovoj čestici?","Koliko bi koštala kuća koju sam upisao?","Koji su rizici i ograničenja?","Što se zna o komunalnoj infrastrukturi?","Stane li kuća 10 × 12 m na dvije etaže?","Usporedi moje spremljene čestice."];
 const AI_TOOL_HR={getCurrentParcel:"podaci čestice",getUrbanRules:"urbana pravila",getParcelConstraints:"rizici i ograničenja",getInfrastructure:"infrastruktura",listScenarios:"scenariji",calculateInvestment:"izračun investicije",validateHousePlacement:"simulator kuće",compareParcels:"spremljene čestice"};
 function aiOn(){try{return FEATURES.ai&&localStorage.getItem("aiOn")==="1"}catch(e){return false}}
@@ -2905,7 +2905,7 @@ function aiCleanUrl(u){try{const x=new URL(String(u).trim()); const local=/^(loc
 async function aiFetch(path,opt={}){
   const c=aiCfg(); if(!c.url) {const e=new Error("Adresa AI servisa nije postavljena."); e.code="NOT_CONFIGURED"; throw e;}
   const ac=new AbortController(), to=setTimeout(()=>ac.abort(),45000);
-  let r; try{r=await fetch(c.url+path,{...opt,signal:ac.signal,headers:{"content-type":"application/json",...(opt.auth?{authorization:"Bearer "+opt.auth}:{})}})}catch(e){const x=new Error("AI servis nije dostupan (mreža ili servis). Aplikacija radi i bez njega."); x.code="AI_UNAVAILABLE"; throw x}
+  let r; try{r=await fetch(c.url+path,{...opt,signal:ac.signal,headers:{"content-type":"application/json",...(opt.auth?{authorization:"Bearer "+opt.auth}:{})}})}catch(e){const x=new Error("AI servis nije dostupan (mreža ili servis). Aplikacija radi i bez njega."); x.code="AI_UNAVAILABLE"; x.net=true; throw x}
   finally{clearTimeout(to)}
   const j=await r.json().catch(()=>null);
   if(!r.ok){const e=new Error(j&&j.error&&j.error.msg?j.error.msg:"AI servis je vratio grešku "+r.status+"."); e.code=j&&j.error&&j.error.code||"HTTP_"+r.status; e.status=r.status; throw e;}
@@ -2913,8 +2913,15 @@ async function aiFetch(path,opt={}){
 }
 // model preko Workera (pravi poziv); u testovima se zamjenjuje simuliranim modelom
 function aiRemoteModel(){
-  return async({messages,tools,turnId})=>{const tok=aiTok(); if(!tok){const e=new Error("Prijavi se u AI asistenta."); e.code="UNAUTHORIZED"; throw e;}
-    const j=await aiFetch("/chat",{method:"POST",auth:tok,body:JSON.stringify({turnId,messages,tools})});
+  // svaki poziv modela ima oznaku zahtjeva (pitanje + korak). Ako veza pukne, isti zahtjev šalje se još jednom:
+  // Worker tada vrati spremljeni odgovor ili javi da je zahtjev u obradi, pa se isti poziv ne naplaćuje dvaput.
+  return async({messages,tools,turnId,step})=>{const tok=aiTok(); if(!tok){const e=new Error("Prijavi se u AI asistenta."); e.code="UNAUTHORIZED"; throw e;}
+    const body=JSON.stringify({turnId,reqId:`${turnId}-${step||0}`,messages,tools});
+    let j=null;
+    for(let a=0;a<3;a++){
+      try{j=await aiFetch("/chat",{method:"POST",auth:tok,body}); break}
+      catch(e){ const again=a<2&&(e.net&&a===0||e.code==="DUPLICATE_PENDING"); if(!again) throw e; await new Promise(r=>setTimeout(r,AI_UI.retryMs*(a+1))); }
+    }
     if(j&&j.potrosnja) AI_UI.use=j.potrosnja; return j;};
 }
 let AI_MODEL=null; // null = pravi Worker
