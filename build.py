@@ -9,7 +9,9 @@ root = pathlib.Path(__file__).parent
 rules = json.loads((root / "src/rules.json").read_text(encoding="utf-8"))
 tpl = (root / "src/app.template.html").read_text(encoding="utf-8")
 data = json.dumps(rules, ensure_ascii=False).replace("</", "<\\/")
+rules_se = json.loads((root / "src/rules_sesvete.json").read_text(encoding="utf-8"))
+data_se = json.dumps(rules_se, ensure_ascii=False).replace("</", "<\\/")
 import datetime
 ver = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=2))).strftime("%d.%m.%Y. %H:%M")
-(root / "index.html").write_text(tpl.replace("/*RULES*/null", data).replace("/*VERSION*/", ver), encoding="utf-8")
+(root / "index.html").write_text(tpl.replace("/*RULES*/null", data).replace("/*RULES_SE*/null", data_se).replace("/*VERSION*/", ver), encoding="utf-8")
 print("index.html sastavljen")
