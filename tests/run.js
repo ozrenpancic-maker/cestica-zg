@@ -494,6 +494,56 @@ async function sunTests(){
   ok(errs.length===0,"bez JS grešaka u scenarijima: "+errs.join(" | "));
 }
 
+// ---------------- 14. Priprema terena (modul 3)
+{
+  const {w,errs}=boot(); try{w.localStorage.clear()}catch(e){}
+  const d=data(w,parcelRect(30,25),"2.2."); w.eval("render")(d);
+  const $$=id=>w.document.getElementById(id), fire=(el,ev)=>el.dispatchEvent(new w.Event(ev,{bubbles:true}));
+  $$("kdZone").value="I"; fire($$("kdZone"),"change");
+  const base0=w.__fin.total.base, lo0=w.__fin.total.lo, hi0=w.__fin.total.hi;
+  ok(!!$$("prepOut")&&/nije uneseno/.test($$("prepSum").textContent),"odjeljak Priprema terena postoji, prazan bez unosa");
+  ok(w.__fin.items.filter(i=>i.group==="priprema").length===0,"bez unosa nema stavki pripreme");
+  // iskop 100 m³ po tržišnom rasponu 9,60–18 €/m³
+  $$("pCut").value="100"; fire($$("pCut"),"input");
+  let it=w.__fin.items.find(i=>i.k==="prep_cut");
+  ok(it&&Math.abs(it.lo-960)<0.01&&Math.abs(it.hi-1800)<0.01&&it.kind==="procjena","iskop 100 m³: 960–1.800 € (procjena iz izvora)");
+  ok(Math.abs(w.__fin.total.lo-(lo0+960))<0.01&&Math.abs(w.__fin.total.hi-(hi0+1800))<0.01,"priprema ulazi u ukupnu investiciju točno jednom");
+  // vlastita jedinična cijena
+  $$("pCutU").value="12"; fire($$("pCutU"),"input");
+  it=w.__fin.items.find(i=>i.k==="prep_cut");
+  ok(it.lo===1200&&it.hi===1200&&it.kind==="unos","upisana jedinična cijena zamjenjuje raspon");
+  // potporni zid 10 m × 1,5 m = 15 m² × 150–300
+  $$("pWallL").value="10"; $$("pWallH").value="1.5"; fire($$("pWallH"),"input");
+  it=w.__fin.items.find(i=>i.k==="prep_wall");
+  ok(it&&Math.abs(it.lo-2250)<0.01&&Math.abs(it.hi-4500)<0.01,"potporni zid 10 × 1,5 m: 2.250–4.500 €");
+  $$("pAccess").value="800"; fire($$("pAccess"),"input");
+  const P=w.__fin.items.filter(i=>i.group==="priprema"), pl=P.reduce((s,i)=>s+i.lo,0);
+  ok(Math.abs(w.__fin.total.lo-(lo0+pl))<0.01&&Math.abs(w.__fin.build.pripremaLo-pl)<0.01,"zbroj pripreme = razlika ukupne investicije");
+  ok(Math.abs(w.__fin.build.rez-(w.__fin.items.filter(i=>i.group==="gradnja").reduce((s,i)=>s+i.base,0)+w.__fin.build.priprema)*0.15)<0.01,"rezerva 15 % uključuje pripremu");
+  ok(/Priprema terena/.test($$("totOut").textContent)&&/Priprema terena/.test($$("bOut").textContent),"priprema prikazana u gradnji i ukupnoj investiciji");
+  // nevaljani unosi
+  $$("pFill").value="-50"; fire($$("pFill"),"input"); $$("pWallH").value="99"; fire($$("pWallH"),"input");
+  ok(!w.__fin.items.find(i=>i.k==="prep_fill"),"negativna količina se ignorira");
+  ok(w.eval("prepGet")(w.__cur.key).pWallH===12,"visina zida ograničena na 12 m");
+  // scenarij nosi istu pripremu
+  $$("pWallH").value="1.5"; fire($$("pWallH"),"input");
+  $$("scAdd").dispatchEvent(new w.Event("click",{bubbles:true}));
+  const sc=w.eval("scList")(w.__cur.key)[0], r=w.eval("scRow")(sc,w.eval("numv")("kdRate"),0,w.eval("prepGet")(w.__cur.key));
+  ok(Math.abs(r.build.base-w.__fin.build.base)<0.01&&r.prep.length===P.length,"scenarij uključuje istu pripremu terena kao kalkulator");
+  ok(sc.inp.prep===undefined,"priprema se ne kopira u scenarij (zajednička za česticu)");
+  // nagib: orijentacijska procjena samo kao prijedlog
+  const d2=data(w,parcelRect(30,25),"2.2."); d2.slope={v:{h:200,slope:10,down:"jug"}}; w.eval("render")(d2);
+  ok(!!$$("prepUseHint")&&/90 m/.test($$("prepHint").textContent),"uz nagib se nudi orijentacijski iskop s napomenom o rezoluciji");
+  const cutBefore=w.__fin.items.find(i=>i.k==="prep_cut").base;
+  ok(cutBefore===1200,"prijedlog iz nagiba se ne upisuje sam");
+  $$("pCut").value=""; fire($$("pCut"),"input"); $$("prepUseHint").dispatchEvent(new w.Event("click",{bubbles:true}));
+  ok(+$$("pCut").value>0&&+$$("pFill").value===+$$("pCut").value,"klik na prijedlog upisuje iskop i nasip");
+  // druga čestica
+  w.eval("render")(data(w,parcelRect(30,25,{KATASTARSKA_CESTICA:"7/7"}),"2.2."));
+  ok(w.__fin.items.filter(i=>i.group==="priprema").length===0,"druga čestica nema tuđu pripremu");
+  ok(errs.length===0,"bez JS grešaka u pripremi terena: "+errs.join(" | "));
+}
+
 netTests().then(infraTests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
