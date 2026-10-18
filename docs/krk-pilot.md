@@ -63,6 +63,19 @@ Evidencija PGŽ za Grad Krk navodi važeće UPU-ove: UPU 1 Krk (pročišćeni te
 
 Zona unutar UPU-a ne može se odrediti automatski (grafički dio nije dostupan kao karta), pa se pretpostavlja M1 uz napomenu i izbor „druga zona”. Gdje vrijedi UPU, neizgrađeni dio nije blokiran čl. 15. PPUG-a, jer je UPU donesen.
 
+### Ostale jedinice na otoku
+
+| Jedinica | Plan | Stanje |
+|---|---|---|
+| Malinska-Dubašnica | PPUO, pročišćeni tekst SN 15/2023 | obrađeno: stambena građevina (do 2 jedinice), skupine GPN-1/2 (čl. 31.), GPN-3 (čl. 34.), GPN-4 (čl. 35.), GPN-5 do 12 (čl. 37.); skupina se čita iz oznake županijskog sloja; neizgrađeni dio uz provjeru uređenosti (čl. 27.) |
+| Baška | PPUO, pročišćeni tekst SN 26/2020 | obrađeno: obiteljska kuća samostojeća, dvojna, skupna (čl. 30.–32.), najveća čestica 1350 m², u naselju Baška bez novih dvojnih i skupnih; neizgrađeni dio blokiran (čl. 19., 28.) |
+| Vrbnik | PPUO, pročišćeni tekst SN 46/2024 | nije obrađeno: tekst je samo u PDF-u |
+| Punat | PPUO, pročišćeni tekst 2010. + izmjene 2015., 2018., 2021. | nije obrađeno: nema novijeg pročišćenog teksta, potrebno spajanje izmjena |
+| Omišalj | PPUO, pročišćeni tekst 2014. + izmjene 2015., 2017. | nije obrađeno: isto |
+| Dobrinj | PPUO 2008. + usklađenje 2022. (PDF) | nije obrađeno: tekst je samo u PDF-u |
+
+UPU-ovi u tim općinama (npr. UPU 1 Malinska, Radići; UPU-1 Baška; UPU 1 Vrbnik) nisu obrađeni: na njihovom obuhvatu piše da uvjete propisuje UPU.
+
 ## Komunalni doprinos (Grad Krk)
 
 Važeća odluka je ona iz SN PGŽ 43/2018 (stranica Grada „Važnije odluke i pravilnici” ne navodi izmjene). Tablica iznosa po zonama nalazi se samo u PDF-u izdanja, koji nisam mogao pročitati, pa iznos upisuješ ti.

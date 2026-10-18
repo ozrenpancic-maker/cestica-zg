@@ -946,7 +946,26 @@ async function krkTests(){
   mode="ok"; gp.OPCINA_GRAD="PUNAT"; ag.OPCINA_GRAD="PUNAT"; gp.IZGRADJENOST="izgrađeno"; E("NET").cache.clear(); w.localStorage.clear();
   await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50);
   ok(/Pilot je provjeren samo za Grad Krk/.test(txt(w,"sheet"))&&/Općina Punat/.test(txt(w,"sheet"))&&/samo za Grad Krk/.test(txt(w,"sheet"))&&w.__krkCalc===null,"druga jedinica na otoku: prikaz uz napomenu izvan pilota, bez uvjeta gradnje iz PPUG-a Krka");
-  gp.OPCINA_GRAD="KRK"; ag.OPCINA_GRAD="KRK";
+  // Malinska-Dubašnica: PPUO (SN 15/2023), skupine naselja po oznaci GPN iz županijskog sloja
+  mode="full"; Object.assign(gp,{OPCINA_GRAD:"MALINSKA-DUBAŠNICA",OZNAKA_NAMJENE:"GPN-1",NASELJE:"Malinska, Radići",IZGRADJENOST:"izgrađeno"});
+  let tm=await reinspect(), M=w.__krkCalc;
+  ok(M&&M.plan==="PPUO Malinska-Dubašnica"&&Math.abs(M.tl-150)<0.5&&Math.abs(M.gbpN-450)<1.2&&M.minOk,"Malinska GPN-1, 600 m²: tlocrt 150 m² (kig 0,25, najviše 150), GBP kis 0,75 = 450 m² (plan ne propisuje granicu)");
+  ok(/GPN-1 i GPN-2/.test(tm)&&/čl\. 31\./.test(tm)&&/6 m od javne prometnice/.test(tm)&&/Prirodni teren/.test(tm)&&/70 m/.test(tm)&&/15\/2023/.test(tm),"Malinska: pravilo čl. 31., udaljenosti, prirodni teren, obalni pojas, izvor SN 15/2023");
+  gp.OZNAKA_NAMJENE="GPN-7"; await reinspect(); ok(/8,5 m do sljemena/.test(txt(w,"sheet"))&&/čl\. 37\./.test(txt(w,"sheet")),"Malinska GPN-7: čl. 37., visina 6,5 m do vijenca i 8,5 m do sljemena");
+  gp.OZNAKA_NAMJENE="GPN-3"; await reinspect(); M=w.__krkCalc; ok(M&&!M.minOk&&/800 m²/.test(txt(w,"sheet")),"Malinska GPN-3 (Rova): najmanja čestica 800 m², 600 m² je premalo");
+  gp.OZNAKA_NAMJENE="GPN-1"; gp.IZGRADJENOST="neizgrađeno"; await reinspect(); M=w.__krkCalc;
+  ok(M&&M.st==="provjera"&&/uređen/.test(txt(w,"sheet")),"Malinska, neizgrađeni dio: izračun uz upozorenje da neposredna gradnja ovisi o uređenosti (čl. 27.)");
+  // Baška: PPUO (SN 26/2020)
+  Object.assign(gp,{OPCINA_GRAD:"BAŠKA",OZNAKA_NAMJENE:"GPN-1",NASELJE:"Baška",IZGRADJENOST:"izgrađeno"});
+  E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
+  tm=await reinspect(); M=w.__krkCalc;
+  ok(M&&M.plan==="PPUO Baška"&&Math.abs(M.tl-150)<0.5&&Math.abs(M.gbpN-400)<0.01&&M.minOk&&/1\.350 m²/.test(tm)&&/7,5 m \(ukupna visina 10,0 m\)/.test(tm),"Baška samostojeća 600 m²: tlocrt 150, GBP 400 (granica), najveća čestica 1350, visina 7,5/10 m");
+  setv(w,"krkOblik","dvoj","change"); ok(w.__krkCalc===null&&/nije dozvoljena/.test(txt(w,"sheet")),"Baška (N1): nove dvojne kuće nisu dozvoljene (čl. 31.)");
+  setv(w,"krkOblik","slob","change");
+  gp.NASELJE="Jurandvor"; setv; await reinspect(); E("KRK_TIP").oblik="dvoj"; E("renderKrk")(E("KRK_CUR")); M=w.__krkCalc; ok(M&&M.oblik==="dvoj"&&M.minOk,"Baška, Jurandvor: dvojna dopuštena (najmanje 400 m²)");
+  E("KRK_TIP").oblik="slob";
+  gp.IZGRADJENOST="neizgrađeno"; tm=await reinspect(); ok(w.__krkCalc===null&&/upućuje na urbanistički plan/.test(tm),"Baška, neizgrađeni dio: bez neposredne gradnje (čl. 19. i 28.)");
+  Object.assign(gp,{OPCINA_GRAD:"KRK",OZNAKA_NAMJENE:"GPN-1",NASELJE:"Kornić",IZGRADJENOST:"izgrađeno"}); ag.OPCINA_GRAD="KRK"; mode="ok";
   // pretraga adrese: naselje na Krku traži se u obuhvatu otoka
   let nomi=null; w.fetch=(u)=>{u=String(u); if(u.includes("nominatim")){nomi=new URL(u); return okj([])} return Promise.reject(new Error("x"))};
   w.document.getElementById("q").value="Kornić 12"; await E("search")(); 

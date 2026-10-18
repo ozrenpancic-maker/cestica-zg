@@ -367,5 +367,343 @@
       "obradeno": false,
       "napomena": "Pravila za obiteljske i višeobiteljske kuće UPU-a 5 – Vrh (čl. 27. i dalje) nisu u mrežnom tekstu Službenih novina (SN PGŽ 2/2014). Potreban je PDF plana."
     }
+  },
+  "ostaleJls": {
+    "MALINSKA-DUBAŠNICA": {
+      "kod": "PPUO Malinska-Dubašnica",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Malinska-Dubašnica, odredbe za provedbu (pročišćeni tekst)",
+        "sn": "Službene novine PGŽ 15/2023",
+        "url": "http://www.sn.pgz.hr/default.asp?Link=odluke&izdanje=2270&mjesto=51511&odluka=15",
+        "status": "na snazi",
+        "provjera": "Vrijednosti i navodi preuzeti su s mrežne stranice Službenih novina (tekst je ondje prikazan do čl. 53.e). Prije objave usporediti s cijelim tekstom."
+      },
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "27.",
+        "txt": "Neposrednom provedbom unutar izgrađenog i neizgrađenog uređenog dijela građevinskog područja naselja mogu se:",
+        "msg": "Neizgrađeni dio: gradi se neposredno samo ako je dio uređen (izgrađena planirana osnovna infrastruktura, čl. 7. i 27.). Županijski sloj ne razlikuje uređeni i neuređeni dio, pa to potvrđuje lokacijska informacija."
+      },
+      "grupe": [
+        {
+          "oznake": [
+            "GPN-1",
+            "GPN-2"
+          ],
+          "naziv": "GPN-1 i GPN-2 (Malinska, Radići, Bogovići, Zidarići, Milčetići)",
+          "tipovi": {
+            "stamb": {
+              "naziv": "Stambena građevina",
+              "opis": "najviše 2 jedinice (čl. 30.)",
+              "clanak": "31.",
+              "gbpMax": null,
+              "etaze": "2 nadzemne etaže i do 1 podzemne",
+              "visina": 6.5,
+              "visinaOpis": "2 nadzemne etaže ili 6,5 m",
+              "slob": {
+                "minC": 500,
+                "izg": 0.25,
+                "kis": 0.75,
+                "kisPodrum": 0.75,
+                "tlMin": 60,
+                "tlMax": 150
+              },
+              "dvoj": {
+                "minC": 500,
+                "izg": 0.25,
+                "kis": 0.75,
+                "kisPodrum": 0.75,
+                "tlMin": 60,
+                "tlMax": 240,
+                "napomena": "Za dvojne građevine plan navodi 500 m² svaka (zajedno 1000 m²) i tlocrt 240 m²; nije jasno odnosi li se 240 m² na obje polovice zajedno."
+              },
+              "txt": {}
+            }
+          },
+          "txt": {
+            "minC": "za slobodnostojeće građevine: 500 m2, … za dvojne građevine: 500 m2 svaka (zajedno 1000 m2)",
+            "tl": "najveća dopuštena površina tlocrtne projekcije nove građevine (slobodnostojeće) iznosi 150 m2, za dvojne građevine 240 m2",
+            "izg": "najveći dopušteni koeficijent izgrađenosti (Kig) iznosi 0,25,",
+            "kis": "najveći dopušteni koeficijent iskorištenosti (Kis) iznosi 0,75,",
+            "visina": "najveća dopuštena visina stambene građevine iznosi 2 nadzemne etaže ili 6,5 m … uz mogućnost izgradnje do 1 podzemne etaže"
+          },
+          "napomena": "GPN-1 do GPN-4 su obalna naselja: u pojasu od 70 m od obale vrijede ograničenja (čl. 20.)."
+        },
+        {
+          "oznake": [
+            "GPN-3"
+          ],
+          "naziv": "GPN-3 (Rova)",
+          "tipovi": {
+            "stamb": {
+              "naziv": "Stambena građevina",
+              "opis": "najviše 2 jedinice (čl. 30.)",
+              "clanak": "34.",
+              "gbpMax": null,
+              "etaze": "2 nadzemne etaže i do 1 podzemne",
+              "visina": 6.5,
+              "visinaOpis": "2 nadzemne etaže ili 6,5 m",
+              "slob": {
+                "minC": 800,
+                "izg": 0.25,
+                "kis": 0.75,
+                "kisPodrum": 0.75,
+                "tlMin": 60,
+                "tlMax": 200
+              },
+              "dvoj": {
+                "minC": 800,
+                "izg": 0.25,
+                "kis": 0.75,
+                "kisPodrum": 0.75,
+                "tlMin": 60,
+                "tlMax": 200,
+                "napomena": "Za dvojne građevine u GPN-3 brojke nisu provjerene; potrebna provjera."
+              },
+              "txt": {}
+            }
+          },
+          "txt": {
+            "minC": "za slobodnostojeće građevine: 800 m2, … širina građevne čestice … mjerena na mjestu građevinskog pravca građevine iznosi min. 18 m"
+          },
+          "napomena": "U neizgrađenim dijelovima čestica mora biti široka najmanje 18 m na mjestu građevnog pravca (čl. 34.). Obalno naselje: ograničenja u pojasu od 70 m (čl. 20.)."
+        },
+        {
+          "oznake": [
+            "GPN-4"
+          ],
+          "naziv": "GPN-4 (Porat, Vantačići)",
+          "tipovi": {
+            "stamb": {
+              "naziv": "Stambena građevina",
+              "opis": "najviše 2 jedinice (čl. 30.)",
+              "clanak": "35.",
+              "gbpMax": null,
+              "etaze": "2 nadzemne etaže i do 1 podzemne",
+              "visina": 6.5,
+              "visinaOpis": "2 nadzemne etaže ili 6,5 m",
+              "slob": {
+                "minC": 500,
+                "izg": 0.25,
+                "kis": 0.75,
+                "kisPodrum": 0.75,
+                "tlMin": 60,
+                "tlMax": 200
+              },
+              "dvoj": {
+                "minC": 500,
+                "izg": 0.25,
+                "kis": 0.75,
+                "kisPodrum": 0.75,
+                "tlMin": 60,
+                "tlMax": 200,
+                "napomena": "Za dvojne građevine u GPN-4 brojke nisu provjerene; potrebna provjera."
+              },
+              "txt": {}
+            }
+          },
+          "txt": {},
+          "napomena": "Obalno naselje: ograničenja u pojasu od 70 m od obale (čl. 20.)."
+        },
+        {
+          "oznake": [
+            "GPN-5",
+            "GPN-6",
+            "GPN-7",
+            "GPN-8",
+            "GPN-9",
+            "GPN-10",
+            "GPN-11",
+            "GPN-12"
+          ],
+          "naziv": "GPN-5 do GPN-12 (ostala naselja)",
+          "tipovi": {
+            "stamb": {
+              "naziv": "Stambena građevina",
+              "opis": "najviše 2 jedinice (čl. 30.)",
+              "clanak": "37.",
+              "gbpMax": null,
+              "etaze": "2 nadzemne etaže i do 1 podzemne",
+              "visina": 6.5,
+              "visinaOpis": "2 nadzemne etaže ili 6,5 m do vijenca, 8,5 m do sljemena",
+              "slob": {
+                "minC": 500,
+                "izg": 0.25,
+                "kis": 0.75,
+                "kisPodrum": 0.75,
+                "tlMin": 60,
+                "tlMax": 200
+              },
+              "dvoj": {
+                "minC": 500,
+                "izg": 0.25,
+                "kis": 0.75,
+                "kisPodrum": 0.75,
+                "tlMin": 60,
+                "tlMax": 200,
+                "napomena": "Za dvojne građevine brojke nisu provjerene; potrebna provjera."
+              },
+              "txt": {}
+            }
+          },
+          "txt": {
+            "visina": "najveća dopuštena visina stambene građevine iznosi 2 nadzemne etaže ili 6,5 m do vijenca … odnosno 8,5 m do sljemena krova"
+          }
+        }
+      ],
+      "meda": {
+        "clanak": "21.",
+        "min": 4,
+        "opis": "najmanje 4 m",
+        "opisIznimka": "",
+        "txt": "ne manje od 4,00 m za stambene građevine"
+      },
+      "regulacija": {
+        "clanak": "21.",
+        "opis": "6 m od javne prometnice, 4 m od pristupnog puta (županijska cesta 10 m, državna 15 m)",
+        "txt": "6,00 m od javne prometnice i 4,00 m od pristupnog puta"
+      },
+      "zelenilo": {
+        "clanak": "26.",
+        "min": 0.4,
+        "opisNaziv": "Prirodni teren",
+        "txt": "Minimalna površina prirodnog terena je 40% površine građevne čestice za planirane građevine stambene namjene"
+      },
+      "pristup": {
+        "napomena": "Stambena građevina može sadržavati najviše 2 jedinice (čl. 30.): „Stambena građevina može sadržavati najviše 2 jedinice.“ Parkiranje: normativ nije u mrežnom tekstu."
+      },
+      "napomene": [
+        "Plan za stambene građevine ne propisuje najveći GBP; ograničenje daje kis."
+      ]
+    },
+    "BAŠKA": {
+      "kod": "PPUO Baška",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Baška, odredbe za provedbu (pročišćeni tekst)",
+        "sn": "Službene novine PGŽ 26/2020",
+        "url": "http://www.sn.pgz.hr/default.asp?Link=odluke&id=41793",
+        "status": "na snazi; VII. izmjene i dopune u izradi (odluka SN 8/2021)",
+        "provjera": "Vrijednosti i navodi preuzeti su s mrežne stranice Službenih novina (tekst je ondje prikazan do čl. 40.; tablica naselja iz čl. 23. nije vidljiva). Prije objave usporediti s cijelim tekstom."
+      },
+      "oblici": [
+        [
+          "slob",
+          "samostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ],
+        [
+          "ugr",
+          "skupna (ugrađena)"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "blok",
+        "clanak": "19. i 28.",
+        "txt": "u skladu s urbanističkim planom uređenja za neizgrađeni dio građevinskog područja",
+        "msg": "Neizgrađeni dio građevinskog područja: plan dopušta neposrednu gradnju samo na izgrađenim dijelovima (čl. 28.), a za neizgrađeni dio upućuje na urbanistički plan uređenja (čl. 19.)."
+      },
+      "grupe": [
+        {
+          "naselje": "^(?!.*STARA).*\\bBASKA\\b",
+          "naziv": "N1 Baška",
+          "zabranjeno": [
+            "dvoj",
+            "ugr"
+          ],
+          "napomena": "U zonama N1-1 i N1-2 (Baška) nije dozvoljena gradnja novih dvojnih i skupnih kuća (čl. 31. i 32.). Zona N1-2 (Zarok): u pojasu od 100 m od obale bez nove gradnje kuća (čl. 28.)."
+        },
+        {
+          "naselje": ".*",
+          "naziv": "ostala naselja"
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća",
+          "opis": "najviše dva stana, GBP do 400 m²",
+          "clanak": "30.–32.",
+          "gbpMax": 400,
+          "etaze": "1 podzemna i 2 nadzemne (Po/S+Pr+1 ili Po/S+Pr+Ppotk)",
+          "visina": 7.5,
+          "visinaOpis": "7,5 m (ukupna visina 10,0 m)",
+          "slob": {
+            "minC": 500,
+            "maxC": 1350,
+            "izg": 0.25,
+            "kis": 0.75,
+            "kisPodrum": 0.75,
+            "tlMin": 60,
+            "tlMax": 150
+          },
+          "dvoj": {
+            "minC": 400,
+            "maxC": 1350,
+            "izg": 0.25,
+            "kis": 0.75,
+            "kisPodrum": 0.75,
+            "tlMin": 60,
+            "tlMax": 150
+          },
+          "ugr": {
+            "minC": 300,
+            "maxC": 1350,
+            "izg": 0.3,
+            "kis": 0.9,
+            "kisPodrum": 0.9,
+            "tlMin": 60,
+            "tlMax": 150,
+            "napomena": "Vrijednosti za skupne kuće (čl. 32.) nisu provjerene doslovnim navodom; potrebna provjera."
+          },
+          "txt": {
+            "minC": "Najmanja dozvoljena veličina građevne čestice za izgradnju obiteljskih kuća - samostojećih je 500 m²",
+            "maxC": "najveća dopuštena veličina građevne čestice iznosi 1350 m²",
+            "izg": "kig=0,25 i kis=0,75",
+            "tl": "Najmanja tlocrtna površina građevine je 60 m², a najveća je 150 m²",
+            "etaze": "1 podzemna etaža i 2 nadzemne etaže (Po/S+Pr+1 ili Po/S +Pr+ Ppotk)",
+            "visina": "Najveća visina građevine: 7,5 m, najveća ukupna visina građevine 10,0 m",
+            "gbp": "sa najviše dva stana i maksimalne građevinske bruto površine do 400 m²",
+            "dvoj": "Najmanja dozvoljena veličina građevne čestice za izgradnju obiteljske kuće - dvojne je 400 m²"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "24.",
+        "min": 4,
+        "opis": "h/2, najmanje 4 m",
+        "opisIznimka": "",
+        "txt": "najmanje pola visine građevine (h/2) ali ne manje od 4 m od granica susjednih građevnih čestica"
+      },
+      "regulacija": {
+        "clanak": "24.",
+        "opis": "5 m od javne prometnice, 4 m od pristupnog puta",
+        "txt": "5 m od javne prometnice, 4 m od pristupnog puta"
+      },
+      "zelenilo": {
+        "clanak": "26.",
+        "min": 0.4,
+        "txt": "minimalna površine pod zelenilom je 40% površine građevne čestice"
+      },
+      "pristup": {
+        "napomena": "Na građevnoj čestici dopuštena je jedna stambena građevina (čl. 29.). Parkiranje prema normativu plana (čl. 90.), koji nije u mrežnom tekstu."
+      },
+      "napomene": [
+        "Višeobiteljske kuće (3–4 stana, čl. 33.) i višestambene građevine nisu obrađene."
+      ]
+    }
   }
 }
