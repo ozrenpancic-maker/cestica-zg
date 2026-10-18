@@ -701,42 +701,57 @@ function krkRuleStateJls(d,jls){
     notes.push(N.msg); izgr=gpn;
   }else if(izgr.length<gpn.length) notes.push("Dio čestice je u neizgrađenom dijelu građevinskog područja. "+N.msg+" Izračun je za izgrađeni dio.");
   if(RS.grupa.napomena) notes.push(RS.grupa.napomena);
-  return {st:notes.some(n=>n===N.msg||/lokacijska informacija|ne odgovara|nije odgovorila/.test(n))?"provjera":"ok",RS,izgr,notes,grupa:RS.grupa.naziv};
+  if(RS.upozorenje) notes.unshift(RS.upozorenje);
+  return {st:RS.upozorenje||notes.some(n=>n===N.msg||/lokacijska informacija|ne odgovara|nije odgovorila/.test(n))?"provjera":"ok",RS,izgr,notes,grupa:RS.grupa.naziv};
 }
 function krkRulesHtml(d){
   const R=RULES_KRK, S=krkRuleState(d); let h=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>`; krkEnvLayer.clearLayers();
   window.__krkCalc=null;
   if(S.st==="ne"||S.st==="upuNe"){h+=`<p class="hint">${esc(S.msg)}</p>`; return h;}
   if(S.st==="blok"){h+=`<div class="verdict v-no">${esc(S.msg)}</div><p class="meta">Čl. ${esc(S.cl)}.: „${esc(S.txt)}“</p>`; return h;}
-  const RS=S.RS, isUpu=S.st==="upu", I=RS.izvor||R.izvor;
+  const isUpu=S.st==="upu";
+  let RS=S.RS; const I=RS.izvor||R.izvor;
+  // UPU s pravilima po zonama: odabrana zona (ili prva) bira skup pravila
+  const zona=RS.zone?(RS.zone.some(z=>z[0]===KRK_TIP.zona)?KRK_TIP.zona:RS.zone[0][0]):null;
+  if(zona&&RS.zoneSet&&RS.zoneSet[zona]) RS={...RS,...RS.zoneSet[zona]};
+  if(!RS.tipovi){ // zona bez pravila za kuće (npr. „druga zona”)
+    const sel0=(id,opts,v)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===v?" selected":""}>${esc(o[1])}</option>`).join("")}</select>`;
+    return h+`<p class="rule-title"><span class="rule-code">${esc(RS.kod)}</span></p><p class="meta">Izvor: <a href="${esc(I.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(I.naziv)}</a>, ${esc(I.sn)}</p><div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label>${sel0("krkZona",RS.zone,zona)}</div><p class="meta">${esc(RS.zonaNapomena)}</p><p class="hint">${esc(RS.drugaZona||"Za ovu zonu uvjeti za obiteljske i višeobiteljske kuće nisu obrađeni.")}</p>`;
+  }
   const src=`<p class="meta">Izvor: <a href="${esc(I.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(I.naziv)}</a>, ${esc(I.sn)} · status: ${esc(I.status)}</p>`;
-  const T=RS.tipovi[KRK_TIP.tip]||RS.tipovi.obit||Object.values(RS.tipovi)[0], P=T[KRK_TIP.oblik]||T.dvoj, area=d.area;
+  const T=RS.tipovi[KRK_TIP.tip]||RS.tipovi.obit||Object.values(RS.tipovi)[0], P=T[KRK_TIP.oblik]||T.dvoj||T.slob, area=d.area;
   h+=`<p class="rule-title"><span class="rule-code">${esc(RS.kod)}</span>${esc(T.naziv)}, čl. ${esc(T.clanak)}${/\.$/.test(T.clanak)?"":"."}${S.na?" · naselje "+esc(S.na):""}${S.grupa?" · "+esc(S.grupa):""}</p>`+src;
   if(S.st==="provjera") h+=`<div class="verdict v-warn">${esc(S.msg||"Potrebna dodatna provjera.")}</div>`;
   for(const n of S.notes||[]) h+=`<p class="flag">${esc(n)}</p>`;
   const sel=(id,opts,v)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===v?" selected":""}>${esc(o[1])}</option>`).join("")}</select>`;
   if(isUpu){
-    h+=`<div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label>${sel("krkZona",RS.zone,KRK_TIP.zona)}</div><p class="meta">${esc(RS.zonaNapomena)}</p>`;
-    if(KRK_TIP.zona!=="M1"){h+=`<p class="hint">Za ovu zonu uvjeti za obiteljske i višeobiteljske kuće nisu obrađeni.</p>`; return h;}
+    h+=`<div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label>${sel("krkZona",RS.zone,zona)}</div><p class="meta">${esc(RS.zonaNapomena)}</p>`;
+    if(zona==="druga"){h+=`<p class="hint">${esc(RS.drugaZona||"Za ovu zonu uvjeti za obiteljske i višeobiteljske kuće nisu obrađeni.")}</p>`; return h;}
   }
   h+=`<div class="kd" style="margin:6px 0"><label for="krkTip">Građevina</label>${sel("krkTip",Object.entries(RS.tipovi).map(([k,t])=>[k,t.naziv]),RS.tipovi[KRK_TIP.tip]?KRK_TIP.tip:Object.keys(RS.tipovi)[0])}</div>`;
   h+=`<p class="meta" style="margin:0 0 6px">${esc(T.naziv)}: ${esc(T.opis)}.</p>`;
-  const obl=RS.oblici||[["slob","slobodnostojeća"]].concat(T.ugr?[["dvoj","dvojna"],["ugr","ugrađena"]]:[["dvoj","dvojna ili ugrađena"]]);
-  h+=`<div class="kd" style="margin:0 0 6px"><label for="krkOblik">Način gradnje</label>${sel("krkOblik",obl,T[KRK_TIP.oblik]?KRK_TIP.oblik:"dvoj")}</div>`;
+  const obl=T.oblici||RS.oblici||[["slob","slobodnostojeća"]].concat(T.ugr?[["dvoj","dvojna"],["ugr","ugrađena"]]:T.dvoj?[["dvoj","dvojna"]]:[]);
+  const oblSel=obl.some(o=>o[0]===KRK_TIP.oblik)&&T[KRK_TIP.oblik]?KRK_TIP.oblik:obl.some(o=>o[0]==="dvoj")&&KRK_TIP.oblik==="ugr"&&T.dvoj?"dvoj":"slob";
+  h+=`<div class="kd" style="margin:0 0 6px"><label for="krkOblik">Način gradnje</label>${sel("krkOblik",obl,oblSel)}</div>`;
   const zab=RS.grupa&&RS.grupa.zabranjeno||[];
-  if(zab.includes(T[KRK_TIP.oblik]?KRK_TIP.oblik:"dvoj")){h+=`<div class="verdict v-no">U ovom naselju nova gradnja ovog načina (${esc((obl.find(o=>o[0]===KRK_TIP.oblik)||["",""])[1])}) nije dozvoljena.</div>`; return h;}
-  if(P.napomena) h+=`<p class="flag">${esc(P.napomena)}</p>`;
+  if(zab.includes(oblSel)){h+=`<div class="verdict v-no">U ovom naselju nova gradnja ovog načina (${esc((obl.find(o=>o[0]===KRK_TIP.oblik)||["",""])[1])}) nije dozvoljena.</div>`; return h;}
+  const Pm=T[oblSel]||P;
+  if(Pm.napomena) h+=`<p class="flag">${esc(Pm.napomena)}</p>`;
+  return h+krkCalcHtml(d,S,RS,T,Pm,oblSel,isUpu);
+}
+function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
+  const R=RULES_KRK, area=d.area, I=RS.izvor||R.izvor; let h="";
   const base=isUpu?S.izgr:S.izgr;
   const A=area?(base.every(r=>r.share!=null)?Math.min(1,base.reduce((a,r)=>a+r.share,0))*area:area):null;
   if(!A){h+=`<p class="meta">Čestica nije pronađena u katastru, pa se izračun ne može napraviti. Pravila: najmanja čestica ${fmt(P.minC)} m², kig ${dec(P.izg)}, kis ${dec(P.kis)}, visina ${dec(T.visina)} m.</p>`; return h;}
   const slope=d.slope&&d.slope.v?d.slope.v.slope:null, kosi=T.kosi&&slope!=null&&slope>T.kosi.nagib;
-  const tl=Math.min(A*P.izg,P.tlMax), gbpN=Math.min(A*P.kis,T.gbpMax||Infinity), gbpP=RS.kisUkupni?null:A*P.kisPodrum;
+  const tl=Math.min(A*P.izg,P.tlMax||Infinity), gbpN=Math.min(A*P.kis,T.gbpMax||Infinity), gbpP=RS.kisUkupni?null:Math.min(A*P.kisPodrum,T.gbpUkupno&&T.gbpMax?T.gbpMax:Infinity);
   const minOk=A>=P.minC, minEx=!minOk&&!!P.minCIznimno&&A>=P.minCIznimno, tlOk=tl>=P.tlMin;
   // prostor za kuću: najmanja udaljenost od međa, na dijelu čestice u GP-u naselja
   let env=null; try{if(d.parcel){let g=turf.buffer(d.parcel,-RS.meda.min/1000,{units:"kilometers"});
     if(g&&base.length<d.rows.length&&base.every(r=>r.geom)){let u=null; for(const r of base){u=u?turf.union(u,turf.feature(r.geom)):turf.feature(r.geom)} g=u?turf.intersect(g,u):g;}
     if(g&&g.geometry) env={geom:g.geometry,area:turf.area(g)};}}catch(e){}
-  window.__krkCalc={plan:RS.kod,A,tl,gbpN,gbpP,minOk,minEx,env:env?Math.round(env.area):null,tip:KRK_TIP.tip,oblik:T[KRK_TIP.oblik]?KRK_TIP.oblik:"dvoj",st:S.st,kosi};
+  window.__krkCalc={plan:RS.kod,A,tl,gbpN,gbpP,minOk,minEx,env:env?Math.round(env.area):null,tip:Object.keys(RS.tipovi).find(k=>RS.tipovi[k]===T),oblik:oblSel,st:S.st,kosi};
   if(env) L.geoJSON(env.geom,{style:{color:"#1f6f54",weight:2,dashArray:"4 3",fillColor:"#1f6f54",fillOpacity:.25},interactive:false}).addTo(krkEnvLayer);
   const chips=[(minOk?"čestica dovoljna":minEx?"čestica: samo iznimno":"čestica premala"),"tlocrt do "+fmt(tl)+" m²","GBP do "+fmt(gbpN)+" m²","visina "+dec(T.visina)+" m"];
   h+=`<div class="chips">${chips.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`;
@@ -746,12 +761,13 @@ function krkRulesHtml(d){
   h+=row(`Najmanja čestica ${fmt(P.minC)} m²`,minOk?"ispunjeno":minEx?"samo iznimno":"premala",minOk?"good":minEx?"":"bad");
   if(minEx) h+=`<p class="meta">Iznimno ${fmt(P.minCIznimno)} m², ako je čestica u okruženju već formiranih (izgrađenih) građevnih čestica. To potvrđuje lokacijska informacija.</p>`;
   if(P.maxC){h+=row(`Najveća čestica ${fmt(P.maxC)} m²`,A>P.maxC?"veća od najveće":"ispunjeno",A>P.maxC?"":"good"); if(A>P.maxC) h+=`<p class="meta">Građevna čestica za kuću smije biti najviše ${fmt(P.maxC)} m²; veća čestica se dijeli ili se za kuću formira manja građevna čestica. Izračun ispod je za cijelu površinu, pa je potrebna dodatna provjera.</p>`;}
-  h+=row(`Najveći tlocrt (kig ${dec(P.izg)}, najviše ${fmt(P.tlMax)} m²)`,fmt(tl)+" m²",tlOk?"":"bad");
+  h+=row(`Najveći tlocrt (kig ${dec(P.izg)}${P.tlMax?", najviše "+fmt(P.tlMax)+" m²":""})`,fmt(tl)+" m²",tlOk?"":"bad");
   if(!tlOk) h+=`<p class="meta">Najmanji dopušteni tlocrt je ${fmt(P.tlMin)} m², a ova čestica dopušta manje; gradnja ovog tipa nije moguća.</p>`;
   if(RS.kisUkupni){h+=row(`Najveći GBP (kis ${dec(P.kis)}${T.gbpMax?", najviše "+fmt(T.gbpMax)+" m²":""})`,fmt(gbpN)+" m²");
     if(T.kosi&&T.kosi.kis) h+=`<p class="meta">Na terenu nagiba većem od ${T.kosi.nagib} % kis može biti ${dec(T.kosi.kis)} (GBP do ${fmt(Math.min(A*T.kosi.kis,T.gbpMax))} m²).</p>`;}
-  else{h+=row(`Najveći GBP nadzemno (kis ${dec(P.kis)}, najviše ${fmt(T.gbpMax)} m²)`,fmt(gbpN)+" m²")+row(`GBP s podrumom (kis ${dec(P.kisPodrum)})`,fmt(gbpP)+" m²");
-    h+=`<p class="meta">Granica ${fmt(T.gbpMax)} m² dolazi iz definicije tipa građevine; plan ovdje ne kaže vrijedi li i za podrum. Potrebna dodatna provjera.</p>`;}
+  else{h+=row(`Najveći GBP nadzemno (kis ${dec(P.kis)}${T.gbpMax?", najviše "+fmt(T.gbpMax)+" m²":""})`,fmt(gbpN)+" m²")+row(`GBP s podrumom (kis ${dec(P.kisPodrum)}${T.gbpUkupno&&T.gbpMax?", ukupno najviše "+fmt(T.gbpMax)+" m²":""})`,fmt(gbpP)+" m²");
+    if(T.gbpNapomena) h+=`<p class="meta">${esc(T.gbpNapomena)}</p>`;}
+  if(T.kosi&&T.kosi.kis&&!RS.kisUkupni) h+=`<p class="meta">Na terenu nagiba većem od ${T.kosi.nagib} % kis može biti ${dec(T.kosi.kis)}.</p>`;
   h+=row("Etaže",esc(T.etaze))+row("Najveća visina",esc(T.visinaOpis||dec(T.visina)+" m"));
   if(T.kosi) h+=`<p class="${kosi?"flag":"meta"}">Na kosom terenu (nagib veći od ${T.kosi.nagib} %): ${esc(T.kosi.etaze)}, visina do ${dec(T.kosi.visina)} m.${slope!=null?` Model visina procjenjuje nagib okoline na oko ${Math.round(slope)} %${kosi?", pa iznimka možda vrijedi":""}; stvarni nagib potvrđuje geodetska snimka.`:""}</p>`;
   if(T.etazeNapomena) h+=`<p class="meta">${esc(T.etazeNapomena)}</p>`;
@@ -759,7 +775,7 @@ function krkRulesHtml(d){
   if(env) h+=row(`Prostor za kuću (${RS.meda.min} m od međa, zeleno na karti)`,fmt(env.area)+" m²",env.area<tl?"bad":"");
   if(env&&env.area<tl) h+=`<p class="meta">Prostor unutar ${RS.meda.min} m od međa manji je od dopuštenog tlocrta, pa oblik čestice ograničava tlocrt na najviše ${fmt(env.area)} m².</p>`;
   h+=row(`Od regulacijskog pravca (čl. ${esc(RS.regulacija.clanak)})`,esc(RS.regulacija.opis));
-  h+=row(`${esc(RS.zelenilo.opisNaziv||"Zelenilo")} (čl. ${esc(RS.zelenilo.clanak)})`,`najmanje ${Math.round(RS.zelenilo.min*100)} % = ${fmt(area*RS.zelenilo.min)} m²`);
+  h+=row(`${esc(RS.zelenilo.opisNaziv||"Zelenilo")} (čl. ${esc(RS.zelenilo.clanak)})`,RS.zelenilo.min?`najmanje ${Math.round(RS.zelenilo.min*100)} % = ${fmt(area*RS.zelenilo.min)} m²`:"plan ne određuje");
   h+=`<p class="meta">${esc(RS.pristup.napomena)}</p></div></details>`;
   const c=T.clanak, tx=T.txt||{}, Q=[[c,tx.minC],[c,tx.minCIznimno],[c,tx.maxC],[c,tx.dvoj],[c,tx.izg],[c,tx.kis],[c,tx.tl],[c,tx.gbp],[c,tx.etaze],[c,tx.visina],[RS.meda.clanak,RS.meda.txt],[RS.meda.clanak,RS.meda.txtBezOtvora],[RS.regulacija.clanak,RS.regulacija.txt],[RS.zelenilo.clanak,RS.zelenilo.txt]];
   if(RS===R) Q.push([R.izravnaProvedba.clanak,R.izravnaProvedba.txt]); else if(RS.neizgradeni) Q.push([RS.neizgradeni.clanak,RS.neizgradeni.txt]);
@@ -769,30 +785,42 @@ function krkRulesHtml(d){
 }
 
 // --- komunalni doprinos Grada Krka: iznosi po zonama nisu potvrđeni, pa ih korisnik upisuje; ništa se ne pretpostavlja
+function krkKdZona(d){
+  const K=RULES_KRK&&RULES_KRK.komunalniDoprinos; if(!K||!K.zone) return null;
+  const gp=d.rows.find(r=>krkKind(r.p)==="gpn"), any=d.rows[0];
+  if(!gp){ if(any&&krkKind(any.p)==="gpi") return {z:K.zone[0],why:"izdvojeno građevinsko područje izvan naselja"}; return null; }
+  const n=" "+norm(gp.p.NASELJE||gp.p.NAZIV||"")+" ";
+  for(const z of K.zone) if(z[3].some(a=>n.includes(" "+norm(a)+" "))) return {z,why:"naselje "+(gp.p.NASELJE||gp.p.NAZIV)};
+  return null;
+}
 function krkCostHtml(d,inPilot,jlsName){
   let h=`<h2 id="sec-troskovi">Troškovi</h2>`;
   const K=RULES_KRK&&RULES_KRK.komunalniDoprinos;
   if(!inPilot||!K) return h+`<p class="meta">Komunalni doprinos (prema odluci jedinice lokalne samouprave${jlsName?": "+esc(jlsName):""}) i naknade za priključenje na Krku još nisu obrađeni.</p>`;
-  const c=window.__krkCalc, vol0=c?Math.round(c.gbpN*3):"";
+  const c=window.__krkCalc, vol0=c?Math.round(c.gbpN*3):"", Z=krkKdZona(d), eur=Z?Math.round(Z.z[2]/K.tecaj*100)/100:null;
   let st={}; try{st=JSON.parse(localStorage.getItem("krkKd")||"{}")||{}}catch(e){}
   h+=`<details class="acc" data-k="krkKd" open><summary><span>Komunalni doprinos (Grad Krk)</span><b id="krkKdSum"></b></summary><div class="acc-body">`;
-  h+=`<p class="meta" style="margin-top:0"><a href="${esc(K.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(K.odluka)}</a>, ${esc(K.sn)}. ${esc(K.napomena)}</p>`;
+  h+=`<p class="meta" style="margin-top:0"><a href="${esc(K.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(K.odluka)}</a>, ${esc(K.sn)}, čl. 6. ${esc(K.napomena)}</p>`;
+  if(Z) h+=`<p class="meta"><b>${esc(Z.z[0])}. zona</b> (${esc(Z.why)}): ${dec(Z.z[2].toFixed(2))} kn/m³ = <b>${dec(eur.toFixed(2))} €/m³</b>.</p>`;
+  else h+=`<p class="meta">Zona nije prepoznata iz naselja; izaberi je u tablici ispod i upiši iznos.</p>`;
   h+=`<div class="kd"><label for="krkKdVol">Obujam građevine</label><input id="krkKdVol" type="number" inputmode="decimal" min="0" step="1" value="${esc(vol0)}"><span>m³</span></div>`;
-  if(c) h+=`<p class="meta">Prijedlog obujma: najveći nadzemni GBP (${fmt(c.gbpN)} m²) × 3 m. Službeno se obračunava obujam iz projekta.</p>`;
-  h+=`<div class="kd"><label for="krkKdRate">Iznos</label><input id="krkKdRate" type="number" inputmode="decimal" min="0" step="0.01" placeholder="€/m³ iz odluke" value="${esc(st.rate||"")}"><span>€/m³</span></div>`;
-  h+=`<div class="kd"><label for="krkKdRed">Umanjenje</label><select id="krkKdRed" class="bsel">${[["1","bez umanjenja"],["0.3","30 % iznosa (čl. 10., uvjeti ispod)"]].map(o=>`<option value="${o[0]}"${String(st.red||"1")===o[0]?" selected":""}>${o[1]}</option>`).join("")}</select></div>`;
+  if(c) h+=`<p class="meta">Prijedlog obujma: najveći nadzemni GBP (${fmt(c.gbpN)} m²) × 3 m. Službeno se obračunava obujam iz projekta (čl. 4.).</p>`;
+  h+=`<div class="kd"><label for="krkKdRate">Iznos</label><input id="krkKdRate" type="number" inputmode="decimal" min="0" step="0.01" placeholder="€/m³" value="${esc(eur!=null?eur:"")}"><span>€/m³</span></div>`;
+  h+=`<div class="kd"><label for="krkKdRed">Umanjenje</label><select id="krkKdRed" class="bsel">${[["1","bez umanjenja"],["0.3","30 % za stanovanje do 500 m³ (čl. 10., uvjeti ispod)"]].map(o=>`<option value="${o[0]}"${String(st.red||"1")===o[0]?" selected":""}>${o[1]}</option>`).join("")}</select></div>`;
   h+=`<div class="kd"><span>Ukupno:</span><output id="krkKdOut"></output></div>`;
-  const P=K.prijedlog2018;
-  h+=`<details><summary>Zone iz prijedloga odluke (2018.), neprovjereno</summary><table class="rp"><tbody>${P.zone.map(z=>`<tr><th>${esc(z[0])}. zona</th><td>${esc(z[1])}<small class="fx">${fmt(z[2])} kn/m³ (preračunato fiksnim tečajem ${String(P.tecaj).replace(".",",")}: ${(z[2]/P.tecaj).toFixed(2).replace(".",",")} €/m³)</small></td></tr>`).join("")}</tbody></table><p class="meta">${esc(P.izvor)}. Ne upisuje se automatski.</p></details>`;
-  h+=`<details><summary>Umanjenja iz odluke</summary><ol>${K.umanjenja.map(t=>`<li>${esc(t)}</li>`).join("")}</ol></details>`;
+  h+=`<details><summary>Zone i iznosi (čl. 6.)</summary><table class="rp"><tbody>${K.zone.map(z=>`<tr><th>${esc(z[0])}. zona</th><td>${esc(z[1])}<small class="fx">${dec(z[2].toFixed(2))} kn/m³ = ${dec((z[2]/K.tecaj).toFixed(2))} €/m³</small></td></tr>`).join("")}</tbody></table></details>`;
+  h+=`<details><summary>Umanjenja i oslobođenja iz odluke</summary><ol>${K.umanjenja.map(t=>`<li>${esc(t)}</li>`).join("")}</ol></details>`;
   h+=`</div></details><p class="meta">Naknade za priključenje (Ponikve, HEP ODS) i cijena gradnje za Krk još nisu obrađene.</p>`;
   return h;
 }
+// čl. 10.: umanjenje na 30 % vrijedi samo za obujam do 500 m³; ostatak po punom iznosu
+function krkKdTotal(vol,rate,k){ if(!(vol>0&&rate>0)) return null; if(k>=1) return vol*rate; const v1=Math.min(vol,500); return v1*rate*k+(vol-v1)*rate; }
 function krkKdUpdate(){
   const v=document.getElementById("krkKdVol"), r=document.getElementById("krkKdRate"), red=document.getElementById("krkKdRed"), o=document.getElementById("krkKdOut"), s=document.getElementById("krkKdSum");
   if(!v||!o) return; const vol=parseFloat(String(v.value).replace(",",".")), rate=parseFloat(String(r.value).replace(",",".")), k=parseFloat(red.value)||1;
-  try{localStorage.setItem("krkKd",JSON.stringify({rate:r.value,red:red.value}))}catch(e){}
-  if(vol>0&&rate>0){const t=vol*rate*k; o.textContent=fmt(t)+" €"+(k<1?" (s umanjenjem)":""); if(s){s.textContent=fmt(t)+" €"; s.className="";}}
+  try{localStorage.setItem("krkKd",JSON.stringify({red:red.value}))}catch(e){}
+  const t=krkKdTotal(vol,rate,k);
+  if(t!=null){o.textContent=fmt(t)+" €"+(k<1?(vol>500?" (umanjenje za prvih 500 m³)":" (s umanjenjem)"):""); if(s){s.textContent=fmt(t)+" €"; s.className="";}}
   else{o.textContent="upiši obujam i iznos"; if(s){s.textContent="upiši iznos"; s.className="";}}
 }
 sheet.addEventListener("input",e=>{ if(/^krkKd/.test(e.target.id||"")) krkKdUpdate(); });

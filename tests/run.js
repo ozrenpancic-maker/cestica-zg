@@ -16,7 +16,7 @@ const num=s=>{const m=String(s).replace(/ /g," ").match(/-?[\d.]+(,\d+)?/); ret
 
 function boot(){
   const vc=new VirtualConsole(); const errs=[];
-  vc.on("jsdomError",e=>errs.push(String(e.message||e))); vc.on("error",e=>errs.push(String(e)));
+  vc.on("jsdomError",e=>{errs.push(String(e.message||e)); if(process.env.DBG) console.log("JSERR",e.detail&&e.detail.stack||e.stack)}); vc.on("error",e=>errs.push(String(e)));
   const dom=new JSDOM(html,{runScripts:"dangerously",pretendToBeVisual:true,url:"https://example.org/cestica-zg/",virtualConsole:vc,
     beforeParse(w){ w.fetch=()=>Promise.reject(new Error("bez mreže u testu")); w.print=()=>{}; w.scrollTo=()=>{};
       w.HTMLElement.prototype.scrollIntoView=function(){};
@@ -887,7 +887,7 @@ async function krkTests(){
   const reinspect=async()=>{E("NET").cache.clear(); w.localStorage.clear(); await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50); return txt(w,"sheet")};
   gp.IZGRADJENOST="izgrađeno"; mode="full";
   let tk=await reinspect(), C=w.__krkCalc;
-  ok(C&&C.st==="ok"&&Math.abs(C.A-600)<1.5&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpN-200)<0.01&&Math.abs(C.gbpP-450)<1.2&&C.minOk,"Krk, obiteljska slobodnostojeća na 600 m²: tlocrt 150, GBP nadzemno 200 (granica tipa), s podrumom 450 m²");
+  ok(C&&C.st==="ok"&&Math.abs(C.A-600)<1.5&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpN-200)<0.01&&Math.abs(C.gbpP-200)<0.01&&C.minOk,"Krk, obiteljska slobodnostojeća na 600 m²: tlocrt 150, GBP nadzemno 200, s podrumom ukupno najviše 200 m² (GBP iz pojmovnika uključuje sve)");
   ok(C.env>255&&C.env<272,"Krk: prostor za kuću 4 m od međa oko 264 m² (22 × 12 m): "+C.env);
   ok(/PPUG Krk/.test(tk)&&/naselje NA2/.test(tk)&&/čl\. 22\./.test(tk)&&/6,5 m/.test(tk)&&/40 %/.test(tk)&&/„najveća dopuštena visina obiteljske kuće iznosi 6,5m“/.test(tk),"Krk: prikaz pravila s člancima i navodima iz plana");
   ok(w.__cur.region==="krk"&&E("krkEnvLayer").getLayers().length===1,"Krk: prostor za kuću nacrtan jednom");
@@ -897,12 +897,14 @@ async function krkTests(){
   C=w.__krkCalc; ok(C.tip==="visobit"&&C.oblik==="dvoj"&&Math.abs(C.gbpN-300)<0.6&&Math.abs(C.tl-100)<0.01&&C.minOk,"Krk, višeobiteljska dvojna: GBP nadzemno kis 0,5 × 600 = 300 m² (granica tipa 400), tlocrt 100 m², čestica dovoljna (najmanje 400 m²)");
   ok(/potrebna provjera/i.test(txt(w,"sheet"))||/Potrebna dodatna provjera/.test(txt(w,"sheet")),"Krk: nejasnoće (podrum u GBP-u, etaže) označene kao potrebna provjera");
   E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
-  // komunalni doprinos: iznos se upisuje (tablica iz odluke nije potvrđena), prijedlog obujma iz GBP-a
+  // komunalni doprinos (SN 43/2018, čl. 6.): zona po naselju, iznos u kunama preračunat u eure
   await reinspect();
-  ok(+$(w,"krkKdVol").value===600&&$(w,"krkKdRate").value===""&&/upiši obujam i iznos/.test(txt(w,"krkKdOut")),"Krk komunalni doprinos: obujam 200 m² × 3 m = 600 m³, iznos prazan (nije potvrđen)");
-  ok(/43\/2018/.test(txt(w,"sheet"))&&/neprovjereno/.test(txt(w,"sheet"))&&/18,32 €\/m³/.test(txt(w,"sheet")),"Krk: navedena odluka, zone iz prijedloga označene kao neprovjerene, preračun 138 kn = 18,32 €");
+  ok(+$(w,"krkKdVol").value===600&&$(w,"krkKdRate").value==="15.93"&&/II\. zona \(naselje Kornić\): 120,00 kn\/m³ = 15,93 €\/m³/.test(txt(w,"sheet")),"Krk komunalni doprinos: Kornić je II. zona, 120 kn = 15,93 €/m³; obujam 200 m² × 3 m = 600 m³");
+  ok(/9\.558 €/.test(txt(w,"krkKdOut"))&&/43\/2018/.test(txt(w,"sheet"))&&/18,32 €\/m³/.test(txt(w,"sheet")),"Krk: 600 m³ × 15,93 € = 9.558 €; tablica zona (I. zona 18,32 €/m³)");
   setv(w,"krkKdRate","10"); ok(/6\.000 €/.test(txt(w,"krkKdOut")),"Krk: 600 m³ × 10 €/m³ = 6.000 €");
-  setv(w,"krkKdRed","0.3","change"); ok(/1\.800 €/.test(txt(w,"krkKdOut"))&&/s umanjenjem/.test(txt(w,"krkKdOut")),"Krk: umanjenje na 30 % = 1.800 €");
+  setv(w,"krkKdRed","0.3","change"); ok(/2\.500 €/.test(txt(w,"krkKdOut"))&&/prvih 500 m³/.test(txt(w,"krkKdOut")),"Krk, čl. 10.: 30 % samo za prvih 500 m³ (500 × 10 × 0,3 + 100 × 10 = 2.500 €)");
+  ok(E("krkKdTotal")(400,10,0.3)===1200,"Krk, čl. 10.: 400 m³ × 10 × 0,3 = 1.200 €");
+  setv(w,"krkKdRed","1","change");
   // mala čestica: 20 × 18 m = 360 m² < 400
   const ring0=ring.map(x=>x.slice()); ring.splice(0,5,[E0-10,N0-9],[E0+10,N0-9],[E0+10,N0+9],[E0-10,N0+9],[E0-10,N0-9]);
   await reinspect(); C=w.__krkCalc; ok(!C.minOk&&!C.minEx&&/premala/.test(txt(w,"sheet")),"Krk: čestica 360 m² je premala za slobodnostojeću obiteljsku kuću");
@@ -917,18 +919,33 @@ async function krkTests(){
   // UPU 2 Kornić (obrađen): pravila UPU-a umjesto PPUG-a, i u neizgrađenom dijelu
   plans.push({GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Odluka o donošenju Urbanističkog plana uređenja UPU 2 - Kornić",SN_BROJ:"2016-19"});
   gp.IZGRADJENOST="neizgrađeno"; tk=await reinspect(); C=w.__krkCalc;
-  ok(C&&C.plan==="UPU 2 Kornić"&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpN-200)<0.01&&C.gbpP===null&&C.minOk,"UPU 2 Kornić, obiteljska slobodnostojeća 600 m²: tlocrt 150, GBP 200 (kis 0,75, granica 200)");
+  ok(C&&C.plan==="UPU 2 Kornić"&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpN-200)<0.01&&C.gbpP===null&&C.minOk,"UPU 2 Kornić, obiteljska slobodnostojeća 600 m²: tlocrt 150, GBP 200 (kis 0,75, granica 200 sa svim građevinama)");
   ok(/UPU 2 Kornić/.test(tk)&&/7,5 m/.test(tk)&&/javna cesta 6 m/.test(tk)&&/19\/2016/.test(tk)&&!/čl\. 15\./.test(tk),"UPU 2: visina 7,5 m, udaljenosti od ceste, izvor SN 19/2016; neizgrađeni dio nije blokiran jer UPU postoji");
-  ok(/Zona se ne može odrediti automatski/.test(tk)&&$(w,"krkZona").value==="M1","UPU 2: zona M1 pretpostavljena uz jasnu napomenu");
-  ok(/Model visina procjenjuje nagib okoline na oko 5 %/.test(tk),"UPU 2: iznimka za kosi teren s procjenom nagiba");
+  ok(/Zona se ne može odrediti automatski/.test(tk)&&$(w,"krkZona").value==="M11","UPU 2: zona M11 pretpostavljena uz jasnu napomenu");
+  ok(!/Model visina procjenjuje/.test(tk),"UPU 2: iznimka za kosi teren ne vrijedi za obiteljsku kuću");
+  setv(w,"krkTip","visobit","change"); ok(/Model visina procjenjuje nagib okoline na oko 5 %/.test(txt(w,"sheet"))&&/10,5 m/.test(txt(w,"sheet")),"UPU 2, višeobiteljska: iznimka za kosi teren (10,5 m) s procjenom nagiba");
+  setv(w,"krkTip","stamb","change"); C=w.__krkCalc; ok(C.tip==="stamb"&&C.oblik==="slob"&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpN-450)<1.2,"UPU 2, stambena građevina (čl. 40.): samo slobodnostojeća, kis 0,75 bez granice tipa = 450 m²");
+  setv(w,"krkTip","obit","change");
   setv(w,"krkOblik","ugr","change"); C=w.__krkCalc; ok(C.oblik==="ugr"&&Math.abs(C.tl-100)<0.01,"UPU 2, ugrađena obiteljska: tlocrt najviše 100 m²");
   setv(w,"krkOblik","dvoj","change"); C=w.__krkCalc; ok(Math.abs(C.tl-150)<0.1,"UPU 2, dvojna: tlocrt 150 m² (kig 0,25 × 600 = 150)");
-  setv(w,"krkZona","druga","change"); ok(w.__krkCalc===null&&/nisu obrađeni/.test(txt(w,"sheet")),"UPU 2, druga zona: bez izračuna");
-  setv(w,"krkZona","M1","change"); setv(w,"krkOblik","slob","change");
+  setv(w,"krkZona","druga","change"); ok(w.__krkCalc===null&&/samo u zonama M11 i M2/.test(txt(w,"sheet")),"UPU 2, druga zona: bez izračuna, uz razlog (čl. 37.)");
+  setv(w,"krkZona","M11","change"); setv(w,"krkOblik","slob","change");
   plans.pop();
-  // UPU 1 Krk (nije obrađen): jasno zašto
+  // UPU 1 Krk (SN 29/2020): pravila po zonama
   plans.push({GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Pročišćeni tekst odredbi za provođenje Urbanističkog plana uređenja UPU 1 - Krk (NA1, R11)",SN_BROJ:"2020-29"});
-  tk=await reinspect(); ok(w.__krkCalc===null&&/aplikacija ga još nije obradila/.test(tk)&&/M11–M17/.test(tk)&&!w.document.getElementById("krkTip"),"UPU 1 Krk: bez izračuna, uz razlog (pravila nisu u mrežnom tekstu)");
+  gp.NASELJE="Krk"; tk=await reinspect(); C=w.__krkCalc;
+  ok(C&&C.plan==="UPU 1 Krk"&&$(w,"krkZona").value==="M11"&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpN-200)<0.01&&Math.abs(C.gbpP-200)<0.01&&/čl\. 86\./.test(tk),"UPU 1 Krk, M11/M15/M21 (čl. 86.): tlocrt 150, GBP 200 m²");
+  setv(w,"krkZona","M12","change"); C=w.__krkCalc; ok(C&&Math.abs(C.tl-138)<0.5&&Math.abs(C.gbpN-200)<0.01&&C.minOk&&/čl\. 87\./.test(txt(w,"sheet")),"UPU 1 Krk, M12 (čl. 87.): kig 0,23 → tlocrt 138 m², najmanja čestica 550 m²");
+  setv(w,"krkZona","M25","change"); C=w.__krkCalc; ok(C&&Math.abs(C.tl-200)<0.01&&/plan ne određuje/.test(txt(w,"sheet"))&&/najmanje 3 m/.test(txt(w,"sheet")),"UPU 1 Krk, M25 stara jezgra (čl. 85.): kig 0,5 (tlocrt do 200 m²), međe 3 m, zelenilo se ne određuje");
+  setv(w,"krkTip","visobit","change"); C=w.__krkCalc; ok(C&&Math.abs(C.gbpN-400)<0.01&&/10,5 m/.test(txt(w,"sheet")),"UPU 1 Krk, M25 višeobiteljska (čl. 89.): GBP 400 m², visina 10,5 m");
+  setv(w,"krkTip","obit","change");
+  setv(w,"krkZona","druga","change"); ok(w.__krkCalc===null&&/čl\. 84\. i 88\./.test(txt(w,"sheet")),"UPU 1 Krk, druga zona: obiteljske kuće nisu predviđene (čl. 84. i 88.)");
+  setv(w,"krkZona","M11","change");
+  plans.pop(); gp.NASELJE="Kornić";
+  // UPU 5 Vrh (SN 2/2014)
+  plans.push({GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Odluka o donošenju Urbanističkog plana uređenja UPU 5 - Vrh (NA 5.1)",SN_BROJ:"2014-02"});
+  tk=await reinspect(); C=w.__krkCalc;
+  ok(C&&C.plan==="UPU 5 Vrh"&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpP-200)<0.01&&/7,5 m/.test(tk)&&/2\/2014/.test(tk),"UPU 5 Vrh (čl. 34.): tlocrt 150, GBP 200 m², visina 7,5 m");
   plans.pop(); gp.IZGRADJENOST="izgrađeno";
   // izvan GP-a
   mode="ag"; tk=await reinspect(); ok(w.__krkCalc===null&&/nije u građevinskom području naselja/.test(tk),"Krk: izvan GP-a nema uvjeta za kuće");
@@ -965,6 +982,12 @@ async function krkTests(){
   gp.NASELJE="Jurandvor"; setv; await reinspect(); E("KRK_TIP").oblik="dvoj"; E("renderKrk")(E("KRK_CUR")); M=w.__krkCalc; ok(M&&M.oblik==="dvoj"&&M.minOk,"Baška, Jurandvor: dvojna dopuštena (najmanje 400 m²)");
   E("KRK_TIP").oblik="slob";
   gp.IZGRADJENOST="neizgrađeno"; tm=await reinspect(); ok(w.__krkCalc===null&&/upućuje na urbanistički plan/.test(tm),"Baška, neizgrađeni dio: bez neposredne gradnje (čl. 19. i 28.)");
+  // Vrbnik: PPUO (pročišćeni tekst 2019.), uz upozorenje da su izmjene 2024. neprovjerene
+  Object.assign(gp,{OPCINA_GRAD:"VRBNIK",OZNAKA_NAMJENE:"GPN-1",NASELJE:"Garica",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").oblik="slob";
+  tm=await reinspect(); M=w.__krkCalc;
+  ok(M&&M.plan==="PPUO Vrbnik"&&M.st==="provjera"&&Math.abs(M.tl-180)<0.6&&Math.abs(M.gbpN-540)<1.5&&/izmijenjen 2024/.test(tm)&&/6,5 m do vijenca/.test(tm)&&/20 %/.test(tm),"Vrbnik, 600 m²: kig 0,3 → tlocrt 180 m², kis 0,9 → GBP 540 m², visina 6,5 m, zelenilo 20 %, upozorenje o izmjenama 2024.");
+  setv(w,"krkOblik","dvoj","change"); M=w.__krkCalc; ok(M&&Math.abs(M.tl-240)<0.6&&/ne propisuje najveći tlocrt/.test(txt(w,"sheet")),"Vrbnik, dvojna: kig 0,4 → tlocrt 240 m² (plan ne propisuje najveći tlocrt)");
+  E("KRK_TIP").oblik="slob";
   Object.assign(gp,{OPCINA_GRAD:"KRK",OZNAKA_NAMJENE:"GPN-1",NASELJE:"Kornić",IZGRADJENOST:"izgrađeno"}); ag.OPCINA_GRAD="KRK"; mode="ok";
   // pretraga adrese: naselje na Krku traži se u obuhvatu otoka
   let nomi=null; w.fetch=(u)=>{u=String(u); if(u.includes("nominatim")){nomi=new URL(u); return okj([])} return Promise.reject(new Error("x"))};

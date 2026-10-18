@@ -91,6 +91,23 @@ Za orijentaciju su prikazane zone iz prijedloga iz 2018., uz oznaku „neprovjer
 
 Umanjenje od 30 % (čl. 10.) bira se ručno.
 
+## Provjera s cijelim tekstovima (18. 10. 2026.)
+
+Ozren je priložio dokumente; vrijednosti su uspoređene s cijelim tekstom:
+
+| Dokument | Ishod |
+|---|---|
+| PPUG Grada Krka, pročišćeni elaborat (SN 29/2020), PDF | sve brojke čl. 14., 15., 17., 19., 22., 23., 33., 35. potvrđene; dopunjeno: GBP 200/400 m² uključuje pomoćne građevine (pojmovnik, točke 10. i 11.), pristupni put (točka 31.), parkiranje 2 PM/stan (čl. 107.) |
+| UPU 2 Kornić (SN 19/2016), Word | potvrđeno; ispravljeno: zone M11 i M2 (ne „M1”), iznimka za kosi teren vrijedi samo za višeobiteljsku kuću i stambenu građevinu (bila je pogrešno i za obiteljsku); dodana stambena građevina (čl. 40.); GBP uključuje sve građevine na čestici |
+| UPU 5 Vrh (SN 2/2014), Word | obrađeno: zone M11 i M12 (čl. 34., 35., 37., 38.) |
+| UPU 1 Krk, pročišćeni elaborat (SN 29/2020), PDF | obrađeno: M11/M15/M21 (čl. 86., 90.), M12 (čl. 87., 91.), M25 stara jezgra (čl. 85., 89.); ostale zone bez kuća (čl. 84., 88.) |
+| Odluka o komunalnom doprinosu Grada Krka (SN 43/2018), PDF | potvrđeno: I. zona 138 kn, II. Kornić 120 kn, III. Pinezići 100 kn, IV. ostala naselja 80 kn/m³ (čl. 6.); preračun fiksnim tečajem 7,53450; umanjenje 30 % samo do 500 m³ (čl. 10.); zona se određuje iz naselja |
+| PPUO Vrbnik, pročišćeni elaborat (svibanj 2019.) | obrađeno (čl. 23.a i 23.b), ali uz upozorenje: plan je izmijenjen 2024. (SN 34/2024, pročišćeni SN 46/2024), a ta verzija nije priložena |
+| Dobrinj, SN Općine Dobrinj 5/2022 | sadrži samo odluku o usklađenju PPUO sa zakonom (5 stranica), ne odredbe za provedbu; Dobrinj nije obrađen |
+| Prijedlog odluke o komunalnom doprinosu (2018.) | isti kao ranije; zamijenjen donesenom odlukom |
+
+Malinska-Dubašnica i Baška i dalje su preuzete s mrežne stranice Službenih novina (bez PDF-a).
+
 ## Koordinate
 
 DGU servis radi u HTRS96/TM (EPSG:3765). Pretvorba je u aplikaciji (`tmFwd`/`tmInv`, Snyder) i provjerena prema pyproju na 5 točaka (Krk, Baška, Zagreb): odstupanje je ispod 2 cm.
