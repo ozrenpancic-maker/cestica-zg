@@ -147,13 +147,16 @@
     "min": 4,
     "minBezOtvora": 3,
     "txt": "moraju biti udaljene najmanje pola visine (h/2) od granice građevinske čestice, ali ne manje od 4,0 metra",
-    "txtBezOtvora": "udaljenost građevine od granice građevne čestice može iznositi i 3,0 m (pročelja bez otvora i otvorenih stubišta)"
+    "txtBezOtvora": "udaljenost građevine od granice građevne čestice može iznositi i 3,0 m (pročelja bez otvora i otvorenih stubišta)",
+    "opis": "h/2, najmanje 4 m",
+    "opisIznimka": "Iznimno 3 m ako pročelje prema međi nema otvora ni otvorenih stubišta."
   },
   "regulacija": {
     "clanak": "17",
     "ostale": 4,
     "razvrstane": 6,
-    "txt": "ne može biti manja od 4 metara … za razvrstane ceste ne može biti manja od 6 metara"
+    "txt": "ne može biti manja od 4 metara … za razvrstane ceste ne može biti manja od 6 metara",
+    "opis": "4 m, uz razvrstanu cestu 6 m"
   },
   "zelenilo": {
     "clanak": "35",
@@ -208,5 +211,161 @@
       "čl. 14.: 50 % za garaže, parkirališta, podrume i pomoćne prostore koji se ne koriste za djelatnost.",
       "čl. 14.: 50 % za rekonstrukciju obiteljske kuće radi poboljšanja standarda."
     ]
+  },
+  "kod": "PPUG Krk",
+  "upu": {
+    "UPU 2": {
+      "kod": "UPU 2 Kornić",
+      "prepoznaj": "UPU 2\\s*-?\\s*Korni",
+      "izvor": {
+        "naziv": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje",
+        "sn": "Službene novine PGŽ 19/2016",
+        "url": "http://www.sn.pgz.hr/default.asp?Link=odluke&id=34138",
+        "status": "na snazi",
+        "provjera": "Vrijednosti i navodi preuzeti su s mrežne stranice Službenih novina (tekst je ondje prikazan do čl. 40.). Prije objave usporediti s cijelim tekstom."
+      },
+      "zone": [
+        [
+          "M1",
+          "M1 – mješovita, pretežito stambena (čl. 5.)"
+        ],
+        [
+          "druga",
+          "druga zona (M2, K, D, R, Z…)"
+        ]
+      ],
+      "zonaNapomena": "Zona se ne može odrediti automatski jer grafički dio UPU-a nije dostupan kao karta. Provjeri zonu na kartografskom prikazu plana (VidiPlan) ili u lokacijskoj informaciji.",
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća",
+          "opis": "jedan stan, GBP do 200 m²",
+          "clanak": "38. i 39.",
+          "gbpMax": 200,
+          "etaze": "podrum i 2 nadzemne etaže",
+          "visina": 7.5,
+          "kosi": {
+            "nagib": 12,
+            "visina": 10.5,
+            "etaze": "podrum i 3 nadzemne etaže, od kojih je jedna suteren"
+          },
+          "slob": {
+            "minC": 500,
+            "minCIznimno": 400,
+            "izg": 0.25,
+            "kis": 0.75,
+            "kisPodrum": 0.75,
+            "tlMin": 60,
+            "tlMax": 200
+          },
+          "dvoj": {
+            "minC": 300,
+            "izg": 0.25,
+            "kis": 0.75,
+            "kisPodrum": 0.75,
+            "tlMin": 60,
+            "tlMax": 150
+          },
+          "ugr": {
+            "minC": 300,
+            "izg": 0.25,
+            "kis": 0.75,
+            "kisPodrum": 0.75,
+            "tlMin": 60,
+            "tlMax": 100
+          },
+          "txt": {
+            "minC": "najmanja površina građevne čestice obiteljske kuće iznosi 500 m2 (dvojna i ugrađena: 300 m2)",
+            "minCIznimno": "iznimno 400 m2 ako se građevna čestica nalazi u okruženju već uređenih i izgrađenih građevnih čestica",
+            "izg": "najveći koeficijent izgrađenosti građevne čestice iznosi 0,25",
+            "kis": "najveći koeficijent iskorištenosti iznosi 0,75",
+            "tl": "najmanja tlocrtna površina građevine iznosi 60 m2 … najveća tlocrtna površina građevine iznosi 200 m2 (dvojna 150 m2, ugrađena 100 m2)",
+            "etaze": "najveći broj etaža građevine iznosi podrum i 2 nadzemne etaže",
+            "visina": "najveća visina građevine iznosi 7,5 m",
+            "gbp": "najveći GBP iznosi 200 m2 za građevnu česticu obiteljske građevine"
+          }
+        },
+        "visobit": {
+          "naziv": "Višeobiteljska kuća",
+          "opis": "do dva stana, GBP do 400 m²",
+          "clanak": "38. i 39.",
+          "gbpMax": 400,
+          "etaze": "podrum i 2 nadzemne etaže",
+          "visina": 7.5,
+          "kosi": {
+            "nagib": 12,
+            "visina": 10.5,
+            "etaze": "podrum i 3 nadzemne etaže, od kojih je jedna suteren",
+            "kis": 1.0
+          },
+          "slob": {
+            "minC": 500,
+            "izg": 0.25,
+            "kis": 0.75,
+            "kisPodrum": 0.75,
+            "tlMin": 60,
+            "tlMax": 200
+          },
+          "dvoj": {
+            "minC": 400,
+            "izg": 0.25,
+            "kis": 0.75,
+            "kisPodrum": 0.75,
+            "tlMin": 60,
+            "tlMax": 150
+          },
+          "ugr": {
+            "minC": 400,
+            "izg": 0.25,
+            "kis": 0.75,
+            "kisPodrum": 0.75,
+            "tlMin": 60,
+            "tlMax": 150
+          },
+          "txt": {
+            "kis": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12% (kis 1,0)",
+            "gbp": "400 m2 za građevnu česticu višeobiteljske građevine"
+          }
+        }
+      },
+      "kisUkupni": true,
+      "meda": {
+        "clanak": "38.",
+        "min": 4,
+        "minBezOtvora": 3,
+        "opis": "najmanje 4 m",
+        "opisIznimka": "Iznimno 3 m bez otvora, prohodnih terasa i otvorenih stubišta prema međi. U kulturno-povijesnoj cjelini h/2, najmanje 3 m (2 m bez otvora), prepričano.",
+        "txt": "najmanja udaljenost građevine od ostalih međa građevne čestice iznosi 4 m",
+        "txtBezOtvora": "iznimno 3 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama"
+      },
+      "regulacija": {
+        "clanak": "38.",
+        "opis": "javna cesta 6 m (najmanje 9 m od osi), nerazvrstana 4 m (najmanje 7 m od osi)",
+        "txt": "prema javnoj cesti iznosi 6 m, pri čemu udaljenosti od osi prometne površine javne ceste ne može biti manja od 9 m"
+      },
+      "zelenilo": {
+        "clanak": "38.",
+        "min": 0.4,
+        "txt": "najmanje 40% površine građevne čestice mora se urediti visokim i niskim zelenilom"
+      },
+      "pristup": {
+        "napomena": "Jedan priključak na prometnu površinu; parkiranje 2 mjesta po stanu (čl. 38.)."
+      },
+      "napomene": [
+        "Na česticama u dvije zone iste namjene s različitim uvjetima vrijede stroži uvjeti.",
+        "Kulturno-povijesna cjelina (čl. 83.) mijenja udaljenosti; taj članak nije u mrežnom tekstu."
+      ]
+    },
+    "UPU 1": {
+      "kod": "UPU 1 Krk",
+      "prepoznaj": "UPU\\s*1\\s*-?\\s*Krk",
+      "obradeno": false,
+      "napomena": "Stambena pravila UPU-a 1 – Krk (zone M11–M17) nalaze se iza čl. 26., koji nisu u mrežnom tekstu Službenih novina (SN PGŽ 29/2020). Potreban je PDF plana."
+    },
+    "UPU 5": {
+      "kod": "UPU 5 Vrh",
+      "prepoznaj": "UPU\\s*5\\s*-?\\s*Vrh",
+      "obradeno": false,
+      "napomena": "Pravila za obiteljske i višeobiteljske kuće UPU-a 5 – Vrh (čl. 27. i dalje) nisu u mrežnom tekstu Službenih novina (SN PGŽ 2/2014). Potreban je PDF plana."
+    }
   }
 }

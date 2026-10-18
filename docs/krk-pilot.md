@@ -50,6 +50,19 @@ Označeno kao potrebna provjera:
 - etaže višeobiteljske kuće u NA1 i NA2 (definicija i čl. 23. se razlikuju);
 - zaštićene povijesne cjeline.
 
+### UPU-ovi Grada Krka
+
+Evidencija PGŽ za Grad Krk navodi važeće UPU-ove: UPU 1 Krk (pročišćeni tekst SN 29/2020, izmjene u izradi), UPU 2 Kornić (SN 19/2016), UPU 5 Vrh (SN 2/2014), UPU 23 Torkul, UPU 25 kamp Glavotok, UPU 26 Dunat.
+
+| UPU | Stanje u aplikaciji |
+|---|---|
+| UPU 2 Kornić | obrađen: zona M1, čl. 38. i 39. (kig 0,25, kis 0,75, tlocrt 60–200, dvojna 150, ugrađena 100 m², visina 7,5 m, na nagibu većem od 12 % do 10,5 m, međe 4 m, ceste 6/9 m i 4/7 m, zelenilo 40 %, 2 PM po stanu) |
+| UPU 1 Krk | nije obrađen: stambena pravila (M11–M17) su iza čl. 26., koji nisu u mrežnom tekstu; treba PDF |
+| UPU 5 Vrh | nije obrađen: pravila za kuće (čl. 27. i dalje) nisu u mrežnom tekstu; treba PDF |
+| ostali (turistički i poslovni) | nisu obrađeni |
+
+Zona unutar UPU-a ne može se odrediti automatski (grafički dio nije dostupan kao karta), pa se pretpostavlja M1 uz napomenu i izbor „druga zona”. Gdje vrijedi UPU, neizgrađeni dio nije blokiran čl. 15. PPUG-a, jer je UPU donesen.
+
 ## Komunalni doprinos (Grad Krk)
 
 Važeća odluka je ona iz SN PGŽ 43/2018 (stranica Grada „Važnije odluke i pravilnici” ne navodi izmjene). Tablica iznosa po zonama nalazi se samo u PDF-u izdanja, koji nisam mogao pročitati, pa iznos upisuješ ti.
@@ -108,6 +121,6 @@ Svi testovi rade s lažnim odgovorima servisa. Stvarni servisi nisu dohvaćeni i
 
 0. Usporediti `src/rules_krk.json` s cijelim tekstom PPUG-a (SN 29/2020) i pročitati tablicu zona iz PDF-a SN 43/2018.
 1. Ako DGU ne radi iz preglednika: opcije su posrednik (Cloudflare Worker, besplatna razina, zahtijeva tvoje odobrenje) ili prikaz bez čestice.
-2. UPU-ovi Grada Krka (npr. UPU 1 – Krk) kao zasebna pravila.
+2. UPU 1 Krk i UPU 5 Vrh iz PDF-a.
 3. Ostalih šest općina na otoku.
 4. Katastar infrastrukture za PGŽ (datoteka 08 na ski.dgu.hr).

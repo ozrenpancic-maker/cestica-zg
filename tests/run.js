@@ -914,9 +914,22 @@ async function krkTests(){
   ok(C&&C.st==="provjera"&&/NA1/.test(txt(w,"sheet"))&&/čl\. 19\./.test(txt(w,"sheet")),"Krk: naselje Krk (NA1) samo orijentacijski, uz upozorenje iz čl. 19.");
   gp.NASELJE="Kornić";
   // na lokaciji vrijedi UPU
-  plans.push({GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Pročišćeni tekst UPU 2 - Kornić (test)",SN_BROJ:"2020-30"});
-  tk=await reinspect(); ok(w.__krkCalc===null&&/Na lokaciji vrijedi UPU/.test(tk)&&/aplikacija ga još nije obradila/.test(tk)&&!w.document.getElementById("krkTip"),"Krk: gdje vrijedi UPU, nema izračuna iz PPUG-a");
+  // UPU 2 Kornić (obrađen): pravila UPU-a umjesto PPUG-a, i u neizgrađenom dijelu
+  plans.push({GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Odluka o donošenju Urbanističkog plana uređenja UPU 2 - Kornić",SN_BROJ:"2016-19"});
+  gp.IZGRADJENOST="neizgrađeno"; tk=await reinspect(); C=w.__krkCalc;
+  ok(C&&C.plan==="UPU 2 Kornić"&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpN-200)<0.01&&C.gbpP===null&&C.minOk,"UPU 2 Kornić, obiteljska slobodnostojeća 600 m²: tlocrt 150, GBP 200 (kis 0,75, granica 200)");
+  ok(/UPU 2 Kornić/.test(tk)&&/7,5 m/.test(tk)&&/javna cesta 6 m/.test(tk)&&/19\/2016/.test(tk)&&!/čl\. 15\./.test(tk),"UPU 2: visina 7,5 m, udaljenosti od ceste, izvor SN 19/2016; neizgrađeni dio nije blokiran jer UPU postoji");
+  ok(/Zona se ne može odrediti automatski/.test(tk)&&$(w,"krkZona").value==="M1","UPU 2: zona M1 pretpostavljena uz jasnu napomenu");
+  ok(/Model visina procjenjuje nagib okoline na oko 5 %/.test(tk),"UPU 2: iznimka za kosi teren s procjenom nagiba");
+  setv(w,"krkOblik","ugr","change"); C=w.__krkCalc; ok(C.oblik==="ugr"&&Math.abs(C.tl-100)<0.01,"UPU 2, ugrađena obiteljska: tlocrt najviše 100 m²");
+  setv(w,"krkOblik","dvoj","change"); C=w.__krkCalc; ok(Math.abs(C.tl-150)<0.1,"UPU 2, dvojna: tlocrt 150 m² (kig 0,25 × 600 = 150)");
+  setv(w,"krkZona","druga","change"); ok(w.__krkCalc===null&&/nisu obrađeni/.test(txt(w,"sheet")),"UPU 2, druga zona: bez izračuna");
+  setv(w,"krkZona","M1","change"); setv(w,"krkOblik","slob","change");
   plans.pop();
+  // UPU 1 Krk (nije obrađen): jasno zašto
+  plans.push({GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Pročišćeni tekst odredbi za provođenje Urbanističkog plana uređenja UPU 1 - Krk (NA1, R11)",SN_BROJ:"2020-29"});
+  tk=await reinspect(); ok(w.__krkCalc===null&&/aplikacija ga još nije obradila/.test(tk)&&/M11–M17/.test(tk)&&!w.document.getElementById("krkTip"),"UPU 1 Krk: bez izračuna, uz razlog (pravila nisu u mrežnom tekstu)");
+  plans.pop(); gp.IZGRADJENOST="izgrađeno";
   // izvan GP-a
   mode="ag"; tk=await reinspect(); ok(w.__krkCalc===null&&/nije u građevinskom području naselja/.test(tk),"Krk: izvan GP-a nema uvjeta za kuće");
   mode="ok"; gp.IZGRADJENOST="neizgrađeno";
