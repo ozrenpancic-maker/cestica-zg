@@ -18,6 +18,9 @@ Mobilna web aplikacija: dodirneš zemljište u Zagrebu i dobiješ katastarsku č
 
 Procjene su orijentacijske. Pravno mjerodavna je lokacijska informacija Grada Zagreba.
 
+## Pilot: otok Krk
+Dodir na otoku Krku pokreće zasebnu analizu: čestica iz DGU INSPIRE WFS-a (HTRS96/TM), namjena i evidencija planova Primorsko-goranske županije (gisportal.pgz.hr), nagib i okolina. Uvjeti gradnje, komunalni doprinos i infrastruktura za Krk još nisu obrađeni. Detalji, neprovjerene stavke i testovi: `docs/krk-pilot.md`.
+
 ## Izmjene
 Uređuje se `src/app.template.html`, a `python3 build.py` sastavlja `index.html`.
 Pravila za Sesvete: `pdfplumber` tekst prvog dijela PDF-a odredbi (bez prikaza izmjena), zatim `python3 src/parse_gup_sesvete.py ses_first.txt src/rules_sesvete.json`.
