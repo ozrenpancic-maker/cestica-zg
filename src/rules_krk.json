@@ -1,0 +1,212 @@
+{
+  "izvor": {
+    "naziv": "Prostorni plan uređenja Grada Krka, odredbe za provedbu (pročišćeni tekst)",
+    "sn": "Službene novine Primorsko-goranske županije 29/2020",
+    "url": "http://www.sn.pgz.hr/default.asp?Link=odluke&id=42441",
+    "pdf": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1541",
+    "status": "na snazi; V. izmjene i dopune u izradi (odluka o izradi SN 7/2025)",
+    "provjera": "Vrijednosti i navodi preuzeti su s mrežne stranice Službenih novina (tekst je ondje prikazan do čl. 53.). Prije objave usporediti s cijelim pročišćenim tekstom."
+  },
+  "naselja": {
+    "NA1": [
+      "Krk"
+    ],
+    "NA2": [
+      "Kornić"
+    ],
+    "NA3": [
+      "Muraj"
+    ],
+    "NA4": [
+      "Lakmartin"
+    ],
+    "NA5.1": [
+      "Vrh"
+    ],
+    "NA5.2": [
+      "Salatić"
+    ],
+    "NA5.3": [
+      "Kosići"
+    ],
+    "NA6": [
+      "Bajčići"
+    ],
+    "NA7.1": [
+      "Nenadići"
+    ],
+    "NA7.2": [
+      "Kapovci"
+    ],
+    "NA8.1": [
+      "Brusići"
+    ],
+    "NA8.2": [
+      "Brozići"
+    ],
+    "NA9": [
+      "Poljica"
+    ],
+    "NA10": [
+      "Žgaljići"
+    ],
+    "NA11": [
+      "Brzac"
+    ],
+    "NA12": [
+      "Milohnići"
+    ],
+    "NA13": [
+      "Linardići"
+    ],
+    "NA14": [
+      "Skrbčići"
+    ],
+    "NA15.1": [
+      "Pinezići"
+    ],
+    "NA15.2": [
+      "Picik"
+    ]
+  },
+  "izravnaProvedba": {
+    "clanak": "19",
+    "bezNaselja": [
+      "NA1"
+    ],
+    "txt": "unutar izgrađenog dijela građevinskih područja naselja (NA2 – NA15.2) … mogu se graditi nove, rekonstruirati postojeća pojedinačna ili više građevina"
+  },
+  "neizgradeni": {
+    "clanak": "15",
+    "txt": "U neizgrađenom dijelu … može se graditi samo nakon izrade urbanističkog plana uređenja."
+  },
+  "tipovi": {
+    "obit": {
+      "naziv": "Obiteljska kuća",
+      "opis": "jedna stambena jedinica, GBP do 200 m²",
+      "clanak": "22",
+      "gbpMax": 200,
+      "etaze": "podrum i 2 nadzemne etaže",
+      "visina": 6.5,
+      "slob": {
+        "minC": 500,
+        "minCIznimno": 400,
+        "izg": 0.25,
+        "kis": 0.5,
+        "kisPodrum": 0.75,
+        "tlMin": 60,
+        "tlMax": 200
+      },
+      "dvoj": {
+        "minC": 300,
+        "izg": 0.25,
+        "kis": 0.5,
+        "kisPodrum": 0.75,
+        "tlMin": 60,
+        "tlMax": 100
+      },
+      "txt": {
+        "minC": "za slobodnostojeće građevine: 500 m2 … za dvojne i ugrađene građevine: 300 m2",
+        "minCIznimno": "može iznositi 400m², uz uvjet da se građevna čestica nalazi u okruženju već formiranih građevinskih čestica.",
+        "izg": "za slobodnostojeće građevine: 0,25 … za dvojne i ugrađene građevine: 0,25",
+        "kis": "za slobodnostojeće građevine: 0,5 … (s podrumom) za slobodnostojeće građevine 0,75",
+        "tl": "za slobodnostojeće građevine 200 m2 … za dvojne i ugrađene građevine 100 m2 (najmanje 60 m2)",
+        "etaze": "najveći dopušteni broj etaža obiteljske kuće je podrum i 2 nadzemne etaže",
+        "visina": "najveća dopuštena visina obiteljske kuće iznosi 6,5m"
+      }
+    },
+    "visobit": {
+      "naziv": "Višeobiteljska kuća",
+      "opis": "do dvije stambene jedinice, GBP do 400 m²",
+      "clanak": "23",
+      "gbpMax": 400,
+      "etaze": "podrum i 2 nadzemne etaže",
+      "visina": 6.5,
+      "etazeNapomena": "Definicije u planu za NA1 i NA2 navode podrum i 3 nadzemne etaže, a čl. 23. podrum i 2; potrebna provjera.",
+      "slob": {
+        "minC": 500,
+        "izg": 0.25,
+        "kis": 0.5,
+        "kisPodrum": 0.75,
+        "tlMin": 60,
+        "tlMax": 200
+      },
+      "dvoj": {
+        "minC": 400,
+        "izg": 0.25,
+        "kis": 0.5,
+        "kisPodrum": 0.75,
+        "tlMin": 60,
+        "tlMax": 100
+      },
+      "txt": {}
+    }
+  },
+  "meda": {
+    "clanak": "33",
+    "min": 4,
+    "minBezOtvora": 3,
+    "txt": "moraju biti udaljene najmanje pola visine (h/2) od granice građevinske čestice, ali ne manje od 4,0 metra",
+    "txtBezOtvora": "udaljenost građevine od granice građevne čestice može iznositi i 3,0 m (pročelja bez otvora i otvorenih stubišta)"
+  },
+  "regulacija": {
+    "clanak": "17",
+    "ostale": 4,
+    "razvrstane": 6,
+    "txt": "ne može biti manja od 4 metara … za razvrstane ceste ne može biti manja od 6 metara"
+  },
+  "zelenilo": {
+    "clanak": "35",
+    "min": 0.4,
+    "txt": "Najmanje 40% građevne čestice mora se urediti visokim i niskim zelenilom."
+  },
+  "pristup": {
+    "clanak": "pojmovnik, točka 31.",
+    "min": 5.5,
+    "minIznimno": 3.0,
+    "napomena": "Pristupni put najmanje 5,5 m; gdje lokalni uvjeti to ne dopuštaju najmanje 3,0 m i najviše 30 m dužine bez okretišta (prepričano, potrebna provjera)."
+  },
+  "napomene": [
+    "U zaštićenim povijesnim cjelinama vrijede posebne odredbe (čl. 17., 33., 39., 45., 50.) i uvjeti konzervatora.",
+    "Udaljenost od regulacijskog pravca ovisi o tome je li cesta razvrstana; aplikacija to ne zna, pa je navedena kao uvjet za provjeru."
+  ],
+  "komunalniDoprinos": {
+    "odluka": "Odluka o komunalnom doprinosu Grada Krka",
+    "sn": "Službene novine PGŽ 43/2018 (21. 12. 2018.)",
+    "url": "http://www.sn.pgz.hr/default.asp?Link=odluke&id=39263",
+    "iznosiPotvrdeni": false,
+    "napomena": "Tablica iznosa po zonama nije u mrežnom tekstu odluke (nalazi se u PDF-u izdanja), pa iznosi nisu potvrđeni. Upiši iznos iz odluke ili iz obračuna Grada.",
+    "prijedlog2018": {
+      "izvor": "Prijedlog odluke (2018.), grad-krk.hr; nije potvrđeno da su iznosi doneseni bez izmjena",
+      "valuta": "kn",
+      "tecaj": 7.5345,
+      "zone": [
+        [
+          "I",
+          "naselje Krk; izdvojena građevinska područja izvan naselja",
+          138
+        ],
+        [
+          "II",
+          "Kornić",
+          120
+        ],
+        [
+          "III",
+          "Pinezići",
+          100
+        ],
+        [
+          "IV",
+          "ostala naselja Grada Krka",
+          80
+        ]
+      ]
+    },
+    "umanjenja": [
+      "čl. 10.: 30 % iznosa za stambenu građevinu, samo do 500 m³, uz prebivalište u Gradu Krku najmanje 10 godina i bez vlastitog stambenog prostora; jednom (tekst spominje i ozakonjenje, potrebna provjera).",
+      "čl. 14.: 50 % za garaže, parkirališta, podrume i pomoćne prostore koji se ne koriste za djelatnost.",
+      "čl. 14.: 50 % za rekonstrukciju obiteljske kuće radi poboljšanja standarda."
+    ]
+  }
+}

@@ -9,7 +9,7 @@ MOCK=r"""async()=>{
   const ll={lat:45.0274,lng:14.5935}, [E0,N0]=tmFwd(ll.lng,ll.lat);
   const ring=[[E0-15,N0-10],[E0+15,N0-10],[E0+15,N0+10],[E0-15,N0+10],[E0-15,N0-10]], w=ring.map(([e,n])=>tmInv(e,n)), mid=(w[0][0]+w[1][0])/2;
   const half=(a,b)=>({type:"Polygon",coordinates:[[[a,w[0][1]-1e-4],[b,w[0][1]-1e-4],[b,w[2][1]+1e-4],[a,w[2][1]+1e-4],[a,w[0][1]-1e-4]]]});
-  const gp={OPCINA_GRAD:"KRK",POLAZNA_NAMJENA:"građevna područja",PRIMARNA_NAMJENA:"naselje",OZNAKA_NAMJENE:"GPN-1",IZGRADJENOST:"neizgrađeno",NASELJE:"Kornić",IZVOR_PODATAKA:"SN 18/19"};
+  const gp={OPCINA_GRAD:"KRK",POLAZNA_NAMJENA:"građevna područja",PRIMARNA_NAMJENA:"naselje",OZNAKA_NAMJENE:"GPN-1",IZGRADJENOST:"izgrađeno",NASELJE:"Kornić",IZVOR_PODATAKA:"SN 18/19"};
   const ag={OPCINA_GRAD:"KRK",POLAZNA_NAMJENA:"poljoprivredno tlo",PRIMARNA_NAMJENA:"ostalo obradivo tlo",OZNAKA_NAMJENE:"P3",IZVOR_PODATAKA:"SN 18/19"};
   const plans=[{GRAD_OPCINA:"Krk",VRSTA_PP:"PPUO/G",STATUS_PP:"VAŽEĆI",NAZIV:"Odluka o donošenju Prostornog plana uređenja Grada Krka, pročišćeni tekst odredbi za provedbu i grafičkog dijela",SN_BROJ:"2020-29",SN_LINK:"https://example.org/a.pdf"},
     {GRAD_OPCINA:"Krk",VRSTA_PP:"PPUO/G",STATUS_PP:"U IZRADI",NAZIV:"Odluka o izradi",SN_BROJ:"2025-07"},{GRAD_OPCINA:"Primorsko-goranska županija",VRSTA_PP:"PPŽ",STATUS_PP:"VAŽEĆI",NAZIV:"Odredbe za provedbu, pročišćeni tekst",SN_BROJ:"2024-12"}];

@@ -855,6 +855,8 @@ async function krkTests(){
       const q=new URL(u).searchParams; return okj({type:"FeatureCollection",features:q.get("typeNames")==="cp:CadastralZoning"?[czFeat]:[cpFeat]}); }
     if(u.includes("NAMJENA_POVRSINA_NOVO")){ const poly=/esriGeometryPolygon/.test(o.body||"");
       if(mode==="crikvenica") return okj({type:"FeatureCollection",features:[{type:"Feature",geometry:null,properties:{...gp,OPCINA_GRAD:"CRIKVENICA"}}]});
+      if(mode==="full") return okj({type:"FeatureCollection",features:[{type:"Feature",geometry:half(wgsRing[0][0]-1e-3,wgsRing[1][0]+1e-3),properties:gp}]});
+      if(mode==="ag") return okj({type:"FeatureCollection",features:[{type:"Feature",geometry:half(wgsRing[0][0]-1e-3,wgsRing[1][0]+1e-3),properties:ag}]});
       return okj({type:"FeatureCollection",features:poly?[{type:"Feature",geometry:half(wgsRing[0][0]-1e-4,lonMid),properties:gp},{type:"Feature",geometry:half(lonMid,wgsRing[1][0]+1e-4),properties:ag}]:[{type:"Feature",geometry:null,properties:gp}]}); }
     if(u.includes("IZRADA_PP")) return okj({type:"FeatureCollection",features:plans.map(p=>({type:"Feature",geometry:null,properties:p}))});
     if(u.includes("open-meteo")) return okj({elevation:[40,42,40,38,40]});
@@ -878,9 +880,46 @@ async function krkTests(){
   const links=[...w.document.querySelectorAll("#sheet a")].map(a=>a.getAttribute("href"));
   ok(links.includes("https://example.org/sn-2020-29.pdf")&&!links.some(h=>/^javascript:/i.test(h)),"Krk: poveznice na dokumente samo http(s)");
   ok(/Komunalna infrastruktura ?Vodovod ?Podaci nisu dostupni ?Kanalizacija ?Podaci nisu dostupni ?Struja ?Podaci nisu dostupni ?Plin ?Podaci nisu dostupni/.test(t)&&!/ 0 m/.test(t),"Krk: infrastruktura 'Podaci nisu dostupni', nikad 0 m");
-  ok(/Za otok Krk još nisu obrađeni/.test(t)&&!/Izgrađenost \d/.test(t)&&!w.document.getElementById("kdZone"),"Krk: uvjeti gradnje i komunalni doprinos nisu izmišljeni");
+  ok(/neizgrađenom dijelu građevinskog područja/.test(t)&&/čl\. 15\./.test(t)&&!w.document.getElementById("krkTip")&&!w.document.getElementById("kdZone"),"Krk: neizgrađeni dio GP-a: gradnja tek nakon UPU-a (čl. 15.), bez brojki i bez komunalnog doprinosa");
   ok(/nagib u okolini/.test(t)&&/Kornić test/.test(t),"Krk: nagib i pristup (OSM) rade kao u Zagrebu");
   ok(w.__cur&&w.__cur.region==="krk"&&w.__cur.ces==="2345/6"&&w.__lastData===null,"Krk: stanje odabrane čestice postavljeno, zagrebački podaci očišćeni");
+  // izgrađeni dio GP-a naselja Kornić (NA2), cijela čestica u GP-u: izračun prema čl. 22. PPUG-a Krka
+  const reinspect=async()=>{E("NET").cache.clear(); w.localStorage.clear(); await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50); return txt(w,"sheet")};
+  gp.IZGRADJENOST="izgrađeno"; mode="full";
+  let tk=await reinspect(), C=w.__krkCalc;
+  ok(C&&C.st==="ok"&&Math.abs(C.A-600)<1.5&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpN-200)<0.01&&Math.abs(C.gbpP-450)<1.2&&C.minOk,"Krk, obiteljska slobodnostojeća na 600 m²: tlocrt 150, GBP nadzemno 200 (granica tipa), s podrumom 450 m²");
+  ok(C.env>255&&C.env<272,"Krk: prostor za kuću 4 m od međa oko 264 m² (22 × 12 m): "+C.env);
+  ok(/PPUG Krk/.test(tk)&&/naselje NA2/.test(tk)&&/čl\. 22\./.test(tk)&&/6,5 m/.test(tk)&&/40 %/.test(tk)&&/„najveća dopuštena visina obiteljske kuće iznosi 6,5m“/.test(tk),"Krk: prikaz pravila s člancima i navodima iz plana");
+  ok(w.__cur.region==="krk"&&E("krkEnvLayer").getLayers().length===1,"Krk: prostor za kuću nacrtan jednom");
+  w.document.getElementById("krkOblik").value="dvoj"; w.document.getElementById("krkOblik").dispatchEvent(new w.Event("change",{bubbles:true}));
+  C=w.__krkCalc; ok(C.oblik==="dvoj"&&Math.abs(C.tl-100)<0.01&&E("krkEnvLayer").getLayers().length===1,"Krk, dvojna: tlocrt ograničen na 100 m²; ponovni prikaz ne udvostručuje sloj");
+  w.document.getElementById("krkTip").value="visobit"; w.document.getElementById("krkTip").dispatchEvent(new w.Event("change",{bubbles:true}));
+  C=w.__krkCalc; ok(C.tip==="visobit"&&C.oblik==="dvoj"&&Math.abs(C.gbpN-300)<0.6&&Math.abs(C.tl-100)<0.01&&C.minOk,"Krk, višeobiteljska dvojna: GBP nadzemno kis 0,5 × 600 = 300 m² (granica tipa 400), tlocrt 100 m², čestica dovoljna (najmanje 400 m²)");
+  ok(/potrebna provjera/i.test(txt(w,"sheet"))||/Potrebna dodatna provjera/.test(txt(w,"sheet")),"Krk: nejasnoće (podrum u GBP-u, etaže) označene kao potrebna provjera");
+  E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
+  // komunalni doprinos: iznos se upisuje (tablica iz odluke nije potvrđena), prijedlog obujma iz GBP-a
+  await reinspect();
+  ok(+$(w,"krkKdVol").value===600&&$(w,"krkKdRate").value===""&&/upiši obujam i iznos/.test(txt(w,"krkKdOut")),"Krk komunalni doprinos: obujam 200 m² × 3 m = 600 m³, iznos prazan (nije potvrđen)");
+  ok(/43\/2018/.test(txt(w,"sheet"))&&/neprovjereno/.test(txt(w,"sheet"))&&/18,32 €\/m³/.test(txt(w,"sheet")),"Krk: navedena odluka, zone iz prijedloga označene kao neprovjerene, preračun 138 kn = 18,32 €");
+  setv(w,"krkKdRate","10"); ok(/6\.000 €/.test(txt(w,"krkKdOut")),"Krk: 600 m³ × 10 €/m³ = 6.000 €");
+  setv(w,"krkKdRed","0.3","change"); ok(/1\.800 €/.test(txt(w,"krkKdOut"))&&/s umanjenjem/.test(txt(w,"krkKdOut")),"Krk: umanjenje na 30 % = 1.800 €");
+  // mala čestica: 20 × 18 m = 360 m² < 400
+  const ring0=ring.map(x=>x.slice()); ring.splice(0,5,[E0-10,N0-9],[E0+10,N0-9],[E0+10,N0+9],[E0-10,N0+9],[E0-10,N0-9]);
+  await reinspect(); C=w.__krkCalc; ok(!C.minOk&&!C.minEx&&/premala/.test(txt(w,"sheet")),"Krk: čestica 360 m² je premala za slobodnostojeću obiteljsku kuću");
+  ring.splice(0,5,[E0-11,N0-10],[E0+11,N0-10],[E0+11,N0+10],[E0-11,N0+10],[E0-11,N0-10]);
+  await reinspect(); C=w.__krkCalc; ok(!C.minOk&&C.minEx&&/samo iznimno/.test(txt(w,"sheet")),"Krk: čestica 440 m²: samo iznimno (400 m² u okruženju formiranih čestica)");
+  ring.splice(0,5,...ring0);
+  // naselje Krk (NA1): nije u izravnoj provedbi
+  gp.NASELJE="Krk"; await reinspect(); C=w.__krkCalc;
+  ok(C&&C.st==="provjera"&&/NA1/.test(txt(w,"sheet"))&&/čl\. 19\./.test(txt(w,"sheet")),"Krk: naselje Krk (NA1) samo orijentacijski, uz upozorenje iz čl. 19.");
+  gp.NASELJE="Kornić";
+  // na lokaciji vrijedi UPU
+  plans.push({GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Pročišćeni tekst UPU 2 - Kornić (test)",SN_BROJ:"2020-30"});
+  tk=await reinspect(); ok(w.__krkCalc===null&&/Na lokaciji vrijedi UPU/.test(tk)&&/aplikacija ga još nije obradila/.test(tk)&&!w.document.getElementById("krkTip"),"Krk: gdje vrijedi UPU, nema izračuna iz PPUG-a");
+  plans.pop();
+  // izvan GP-a
+  mode="ag"; tk=await reinspect(); ok(w.__krkCalc===null&&/nije u građevinskom području naselja/.test(tk),"Krk: izvan GP-a nema uvjeta za kuće");
+  mode="ok"; gp.IZGRADJENOST="neizgrađeno";
   // DGU nedostupan (npr. preglednik ne smije dohvatiti servis): namjena za točku i jasna poruka
   mode="dguFail"; calls=[]; E("NET").cache.clear(); w.localStorage.clear();
   await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50);
@@ -891,9 +930,9 @@ async function krkTests(){
   await E("inspect")(w.L.latLng(45.17,14.69)); await tick(50);
   ok(/izvan područja aplikacije/.test(txt(w,"sheet")),"točka na kopnu (Crikvenica): jasno da je izvan područja aplikacije");
   // druga jedinica na otoku: prikaz uz napomenu da pilot nije provjeren
-  mode="ok"; gp.OPCINA_GRAD="PUNAT"; ag.OPCINA_GRAD="PUNAT"; E("NET").cache.clear(); w.localStorage.clear();
+  mode="ok"; gp.OPCINA_GRAD="PUNAT"; ag.OPCINA_GRAD="PUNAT"; gp.IZGRADJENOST="izgrađeno"; E("NET").cache.clear(); w.localStorage.clear();
   await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50);
-  ok(/Pilot je provjeren samo za Grad Krk/.test(txt(w,"sheet"))&&/Općina Punat/.test(txt(w,"sheet")),"druga jedinica na otoku: prikaz uz napomenu izvan pilota");
+  ok(/Pilot je provjeren samo za Grad Krk/.test(txt(w,"sheet"))&&/Općina Punat/.test(txt(w,"sheet"))&&/samo za Grad Krk/.test(txt(w,"sheet"))&&w.__krkCalc===null,"druga jedinica na otoku: prikaz uz napomenu izvan pilota, bez uvjeta gradnje iz PPUG-a Krka");
   gp.OPCINA_GRAD="KRK"; ag.OPCINA_GRAD="KRK";
   // pretraga adrese: naselje na Krku traži se u obuhvatu otoka
   let nomi=null; w.fetch=(u)=>{u=String(u); if(u.includes("nominatim")){nomi=new URL(u); return okj([])} return Promise.reject(new Error("x"))};

@@ -15,8 +15,9 @@ Prikaz za Krk:
 | Važeći planovi i planovi u izradi na lokaciji | PGŽ, `STANJE/IZRADA_PP` | provjereno upitima na servis |
 | Nagib terena, pristup i okolina | Open-Meteo, OpenStreetMap | isti kod kao za Zagreb |
 | Vodovod, kanalizacija, struja, plin | — | „Podaci nisu dostupni” (SKI za PGŽ nije pripremljen) |
-| Uvjeti gradnje | — | „Za otok Krk još nisu obrađeni” |
-| Komunalni doprinos, priključci | — | „još nisu obrađeni” |
+| Uvjeti gradnje (obiteljska i višeobiteljska kuća, Grad Krk) | PPUG Grada Krka, pročišćeni tekst SN PGŽ 29/2020, `src/rules_krk.json` | parametri i navodi preuzeti s mrežne stranice SN-a; potrebna usporedba s cijelim tekstom |
+| Komunalni doprinos (Grad Krk) | Odluka SN PGŽ 43/2018 | iznos po zoni upisuje korisnik (tablica nije u mrežnom tekstu) |
+| Priključci, cijena gradnje | — | „još nisu obrađeni” |
 
 Za ostalih šest jedinica na otoku prikazuje se isti županijski sloj, uz napomenu da pilot nije provjeren za njih. Za točke na kopnu unutar obuhvata (npr. Crikvenica) piše da su izvan područja aplikacije.
 
@@ -26,6 +27,43 @@ Ocjena namjene:
 - „Izvan građevinskog područja” za sve ostalo.
 
 Za „neizgrađeno” piše samo da plan *može* propisati obvezu UPU-a, ništa više.
+
+## Uvjeti gradnje (Grad Krk)
+
+Redoslijed odluke:
+1. Druga jedinica na otoku: „zasad obrađeni samo za Grad Krk”.
+2. Izvan građevinskog područja naselja: uvjeti za kuće ne vrijede.
+3. Na lokaciji vrijedi UPU ili DPU (evidencija PGŽ): nema izračuna; uvjete propisuje taj plan.
+4. Neizgrađeni dio GP-a: čl. 15., gradnja tek nakon UPU-a (crveno, bez brojki).
+5. Naselje Krk (NA1): čl. 19. ga ne navodi za izravnu provedbu, pa su brojke samo orijentacijske.
+6. Inače izračun prema čl. 22. (obiteljska) ili 23. (višeobiteljska), slobodnostojeća ili dvojna:
+   - najmanja čestica, uz iznimku od 400 m²;
+   - tlocrt (kig 0,25, najviše 200 ili 100 m², najmanje 60 m²);
+   - nadzemni GBP (kis 0,5 i granica tipa 200 ili 400 m²), s podrumom kis 0,75;
+   - etaže, visina 6,5 m;
+   - od međe h/2, najmanje 4 m (3 m bez otvora), uz prostor za kuću na karti;
+   - od regulacijskog pravca 4 m, uz razvrstanu cestu 6 m;
+   - zelenilo 40 %, pristupni put.
+
+Označeno kao potrebna provjera:
+- vrijedi li granica GBP-a tipa i za podrum;
+- etaže višeobiteljske kuće u NA1 i NA2 (definicija i čl. 23. se razlikuju);
+- zaštićene povijesne cjeline.
+
+## Komunalni doprinos (Grad Krk)
+
+Važeća odluka je ona iz SN PGŽ 43/2018 (stranica Grada „Važnije odluke i pravilnici” ne navodi izmjene). Tablica iznosa po zonama nalazi se samo u PDF-u izdanja, koji nisam mogao pročitati, pa iznos upisuješ ti.
+
+Za orijentaciju su prikazane zone iz prijedloga iz 2018., uz oznaku „neprovjereno”:
+
+| Zona | Naselja | Prijedlog | Preračun (7,5345 kn/€) |
+|---|---|---|---|
+| I | Krk | 138 kn | 18,32 € |
+| II | Kornić | 120 kn | 15,93 € |
+| III | Pinezići | 100 kn | 13,27 € |
+| IV | ostala naselja | 80 kn | 10,62 € |
+
+Umanjenje od 30 % (čl. 10.) bira se ručno.
 
 ## Koordinate
 
@@ -68,7 +106,8 @@ Svi testovi rade s lažnim odgovorima servisa. Stvarni servisi nisu dohvaćeni i
 
 ## Sljedeći koraci (nakon tvoje provjere)
 
+0. Usporediti `src/rules_krk.json` s cijelim tekstom PPUG-a (SN 29/2020) i pročitati tablicu zona iz PDF-a SN 43/2018.
 1. Ako DGU ne radi iz preglednika: opcije su posrednik (Cloudflare Worker, besplatna razina, zahtijeva tvoje odobrenje) ili prikaz bez čestice.
-2. Odredbe za provedbu PPUG Krka (pročišćeni tekst SN 2020-29) → `rules_krk.json`, po uzoru na Zagreb.
-3. Komunalni doprinos Grada Krka: pronaći važeću odluku (pronađen je samo prijedlog).
+2. UPU-ovi Grada Krka (npr. UPU 1 – Krk) kao zasebna pravila.
+3. Ostalih šest općina na otoku.
 4. Katastar infrastrukture za PGŽ (datoteka 08 na ski.dgu.hr).
