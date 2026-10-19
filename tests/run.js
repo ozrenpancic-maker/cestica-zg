@@ -186,6 +186,7 @@ async function zgOssTests(){
   ({w,errs}=mk(DZ)); w.eval("render")(data(w,parcelRect(40,25),"2.2."));
   const tz=txt(w,"sheet"); ok(/Uvjeti iz baze ČesticaHR/.test(tz)&&/Izračun iz potvrđenih uvjeta baze/.test(tz)&&/Korištena površina: 1\.0\d\d m² \(grafička/.test(tz)&&!errs.length,"baza: Zagreb prikazuje uvjete iz baze i izračun s navedenom površinom "+errs.join(";"));
   ({w,errs}=boot()); w.eval("render")(data(w,parcelRect(40,25),"2.2.")); ok(!/Uvjeti iz baze ČesticaHR/.test(txt(w,"sheet")),"baza: bez uvezene baze nema novog odjeljka (aplikacija nepromijenjena)");
+  {const r=w.eval("geoParcelExport")(), f=r.fc.features[0]; ok(!!$(w,"geoDl")&&r.name==="sestine_cestica_1_1.geojson"&&f.geometry.type==="Polygon"&&/Grad Zagreb/.test(f.properties.izvor)&&f.properties.katastarska_opcina==="ŠESTINE"&&JSON.stringify(f.geometry.coordinates)===JSON.stringify(parcelRect(40,25).geometry.coordinates),"GeoJSON Zagreb: stvarna geometrija iz gradskog sloja, bez promjena");}
 }
 
 // ---------------- 3. Kupnja zemljišta
@@ -920,7 +921,7 @@ async function krkTests(){
   let mode="ok", calls=[];
   const okj=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b)});
   w.fetch=(u,o={})=>{u=String(u); calls.push(u);
-    if(u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/")) return mode==="wms"?okj({type:"FeatureCollection",features:[{type:"Feature",properties:{CESTICA_ID:1,BROJ_CESTICE:"2345/6",POVRSINA_GRAFICKA:600,POVRSINA_ATRIBUTNA:615}}]}):Promise.reject(new TypeError("Failed to fetch"));
+    if(u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/")) return mode==="wms"?okj({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{CESTICA_ID:1,BROJ_CESTICE:"2345/6",MATICNI_BROJ_KO:315907,KATASTARSKA_OPCINA_ID:1239,POVRSINA_GRAFICKA:600,POVRSINA_ATRIBUTNA:615}}]}):Promise.reject(new TypeError("Failed to fetch"));
     if(u.startsWith("https://oss-test.example/")){ if(mode==="ossFail") return Promise.reject(new TypeError("Failed to fetch"));
       if(mode==="oss403once"){mode="ok"; return Promise.resolve({ok:false,status:502,json:()=>Promise.resolve({ok:false,greska:"OSS HTTP 403"})});}
       if(!/\?id=1$/.test(u)) return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve({ok:false,greska:"OSS nema česticu s tim ID-om"})});
@@ -991,7 +992,10 @@ async function krkTests(){
   // izravno iz katastarskog sloja karte (bez posrednika): površina upisana u katastar
   mode="wms"; E("KATW").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20); {const tw=txt(w,"sheet");
    ok(calls.some(u=>u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/ows2-m/wms?")&&/REQUEST=GetFeatureInfo/.test(u))&&/Upisana u katastru ?615 m²/.test(tw)&&/posjedovni list \(DGU, katastarski sloj\)/.test(tw)&&/Razlika upisane u katastru i grafičke: \+2,5 %/.test(tw),"Krk: površina upisana u katastar izravno iz katastarskog sloja karte, bez posrednika");}
+  {const r=E("geoParcelExport")(), f=r&&r.fc.features[0], pr=f&&f.properties, c0=f&&f.geometry.coordinates[0][0], x=E("tmInv")(ring[0][0],ring[0][1]);
+   ok(!!$(w,"geoDl")&&r.name==="kornic_cestica_2345_6.geojson"&&f.geometry.type==="Polygon"&&pr.broj_cestice==="2345/6"&&pr.katastarska_opcina==="KORNIĆ"&&pr.ko_maticni_broj==="315907"&&pr.ko_id_dgu===1239&&pr.cestica_id_dgu===1&&/WMS oss:BZP_CESTICE/.test(pr.izvor)&&/EPSG:3765/.test(pr.izvorni_crs)&&/EPSG:4326/.test(pr.crs)&&Math.abs(c0[0]-x[0])<1e-7&&Math.abs(c0[1]-x[1])<1e-7&&Math.abs(pr.povrsina_iz_koordinata_m2-600)<1.5,"GeoJSON Krk: izvorna DGU geometrija iz katastarskog sloja, EPSG:4326, broj, k.o. i izvor");}
   mode="ok"; E("KATW").clear(); E("renderKrk")(E("KRK_CUR"));
+  {const r=E("geoParcelExport")(), pr=r.fc.features[0].properties; ok(r.name==="kornic_cestica_2345_6.geojson"&&/DKP, ATOM ko-315907\.zip/.test(pr.izvor)&&/0,1 m/.test(pr.tocnost)&&r.fc.features[0].geometry.coordinates[0].length===5,"GeoJSON Krk: bez sloja karte koristi se DKP uz aplikaciju, uz navedenu točnost");}
   // isti raspored odjeljaka kao Zagreb; gdje nema podataka piše da nisu dostupni
   {const tu=txt(w,"sheet"), hs=[...w.document.querySelectorAll("#sheet h2")].map(x=>x.textContent);
    ok(["Provjere","Uvjeti gradnje","Gradnja i naknade","Novac i kupnja","Sunce i energija","Dokumentacija i gdje se obratiti"].every(x=>hs.includes(x)),"Krk: isti odjeljci kao Zagreb ("+hs.join(", ")+")");

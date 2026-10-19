@@ -937,7 +937,7 @@ async function katwAt(lat,lon){
   try{const r=await fetch(KATW_URL+"?"+q.toString(),{signal:ac.signal}); if(!r.ok) throw new Error("HTTP "+r.status);
     const j=await r.json(), f=j&&j.features&&j.features[0]; if(!f) return null; const p=f.properties||{};
     const n=v=>{const x=parseFloat(v); return Number.isFinite(x)?x:null};
-    return {id:p.CESTICA_ID!=null?String(p.CESTICA_ID):null,broj:p.BROJ_CESTICE||null,koMb:p.MATICNI_BROJ_KO!=null?String(p.MATICNI_BROJ_KO):null,graficka:n(p.POVRSINA_GRAFICKA),atributna:n(p.POVRSINA_ATRIBUTNA)};}
+    return {id:p.CESTICA_ID!=null?String(p.CESTICA_ID):null,broj:p.BROJ_CESTICE||null,koMb:p.MATICNI_BROJ_KO!=null?String(p.MATICNI_BROJ_KO):null,koId:p.KATASTARSKA_OPCINA_ID!=null?String(p.KATASTARSKA_OPCINA_ID):null,graficka:n(p.POVRSINA_GRAFICKA),atributna:n(p.POVRSINA_ATRIBUTNA),geom:f.geometry||null};}
   catch(e){throw new Error(e.name==="AbortError"?"ne odgovara":e.message||"mreža")}
   finally{clearTimeout(t)}
 }
@@ -1058,6 +1058,47 @@ function areaCmpRefresh(){const c=window.__areaCmp; if(!c) return;
   if(AREA_SRC!=="graf"){clearTimeout(AREA_RR); AREA_RR=setTimeout(()=>c.rerender(),60); return;}
   const el=document.getElementById("areaCmp"); if(el) el.outerHTML=areaCmpHtml(c.P,c.area,c.share,c.calc);}
 sheet.addEventListener("change",e=>{ if(e.target.id!=="areaSel") return; AREA_SRC=e.target.value; try{localStorage.setItem("areaSrc",AREA_SRC)}catch(err){} const c=window.__areaCmp; if(c) c.rerender(); });
+// --- izvoz granice čestice kao GeoJSON (EPSG:4326); samo stvarna geometrija iz izvora, ništa se ne procjenjuje
+const geoSlug=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/gi,"d").toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"");
+function geoFromTM(g){ // GeoJSON geometrija u EPSG:3765 -> EPSG:4326
+  const ring=r=>r.map(([e,n])=>{const [lo,la]=tmInv(e,n); return [+lo.toFixed(8),+la.toFixed(8)]});
+  if(g.type==="Polygon") return {type:"Polygon",coordinates:g.coordinates.map(ring)};
+  if(g.type==="MultiPolygon") return {type:"MultiPolygon",coordinates:g.coordinates.map(p=>p.map(ring))};
+  return null;
+}
+function geoParcelExport(){
+  const c=window.__cur; if(!c) return null;
+  let parcel=null, base={}, key=c.key, P=null;
+  if(KRK_CUR&&KRK_CUR.parcel){parcel=KRK_CUR.parcel; P=parcel.properties;
+    base={broj_cestice:P.broj,katastarska_opcina:P.ko||null,ko_maticni_broj:P.koRef||null,cestica_id_dgu:P.dguId!=null?Number(P.dguId):null};}
+  else if(window.__lastData&&window.__lastData.parcel){parcel=window.__lastData.parcel; const p=parcel.properties; P=zgAreaP(parcel,key);
+    base={broj_cestice:p.KATASTARSKA_CESTICA||null,katastarska_opcina:p.KATASTARSKA_OPCINA||null,ko_maticni_broj:null,cestica_id_dgu:null};}
+  if(!parcel||!parcel.geometry||!/^(Multi)?Polygon$/.test(parcel.geometry.type)) return null;
+  const w=P?katwGet(P):null; let geom, izvor, crs0, tocnost;
+  if(w&&w.geom&&/^(Multi)?Polygon$/.test(w.geom.type)){ // izvorne koordinate DGU-a (HTRS96/TM)
+    geom=geoFromTM(w.geom); izvor="Državna geodetska uprava, katastarski sloj karte (WMS oss:BZP_CESTICE, wms1-gs-oss.uredjenazemlja.hr), dohvaćeno "+new Date().toISOString().slice(0,10);
+    crs0="EPSG:3765 (HTRS96/TM)"; tocnost="pretvorba u aplikaciji (Snyder, USGS 1395), odstupanje manje od 2 cm; 8 decimala";
+    if(w.id) base.cestica_id_dgu=Number(w.id); if(w.koMb) base.ko_maticni_broj=w.koMb; if(w.koId) base.ko_id_dgu=Number(w.koId);
+  }else if(KRK_CUR){
+    const I=KAT.idx||{}; geom=parcel.geometry; izvor="Državna geodetska uprava, digitalni katastarski plan (DKP, ATOM ko-"+(base.ko_maticni_broj||"")+".zip), preuzet uz aplikaciju "+(I.preuzeto||P.preuzeto||"");
+    crs0="EPSG:3765 (HTRS96/TM), pretvoreno pri pripremi podataka (pyproj)"; tocnost="koordinate zaokružene na 0,000001° (oko 0,1 m)";
+  }else{
+    geom=parcel.geometry; izvor="Grad Zagreb, sloj katastarskih čestica (2023.), geoportal.zagreb.hr";
+    crs0="EPSG:4326 (servis Grada Zagreba)"; tocnost="kako ih vraća servis Grada Zagreba";
+  }
+  const props={...base,izvor,izvorni_crs:crs0,crs:"EPSG:4326 (WGS84), redoslijed koordinata: geografska dužina, širina",tocnost,
+    povrsina_iz_koordinata_m2:Math.round(turf.area({type:"Feature",geometry:geom,properties:{}})*10)/10,
+    napomena:"Grafički prikaz granice iz katastarskog plana; nije geodetska izmjera i nije pravno mjerodavan.",izvezeno:new Date().toISOString(),aplikacija:"Čestica HR"};
+  for(const k of Object.keys(props)) if(props[k]==null) delete props[k];
+  const name=(geoSlug(props.katastarska_opcina)||"ko")+"_cestica_"+geoSlug(props.broj_cestice||"bez_broja")+".geojson";
+  return {name,fc:{type:"FeatureCollection",name:name.replace(/\.geojson$/,""),crs:{type:"name",properties:{name:"urn:ogc:def:crs:OGC:1.3:CRS84"}},
+    features:[{type:"Feature",id:props.cestica_id_dgu!=null?String(props.cestica_id_dgu):undefined,geometry:geom,properties:props}]}};
+}
+sheet.addEventListener("click",e=>{ if(e.target.id!=="geoDl") return;
+  const r=geoParcelExport(); if(!r){alert("Za ovu lokaciju nema geometrije katastarske čestice, pa se GeoJSON ne može napraviti."); return}
+  const blob=new Blob([JSON.stringify(r.fc,null,1)],{type:"application/geo+json"}), u=URL.createObjectURL(blob), a=document.createElement("a");
+  a.href=u; a.download=r.name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(u); a.remove()},1000);
+});
 // Zagreb: čestica iz gradskog sloja nema DGU-ov ID, pa posrednik česticu traži po točki unutar čestice
 function zgAreaP(parcel,key){
   const p=parcel.properties, k="zg:"+key, os=OSSZK.get(k), d=os&&os.st==="ok"?os.d:null, w=katwGet({cid:k,broj:p.KATASTARSKA_CESTICA||null});
@@ -1168,7 +1209,7 @@ function renderKrk(d){
   }
   h+=`<div id="sumEnd"></div>`;
   const key=window.__cur.key;
-  h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(key)?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="shareBtn">Podijeli</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button></div>`;
+  h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(key)?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="shareBtn">Podijeli</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button>${parcel?`<button type="button" class="ib" id="geoDl">Preuzmi GeoJSON čestice</button>`:""}</div>`;
   h+=G("analiza");
   if(parcel) h+=krkZkBlock(parcel.properties,ll);
   // provjere (isti raspored kao za Zagreb)
@@ -2261,7 +2302,7 @@ function render(d){
   if(!snap&&parcel) projApplySim(window.__cur.key);
   GRP=null; let zkH=""; window.__areaCmp=null;
   let h=G("sum")+`<p id="printHead" class="print-only"></p><div id="printMap"></div>`;
-  if(checks) h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(favKey(parcel,ll))?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="shareBtn">Podijeli</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button></div>`;
+  if(checks) h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(favKey(parcel,ll))?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="shareBtn">Podijeli</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button>${parcel?`<button type="button" class="ib" id="geoDl">Preuzmi GeoJSON čestice</button>`:""}</div>`;
   // Čestica
   if(parcel){
     const p=parcel.properties;

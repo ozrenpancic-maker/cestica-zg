@@ -1,0 +1,75 @@
+{
+ "type": "FeatureCollection",
+ "name": "kornic_cestica_735_76",
+ "crs": {
+  "type": "name",
+  "properties": {
+   "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+  }
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "id": "19311099",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       14.61572897,
+       45.04408013
+      ],
+      [
+       14.61593872,
+       45.04390091
+      ],
+      [
+       14.61597191,
+       45.04388751
+      ],
+      [
+       14.61608669,
+       45.0440144
+      ],
+      [
+       14.61593808,
+       45.0441059
+      ],
+      [
+       14.61588894,
+       45.04415665
+      ],
+      [
+       14.61584619,
+       45.04414434
+      ],
+      [
+       14.61576678,
+       45.04410388
+      ],
+      [
+       14.61572897,
+       45.04408013
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "broj_cestice": "735/76",
+    "cestica_id_dgu": 19311099,
+    "katastarska_opcina": "KORNIĆ",
+    "ko_maticni_broj": "315907",
+    "ko_id_dgu": 1239,
+    "povrsina_graficka_m2": 405.0,
+    "povrsina_iz_koordinata_m2_htrs96": 405.41,
+    "izvor": "Državna geodetska uprava, digitalni katastarski plan (DKP), usluga preuzimanja ATOM: https://oss.uredjenazemlja.hr/oss/public/atom/ko-315907.zip",
+    "izvorna_datoteka": "ko-315907.zip / katastarske_cestice.gml",
+    "datum_podataka": "2026-10-19",
+    "izvorni_crs": "EPSG:3765 (HTRS96/TM)",
+    "crs": "EPSG:4326 (WGS84), redoslijed koordinata: geografska dužina, širina",
+    "pretvorba": "pyproj (PROJ), EPSG:3765 → EPSG:4326; koordinate zaokružene na 8 decimala (oko 1 mm)",
+    "napomena": "Grafički prikaz granice iz katastarskog plana; nije geodetska izmjera i nije pravno mjerodavan."
+   }
+  }
+ ]
+}
