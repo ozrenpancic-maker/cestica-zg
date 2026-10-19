@@ -880,6 +880,7 @@ async function krkTests(){
     return Promise.reject(new Error("neočekivan zahtjev "+u));
   };
   const tick=ms=>new Promise(r=>setTimeout(r,ms));
+  const OSS_URL=E("SRC_KRK").oss; ok(/^https:\/\/cestica-oss\.ozren-pancic\.workers\.dev\/$/.test(OSS_URL),"Krk: adresa posrednika prema OSS-u je postavljena"); E("SRC_KRK").oss="";
   await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50);
   const t=txt(w,"sheet");
   ok(calls.some(u=>u.endsWith("data/kat_krk/index.json"))&&calls.filter(u=>/data\/kat_krk\/-?\d+_-?\d+\.json$/.test(u)).length===1&&!calls.some(u=>u.includes("uredjenazemlja")),"Krk: čestica iz katastra uz aplikaciju (jedan kvadrat), bez DGU WFS-a");

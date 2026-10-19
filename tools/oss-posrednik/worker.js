@@ -35,7 +35,7 @@ function xmlToObj(s) {
   const k = Object.keys(root.kids); return k.length === 1 ? root.kids[k[0]] : root.kids;
 }
 
-export function sazmi(d) {
+function sazmi(d) {
   const odjeli = {};
   for (const u of list(d.lrUnitsFromParcelLinks)) odjeli[String(u.lrUnitId)] = { odjel: u.institutionName || null, vrsta: u.lrUnitTypeName || null, status: u.statusName || null };
   const zk = list(d.parcelLinks).map(l => {
@@ -82,4 +82,3 @@ export default {
   }
 };
 
-export { xmlToObj };
