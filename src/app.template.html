@@ -718,6 +718,41 @@ function tipCmpHtml(rows,A,izvor){
   h+=`</ul><p class="meta">Dodirni tip za detaljan izračun ispod. Pouzdanost: izračun je najviše B; ako je zona tvoja pretpostavka, C.</p></div></details>`;
   return h;
 }
+// ================= PODRUČJE ZA GRADNJU (Faza B, korak 2) =================
+// Obris = čestica umanjena za udaljenost od međa (samo dio u građevinskoj namjeni), pa još za pojas uz ulicu do
+// udaljenosti od regulacijskog pravca. Strana čestice uz ulicu procjenjuje se iz OpenStreetMapa (ceste do 12 m od ruba),
+// jer regulacijski pravac nije u javnim podacima. Rezultat je geometrijski (B), uz cestu procjena (C); nije dopuštenje.
+const gpLayer=L.layerGroup().addTo(map); const GP={show:true};
+function gradivo(parcel,baseGeom,medaD,pravacD,roads){
+  if(!parcel||!baseGeom) return null;
+  const base={type:"Feature",geometry:baseGeom,properties:{}}, baseArea=turf.area(base);
+  let band=null, geom=base, st="nema";
+  if(pravacD>0&&Array.isArray(roads)){ st="nije uz cestu"; try{band=streetBand(parcel,roads,pravacD); if(band){const g=turf.difference(base,band); geom=g||null; st="primijenjen";}}catch(e){} }
+  else if(pravacD>0) st="ceste nisu učitane";
+  let bi=null; try{bi=band?turf.intersect(base,band):null}catch(e){}
+  return {geom:geom?geom.geometry:null,area:geom?turf.area(geom):0,baseArea,band:bi,medaD,pravacD,st,parcelArea:turf.area(parcel)};
+}
+function gpDraw(G){ gpLayer.clearLayers(); if(!G||!GP.show) return;
+  if(G.band) L.geoJSON(G.band,{style:{color:"#c77700",weight:1,dashArray:"3 3",fillColor:"#f0a020",fillOpacity:.35},interactive:false}).addTo(gpLayer);
+  if(G.geom) L.geoJSON(G.geom,{style:{color:"#14532d",weight:2.5,fillColor:"#22a35a",fillOpacity:.30},interactive:false}).addTo(gpLayer); }
+function gpHtml(G,tlKig,opisMeda,opisPravac){
+  if(!G) return "";
+  window.__gp=G; gpDraw(G);
+  const geo=tlKig!=null?Math.min(tlKig,G.area):null, ogr=tlKig!=null&&G.area<tlKig, md=String(G.medaD).replace(".",",");
+  const pzG=pzSet("gp-podrucje","Područje za gradnju (obris na karti)",fmt(G.area)+" m²",G.st==="primijenjen"?pz("C",{metoda:"odmak "+md+" m od međa i "+String(G.pravacD).replace(".",",")+" m od strane uz cestu",razlog:"strana uz cestu procijenjena iz OpenStreetMapa; regulacijski pravac nije potvrđen",provjera:"lokacijska informacija"})
+    :G.st==="nema"?pz("B",{metoda:"odmak "+md+" m od međa"}):pz("C",{metoda:"odmak "+md+" m od međa",razlog:G.st==="ceste nisu učitane"?"ceste iz OpenStreetMapa nisu učitane; odmak od ceste nije primijenjen":"uz česticu nije prepoznata cesta; odmak od ceste nije primijenjen",provjera:"lokacijska informacija"}));
+  const open=OPEN.has("gp")?" open":"";
+  let h=`<details class="acc" data-k="gp"${open}><summary><span>Područje za gradnju</span><b>${fmt(G.area)} m² ${pzTag(pzG)}</b></summary><div class="acc-body"><table class="rp"><tbody>`;
+  h+=`<tr><th>Čestica</th><td>${fmt(G.parcelArea)} m²<small class="fx">grafička površina</small></td></tr>`;
+  h+=`<tr><th>Nakon odmaka od međa</th><td>${fmt(G.baseArea)} m²<small class="fx">${esc(opisMeda)}; samo dio čestice u građevinskoj namjeni</small></td></tr>`;
+  h+=`<tr><th>Odmak od ceste</th><td>${G.st==="primijenjen"?`${String(G.pravacD).replace(".",",")} m od ruba čestice uz cestu (narančasto)`:G.st==="nema"?"pravilo ne navodi udaljenost od regulacijskog pravca":G.st==="nije uz cestu"?"uz česticu nije prepoznata cesta; nije primijenjen":"ceste još nisu učitane; nije primijenjen"}<small class="fx">${esc(opisPravac||"")}</small></td></tr>`;
+  h+=`<tr><th>Područje za gradnju</th><td><b>${fmt(G.area)} m²</b> ${pzTag(pzG)}<small class="fx">zeleno na karti</small></td></tr>`;
+  if(tlKig!=null) h+=`<tr><th>Geometrijski moguć tlocrt</th><td><b>do ${fmt(geo)} m²</b> ${pzTag(pzCalc({},[pzG]))}<small class="fx">${ogr?`Oblik čestice ograničava tlocrt: kig dopušta ${fmt(tlKig)} m², a u obris stane najviše ${fmt(G.area)} m².`:`Kig dopušta ${fmt(tlKig)} m²; obris je veći, pa ograničenje dolazi od kig-a.`} Kuća mora stati u obris; provjeri u simulatoru.</small></td></tr>`;
+  h+=`</tbody></table><div class="kd"><button type="button" class="ib" id="gpTog">${GP.show?"Sakrij s karte":"Prikaži na karti"}</button></div>`;
+  h+=`<p class="meta">Strana čestice uz cestu procijenjena je iz OpenStreetMapa (cesta do 12 m od ruba čestice). Regulacijski pravac nije u javnim podacima, pa obris nije potvrđen: mjerodavna je lokacijska informacija. Obris nije dopuštenje za gradnju.</p></div></details>`;
+  return h;
+}
+sheet.addEventListener("click",e=>{ if(e.target.id!=="gpTog") return; GP.show=!GP.show; gpDraw(window.__gp); e.target.textContent=GP.show?"Sakrij s karte":"Prikaži na karti"; });
 function pzOtvoreno(extra){
   pzSet("ot-pristup","Pristup s javne prometne površine",null,pz("C",{razlog:"širina i pravni status pristupa nisu provjereni; ulica iz OpenStreetMapa je procjena",provjera:"lokacijska informacija, katastar (čestica puta)"}));
   pzSet("ot-regulacija","Regulacijski pravac",null,pz("C",{razlog:"nije u javnim podacima",provjera:"lokacijska informacija"}));
@@ -808,7 +843,7 @@ function krkRuleStateJls(d,jls){
   return {st:RS.upozorenje||notes.some(n=>n===N.msg||/lokacijska informacija|ne odgovara|nije odgovorila/.test(n))?"provjera":"ok",RS,izgr,notes,grupa:RS.grupa.naziv};
 }
 function krkRulesHtml(d){
-  const R=RULES_KRK, S=krkRuleState(d); let h=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>`; krkEnvLayer.clearLayers();
+  const R=RULES_KRK, S=krkRuleState(d); let h=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>`; krkEnvLayer.clearLayers(); gpLayer.clearLayers(); window.__gp=null; pzDel("gp-podrucje");
   window.__krkCalc=null; window.__env=null;
   if(S.st==="ne"||S.st==="upuNe"){h+=`<p class="hint">${esc(S.msg)}</p>`; return h;}
   if(S.st==="blok"){h+=`<div class="verdict v-no">${esc(S.msg)}</div><p class="meta">Čl. ${esc(S.cl)}.: „${esc(S.txt)}“</p>`; return h;}
@@ -850,6 +885,10 @@ function krkRulesHtml(d){
   if(Pm.napomena) h+=`<p class="flag">${esc(Pm.napomena)}</p>`;
   return h+krkCalcHtml(d,S,RS,T,Pm,oblSel,isUpu);
 }
+// udaljenost od regulacijskog pravca na Krku: manja vrijednost (ostale/nerazvrstane ceste); uz razvrstanu/javnu cestu više
+function krkRegDist(RS){const r=RS&&RS.regulacija; if(!r) return null; if(r.ostale) return {d:r.ostale,max:r.razvrstane||null};
+  const n=String(r.opis||""), a=n.match(/nerazvrstan\w*\s+(\d+(?:,\d+)?)\s*m/i), b=n.match(/javn\w*\s+cest\w*\s+(\d+(?:,\d+)?)\s*m/i);
+  return a?{d:parseFloat(a[1].replace(",",".")),max:b?parseFloat(b[1].replace(",",".")):null}:null;}
 function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   const R=RULES_KRK, area=d.area, I=RS.izvor||R.izvor; let h="";
   const base=isUpu?S.izgr:S.izgr;
@@ -879,6 +918,8 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
        const stanje=zab.includes(o)?"zabr":!mOk&&!mEx?"mala":P2.tlMin&&t2<P2.tlMin?"tl":P2.maxC&&A>P2.maxC?"vel":mEx?"izn":"ok";
        rows.push({key:"krk|"+k+"|"+o,naziv:T2.naziv,oblik:ON[o]||o,minC:P2.minC,minCIzn:P2.minCIznimno,tl:t2,gbp:g2,visina:T2.visina,etaze:T2.etaze,stanje,odabran:T2===T&&o===oblSel,pz:pzCalc({},[pzA,pzR,pzZ,pzS])});}}
    window.__tipCmp=rows; h+=tipCmpHtml(rows,A,AS&&AS.naziv?AS.naziv+" površina":null);}
+  if(env){const RD=krkRegDist(RS);
+    h+=gpHtml(gradivo(d.parcel,env.geom,RS.meda.min,RD?RD.d:null,d.env&&d.env.v?d.env.v.roadLines:null),tl,`${RS.meda.min} m od međa (${RS.meda.opis||""}, čl. ${RS.meda.clanak})`,RD?`primijenjeno ${RD.d} m; plan: ${RS.regulacija.opis} (čl. ${RS.regulacija.clanak})${RD.max?". Ako je cesta razvrstana ili javna, odmak je veći.":""}`:"");}
   const chips=[(minOk?"čestica dovoljna":minEx?"čestica: samo iznimno":"čestica premala"),"tlocrt do "+fmt(tl)+" m²","GBP do "+fmt(gbpN)+" m²","visina "+dec(T.visina)+" m"];
   h+=`<div class="chips">${chips.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`;
   const row=(l,v,cls="")=>`<div class="row"><span>${l}</span><span class="${cls}">${v}</span></div>`;
@@ -1735,7 +1776,7 @@ function renderKrk(d){
 
 async function inspect(ll){
   if(isOffline()){pwaOfflineInspect(); return}
-  krkEnvLayer.clearLayers(); KRK_CUR=null; RK_CTX=null; if(RK_MAP.layer){map.removeLayer(RK_MAP.layer); RK_MAP.layer=null;} RK_MAP.on=false;
+  krkEnvLayer.clearLayers(); KRK_CUR=null; RK_CTX=null; gpLayer.clearLayers(); window.__gp=null; if(RK_MAP.layer){map.removeLayer(RK_MAP.layer); RK_MAP.layer=null;} RK_MAP.on=false;
   if(regionOf(ll)==="krk") return inspectKrk(ll);
   const id=++clickId;
   selLayer.clearLayers(); infLayer.clearLayers(); TL.layer=null; TL.marker=null; TL.rotM=null; TL.center=null; TL.zl=null; TL.zones=null; SUN.nb=null; SUN.layer=null; SUN.nbErr=null; ZK.res=null; window.__infra=null; window.__ski=null; skiLayer.clearLayers();
@@ -2833,7 +2874,7 @@ function render(d){
     risks:checks?checks.filter(r=>r.v&&r.v.length).map(r=>r.c.label):null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:envelope?Math.round(envelope.area):null};
   if(!snap&&parcel) projApplySim(window.__cur.key);
   GRP=null; let zkH=""; window.__areaCmp=null;
-  pzReset(window.__cur.key);
+  pzReset(window.__cur.key); gpLayer.clearLayers(); window.__gp=null;
   if(rows.length){const m=rows[0].p; pzSet("namjena","Namjena (GUP)",m.Namjena||m.Analitika,pz("A",{izvor:"Grad Zagreb, GIS baza planirane namjene (2023.)"+(m.Naziv_plana?", "+m.Naziv_plana:""),obuhvat:"oznaka na čestici",datum:pzDan()}));
     if(rows.length>1||rows[0].share!=null) pzSet("namjena-udio","Udio zona na čestici",rows.map(r=>(r.p.Namjena||r.p.Analitika||"?")+(r.share!=null?" "+Math.round(r.share*100)+" %":"")).join(", "),pz("B",{metoda:"GIS presjek granice čestice i sloja namjene"}));}
   else if(nam&&nam.e) pzSet("namjena","Namjena",null,pz("C",{razlog:"servis namjene nije odgovorio",provjera:"lokacijska informacija"}));
@@ -2955,6 +2996,8 @@ function render(d){
             const stanje=!p.minC||A>=p.minC?"ok":A>=p.minC*0.95?"rub":(smallParcelRule(zone)||RP.find(x=>x.id==="minC"&&x.status==="provjera"))?"provj":"mala";
             return {key:"zg|"+t,naziv:"Kuća",oblik:n,minC:p.minC,tl:p.izg?A*p.izg:null,gbp:g,etaze:est?"GBP procjena (tlocrt × 2,5)":null,stanje,odabran:t===TIP,pz:pzCalc({},[pzA,pzR,pzZ,PZREG.items.get("pravilo-karta")])};}).filter(Boolean);
          window.__tipCmp=rows; h+=tipCmpHtml(rows,A,AS&&AS.naziv?AS.naziv+" površina":null);}
+        if(envelope&&envelope.geom){const pr=RP.find(x=>x.id==="pravac"), pd=pr&&pr.value?parseFloat(String(pr.value).replace(/[^\d,]/g,"").replace(",",".")):null;
+          h+=gpHtml(gradivo(parcel,envelope.geom,envelope.d,pd,env&&env.v?env.v.roadLines:null),pp.izg?A*pp.izg:null,`${String(envelope.d).replace(".",",")} m od međa${envelope.est?" (procjena: "+envelope.est+")":""}`,pd?`${String(pd).replace(".",",")} m od regulacijskog pravca (pravilo ${code})`:"");}
         h+=`<details class="acc" data-k="calc"><summary><span>Izračun za ovu česticu</span><b class="${okC}">${esc(sumC)}</b></summary><div class="calc">`;
         if(AP){const smallX0=!!(pp.minC&&(smallParcelRule(zone)||minCond)), calcZ=a=>{let g=pp.kis?Math.min(a*pp.kis,pp.gbp||Infinity):(pp.gbp||null); if(!g&&pp.izg) g=a*pp.izg*2.5; return {min:pp.minC?(a>=pp.minC?true:a>=pp.minC*0.95?"rub":smallX0?"provj":false):null,tl:pp.izg?a*pp.izg:null,gbp:g};};
           window.__areaCmp={P:AP,area,share,calc:calcZ,rerender:()=>{if(window.__lastData) render(window.__lastData)}}; h+=areaCmpHtml(AP,area,share,calcZ);}

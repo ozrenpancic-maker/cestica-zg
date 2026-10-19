@@ -101,3 +101,19 @@ Uz faze se ispisuje cijela formula jedinične cijene.
 - Simulirana kuća je korisnički scenarij.
 - Cijene su procjene (B).
 - Usklađenost s pravilima je samo geometrijska. Aplikacija nikad ne tvrdi da je kuća pravno dopuštena.
+
+## Područje za gradnju (Faza B, korak 2)
+
+U „Uvjetima gradnje”, odmah ispod usporedbe tipova, postoji odjeljak „Područje za gradnju”, a obris je ucrtan na karti.
+
+- **Obris (zeleno):** čestica umanjena za udaljenost od međa. Uzima se samo dio u građevinskoj namjeni: Zagreb prema pravilu GUP-a, Krk prema PPUG-u ili UPU-u (4 m).
+- **Pojas uz cestu (narančasto):** od obrisa se oduzima pojas do udaljenosti od regulacijskog pravca uz rub čestice prema cesti.
+  - Rub uz cestu procjenjuje se iz OpenStreetMapa (cesta do 12 m od ruba).
+  - Na Krku se primjenjuje manja vrijednost iz plana (4 m), uz napomenu da je uz razvrstanu ili javnu cestu odmak veći.
+- **Geometrijski moguć tlocrt** = manje od tlocrta prema kig-u i površine obrisa. Uz njega piše što ograničava: kig ili oblik čestice.
+- **Pouzdanost:**
+  - B kad se primjenjuje samo odmak od međa;
+  - C kad je primijenjen pojas uz cestu (procjena iz OpenStreetMapa) ili kad ceste nisu učitane.
+
+  Obris nije dopuštenje: regulacijski pravac potvrđuje lokacijska informacija.
+- Gumb „Sakrij s karte” / „Prikaži na karti”.

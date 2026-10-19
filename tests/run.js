@@ -1358,7 +1358,26 @@ async function investTests(){
   ok(errs.length===0,"bez JS grešaka (moja investicija, faza I): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(ai2Tests).then(sunTests).then(()=>{
+// ---------------- Faza B, korak 2: područje za gradnju (odmak od međa i ceste)
+async function gpTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"90/1",KATASTARSKA_OPCINA:"REMETE"}), T=w.turf;
+  const base=T.buffer(A,-3/1000,{units:"kilometers"}).geometry;
+  const c=A.geometry.coordinates[0], dy=5/110540, road=[{ok:true,geom:[[c[0][0]-0.001,c[0][1]-dy],[c[1][0]+0.001,c[1][1]-dy]]}];
+  const G=E("gradivo")(A,base,3,5,road), G0=E("gradivo")(A,base,3,5,null), G1=E("gradivo")(A,base,3,null,road);
+  ok(Math.abs(G.parcelArea-750)<8&&Math.abs(G.baseArea-456)<6&&Math.abs((G.baseArea-G.area)-48)<3&&G.st==="primijenjen"&&G.band,"Područje za gradnju: 30 × 25 m, 3 m od međa → 456 m²; cesta uz južnu stranu, 5 m od ruba → uklanja se pojas 2 × 24 = 48 m²");
+  ok(G0.st==="ceste nisu učitane"&&Math.abs(G0.area-G0.baseArea)<0.01&&G1.st==="nema","Bez učitanih cesta ili bez pravila o pravcu odmak od ceste se ne primjenjuje, uz razlog");
+  const rd=E("krkRegDist"); ok(JSON.stringify(rd({regulacija:{ostale:4,razvrstane:6}}))==='{"d":4,"max":6}'&&JSON.stringify(rd({regulacija:{opis:"javna cesta 6 m (najmanje 9 m od osi), nerazvrstana 4 m (najmanje 7 m od osi)"}}))==='{"d":4,"max":6}',"Krk: udaljenost od regulacijskog pravca iz PPUG-a (4 / 6 m) i UPU-a 2 (nerazvrstana 4 m, javna 6 m)");
+  // prikaz u Zagrebu: s cestama iz OSM-a
+  const d=data(w,A,"2.2."), envO={v:{roads:[],roadLines:road,stops:[]}}; d.env=envO; w.__env=d.envelope; E("OPEN").add("calc"); E("OPEN").add("gp"); E("render")(d);
+  const t=txt(w,"sheet"), R=E("PZREG").items.get("gp-podrucje");
+  ok(/Područje za gradnju/.test(t)&&/Geometrijski moguć tlocrt/.test(t)&&R&&R.raz==="C"&&/OpenStreetMapa/.test(R.razlog)&&E("gpLayer").getLayers().length===2,"Zagreb: obris i pojas uz cestu na karti; područje C jer je strana uz cestu procjena");
+  $(w,"gpTog").dispatchEvent(new w.Event("click",{bubbles:true})); ok(E("gpLayer").getLayers().length===0,"Područje za gradnju: skrivanje s karte");
+  $(w,"gpTog").dispatchEvent(new w.Event("click",{bubbles:true})); ok(E("gpLayer").getLayers().length===2,"Područje za gradnju: ponovni prikaz");
+  ok(errs.length===0,"bez JS grešaka (područje za gradnju): "+errs.join(" | "));
+}
+
+netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(ai2Tests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
