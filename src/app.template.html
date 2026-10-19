@@ -457,8 +457,8 @@ const MV=(()=>{try{const v=JSON.parse(localStorage.getItem("mapv")||"null"); ret
 const map = L.map("map",{zoomControl:false,tap:false}).setView(MV?[MV[0],MV[1]]:[45.815,15.982],MV?MV[2]:13);
 L.control.zoom({position:MQ_M.matches?"topleft":"bottomleft"}).addTo(map);
 L.control.scale({position:"bottomright",imperial:false}).addTo(map);
-const osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:20,maxNativeZoom:19,attribution:"© OpenStreetMap"}).addTo(map);
-const sat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:20,maxNativeZoom:19,attribution:"Esri"});
+const osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:22,maxNativeZoom:19,attribution:"© OpenStreetMap"}).addTo(map);
+const sat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:22,maxNativeZoom:19,attribution:"Esri"});
 const namLayer = L.geoJSON(null,{style:f=>({color:COLORS[f.properties.Analitika]||"#888",weight:.6,fillOpacity:.25}),interactive:false}).addTo(map);
 const selLayer = L.layerGroup().addTo(map);
 const infLayer = L.layerGroup().addTo(map); // vodovi iz GUP-a, može se isključiti
@@ -471,7 +471,7 @@ function katHint(){const h=document.getElementById("lyrKatH"), c=document.getEle
   h.textContent=!c.checked?"":katErr>=4&&!katOk?"(DGU ne odgovara)":map.getZoom()<KAT_MINZ?"(približi kartu)":"";}
 function katPane(){if(!map.getPane("katPane")){const pn=map.createPane("katPane"); pn.style.zIndex=360; pn.style.pointerEvents="none";} return "katPane";}
 function katSet(on){
-  if(on){ if(!katLayer){ katLayer=L.tileLayer.wms("https://wms1-gs-oss.uredjenazemlja.hr/ows2-m/wms",{layers:"oss:BZP_CESTICE",styles:"",format:"image/png",transparent:true,version:"1.1.1",minZoom:KAT_MINZ,maxZoom:20,tileSize:512,pane:katPane(),opacity:.9,attribution:"Katastar © DGU"});
+  if(on){ if(!katLayer){ katLayer=L.tileLayer.wms("https://wms1-gs-oss.uredjenazemlja.hr/ows2-m/wms",{layers:"oss:BZP_CESTICE",styles:"",format:"image/png",transparent:true,version:"1.1.1",minZoom:KAT_MINZ,maxZoom:22,tileSize:512,pane:katPane(),opacity:.9,attribution:"Katastar © DGU"});
       katLayer.on("tileerror",()=>{katErr++; katHint()}); katLayer.on("tileload",()=>{katOk++; katHint()}); }
     katLayer.addTo(map); }
   else if(katLayer) map.removeLayer(katLayer);
