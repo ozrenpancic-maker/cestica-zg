@@ -126,7 +126,12 @@ h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute
 .rule-code{font-family:var(--f-mono);font-weight:500;background:var(--soft);border-radius:6px;padding:1px 6px;margin-right:6px}
 .rule-title{font-weight:700;font-size:16px;margin:4px 0 2px;text-wrap:balance}
 .kv{display:grid;grid-template-columns:7.5em 1fr;gap:6px 10px;margin:8px 0 0;font-size:14px}
-.acmpt{font-size:.88em}.acmpt th,.acmpt td{text-align:right;padding:3px 4px}.acmpt th:first-child{text-align:left}.acmpt .sel{font-weight:700;background:var(--accent-bg,rgba(31,111,84,.10))}
+table.rp.acmpt{font-size:12.5px;table-layout:auto}
+table.rp.acmpt tr{display:table-row;padding:0;border:0}
+table.rp.acmpt th,table.rp.acmpt td{display:table-cell;width:auto;text-align:right;padding:4px 3px;border-top:1px solid var(--line);vertical-align:top}
+table.rp.acmpt th:first-child{text-align:left}
+table.rp.acmpt thead th{font-weight:600;color:var(--fg)}
+table.rp.acmpt .sel{font-weight:700;background:rgba(31,111,84,.10)}
 .kv dt{color:var(--muted);min-width:0;overflow-wrap:anywhere;hyphens:auto} .kv dd{margin:0;min-width:0}
 .calc{margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--soft)}
 .calc .row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:14px}
