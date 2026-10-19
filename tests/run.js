@@ -918,6 +918,17 @@ async function krkTests(){
   mode="ok"; $(w,"krkOssRetry").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20);
   ok(/Upisana u zemljišnoj knjizi ?642 m²/.test(txt(w,"sheet")),"Krk OSS: „Pokušaj ponovno” dohvaća površinu");
   mode="ok"; E("SRC_KRK").oss=""; E("OSSZK").clear(); E("renderKrk")(E("KRK_CUR"));
+  // isti raspored odjeljaka kao Zagreb; gdje nema podataka piše da nisu dostupni
+  {const tu=txt(w,"sheet"), hs=[...w.document.querySelectorAll("#sheet h2")].map(x=>x.textContent);
+   ok(["Provjere","Uvjeti gradnje","Gradnja i naknade","Novac i kupnja","Sunce i energija","Dokumentacija i gdje se obratiti"].every(x=>hs.includes(x)),"Krk: isti odjeljci kao Zagreb ("+hs.join(", ")+")");
+   ok(!!$(w,"saveBtn")&&!!$(w,"shareBtn")&&!!$(w,"printBtn"),"Krk: spremanje, dijeljenje i ispis kao za Zagreb");
+   ok(/Procjena cijene gradnje\s*nije dostupno/.test(tu)&&/Priključci i dozvole\s*nije dostupno/.test(tu)&&/Postojeće zgrade i dogradnja\s*nije dostupno/.test(tu)&&/Podaci nisu dostupni za ovo područje/.test(tu)&&/okolicu Zagreba i ne vrijede za otok Krk/.test(tu),"Krk: odjeljci bez podataka označeni „nije dostupno” s razlogom");
+   ok(!!$(w,"sunDate")&&!!$(w,"pvGo"),"Krk: sunce i sunčana elektrana dostupni");
+   setv(w,"yPrice","60000"); const B=w.__fin&&w.__fin.buy;
+   ok(B&&near(B.rows.find(r=>r.k==="porez").v,1800)&&Math.abs(B.area-600)<1.5,"Krk: kupnja zemljišta – porez na promet 3 % od 60.000 € = 1.800 €, površina 600 m²");
+   $(w,"saveBtn").dispatchEvent(new w.Event("click",{bubbles:true}));
+   ok(JSON.parse(w.localStorage.getItem("favs")||"[]").some(f=>/^krk:/.test(f.key)&&f.ces==="2345/6"),"Krk: čestica se može spremiti");
+   const sc=E("sunCompute")(); ok(sc&&Math.abs(sc.lat-45.0274)<0.01,"Krk: položaj Sunca računa se za česticu na Krku");}
   ok(/Građevinsko područje naselja \(Kornić\)/.test(t)&&/GPN-1/.test(t)&&/P3/.test(t)&&/(4[5-9]|5[0-5]) %P3/.test(t),"Krk: namjena iz županijskog sloja s udjelima (GPN-1 i P3 otprilike po pola)");
   ok(/neizgrađeno/.test(t)&&/obvezu urbanističkog plana/.test(t),"Krk: neizgrađeni dio GP-a uz upozorenje o mogućoj obvezi UPU-a");
   ok(/U izradi: Prostorni plan uređenja općine ili grada \(Krk\)/.test(t)&&!/državni plan/.test(t)&&!/stari plan/.test(t),"Krk: plan u izradi istaknut; državni plan i planovi van snage se ne prikazuju");
@@ -937,6 +948,12 @@ async function krkTests(){
   const reinspect=async()=>{E("NET").cache.clear(); E("KAT").tiles.clear(); E("KAT").idx=null; w.localStorage.clear(); await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50); return txt(w,"sheet")};
   gp.IZGRADJENOST="izgrađeno"; mode="full";
   let tk=await reinspect(), C=w.__krkCalc;
+  {const C=w.__krkCalc;
+   ok(!!$(w,"tGrid")&&!!$(w,"tEdit"),"Krk: simulator kuće na čestici dostupan");
+   $(w,"tEdit").dispatchEvent(new w.Event("click",{bubbles:true}));
+   const R=w.__sim, tlc=R&&R.C.find(c=>c.label==="Tlocrt (izgrađenost)"), gb=R&&R.C.find(c=>c.label==="GBP nadzemno");
+   ok(R&&tlc&&gb&&tlc.val.includes(E("fmt")(C.tl))&&gb.val.includes(E("fmt")(C.gbpN))&&!R.C.some(c=>c.label==="Tip kuće")&&!$(w,"tToFin"),"Krk simulator: provjere tlocrta ("+(tlc&&tlc.val)+") i GBP-a prema pravilu Krka");
+   E("tReset")();}
   ok(C&&C.st==="ok"&&Math.abs(C.A-600)<1.5&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpN-200)<0.01&&Math.abs(C.gbpP-200)<0.01&&C.minOk,"Krk, obiteljska slobodnostojeća na 600 m²: tlocrt 150, GBP nadzemno 200, s podrumom ukupno najviše 200 m² (GBP iz pojmovnika uključuje sve)");
   ok(C.env>255&&C.env<272,"Krk: prostor za kuću 4 m od međa oko 264 m² (22 × 12 m): "+C.env);
   ok(/PPUG Krk/.test(tk)&&/naselje NA2/.test(tk)&&/čl\. 22\./.test(tk)&&/6,5 m/.test(tk)&&/40 %/.test(tk)&&/„najveća dopuštena visina obiteljske kuće iznosi 6,5m“/.test(tk),"Krk: prikaz pravila s člancima i navodima iz plana");
