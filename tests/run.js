@@ -148,7 +148,7 @@ async function zgOssTests(){
         setv(w,"areaSel","zk","change"); await tick(10); const tz=txt(w,"sheet");
         ok(/Korištena površina: 1\.012 m² \(upisana u zemljišnoj knjizi; izvor: zemljišna knjiga, OSS/.test(tz)&&/računaju se s površinom: upisana u zemljišnoj knjizi \(1\.012 m²\)/.test(tz)&&w.__tl!==t0,"Zagreb: izračun s odabranom ZK površinom (tlocrt "+t0+" → "+w.__tl+" m²)");
         setv(w,"areaSel","graf","change"); await tick(10); ok(w.__gbp===g0&&w.__tl===t0,"Zagreb: povratak na grafičku površinu");
-        {await tick(5); const R=w.eval("PZREG").items, ct=R.get("calc-tlocrt"); ok(ct&&ct.raz!=="A"&&R.get("namjena").raz==="A"&&R.get("pravilo-karta")&&R.get("pravilo-karta").raz==="B"&&/Pouzdanost podataka/.test(txt(w,"sheet"))&&/Pristup s javne prometne površine/.test(txt(w,"pzBox"))&&/Teorijski izračun/.test(txt(w,"sheet")),"Zagreb: oznake A/B/C (namjena A, granica pravila B, izračun najviše B) i popis otvorenih uvjeta");}
+        {await tick(5); const R=w.eval("PZREG").items, ct=R.get("calc-tlocrt"); ok(ct&&ct.raz!=="A"&&R.get("namjena").raz==="A"&&R.get("pravilo-karta")&&R.get("pravilo-karta").raz==="B"&&/Pouzdanost podataka/.test(txt(w,"sheet"))&&/Pristup s (javne )?prometne površine/.test(txt(w,"pzBox"))&&/Teorijski izračun/.test(txt(w,"sheet")),"Zagreb: oznake A/B/C (namjena A, granica pravila B, izračun najviše B) i popis otvorenih uvjeta");}
       }
       w.eval("render")(d); await tick(10); ok(calls.filter(u=>u.startsWith("https://oss-test.example/")).length===1,"Zagreb OSS: ponovni prikaz ne šalje novi upit");
       $(w,"krkZkMan").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!!$(w,"krkZkIn"),"Zagreb: može se upisati druga upisana površina");
@@ -1009,7 +1009,7 @@ async function krkTests(){
     plans.splice(-3,3); plans.push({GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAN SNAGE",NAZIV:"UPU 2 - Kornić (stari)",SN_BROJ:"2005-01"});
     t=await rr(); ok(/van snage \(povijesni plan\)/.test(t)&&/ne vrijedi za gradnju/.test(t)&&R.get("upu-status").raz==="C","UPU karta: plan van snage prikazan kao povijesni, C");
     plans.pop(); await rr();
-    const pzt=txt(w,"pzBox"); ok(/Pouzdanost podataka/.test(txt(w,"sheet"))&&/Pristup s javne prometne površine/.test(pzt)&&/Regulacijski pravac/.test(pzt)&&/Parkirna mjesta/.test(pzt)&&/Komunalna opremljenost/.test(pzt)&&/Grafička površina/.test(pzt)&&/nije pravno dopuštena|ne znači da je gradnja pravno dopuštena/.test(pzt),"Pouzdanost: popis s otvorenim uvjetima (pristup, regulacija, parking, opremljenost) i napomenom o pravnoj dopuštenosti");
+    const pzt=txt(w,"pzBox"); ok(/Pouzdanost podataka/.test(txt(w,"sheet"))&&/Pristup s (javne )?prometne površine/.test(pzt)&&/Regulacijski pravac/.test(pzt)&&/Parkir/.test(pzt)&&/Komunalna opremljenost/.test(pzt)&&/Grafička površina/.test(pzt)&&/nije pravno dopuštena|ne znači da je gradnja pravno dopuštena/.test(pzt),"Pouzdanost: popis s otvorenim uvjetima (pristup, regulacija, parking, opremljenost) i napomenom o pravnoj dopuštenosti");
     ok(R.get("namjena").raz==="A"&&R.get("pov-graf").raz==="A"&&(!R.get("pravilo")||R.get("pravilo").raz==="A")&&[...R.values()].every(x=>!/^calc-/.test(x.id)||x.raz!=="A"),"Pouzdanost: namjena i površina A, nijedan izračun nije A");}
    rkMode="none"; E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k); E("RKAT").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20); ok(/nema karte UPU-a ni DPU-a/.test(txt(w,"rkBox")),"UPU karta: bez karte na lokaciji jasna poruka");
    rkMode="fail"; E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k); E("RKAT").clear(); E("renderKrk")(E("KRK_CUR")); for(let i=0;i<60&&!/Podaci nisu/.test(txt(w,"rkBox"));i++) await tick(100); ok(/Podaci nisu dostupni/.test(txt(w,"rkBox"))&&/Detaljna zona nije potvrđena/.test(txt(w,"rkBox")),"UPU karta: kad katalog ne odgovara, poruka bez izmišljene zone");
@@ -1129,6 +1129,8 @@ async function krkTests(){
    const b=w.document.querySelector('[data-tipcmp="krk|visobit|slob"]'); b&&b.dispatchEvent(new w.Event("click",{bubbles:true}));
    ok(b&&w.__krkCalc&&w.__krkCalc.tip==="visobit"&&w.document.querySelector('[data-tipcmp="krk|visobit|slob"]').getAttribute("aria-pressed")==="true","Faza B: dodir na tip u usporedbi bira taj tip za detaljan izračun");
    w.document.querySelector('[data-tipcmp="krk|obit|slob"]').dispatchEvent(new w.Event("click",{bubbles:true})); tk=txt(w,"sheet");}
+  {const t=txt(w,"sheet"), R=E("PZREG").items;
+   ok(/Prije svega provjeri/.test(t)&&/Parkiranje na čestici.*Plan traži 2 PGM po stanu; za 1 stan najmanje 2 mjesta/.test(t)&&/Broj stanova iz tipa građevine: 1/.test(t)&&/Detaljni plan \(UPU\)/.test(t)&&R.get("ot-upu").raz==="A"&&R.get("ot-pristup").raz==="C"&&/Komunalna opremljenost/.test(t),"Faza B: prekidači na Krku (UPU 2: UPU vrijedi (A), 2 PGM po stanu za obiteljsku kuću, pristup C, opremljenost)");}
   ok(/Zona se ne može odrediti automatski/.test(tk)&&$(w,"krkZona").value==="M11"&&/Izračun je za zonu koju si odabrao \(M11\)\. Detaljna zona nije potvrđena/.test(tk),"UPU 2: izračun za zonu koju je korisnik odabrao, uz oznaku da nije potvrđena");
   ok(!/Model visina procjenjuje/.test(tk),"UPU 2: iznimka za kosi teren ne vrijedi za obiteljsku kuću");
   setv(w,"krkTip","visobit","change"); ok(/Model visina procjenjuje nagib okoline na oko 5 %/.test(txt(w,"sheet"))&&/10,5 m/.test(txt(w,"sheet")),"UPU 2, višeobiteljska: iznimka za kosi teren (10,5 m) s procjenom nagiba");
@@ -1374,6 +1376,21 @@ async function gpTests(){
   ok(/Područje za gradnju/.test(t)&&/Geometrijski moguć tlocrt/.test(t)&&R&&R.raz==="C"&&/OpenStreetMapa/.test(R.razlog)&&E("gpLayer").getLayers().length===2,"Zagreb: obris i pojas uz cestu na karti; područje C jer je strana uz cestu procjena");
   $(w,"gpTog").dispatchEvent(new w.Event("click",{bubbles:true})); ok(E("gpLayer").getLayers().length===0,"Područje za gradnju: skrivanje s karte");
   $(w,"gpTog").dispatchEvent(new w.Event("click",{bubbles:true})); ok(E("gpLayer").getLayers().length===2,"Područje za gradnju: ponovni prikaz");
+  {const f=E("pkFit")(2,600,150,240); ok(f.need===25&&f.free===210&&f.ok&&!E("pkFit")(4,200,120,60).ok,"Parkiranje: 2 mjesta = 25 m², slobodno 600 − 150 − 240 = 210 m² (stane); 4 mjesta na 200 m² čestici s 120 m² tlocrta i 60 m² zelenila ne stanu");}
+  {const d2=data(w,A,"2.2."); d2.env=envO; const u=d2.checks.find(r=>r.c.id==="upu"); u.v=[{properties:{TextString:"UPU Test"}}]; E("render")(d2); const t2=txt(w,"sheet");
+   ok(/Prije svega provjeri/.test(t2)&&/mogu zaustaviti gradnju/.test(t2)&&/u obuhvatu urbanističkog plana uređenja \(UPU Test\)/.test(t2)&&E("PZREG").items.get("ot-upu").raz==="A","Zagreb: obvezni UPU na čestici je zapreka na vrhu uvjeta gradnje (A, iz sloja 4b)");
+   ok(/Uz rub čestice prepoznata je ulica iz OpenStreetMapa/.test(t2),"Zagreb: pristup prikazuje prepoznatu ulicu kao procjenu");}
+  // cesta 2 m od ruba čestice (os ceste 5 m od ruba): južni rub je uz cestu, bočni rubovi nisu
+  {const dy5=5/110540, road5=[{ok:true,geom:[[c[0][0]-0.001,c[0][1]-dy5],[c[1][0]+0.001,c[1][1]-dy5]]}], B=E("streetBand")(A,road5,4);
+   const ba=B?T.area(T.intersect(A,B)):0; ok(B&&Math.abs(ba-30*4)<15,"Cesta 2 m od ruba čestice (os 5 m): prepoznat samo južni rub, pojas 4 m × 30 m ≈ 120 m² (bočni rubovi nisu uz cestu)");}
+  // OpenStreetMap: sadržaji ne odgovaraju, ceste da → pristup i pojas uz cestu i dalje rade
+  {const calls=[]; w.fetch=(u)=>{u=decodeURIComponent(String(u)); calls.push(u); if(/amenity|bus_stop/.test(u)) return Promise.reject(new TypeError("Failed to fetch"));
+     if(/interpreter/.test(u)) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({elements:[{type:"way",tags:{highway:"residential",name:"Test ulica"},geometry:[{lat:45.84,lon:15.969},{lat:45.84,lon:15.971}]}]})});
+     return Promise.reject(new Error("x"));};
+   E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k);
+   const env=await E("loadEnv")({lat:45.8401,lng:15.9702},A);
+   ok(env&&env.roadLines.length===1&&env.roads[0].name==="Test ulica"&&env.poiErr===true&&calls.some(u=>/around:20,/.test(u)),"OpenStreetMap: ceste se dohvaćaju zasebnim brzim upitom (20 m oko čestice); pad upita za sadržaje ne ruši pristup");
+   ok(/ceste su učitane/.test(E("envHtml")({v:env})),"Okolina: kad sadržaji nisu dostupni, to piše, a ceste se prikazuju");}
   ok(errs.length===0,"bez JS grešaka (područje za gradnju): "+errs.join(" | "));
 }
 

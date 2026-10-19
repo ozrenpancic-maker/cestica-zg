@@ -226,6 +226,7 @@ details p{font-size:13.5px;margin:6px 0}
 .pz{font-style:normal;font-size:10.5px;font-weight:700;display:inline-block;min-width:16px;text-align:center;padding:0 4px;border-radius:8px;margin-left:4px;vertical-align:1px;cursor:help}
 .pz-A{background:var(--ok-bg);color:var(--ok)} .pz-B{background:#e8eefc;color:#2b4a9a} .pz-C{background:var(--warn-bg);color:var(--warn)}
 @media (prefers-color-scheme:dark){.pz-B{background:#1e2a44;color:#9fb6ff}}
+.prek .checks{margin-top:4px}.prek .checks b{white-space:normal}
 .tipcmp{list-style:none;margin:6px 0;padding:0}.tipcmp li{margin:0 0 6px}.tipcmp .tipb{display:block;width:100%;text-align:left;font:inherit;font-size:14px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);cursor:pointer}
 .tipcmp .tipb>span{display:block;font-size:13px;font-weight:600;margin-top:2px}.tipcmp li.sel .tipb{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
 .pzt{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}.pzt td{padding:4px 2px;border-top:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}.pzt td:first-child{width:26px}
@@ -753,6 +754,36 @@ function gpHtml(G,tlKig,opisMeda,opisPravac){
   return h;
 }
 sheet.addEventListener("click",e=>{ if(e.target.id!=="gpTog") return; GP.show=!GP.show; gpDraw(window.__gp); e.target.textContent=GP.show?"Sakrij s karte":"Prikaži na karti"; });
+// ================= PREKIDAČI NA VRHU REZULTATA (Faza B, korak 3) =================
+// Uvjeti koji mogu zaustaviti gradnju bez obzira na kig i kis: obvezni UPU, pristup s prometne površine, parkiranje na
+// čestici i komunalna opremljenost. Svaki ima stanje (ok / provjeri / zapreka / nepoznato) i oznaku pouzdanosti.
+const PGM_M2=12.5; // jedno parkirno mjesto 2,5 × 5 m, bez prilaza i manipulativnog prostora (pretpostavka)
+function pkStanovi(){try{const v=+localStorage.getItem("pkStan"); return v>=1&&v<=20?v:1}catch(e){return 1}}
+function pkFit(n,parcelA,tl,zel){ if(!(n>0)||!(parcelA>0)) return null; const need=n*PGM_M2, free=parcelA-(tl||0)-(zel||0); return {need,free,ok:free>=need}; }
+function skiPrek(){
+  const M=window.__ski&&window.__ski.v&&window.__ski.v.mreze, E=window.__ski&&window.__ski.e;
+  if(E||!window.__ski) return {stanje:"?",tekst:E?"katastar infrastrukture se nije učitao":"katastar infrastrukture se učitava",pz:pz("C",{razlog:"podaci nisu dostupni",provjera:"komunalna i elektroenergetska poduzeća"})};
+  const nm={vodovod:"vodovod",kanalizacija:"kanalizacija",struja:"struja"}, parts=[];
+  for(const k of Object.keys(nm)){const r=M&&M[k]; parts.push(nm[k]+": "+(r&&r.d!=null?(r.d<1?"uz česticu":"oko "+fmt(Math.round(r.d))+" m"):"nije u krugu "+SKI.R+" m"));}
+  const far=Object.keys(nm).some(k=>!(M&&M[k]&&M[k].d!=null&&M[k].d<=50));
+  return {stanje:far?"warn":"ok",tekst:parts.join(" · ")+". Blizina voda nije potvrda da je priključak moguć.",pz:pz("C",{izvor:"DGU, katastar infrastrukture",razlog:"blizina evidentiranog voda nije potvrda priključka"+(far?"; neki vod je dalje od 50 m ili nije pronađen":""),provjera:"komunalna i elektroenergetska poduzeća"})};
+}
+function prekHtml(L){
+  if(!L||!L.length) return "";
+  const ic={ok:["chk-ok","✓"],warn:["chk-warn","!"],no:["chk-no","✕"],"?":["chk-warn","?"]};
+  for(const x of L) if(x.id&&x.pz) pzSet(x.id,x.naziv,x.tekst.slice(0,160),x.pz);
+  const zap=L.filter(x=>x.stanje==="no").length;
+  return `<div class="prek"><p class="eyebrow" style="margin:6px 0 2px">Prije svega provjeri</p>${zap?`<div class="verdict v-no" style="margin:4px 0">${zap===1?"Jedan uvjet":"Neki uvjeti"} mogu zaustaviti gradnju bez obzira na kig i kis.</div>`:""}<ul class="checks">${L.map(x=>`<li class="chk ${ic[x.stanje][0]}"><b>${ic[x.stanje][1]} ${esc(x.naziv)} ${pzTag(x.pz)}</b><span>${esc(x.tekst)}${x.extra||""}</span></li>`).join("")}</ul></div>`;
+}
+function pkRow(n,perStan,fit,izvorTxt,stanoviIzPravila){
+  const st=`<span class="kd" style="margin:4px 0 0"><label for="pkStan">Broj stanova</label><input id="pkStan" type="number" inputmode="numeric" min="1" max="20" step="1" value="${pkStanovi()}"${stanoviIzPravila?" disabled":""}></span>`;
+  if(!(perStan>0)) return {id:"ot-parking",naziv:"Parkiranje na čestici",stanje:"?",tekst:"Normativ parkiranja za ovu lokaciju nije u aplikaciji"+(izvorTxt?" ("+izvorTxt+")":"")+".",pz:pz("C",{razlog:"normativ nije obrađen",provjera:"odredbe plana"})};
+  return {id:"ot-parking",naziv:"Parkiranje na čestici",stanje:fit?(fit.ok?"ok":"no"):"?",
+    tekst:`Plan traži ${perStan} PGM po stanu; za ${n} ${n===1?"stan":"stana"} najmanje ${n*perStan} mjesta (${izvorTxt}).`+(fit?` Za ${n*perStan} mjesta treba oko ${fmt(fit.need)} m² (2,5 × 5 m po mjestu, bez prilaza); na čestici ostaje oko ${fmt(Math.max(0,fit.free))} m² izvan tlocrta i obveznog zelenila${fit.ok?"":" — ne stane"}.`:""),
+    extra:stanoviIzPravila?`<small class="fx">Broj stanova iz tipa građevine: ${n}.</small>`:st,
+    pz:pz(fit&&!fit.ok?"C":"B",{metoda:"broj mjesta × 12,5 m² prema slobodnoj površini čestice",razlog:"smještaj i prilaz parkiralištu nisu provjereni",provjera:"idejno rješenje"})};
+}
+sheet.addEventListener("change",e=>{ if(e.target.id!=="pkStan") return; const v=Math.max(1,Math.min(20,parseInt(e.target.value)||1)); try{localStorage.setItem("pkStan",String(v))}catch(err){} if(KRK_CUR) renderKrk(KRK_CUR); else if(window.__lastData) render(window.__lastData); });
 function pzOtvoreno(extra){
   pzSet("ot-pristup","Pristup s javne prometne površine",null,pz("C",{razlog:"širina i pravni status pristupa nisu provjereni; ulica iz OpenStreetMapa je procjena",provjera:"lokacijska informacija, katastar (čestica puta)"}));
   pzSet("ot-regulacija","Regulacijski pravac",null,pz("C",{razlog:"nije u javnim podacima",provjera:"lokacijska informacija"}));
@@ -843,7 +874,7 @@ function krkRuleStateJls(d,jls){
   return {st:RS.upozorenje||notes.some(n=>n===N.msg||/lokacijska informacija|ne odgovara|nije odgovorila/.test(n))?"provjera":"ok",RS,izgr,notes,grupa:RS.grupa.naziv};
 }
 function krkRulesHtml(d){
-  const R=RULES_KRK, S=krkRuleState(d); let h=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>`; krkEnvLayer.clearLayers(); gpLayer.clearLayers(); window.__gp=null; pzDel("gp-podrucje");
+  const R=RULES_KRK, S=krkRuleState(d); let h=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>%%PREK%%`; window.__krkS=S; krkEnvLayer.clearLayers(); gpLayer.clearLayers(); window.__gp=null; pzDel("gp-podrucje");
   window.__krkCalc=null; window.__env=null;
   if(S.st==="ne"||S.st==="upuNe"){h+=`<p class="hint">${esc(S.msg)}</p>`; return h;}
   if(S.st==="blok"){h+=`<div class="verdict v-no">${esc(S.msg)}</div><p class="meta">Čl. ${esc(S.cl)}.: „${esc(S.txt)}“</p>`; return h;}
@@ -884,6 +915,31 @@ function krkRulesHtml(d){
   const Pm=T[oblSel]||P;
   if(Pm.napomena) h+=`<p class="flag">${esc(Pm.napomena)}</p>`;
   return h+krkCalcHtml(d,S,RS,T,Pm,oblSel,isUpu);
+}
+// prekidači za Krk: obvezni UPU / neizgrađeno bez UPU-a, pristup, parkiranje, opremljenost
+function krkPrekHtml(d){
+  if(!d.parcel) return ""; const S=window.__krkS||{}, R=RULES_KRK||{}, C=window.__krkCalc, L=[], K=d.pl&&!d.pl.e?krkPlans(d.pl.v):null;
+  // obvezni UPU
+  if(S.st==="blok") L.push({id:"ot-upu",naziv:"Obvezni urbanistički plan (UPU)",stanje:"no",tekst:S.msg||"Za neizgrađeni dio plan traži UPU, a on nije donesen.",pz:pz("A",{izvor:"PGŽ, namjena i evidencija planova; PPUG",obuhvat:"na čestici"})});
+  else if(S.st==="upuNe") L.push({id:"ot-upu",naziv:"Detaljni plan (UPU)",stanje:"warn",tekst:S.msg,pz:pz("C",{razlog:"uvjeti UPU-a nisu obrađeni",provjera:"UPU, lokacijska informacija"})});
+  else if(K&&K.upu.length) L.push({id:"ot-upu",naziv:"Detaljni plan (UPU)",stanje:"ok",tekst:"Na lokaciji vrijedi "+K.upu.map(p=>p.VRSTA_PP+(p.NAZIV?" ("+String(p.NAZIV).slice(0,90)+")":"")).join(", ")+"; uvjeti su iz njega.",pz:pz("A",{izvor:"PGŽ, evidencija prostornih planova",obuhvat:"na točki"})});
+  else if(K) L.push({id:"ot-upu",naziv:"Obvezni urbanistički plan (UPU)",stanje:"ok",tekst:"Evidencija planova na točki ne navodi UPU; čestica nije u neizgrađenom dijelu za koji je UPU obvezan.",pz:pz("B",{izvor:"PGŽ, namjena i evidencija planova",razlog:"obveza UPU-a izvedena iz izgrađenosti i evidencije"})});
+  // pristup
+  const pr=R.pristup, G=window.__gp, uzCestu=G?G.st==="primijenjen":null, RS=C&&R.upu?Object.values(R.upu).find(u=>u.kod===C.plan):null;
+  L.push({id:"ot-pristup",naziv:"Pristup s prometne površine",stanje:uzCestu===false?"warn":"?",
+    tekst:(uzCestu?"Uz rub čestice prepoznata je cesta iz OpenStreetMapa (procjena). ":uzCestu===false?"Uz česticu nije prepoznata cesta iz OpenStreetMapa. ":"")+(pr&&pr.min?`PPUG: pristupni put najmanje ${String(pr.min).replace(".",",")} m (iznimno ${String(pr.minIznimno).replace(".",",")} m, ${pr.clanak}). `:"")+"Status i širina pristupa nisu provjereni.",
+    pz:pz("C",{razlog:"pravni status i širina pristupa nisu u javnim podacima",provjera:"katastar (čestica puta), lokacijska informacija"})});
+  // parkiranje
+  const src=(RS&&RS.pristup&&RS.pristup.napomena)||(pr&&pr.napomena)||"", m=src.match(/(\d+)\s*mjest\w*\s*po stanu/i), per=m?+m[1]:null;
+  let n=null, iz=false; if(C&&RULES_KRK){const all=Object.assign({},R.tipovi||{},...Object.values(R.upu||{}).map(u=>u.tipovi||{})), T=all[C.tip]; const o=String(T&&T.opis||"").toLowerCase();
+    if(/\bjedan stan|\bjedn\w* stamben\w* jedinic/.test(o)) n=1; else if(/(do )?dva stana|dvije/.test(o)) n=2; else if(/tri stana/.test(o)) n=3; iz=n!=null;}
+  if(n==null) n=pkStanovi();
+  const zel=C&&RS&&RS.zelenilo&&RS.zelenilo.min?RS.zelenilo.min*C.A:(R.zelenilo&&R.zelenilo.min&&C?R.zelenilo.min*C.A:0);
+  const tl=C?Math.min(C.tl,G?G.area:C.tl):null;
+  L.push(pkRow(n,per,C?pkFit(n*(per||0),d.area,tl,zel):null,m?(RS&&RS.pristup?RS.kod:"PPUG, čl. 107."):"",iz));
+  // komunalna opremljenost
+  const k=skiPrek(); L.push({id:"ot-komunalno",naziv:"Komunalna opremljenost (voda, odvodnja, struja)",...k});
+  return prekHtml(L);
 }
 // udaljenost od regulacijskog pravca na Krku: manja vrijednost (ostale/nerazvrstane ceste); uz razvrstanu/javnu cestu više
 function krkRegDist(RS){const r=RS&&RS.regulacija; if(!r) return null; if(r.ostale) return {d:r.ostale,max:r.razvrstane||null};
@@ -1747,7 +1803,7 @@ function renderKrk(d){
   RK_CTX=parcel?{key:window.__cur.key,parcel,ll,region:"krk",pl}:null;
   if(parcel&&rkKatalog(ll)) h+=`<h2 id="sec-upu">${esc(rkKatalog(ll).naslov)}</h2><div id="rkBox">${rkInner()}</div>`;
   // uvjeti gradnje i izračun
-  h+=krkRulesHtml(d);
+  h+=krkRulesHtml(d); {let ph=""; try{ph=krkPrekHtml(d)}catch(err){console.error(err)} h=h.replace("%%PREK%%",ph);}
   {const C=window.__krkCalc; if(parcel&&C&&window.__env) h+=simHtml({izg:C.tl/C.A,kis:C.kis},C.A,area,C.gbpN,null);}
   if(RULES_DB){const m=rows[0]?rows[0].p:{}, T=RULES_KRK&&RULES_KRK.tipovi&&RULES_KRK.tipovi[KRK_TIP.tip];
     h+=dbHtml({jls:jlsName,zone:rows.filter(r=>r.share==null||r.share>0.05).map(r=>r.p.OZNAKA_NAMJENE).filter(Boolean),izgradenost:m.IZGRADJENOST||null,vrsta:T?T.naziv:null,nacin:{slob:"slobodnostojeća",dvoj:"dvojna",ugr:"ugrađena"}[KRK_TIP.oblik]||null},
@@ -1868,6 +1924,22 @@ function predlozakDims(gbp,flCode){
 const FL_SIM2BUILD={"1":"P","1.5":"PPk","2":"P1","2.5":"P1Pk","3":"P2"};
 // azimut sljemena (0° = sjever, u smjeru kazaljke): kuća s okretom 0° ima širinu u smjeru istok–zapad
 function sljemeAzimut(){const duzW=TL.sljeme==="duz"?TL.w>=TL.d:TL.w<TL.d; return ((duzW?90:0)+TL.rot)%180;}
+// prekidači za Zagreb: obvezni UPU (sloj 4b), pristup, parkiranje (PGM iz pravila), opremljenost
+function zgPrekHtml(d){
+  const L=[], ch=d.checks;
+  if(!ch) L.push({id:"ot-upu",naziv:"Obvezni urbanistički plan (UPU)",stanje:"?",tekst:"Provjera se učitava.",pz:pz("C",{razlog:"sloj se učitava"})});
+  else{const u=ch.find(r=>r.c.id==="upu");
+    if(u&&u.e) L.push({id:"ot-upu",naziv:"Obvezni urbanistički plan (UPU)",stanje:"?",tekst:"Sloj obveze UPU-a nije odgovorio.",pz:pz("C",{razlog:"servis nije odgovorio",provjera:"lokacijska informacija"})});
+    else if(u&&u.v&&u.v.length) L.push({id:"ot-upu",naziv:"Obvezni urbanistički plan (UPU)",stanje:"no",tekst:u.c.hit(u.v[0].properties||{},u.v.map(f=>f.properties||{})),pz:pz("A",{izvor:"Grad Zagreb, GUP 4b Procedure urbano-prostornog uređenja (sloj javne rasprave)",obuhvat:"presjek s česticom"})});
+    else if(u) L.push({id:"ot-upu",naziv:"Obvezni urbanistički plan (UPU)",stanje:"ok",tekst:"Čestica nije u obuhvatu obveznog UPU-a.",pz:pz("A",{izvor:"Grad Zagreb, GUP 4b Procedure urbano-prostornog uređenja (sloj javne rasprave)",obuhvat:"presjek s česticom"})});}
+  const G=window.__gp, uz=G?G.st==="primijenjen":null;
+  L.push({id:"ot-pristup",naziv:"Pristup s prometne površine",stanje:uz===false?"warn":"?",tekst:(uz?"Uz rub čestice prepoznata je ulica iz OpenStreetMapa (procjena). ":uz===false?"Uz česticu nije prepoznata ulica iz OpenStreetMapa. ":"")+"Pravni status i širina pristupa nisu provjereni.",pz:pz("C",{razlog:"pravni status i širina pristupa nisu u javnim podacima",provjera:"katastar (čestica puta), lokacijska informacija"})});
+  const RP=window.__ruleP||[], pg=RP.find(x=>x.id==="pgm"), per=pg&&pg.num, jed=RP.find(x=>x.id==="jed"), n=pkStanovi(), pp={teren:(RP.find(x=>x.id==="teren")||{}).num};
+  const A=window.__cur&&window.__cur.area, tl=window.__tl!=null?Math.min(window.__tl,G?G.area:window.__tl):null, ter=RP.find(x=>x.id==="teren"), terP=ter&&ter.value?parseFloat(String(ter.value).replace(",","."))/100:null;
+  L.push(pkRow(n,per,tl!=null&&per?pkFit(n*per,A,tl,terP?terP*A:0):null,per?"pravilo "+(window.__rule&&window.__rule.code||"")+(jed&&jed.num?", najviše "+jed.num+" jedinica":""):"pravilo GUP-a ne navodi PGM po stanu",false));
+  const k=skiPrek(); L.push({id:"ot-komunalno",naziv:"Komunalna opremljenost (voda, odvodnja, struja)",...k});
+  return prekHtml(L);
+}
 function zgradaModel(){
   if(!TL.center) return null; const F=tFloors(), hA=TL.w*TL.d, gA=TL.gar?TL.gw*TL.gd:0;
   const et=[]; for(let i=0;i<F.full;i++) et.push({naziv:i===0?"prizemlje":i+". kat",gbp:hA});
@@ -1921,8 +1993,10 @@ function streetBand(parcel,roads,dist){
   if(!lines.length) return null;
   const segs=[]; const ring=parcel.geometry.type==="Polygon"?parcel.geometry.coordinates[0]:parcel.geometry.coordinates[0][0];
   for(let i=0;i<ring.length-1;i++){const a=ring[i],b=ring[i+1], len=turf.distance(a,b,{units:"kilometers"})*1000; if(len<1) continue;
-    const mid=[(a[0]+b[0])/2,(a[1]+b[1])/2], d=Math.min(...lines.map(l=>turf.pointToLineDistance(turf.point(mid),l,{units:"kilometers"})*1000));
-    if(d<12) segs.push([a,b]);}
+    // rub je uz cestu ako je barem pola njegove duljine (5 točaka) do 12 m od osi ceste: hvata i česticu 1–2 m od ceste
+    // i zakrivljenu cestu, a bočne rubove okomite na cestu ne
+    const near=[0,.25,.5,.75,1].filter(f=>{const p=[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f]; return Math.min(...lines.map(l=>turf.pointToLineDistance(turf.point(p),l,{units:"kilometers"})*1000))<12;}).length;
+    if(near>=3) segs.push([a,b]);}
   if(!segs.length) return null;
   let band=null;
   for(const s of segs){const b=turf.buffer(turf.lineString(s),dist/1000,{units:"kilometers"}); band=band?turf.union(band,b):b;}
@@ -2529,22 +2603,25 @@ async function loadEnv(ll,parcel){
   }else ring=ll.lat.toFixed(6)+","+ll.lng.toFixed(6);
   const c=parcel?turf.centroid(parcel.geometry).geometry.coordinates:[ll.lng,ll.lat];
   const P=c[1].toFixed(6)+","+c[0].toFixed(6);
-  const q=`[out:json][timeout:15];
-way(around:12,${ring})[highway]->.r; .r out tags geom;
+  // dva odvojena upita: ceste (mali i brz, potreban za pristup i pojas uz cestu) i sadržaji u blizini (veći, smije pasti)
+  const qR=`[out:json][timeout:10];way(around:20,${ring})[highway];out tags geom;`;
+  const qE=`[out:json][timeout:20];
 (node(around:600,${P})[highway=bus_stop];node(around:600,${P})[railway=tram_stop];node(around:900,${P})[railway=station];
  node(around:1200,${P})[amenity=kindergarten];way(around:1200,${P})[amenity=kindergarten];
  node(around:1500,${P})[amenity=school];way(around:1500,${P})[amenity=school];
  node(around:1000,${P})[shop=supermarket];way(around:1000,${P})[shop=supermarket];
- node(around:1500,${P})[amenity=pharmacy];)->.e; .e out tags center;`;
-  // više Overpass servera: prvi koji odgovori pobjeđuje
-  const body="data="+encodeURIComponent(q);
-  const ask=u=>getJSON(u+"?"+body,{},20000,{retries:0});
-  const j=await Promise.any(["https://overpass-api.de/api/interpreter","https://overpass.private.coffee/api/interpreter","https://overpass.kumi.systems/api/interpreter","https://maps.mail.ru/osm/tools/overpass/api/interpreter"].map(ask))
-    .catch(()=>{throw new Error("serveri za podatke o okolini trenutno ne odgovaraju, pokušaj ponovno za minutu")});
+ node(around:1500,${P})[amenity=pharmacy];);out tags center;`;
+  // više Overpass servera: prvi koji odgovori pobjeđuje; ceste se pokušaju još jednom ako svi odbiju
+  const OVP=["https://overpass-api.de/api/interpreter","https://overpass.private.coffee/api/interpreter","https://overpass.kumi.systems/api/interpreter","https://maps.mail.ru/osm/tools/overpass/api/interpreter"];
+  const any=(q,ms)=>Promise.any(OVP.map(u=>getJSON(u+"?data="+encodeURIComponent(q),{},ms,{retries:0})));
+  const [rR,rE]=await Promise.allSettled([any(qR,12000).catch(()=>new Promise(r=>setTimeout(r,1500)).then(()=>any(qR,15000))),any(qE,25000)]);
+  if(rR.status!=="fulfilled") throw new Error("serveri OpenStreetMapa trenutno ne odgovaraju, pokušaj ponovno za minutu");
+  const j={elements:[...((rR.value&&rR.value.elements)||[]),...(rE.status==="fulfilled"&&rE.value&&rE.value.elements||[])]};
+  const poiErr=rE.status!=="fulfilled";
   const here=turf.point(c);
   const dist=e=>{const lat=e.lat??e.center?.lat, lon=e.lon??e.center?.lon; return lat==null?null:Math.round(turf.distance(here,turf.point([lon,lat]),{units:"kilometers"})*1000)};
   const roads=[], seen=new Set();
-  const out={roads, roadLines:[], stops:[], kinder:null, school:null, shop:null, pharmacy:null};
+  const out={roads, roadLines:[], stops:[], kinder:null, school:null, shop:null, pharmacy:null, poiErr};
   const nearest=(key,e)=>{const d=dist(e); if(d==null) return; if(!out[key]||d<out[key].d) out[key]={n:e.tags.name||"bez naziva",d}};
   for(const e of j.elements||[]){
     const t=e.tags||{};
@@ -2571,8 +2648,9 @@ function envHtml(env,gbp){
   else if(other.length) h+=`<ul class="checks"><li class="chk chk-warn"><b>Pristup</b><span>Uz česticu je samo ${other.map(r=>esc(HW_NAMES[r.hw]||r.hw)).join(", ")}. Za gradnju treba pristup s prometne površine propisane širine; provjeri status puta.</span></li></ul>`;
   else h+=`<ul class="checks"><li class="chk chk-warn"><b>Pristup</b><span>U OpenStreetMapu nema ceste uz česticu. Provjeri ima li čestica izlaz na javni put ili služnost prolaza.</span></li></ul>`;
   const rows=[];
+  if(o.poiErr) rows.push(["Sadržaji u blizini","Podaci nisu dostupni (poslužitelj nije odgovorio); ceste su učitane"]);
   for(const s of o.stops) rows.push([`Stanica (${s.type})`,`${s.n} · ${s.d} m`]);
-  if(!o.stops.length) rows.push(["Javni prijevoz","nema stanice unutar 600 m"]);
+  if(!o.stops.length&&!o.poiErr) rows.push(["Javni prijevoz","nema stanice unutar 600 m"]);
   if(o.kinder) rows.push(["Vrtić",`${o.kinder.n} · ${o.kinder.d} m`]);
   if(o.school) rows.push(["Škola",`${o.school.n} · ${o.school.d} m`]);
   if(o.shop) rows.push(["Trgovina",`${o.shop.n} · ${o.shop.d} m`]);
@@ -2944,7 +3022,7 @@ function render(d){
   RK_CTX=parcel?{key:window.__cur.key,parcel,ll,region:"zg",rows}:null;
   if(parcel&&rkKatalog(ll)) h+=`<h2 id="sec-upu">${esc(rkKatalog(ll).naslov)}</h2><div id="rkBox">${rkInner()}</div>`;
   // Urbano pravilo
-  h+=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>`;
+  h+=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>%%PREK%%`;
   const {code,rule,se,pp:isPP}=ruleLookup(up,rows);
   window.__rule={code,clanak:rule?rule.clanak:null,naziv:rule?rule.naziv:null,src:isPP?"PP":se?"SE":"GUP",zona:null};
   if(up.e){h+=`<p class="err">Urbana pravila: ${esc(up.e)}</p>`}
@@ -3089,6 +3167,7 @@ function render(d){
   h+=`<p class="note">Izvori: katastarske čestice Grada Zagreba (2023.), GIS baza planirane namjene (2023.), karta urbanih pravila iz ponovne javne rasprave GUP-a (2024.) i tekst Odluke o GUP-u s izmjenama 2025. Granice pravila u konačnom planu mogu malo odstupati. Procjena je orijentacijska; pravno mjerodavna je lokacijska informacija Gradskog ureda.</p>`;
   h+=G(null);
   {let rh=""; try{rh=parcel||rows.length?riskHtml(d):""}catch(err){console.error(err); rh=`<p class="err">Analiza rizika nije uspjela: ${esc(err.message)}</p>`} h=h.replace("%%RISK%%",rh);}
+  {let ph=""; try{ph=parcel?zgPrekHtml(d):""}catch(err){console.error(err)} h=h.replace("%%PREK%%",ph);}
   restoreMap();
   sheet.innerHTML=h;
   restoreInputs(snap);

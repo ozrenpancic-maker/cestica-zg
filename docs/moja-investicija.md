@@ -117,3 +117,26 @@ U „Uvjetima gradnje”, odmah ispod usporedbe tipova, postoji odjeljak „Podr
 
   Obris nije dopuštenje: regulacijski pravac potvrđuje lokacijska informacija.
 - Gumb „Sakrij s karte” / „Prikaži na karti”.
+
+## Prekidači na vrhu „Uvjeta gradnje” (Faza B, korak 3)
+
+Okvir „Prije svega provjeri” sadrži uvjete koji mogu zaustaviti gradnju bez obzira na kig i kis. Svaki ima stanje (✓, !, ✕, ?) i oznaku pouzdanosti.
+
+| Uvjet | Krk | Zagreb |
+| --- | --- | --- |
+| Obvezni UPU | neizgrađeni dio bez UPU-a je zapreka (A); važeći UPU iz evidencije (A) | presjek sa slojem GUP-a 4b (A, sloj javne rasprave) |
+| Pristup | cesta iz OpenStreetMapa (procjena) i zahtjev plana (PPUG: 5,5 m, iznimno 3 m); uvijek C | cesta iz OpenStreetMapa (procjena); uvijek C |
+| Parkiranje | 2 PGM po stanu (PPUG čl. 107, UPU 2 čl. 38); broj stanova iz tipa građevine | PGM po stanu iz pravila GUP-a; broj stanova unosi korisnik |
+| Komunalna opremljenost | udaljenost do vodovoda, kanalizacije i struje (DGU katastar infrastrukture); uvijek C | isto |
+
+**Parkiranje na čestici:**
+
+- Potreban prostor: broj mjesta × 12,5 m² (2,5 × 5 m, bez prilaza; pretpostavka).
+- Slobodna površina: čestica − geometrijski moguć tlocrt − obvezno zelenilo ili prirodni teren.
+- Ako ne stane, oznaka je ✕ i pouzdanost C.
+
+## OpenStreetMap (ceste i okolina)
+
+- Ceste se dohvaćaju posebnim malim upitom: ceste do 20 m od ruba čestice, 10 s na poslužitelju. Ako svi poslužitelji odbiju, upit se ponavlja jednom.
+- Sadržaji u blizini (stanice, vrtić, škola, trgovina, ljekarna) idu posebnim upitom. Ako on padne, ceste i pristup i dalje rade, a u „Okolini” piše da sadržaji nisu dostupni.
+- Rub čestice smatra se rubom uz cestu ako je barem pola njegove duljine (3 od 5 točaka) do 12 m od osi ceste. Tako se prepoznaje i čestica 1–2 m od ceste, a bočni rubovi okomiti na cestu ne.
