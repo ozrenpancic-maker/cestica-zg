@@ -881,9 +881,17 @@ async function krkTests(){
   const t=txt(w,"sheet");
   ok(calls.some(u=>u.endsWith("data/kat_krk/index.json"))&&calls.filter(u=>/data\/kat_krk\/-?\d+_-?\d+\.json$/.test(u)).length===1&&!calls.some(u=>u.includes("uredjenazemlja")),"Krk: čestica iz katastra uz aplikaciju (jedan kvadrat), bez DGU WFS-a");
   ok(!calls.some(u=>u.includes("services8.arcgis.com")),"Krk: zagrebački servisi se ne pozivaju");
-  ok(/Otok Krk · pilot · Grad Krk/.test(t)&&/2345\/6/.test(t)&&/k\.o\. KORNIĆ/.test(t)&&/digitalni katastarski plan \(stanje 19\. 10\. 2026\.\)/.test(t),"Krk: prikazani broj čestice, k.o. i stanje katastra");
+  ok(/Otok Krk · pilot · Grad Krk/.test(t)&&/2345\/6/.test(t)&&/k\.o\. KORNIĆ/.test(t)&&/DGU, stanje 19\. 10\. 2026\./.test(t),"Krk: prikazani broj čestice, k.o. i stanje katastra");
   const A=E("KRK_CUR").area; ok(Math.abs(A-600)<1.5,"Krk: površina iz geometrije nakon pretvorbe "+(A||0).toFixed(2)+" m² (čestica 30 × 20 m)");
-  ok(/grafička površina u katastru 600 m²/.test(t),"Krk: prikazana i grafička površina iz katastra");
+  ok(/Grafička površina ?600 m²/.test(t)&&/Upisana u zemljišnoj knjizi/.test(t)&&!!$(w,"krkZkIn"),"Krk: grafička površina iz katastra i polje za površinu iz zemljišne knjige");
+  // ručni unos upisane površine: obje vrijednosti i razlika
+  $(w,"krkZkIn").value="642"; $(w,"krkZkOk").dispatchEvent(new w.Event("click",{bubbles:true}));
+  let tz=txt(w,"sheet");
+  ok(/Grafička površina ?600 m²/.test(tz)&&/Upisana u zemljišnoj knjizi ?642 m²/.test(tz)&&/\+7,0 % \(42 m²\)/.test(tz)&&/veća od 5 %/.test(tz)&&/geodetska izmjera/.test(tz),"Krk: grafička 600 i upisana 642 m², razlika +7 % uz objašnjenje");
+  ok(/računaju se s grafičkom površinom/.test(tz)&&Math.abs(E("KRK_CUR").area-600)<1.5,"Krk: izračun i dalje s grafičkom površinom");
+  ok(/ZK izvadak/.test(tz)&&!!$(w,"zkFile"),"Krk: odjeljak za ZK izvadak s učitavanjem PDF-a");
+  $(w,"krkZkDel").dispatchEvent(new w.Event("click",{bubbles:true}));
+  ok(!!$(w,"krkZkIn")&&!/642 m²/.test(txt(w,"sheet")),"Krk: upisanu površinu se može promijeniti");
   ok(/Građevinsko područje naselja \(Kornić\)/.test(t)&&/GPN-1/.test(t)&&/P3/.test(t)&&/(4[5-9]|5[0-5]) %P3/.test(t),"Krk: namjena iz županijskog sloja s udjelima (GPN-1 i P3 otprilike po pola)");
   ok(/neizgrađeno/.test(t)&&/obvezu urbanističkog plana/.test(t),"Krk: neizgrađeni dio GP-a uz upozorenje o mogućoj obvezi UPU-a");
   ok(/U izradi: Prostorni plan uređenja općine ili grada \(Krk\)/.test(t)&&!/državni plan/.test(t)&&!/stari plan/.test(t),"Krk: plan u izradi istaknut; državni plan i planovi van snage se ne prikazuju");

@@ -873,6 +873,36 @@ function krkJls(rows,pl){
   const r=rows.find(x=>x.p.OPCINA_GRAD); if(r) return String(r.p.OPCINA_GRAD).toUpperCase();
   const p=pl&&pl.v&&pl.v.map(f=>f.properties||{}).find(x=>x.VRSTA_PP==="PPUO/G"&&x.GRAD_OPCINA); return p?String(p.GRAD_OPCINA).toUpperCase():null;
 }
+// --- dvije površine: grafička (iz katastarskog plana) i upisana u zemljišnu knjigu (iz izvatka ili ručni unos)
+function krkZkGet(key){try{const v=JSON.parse(localStorage.getItem("krkZK:"+key)||"null"); return v&&v.a>0?v:null}catch(e){return null}}
+function krkZkSet(key,a,src){try{if(a>0) localStorage.setItem("krkZK:"+key,JSON.stringify({a:Math.round(a),src})); else localStorage.removeItem("krkZK:"+key)}catch(e){}}
+function krkAreaHtml(P,area){
+  const key=window.__cur&&window.__cur.key, zk=key?krkZkGet(key):null, g=P.povrsinaKatastar||area;
+  let h=`<dl class="kv" style="margin-top:4px">`;
+  h+=`<dt>Grafička površina</dt><dd><b>${fmt(g)} m²</b><small class="fx">iz katastarskog plana (DGU${P.preuzeto?", stanje "+esc(P.preuzeto.split("-").reverse().join(". ")+".")+")":")"}${P.povrsinaKatastar&&Math.abs(P.povrsinaKatastar-area)>1?" · iz ucrtane granice "+fmt(area)+" m²":""}</small></dd>`;
+  h+=`<dt>Upisana u zemljišnoj knjizi</dt><dd>${zk?`<b>${fmt(zk.a)} m²</b><small class="fx">${zk.src==="izvadak"?"pročitano iz učitanog izvatka":"upisao si ručno"} · <button type="button" class="ib" id="krkZkDel" style="min-height:28px;padding:0 8px">promijeni</button></small>`
+    :`<span class="kd" style="margin:0"><input id="krkZkIn" type="number" inputmode="decimal" min="1" step="1" placeholder="m² iz izvatka" style="width:8em"><button type="button" class="ib" id="krkZkOk">Spremi</button></span><small class="fx">nije javno dostupna; upiši je iz izvatka ili učitaj PDF izvatka ispod</small>`}</dd></dl>`;
+  if(zk){const r=(zk.a-g)/g*100;
+    h+=`<p class="${Math.abs(r)>5?"flag":"meta"}">Razlika: ${r>0?"+":""}${dec(r.toFixed(1))} % (${fmt(Math.abs(zk.a-g))} m²). ${Math.abs(r)>5?"Razlika je veća od 5 %. ":""}Grafička površina izračunata je iz katastarskog plana, koji je često digitaliziran sa starih planova, a upisana površina potječe iz zemljišne knjige; zato se često razlikuju. Nijedna nije nužno stvarna površina na terenu: točnu daje geodetska izmjera (elaborat). Kod veće razlike, prije kupnje ili gradnje, provjeri s ovlaštenim geodetom.</p>`;}
+  else h+=`<p class="meta">Grafička i upisana površina često se razlikuju; nijedna nije nužno stvarna površina na terenu.</p>`;
+  h+=`<p class="meta">Uvjeti gradnje ispod računaju se s grafičkom površinom.</p>`;
+  return h;
+}
+function krkZkBlock(P,ll){
+  const ko=esc(P.ko||""), kc=esc(P.broj||""), key=window.__cur&&window.__cur.key;
+  let h=`<details class="acc" data-k="zk"><summary><span>Vlasnici, tereti i upisana površina (ZK izvadak)</span><b id="zkSum">${ZK.res&&ZK.res.key===key?esc(ZK.res.sum):"provjeri izvadak"}</b></summary><div class="acc-body">`;
+  h+=`<div class="kd zkc"><button type="button" class="ib zkCopy" data-v="${ko}">Kopiraj k.o.: <b>${ko}</b></button><button type="button" class="ib zkCopy" data-v="${kc}">Kopiraj broj: <b>${kc}</b></button></div>`;
+  h+=`<div class="kd"><a class="ib" href="https://oss.uredjenazemlja.hr/public-services/search-cad-parcel" target="_blank" rel="noopener">1. Otvori pretragu na OSS-u</a></div>`;
+  h+=`<p class="meta">Na OSS-u izaberi k.o. ${ko}, upiši broj ${kc}, otvori ZK uložak i preuzmi izvadak kao PDF.</p>`;
+  h+=`<div class="kd"><label class="ib" for="zkFile" style="cursor:pointer">2. Učitaj PDF izvatka</label><input id="zkFile" type="file" accept="application/pdf,.pdf" hidden></div>`;
+  h+=`<div id="zkOut">${ZK.res&&ZK.res.key===key?ZK.res.html:""}</div><p class="meta">Iz izvatka se čitaju vlasnici, tereti i upisana površina čestice. Izvadak se čita samo na ovom uređaju; ništa se ne šalje.</p></div></details>`;
+  return h;
+}
+sheet.addEventListener("click",e=>{
+  if(!KRK_CUR||!window.__cur) return;
+  if(e.target.id==="krkZkOk"){const v=parseFloat(String(document.getElementById("krkZkIn").value).replace(",",".")); if(v>0){krkZkSet(window.__cur.key,v,"rucno"); renderKrk(KRK_CUR);}}
+  if(e.target.id==="krkZkDel"){krkZkSet(window.__cur.key,0); renderKrk(KRK_CUR);}
+});
 function renderKrk(d){
   KRK_CUR=d;
   const {ll,parcel,area,rows,ces,nam,pl,slope,env}=d, R=REGIJE.krk;
@@ -892,7 +922,7 @@ function renderKrk(d){
   // čestica
   if(parcel){
     h+=`<p class="eyebrow">Katastarska čestica${P.ko?" · k.o. "+esc(P.ko):P.koRef?" · k.o. br. "+esc(P.koRef):""}</p><p class="parcel">${esc(P.broj||"?")}</p>`;
-    h+=`<p class="meta">${fmt(area)} m² (iz geometrije)${P.povrsinaKatastar?" · grafička površina u katastru "+fmt(P.povrsinaKatastar)+" m²":""} · izvor: DGU, digitalni katastarski plan${P.preuzeto?" (stanje "+esc(P.preuzeto.split("-").reverse().join(". ")+".")+")":""}</p>`;
+    h+=krkAreaHtml(P,area);
     if(P.preklapanje) h+=`<p class="meta">Na ovoj točki preklapaju se stara i nova izmjera (${esc(P.preklapanje.join(", "))}); prikazana je čestica novije izmjere.</p>`;
   }else{
     h+=`<p class="eyebrow">Lokacija</p><p class="parcel">${ll.lat.toFixed(5)}, ${ll.lng.toFixed(5)}</p>`;
@@ -910,6 +940,7 @@ function renderKrk(d){
   h+=`<div id="sumEnd"></div>`;
   h+=`<div class="actions"><button type="button" class="ib" id="shareBtn">Podijeli</button></div>`;
   h+=G("analiza");
+  if(parcel) h+=krkZkBlock(parcel.properties,ll);
   // planovi
   h+=`<h2>Prostorni planovi na lokaciji</h2>`;
   if(pl.e) h+=`<p class="err">Evidencija planova (PGŽ): Podaci nisu dostupni (${esc(pl.e)}).</p>`;
@@ -3129,6 +3160,7 @@ function analyzeZK(text,ctx){
     const re=new RegExp(ctx.kc.replace("/","\\s*/\\s*")+"\\b[^\\n]*?(\\d{1,3}(?:[.\\s]\\d{3})*|\\d+)\\s*(?:m2|m²|čhv)?\\s*$","im");
     const lines=A.split("\n").filter(l=>l.includes(ctx.kc.split("/")[0]));
     let zkA=null; for(const l of lines){const m=l.match(/(\d{1,3}(?:\.\d{3})+|\d+)\s*(?:m2|m²)?\s*$/); if(m&&!l.trim().endsWith(ctx.kc)){zkA=parseInt(m[1].replace(/\./g,"")); break}}
+    out.zkA=zkA||null;
     if(zkA&&ctx.area){ const d=Math.abs(zkA-ctx.area)/ctx.area;
       if(d>0.05) out.flags.push(["warn",`Površina u zemljišnoj knjizi (${fmt(zkA)} m²) razlikuje se od katastra (${fmt(ctx.area)} m²) za ${Math.round(d*100)} %. Provjeri s geodetom prije kupnje.`]);
       else out.ok.push(`Površina u zemljišnoj knjizi (${fmt(zkA)} m²) odgovara katastru.`); }
@@ -3153,6 +3185,7 @@ sheet.addEventListener("change",async e=>{
     const r=analyzeZK(txt,{kc:c.ces,area:c.area});
     const sum=r.flags.some(f=>f[0]==="no")?"ima ozbiljnih upisa":r.flags.length?"provjeri upozorenja":"bez upozorenja";
     ZK.res={key:c.key,html:zkHtml(r),sum};
+    if(c.region==="krk"&&r.zkA&&KRK_CUR){krkZkSet(c.key,r.zkA,"izvadak"); renderKrk(KRK_CUR); return;}
     o.innerHTML=ZK.res.html; if(s){s.textContent=sum; s.className=r.flags.some(f=>f[0]==="no")?"bad":"";}
   }catch(err){o.innerHTML=`<p class="err">Ne mogu pročitati izvadak: ${esc(err.message)}</p>`}
   e.target.value="";
