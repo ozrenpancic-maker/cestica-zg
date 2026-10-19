@@ -1,4 +1,4 @@
-# Čestica ZG
+# Čestica HR (ranije Čestica ZG)
 
 Mobilna web aplikacija: dodirneš zemljište u Zagrebu i dobiješ katastarsku česticu, namjenu iz prostornih planova, urbano pravilo GUP-a s uvjetima gradnje, provjere rizika (UPU, klizišta, zaštita, voda), pristup i okolinu, procjenu doprinosa, priključaka i cijene gradnje te popis dokumentacije s adresama ureda.
 
@@ -17,6 +17,9 @@ Mobilna web aplikacija: dodirneš zemljište u Zagrebu i dobiješ katastarsku č
 - GUP Grada Zagreba, karte 3b (energetski sustav) i 3c (vodnogospodarski sustav) te sloj GUP_Infrastruktura: magistralni vodovod, dalekovodi i kabeli 110 kV+, trafostanice 110 kV, magistralni i VT plinovodi, toplovodi (postojeći i planirani). Ulična mreža vodovoda, kanalizacije, NN struje i distribucijskog plina nije javno objavljena (servisi Javni_vodovod i Javna_kanalizacija su samo statistika; KI_LINIJE je probno područje)
 
 Procjene su orijentacijske. Pravno mjerodavna je lokacijska informacija Grada Zagreba.
+
+## Pilot: otok Krk
+Dodir na otoku Krku pokreće zasebnu analizu: čestica iz DGU INSPIRE WFS-a (HTRS96/TM), namjena i evidencija planova Primorsko-goranske županije (gisportal.pgz.hr), nagib i okolina. Uvjeti gradnje (Grad Krk s UPU-ima, Malinska, Baška, Vrbnik), komunalni doprinos Grada Krka i udaljenosti do vodovoda, kanalizacije i niskonaponske mreže (DGU SKI, `data/ski_krk/`, `docs/infrastruktura-krk.md`). Detalji, neprovjerene stavke i testovi: `docs/krk-pilot.md`.
 
 ## Izmjene
 Uređuje se `src/app.template.html`, a `python3 build.py` sastavlja `index.html`.

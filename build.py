@@ -45,9 +45,23 @@ rules_pp = json.loads((root / "src/rules_ppgz.json").read_text(encoding="utf-8")
 meta = json.loads((root / "src/rules_meta.json").read_text(encoding="utf-8"))
 data_meta = json.dumps(meta, ensure_ascii=False).replace("</", "<\\/")
 data_pp = json.dumps(rules_pp, ensure_ascii=False).replace("</", "<\\/")
+# pravila PPUG Grada Krka (pilot): parametri s navodima iz teksta
+def check_krk(r):
+    errs=[]
+    for k in ("izvor","naselja","tipovi","meda","regulacija","zelenilo","izravnaProvedba","neizgradeni"):
+        if k not in r: errs.append(f"KRK: nedostaje '{k}'")
+    for t,v in r.get("tipovi",{}).items():
+        for s in ("slob","dvoj"):
+            for f in ("minC","izg","kis","kisPodrum","tlMin","tlMax"):
+                if not isinstance(v.get(s,{}).get(f),(int,float)): errs.append(f"KRK {t}.{s}: nedostaje broj '{f}'")
+        for f in ("clanak","gbpMax","visina","etaze"):
+            if f not in v: errs.append(f"KRK {t}: nedostaje '{f}'")
+    if errs: print("\n".join(errs)); sys.exit(1)
+rules_krk = json.loads((root / "src/rules_krk.json").read_text(encoding="utf-8")); check_krk(rules_krk)
+data_krk = json.dumps(rules_krk, ensure_ascii=False).replace("</", "<\\/")
 import datetime
 ver = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=2))).strftime("%d.%m.%Y. %H:%M")
-(root / "index.html").write_text(tpl.replace("/*RULES*/null", data).replace("/*RULES_SE*/null", data_se).replace("/*RULES_PP*/null", data_pp).replace("/*RULES_META*/null", data_meta).replace("/*VERSION*/", ver), encoding="utf-8")
+(root / "index.html").write_text(tpl.replace("/*RULES*/null", data).replace("/*RULES_SE*/null", data_se).replace("/*RULES_PP*/null", data_pp).replace("/*RULES_META*/null", data_meta).replace("/*RULES_KRK*/null", data_krk).replace("/*VERSION*/", ver), encoding="utf-8")
 # service worker: verzija = sažetak sadržaja stranice i ljuske, pa svaka promjena aplikacije daje novi sw.js
 import hashlib
 h = hashlib.sha256()

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Čestica Zagreb</title>
+<title>Čestica HR</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#1f6f54">
@@ -122,7 +122,7 @@ h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute
 .rule-code{font-family:var(--f-mono);font-weight:500;background:var(--soft);border-radius:6px;padding:1px 6px;margin-right:6px}
 .rule-title{font-weight:700;font-size:16px;margin:4px 0 2px;text-wrap:balance}
 .kv{display:grid;grid-template-columns:7.5em 1fr;gap:6px 10px;margin:8px 0 0;font-size:14px}
-.kv dt{color:var(--muted)} .kv dd{margin:0;min-width:0}
+.kv dt{color:var(--muted);min-width:0;overflow-wrap:anywhere;hyphens:auto} .kv dd{margin:0;min-width:0}
 .calc{margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--soft)}
 .calc .row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:14px}
 .calc .row span:last-child{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
@@ -276,14 +276,14 @@ ul.risk small{color:var(--muted)}
 <body>
 <div id="app">
   <header>
-    <h1>Čestica ZG</h1>
+    <h1>Čestica HR</h1>
     <input id="q" type="search" placeholder="Adresa ili čestica, npr. Šestine 4027/1" autocomplete="off">
     <button class="ib" id="go" type="button">Traži</button>
     <button class="ib" id="me" type="button" aria-label="Prikaži moju lokaciju" title="Prikaži moju lokaciju">◎</button>
     <button class="ib" id="favBtn" type="button" aria-label="Spremljene čestice">★</button>
     <button class="ib" id="menuBtn" type="button" aria-label="Izbornik">☰</button>
   </header>
-  <div id="menu" hidden><p class="meta" id="ver" style="margin:0 0 6px"></p><a href="#" id="statBtn2" class="ib">Stanje servisa</a><label id="aiOnRow" class="aion" hidden><input type="checkbox" id="aiOn"> AI asistent (testno)</label></div>
+  <div id="menu" hidden><p class="meta" id="ver" style="margin:0 0 6px"></p><a href="#" id="statBtn2" class="ib">Stanje servisa</a><a href="#" id="goKrk" class="ib">Otok Krk (pilot)</a><label id="aiOnRow" class="aion" hidden><input type="checkbox" id="aiOn"> AI asistent (testno)</label></div>
   <main>
     <div id="map"></div>
     <div class="layers" id="layers">
@@ -322,6 +322,7 @@ const RULES = /*RULES*/null;
 const RULES_SE = /*RULES_SE*/null;
 const RULES_PP = /*RULES_PP*/null;
 const RULES_META = /*RULES_META*/null; // izvor, verzija i status svake datoteke pravila (src/rules_meta.json)
+const RULES_KRK = /*RULES_KRK*/null; // PPUG Grada Krka (pilot), src/rules_krk.json
 const APP_VERSION = "/*VERSION*/";
 
 const BASE = "https://services8.arcgis.com/Usi0jGQwMmBUpFjr/arcgis/rest/services/";
@@ -517,8 +518,425 @@ window.__lastBounds=null;
 const OPEN=new Set();
 sheet.addEventListener("toggle",e=>{const k=e.target.dataset&&e.target.dataset.k; if(k){e.target.open?OPEN.add(k):OPEN.delete(k)}},true);
 map.on("click",e=>inspect(e.latlng));
+// ================= REGIJE: Grad Zagreb (puna analiza) i pilot otok Krk =================
+// Zagreb koristi gradske ArcGIS servise. Za otok Krk (pilot, Grad Krk) aplikacija koristi:
+//  - katastarske čestice: DGU, INSPIRE WFS (api.uredjenazemlja.hr), koordinate HTRS96/TM (EPSG:3765);
+//  - namjenu površina i evidenciju prostornih planova: Primorsko-goranska županija (gisportal.pgz.hr, sloj STANJE).
+// Uvjeti gradnje (odredbe za provedbu), komunalni doprinos i ulične mreže za Krk još nisu obrađeni i to se jasno piše.
+const REGIJE={
+  zg:{naziv:"Grad Zagreb"},
+  krk:{naziv:"Otok Krk (pilot)", bbox:[14.40,44.86,14.90,45.26], centar:[45.027,14.576], zoom:14,
+       // jedinice lokalne samouprave na otoku, kako ih piše županijski sloj (OPCINA_GRAD)
+       jls:{"KRK":"Grad Krk","BAŠKA":"Općina Baška","DOBRINJ":"Općina Dobrinj","MALINSKA-DUBAŠNICA":"Općina Malinska-Dubašnica","OMIŠALJ":"Općina Omišalj","PUNAT":"Općina Punat","VRBNIK":"Općina Vrbnik"},
+       pilot:"KRK"}
+};
+// Zagreb je istočno od 15,5° E, Krk zapadno; preklapanja nema. Unutar obuhvata Krka o jedinici odlučuje županijski sloj.
+function regionOf(ll){ const b=REGIJE.krk.bbox; return ll.lng>=b[0]&&ll.lng<=b[2]&&ll.lat>=b[1]&&ll.lat<=b[3]?"krk":"zg"; }
+const PGZ="https://gisportal.pgz.hr/server/rest/services/STANJE/";
+const SRC_KRK={
+  namjena:PGZ+"NAMJENA_POVRSINA_NOVO/FeatureServer/0/query",
+  planovi:PGZ+"IZRADA_PP/FeatureServer/0/query",
+  cp:"https://api.uredjenazemlja.hr/services/inspire/cp/wfs"
+};
+
+// --- HTRS96/TM (EPSG:3765): poprečna Merkatorova projekcija, GRS80, srednji meridijan 16,5°, k0 0,9999, E0 500 000 m.
+// Formule: Snyder, Map Projections – A Working Manual (USGS 1395), str. 61–64. Na Krku (2° od srednjeg meridijana) greška je ispod 1 cm.
+const TM={a:6378137,f:1/298.257222101,k0:0.9999,lon0:16.5,E0:500000};
+TM.e2=TM.f*(2-TM.f); TM.ep2=TM.e2/(1-TM.e2);
+function tmM(phi){const e2=TM.e2,e4=e2*e2,e6=e4*e2; return TM.a*((1-e2/4-3*e4/64-5*e6/256)*phi-(3*e2/8+3*e4/32+45*e6/1024)*Math.sin(2*phi)+(15*e4/256+45*e6/1024)*Math.sin(4*phi)-(35*e6/3072)*Math.sin(6*phi));}
+function tmFwd(lon,lat){
+  const r=Math.PI/180, phi=lat*r, s=Math.sin(phi), c=Math.cos(phi), t=Math.tan(phi);
+  const N=TM.a/Math.sqrt(1-TM.e2*s*s), T=t*t, C=TM.ep2*c*c, A=(lon-TM.lon0)*r*c, ep2=TM.ep2;
+  const x=TM.k0*N*(A+(1-T+C)*A**3/6+(5-18*T+T*T+72*C-58*ep2)*A**5/120);
+  const y=TM.k0*(tmM(phi)+N*t*(A*A/2+(5-T+9*C+4*C*C)*A**4/24+(61-58*T+T*T+600*C-330*ep2)*A**6/720));
+  return [x+TM.E0,y];
+}
+function tmInv(E,Nn){
+  const e2=TM.e2,e4=e2*e2,e6=e4*e2,ep2=TM.ep2, x=E-TM.E0, M=Nn/TM.k0;
+  const mu=M/(TM.a*(1-e2/4-3*e4/64-5*e6/256)), e1=(1-Math.sqrt(1-e2))/(1+Math.sqrt(1-e2));
+  const p1=mu+(3*e1/2-27*e1**3/32)*Math.sin(2*mu)+(21*e1*e1/16-55*e1**4/32)*Math.sin(4*mu)+(151*e1**3/96)*Math.sin(6*mu)+(1097*e1**4/512)*Math.sin(8*mu);
+  const s=Math.sin(p1), c=Math.cos(p1), t=Math.tan(p1), C1=ep2*c*c, T1=t*t, N1=TM.a/Math.sqrt(1-e2*s*s), R1=TM.a*(1-e2)/Math.pow(1-e2*s*s,1.5), D=x/(N1*TM.k0);
+  const phi=p1-(N1*t/R1)*(D*D/2-(5+3*T1+10*C1-4*C1*C1-9*ep2)*D**4/24+(61+90*T1+298*C1+45*T1*T1-252*ep2-3*C1*C1)*D**6/720);
+  const lam=(D-(1+2*T1+C1)*D**3/6+(5-2*C1+28*T1-3*C1*C1+8*ep2+24*T1*T1)*D**5/120)/c;
+  return [TM.lon0+lam*180/Math.PI, phi*180/Math.PI];
+}
+// GeoJSON geometrija iz HTRS96/TM u WGS84 (ako su koordinate već u stupnjevima, ostaju kakve jesu)
+function geomTo4326(g){
+  const conv=c=>Array.isArray(c[0])?c.map(conv):(Math.abs(c[0])>180||Math.abs(c[1])>90?tmInv(c[0],c[1]):[c[0],c[1]]);
+  return g&&g.coordinates?{type:g.type,coordinates:conv(g.coordinates)}:null;
+}
+// prva jednostavna vrijednost za zadani ključ, bilo gdje u (ugniježđenim) svojstvima INSPIRE objekta
+function deepFind(o,keys,depth=0){
+  if(!o||typeof o!=="object"||depth>6) return null;
+  for(const k of Object.keys(o)){ if(keys.includes(k.toLowerCase())){const v=o[k];
+    if(v!=null&&typeof v!=="object"&&String(v).trim()!=="") return v;
+    if(v&&typeof v==="object"){const n=deepFind(v,["value","text","#text","spelling","_"],depth+1); if(n!=null) return n;}}}
+  for(const k of Object.keys(o)){const v=o[k]; if(v&&typeof v==="object"){const r=deepFind(v,keys,depth+1); if(r!=null) return r;}}
+  return null;
+}
+// WFS upit oko točke (±m metara) u HTRS96/TM; DGU ograničava upit na 1000 objekata i dijagonalu od 2 km
+function dguQuery(type,ll,m=1,count=20){
+  const [E,N]=tmFwd(ll.lng,ll.lat);
+  const p=new URLSearchParams({service:"WFS",version:"2.0.0",request:"GetFeature",typeNames:type,count:String(count),outputFormat:"application/json",
+    bbox:[E-m,N-m,E+m,N+m].map(v=>v.toFixed(2)).join(",")+",urn:ogc:def:crs:EPSG::3765"});
+  return getJSON(SRC_KRK.cp+"?"+p.toString(),{},15000);
+}
+async function loadParcelDGU(ll){
+  const [cp,cz]=await Promise.all([dguQuery("cp:CadastralParcel",ll,1,20),settle(dguQuery("cp:CadastralZoning",ll,1,5))]);
+  const pt=turf.point([ll.lng,ll.lat]);
+  for(const f of (cp&&cp.features)||[]){
+    const g=geomTo4326(f.geometry); if(!g||!/Polygon/.test(g.type)) continue;
+    let inside=false; try{inside=turf.booleanPointInPolygon(pt,g)}catch(e){}
+    if(!inside) continue;
+    const P=f.properties||{};
+    const ref=deepFind(P,["nationalcadastralreference"]), label=deepFind(P,["label"])||(ref?String(ref).split(/[\/\-:]/).slice(1).join("/"):null);
+    const av=deepFind(P,["areavalue"]); let ko=null, koRef=null;
+    const z=cz.v&&cz.v.features&&cz.v.features[0]; if(z){const Z=z.properties||{}; ko=deepFind(Z,["name","geographicalname","label"]); koRef=deepFind(Z,["nationalcadastalzoningreference","nationalcadastralzoningreference"]);}
+    return {type:"Feature",geometry:g,properties:{broj:label?String(label):null,ref:ref?String(ref):null,povrsinaKatastar:av!=null&&isFinite(+av)?+av:null,ko:ko?String(ko):null,koRef:koRef?String(koRef):null,izvor:"DGU"}};
+  }
+  return null; // u upitu nema čestice koja sadrži točku (more, cesta bez čestice ili rub)
+}
+
+// --- namjena (županijski sloj): procjena je li građevinsko područje
+const KRK_COLORS={gpn:"#f79646",gpi:"#9966ff",van:"#7fb800",nep:"#888"};
+function krkKind(p){
+  const pol=String(p.POLAZNA_NAMJENA||"").toLowerCase(), pri=String(p.PRIMARNA_NAMJENA||"").toLowerCase();
+  if(/građevn|gradevn|građevinsk/.test(pol)) return /naselj/.test(pri)?"gpn":"gpi";
+  if(pol||pri) return "van";
+  return "nep";
+}
+function krkVerdict(p){
+  const k=krkKind(p), pri=p.PRIMARNA_NAMJENA||"", sek=p.SEKUNDARNA_NAMJENA||"";
+  if(k==="gpn") return ["ok","Građevinsko područje naselja"+(p.NASELJE?" ("+p.NASELJE+")":"")+"."];
+  if(k==="gpi") return ["warn","Građevinsko područje, ali izdvojene namjene: "+[pri,sek].filter(Boolean).join(", ")+". Gradnja je vezana uz tu namjenu, ne za obiteljsku kuću općenito."];
+  if(k==="van") return ["no","Izvan građevinskog područja: "+[p.POLAZNA_NAMJENA,pri].filter(Boolean).join(", ")+". Gradnja kuće u pravilu nije moguća; iznimke propisuje plan."];
+  return ["warn","Namjena nije prepoznata; provjeri u planu."];
+}
+function krkZoneLabel(p){return [p.OZNAKA_NAMJENE,p.PRIMARNA_NAMJENA||p.POLAZNA_NAMJENA,p.SEKUNDARNA_NAMJENA,p.DETALJNA_NAMJENA].filter(Boolean).join(" · ")}
+
+// --- evidencija planova (županija): važeći i oni u izradi na točki
+const PP_VRSTE={"PPŽ":"Prostorni plan Primorsko-goranske županije","PPUO/G":"Prostorni plan uređenja općine ili grada","UPU":"Urbanistički plan uređenja","DPU":"Detaljni plan uređenja","GUP":"Generalni urbanistički plan"};
+const snKey=s=>{const m=String(s||"").match(/(\d{4})\D+(\d+)/); return m?+m[1]*1000+ +m[2]:0};
+function krkPlans(feats){
+  const P=(feats||[]).map(f=>f.properties||{}).filter(p=>p.VRSTA_PP&&p.VRSTA_PP!=="DPPR");
+  const vazeci={}, izrada=[];
+  for(const p of P){
+    const st=String(p.STATUS_PP||"").toUpperCase();
+    if(st==="VAŽEĆI"){const k=p.VRSTA_PP+"|"+(p.GRAD_OPCINA||""); if(!vazeci[k]||snKey(p.SN_BROJ)>snKey(vazeci[k].SN_BROJ)) vazeci[k]=p;}
+    else if(st==="U IZRADI") izrada.push(p);
+  }
+  const ord=v=>["UPU","DPU","GUP","PPUO/G","PPŽ"].indexOf(v);
+  return {vazeci:Object.values(vazeci).sort((a,b)=>ord(a.VRSTA_PP)-ord(b.VRSTA_PP)), izrada:izrada.sort((a,b)=>snKey(b.SN_BROJ)-snKey(a.SN_BROJ)),
+          upu:Object.values(vazeci).filter(p=>p.VRSTA_PP==="UPU"||p.VRSTA_PP==="DPU")};
+}
+const safeLink=u=>/^https?:\/\//i.test(String(u||"").trim())?String(u).trim():null;
+
+let KRK_CUR=null;
+const krkEnvLayer=L.layerGroup().addTo(map); // prostor za kuću na Krku (4 m od međa)
+
+// --- uvjeti gradnje za Grad Krk: PPUG (pročišćeni tekst SN PGŽ 29/2020) izvan UPU-a, a obrađeni UPU-ovi (rules_krk.json → upu) unutar svog obuhvata
+const KRK_TIP={tip:"obit",oblik:"slob",zona:"M1"};
+try{const v=JSON.parse(localStorage.getItem("krkTip")||"null"); if(v&&RULES_KRK&&RULES_KRK.tipovi[v.tip]&&/^(slob|dvoj|ugr)$/.test(v.oblik)) Object.assign(KRK_TIP,{tip:v.tip,oblik:v.oblik,zona:v.zona==="druga"?"druga":"M1"})}catch(e){}
+function krkNaselje(name){
+  if(!RULES_KRK||!name) return null; const n=" "+norm(name)+" ";
+  for(const [code,arr] of Object.entries(RULES_KRK.naselja)) if(arr.some(a=>n.includes(" "+norm(a)+" "))) return code;
+  return null;
+}
+// koji obrađeni UPU odgovara važećem UPU-u iz evidencije PGŽ
+function krkUpuRule(p){
+  const U=RULES_KRK&&RULES_KRK.upu||{}, s=String(p.NAZIV||"");
+  for(const [k,u] of Object.entries(U)){ try{ if(new RegExp(u.prepoznaj,"i").test(s)) return {k,...u} }catch(e){} }
+  return null;
+}
+function krkRuleState(d){
+  const R=RULES_KRK; if(!R) return {st:"ne",msg:"Pravila za Krk nisu učitana."};
+  const jls=krkJls(d.rows,d.pl);
+  if(jls!==REGIJE.krk.pilot) return krkRuleStateJls(d,jls);
+  if(!d.rows.length) return {st:"ne",msg:"Namjena nije poznata, pa se uvjeti ne mogu odrediti."};
+  const gpn=d.rows.filter(r=>krkKind(r.p)==="gpn");
+  if(!gpn.length) return {st:"ne",msg:"Lokacija nije u građevinskom području naselja, pa uvjeti za obiteljske i višeobiteljske kuće ovdje ne vrijede."};
+  const K=d.pl&&d.pl.v?krkPlans(d.pl.v):null;
+  if(K&&K.upu.length){
+    const known=K.upu.map(p=>({p,u:krkUpuRule(p)})), ok=known.find(x=>x.u&&x.u.obradeno!==false);
+    if(ok&&K.upu.length===1) return {st:"upu",RS:ok.u,izgr:gpn,notes:[],plan:ok.p};
+    const nk=known.find(x=>x.u&&x.u.obradeno===false);
+    const naziv=K.upu.map(p=>p.VRSTA_PP+(p.NAZIV?" ("+String(p.NAZIV).slice(0,80)+")":"")).join(", ");
+    return {st:"upuNe",msg:"Na lokaciji vrijedi "+naziv+". Uvjete gradnje propisuje taj plan, a aplikacija ga još nije obradila."+(nk?" "+nk.u.napomena:"")};
+  }
+  const izgr=gpn.filter(r=>!/neizgr/i.test(r.p.IZGRADJENOST||""));
+  if(!izgr.length) return {st:"blok",msg:"Lokacija je u neizgrađenom dijelu građevinskog područja. Prema čl. 15. PPUG-a ovdje se može graditi tek nakon izrade urbanističkog plana uređenja (UPU).",txt:R.neizgradeni.txt,cl:R.neizgradeni.clanak};
+  const na=krkNaselje(izgr[0].p.NASELJE||izgr[0].p.NAZIV), notes=[];
+  if(d.pl&&d.pl.e) notes.push("Evidencija planova nije odgovorila, pa nije provjereno vrijedi li na lokaciji UPU.");
+  if(izgr.length<gpn.length) notes.push("Dio čestice je u neizgrađenom dijelu građevinskog područja; ondje se gradi tek nakon UPU-a (čl. 15.). Izračun je za izgrađeni dio.");
+  if(na&&R.izravnaProvedba.bezNaselja.includes(na)) return {st:"provjera",RS:R,msg:"Naselje Krk (NA1) nije u popisu naselja s izravnom provedbom plana (čl. 19.). Za grad Krk vrijedi UPU; uvjeti ispod su iz PPUG-a i služe samo za orijentaciju.",na,izgr,notes};
+  if(!na) notes.push("Naselje iz županijskog sloja ("+(izgr[0].p.NASELJE||"?")+") nije prepoznato u popisu naselja plana (čl. 14.).");
+  return {st:notes.length?"provjera":"ok",RS:R,na,izgr,notes};
+}
+const dec=x=>String(x).replace(".",",");
+// ostale jedinice na otoku: prostorni plan općine (rules_krk.json → ostaleJls), skupine naselja po oznaci iz županijskog sloja ili po nazivu naselja
+function krkRuleSetJls(jls,row){
+  const B=RULES_KRK&&RULES_KRK.ostaleJls&&RULES_KRK.ostaleJls[jls]; if(!B) return null;
+  const oz=String(row.p.OZNAKA_NAMJENE||"").toUpperCase().replace(/\s+/g,""), nas=norm(row.p.NASELJE||row.p.NAZIV||"");
+  const g=(B.grupe||[]).find(g=>g.oznake?g.oznake.includes(oz):g.naselje?new RegExp(g.naselje).test(nas):false)||null;
+  if(!g) return {...B,grupa:null};
+  const tipovi=JSON.parse(JSON.stringify(g.tipovi||B.tipovi));
+  if(g.txt) for(const t of Object.values(tipovi)) t.txt={...(t.txt||{}),...g.txt};
+  return {...B,tipovi,grupa:g};
+}
+function krkRuleStateJls(d,jls){
+  const name=REGIJE.krk.jls[jls]||jls;
+  if(!RULES_KRK.ostaleJls||!RULES_KRK.ostaleJls[jls]) return {st:"ne",msg:`Uvjeti gradnje za ${name} još nisu obrađeni.`};
+  if(!d.rows.length) return {st:"ne",msg:"Namjena nije poznata, pa se uvjeti ne mogu odrediti."};
+  const gpn=d.rows.filter(r=>krkKind(r.p)==="gpn");
+  if(!gpn.length) return {st:"ne",msg:"Lokacija nije u građevinskom području naselja, pa uvjeti za stambene građevine ovdje ne vrijede."};
+  const K=d.pl&&d.pl.v?krkPlans(d.pl.v):null;
+  if(K&&K.upu.length) return {st:"upuNe",msg:"Na lokaciji vrijedi "+K.upu.map(p=>p.VRSTA_PP+(p.NAZIV?" ("+String(p.NAZIV).slice(0,80)+")":"")).join(", ")+". Uvjete gradnje propisuje taj plan, a aplikacija ga još nije obradila."};
+  const RS=krkRuleSetJls(jls,gpn[0]), notes=[];
+  if(!RS.grupa) return {st:"ne",msg:`Skupina naselja (${gpn[0].p.OZNAKA_NAMJENE||gpn[0].p.NASELJE||"?"}) nije prepoznata u planu ${RS.kod}; uvjeti se ne mogu odrediti.`};
+  if(d.pl&&d.pl.e) notes.push("Evidencija planova nije odgovorila, pa nije provjereno vrijedi li na lokaciji UPU.");
+  let izgr=gpn.filter(r=>!/neizgr/i.test(r.p.IZGRADJENOST||""));
+  const N=RS.neizgradeni;
+  if(!izgr.length){
+    if(N.mod==="blok") return {st:"blok",msg:N.msg,txt:N.txt,cl:N.clanak};
+    notes.push(N.msg); izgr=gpn;
+  }else if(izgr.length<gpn.length) notes.push("Dio čestice je u neizgrađenom dijelu građevinskog područja. "+N.msg+" Izračun je za izgrađeni dio.");
+  if(RS.grupa.napomena) notes.push(RS.grupa.napomena);
+  if(RS.upozorenje) notes.unshift(RS.upozorenje);
+  return {st:RS.upozorenje||notes.some(n=>n===N.msg||/lokacijska informacija|ne odgovara|nije odgovorila/.test(n))?"provjera":"ok",RS,izgr,notes,grupa:RS.grupa.naziv};
+}
+function krkRulesHtml(d){
+  const R=RULES_KRK, S=krkRuleState(d); let h=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>`; krkEnvLayer.clearLayers();
+  window.__krkCalc=null;
+  if(S.st==="ne"||S.st==="upuNe"){h+=`<p class="hint">${esc(S.msg)}</p>`; return h;}
+  if(S.st==="blok"){h+=`<div class="verdict v-no">${esc(S.msg)}</div><p class="meta">Čl. ${esc(S.cl)}.: „${esc(S.txt)}“</p>`; return h;}
+  const isUpu=S.st==="upu";
+  let RS=S.RS; const I=RS.izvor||R.izvor;
+  // UPU s pravilima po zonama: odabrana zona (ili prva) bira skup pravila
+  const zona=RS.zone?(RS.zone.some(z=>z[0]===KRK_TIP.zona)?KRK_TIP.zona:RS.zone[0][0]):null;
+  if(zona&&RS.zoneSet&&RS.zoneSet[zona]) RS={...RS,...RS.zoneSet[zona]};
+  if(!RS.tipovi){ // zona bez pravila za kuće (npr. „druga zona”)
+    const sel0=(id,opts,v)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===v?" selected":""}>${esc(o[1])}</option>`).join("")}</select>`;
+    return h+`<p class="rule-title"><span class="rule-code">${esc(RS.kod)}</span></p><p class="meta">Izvor: <a href="${esc(I.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(I.naziv)}</a>, ${esc(I.sn)}</p><div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label>${sel0("krkZona",RS.zone,zona)}</div><p class="meta">${esc(RS.zonaNapomena)}</p><p class="hint">${esc(RS.drugaZona||"Za ovu zonu uvjeti za obiteljske i višeobiteljske kuće nisu obrađeni.")}</p>`;
+  }
+  const src=`<p class="meta">Izvor: <a href="${esc(I.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(I.naziv)}</a>, ${esc(I.sn)} · status: ${esc(I.status)}</p>`;
+  const T=RS.tipovi[KRK_TIP.tip]||RS.tipovi.obit||Object.values(RS.tipovi)[0], P=T[KRK_TIP.oblik]||T.dvoj||T.slob, area=d.area;
+  h+=`<p class="rule-title"><span class="rule-code">${esc(RS.kod)}</span>${esc(T.naziv)}, čl. ${esc(T.clanak)}${/\.$/.test(T.clanak)?"":"."}${S.na?" · naselje "+esc(S.na):""}${S.grupa?" · "+esc(S.grupa):""}</p>`+src;
+  if(S.st==="provjera") h+=`<div class="verdict v-warn">${esc(S.msg||"Potrebna dodatna provjera.")}</div>`;
+  for(const n of S.notes||[]) h+=`<p class="flag">${esc(n)}</p>`;
+  const sel=(id,opts,v)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===v?" selected":""}>${esc(o[1])}</option>`).join("")}</select>`;
+  if(isUpu){
+    h+=`<div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label>${sel("krkZona",RS.zone,zona)}</div><p class="meta">${esc(RS.zonaNapomena)}</p>`;
+    if(zona==="druga"){h+=`<p class="hint">${esc(RS.drugaZona||"Za ovu zonu uvjeti za obiteljske i višeobiteljske kuće nisu obrađeni.")}</p>`; return h;}
+  }
+  h+=`<div class="kd" style="margin:6px 0"><label for="krkTip">Građevina</label>${sel("krkTip",Object.entries(RS.tipovi).map(([k,t])=>[k,t.naziv]),RS.tipovi[KRK_TIP.tip]?KRK_TIP.tip:Object.keys(RS.tipovi)[0])}</div>`;
+  h+=`<p class="meta" style="margin:0 0 6px">${esc(T.naziv)}: ${esc(T.opis)}.</p>`;
+  const obl=T.oblici||RS.oblici||[["slob","slobodnostojeća"]].concat(T.ugr?[["dvoj","dvojna"],["ugr","ugrađena"]]:T.dvoj?[["dvoj","dvojna"]]:[]);
+  const oblSel=obl.some(o=>o[0]===KRK_TIP.oblik)&&T[KRK_TIP.oblik]?KRK_TIP.oblik:obl.some(o=>o[0]==="dvoj")&&KRK_TIP.oblik==="ugr"&&T.dvoj?"dvoj":"slob";
+  h+=`<div class="kd" style="margin:0 0 6px"><label for="krkOblik">Način gradnje</label>${sel("krkOblik",obl,oblSel)}</div>`;
+  const zab=RS.grupa&&RS.grupa.zabranjeno||[];
+  if(zab.includes(oblSel)){h+=`<div class="verdict v-no">U ovom naselju nova gradnja ovog načina (${esc((obl.find(o=>o[0]===KRK_TIP.oblik)||["",""])[1])}) nije dozvoljena.</div>`; return h;}
+  const Pm=T[oblSel]||P;
+  if(Pm.napomena) h+=`<p class="flag">${esc(Pm.napomena)}</p>`;
+  return h+krkCalcHtml(d,S,RS,T,Pm,oblSel,isUpu);
+}
+function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
+  const R=RULES_KRK, area=d.area, I=RS.izvor||R.izvor; let h="";
+  const base=isUpu?S.izgr:S.izgr;
+  const A=area?(base.every(r=>r.share!=null)?Math.min(1,base.reduce((a,r)=>a+r.share,0))*area:area):null;
+  if(!A){h+=`<p class="meta">Čestica nije pronađena u katastru, pa se izračun ne može napraviti. Pravila: najmanja čestica ${fmt(P.minC)} m², kig ${dec(P.izg)}, kis ${dec(P.kis)}, visina ${dec(T.visina)} m.</p>`; return h;}
+  const slope=d.slope&&d.slope.v?d.slope.v.slope:null, kosi=T.kosi&&slope!=null&&slope>T.kosi.nagib;
+  const tl=Math.min(A*P.izg,P.tlMax||Infinity), gbpN=Math.min(A*P.kis,T.gbpMax||Infinity), gbpP=RS.kisUkupni?null:Math.min(A*P.kisPodrum,T.gbpUkupno&&T.gbpMax?T.gbpMax:Infinity);
+  const minOk=A>=P.minC, minEx=!minOk&&!!P.minCIznimno&&A>=P.minCIznimno, tlOk=tl>=P.tlMin;
+  // prostor za kuću: najmanja udaljenost od međa, na dijelu čestice u GP-u naselja
+  let env=null; try{if(d.parcel){let g=turf.buffer(d.parcel,-RS.meda.min/1000,{units:"kilometers"});
+    if(g&&base.length<d.rows.length&&base.every(r=>r.geom)){let u=null; for(const r of base){u=u?turf.union(u,turf.feature(r.geom)):turf.feature(r.geom)} g=u?turf.intersect(g,u):g;}
+    if(g&&g.geometry) env={geom:g.geometry,area:turf.area(g)};}}catch(e){}
+  window.__krkCalc={plan:RS.kod,A,tl,gbpN,gbpP,minOk,minEx,env:env?Math.round(env.area):null,tip:Object.keys(RS.tipovi).find(k=>RS.tipovi[k]===T),oblik:oblSel,st:S.st,kosi};
+  if(env) L.geoJSON(env.geom,{style:{color:"#1f6f54",weight:2,dashArray:"4 3",fillColor:"#1f6f54",fillOpacity:.25},interactive:false}).addTo(krkEnvLayer);
+  const chips=[(minOk?"čestica dovoljna":minEx?"čestica: samo iznimno":"čestica premala"),"tlocrt do "+fmt(tl)+" m²","GBP do "+fmt(gbpN)+" m²","visina "+dec(T.visina)+" m"];
+  h+=`<div class="chips">${chips.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`;
+  const row=(l,v,cls="")=>`<div class="row"><span>${l}</span><span class="${cls}">${v}</span></div>`;
+  h+=`<details class="acc" data-k="krkCalc" open><summary><span>Izračun za ovu česticu</span><b class="${minOk&&tlOk?"good":minEx?"":"bad"}">${esc(chips.slice(0,3).join(" · "))}</b></summary><div class="calc">`;
+  if(Math.abs(A-area)>1) h+=row(isUpu?"Dio čestice u GP-u naselja":"Izgrađeni dio GP-a naselja na čestici",`${fmt(A)} od ${fmt(area)} m²`);
+  h+=row(`Najmanja čestica ${fmt(P.minC)} m²`,minOk?"ispunjeno":minEx?"samo iznimno":"premala",minOk?"good":minEx?"":"bad");
+  if(minEx) h+=`<p class="meta">Iznimno ${fmt(P.minCIznimno)} m², ako je čestica u okruženju već formiranih (izgrađenih) građevnih čestica. To potvrđuje lokacijska informacija.</p>`;
+  if(P.maxC){h+=row(`Najveća čestica ${fmt(P.maxC)} m²`,A>P.maxC?"veća od najveće":"ispunjeno",A>P.maxC?"":"good"); if(A>P.maxC) h+=`<p class="meta">Građevna čestica za kuću smije biti najviše ${fmt(P.maxC)} m²; veća čestica se dijeli ili se za kuću formira manja građevna čestica. Izračun ispod je za cijelu površinu, pa je potrebna dodatna provjera.</p>`;}
+  h+=row(`Najveći tlocrt (kig ${dec(P.izg)}${P.tlMax?", najviše "+fmt(P.tlMax)+" m²":""})`,fmt(tl)+" m²",tlOk?"":"bad");
+  if(!tlOk) h+=`<p class="meta">Najmanji dopušteni tlocrt je ${fmt(P.tlMin)} m², a ova čestica dopušta manje; gradnja ovog tipa nije moguća.</p>`;
+  if(RS.kisUkupni){h+=row(`Najveći GBP (kis ${dec(P.kis)}${T.gbpMax?", najviše "+fmt(T.gbpMax)+" m²":""})`,fmt(gbpN)+" m²");
+    if(T.kosi&&T.kosi.kis) h+=`<p class="meta">Na terenu nagiba većem od ${T.kosi.nagib} % kis može biti ${dec(T.kosi.kis)} (GBP do ${fmt(Math.min(A*T.kosi.kis,T.gbpMax))} m²).</p>`;}
+  else{h+=row(`Najveći GBP nadzemno (kis ${dec(P.kis)}${T.gbpMax?", najviše "+fmt(T.gbpMax)+" m²":""})`,fmt(gbpN)+" m²")+row(`GBP s podrumom (kis ${dec(P.kisPodrum)}${T.gbpUkupno&&T.gbpMax?", ukupno najviše "+fmt(T.gbpMax)+" m²":""})`,fmt(gbpP)+" m²");
+    if(T.gbpNapomena) h+=`<p class="meta">${esc(T.gbpNapomena)}</p>`;}
+  if(T.kosi&&T.kosi.kis&&!RS.kisUkupni) h+=`<p class="meta">Na terenu nagiba većem od ${T.kosi.nagib} % kis može biti ${dec(T.kosi.kis)}.</p>`;
+  h+=row("Etaže",esc(T.etaze))+row("Najveća visina",esc(T.visinaOpis||dec(T.visina)+" m"));
+  if(T.kosi) h+=`<p class="${kosi?"flag":"meta"}">Na kosom terenu (nagib veći od ${T.kosi.nagib} %): ${esc(T.kosi.etaze)}, visina do ${dec(T.kosi.visina)} m.${slope!=null?` Model visina procjenjuje nagib okoline na oko ${Math.round(slope)} %${kosi?", pa iznimka možda vrijedi":""}; stvarni nagib potvrđuje geodetska snimka.`:""}</p>`;
+  if(T.etazeNapomena) h+=`<p class="meta">${esc(T.etazeNapomena)}</p>`;
+  h+=row(`Od međe (čl. ${esc(RS.meda.clanak)})`,esc(RS.meda.opis))+(RS.meda.opisIznimka?`<p class="meta">${esc(RS.meda.opisIznimka)}</p>`:"");
+  if(env) h+=row(`Prostor za kuću (${RS.meda.min} m od međa, zeleno na karti)`,fmt(env.area)+" m²",env.area<tl?"bad":"");
+  if(env&&env.area<tl) h+=`<p class="meta">Prostor unutar ${RS.meda.min} m od međa manji je od dopuštenog tlocrta, pa oblik čestice ograničava tlocrt na najviše ${fmt(env.area)} m².</p>`;
+  h+=row(`Od regulacijskog pravca (čl. ${esc(RS.regulacija.clanak)})`,esc(RS.regulacija.opis));
+  h+=row(`${esc(RS.zelenilo.opisNaziv||"Zelenilo")} (čl. ${esc(RS.zelenilo.clanak)})`,RS.zelenilo.min?`najmanje ${Math.round(RS.zelenilo.min*100)} % = ${fmt(area*RS.zelenilo.min)} m²`:"plan ne određuje");
+  h+=`<p class="meta">${esc(RS.pristup.napomena)}</p></div></details>`;
+  const c=T.clanak, tx=T.txt||{}, Q=[[c,tx.minC],[c,tx.minCIznimno],[c,tx.maxC],[c,tx.dvoj],[c,tx.izg],[c,tx.kis],[c,tx.tl],[c,tx.gbp],[c,tx.etaze],[c,tx.visina],[RS.meda.clanak,RS.meda.txt],[RS.meda.clanak,RS.meda.txtBezOtvora],[RS.regulacija.clanak,RS.regulacija.txt],[RS.zelenilo.clanak,RS.zelenilo.txt]];
+  if(RS===R) Q.push([R.izravnaProvedba.clanak,R.izravnaProvedba.txt]); else if(RS.neizgradeni) Q.push([RS.neizgradeni.clanak,RS.neizgradeni.txt]);
+  h+=`<details data-k="krkTxt"><summary>Navodi iz plana</summary><ol>${Q.filter(x=>x[1]).map(([cl,t])=>`<li><b>čl. ${esc(String(cl).replace(/\.$/,""))}.</b> „${esc(t)}“</li>`).join("")}</ol>`;
+  h+=`<p class="meta">${esc(I.provjera)}</p>${(RS.napomene||[]).map(n=>`<p class="meta">${esc(n)}</p>`).join("")}</details>`;
+  return h;
+}
+
+// --- komunalni doprinos Grada Krka: iznosi po zonama nisu potvrđeni, pa ih korisnik upisuje; ništa se ne pretpostavlja
+function krkKdZona(d){
+  const K=RULES_KRK&&RULES_KRK.komunalniDoprinos; if(!K||!K.zone) return null;
+  const gp=d.rows.find(r=>krkKind(r.p)==="gpn"), any=d.rows[0];
+  if(!gp){ if(any&&krkKind(any.p)==="gpi") return {z:K.zone[0],why:"izdvojeno građevinsko područje izvan naselja"}; return null; }
+  const n=" "+norm(gp.p.NASELJE||gp.p.NAZIV||"")+" ";
+  for(const z of K.zone) if(z[3].some(a=>n.includes(" "+norm(a)+" "))) return {z,why:"naselje "+(gp.p.NASELJE||gp.p.NAZIV)};
+  return null;
+}
+function krkCostHtml(d,inPilot,jlsName){
+  let h=`<h2 id="sec-troskovi">Troškovi</h2>`;
+  const K=RULES_KRK&&RULES_KRK.komunalniDoprinos;
+  if(!inPilot||!K) return h+`<p class="meta">Komunalni doprinos (prema odluci jedinice lokalne samouprave${jlsName?": "+esc(jlsName):""}) i naknade za priključenje na Krku još nisu obrađeni.</p>`;
+  const c=window.__krkCalc, vol0=c?Math.round(c.gbpN*3):"", Z=krkKdZona(d), eur=Z?Math.round(Z.z[2]/K.tecaj*100)/100:null;
+  let st={}; try{st=JSON.parse(localStorage.getItem("krkKd")||"{}")||{}}catch(e){}
+  h+=`<details class="acc" data-k="krkKd" open><summary><span>Komunalni doprinos (Grad Krk)</span><b id="krkKdSum"></b></summary><div class="acc-body">`;
+  h+=`<p class="meta" style="margin-top:0"><a href="${esc(K.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(K.odluka)}</a>, ${esc(K.sn)}, čl. 6. ${esc(K.napomena)}</p>`;
+  if(Z) h+=`<p class="meta"><b>${esc(Z.z[0])}. zona</b> (${esc(Z.why)}): ${dec(Z.z[2].toFixed(2))} kn/m³ = <b>${dec(eur.toFixed(2))} €/m³</b>.</p>`;
+  else h+=`<p class="meta">Zona nije prepoznata iz naselja; izaberi je u tablici ispod i upiši iznos.</p>`;
+  h+=`<div class="kd"><label for="krkKdVol">Obujam građevine</label><input id="krkKdVol" type="number" inputmode="decimal" min="0" step="1" value="${esc(vol0)}"><span>m³</span></div>`;
+  if(c) h+=`<p class="meta">Prijedlog obujma: najveći nadzemni GBP (${fmt(c.gbpN)} m²) × 3 m. Službeno se obračunava obujam iz projekta (čl. 4.).</p>`;
+  h+=`<div class="kd"><label for="krkKdRate">Iznos</label><input id="krkKdRate" type="number" inputmode="decimal" min="0" step="0.01" placeholder="€/m³" value="${esc(eur!=null?eur:"")}"><span>€/m³</span></div>`;
+  h+=`<div class="kd"><label for="krkKdRed">Umanjenje</label><select id="krkKdRed" class="bsel">${[["1","bez umanjenja"],["0.3","30 % za stanovanje do 500 m³ (čl. 10., uvjeti ispod)"]].map(o=>`<option value="${o[0]}"${String(st.red||"1")===o[0]?" selected":""}>${o[1]}</option>`).join("")}</select></div>`;
+  h+=`<div class="kd"><span>Ukupno:</span><output id="krkKdOut"></output></div>`;
+  h+=`<details><summary>Zone i iznosi (čl. 6.)</summary><table class="rp"><tbody>${K.zone.map(z=>`<tr><th>${esc(z[0])}. zona</th><td>${esc(z[1])}<small class="fx">${dec(z[2].toFixed(2))} kn/m³ = ${dec((z[2]/K.tecaj).toFixed(2))} €/m³</small></td></tr>`).join("")}</tbody></table></details>`;
+  h+=`<details><summary>Umanjenja i oslobođenja iz odluke</summary><ol>${K.umanjenja.map(t=>`<li>${esc(t)}</li>`).join("")}</ol></details>`;
+  h+=`</div></details><p class="meta">Naknade za priključenje (Ponikve, HEP ODS) i cijena gradnje za Krk još nisu obrađene.</p>`;
+  return h;
+}
+// čl. 10.: umanjenje na 30 % vrijedi samo za obujam do 500 m³; ostatak po punom iznosu
+function krkKdTotal(vol,rate,k){ if(!(vol>0&&rate>0)) return null; if(k>=1) return vol*rate; const v1=Math.min(vol,500); return v1*rate*k+(vol-v1)*rate; }
+function krkKdUpdate(){
+  const v=document.getElementById("krkKdVol"), r=document.getElementById("krkKdRate"), red=document.getElementById("krkKdRed"), o=document.getElementById("krkKdOut"), s=document.getElementById("krkKdSum");
+  if(!v||!o) return; const vol=parseFloat(String(v.value).replace(",",".")), rate=parseFloat(String(r.value).replace(",",".")), k=parseFloat(red.value)||1;
+  try{localStorage.setItem("krkKd",JSON.stringify({red:red.value}))}catch(e){}
+  const t=krkKdTotal(vol,rate,k);
+  if(t!=null){o.textContent=fmt(t)+" €"+(k<1?(vol>500?" (umanjenje za prvih 500 m³)":" (s umanjenjem)"):""); if(s){s.textContent=fmt(t)+" €"; s.className="";}}
+  else{o.textContent="upiši obujam i iznos"; if(s){s.textContent="upiši iznos"; s.className="";}}
+}
+sheet.addEventListener("input",e=>{ if(/^krkKd/.test(e.target.id||"")) krkKdUpdate(); });
+sheet.addEventListener("change",e=>{ if(/^krkKd/.test(e.target.id||"")) krkKdUpdate(); });
+sheet.addEventListener("change",e=>{
+  if((e.target.id==="krkTip"||e.target.id==="krkOblik"||e.target.id==="krkZona")&&KRK_CUR){
+    KRK_TIP[{krkTip:"tip",krkOblik:"oblik",krkZona:"zona"}[e.target.id]]=e.target.value; try{localStorage.setItem("krkTip",JSON.stringify(KRK_TIP))}catch(err){}
+    renderKrk(KRK_CUR);
+  }
+});
+async function inspectKrk(ll){
+  const id=++clickId;
+  selLayer.clearLayers(); infLayer.clearLayers(); skiLayer.clearLayers(); TL.layer=null; TL.marker=null; TL.rotM=null; TL.center=null; TL.zones=null;
+  window.__lastData=null; window.__infra=null; window.__ski=null; window.__env=null; KRK_CUR=null;
+  L.circleMarker(ll,{radius:5,color:"#000",weight:2,fillColor:"#fff",fillOpacity:1}).addTo(selLayer);
+  sheet.innerHTML='<p class="hint"><span class="spin"></span>Otok Krk (pilot): tražim česticu u katastru DGU i namjenu iz županijskog sloja…</p>';
+  const [ces,nam,pl]=await Promise.all([
+    settle(loadParcelDGU(ll)),
+    settle(pointQuery(SRC_KRK.namjena,ll,"*",false)),
+    settle(pointQuery(SRC_KRK.planovi,ll,"GRAD_OPCINA,VRSTA_PP,STATUS_PP,NAZIV,SN_BROJ,SN_LINK,PDF_LINK_PUBLIC,DatumStNaSnPlana,DatumDonOdlIzr",false))
+  ]);
+  if(id!==clickId) return;
+  const parcel=ces.v||null, area=parcel?turf.area(parcel.geometry):null;
+  let rows=(nam.v||[]).map(f=>({p:f.properties||{},share:null,geom:null}));
+  if(parcel){
+    L.geoJSON(parcel.geometry,{style:{color:"#111",weight:3,fill:false},interactive:false}).addTo(selLayer);
+    try{const z=await polyQuery(SRC_KRK.namjena,parcel.geometry,"*",true);
+      rows=z.map(f=>{let share=null; try{const i=turf.intersect(parcel.geometry,f.geometry); share=i?turf.area(i)/area:0}catch(e){} return {p:f.properties||{},share,geom:f.geometry}})
+           .filter(r=>r.share===null||r.share>0.005).sort((a,b)=>(b.share??0)-(a.share??0));
+    }catch(e){}
+    if(id!==clickId) return;
+    rows.forEach(r=>r.geom&&L.geoJSON(r.geom,{style:{color:KRK_COLORS[krkKind(r.p)],weight:1,fillOpacity:.3},interactive:false}).addTo(selLayer));
+  }
+  const d={region:"krk",ll,parcel,area,rows,ces,nam,pl,slope:null,env:null};
+  renderKrk(d);
+  const [slope,env,ski]=await Promise.all([settle(loadSlope(parcel,ll)),settle(loadEnv(ll,parcel)),FEATURES.infra?settle(loadSki(parcel,ll,SKI_KRK)):Promise.resolve(null)]);
+  if(id!==clickId) return;
+  window.__ski=ski||null; skiDraw(ski);
+  renderKrk({...d,slope,env,ski});
+}
+function krkJls(rows,pl){
+  const r=rows.find(x=>x.p.OPCINA_GRAD); if(r) return String(r.p.OPCINA_GRAD).toUpperCase();
+  const p=pl&&pl.v&&pl.v.map(f=>f.properties||{}).find(x=>x.VRSTA_PP==="PPUO/G"&&x.GRAD_OPCINA); return p?String(p.GRAD_OPCINA).toUpperCase():null;
+}
+function renderKrk(d){
+  KRK_CUR=d;
+  const {ll,parcel,area,rows,ces,nam,pl,slope,env}=d, R=REGIJE.krk;
+  const jls=krkJls(rows,pl), jlsName=jls?(R.jls[jls]||null):null, inPilot=jls===R.pilot;
+  const P=parcel?parcel.properties:{};
+  const ptc=parcel?(()=>{try{const c=turf.pointOnFeature(parcel).geometry.coordinates; return {lat:c[1],lng:c[0]}}catch(e){return ll}})():ll;
+  window.__lastLL=ll;
+  window.__cur={key:"krk:"+(P.ref||P.broj||(ll.lat.toFixed(6)+","+ll.lng.toFixed(6))),region:"krk",ll:{lat:ptc.lat,lng:ptc.lng},ces:P.broj||null,ko:P.ko||null,area,buildArea:null,code:null,
+    namjena:rows[0]?krkZoneLabel(rows[0].p):null,analitika:null,risks:null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:null};
+  const keepScroll=env?sheet.scrollTop:0;
+  GRP=null;
+  let h=G("sum")+`<p class="eyebrow">Otok Krk · pilot${jlsName?" · "+esc(jlsName):""}</p>`;
+  if(jls&&!R.jls[jls]){
+    h+=`<div class="verdict v-warn">Lokacija je u jedinici ${esc(jls)}, izvan područja aplikacije (Grad Zagreb i pilot otok Krk).</div><div id="sumEnd"></div>`;
+  }
+  if(!inPilot&&jlsName) h+=`<p class="flag">Pilot je provjeren samo za Grad Krk. Za ${esc(jlsName)} prikazujem isti županijski sloj namjene i popis planova${RULES_KRK&&RULES_KRK.ostaleJls&&RULES_KRK.ostaleJls[jls]?" te uvjete iz prostornog plana općine":""}, ali to nisam provjerio na primjerima.</p>`;
+  // čestica
+  if(parcel){
+    h+=`<p class="eyebrow">Katastarska čestica${P.ko?" · k.o. "+esc(P.ko):P.koRef?" · k.o. br. "+esc(P.koRef):""}</p><p class="parcel">${esc(P.broj||"?")}</p>`;
+    h+=`<p class="meta">${fmt(area)} m² (iz geometrije)${P.povrsinaKatastar?" · u katastru "+fmt(P.povrsinaKatastar)+" m²":""} · izvor: DGU, katastarske čestice (INSPIRE)</p>`;
+  }else{
+    h+=`<p class="eyebrow">Lokacija</p><p class="parcel">${ll.lat.toFixed(5)}, ${ll.lng.toFixed(5)}</p>`;
+    h+=ces.e?`<p class="err">Katastar DGU: Podaci nisu dostupni (${esc(ces.e)}). Namjena je određena za dodirnutu točku.</p>`:`<p class="meta">Ovdje u katastru DGU nije pronađena čestica (more, cesta ili rub čestice). Namjena je određena za dodirnutu točku.</p>`;
+  }
+  // namjena
+  if(nam.e&&!rows.length) h+=`<p class="err">Namjena (Primorsko-goranska županija): Podaci nisu dostupni (${esc(nam.e)}).</p>`;
+  else if(!rows.length) h+=`<div class="verdict v-warn">Za ovu točku županijski sloj nema namjene (more ili izvan obuhvata).</div>`;
+  else{
+    const main=rows[0], v=krkVerdict(main.p), mixed=rows.length>1&&rows[1].share!=null&&rows[1].share>0.05;
+    h+=`<div class="verdict v-${v[0]}">${esc(v[1])}${mixed?" Čestica je u više zona, vidi udjele.":""}</div>`;
+    if(krkKind(main.p)!=="van"&&main.p.IZGRADJENOST) h+=`<p class="meta">Dio građevinskog područja: <b>${esc(main.p.IZGRADJENOST)}</b>.${/neizgr/i.test(main.p.IZGRADJENOST)?" Za neizgrađene dijelove plan može propisati obvezu urbanističkog plana uređenja; provjeri popis planova ispod.":""}</p>`;
+    h+=`<ul class="zones">`+rows.map(r=>`<li class="zone"><span class="sw" style="background:${KRK_COLORS[krkKind(r.p)]}"></span><div><b>${esc(krkZoneLabel(r.p)||"?")}</b><small>${esc([r.p.POLAZNA_NAMJENA,r.p.IZGRADJENOST,r.p.NAZIV||r.p.NASELJE].filter(Boolean).join(" · "))}${r.p.IZVOR_PODATAKA?" · izvor "+esc(r.p.IZVOR_PODATAKA):""}</small></div><span class="pct">${r.share!=null?Math.round(r.share*100)+" %":""}</span></li>`).join("")+`</ul>`;
+  }
+  h+=`<div id="sumEnd"></div>`;
+  h+=`<div class="actions"><button type="button" class="ib" id="shareBtn">Podijeli</button></div>`;
+  h+=G("analiza");
+  // planovi
+  h+=`<h2>Prostorni planovi na lokaciji</h2>`;
+  if(pl.e) h+=`<p class="err">Evidencija planova (PGŽ): Podaci nisu dostupni (${esc(pl.e)}).</p>`;
+  else{
+    const K=krkPlans(pl.v);
+    if(K.upu.length) h+=`<p class="flag">Na lokaciji vrijedi ${esc(K.upu.map(p=>p.VRSTA_PP+(p.NAZIV?" ("+String(p.NAZIV).slice(0,90)+")":"")).join(", "))}. Detaljni uvjeti gradnje su u tom planu.</p>`;
+    if(K.izrada.length) h+=`<p class="flag">U izradi: ${esc(K.izrada.map(p=>(PP_VRSTE[p.VRSTA_PP]||p.VRSTA_PP)+(p.GRAD_OPCINA?" ("+p.GRAD_OPCINA+")":"")).join("; "))}. Uvjeti se mogu promijeniti; pitaj nadležni upravni odjel u kojoj je fazi izrada.</p>`;
+    if(K.vazeci.length) h+=`<ul class="checks">${K.vazeci.map(p=>{const u=safeLink(p.PDF_LINK_PUBLIC)||safeLink(p.SN_LINK);
+      return `<li class="chk chk-ok"><b>${esc(PP_VRSTE[p.VRSTA_PP]||p.VRSTA_PP)}</b><span>${esc(p.NAZIV||"")}${p.SN_BROJ?" · SN "+esc(p.SN_BROJ):""}${u?` · <a href="${esc(u)}" target="_blank" rel="noopener" style="color:var(--accent)">dokument</a>`:""}</span></li>`}).join("")}</ul>`;
+    else h+=`<p class="meta">Za ovu točku evidencija nema važećih planova.</p>`;
+    h+=`<p class="meta">Izvor: Primorsko-goranska županija, evidencija prostornih planova. Prikazana je zadnja važeća odluka za svaku vrstu plana.</p>`;
+  }
+  // teren
+  if(slope&&slope.v){const s=slope.v, sev=s.slope>=20?"no":s.slope>=10?"warn":"ok";
+    h+=`<ul class="checks" style="margin-top:6px"><li class="chk chk-${sev}"><b>Teren</b><span>Nadmorska visina oko ${s.h} m, nagib u okolini oko ${Math.round(s.slope)} %, pada prema ${s.down}u.${s.slope>=20?" Strm teren: računaj s potpornim zidovima i skupljim temeljima.":s.slope>=10?" Umjereno strm teren.":""}</span></li></ul><p class="meta">Nagib je iz modela visina rezolucije oko 90 m.</p>`;}
+  else if(slope&&slope.e) h+=`<p class="meta">Nagib terena: Podaci nisu dostupni (${esc(slope.e)}).</p>`;
+  // infrastruktura: za Krk još nema pripremljenih podataka
+  h+=krkInfraHtml(env?d.ski||{e:"nije učitano"}:null);
+  h+=env?envHtml(env):envHtml(null);
+  // uvjeti gradnje i troškovi: još nisu obrađeni
+  h+=krkRulesHtml(d);
+  h+=G("troskovi")+krkCostHtml(d,inPilot,jlsName)+G("analiza");
+  h+=`<div class="links"><a href="https://geoportal.dgu.hr/#/?lng=${ll.lng.toFixed(6)}&lat=${ll.lat.toFixed(6)}&zoom=9&layerconfig=17013&mode=2d" target="_blank" rel="noopener">Geoportal DGU</a><a href="https://oss.uredjenazemlja.hr/public-services/search-cad-parcel" target="_blank" rel="noopener">Katastar (OSS)</a><a href="https://vidiplan.pgz.hr/" target="_blank" rel="noopener">VidiPlan (PGŽ)</a><a href="https://www.google.com/maps?q=${ll.lat},${ll.lng}" target="_blank" rel="noopener">Google Maps</a></div>`;
+  h+=`<p class="note">Pilot za otok Krk. Izvori: Državna geodetska uprava, katastarske čestice (INSPIRE WFS); Primorsko-goranska županija, namjena površina i evidencija prostornih planova (gisportal.pgz.hr); OpenStreetMap; Open-Meteo. Pravno mjerodavna je lokacijska informacija nadležnog upravnog odjela.</p>`;
+  h+=G(null);
+  restoreMap();
+  sheet.innerHTML=h;
+  sheet.scrollTop=keepScroll; krkKdUpdate();
+  try{PWA.loadedAt=Date.now(); if(parcel) pwaRememberParcel(); pwaNetUI();}catch(e){}
+  if(isMobile()){ if(!UI.hadParcel&&parcel){UI.hadParcel=true; if(UI.state==="peek") setState("half"); else setState(UI.state,{keepScroll:true});} else setState(UI.state,{keepScroll:true}); }
+}
+
 async function inspect(ll){
   if(isOffline()){pwaOfflineInspect(); return}
+  krkEnvLayer.clearLayers(); KRK_CUR=null;
+  if(regionOf(ll)==="krk") return inspectKrk(ll);
   const id=++clickId;
   selLayer.clearLayers(); infLayer.clearLayers(); TL.layer=null; TL.marker=null; TL.rotM=null; TL.center=null; TL.zl=null; TL.zones=null; SUN.nb=null; SUN.layer=null; SUN.nbErr=null; ZK.res=null; window.__infra=null; window.__ski=null; skiLayer.clearLayers();
   L.circleMarker(ll,{radius:5,color:"#000",weight:2,fillColor:"#fff",fillOpacity:1}).addTo(selLayer);
@@ -905,22 +1323,27 @@ async function skiFetch(path,ms=12000){
   try{const r=await fetch(path,{signal:ac.signal}); if(!r.ok) throw new Error("HTTP "+r.status); return await r.json()}
   finally{clearTimeout(t)}
 }
-async function skiIndex(){
-  if(SKI.idx) return SKI.idx;
-  const j=await skiFetch("data/ski/index.json");
+// više područja: Zagreb (data/ski/) i otok Krk (data/ski_krk/), isti format i isti izračun
+const SKI_ZG="data/ski/", SKI_KRK="data/ski_krk/";
+SKI.idxs={};
+async function skiIndex(base=SKI_ZG){
+  if(base===SKI_ZG&&SKI.idx) return SKI.idx;
+  if(base!==SKI_ZG&&SKI.idxs[base]) return SKI.idxs[base];
+  const j=await skiFetch(base+"index.json");
   if(!j||j.v!==1||!j.mreze) throw new Error("neispravan indeks");
   j.sets={}; for(const [k,m] of Object.entries(j.mreze)) j.sets[k]=new Set(m.kvadrati);
-  SKI.idx=j; return j;
+  if(base===SKI_ZG) SKI.idx=j; else SKI.idxs[base]=j;
+  return j;
 }
-async function skiTile(net,key){
-  const k=net+"/"+key; if(SKI.tiles.has(k)) return SKI.tiles.get(k);
-  const p=skiFetch("data/ski/"+k+".json").then(a=>{ if(!Array.isArray(a)) throw new Error("neispravan kvadrat"); return a; });
+async function skiTile(net,key,base=SKI_ZG){
+  const k=(base===SKI_ZG?"":base)+net+"/"+key; if(SKI.tiles.has(k)) return SKI.tiles.get(k);
+  const p=skiFetch(base+net+"/"+key+".json").then(a=>{ if(!Array.isArray(a)) throw new Error("neispravan kvadrat"); return a; });
   SKI.tiles.set(k,p); p.catch(()=>SKI.tiles.delete(k)); // neuspjelo učitavanje ne ostaje u memoriji
   if(SKI.tiles.size>80) SKI.tiles.delete(SKI.tiles.keys().next().value);
   return p;
 }
-async function loadSki(parcel,ll){
-  const I=await skiIndex();
+async function loadSki(parcel,ll,base=SKI_ZG){
+  const I=await skiIndex(base);
   const bb=parcel?turf.bbox(parcel):[ll.lng,ll.lat,ll.lng,ll.lat], lat=(bb[1]+bb[3])/2;
   const dla=SKI.R/110540, dlo=SKI.R/(111320*Math.cos(lat*Math.PI/180));
   const B=[bb[0]-dlo,bb[1]-dla,bb[2]+dlo,bb[3]+dla];
@@ -929,7 +1352,7 @@ async function loadSki(parcel,ll){
   const out={};
   await Promise.all(SKI.NETS.map(async([net])=>{
     try{
-      const ks=keys.filter(k=>I.sets[net]&&I.sets[net].has(k)), arrs=await Promise.all(ks.map(k=>skiTile(net,k)));
+      const ks=keys.filter(k=>I.sets[net]&&I.sets[net].has(k)), arrs=await Promise.all(ks.map(k=>skiTile(net,k,base)));
       let best=null; const seen=new Set();
       for(const arr of arrs) for(const [id,f] of arr){
         if(seen.has(id)) continue; seen.add(id);
@@ -945,7 +1368,7 @@ async function loadSki(parcel,ll){
       out[net]=best?{d:best.d,geom:best.geom}:{none:true};
     }catch(err){out[net]={e:err.message||"greška"}}
   }));
-  return {mreze:out,izvor:I.izvor,preuzeto:I.preuzeto};
+  return {mreze:out,izvor:I.izvor,preuzeto:I.preuzeto,podrucje:I.podrucje||"zagreb",stanje:I.stanje||null};
 }
 function skiText(r,lbl){
   if(!r) return {t:"učitavam…",s:""};
@@ -957,7 +1380,26 @@ function skiText(r,lbl){
 const skiLayer=L.layerGroup();
 function skiDraw(ski){
   skiLayer.clearLayers(); const M=ski&&ski.v&&ski.v.mreze; if(!M) return;
-  for(const [net,,,col] of SKI.NETS){const r=M[net]; if(r&&r.geom) L.geoJSON(r.geom,{style:{color:col,weight:4,opacity:.9},interactive:false}).addTo(skiLayer);}
+  const krk=ski.v.podrucje==="krk"; // Zagreb ostaje kao prije; za Krk klik na vod pokazuje izvor i stanje podataka
+  for(const [net,lbl,opis,col] of SKI.NETS){const r=M[net]; if(!r||!r.geom) continue;
+    const g=L.geoJSON(r.geom,{style:{color:col,weight:krk?5:4,opacity:.9},interactive:krk}).addTo(skiLayer);
+    if(krk) g.bindPopup(`<b>${esc(lbl)}</b>: ${esc(opis)} (${r.d<1?"manje od 1":fmt(Math.round(r.d))} m od granice čestice)<br><small>Funkcionalni vod${net==="struja"?", niski napon":""}. Izvor: ${esc(ski.v.izvor||"DGU SKI")}${ski.v.stanje&&ski.v.stanje[net]?", stanje podataka: "+esc(ski.v.stanje[net]):""}. Promjer i vrsta nisu objavljeni.</small>`);}
+}
+// legenda slojeva vodova (Krk)
+function skiLegendHtml(){return `<p class="meta">${SKI.NETS.map(([,l,,c])=>`<span style="display:inline-block;width:14px;height:4px;background:${c};vertical-align:middle;margin-right:4px"></span>${esc(l)}`).join(" &nbsp; ")} · na karti: sloj „Najbliži vodovi (DGU)”</p>`}
+function krkInfraHtml(ski){
+  let h=`<h2>Komunalna infrastruktura</h2>`;
+  if(!ski) return h+`<p class="hint"><span class="spin"></span>Učitavam katastar infrastrukture…</p>`;
+  const M=ski.v&&ski.v.mreze, err=ski.e||null, rows=[];
+  for(const [net,lbl,opis] of SKI.NETS){const t=M?skiText(M[net],opis):{t:"Podaci nisu dostupni",s:err?"podaci katastra infrastrukture se nisu učitali":""}; rows.push([lbl,t.t,t.s,t.cross]);}
+  rows.push(["Telekomunikacije","Podaci nisu dostupni","nisu u javnim podacima DGU-a"]);
+  rows.push(["Plin","Podaci nisu dostupni","nisu obrađeni za Krk"]);
+  h+=`<dl class="kv">${rows.map(([a,b,c,x])=>`<dt>${esc(a)}</dt><dd>${esc(b)}${c?`<small class="fx"${x?' style="color:#b26a00"':""}>${esc(c)}</small>`:""}</dd>`).join("")}</dl>`;
+  if(M&&Object.values(M).some(r=>r&&r.d!=null&&r.d<0.5)) h+=`<p class="flag">Vod prolazi česticom ili njezinom granicom. Iznad i uz vod gradnja može biti ograničena; provjeri s upraviteljem mreže.</p>`;
+  const st=ski.v&&ski.v.stanje;
+  h+=`<p class="meta">Izvor: Državna geodetska uprava, katastar infrastrukture (INSPIRE, Primorsko-goranska županija)${st?`; stanje podataka: vodovod i kanalizacija ${esc(st.vodovod||"?")}, struja ${esc(st.struja||"?")}`:""}. Udaljenost je od granice čestice do osi voda, u krugu od ${SKI.R} m. Evidencija može biti nepotpuna; mogućnost i trošak priključenja potvrđuju Ponikve (voda i odvodnja) i HEP ODS. Niskonaponski vod može biti i kabel javne rasvjete.</p>`;
+  if(M) h+=skiLegendHtml();
+  return h;
 }
 function infraHtml(inf,ski){
   let h=`<h2>Komunalna infrastruktura</h2>`;
@@ -2092,7 +2534,7 @@ function projExport(k){
 function projParseImport(text){
   if(typeof text!=="string"||text.length>PROJ_MAX_BYTES) return {ok:false,msg:"Datoteka je prevelika ili nije tekst."};
   let j; try{j=JSON.parse(text)}catch(e){return {ok:false,msg:"Datoteka nije ispravan JSON."}}
-  if(!j||j.app!=="ČesticaZG"||j.vrsta!=="projekt") return {ok:false,msg:"Ovo nije izvoz projekta iz ČesticaZG."};
+  if(!j||(j.app!=="ČesticaZG"&&j.app!=="Čestica HR")||j.vrsta!=="projekt") return {ok:false,msg:"Ovo nije izvoz projekta iz aplikacije Čestica HR."};
   if(j.verzija!==PROJ_V) return {ok:false,msg:"Nepoznata verzija izvoza ("+String(j.verzija).slice(0,10)+")."};
   const k=j.cestica&&typeof j.cestica.key==="string"&&j.cestica.key.length<=80?j.cestica.key:null; if(!k) return {ok:false,msg:"U datoteci nema oznake čestice."};
   const P=j.proj||{}, out={proj:{}};
@@ -2486,6 +2928,9 @@ function serviceList(){
   out.push({n:"OpenStreetMap Overpass (okolina)",u:"https://overpass-api.de/api/status",raw:true});
   out.push({n:"Open-Meteo (visine terena)",u:"https://api.open-meteo.com/v1/elevation?latitude=45.81&longitude=15.98"});
   out.push({n:"Nominatim (pretraga adresa)",u:"https://nominatim.openstreetmap.org/status?format=json"});
+  out.push({n:"Krk: katastarske čestice (DGU WFS)",u:SRC_KRK.cp+"?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=2.0.0",raw:true});
+  out.push({n:"Krk: namjena površina (PGŽ)",u:SRC_KRK.namjena.replace(/\/query$/,"")+"?f=json"});
+  out.push({n:"Krk: evidencija prostornih planova (PGŽ)",u:SRC_KRK.planovi.replace(/\/query$/,"")+"?f=json"});
   out.push({n:"DGU katastar infrastrukture (WMS; provjera može li ga preglednik dohvatiti)",u:"https://ski.dgu.hr/inspire/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",raw:true});
   return out;
 }
@@ -2697,7 +3142,7 @@ sheet.addEventListener("change",async e=>{
 function shareUrl(){const ll=window.__lastLL; return location.origin+location.pathname+"?c="+ll.lat.toFixed(6)+","+ll.lng.toFixed(6);}
 sheet.addEventListener("click",async e=>{
   if(e.target.id!=="shareBtn"||!window.__lastLL) return;
-  const url=shareUrl(), c=window.__cur, title="Čestica "+(c&&c.ces?c.ces+", k.o. "+c.ko:"Zagreb");
+  const url=shareUrl(), c=window.__cur, title="Čestica "+(c&&c.ces?c.ces+(c.ko?", k.o. "+c.ko:""):c&&c.region==="krk"?"Krk":"Zagreb");
   try{ if(navigator.share){await navigator.share({title,url});return} }catch(err){ if(err&&err.name==="AbortError") return; }
   try{await navigator.clipboard.writeText(url); e.target.textContent="Link kopiran"}catch(err){ prompt?0:0; e.target.textContent="Kopiraj: "+url; }
   setTimeout(()=>{const b=document.getElementById("shareBtn"); if(b) b.textContent="Podijeli"},4000);
@@ -3261,20 +3706,25 @@ function pwaGpsNote(){
   sheet.insertBefore(box,sheet.firstChild);
 }
 
-// --- pretraga adrese (Nominatim, Zagreb)
+// --- pretraga adrese (Nominatim, Zagreb; naselja otoka Krka u obuhvatu otoka)
+const KRK_MJESTA=/\b(KRK|MALINSKA|BASKA|PUNAT|OMISALJ|NJIVICE|VRBNIK|DOBRINJ|SILO|KORNIC|PINEZICI|KOSTERNA|BRZAC|LINARDICI|GARICA|SVETI VID|KLIMNO|SOLINE|RISIKA|STARA BASKA|DRAGA BASCANSKA|JURANDVOR|BATOMALJ|CIZICI|NENADICI|LUKEZIC|MILOHNICI)\b/;
 async function search(){
   const q=document.getElementById("q").value.trim(); if(!q) return;
   const pq=parcelQuery(q);
   if(pq){try{await searchParcel(pq)}catch(e){sheet.innerHTML='<p class="err">Pretraga čestice nije uspjela: '+esc(e.message)+'</p>'} return;}
   sheet.innerHTML='<p class="hint"><span class="spin"></span>Tražim adresu…</p>';
   try{
-    const p=new URLSearchParams({q:q+", Zagreb",format:"json",limit:"1",countrycodes:"hr",viewbox:"15.75,46.0,16.25,45.6",bounded:"1"});
+    // pilot Krk: naselja na otoku traže se u obuhvatu otoka, sve ostalo u Zagrebu
+    const krk=KRK_MJESTA.test(norm(q));
+    const p=new URLSearchParams(krk?{q,format:"json",limit:"1",countrycodes:"hr",viewbox:"14.40,45.26,14.90,44.86",bounded:"1"}:{q:q+", Zagreb",format:"json",limit:"1",countrycodes:"hr",viewbox:"15.75,46.0,16.25,45.6",bounded:"1"});
     const a=await getJSON("https://nominatim.openstreetmap.org/search?"+p.toString());
     if(!a[0]){sheet.innerHTML='<p class="err">Adresa nije pronađena. Probaj drukčije napisati ili dodirni kartu.</p>';return}
     const ll=L.latLng(+a[0].lat,+a[0].lon); map.setView(ll,18); inspect(ll);
   }catch(e){sheet.innerHTML='<p class="err">Pretraga nije uspjela: '+esc(e.message)+'</p>'}
 }
 document.getElementById("go").onclick=search;
+document.getElementById("goKrk").addEventListener("click",e=>{e.preventDefault(); const R=REGIJE.krk; map.setView(R.centar,R.zoom); const m=document.getElementById("menu"); if(m) m.hidden=true;
+  sheet.innerHTML='<p class="eyebrow">Otok Krk · pilot</p><p class="hint">Dodirni zemljište na otoku. Dobit ćeš česticu iz katastra DGU, namjenu i popis prostornih planova iz županijskog sloja, nagib i okolinu. Uvjeti gradnje i troškovi za Krk još nisu obrađeni.</p><div id="sumEnd"></div>';});
 document.getElementById("q").addEventListener("keydown",e=>{if(e.key==="Enter")search()});
 document.getElementById("me").onclick=()=>pwaLocate();
 </script>
