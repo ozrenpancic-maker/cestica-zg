@@ -126,7 +126,10 @@ h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute
 .rule-code{font-family:var(--f-mono);font-weight:500;background:var(--soft);border-radius:6px;padding:1px 6px;margin-right:6px}
 .rule-title{font-weight:700;font-size:16px;margin:4px 0 2px;text-wrap:balance}
 .kv{display:grid;grid-template-columns:7.5em 1fr;gap:6px 10px;margin:8px 0 0;font-size:14px}
-table.rp.acmpt{font-size:12.5px;table-layout:auto}
+.dbh{font-size:15px;margin:14px 0 4px}.dbl{padding-left:18px;margin:4px 0}.dbl li{margin:6px 0}
+.dbst{display:inline-block;font-size:11.5px;padding:1px 6px;border-radius:9px;border:1px solid var(--line);margin-top:2px}.dbst.ok{color:#1f6f54;border-color:#1f6f54}.dbst.kand{color:#a86400;border-color:#a86400}
+.acmp{max-width:100%;overflow-x:auto}
+table.rp.acmpt{font-size:12px;table-layout:auto;overflow-wrap:anywhere}
 table.rp.acmpt tr{display:table-row;padding:0;border:0}
 table.rp.acmpt th,table.rp.acmpt td{display:table-cell;width:auto;text-align:right;padding:4px 3px;border-top:1px solid var(--line);vertical-align:top}
 table.rp.acmpt th:first-child{text-align:left}
@@ -336,6 +339,7 @@ const RULES = /*RULES*/null;
 const RULES_SE = /*RULES_SE*/null;
 const RULES_PP = /*RULES_PP*/null;
 const RULES_META = /*RULES_META*/null; // izvor, verzija i status svake datoteke pravila (src/rules_meta.json)
+const RULES_DB = /*RULES_DB*/null; // baza urbanističkih pravila iz ČesticaHR Data Managera (src/baza/baza.json; docs/baza-uvoz.md)
 const RULES_KRK = /*RULES_KRK*/null; // PPUG Grada Krka (pilot), src/rules_krk.json
 const APP_VERSION = "/*VERSION*/";
 
@@ -946,6 +950,78 @@ function katwFetchInto(k,lat,lon,onUpd){
 // podatak iz sloja karte samo ako je za istu česticu
 function katwGet(P){const w=KATW.get(String(P.cid)); if(!w||w.st!=="ok") return null; const d=w.d;
   if(P.dguId!=null) return String(d.id)===String(P.dguId)?d:null; return !P.broj||d.broj===P.broj?d:null;}
+
+// ================= BAZA PRAVILA (ČesticaHR Data Manager) =================
+// Dvije razine: potvrđeno (pravno provjereno pravilo) i kandidat (automatski izdvojeno, nije za izračun).
+// Pravni status i GIS primjenjivost na česticu odvojeni su; u izračun ulazi samo pravilo s oba statusa "potvrđeno" iz važećeg plana.
+// Više planova vrijedi istovremeno; aplikacija ne određuje koji ima prednost, nego prikazuje različite vrijednosti kao neusklađene.
+const DB_PARAM={min_cestica:"Najmanja čestica",max_cestica:"Najveća čestica",kig:"Koeficijent izgrađenosti (kig)",kis:"Koeficijent iskorištenosti (kis)",kis_nadzemni:"Kis nadzemno",kis_podzemni:"Kis podzemno",tlocrt_min:"Najmanji tlocrt",tlocrt_max:"Najveći tlocrt",gbp_max:"Najveći GBP",visina:"Najveća visina",etaze:"Etaže",udaljenost_meda:"Udaljenost od međe",udaljenost_regulacija:"Udaljenost od regulacijskog pravca",zelenilo:"Zelenilo / prirodni teren",parkiranje:"Parkiranje",zabrana_gradnje:"Zabrana gradnje",ostalo:"Ostalo"};
+const dbN=s=>String(s==null?"":s).normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/đ/gi,"d").toLowerCase().replace(/\s+/g," ").trim();
+function dbHit(list,vals){ // prazan popis ili "*" = vrijedi za sve; "GPN-*" = početak oznake
+  if(!list||!list.length) return true; const V=(vals||[]).map(dbN);
+  return list.some(x=>{const p=dbN(x); if(p==="*"||p==="sve") return true; if(p.endsWith("*")) return V.some(v=>v.startsWith(p.slice(0,-1))); return V.some(v=>v===p);}); // točna oznaka (bez djelomičnog podudaranja: „izgrađeno” ≠ „neizgrađeno”)
+}
+// potvrđeno pravilo mora imati izvor, članak, citat, datum provjere, status važenja i primjenjivost; inače se tretira kao kandidat
+function dbRuleLegal(r,plan,od){
+  const ps=r.pravni_status||{}, pr=r.primjenjivost||{}, miss=[];
+  if(ps.razina!=="potvrđeno") return {ok:false,miss:[]};
+  if(!od||!od.url) miss.push("službeni izvor"); if(!r.clanak) miss.push("članak"); if(!r.citat) miss.push("citat");
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(ps.datum_provjere||"")) miss.push("datum provjere"); if(!plan||!plan.status_vazenja) miss.push("status važenja");
+  if(!(pr.zone&&pr.zone.length)) miss.push("zone"); if(!(pr.vrste_gradnje&&pr.vrste_gradnje.length)) miss.push("vrste gradnje");
+  return {ok:!miss.length,miss};
+}
+// ctx: {jls, zone:[oznake iz GIS-a], izgradenost, vrsta, nacin}
+function dbMatch(ctx,db=RULES_DB){
+  if(!db||!db.planovi||!db.pravila||!ctx) return null;
+  const plans=db.planovi.filter(p=>dbHit((p.obuhvat||{}).jls,[ctx.jls]));
+  const od={}; for(const p of db.planovi) for(const o of p.odluke||[]) od[o.id]=o;
+  const out=[];
+  for(const p of plans){
+    const rr=[];
+    for(const r of db.pravila){ if(r.plan_id!==p.id) continue;
+      const pr=r.primjenjivost||{};
+      if(!dbHit(pr.zone,ctx.zone)) continue;
+      if(pr.izgradenost&&pr.izgradenost.length&&ctx.izgradenost!=null&&!dbHit(pr.izgradenost,[ctx.izgradenost])) continue;
+      const L=dbRuleLegal(r,p,od[r.odluka_id]), gis=(r.gis_status||{}).razina==="potvrđeno"&&(((p.obuhvat||{}).gis||{}).status||"potvrđeno")!=="nema";
+      const vrstaOk=!ctx.vrsta||dbHit(pr.vrste_gradnje,[ctx.vrsta]), nacinOk=!ctx.nacin||dbHit(pr.nacin_gradnje,[ctx.nacin]);
+      rr.push({r,p,od:od[r.odluka_id]||null,legal:L.ok,miss:L.miss,gis,tipOk:vrstaOk&&nacinOk,calc:L.ok&&gis&&p.status_vazenja==="važeći"&&vrstaOk&&nacinOk});
+    }
+    if(rr.length) out.push({plan:p,rules:rr});
+  }
+  // neusklađenosti: isti parametar s različitim vrijednostima u različitim planovima (za izračun)
+  const byP={}; for(const g of out) for(const x of g.rules) if(x.calc) (byP[x.r.parametar]=byP[x.r.parametar]||[]).push(x);
+  const sukobi=Object.entries(byP).filter(([k,xs])=>new Set(xs.map(x=>String(x.r.vrijednost))).size>1&&new Set(xs.map(x=>x.p.id)).size>1).map(([k,xs])=>({parametar:k,xs}));
+  return {grupe:out,sukobi,byP};
+}
+function dbCalc(M,A){ // samo potvrđena, primjenjiva i usklađena pravila
+  const one=k=>{const xs=M.byP[k]; if(!xs||!xs.length) return null; if(M.sukobi.some(s=>s.parametar===k)) return null; const v=parseFloat(xs[0].r.vrijednost); return Number.isFinite(v)?v:null;};
+  const minC=one("min_cestica"), kig=one("kig"), kis=one("kis_nadzemni")??one("kis"), tlM=one("tlocrt_max"), gM=one("gbp_max");
+  return {minC,min:minC!=null?A>=minC:null,tl:kig!=null?Math.min(A*kig,tlM??Infinity):tlM,gbp:kis!=null?Math.min(A*kis,gM??Infinity):gM};
+}
+function dbHtml(ctx,areaCtx){
+  if(!RULES_DB) return "";
+  const M=dbMatch(ctx); let h=`<h3 class="dbh">Uvjeti iz baze ČesticaHR</h3>`;
+  const src=`<p class="meta">Baza: ${esc(RULES_DB.izvor||"")}${RULES_DB.verzija_izvora?" "+esc(RULES_DB.verzija_izvora):""}, izvezeno ${esc(RULES_DB.izvezeno||"")}. Postojeći uvjeti gradnje iznad ostaju nepromijenjeni.</p>`;
+  if(!M||!M.grupe.length) return h+`<p class="meta">Za ovu lokaciju baza nema pravila (${esc(ctx.jls||"nepoznata jedinica")}${ctx.zone&&ctx.zone.length?", zona "+esc(ctx.zone.join(", ")):""}).</p>`+src;
+  const st=(x)=>`<span class="dbst ${x.legal?"ok":"kand"}">${x.legal?"pravno potvrđeno "+esc(x.r.pravni_status.datum_provjere):"kandidat"}</span> <span class="dbst ${x.gis?"ok":"kand"}">${x.gis?"GIS potvrđen":"GIS nije potvrđen"}</span>${x.calc?` <span class="dbst ok">u izračunu</span>`:""}`;
+  const row=x=>{const r=x.r, pr=r.primjenjivost||{};
+    return `<li><b>${esc(DB_PARAM[r.parametar]||r.parametar)}: ${esc(typeof r.vrijednost==="number"?dec(String(r.vrijednost)):String(r.vrijednost))}${r.jedinica?" "+esc(r.jedinica):""}</b>${r.uvjet?` <span class="meta">(${esc(r.uvjet)})</span>`:""}<br>${st(x)}<small class="fx">${esc([pr.vrste_gradnje&&pr.vrste_gradnje.join(", "),pr.nacin_gradnje&&pr.nacin_gradnje.join(", "),pr.zahvat&&pr.zahvat.join(", ")].filter(Boolean).join(" · "))}${r.clanak?" · čl. "+esc(String(r.clanak).replace(/\.$/,""))+".":""}${x.od?` · ${x.od.url?`<a href="${esc(safeLink(x.od.url)||"#")}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(x.od.glasilo||x.od.naziv)}${x.od.broj?" "+esc(x.od.broj):""}</a>`:esc(x.od.glasilo||x.od.naziv)}`:""}${x.miss&&x.miss.length?" · nedostaje: "+esc(x.miss.join(", ")):""}${!x.tipOk?" · drugi tip gradnje":""}</small>${r.citat?`<small class="fx src">„${esc(r.citat)}“</small>`:""}</li>`;};
+  if(M.grupe.length>1) h+=`<p class="flag">Na lokaciji vrijedi više planova (${esc(M.grupe.map(g=>g.plan.vrsta+" "+g.plan.naziv).join("; "))}). Aplikacija ne određuje koji uvjet ima prednost; to potvrđuje lokacijska informacija.</p>`;
+  for(const s of M.sukobi) h+=`<p class="flag">${esc(DB_PARAM[s.parametar]||s.parametar)}: planovi propisuju različite vrijednosti (${esc(s.xs.map(x=>x.p.vrsta+": "+x.r.vrijednost).join(", "))}). Ta vrijednost se ne koristi u izračunu.</p>`;
+  for(const g of M.grupe){const P=g.plan, pot=g.rules.filter(x=>x.legal), kan=g.rules.filter(x=>!x.legal);
+    h+=`<p class="rule-title"><span class="rule-code">${esc(P.vrsta)}</span>${esc(P.naziv)}</p><p class="meta">Status plana: ${esc(P.status_vazenja)}${(P.obuhvat||{}).gis&&P.obuhvat.gis.status!=="potvrđeno"?" · obuhvat na karti nije potvrđen":""}</p>`;
+    if(pot.length) h+=`<ul class="dbl">${pot.map(row).join("")}</ul>`; else h+=`<p class="meta">Nema pravno potvrđenih pravila za ovu zonu.</p>`;
+    if(kan.length) h+=`<details data-k="dbk-${esc(P.id)}"><summary>Istraživački kandidati, nepotvrđeno (${kan.length})</summary><p class="meta">Automatski izdvojeni podaci; nisu pravno potvrđeni i ne ulaze u izračun.</p><ul class="dbl">${kan.map(row).join("")}</ul></details>`;
+  }
+  if(areaCtx&&Object.keys(M.byP).length){const S=areaSel(areaCtx.P,areaCtx.area), A=S.a*(areaCtx.share??1), c=dbCalc(M,A);
+    if(c.min!=null||c.tl||c.gbp){
+      h+=`<div class="calc"><p class="eyebrow">Izračun iz potvrđenih uvjeta baze</p><p class="meta" style="margin:0 0 4px">Korištena površina: <b>${fmt(S.a)} m²</b> (${esc(S.naziv)}; izvor: ${esc(S.src)})${(areaCtx.share??1)<0.999?`, građevinski dio ${fmt(A)} m²`:""}.</p>`;
+      if(c.min!=null) h+=`<div class="row"><span>Najmanja čestica ${fmt(c.minC)} m²</span><span class="${c.min?"good":"bad"}">${c.min?"ispunjeno":"nije ispunjeno"}</span></div>`;
+      if(c.tl) h+=`<div class="row"><span>Najveći tlocrt</span><span>${fmt(c.tl)} m²</span></div>`;
+      if(c.gbp) h+=`<div class="row"><span>Najveći GBP</span><span>${fmt(c.gbp)} m²</span></div>`;
+      h+=`</div>`;}}
+  return h+src;
+}
 // --- površina za izračun: korisnik bira grafičku, upisanu u katastar ili upisanu u zemljišnu knjigu; izračun je uvijek s navedenom površinom i izvorom
 let AREA_SRC=(()=>{try{return localStorage.getItem("areaSrc")||"graf"}catch(e){return "graf"}})();
 function areaInfo(P,area){
@@ -961,7 +1037,7 @@ function areaSel(P,area){const I=areaInfo(P,area), s=I[AREA_SRC]||I.graf; return
 // usporedba rezultata za sve dostupne površine; calc(A) vraća {min, tl, gbp} za površinu A (građevinski dio)
 function areaCmpHtml(P,area,share,calc){
   const S=areaSel(P,area), cols=["graf","kat","zk"].map(k=>S.info[k]).filter(Boolean);
-  const nm={graf:"Grafička",kat:"Upisana u katastru",zk:"Upisana u ZK"};
+  const nm={graf:"Grafička",kat:"Katastar",zk:"Zemljišna knjiga"};
   let h=`<div id="areaCmp" class="acmp"><div class="kd" style="margin:0 0 4px"><label for="areaSel">Površina za izračun</label><select id="areaSel" class="bsel">${[["graf","grafička"],["kat","upisana u katastru"],["zk","upisana u zemljišnoj knjizi"]].map(o=>`<option value="${o[0]}"${o[0]===AREA_SRC?" selected":""}${o[0]==="graf"||S.info[o[0]]?"":" disabled"}>${o[1]}${o[0]==="graf"||S.info[o[0]]?"":" (nije dostupna)"}</option>`).join("")}</select></div>`;
   h+=`<p class="meta" style="margin:0 0 6px">Korištena površina: <b>${fmt(S.a)} m²</b> (${esc(S.naziv)}; izvor: ${esc(S.src)})${share<0.999?`, od toga u građevinskom dijelu ${fmt(S.a*share)} m²`:""}.${S.fallback?" Odabrana površina još nije dostupna, pa se koristi grafička.":""}</p>`;
   if(cols.length>1){
@@ -1119,6 +1195,9 @@ function renderKrk(d){
   // uvjeti gradnje i izračun
   h+=krkRulesHtml(d);
   {const C=window.__krkCalc; if(parcel&&C&&window.__env) h+=simHtml({izg:C.tl/C.A,kis:C.kis},C.A,area,C.gbpN,null);}
+  if(RULES_DB){const m=rows[0]?rows[0].p:{}, T=RULES_KRK&&RULES_KRK.tipovi&&RULES_KRK.tipovi[KRK_TIP.tip];
+    h+=dbHtml({jls:jlsName,zone:rows.filter(r=>r.share==null||r.share>0.05).map(r=>r.p.OZNAKA_NAMJENE).filter(Boolean),izgradenost:m.IZGRADJENOST||null,vrsta:T?T.naziv:null,nacin:{slob:"slobodnostojeća",dvoj:"dvojna",ugr:"ugrađena"}[KRK_TIP.oblik]||null},
+      parcel?{P,area,share:window.__areaCmp?window.__areaCmp.share:1}:null);}
   if(parcel) h+=naHtml("Postojeće zgrade i dogradnja","Tlocrte postojećih zgrada aplikacija ima samo za Zagreb (Topografska osnova Grada Zagreba).");
   // gradnja i naknade, novac
   h+=G("troskovi")+krkCostHtml(d,inPilot,jlsName);
@@ -2359,6 +2438,8 @@ function render(d){
     if(rule.opca&&rule.opca.length) h+=`<details><summary>Opća pravila</summary><ol>${rule.opca.map(i=>`<li>${esc(i)}</li>`).join("")}</ol></details>`;
     h+=`<details><summary>Cijeli članak ${esc(rule.clanak)}.</summary>${rule.tekst.map(p=>`<p>${esc(p)}</p>`).join("")}</details>`;
   }
+  if(RULES_DB&&rows.length) h+=dbHtml({jls:"Grad Zagreb",zone:[code,(isPP?"PPGZ":se?"GUP Sesvete":"GUP"),...rows.filter(r=>r.share==null||r.share>0.05).map(r=>r.p.Analitika)].filter(Boolean),izgradenost:null,vrsta:null,nacin:TIPOVI.find(t=>t[0]===TIP)[1]},
+    parcel?{P:zgAreaP(parcel,favKey(parcel,ll)),area,share:area&&buildArea!=null?buildArea/area:1}:null);
   if(parcel) h+=G("troskovi")+moneyHtml(favKey(parcel,ll),area)+G("analiza");
   if(parcel){ h+=`<h2 id="sec-sunce">Sunce i energija</h2>`+sunHtml()+pvHtml(); if(FEATURES.seis) h+=seisHtml(ll); }
   if(checks) h+=docsHtml(d);

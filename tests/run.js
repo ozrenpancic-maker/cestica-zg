@@ -10,14 +10,15 @@ html=html.replace(/<script src="[^"]*leaflet[^"]*"><\/script>/,()=>"<script>"+li
          .replace(/<link[^>]+leaflet[^>]*>/,"");
 
 let pass=0, fail=0; const fails=[];
+const assert_has=(s,x)=>{ if(!s.includes(x)) throw new Error("index.html nema: "+x); };
 const ok=(c,msg)=>{ if(c){pass++} else {fail++; fails.push(msg)} };
 const near=(a,b,eps=0.01)=>Math.abs(a-b)<=eps;
 const num=s=>{const m=String(s).replace(/ /g," ").match(/-?[\d.]+(,\d+)?/); return m?parseFloat(m[0].replace(/\./g,"").replace(",",".")):NaN};
 
-function boot(){
+function boot(src){
   const vc=new VirtualConsole(); const errs=[];
   vc.on("jsdomError",e=>{errs.push(String(e.message||e)); if(process.env.DBG) console.log("JSERR",e.detail&&e.detail.stack||e.stack)}); vc.on("error",e=>errs.push(String(e)));
-  const dom=new JSDOM(html,{runScripts:"dangerously",pretendToBeVisual:true,url:"https://example.org/cestica-zg/",virtualConsole:vc,
+  const dom=new JSDOM(src||html,{runScripts:"dangerously",pretendToBeVisual:true,url:"https://example.org/cestica-zg/",virtualConsole:vc,
     beforeParse(w){ w.fetch=()=>Promise.reject(new Error("bez mreže u testu")); w.print=()=>{}; w.scrollTo=()=>{};
       w.HTMLElement.prototype.scrollIntoView=function(){};
       // jsdom nema canvas: Leaflet crta na lažni kontekst koji prihvaća sve pozive
@@ -140,7 +141,7 @@ async function zgOssTests(){
       ok(/Upisana u zemljišnoj knjizi ?1\.012 m²/.test(t)&&/ZK uložak 777/.test(t)&&/Upisana u katastru ?1\.010 m²/.test(t),"Zagreb OSS: upisana površina u ZK i u katastru");
       ok(/računaju se s površinom: grafička \(1\.0\d\d m²\)/.test(t)&&Math.abs(w.__cur.area-d.area)<0.01,"Zagreb OSS: izračun prema zadanom ostaje na grafičkoj površini");
       if(wms){ // usporedni kalkulator: odabir upisane površine u ZK
-        const g0=w.__gbp, t0=w.__tl; ok(!!$(w,"areaSel")&&/Korištena površina: 1\.0\d\d m² \(grafička; izvor: granica čestice u gradskom sloju/.test(t)&&/Upisana u ZK/.test(txt(w,"areaCmp")),"Zagreb: usporedni kalkulator s grafičkom, katastarskom i ZK površinom");
+        const g0=w.__gbp, t0=w.__tl; ok(!!$(w,"areaSel")&&/Korištena površina: 1\.0\d\d m² \(grafička; izvor: granica čestice u gradskom sloju/.test(t)&&/Zemljišna knjiga/.test(txt(w,"areaCmp")),"Zagreb: usporedni kalkulator s grafičkom, katastarskom i ZK površinom");
         setv(w,"areaSel","zk","change"); await tick(10); const tz=txt(w,"sheet");
         ok(/Korištena površina: 1\.012 m² \(upisana u zemljišnoj knjizi; izvor: zemljišna knjiga, OSS/.test(tz)&&/računaju se s površinom: upisana u zemljišnoj knjizi \(1\.012 m²\)/.test(tz)&&w.__tl!==t0,"Zagreb: izračun s odabranom ZK površinom (tlocrt "+t0+" → "+w.__tl+" m²)");
         setv(w,"areaSel","graf","change"); await tick(10); ok(w.__gbp===g0&&w.__tl===t0,"Zagreb: povratak na grafičku površinu");
@@ -152,6 +153,39 @@ async function zgOssTests(){
       ok(/OSS je na ovom mjestu vratio drugu česticu \(2\/2\)/.test(t)&&!!$(w,"krkZkIn")&&!/1\.012 m²/.test(t),"Zagreb OSS: ako OSS na točki ima drugi broj čestice, vrijednost se ne prikazuje");
     }
   }
+}
+
+// ---------------- 2c. Baza pravila iz ČesticaHR Data Managera (primjer formata)
+{
+  const PR=JSON.parse(fs.readFileSync(path.join(ROOT,"tools/baza/primjer_baza.json"),"utf8"));
+  const mk=db=>{assert_has(html,"const RULES_DB = null;"); return boot(html.replace("const RULES_DB = null;","const RULES_DB = "+JSON.stringify(db)+";"));};
+  let {w,errs}=mk(PR); const E=n=>w.eval(n);
+  const ctx={jls:"Grad Krk",zone:["GPN-1"],izgradenost:"izgrađeno",vrsta:"Obiteljska kuća",nacin:"slobodnostojeća"};
+  let M=E("dbMatch")(ctx); const all=M.grupe[0].rules;
+  ok(M.grupe.length===1&&all.length===3&&all.filter(x=>x.calc).map(x=>x.r.parametar).sort().join()==="kig,min_cestica"&&!all.find(x=>x.r.parametar==="udaljenost_meda").legal,"baza: potvrđena i GIS-potvrđena pravila ulaze u izračun, kandidat ne");
+  ok(E("dbMatch")({...ctx,zone:["P3"]}).grupe.length===0&&E("dbMatch")({...ctx,jls:"Općina Baška"}).grupe.length===0&&E("dbMatch")({...ctx,izgradenost:"neizgrađeno"}).grupe[0].rules.map(x=>x.r.parametar).join()==="udaljenost_meda","baza: primjenjivost po jedinici, zoni i izgrađenosti");
+  ok(E("dbMatch")({...ctx,nacin:"dvojna"}).grupe[0].rules.every(x=>!x.calc),"baza: pravilo za slobodnostojeću ne ulazi u izračun za dvojnu");
+  let c=E("dbCalc")(M,600); ok(c.min===true&&Math.abs(c.tl-150)<0.01&&c.gbp==null,"baza: izračun kig 0,25 × 600 = 150 m², najmanja čestica 500 ispunjena");
+  const h=E("dbHtml")(ctx,null).replace(/<[^>]+>/g," ").replace(/\s+/g," ");
+  ok(/pravno potvrđeno 2026-10-18/.test(h)&&/GIS potvrđen/.test(h)&&/u izračunu/.test(h)&&/Istraživački kandidati, nepotvrđeno \(1\)/.test(h)&&/čl\. 22\./.test(h)&&/Službene novine/.test(h),"baza: prikaz statusa (pravni i GIS odvojeno), izvora, članka i kandidata");
+  // potvrđeno bez citata se tretira kao kandidat; GIS kandidat ne ulazi u izračun
+  const D2=JSON.parse(JSON.stringify(PR)); D2.pravila[0].citat=""; D2.pravila[1].gis_status.razina="kandidat";
+  ({w,errs}=mk(D2)); M=w.eval("dbMatch")(ctx);
+  const k=M.grupe[0].rules.find(x=>x.r.parametar==="kig"), m=M.grupe[0].rules.find(x=>x.r.parametar==="min_cestica");
+  ok(!k.legal&&k.miss.includes("citat")&&!k.calc&&m.legal&&!m.gis&&!m.calc,"baza: nepotpuno potvrđeno pravilo = kandidat; pravno potvrđeno bez GIS potvrde ne ulazi u izračun");
+  // više planova istovremeno, bez pretpostavke prednosti
+  const D3=JSON.parse(JSON.stringify(PR));
+  D3.planovi.push({id:"UPU-T",naziv:"UPU test",vrsta:"UPU",status_vazenja:"važeći",obuhvat:{jls:["Grad Krk"],gis:{status:"potvrđeno"}},odluke:[{id:"UPU-T-1",naziv:"Odluka",vrsta:"donošenje",glasilo:"SN PGŽ",broj:"1/2026",url:"https://example.org/upu"}]});
+  D3.pravila.push({...PR.pravila[0],id:"UPU-T-kig",plan_id:"UPU-T",odluka_id:"UPU-T-1",vrijednost:0.3});
+  ({w,errs}=mk(D3)); M=w.eval("dbMatch")(ctx); c=w.eval("dbCalc")(M,600);
+  const h3=w.eval("dbHtml")(ctx,null).replace(/<[^>]+>/g," ");
+  ok(M.grupe.length===2&&M.sukobi.length===1&&M.sukobi[0].parametar==="kig"&&c.tl==null&&c.min===true&&/više planova/.test(h3)&&/različite vrijednosti/.test(h3),"baza: dva plana s različitim kig – prikazano kao neusklađeno, kig se ne koristi u izračunu");
+  // Zagreb: prikaz u analizi bez grešaka; bez baze nema odjeljka
+  const DZ={verzija_sheme:"1.0",izvor:"test",izvezeno:"2026-10-19",planovi:[{id:"GUP-ZG",naziv:"GUP Grada Zagreba",vrsta:"GUP",status_vazenja:"važeći",obuhvat:{jls:["Grad Zagreb"],gis:{status:"potvrđeno"}},odluke:[{id:"G1",naziv:"Odluka o GUP-u",vrsta:"pročišćeni tekst",glasilo:"SGGZ",url:"https://example.org/gup"}]}],
+    pravila:[{id:"g-kig",plan_id:"GUP-ZG",odluka_id:"G1",parametar:"kig",vrijednost:0.3,clanak:"69",citat:"test",primjenjivost:{zone:["2.2."],vrste_gradnje:["sve"]},pravni_status:{razina:"potvrđeno",datum_provjere:"2026-10-19"},gis_status:{razina:"potvrđeno"}}]};
+  ({w,errs}=mk(DZ)); w.eval("render")(data(w,parcelRect(40,25),"2.2."));
+  const tz=txt(w,"sheet"); ok(/Uvjeti iz baze ČesticaHR/.test(tz)&&/Izračun iz potvrđenih uvjeta baze/.test(tz)&&/Korištena površina: 1\.0\d\d m² \(grafička/.test(tz)&&!errs.length,"baza: Zagreb prikazuje uvjete iz baze i izračun s navedenom površinom "+errs.join(";"));
+  ({w,errs}=boot()); w.eval("render")(data(w,parcelRect(40,25),"2.2.")); ok(!/Uvjeti iz baze ČesticaHR/.test(txt(w,"sheet")),"baza: bez uvezene baze nema novog odjeljka (aplikacija nepromijenjena)");
 }
 
 // ---------------- 3. Kupnja zemljišta
@@ -992,7 +1026,7 @@ async function krkTests(){
    ok(!!$(w,"areaSel")&&/Korištena površina: (599|600) m² \(grafička; izvor: granica čestice u katastarskom planu DGU\)/.test(txt(w,"sheet"))&&$(w,"areaSel").querySelector('option[value="zk"]').disabled,"Krk: odabir površine za izračun; ZK nedostupna dok nije upisana");
    E("krkZkSet")(w.__cur.key,700,"rucno"); setv(w,"areaSel","zk","change"); await tick(10);
    const C2=w.__krkCalc, tz=txt(w,"sheet");
-   ok(Math.abs(C2.A-A0*700/E("KRK_CUR").area)<1&&/Korištena površina: 700 m² \(upisana u zemljišnoj knjizi; izvor: zemljišna knjiga, ručni unos\)/.test(tz)&&/Upisana u ZK/.test(txt(w,"areaCmp")),"Krk: izračun sa ZK površinom 700 m² ("+Math.round(C2.A)+" m²), usporedna tablica");
+   ok(Math.abs(C2.A-A0*700/E("KRK_CUR").area)<1&&/Korištena površina: 700 m² \(upisana u zemljišnoj knjizi; izvor: zemljišna knjiga, ručni unos\)/.test(tz)&&/Zemljišna knjiga/.test(txt(w,"areaCmp")),"Krk: izračun sa ZK površinom 700 m² ("+Math.round(C2.A)+" m²), usporedna tablica");
    setv(w,"areaSel","graf","change"); await tick(10); ok(Math.abs(w.__krkCalc.A-A0)<0.01&&Math.abs(w.__krkCalc.gbpN-g0)<0.01,"Krk: povratak na grafičku površinu");
    E("krkZkSet")(w.__cur.key,0); E("renderKrk")(E("KRK_CUR"));}
   {const C=w.__krkCalc;

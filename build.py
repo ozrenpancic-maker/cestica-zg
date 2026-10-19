@@ -59,9 +59,18 @@ def check_krk(r):
     if errs: print("\n".join(errs)); sys.exit(1)
 rules_krk = json.loads((root / "src/rules_krk.json").read_text(encoding="utf-8")); check_krk(rules_krk)
 data_krk = json.dumps(rules_krk, ensure_ascii=False).replace("</", "<\\/")
+# baza pravila iz ČesticaHR Data Managera (nije obavezna): provjera prije ugradnje (tools/baza/provjeri.py)
+data_db = "null"
+db_path = root / "src/baza/baza.json"
+if db_path.exists():
+    sys.path.insert(0, str(root / "tools/baza")); import provjeri as _pdb
+    _db = json.loads(db_path.read_text(encoding="utf-8")); _E, _W, _n = _pdb.provjeri(_db)
+    if _E: print("\n".join("BAZA: " + e for e in _E)); sys.exit(1)
+    data_db = json.dumps(_db, ensure_ascii=False).replace("</", "<\\/")
+    print(f"baza pravila: {_n}")
 import datetime
 ver = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=2))).strftime("%d.%m.%Y. %H:%M")
-(root / "index.html").write_text(tpl.replace("/*RULES*/null", data).replace("/*RULES_SE*/null", data_se).replace("/*RULES_PP*/null", data_pp).replace("/*RULES_META*/null", data_meta).replace("/*RULES_KRK*/null", data_krk).replace("/*VERSION*/", ver), encoding="utf-8")
+(root / "index.html").write_text(tpl.replace("/*RULES*/null", data).replace("/*RULES_SE*/null", data_se).replace("/*RULES_PP*/null", data_pp).replace("/*RULES_META*/null", data_meta).replace("/*RULES_KRK*/null", data_krk).replace("/*RULES_DB*/null", data_db).replace("/*VERSION*/", ver), encoding="utf-8")
 # service worker: verzija = sažetak sadržaja stranice i ljuske, pa svaka promjena aplikacije daje novi sw.js
 import hashlib
 h = hashlib.sha256()
