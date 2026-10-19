@@ -859,6 +859,13 @@ async function krkTests(){
       if(mode==="ag") return okj({type:"FeatureCollection",features:[{type:"Feature",geometry:half(wgsRing[0][0]-1e-3,wgsRing[1][0]+1e-3),properties:ag}]});
       return okj({type:"FeatureCollection",features:poly?[{type:"Feature",geometry:half(wgsRing[0][0]-1e-4,lonMid),properties:gp},{type:"Feature",geometry:half(lonMid,wgsRing[1][0]+1e-4),properties:ag}]:[{type:"Feature",geometry:null,properties:gp}]}); }
     if(u.includes("IZRADA_PP")) return okj({type:"FeatureCollection",features:plans.map(p=>({type:"Feature",geometry:null,properties:p}))});
+    if(u.includes("data/ski_krk/")){ if(mode==="dguFail") return Promise.reject(new TypeError("Failed to fetch"));
+      const DLAT=0.009,DLON=0.013, top=wgsRing[2][1], mid=(wgsRing[0][1]+wgsRing[2][1])/2, cx=(wgsRing[0][0]+wgsRing[1][0])/2, key=Math.floor(mid/DLAT)+"_"+Math.floor(cx/DLON);
+      const ks=[]; for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++) ks.push((Math.floor(mid/DLAT)+i)+"_"+(Math.floor(cx/DLON)+j));
+      if(u.endsWith("index.json")) return okj({v:1,podrucje:"krk",izvor:"DGU test Krk",preuzeto:"2026-10-18",stanje:{vodovod:"16. 7. 2024.",kanalizacija:"17. 7. 2024.",struja:"3. 10. 2026."},dlat:DLAT,dlon:DLON,mreze:{vodovod:{kvadrati:ks},kanalizacija:{kvadrati:[]},struja:{kvadrati:ks}}});
+      if(/struja\//.test(u)) return Promise.resolve({ok:false,status:500,json:()=>Promise.resolve(null)});
+      const y=top+25/110540, line=[[cx-0.001,y],[cx+0.001,y]].flatMap(([a,b])=>[Math.round(a*1e6),Math.round(b*1e6)]);
+      return okj(u.endsWith(key+".json")?[[1,line]]:[]); }
     if(u.includes("open-meteo")) return okj({elevation:[40,42,40,38,40]});
     if(/overpass|interpreter/.test(u)) return okj({elements:[{type:"way",tags:{highway:"residential",name:"Kornić test"},geometry:[{lat:45.0275,lon:14.5934},{lat:45.0276,lon:14.5936}]}]});
     return Promise.reject(new Error("neočekivan zahtjev "+u));
@@ -879,7 +886,12 @@ async function krkTests(){
   ok(/SN 2020-29/.test(t)&&!/SN 2019-18/.test(t),"Krk: od važećih odluka prikazuje se zadnja (2020-29)");
   const links=[...w.document.querySelectorAll("#sheet a")].map(a=>a.getAttribute("href"));
   ok(links.includes("https://example.org/sn-2020-29.pdf")&&!links.some(h=>/^javascript:/i.test(h)),"Krk: poveznice na dokumente samo http(s)");
-  ok(/Komunalna infrastruktura ?Vodovod ?Podaci nisu dostupni ?Kanalizacija ?Podaci nisu dostupni ?Struja ?Podaci nisu dostupni ?Plin ?Podaci nisu dostupni/.test(t)&&!/ 0 m/.test(t),"Krk: infrastruktura 'Podaci nisu dostupni', nikad 0 m");
+  ok(/Vodovod ?najbliži evidentirani vod: 2[45] m/.test(t),"Krk: vodovod iz DGU SKI (PGŽ) 25 m od granice čestice");
+  ok(/Kanalizacija ?Podaci nisu dostupni ?u krugu od 500 m nema evidentiranog voda/.test(t),"Krk: kanalizacija bez voda u krugu: 'Podaci nisu dostupni', ne 0 m");
+  ok(/Struja ?Podaci nisu dostupni ?podaci katastra infrastrukture se nisu učitali/.test(t),"Krk: neuspjelo učitavanje struje je jasno označeno");
+  ok(/Telekomunikacije ?Podaci nisu dostupni/.test(t)&&/Plin ?Podaci nisu dostupni/.test(t)&&!/ 0 m/.test(t),"Krk: telekomunikacije i plin 'Podaci nisu dostupni', nigdje 0 m");
+  ok(/Ponikve/.test(t)&&/16\. 7\. 2024\./.test(t)&&/3\. 10\. 2026\./.test(t),"Krk: izvor, stanje podataka i tko potvrđuje priključak");
+  ok(w.__ski&&w.__ski.v&&w.__ski.v.podrucje==="krk"&&E("skiLayer").getLayers().length===1,"Krk: najbliži vod nacrtan na sloju vodova");
   ok(/neizgrađenom dijelu građevinskog područja/.test(t)&&/čl\. 15\./.test(t)&&!w.document.getElementById("krkTip")&&!w.document.getElementById("kdZone"),"Krk: neizgrađeni dio GP-a: gradnja tek nakon UPU-a (čl. 15.), bez brojki i bez komunalnog doprinosa");
   ok(/nagib u okolini/.test(t)&&/Kornić test/.test(t),"Krk: nagib i pristup (OSM) rade kao u Zagrebu");
   ok(w.__cur&&w.__cur.region==="krk"&&w.__cur.ces==="2345/6"&&w.__lastData===null,"Krk: stanje odabrane čestice postavljeno, zagrebački podaci očišćeni");

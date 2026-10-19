@@ -14,7 +14,8 @@ Prikaz za Krk:
 | Namjena, građevinsko područje, izgrađeno ili neizgrađeno, udjeli na čestici | PGŽ, `STANJE/NAMJENA_POVRSINA_NOVO` | provjereno upitima na servis |
 | Važeći planovi i planovi u izradi na lokaciji | PGŽ, `STANJE/IZRADA_PP` | provjereno upitima na servis |
 | Nagib terena, pristup i okolina | Open-Meteo, OpenStreetMap | isti kod kao za Zagreb |
-| Vodovod, kanalizacija, struja, plin | — | „Podaci nisu dostupni” (SKI za PGŽ nije pripremljen) |
+| Vodovod, kanalizacija, niskonaponska struja | DGU SKI, PGŽ (`_08`), `data/ski_krk/` | udaljenost od granice čestice; provjereno prema izvornim podacima (`docs/infrastruktura-krk.md`) |
+| Telekomunikacije, plin | — | „Podaci nisu dostupni” |
 | Uvjeti gradnje (obiteljska i višeobiteljska kuća, Grad Krk) | PPUG Grada Krka, pročišćeni tekst SN PGŽ 29/2020, `src/rules_krk.json` | parametri i navodi preuzeti s mrežne stranice SN-a; potrebna usporedba s cijelim tekstom |
 | Komunalni doprinos (Grad Krk) | Odluka SN PGŽ 43/2018 | iznos po zoni upisuje korisnik (tablica nije u mrežnom tekstu) |
 | Priključci, cijena gradnje | — | „još nisu obrađeni” |
@@ -153,4 +154,3 @@ Svi testovi rade s lažnim odgovorima servisa. Stvarni servisi nisu dohvaćeni i
 1. Ako DGU ne radi iz preglednika: opcije su posrednik (Cloudflare Worker, besplatna razina, zahtijeva tvoje odobrenje) ili prikaz bez čestice.
 2. UPU 1 Krk i UPU 5 Vrh iz PDF-a.
 3. Ostalih šest općina na otoku.
-4. Katastar infrastrukture za PGŽ (datoteka 08 na ski.dgu.hr).

@@ -122,7 +122,7 @@ h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute
 .rule-code{font-family:var(--f-mono);font-weight:500;background:var(--soft);border-radius:6px;padding:1px 6px;margin-right:6px}
 .rule-title{font-weight:700;font-size:16px;margin:4px 0 2px;text-wrap:balance}
 .kv{display:grid;grid-template-columns:7.5em 1fr;gap:6px 10px;margin:8px 0 0;font-size:14px}
-.kv dt{color:var(--muted)} .kv dd{margin:0;min-width:0}
+.kv dt{color:var(--muted);min-width:0;overflow-wrap:anywhere;hyphens:auto} .kv dd{margin:0;min-width:0}
 .calc{margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--soft)}
 .calc .row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:14px}
 .calc .row span:last-child{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
@@ -856,9 +856,10 @@ async function inspectKrk(ll){
   }
   const d={region:"krk",ll,parcel,area,rows,ces,nam,pl,slope:null,env:null};
   renderKrk(d);
-  const [slope,env]=await Promise.all([settle(loadSlope(parcel,ll)),settle(loadEnv(ll,parcel))]);
+  const [slope,env,ski]=await Promise.all([settle(loadSlope(parcel,ll)),settle(loadEnv(ll,parcel)),FEATURES.infra?settle(loadSki(parcel,ll,SKI_KRK)):Promise.resolve(null)]);
   if(id!==clickId) return;
-  renderKrk({...d,slope,env});
+  window.__ski=ski||null; skiDraw(ski);
+  renderKrk({...d,slope,env,ski});
 }
 function krkJls(rows,pl){
   const r=rows.find(x=>x.p.OPCINA_GRAD); if(r) return String(r.p.OPCINA_GRAD).toUpperCase();
@@ -917,7 +918,7 @@ function renderKrk(d){
     h+=`<ul class="checks" style="margin-top:6px"><li class="chk chk-${sev}"><b>Teren</b><span>Nadmorska visina oko ${s.h} m, nagib u okolini oko ${Math.round(s.slope)} %, pada prema ${s.down}u.${s.slope>=20?" Strm teren: računaj s potpornim zidovima i skupljim temeljima.":s.slope>=10?" Umjereno strm teren.":""}</span></li></ul><p class="meta">Nagib je iz modela visina rezolucije oko 90 m.</p>`;}
   else if(slope&&slope.e) h+=`<p class="meta">Nagib terena: Podaci nisu dostupni (${esc(slope.e)}).</p>`;
   // infrastruktura: za Krk još nema pripremljenih podataka
-  h+=`<h2>Komunalna infrastruktura</h2><dl class="kv">${["Vodovod","Kanalizacija","Struja","Plin"].map(n=>`<dt>${n}</dt><dd>Podaci nisu dostupni</dd>`).join("")}</dl><p class="meta">Katastar infrastrukture DGU za Primorsko-goransku županiju još nije pripremljen u aplikaciji. Mogućnost priključenja potvrđuju Ponikve (voda i odvodnja) i HEP ODS.</p>`;
+  h+=krkInfraHtml(env?d.ski||{e:"nije učitano"}:null);
   h+=env?envHtml(env):envHtml(null);
   // uvjeti gradnje i troškovi: još nisu obrađeni
   h+=krkRulesHtml(d);
@@ -1322,22 +1323,27 @@ async function skiFetch(path,ms=12000){
   try{const r=await fetch(path,{signal:ac.signal}); if(!r.ok) throw new Error("HTTP "+r.status); return await r.json()}
   finally{clearTimeout(t)}
 }
-async function skiIndex(){
-  if(SKI.idx) return SKI.idx;
-  const j=await skiFetch("data/ski/index.json");
+// više područja: Zagreb (data/ski/) i otok Krk (data/ski_krk/), isti format i isti izračun
+const SKI_ZG="data/ski/", SKI_KRK="data/ski_krk/";
+SKI.idxs={};
+async function skiIndex(base=SKI_ZG){
+  if(base===SKI_ZG&&SKI.idx) return SKI.idx;
+  if(base!==SKI_ZG&&SKI.idxs[base]) return SKI.idxs[base];
+  const j=await skiFetch(base+"index.json");
   if(!j||j.v!==1||!j.mreze) throw new Error("neispravan indeks");
   j.sets={}; for(const [k,m] of Object.entries(j.mreze)) j.sets[k]=new Set(m.kvadrati);
-  SKI.idx=j; return j;
+  if(base===SKI_ZG) SKI.idx=j; else SKI.idxs[base]=j;
+  return j;
 }
-async function skiTile(net,key){
-  const k=net+"/"+key; if(SKI.tiles.has(k)) return SKI.tiles.get(k);
-  const p=skiFetch("data/ski/"+k+".json").then(a=>{ if(!Array.isArray(a)) throw new Error("neispravan kvadrat"); return a; });
+async function skiTile(net,key,base=SKI_ZG){
+  const k=(base===SKI_ZG?"":base)+net+"/"+key; if(SKI.tiles.has(k)) return SKI.tiles.get(k);
+  const p=skiFetch(base+net+"/"+key+".json").then(a=>{ if(!Array.isArray(a)) throw new Error("neispravan kvadrat"); return a; });
   SKI.tiles.set(k,p); p.catch(()=>SKI.tiles.delete(k)); // neuspjelo učitavanje ne ostaje u memoriji
   if(SKI.tiles.size>80) SKI.tiles.delete(SKI.tiles.keys().next().value);
   return p;
 }
-async function loadSki(parcel,ll){
-  const I=await skiIndex();
+async function loadSki(parcel,ll,base=SKI_ZG){
+  const I=await skiIndex(base);
   const bb=parcel?turf.bbox(parcel):[ll.lng,ll.lat,ll.lng,ll.lat], lat=(bb[1]+bb[3])/2;
   const dla=SKI.R/110540, dlo=SKI.R/(111320*Math.cos(lat*Math.PI/180));
   const B=[bb[0]-dlo,bb[1]-dla,bb[2]+dlo,bb[3]+dla];
@@ -1346,7 +1352,7 @@ async function loadSki(parcel,ll){
   const out={};
   await Promise.all(SKI.NETS.map(async([net])=>{
     try{
-      const ks=keys.filter(k=>I.sets[net]&&I.sets[net].has(k)), arrs=await Promise.all(ks.map(k=>skiTile(net,k)));
+      const ks=keys.filter(k=>I.sets[net]&&I.sets[net].has(k)), arrs=await Promise.all(ks.map(k=>skiTile(net,k,base)));
       let best=null; const seen=new Set();
       for(const arr of arrs) for(const [id,f] of arr){
         if(seen.has(id)) continue; seen.add(id);
@@ -1362,7 +1368,7 @@ async function loadSki(parcel,ll){
       out[net]=best?{d:best.d,geom:best.geom}:{none:true};
     }catch(err){out[net]={e:err.message||"greška"}}
   }));
-  return {mreze:out,izvor:I.izvor,preuzeto:I.preuzeto};
+  return {mreze:out,izvor:I.izvor,preuzeto:I.preuzeto,podrucje:I.podrucje||"zagreb",stanje:I.stanje||null};
 }
 function skiText(r,lbl){
   if(!r) return {t:"učitavam…",s:""};
@@ -1374,7 +1380,26 @@ function skiText(r,lbl){
 const skiLayer=L.layerGroup();
 function skiDraw(ski){
   skiLayer.clearLayers(); const M=ski&&ski.v&&ski.v.mreze; if(!M) return;
-  for(const [net,,,col] of SKI.NETS){const r=M[net]; if(r&&r.geom) L.geoJSON(r.geom,{style:{color:col,weight:4,opacity:.9},interactive:false}).addTo(skiLayer);}
+  const krk=ski.v.podrucje==="krk"; // Zagreb ostaje kao prije; za Krk klik na vod pokazuje izvor i stanje podataka
+  for(const [net,lbl,opis,col] of SKI.NETS){const r=M[net]; if(!r||!r.geom) continue;
+    const g=L.geoJSON(r.geom,{style:{color:col,weight:krk?5:4,opacity:.9},interactive:krk}).addTo(skiLayer);
+    if(krk) g.bindPopup(`<b>${esc(lbl)}</b>: ${esc(opis)} (${r.d<1?"manje od 1":fmt(Math.round(r.d))} m od granice čestice)<br><small>Funkcionalni vod${net==="struja"?", niski napon":""}. Izvor: ${esc(ski.v.izvor||"DGU SKI")}${ski.v.stanje&&ski.v.stanje[net]?", stanje podataka: "+esc(ski.v.stanje[net]):""}. Promjer i vrsta nisu objavljeni.</small>`);}
+}
+// legenda slojeva vodova (Krk)
+function skiLegendHtml(){return `<p class="meta">${SKI.NETS.map(([,l,,c])=>`<span style="display:inline-block;width:14px;height:4px;background:${c};vertical-align:middle;margin-right:4px"></span>${esc(l)}`).join(" &nbsp; ")} · na karti: sloj „Najbliži vodovi (DGU)”</p>`}
+function krkInfraHtml(ski){
+  let h=`<h2>Komunalna infrastruktura</h2>`;
+  if(!ski) return h+`<p class="hint"><span class="spin"></span>Učitavam katastar infrastrukture…</p>`;
+  const M=ski.v&&ski.v.mreze, err=ski.e||null, rows=[];
+  for(const [net,lbl,opis] of SKI.NETS){const t=M?skiText(M[net],opis):{t:"Podaci nisu dostupni",s:err?"podaci katastra infrastrukture se nisu učitali":""}; rows.push([lbl,t.t,t.s,t.cross]);}
+  rows.push(["Telekomunikacije","Podaci nisu dostupni","nisu u javnim podacima DGU-a"]);
+  rows.push(["Plin","Podaci nisu dostupni","nisu obrađeni za Krk"]);
+  h+=`<dl class="kv">${rows.map(([a,b,c,x])=>`<dt>${esc(a)}</dt><dd>${esc(b)}${c?`<small class="fx"${x?' style="color:#b26a00"':""}>${esc(c)}</small>`:""}</dd>`).join("")}</dl>`;
+  if(M&&Object.values(M).some(r=>r&&r.d!=null&&r.d<0.5)) h+=`<p class="flag">Vod prolazi česticom ili njezinom granicom. Iznad i uz vod gradnja može biti ograničena; provjeri s upraviteljem mreže.</p>`;
+  const st=ski.v&&ski.v.stanje;
+  h+=`<p class="meta">Izvor: Državna geodetska uprava, katastar infrastrukture (INSPIRE, Primorsko-goranska županija)${st?`; stanje podataka: vodovod i kanalizacija ${esc(st.vodovod||"?")}, struja ${esc(st.struja||"?")}`:""}. Udaljenost je od granice čestice do osi voda, u krugu od ${SKI.R} m. Evidencija može biti nepotpuna; mogućnost i trošak priključenja potvrđuju Ponikve (voda i odvodnja) i HEP ODS. Niskonaponski vod može biti i kabel javne rasvjete.</p>`;
+  if(M) h+=skiLegendHtml();
+  return h;
 }
 function infraHtml(inf,ski){
   let h=`<h2>Komunalna infrastruktura</h2>`;
