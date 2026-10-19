@@ -3262,7 +3262,7 @@ function render(d){
 // reporter.hr 2026 (ključ u ruke 1.500–1.700, viši standard > 2.000 €/m²).
 const BUILD={
   klas:{kljuc:1400, roh:600, temelj:0},
-  mont:{kljuc:1600, roh:1100, temelj:90}
+  mont:{kljuc:1600, roh:1100, temelj:90} // temelj > 0: cijena po m² ne uključuje temelje (od faze II temelji se računaju iz stavki, iznos 90 se ne koristi)
 };
 const STD={osn:0.85, sred:1.0, vis:1.3};
 const FLOORS={P:{f:1.00,n:1,label:"prizemnica"},PPk:{f:0.96,n:1.75,label:"P + potkrovlje"},P1:{f:0.93,n:2,label:"P + 1"},P1Pk:{f:0.91,n:2.75,label:"P + 1 + Pk"},P2:{f:0.90,n:3,label:"P + 2"}}; // n = broj tlocrta u GBP-u (potkrovlje 75 %, kao u simulatoru); P2: nastavak trenda (procjena)
