@@ -126,6 +126,9 @@ h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute
 .rule-code{font-family:var(--f-mono);font-weight:500;background:var(--soft);border-radius:6px;padding:1px 6px;margin-right:6px}
 .rule-title{font-weight:700;font-size:16px;margin:4px 0 2px;text-wrap:balance}
 .kv{display:grid;grid-template-columns:7.5em 1fr;gap:6px 10px;margin:8px 0 0;font-size:14px}
+#rkBox td,#rkBox th{overflow-wrap:anywhere}
+.rkimg{position:relative;width:100%;max-width:520px;aspect-ratio:1/1;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+.rkimg img,.rkimg svg{position:absolute;inset:0;width:100%;height:100%;display:block}
 .dbh{font-size:15px;margin:14px 0 4px}.dbl{padding-left:18px;margin:4px 0}.dbl li{margin:6px 0}
 .dbst{display:inline-block;font-size:11.5px;padding:1px 6px;border-radius:9px;border:1px solid var(--line);margin-top:2px}.dbst.ok{color:#1f6f54;border-color:#1f6f54}.dbst.kand{color:#a86400;border-color:#a86400}
 .acmp{max-width:100%;overflow-x:auto}
@@ -659,8 +662,12 @@ function naHtml(title,why){return `<details class="acc na" data-k="na-${esc(titl
 const krkEnvLayer=L.layerGroup().addTo(map); // prostor za kuću na Krku (4 m od međa)
 
 // --- uvjeti gradnje za Grad Krk: PPUG (pročišćeni tekst SN PGŽ 29/2020) izvan UPU-a, a obrađeni UPU-ovi (rules_krk.json → upu) unutar svog obuhvata
-const KRK_TIP={tip:"obit",oblik:"slob",zona:"M1"};
-try{const v=JSON.parse(localStorage.getItem("krkTip")||"null"); if(v&&RULES_KRK&&RULES_KRK.tipovi[v.tip]&&/^(slob|dvoj|ugr)$/.test(v.oblik)) Object.assign(KRK_TIP,{tip:v.tip,oblik:v.oblik,zona:v.zona==="druga"?"druga":"M1"})}catch(e){}
+const KRK_TIP={tip:"obit",oblik:"slob"};
+// zona UPU-a koju je korisnik odabrao, posebno za svaku česticu (nikad se ne prenosi na drugu česticu)
+function krkZonaKey(){return window.__cur&&window.__cur.key?"krkZona:"+window.__cur.key:null}
+function krkZonaGet(){const k=krkZonaKey(); try{return k?localStorage.getItem(k)||"":""}catch(e){return ""}}
+function krkZonaSet(v){const k=krkZonaKey(); try{if(k){if(v) localStorage.setItem(k,v); else localStorage.removeItem(k)}}catch(e){}}
+try{const v=JSON.parse(localStorage.getItem("krkTip")||"null"); if(v&&RULES_KRK&&RULES_KRK.tipovi[v.tip]&&/^(slob|dvoj|ugr)$/.test(v.oblik)) Object.assign(KRK_TIP,{tip:v.tip,oblik:v.oblik})}catch(e){}
 function krkNaselje(name){
   if(!RULES_KRK||!name) return null; const n=" "+norm(name)+" ";
   for(const [code,arr] of Object.entries(RULES_KRK.naselja)) if(arr.some(a=>n.includes(" "+norm(a)+" "))) return code;
@@ -735,8 +742,14 @@ function krkRulesHtml(d){
   if(S.st==="blok"){h+=`<div class="verdict v-no">${esc(S.msg)}</div><p class="meta">Čl. ${esc(S.cl)}.: „${esc(S.txt)}“</p>`; return h;}
   const isUpu=S.st==="upu";
   let RS=S.RS; const I=RS.izvor||R.izvor;
-  // UPU s pravilima po zonama: odabrana zona (ili prva) bira skup pravila
-  const zona=RS.zone?(RS.zone.some(z=>z[0]===KRK_TIP.zona)?KRK_TIP.zona:RS.zone[0][0]):null;
+  // UPU s pravilima po zonama: zonu bira korisnik za ovu česticu; bez odabira nema izračuna (detaljna zona nije potvrđena)
+  const zSel=krkZonaGet(), zona=RS.zone?(RS.zone.some(z=>z[0]===zSel)?zSel:null):null;
+  if(RS.zone&&!zona){
+    const opts=[["","— odaberi zonu —"],...RS.zone];
+    return h+`<p class="rule-title"><span class="rule-code">${esc(RS.kod)}</span></p><p class="meta">Izvor: <a href="${esc(I.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(I.naziv)}</a>, ${esc(I.sn)}</p>`+
+      `<div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label><select id="krkZona" class="bsel">${opts.map(o=>`<option value="${esc(o[0])}">${esc(o[1])}</option>`).join("")}</select></div>`+
+      `<div class="verdict v-warn">Detaljna zona nije potvrđena. Izračun uvjeta gradnje radi se tek kad odabereš zonu.</div><p class="meta">${esc(RS.zonaNapomena||"")} Zonu možeš očitati na karti UPU-a u odjeljku „Detaljna namjena (UPU)”; mjerodavna je lokacijska informacija.</p>`;
+  }
   if(zona&&RS.zoneSet&&RS.zoneSet[zona]) RS={...RS,...RS.zoneSet[zona]};
   if(!RS.tipovi){ // zona bez pravila za kuće (npr. „druga zona”)
     const sel0=(id,opts,v)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===v?" selected":""}>${esc(o[1])}</option>`).join("")}</select>`;
@@ -749,7 +762,7 @@ function krkRulesHtml(d){
   for(const n of S.notes||[]) h+=`<p class="flag">${esc(n)}</p>`;
   const sel=(id,opts,v)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===v?" selected":""}>${esc(o[1])}</option>`).join("")}</select>`;
   if(isUpu){
-    h+=`<div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label>${sel("krkZona",RS.zone,zona)}</div><p class="meta">${esc(RS.zonaNapomena)}</p>`;
+    h+=`<div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label>${sel("krkZona",[["","— odaberi zonu —"],...RS.zone],zona)}</div><p class="flag">Izračun je za zonu koju si odabrao (${esc(zona)}). Detaljna zona nije potvrđena službenim vektorskim slojem ni lokacijskom informacijom.</p><p class="meta">${esc(RS.zonaNapomena)}</p>`;
     if(zona==="druga"){h+=`<p class="hint">${esc(RS.drugaZona||"Za ovu zonu uvjeti za obiteljske i višeobiteljske kuće nisu obrađeni.")}</p>`; return h;}
   }
   h+=`<div class="kd" style="margin:6px 0"><label for="krkTip">Građevina</label>${sel("krkTip",Object.entries(RS.tipovi).map(([k,t])=>[k,t.naziv]),RS.tipovi[KRK_TIP.tip]?KRK_TIP.tip:Object.keys(RS.tipovi)[0])}</div>`;
@@ -857,7 +870,8 @@ sheet.addEventListener("input",e=>{ if(/^krkKd/.test(e.target.id||"")) krkKdUpda
 sheet.addEventListener("change",e=>{ if(/^krkKd/.test(e.target.id||"")) krkKdUpdate(); });
 sheet.addEventListener("change",e=>{
   if((e.target.id==="krkTip"||e.target.id==="krkOblik"||e.target.id==="krkZona")&&KRK_CUR){
-    KRK_TIP[{krkTip:"tip",krkOblik:"oblik",krkZona:"zona"}[e.target.id]]=e.target.value; try{localStorage.setItem("krkTip",JSON.stringify(KRK_TIP))}catch(err){}
+    if(e.target.id==="krkZona") krkZonaSet(e.target.value);
+    else{KRK_TIP[{krkTip:"tip",krkOblik:"oblik"}[e.target.id]]=e.target.value; try{localStorage.setItem("krkTip",JSON.stringify(KRK_TIP))}catch(err){}}
     renderKrk(KRK_CUR);
   }
 });
@@ -950,6 +964,122 @@ function katwFetchInto(k,lat,lon,onUpd){
 // podatak iz sloja karte samo ako je za istu česticu
 function katwGet(P){const w=KATW.get(String(P.cid)); if(!w||w.st!=="ok") return null; const d=w.d;
   if(P.dguId!=null) return String(d.id)===String(P.dguId)?d:null; return !P.broj||d.broj===P.broj?d:null;}
+
+
+// ================= DETALJNA NAMJENA: rasterske karte planova (katalog PGŽ) =================
+// Katalog georeferenciranih karata prostornih planova Zavoda za prostorno uređenje PGŽ (ArcGIS MapServer, Raster Catalog).
+// Za točku čestice traže se listovi UPU-a i DPU-a (u HTRS96 i u starijem GK5 katalogu), izrezuje se karta oko čestice
+// službenom operacijom export i preko nje crta granica čestice iz DGU-a. Zona se NE očitava automatski: na skeniranoj karti
+// boje i oznake nisu povezane sa službenom legendom u digitalnom obliku, pa rezultat ostaje „detaljna zona nije potvrđena”.
+// Drugi katalozi (druge županije) dodaju se u isti popis s vlastitim obuhvatom.
+const RASTER_KATALOZI=[{id:"pgz",naziv:"Zavod za prostorno uređenje Primorsko-goranske županije, katalog rasterskih karata prostornih planova",
+  url:"https://gisportal.pgz.hr/server/rest/services/PP_RASTERI/PP_RASTERI/MapServer",
+  obuhvat:[13.9,44.4,15.3,45.7], // približni okvir PGŽ (WGS84); služi samo da se katalog ne pita izvan županije
+  slojevi:[{id:12,vrsta:"UPU",grupa:"HTRS96",naziv:"RASTER_5UPU_HTRS"},{id:5,vrsta:"UPU",grupa:"GK5",naziv:"RASTER_5UPU"},{id:13,vrsta:"DPU",grupa:"HTRS96",naziv:"RASTER_6DPU_HTRS"},{id:6,vrsta:"DPU",grupa:"GK5",naziv:"RASTER_6DPU"}]}];
+const RK_POLJA="OBJECTID,Name,KARTA_NAZIV,PLAN_NAZIV,OPCINA,GIS_SIFRA,MJERILO,KARTA_SIFRA,STANJE_1212";
+const RKAT=new Map(); // ključ čestice -> {st, items, sel, img, e, dan}
+function rkKatalog(ll){return RASTER_KATALOZI.find(k=>ll.lng>=k.obuhvat[0]&&ll.lng<=k.obuhvat[2]&&ll.lat>=k.obuhvat[1]&&ll.lat<=k.obuhvat[3])||null}
+// list namjene: naziv karte spominje namjenu/korištenje ili je datoteka „karta1”
+const rkNamjena=a=>/namjen|korištenj|koristenj/i.test(a.KARTA_NAZIV||"")||/karta_?1(?!\d)/i.test(a.Name||"");
+async function rkQuery(K,E,N){
+  const out=[], err=[];
+  for(const L of K.slojevi){
+    const q=new URLSearchParams({geometry:E.toFixed(2)+","+N.toFixed(2),geometryType:"esriGeometryPoint",inSR:"3765",spatialRel:"esriSpatialRelIntersects",outFields:RK_POLJA,returnGeometry:"false",f:"json"});
+    try{const j=await getJSON(K.url+"/"+L.id+"/query?"+q.toString(),{},15000,{retries:1});
+      if(j&&j.error) throw new Error((j.error.message||"greška servisa")+(j.error.code?" ("+j.error.code+")":""));
+      for(const f of (j&&j.features)||[]){const a=f.attributes||{}; if(a.OBJECTID!=null) out.push({...a,_sloj:L});}
+    }catch(e){err.push(L.naziv+": "+e.message)}
+  }
+  // isti list u oba kataloga: prednost HTRS96
+  const seen=new Map();
+  for(const a of out){const k=(a.PLAN_NAZIV||"")+"|"+(a.KARTA_SIFRA||a.Name||"")+"|"+(a.Name||""); const b=seen.get(k); if(!b||(b._sloj.grupa!=="HTRS96"&&a._sloj.grupa==="HTRS96")) seen.set(k,a);}
+  const items=[...seen.values()].sort((a,b)=>(rkNamjena(b)-rkNamjena(a))||String(a.PLAN_NAZIV).localeCompare(String(b.PLAN_NAZIV))||String(a.KARTA_SIFRA||a.Name).localeCompare(String(b.KARTA_SIFRA||b.Name),"hr",{numeric:true}));
+  if(!items.length&&err.length===K.slojevi.length) throw new Error(err[0]);
+  return {items,err};
+}
+// okvir oko čestice u HTRS96/TM, kvadratni, s rubom; scale > 1 = šire
+function rkBox(parcel,scale){
+  const pts=[]; const g=parcel.geometry, rings=g.type==="Polygon"?g.coordinates:g.coordinates.flat();
+  for(const r of rings) for(const [lo,la] of r) pts.push(tmFwd(lo,la));
+  const xs=pts.map(p=>p[0]), ys=pts.map(p=>p[1]), cx=(Math.min(...xs)+Math.max(...xs))/2, cy=(Math.min(...ys)+Math.max(...ys))/2;
+  const half=Math.max(60,Math.max(Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys))*1.3)*scale/2;
+  return {xmin:cx-half,ymin:cy-half,xmax:cx+half,ymax:cy+half,pts:rings.map(r=>r.map(([lo,la])=>tmFwd(lo,la)))};
+}
+async function rkExport(K,item,parcel,scale){
+  const B=rkBox(parcel,scale), L=item._sloj;
+  const q=new URLSearchParams({bbox:[B.xmin,B.ymin,B.xmax,B.ymax].map(v=>v.toFixed(2)).join(","),bboxSR:"3765",imageSR:"3765",size:"800,800",dpi:"96",format:"png",transparent:"false",
+    layers:"show:"+L.id,layerDefs:JSON.stringify({[L.id]:"OBJECTID="+Number(item.OBJECTID)}),f:"json"});
+  const j=await getJSON(K.url+"/export?"+q.toString(),{},20000,{retries:1,cache:false});
+  if(j&&j.error) throw new Error(j.error.message||"greška servisa");
+  const x=j&&j.extent;
+  if(!j||!j.href||!x||!(x.xmax>x.xmin)||!(x.ymax>x.ymin)) throw new Error("servis nije vratio sliku s okvirom");
+  if(x.spatialReference&&x.spatialReference.wkid&&![3765].includes(x.spatialReference.wkid)&&x.spatialReference.latestWkid!==3765) throw new Error("slika nije u HTRS96/TM (EPSG:3765)");
+  // granica čestice u pikselima slike prema okviru koji je servis stvarno vratio
+  const W=j.width||800, H=j.height||800, px=([e,n])=>[(e-x.xmin)/(x.xmax-x.xmin)*W,(x.ymax-n)/(x.ymax-x.ymin)*H];
+  return {href:safeLink(j.href),extent:x,W,H,poly:B.pts.map(r=>r.map(px)),scale,url:K.url+"/export?"+q.toString().replace("f=json","f=image")};
+}
+function rkKey(){return window.__cur&&window.__cur.key}
+async function rkStart(parcel,ll){
+  const key=rkKey(), K=rkKatalog(ll); if(!key||!parcel||!K||RKAT.has(key)) return;
+  const S={st:"load",K,dan:new Date().toISOString().slice(0,10)}; RKAT.set(key,S); rkUpd();
+  try{const c=turf.pointOnFeature(parcel).geometry.coordinates, [E,N]=tmFwd(c[0],c[1]); const r=await rkQuery(K,E,N);
+    S.items=r.items; S.err=r.err; S.st=r.items.length?"ok":"none"; S.sel=r.items.length?0:null;}
+  catch(e){S.st="err"; S.e=e.message; setTimeout(()=>{if(RKAT.get(key)===S) RKAT.delete(key)},30000);}
+  rkUpd(); if(S.st==="ok") rkImg(parcel,1);
+}
+async function rkImg(parcel,scale){
+  const key=rkKey(), S=RKAT.get(key); if(!S||S.st!=="ok") return;
+  const it=S.items[S.sel]; S.img={st:"load",scale}; rkUpd();
+  try{const im=await rkExport(S.K,it,parcel,scale); if(RKAT.get(key)===S&&S.items[S.sel]===it) S.img={st:"ok",...im};}
+  catch(e){if(RKAT.get(key)===S) S.img={st:"err",e:e.message,scale}}
+  rkUpd();
+}
+function rkUpd(){const el=document.getElementById("rkBox"); if(el&&KRK_CUR) el.innerHTML=rkInner();}
+function rkInner(){
+  const S=RKAT.get(rkKey());
+  if(!S) return `<p class="meta">Katalog karata prostornih planova nije dostupan za ovo područje.</p>`;
+  if(S.st==="load") return `<p class="hint"><span class="spin"></span>Tražim kartu UPU-a u katalogu ${esc(S.K.id.toUpperCase())}…</p>`;
+  if(S.st==="err") return `<p class="err">Katalog karata planova (${esc(S.K.naziv)}): Podaci nisu dostupni (${esc(S.e)}).</p><p class="meta"><b>Detaljna zona nije potvrđena.</b></p>`;
+  if(S.st==="none") return `<p class="meta">Za ovu točku katalog karata PGŽ nema karte UPU-a ni DPU-a. Vrijede uvjeti iz prostornog plana grada ili općine.</p>`;
+  const it=S.items[S.sel], L=it._sloj, im=S.img||{};
+  let h=`<div class="kd" style="margin:0 0 6px"><label for="rkSel">Karta</label><select id="rkSel" class="bsel">${S.items.map((a,i)=>`<option value="${i}"${i===S.sel?" selected":""}>${esc((a.PLAN_NAZIV||"plan")+" · "+(a.KARTA_NAZIV||a.Name||"list"))}</option>`).join("")}</select></div>`;
+  if(im.st==="load") h+=`<p class="hint"><span class="spin"></span>Dohvaćam izrez karte oko čestice…</p>`;
+  else if(im.st==="err") h+=`<p class="err">Izrez karte: Podaci nisu dostupni (${esc(im.e)}).</p>`;
+  else if(im.st==="ok"&&im.href){
+    const pts=im.poly.map(r=>r.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" "));
+    h+=`<div class="rkimg" style="aspect-ratio:${im.W}/${im.H}"><img src="${esc(im.href)}" alt="Izrez karte ${esc(it.KARTA_NAZIV||"")} s granicom čestice" width="${im.W}" height="${im.H}"><svg viewBox="0 0 ${im.W} ${im.H}" preserveAspectRatio="none" aria-hidden="true">${pts.map(p=>`<polygon points="${p}" fill="rgba(0,200,220,.18)" stroke="#000" stroke-width="6"/><polygon points="${p}" fill="none" stroke="#00e0ff" stroke-width="3"/>`).join("")}</svg></div>`;
+    h+=`<div class="kd"><button type="button" class="ib" id="rkIn">Uvećaj</button><button type="button" class="ib" id="rkOut">Umanji</button><button type="button" class="ib" id="rkMap">${RK_MAP.on?"Ukloni s karte":"Prikaži na karti"}</button><a class="ib" href="${esc(im.url)}" target="_blank" rel="noopener">Otvori izrez</a></div>`;
+    h+=`<p class="meta">Prikazano je ${Math.round(im.extent.xmax-im.extent.xmin)} × ${Math.round(im.extent.ymax-im.extent.ymin)} m. Granica čestice (plavo) je iz DGU-a, ucrtana prema okviru koji je vratio servis (HTRS96/TM).</p>`;
+  }
+  h+=`<div class="verdict v-warn" style="margin:6px 0">Detaljna zona nije potvrđena.</div>`;
+  h+=`<p class="meta">Oznaku zone (npr. M1, M11, M2) pročitaj na karti i usporedi s legendom i odredbama plana. Aplikacija je ne očitava automatski, jer skenirana karta nema digitalnu legendu povezanu s bojama. Uvjeti gradnje računaju se samo za zonu koju sam odabereš u „Uvjetima gradnje”, uz napomenu da nije potvrđena.</p>`;
+  h+=`<table class="rp"><tbody>`+
+    `<tr><th>Plan</th><td>${esc(it.PLAN_NAZIV||"–")}${it.OPCINA?`<small class="fx">${esc(it.OPCINA)}</small>`:""}</td></tr>`+
+    `<tr><th>Karta</th><td>${esc(it.KARTA_NAZIV||"–")}${it.MJERILO?" · 1:"+fmt(it.MJERILO):""}<small class="fx">datoteka ${esc(it.Name||"–")}${it.KARTA_SIFRA?" · šifra "+esc(it.KARTA_SIFRA):""}</small></td></tr>`+
+    `<tr><th>Izvor karte</th><td>${esc(S.K.naziv)}<small class="fx">${esc(S.K.url)}</small></td></tr>`+
+    `<tr><th>GIS sloj</th><td>sloj ${L.id} ${esc(L.naziv)} (${esc(L.grupa)}) · OBJECTID ${esc(String(it.OBJECTID))}</td></tr>`+
+    `<tr><th>Datum provjere</th><td>${esc(S.dan)}</td></tr>`+
+    `<tr><th>Pouzdanost</th><td>preliminarno: georeferencirani raster; plan i list pronađeni prostornim upitom, zona nije očitana</td></tr></tbody></table>`;
+  h+=`<p class="meta">Razine podataka: <b>vektor</b> (namjena iz PPUG-a, županijski sloj), <b>preliminarno</b> (karta UPU-a iz rastera), <b>pravno potvrđeno</b> (samo lokacijska informacija nadležnog upravnog tijela).${S.err&&S.err.length?" Dio kataloga nije odgovorio: "+esc(S.err.join("; "))+".":""}</p>`;
+  return h;
+}
+// karta UPU-a kao sloj na glavnoj karti (export za trenutni prikaz, Web Mercator)
+const RK_MAP={on:false,layer:null};
+function rkMapDraw(){
+  if(RK_MAP.layer){map.removeLayer(RK_MAP.layer); RK_MAP.layer=null;}
+  const S=RKAT.get(rkKey()); if(!RK_MAP.on||!S||S.st!=="ok") return;
+  const it=S.items[S.sel], L=it._sloj, b=map.getBounds(), sz=map.getSize();
+  const sw=window.L.CRS.EPSG3857.project(b.getSouthWest()), ne=window.L.CRS.EPSG3857.project(b.getNorthEast());
+  const q=new URLSearchParams({bbox:[sw.x,sw.y,ne.x,ne.y].map(v=>v.toFixed(1)).join(","),bboxSR:"3857",imageSR:"3857",size:Math.min(2048,sz.x)+","+Math.min(2048,sz.y),dpi:"96",format:"png32",transparent:"true",
+    layers:"show:"+L.id,layerDefs:JSON.stringify({[L.id]:"OBJECTID="+Number(it.OBJECTID)}),f:"image"});
+  if(!map.getPane("rkPane")){const pn=map.createPane("rkPane"); pn.style.zIndex=350; pn.style.pointerEvents="none";} // ispod granice čestice i oznaka
+  RK_MAP.layer=window.L.imageOverlay(S.K.url+"/export?"+q.toString(),b,{opacity:.8,interactive:false,pane:"rkPane"}).addTo(map);
+}
+map.on("moveend",()=>{if(RK_MAP.on) rkMapDraw();});
+sheet.addEventListener("change",e=>{ if(e.target.id!=="rkSel") return; const S=RKAT.get(rkKey()); if(!S||!KRK_CUR) return; S.sel=+e.target.value; rkImg(KRK_CUR.parcel,1); if(RK_MAP.on) rkMapDraw(); });
+sheet.addEventListener("click",e=>{ const id=e.target.id; if(!/^rk(In|Out|Map)$/.test(id)||!KRK_CUR) return; const S=RKAT.get(rkKey()); if(!S) return;
+  if(id==="rkMap"){RK_MAP.on=!RK_MAP.on; rkMapDraw(); rkUpd(); if(RK_MAP.on&&KRK_CUR.parcel){try{map.fitBounds(window.L.geoJSON(KRK_CUR.parcel).getBounds(),{maxZoom:19,padding:[40,40]})}catch(err){} if(isMobile()) setState("peek");} return;}
+  const sc=(S.img&&S.img.scale)||1; rkImg(KRK_CUR.parcel,id==="rkIn"?Math.max(0.35,sc/1.6):Math.min(6,sc*1.6)); });
 
 // ================= BAZA PRAVILA (ČesticaHR Data Manager) =================
 // Dvije razine: potvrđeno (pravno provjereno pravilo) i kandidat (automatski izdvojeno, nije za izračun).
@@ -1233,6 +1363,8 @@ function renderKrk(d){
     else h+=`<p class="meta">Za ovu točku evidencija nema važećih planova.</p>`;
     h+=`<p class="meta">Izvor: Primorsko-goranska županija, evidencija prostornih planova. Prikazana je zadnja važeća odluka za svaku vrstu plana.</p>`;
   }
+  // detaljna namjena iz karte UPU-a (raster): plan, list, granica čestice; zona se ne pretpostavlja
+  if(parcel&&rkKatalog(ll)) h+=`<h2 id="sec-upu">Detaljna namjena (UPU)</h2><div id="rkBox">${rkInner()}</div>`;
   // uvjeti gradnje i izračun
   h+=krkRulesHtml(d);
   {const C=window.__krkCalc; if(parcel&&C&&window.__env) h+=simHtml({izg:C.tl/C.A,kis:C.kis},C.A,area,C.gbpN,null);}
@@ -1254,7 +1386,7 @@ function renderKrk(d){
   sheet.querySelectorAll("details[data-k]").forEach(dd=>{if(OPEN.has(dd.dataset.k)) dd.open=true});
   sheet.scrollTop=keepScroll; krkKdUpdate();
   if(parcel){ window.__areaCtx={key:window.__cur.key,refresh:()=>renderKrk(KRK_CUR),retry:()=>{OSSZK.delete(String(P.cid)); KATW.delete(String(P.cid)); krkOssFetch(P,area);}};
-    try{finUpdate()}catch(err){console.error(err)} if(TL.layer){TL.zones=null; tDraw();} if(OPEN.has("sun")) sunDraw(); krkOssFetch(P,area); }
+    try{finUpdate()}catch(err){console.error(err)} if(TL.layer){TL.zones=null; tDraw();} if(OPEN.has("sun")) sunDraw(); krkOssFetch(P,area); rkStart(parcel,ll); }
   else window.__areaCtx=null;
   try{PWA.loadedAt=Date.now(); if(parcel) pwaRememberParcel(); pwaNetUI();}catch(e){}
   if(isMobile()){ if(!UI.hadParcel&&parcel){UI.hadParcel=true; if(UI.state==="peek") setState("half"); else setState(UI.state,{keepScroll:true});} else setState(UI.state,{keepScroll:true}); }
@@ -1262,7 +1394,7 @@ function renderKrk(d){
 
 async function inspect(ll){
   if(isOffline()){pwaOfflineInspect(); return}
-  krkEnvLayer.clearLayers(); KRK_CUR=null;
+  krkEnvLayer.clearLayers(); KRK_CUR=null; if(RK_MAP.layer){map.removeLayer(RK_MAP.layer); RK_MAP.layer=null;} RK_MAP.on=false;
   if(regionOf(ll)==="krk") return inspectKrk(ll);
   const id=++clickId;
   selLayer.clearLayers(); infLayer.clearLayers(); TL.layer=null; TL.marker=null; TL.rotM=null; TL.center=null; TL.zl=null; TL.zones=null; SUN.nb=null; SUN.layer=null; SUN.nbErr=null; ZK.res=null; window.__infra=null; window.__ski=null; skiLayer.clearLayers();

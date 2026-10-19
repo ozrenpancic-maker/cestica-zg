@@ -918,9 +918,18 @@ async function krkTests(){
     {GRAD_OPCINA:"Primorsko-goranska županija",VRSTA_PP:"PPŽ",STATUS_PP:"VAŽEĆI",NAZIV:"PPŽ, pročišćeni tekst",SN_BROJ:"2024-12",SN_LINK:"javascript:alert(1)"},
     {GRAD_OPCINA:"Krk",VRSTA_PP:"PPUO/G",STATUS_PP:"VAN SNAGE",NAZIV:"stari plan",SN_BROJ:"1978-31"},
     {GRAD_OPCINA:"Republika Hrvatska",VRSTA_PP:"DPPR",STATUS_PP:"U IZRADI",NAZIV:"državni plan",SN_BROJ:"2024-48"}];
-  let mode="ok", calls=[];
+  let mode="ok", calls=[], rkMode="ok", rkCalls=[];
   const okj=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b)});
   w.fetch=(u,o={})=>{u=String(u); calls.push(u);
+    if(u.startsWith("https://gisportal.pgz.hr/server/rest/services/PP_RASTERI/PP_RASTERI/MapServer/")){ rkCalls.push(u);
+      if(rkMode==="fail") return Promise.reject(new TypeError("Failed to fetch"));
+      if(/\/MapServer\/5\/query\?/.test(u)) return okj({features:rkMode==="none"?[]:[
+        {attributes:{OBJECTID:7097,Name:"618_karta2a_i.tif",KARTA_NAZIV:"2a. Promet",PLAN_NAZIV:"UPU 2 - Kornić",OPCINA:"KRK",MJERILO:2000,KARTA_SIFRA:"2a"}},
+        {attributes:{OBJECTID:7096,Name:"618_karta1_i.tif",KARTA_NAZIV:"1. Korištenje i namjena površina",PLAN_NAZIV:"UPU 2 - Kornić",OPCINA:"KRK",MJERILO:2000,KARTA_SIFRA:"1"}}]});
+      if(/\/query\?/.test(u)) return okj({features:[]});
+      if(/\/export\?/.test(u)){const q=new URL(u).searchParams, b=q.get("bbox").split(",").map(Number);
+        return okj({href:"https://gisportal.pgz.hr/arcgis/rest/directories/arcgisoutput/test_"+q.get("layerDefs").replace(/\D/g,"")+".png",width:800,height:800,extent:{xmin:b[0],ymin:b[1],xmax:b[2],ymax:b[3],spatialReference:{wkid:3765}},scale:1000});}
+      return okj({}); }
     if(u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/")) return mode==="wms"?okj({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{CESTICA_ID:1,BROJ_CESTICE:"2345/6",MATICNI_BROJ_KO:315907,KATASTARSKA_OPCINA_ID:1239,POVRSINA_GRAFICKA:600,POVRSINA_ATRIBUTNA:615}}]}):Promise.reject(new TypeError("Failed to fetch"));
     if(u.startsWith("https://oss-test.example/")){ if(mode==="ossFail") return Promise.reject(new TypeError("Failed to fetch"));
       if(mode==="oss403once"){mode="ok"; return Promise.resolve({ok:false,status:502,json:()=>Promise.resolve({ok:false,greska:"OSS HTTP 403"})});}
@@ -968,6 +977,24 @@ async function krkTests(){
   ok(/ZK izvadak/.test(tz)&&!!$(w,"zkFile"),"Krk: odjeljak za ZK izvadak s učitavanjem PDF-a");
   $(w,"krkZkDel").dispatchEvent(new w.Event("click",{bubbles:true}));
   ok(!!$(w,"krkZkIn")&&!/642 m²/.test(txt(w,"sheet")),"Krk: upisanu površinu se može promijeniti");
+  // detaljna namjena iz rasterskog kataloga PGŽ
+  {await tick(30); const tr=txt(w,"rkBox"), img=w.document.querySelector("#rkBox .rkimg img"), poly=w.document.querySelector("#rkBox .rkimg polygon");
+   const exp=rkCalls.find(u=>/\/export\?/.test(u)), q=exp&&new URL(exp).searchParams;
+   ok(/Detaljna namjena \(UPU\)/.test(txt(w,"sheet"))&&/Detaljna zona nije potvrđena/.test(tr)&&/UPU 2 - Kornić/.test(tr)&&/OBJECTID 7096/.test(tr)&&/sloj 5 RASTER_5UPU \(GK5\)/.test(tr)&&/618_karta1_i\.tif/.test(tr)&&/Datum provjere ?\d{4}-\d\d-\d\d/.test(tr)&&/preliminarno/.test(tr),"UPU karta: plan, list namjene, sloj, OBJECTID, datum provjere i pouzdanost; zona nije potvrđena");
+   ok(rkCalls.some(u=>/\/12\/query\?/.test(u)&&/inSR=3765/.test(u))&&rkCalls.some(u=>/\/5\/query\?/.test(u)),"UPU karta: katalog se pita prostorno, u HTRS96 i GK5 sloju (ne po OBJECTID-u)");
+   ok($(w,"rkSel")&&$(w,"rkSel").options[0].textContent.includes("Korištenje i namjena")&&q&&q.get("layerDefs")==='{"5":"OBJECTID=7096"}'&&q.get("bboxSR")==="3765"&&q.get("imageSR")==="3765"&&q.get("layers")==="show:5","UPU karta: list namjene prvi, export samo tog lista u HTRS96/TM");
+   const ex=E("RKAT").get(w.__cur.key).img, pts=poly&&poly.getAttribute("points").split(" ").map(p=>p.split(",").map(Number));
+   const [e0,n0]=ring[0], px0=[(e0-ex.extent.xmin)/(ex.extent.xmax-ex.extent.xmin)*800,(ex.extent.ymax-n0)/(ex.extent.ymax-ex.extent.ymin)*800];
+   ok(img&&/test_57096\.png$/.test(img.src)&&pts&&pts.length===5&&Math.hypot(pts[0][0]-px0[0],pts[0][1]-px0[1])<1&&pts.every(([x,y])=>x>100&&x<700&&y>100&&y<700),"UPU karta: granica čestice ucrtana prema okviru koji je vratio servis (odstupanje < 1 px)");
+   const w0=ex.extent.xmax-ex.extent.xmin; $(w,"rkIn").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20);
+   const ex2=E("RKAT").get(w.__cur.key).img; ok(ex2.extent.xmax-ex2.extent.xmin<w0*0.7,"UPU karta: uvećanje traži uži izrez ("+Math.round(w0)+" → "+Math.round(ex2.extent.xmax-ex2.extent.xmin)+" m)");
+   setv(w,"rkSel","1","change"); await tick(20); ok(/test_57097\.png$/.test(w.document.querySelector("#rkBox .rkimg img").src),"UPU karta: odabir drugog lista");
+   $(w,"rkMap").dispatchEvent(new w.Event("click",{bubbles:true})); const ov=E("RK_MAP").layer;
+   ok(ov&&/bboxSR=3857/.test(ov._url)&&/f=image/.test(ov._url)&&/7097/.test(decodeURIComponent(ov._url))&&$(w,"rkMap").textContent==="Ukloni s karte","UPU karta: prikaz na glavnoj karti (export u Web Mercatoru)");
+   $(w,"rkMap").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!E("RK_MAP").layer,"UPU karta: uklanjanje s karte");
+   rkMode="none"; E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k); E("RKAT").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20); ok(/nema karte UPU-a ni DPU-a/.test(txt(w,"rkBox")),"UPU karta: bez karte na lokaciji jasna poruka");
+   rkMode="fail"; E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k); E("RKAT").clear(); E("renderKrk")(E("KRK_CUR")); for(let i=0;i<60&&!/Podaci nisu/.test(txt(w,"rkBox"));i++) await tick(100); ok(/Podaci nisu dostupni/.test(txt(w,"rkBox"))&&/Detaljna zona nije potvrđena/.test(txt(w,"rkBox")),"UPU karta: kad katalog ne odgovara, poruka bez izmišljene zone");
+   rkMode="ok"; E("RKAT").clear(); E("renderKrk")(E("KRK_CUR")); await tick(30);}
   // upisana površina automatski iz OSS-a preko posrednika
   ok(!calls.some(u=>u.includes("oss-test.example")),"Krk: bez adrese posrednika OSS se ne poziva");
   E("SRC_KRK").oss="https://oss-test.example/"; E("OSSZK").clear(); E("renderKrk")(E("KRK_CUR"));
@@ -1070,10 +1097,12 @@ async function krkTests(){
   // na lokaciji vrijedi UPU
   // UPU 2 Kornić (obrađen): pravila UPU-a umjesto PPUG-a, i u neizgrađenom dijelu
   plans.push({GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Odluka o donošenju Urbanističkog plana uređenja UPU 2 - Kornić",SN_BROJ:"2016-19"});
-  gp.IZGRADJENOST="neizgrađeno"; tk=await reinspect(); C=w.__krkCalc;
+  gp.IZGRADJENOST="neizgrađeno"; tk=await reinspect();
+  ok(w.__krkCalc===null&&$(w,"krkZona").value===""&&/Detaljna zona nije potvrđena\. Izračun uvjeta gradnje radi se tek kad odabereš zonu/.test(tk),"UPU 2: bez odabrane zone nema izračuna (zona se ne pretpostavlja)");
+  setv(w,"krkZona","M11","change"); tk=txt(w,"sheet"); C=w.__krkCalc;
   ok(C&&C.plan==="UPU 2 Kornić"&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpN-200)<0.01&&C.gbpP===null&&C.minOk,"UPU 2 Kornić, obiteljska slobodnostojeća 600 m²: tlocrt 150, GBP 200 (kis 0,75, granica 200 sa svim građevinama)");
   ok(/UPU 2 Kornić/.test(tk)&&/7,5 m/.test(tk)&&/javna cesta 6 m/.test(tk)&&/19\/2016/.test(tk)&&!/čl\. 15\./.test(tk),"UPU 2: visina 7,5 m, udaljenosti od ceste, izvor SN 19/2016; neizgrađeni dio nije blokiran jer UPU postoji");
-  ok(/Zona se ne može odrediti automatski/.test(tk)&&$(w,"krkZona").value==="M11","UPU 2: zona M11 pretpostavljena uz jasnu napomenu");
+  ok(/Zona se ne može odrediti automatski/.test(tk)&&$(w,"krkZona").value==="M11"&&/Izračun je za zonu koju si odabrao \(M11\)\. Detaljna zona nije potvrđena/.test(tk),"UPU 2: izračun za zonu koju je korisnik odabrao, uz oznaku da nije potvrđena");
   ok(!/Model visina procjenjuje/.test(tk),"UPU 2: iznimka za kosi teren ne vrijedi za obiteljsku kuću");
   setv(w,"krkTip","visobit","change"); ok(/Model visina procjenjuje nagib okoline na oko 5 %/.test(txt(w,"sheet"))&&/10,5 m/.test(txt(w,"sheet")),"UPU 2, višeobiteljska: iznimka za kosi teren (10,5 m) s procjenom nagiba");
   setv(w,"krkTip","stamb","change"); C=w.__krkCalc; ok(C.tip==="stamb"&&C.oblik==="slob"&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpN-450)<1.2,"UPU 2, stambena građevina (čl. 40.): samo slobodnostojeća, kis 0,75 bez granice tipa = 450 m²");
@@ -1085,7 +1114,8 @@ async function krkTests(){
   plans.pop();
   // UPU 1 Krk (SN 29/2020): pravila po zonama
   plans.push({GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Pročišćeni tekst odredbi za provođenje Urbanističkog plana uređenja UPU 1 - Krk (NA1, R11)",SN_BROJ:"2020-29"});
-  gp.NASELJE="Krk"; tk=await reinspect(); C=w.__krkCalc;
+  gp.NASELJE="Krk"; tk=await reinspect(); ok(w.__krkCalc===null,"UPU 1: zona odabrana na drugoj čestici ne prenosi se");
+  setv(w,"krkZona","M11","change"); tk=txt(w,"sheet"); C=w.__krkCalc;
   ok(C&&C.plan==="UPU 1 Krk"&&$(w,"krkZona").value==="M11"&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpN-200)<0.01&&Math.abs(C.gbpP-200)<0.01&&/čl\. 86\./.test(tk),"UPU 1 Krk, M11/M15/M21 (čl. 86.): tlocrt 150, GBP 200 m²");
   setv(w,"krkZona","M12","change"); C=w.__krkCalc; ok(C&&Math.abs(C.tl-138)<0.5&&Math.abs(C.gbpN-200)<0.01&&C.minOk&&/čl\. 87\./.test(txt(w,"sheet")),"UPU 1 Krk, M12 (čl. 87.): kig 0,23 → tlocrt 138 m², najmanja čestica 550 m²");
   setv(w,"krkZona","M25","change"); C=w.__krkCalc; ok(C&&Math.abs(C.tl-200)<0.01&&/plan ne određuje/.test(txt(w,"sheet"))&&/najmanje 3 m/.test(txt(w,"sheet")),"UPU 1 Krk, M25 stara jezgra (čl. 85.): kig 0,5 (tlocrt do 200 m²), međe 3 m, zelenilo se ne određuje");
@@ -1096,7 +1126,7 @@ async function krkTests(){
   plans.pop(); gp.NASELJE="Kornić";
   // UPU 5 Vrh (SN 2/2014)
   plans.push({GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Odluka o donošenju Urbanističkog plana uređenja UPU 5 - Vrh (NA 5.1)",SN_BROJ:"2014-02"});
-  tk=await reinspect(); C=w.__krkCalc;
+  tk=await reinspect(); setv(w,"krkZona","M11","change"); tk=txt(w,"sheet"); C=w.__krkCalc;
   ok(C&&C.plan==="UPU 5 Vrh"&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpP-200)<0.01&&/7,5 m/.test(tk)&&/2\/2014/.test(tk),"UPU 5 Vrh (čl. 34.): tlocrt 150, GBP 200 m², visina 7,5 m");
   plans.pop(); gp.IZGRADJENOST="izgrađeno";
   // izvan GP-a
