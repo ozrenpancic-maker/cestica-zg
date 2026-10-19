@@ -881,17 +881,23 @@ function krkZkSet(key,a,src){try{if(a>0) localStorage.setItem("krkZK:"+key,JSON.
 // upisana površina iz OSS-a (preko posrednika); cache po CESTICA_ID
 const OSSZK=new Map();
 function krkOssGet(P){return SRC_KRK.oss&&P&&P.cid!=null?OSSZK.get(String(P.cid))||null:null}
+// OSS povremeno odbije upit posrednika (HTTP 403); zato do dva ponovna pokušaja s razmakom (ms)
+const OSS_RETRY=[2000,4000];
+async function krkOssOnce(P,k){
+  const ac=new AbortController(), t=setTimeout(()=>ac.abort(),15000);
+  try{const r=await fetch(SRC_KRK.oss+"?id="+encodeURIComponent(k),{signal:ac.signal}); const j=await r.json().catch(()=>null);
+    if(r.ok&&j&&j.ok) return j.broj&&P.broj&&j.broj!==P.broj?{st:"err",e:"OSS je vratio drugu česticu ("+j.broj+")"}:{st:"ok",d:j};
+    return {st:"err",e:(j&&j.greska)||("HTTP "+r.status),retry:r.status!==404&&r.status!==400};}
+  catch(e){return {st:"err",e:e.name==="AbortError"?"OSS ne odgovara":"mreža ili posrednik nedostupan",retry:true}}
+  finally{clearTimeout(t)}
+}
 async function krkOssFetch(P,area){
   if(!SRC_KRK.oss||!P||P.cid==null) return; const k=String(P.cid); if(OSSZK.has(k)) return;
   const upd=()=>{const el=document.getElementById("krkArea"); if(el&&KRK_CUR&&KRK_CUR.parcel&&String(KRK_CUR.parcel.properties.cid)===k) el.innerHTML=krkAreaHtml(P,area);};
   OSSZK.set(k,{st:"load"}); upd();
-  const ac=new AbortController(), t=setTimeout(()=>ac.abort(),15000); let v;
-  try{const r=await fetch(SRC_KRK.oss+"?id="+encodeURIComponent(k),{signal:ac.signal}); const j=await r.json().catch(()=>null);
-    v=r.ok&&j&&j.ok?{st:"ok",d:j}:{st:"err",e:(j&&j.greska)||("HTTP "+r.status)};
-    if(v.st==="ok"&&j.broj&&P.broj&&j.broj!==P.broj) v={st:"err",e:"OSS je vratio drugu česticu ("+j.broj+")"};}
-  catch(e){v={st:"err",e:e.name==="AbortError"?"OSS ne odgovara":"mreža ili posrednik nedostupan"}}
-  finally{clearTimeout(t)}
-  OSSZK.set(k,v); if(v.st==="err") setTimeout(()=>{if(OSSZK.get(k)===v) OSSZK.delete(k)},120000);
+  let v=await krkOssOnce(P,k);
+  for(let n=0;v.st==="err"&&v.retry&&n<OSS_RETRY.length;n++){OSSZK.set(k,{st:"load",n:n+1}); upd(); await new Promise(r=>setTimeout(r,OSS_RETRY[n])); v=await krkOssOnce(P,k);}
+  OSSZK.set(k,v); if(v.st==="err") setTimeout(()=>{if(OSSZK.get(k)===v) OSSZK.delete(k)},30000);
   upd();
 }
 // iz odgovora OSS-a: upisana površina ZK čestice/a povezanih s katastarskom česticom
@@ -912,9 +918,10 @@ function krkAreaHtml(P,area){
     const src=zk.src==="izvadak"?"pročitano iz učitanog izvatka":zk.src==="oss"?`OSS${oz.ul.length?", ZK uložak "+esc(oz.ul.join(", ")):""}${oz.od.length?", "+esc(oz.od.join(", ")):""}${oz.n>1?" · zbroj "+oz.n+" ZK čestice":""} · neslužbeni javni podatak${today?", dohvaćeno "+esc(today):""}`:"upisao si ručno";
     h+=`<b>${fmt(zk.a)} m²</b><small class="fx">${src} · <button type="button" class="ib" id="${zk.src==="oss"?"krkZkMan":"krkZkDel"}" style="min-height:28px;padding:0 8px">${zk.src==="oss"?"upiši drugu":"promijeni"}</button></small>`;
   }else{
-    const st=os&&os.st==="load"?`<small class="fx"><span class="spin"></span>dohvaćam iz OSS-a…</small>`:"";
+    const st=os&&os.st==="load"?`<small class="fx"><span class="spin"></span>dohvaćam iz OSS-a…${os.n?" (ponovni pokušaj "+os.n+")":""}</small>`:"";
     const why=os&&os.st==="err"?`OSS: podaci nisu dostupni (${esc(os.e)}); upiši je iz izvatka ili učitaj PDF izvatka ispod`:os&&os.st==="ok"&&!oz?"OSS nema upisanu površinu za ovu česticu; upiši je iz izvatka ili učitaj PDF izvatka ispod":SRC_KRK.oss&&!manual?"upiši je iz izvatka ili učitaj PDF izvatka ispod":"nije javno dostupna; upiši je iz izvatka ili učitaj PDF izvatka ispod";
     h+=st||`<span class="kd" style="margin:0"><input id="krkZkIn" type="number" inputmode="decimal" min="1" step="1" placeholder="m² iz izvatka" style="width:8em"><button type="button" class="ib" id="krkZkOk">Spremi</button></span><small class="fx">${why}</small>`;
+    if(os&&os.st==="err") h+=`<span class="kd" style="margin:4px 0 0"><button type="button" class="ib" id="krkOssRetry">Pokušaj ponovno</button><a class="ib" href="https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info?parcelId=${encodeURIComponent(P.cid)}" target="_blank" rel="noopener">Otvori česticu u OSS-u</a></span>`;
   }
   h+=`</dd>`;
   if(os&&os.st==="ok"){const d=os.d;
@@ -943,6 +950,7 @@ sheet.addEventListener("click",e=>{
   if(!KRK_CUR||!window.__cur) return;
   if(e.target.id==="krkZkOk"){const v=parseFloat(String(document.getElementById("krkZkIn").value).replace(",",".")); if(v>0){krkZkSet(window.__cur.key,v,"rucno"); renderKrk(KRK_CUR);}}
   if(e.target.id==="krkZkDel"){krkZkSet(window.__cur.key,0); window.__krkZkManual=null; renderKrk(KRK_CUR);}
+  if(e.target.id==="krkOssRetry"){const P=KRK_CUR.parcel&&KRK_CUR.parcel.properties; if(P){OSSZK.delete(String(P.cid)); krkOssFetch(P,KRK_CUR.area);}}
   if(e.target.id==="krkZkMan"){window.__krkZkManual=window.__cur.key; renderKrk(KRK_CUR);}
 });
 function renderKrk(d){
