@@ -1302,7 +1302,58 @@ async function ispuTests(){
   ok(errs.length===0,"bez JS grešaka u kartama planova Zagreba: "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(ai2Tests).then(sunTests).then(()=>{
+// ---------------- „Moja investicija”, faza I: model građevine, predlošci, simulator → procjena gradnje, faze
+async function investTests(){
+  const {w,errs}=boot(); try{w.localStorage.clear()}catch(e){}
+  const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  const PD=E("predlozakDims");
+  {const a=PD(150,"2"), b=PD(100,"1"), c=PD(200,"2.5");
+   ok(Math.abs(a.tl-75)<1e-9&&a.w===10&&a.d===7.5&&Math.abs(b.tl-100)<1e-9&&b.w===11.5&&b.d===8.7&&Math.abs(c.tl-200/2.75)<1e-9,"Predlošci: 150 m² P+1 → tlocrt 75 m², 10 × 7,5 m; 100 m² P → 11,5 × 8,7 m; P+1+Pk dijeli s 2,75");}
+  const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"77/1",KATASTARSKA_OPCINA:"REMETE"}), d=data(w,A,"2.2.");
+  w.__env=d.envelope; E("OPEN").add("tloc"); E("OPEN").add("bfaze"); E("render")(d);
+  ok(/Postavi kuću u „Simulatoru kuće na čestici”|Za automatsko povezivanje postavi kuću/.test(txt(w,"bLink")),"Bez simulatora: kalkulator objašnjava kako se povezuje");
+  setv(w,"tFl","2","change"); setv(w,"tPred","150","change"); await tick(20);
+  const TL=E("TL"); let M=w.__zgrada, H=w.__fin.house;
+  ok(TL.w===10&&TL.d===7.5&&M&&M.tlocrt===75&&M.gbpN===150&&M.gbpPoEtazama.length===2&&M.etazeNadzemne===2&&M.katnost==="2","Model građevine: predložak 150 m², P+1 → 10 × 7,5 m, dvije etaže po 75 m²");
+  ok(+$(w,"bArea").value===150&&$(w,"bFloors").value==="P1"&&Math.abs(H.foot-75)<1e-9&&/Povezano sa simulatorom/.test(txt(w,"bLink")),"Simulator automatski puni procjenu gradnje (150 m², P + 1, tlocrt 75 m²)");
+  // ručno provjerljiv primjer: klasična, ključ u ruke, standardni: 1.400 × 1,0 × 0,93 = 1.302 €/m²; 150 m² → 195.300 €
+  {const F=H.faze, f=k=>F.find(x=>x.k===k).v;
+   ok(Math.abs(H.unit-1302)<1e-9&&Math.abs(H.gradnja-195300)<1e-6&&Math.abs(f("zem")-5859)<1e-6&&Math.abs(f("kon")-42966)<1e-6&&Math.abs(f("ins")-33201)<1e-6&&Math.abs(F.reduce((a,x)=>a+x.v,0)-H.gradnja)<1e-6,"Faze: 1.302 €/m² × 150 m² = 195.300 €; iskop 5.859 €, konstrukcija 42.966 €, instalacije 33.201 €; zbroj faza = gradnja");}
+  ok(M.krov.tip==="dvo"&&M.krov.nagib===30&&M.krov.sljemeAzimut===90,"Krov: dvostrešni 30°, sljeme uzduž dulje strane (širina 10 m, istok–zapad) → azimut 90°");
+  // rotacija mijenja smjer krova, ne površinu ni cijenu
+  const g0=w.__fin.house.gradnja; TL.rot=30; E("tDraw")(); await tick(10);
+  ok(w.__zgrada.krov.sljemeAzimut===120&&Math.abs(w.__fin.house.gradnja-g0)<1e-6&&w.__zgrada.tlocrt===75,"Okret 30°: sljeme na 120°, tlocrt i cijena gradnje isti");
+  // promjena katnosti: isti predložak, P → tlocrt 150 m²
+  setv(w,"tFl","1","change"); await tick(10);
+  ok(TL.w===14&&Math.abs(TL.d-10.7)<1e-9&&+$(w,"bArea").value===Math.round(14*10.7)&&$(w,"bFloors").value==="P","Predložak 150 m² kao prizemnica: 14 × 10,7 m, kalkulator prati katnost");
+  setv(w,"tFl","2","change"); await tick(10);
+  // ručna izmjena površine ostaje; simulator je ne poništava; povratak na simulator
+  setv(w,"bArea","200"); setv(w,"tW","11"); await tick(10);
+  ok(+$(w,"bArea").value===200&&/ručno izmijenjeni/.test(txt(w,"bLink"))&&!!$(w,"bAuto")&&TL.pred==="","Ručno upisana površina (200 m²) ostaje kad se kuća promijeni; predložak prelazi u vlastite dimenzije");
+  $(w,"bAuto").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(10);
+  ok(+$(w,"bArea").value===Math.round(11*7.5*2)&&/Povezano sa simulatorom/.test(txt(w,"bLink")),"Vrati na simulator: površina opet iz kuće (11 × 7,5 m × 2 = 165 m²)");
+  // ručni iznos faze i ručna jedinična cijena; povratak na automatske
+  const g1=w.__fin.house.gradnja, kr=w.__fin.house.faze.find(x=>x.k==="krov").auto;
+  setv(w,"bF_krov","20000"); 
+  ok(Math.abs(w.__fin.house.gradnja-(g1-kr+20000))<1e-6&&/tvoj unos/.test(txt(w,"bFv_krov")),"Ručni iznos faze (krov 20.000 €) zamjenjuje samo tu fazu");
+  setv(w,"tW","12"); await tick(10);
+  ok(+$(w,"bF_krov").value===20000&&w.__fin.house.faze.find(x=>x.k==="krov").v===20000,"Promjena kuće ne poništava ručni iznos faze");
+  setv(w,"bUnit","1000"); ok(Math.abs(w.__fin.house.unit-1000)<1e-9,"Ručna jedinična cijena 1.000 €/m² GBP");
+  $(w,"bFazeAuto").dispatchEvent(new w.Event("click",{bubbles:true}));
+  ok(!$(w,"bUnit").value&&!$(w,"bF_krov").value&&Math.abs(w.__fin.house.unit-1302)<1e-9,"Vrati na automatske: cijena i faze ponovno iz modela");
+  // roh-bau: faze 5–8 nisu uključene, faze 1–4 nose cijelu cijenu roh-baua
+  setv(w,"bPhase","roh","change"); H=w.__fin.house;
+  ok(H.faze.filter(f=>!f.ukljuceno).length===4&&H.faze.filter(f=>!f.ukljuceno).every(f=>f.v===0)&&Math.abs(H.gradnja-H.hA*H.unit)<1e-6&&/nije uključeno u roh-bau/.test(txt(w,"bFv_zav")),"Roh-bau: faze 5–8 nisu uključene, zbroj faza 1–4 = površina × cijena roh-baua");
+  setv(w,"bPhase","kljuc","change");
+  // pamćenje: kuća s ručnom fazom i simulator s krovom
+  setv(w,"bF_sto","9000"); setv(w,"tKrov","cet","change"); await tick(450);
+  E("render")(data(w,parcelRect(30,25,{KATASTARSKA_CESTICA:"78/1",KATASTARSKA_OPCINA:"REMETE"}),"2.2.")); w.__env=d.envelope; E("render")(d); await tick(20);
+  ok(+$(w,"bF_sto").value===9000&&E("TL").krov==="cet"&&$(w,"tKrov").value==="cet","Ručna faza i oblik krova pamte se uz česticu");
+  ok(/Udjeli faza .* pretpostavka aplikacije/.test(txt(w,"bFazeNote"))&&/Faza 1 obuhvaća samo iskop i nasip za temelje/.test(txt(w,"bFazeNote")),"Pretpostavke raspodjele i granica prema „Pripremi terena” navedene su uz faze");
+  ok(errs.length===0,"bez JS grešaka (moja investicija, faza I): "+errs.join(" | "));
+}
+
+netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(ai2Tests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
