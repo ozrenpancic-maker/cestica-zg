@@ -1268,6 +1268,14 @@ async function ispuTests(){
    E('RK_SIFRE["GUP1_01333_R09"]={"KN_1_1":{vrsta:"namjena",naziv:"1. Korištenje i namjena prostora",izvor:"test",datum:"2026-10-19"}}');
    ({t}=await run());
    ok(it().id==="HR_ISPU_GUP1_01333_R09_KN_1_1"&&it().karta==="1. Korištenje i namjena prostora"&&E("PZREG").items.get("upu-vrsta").raz==="A"&&/iz provjerene tablice šifri/.test(t)&&S().items.filter(x=>x.vrsta==="namjena").length===1,"ISPU: vrsta iz provjerene tablice (za taj plan i reviziju) odabire kartu namjene");
+   E('delete RK_SIFRE["GUP1_01333_R09"]');
+   // uvoz JSON-a iz pregleda listova: samo potvrđeni zapisi s naslovom, vrstom, izvorom i datumom
+   const n=E("rkSifreUvoz")({zapisi:[
+     {sloj:"HR_ISPU_GUP1_01333_R09_IS_1_1",plan:"GUP1_01333",revizija:"R09",sifra:"IS_1_1",status:"potvrđeno",naslov:"3a. Promet",vrsta:"promet",izvor:"naslov pročitan na cijelom listu",datum_provjere:"2026-10-19",provjerio:"test"},
+     {sloj:"HR_ISPU_GUP1_01333_R09_KN_1_2",plan:"GUP1_01333",revizija:"R09",sifra:"KN_1_2",status:"nepotvrđeno",naslov:null,vrsta:null},
+     {sloj:"HR_ISPU_GUP1_01333_R09_ZP_1_1",plan:"GUP1_01333",revizija:"R09",sifra:"ZP_1_1",status:"potvrđeno",naslov:"4a. Urbana pravila",vrsta:"urbana_pravila",izvor:"x",datum_provjere:"19.10.2026."}]});
+   ({t}=await run()); const pr=S().items.find(x=>x.id==="HR_ISPU_GUP1_01333_R09_IS_1_1"), kn=S().items.find(x=>x.id==="HR_ISPU_GUP1_01333_R09_KN_1_2"), zp=S().items.find(x=>x.id==="HR_ISPU_GUP1_01333_R09_ZP_1_1");
+   ok(n===1&&pr.vrsta==="promet"&&pr.karta==="3a. Promet"&&kn.vrsta==="nepoznato"&&zp.vrsta==="nepoznato"&&/nije prepoznata/.test(t),"ISPU: uvoz JSON-a pregleda listova (samo potpuni potvrđeni zapis; nepotvrđeni i oni bez ispravnog datuma se ne koriste)");
    E('delete RK_SIFRE["GUP1_01333_R09"]');}
   ok(errs.length===0,"bez JS grešaka u kartama planova Zagreba: "+errs.join(" | "));
 }

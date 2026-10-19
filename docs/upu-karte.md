@@ -142,3 +142,33 @@ Stvarni test na točki u Zagrebu dao je 15 slojeva:
 - tablicu puni tek nakon što se naslov pročita na cijelom listu (gumb „Otvori cijeli list” ili `planovi-test.html`). Tablica je zasad prazna;
 - plan veže uz evidenciju samo kad ga servis imenuje. Inače je status C („plan je prepoznat samo iz šifre sloja”);
 - za namjenu u Zagrebu koristi službeni vektorski sloj GIS baze planirane namjene (A), kao i dosad. Raster ISPU-a je kartografski dokaz.
+
+## Pregled i potvrda listova (alat)
+
+Odjeljak 3 stranice `planovi-test.html` (probna stranica):
+
+1. Za točku pronađe sve listove čiji okvir je obuhvaća. Uz svaki prikaže minijaturu cijelog lista, ISPU šifru, Title iz servisa i nadređeni sloj.
+2. Dodir na minijaturu otvara list u većoj razlučivosti (2400 px), s povećanjem ×2 i ×4.
+3. Uz svaki list se upisuju:
+   - plan prema listu;
+   - službeni kartografski prikaz, ako je popis prikaza plana poznat (zasad GUP Grada Zagreba, iz Odluke). Odabir upisuje službeni naslov i vrstu;
+   - naslov s lista;
+   - vrsta: namjena, urbana pravila, promet, infrastruktura, zaštita, ostalo;
+   - napomena.
+
+   Bez naslova i vrste zapis ostaje „nepotvrđeno”. Ništa se ne popunjava iz šifre.
+4. „Izvezi potvrđene u JSON” sprema sve zapise:
+   - sloj, plan, revizija, šifra, Title;
+   - naslov, vrsta, status;
+   - izvor, datum provjere, tko je provjerio.
+
+   Unosi se do izvoza pamte samo u tom pregledniku.
+
+**Uvoz:**
+
+```
+python3 tools/ispu/provjeri_sifre.py ispu_sifre_….json --uvezi   # provjera i spajanje u src/ispu_sifre.json
+python3 build.py                                                # ugradnja (ponovna provjera; greška zaustavlja izradu)
+```
+
+U aplikaciju (`RK_SIFRE`) ulaze samo potvrđeni zapisi s naslovom, vrstom, izvorom i datumom. Takav list dobiva vrstu s oznakom A. Format je u `tools/ispu/primjer_sifre.json` (izmišljeni plan).

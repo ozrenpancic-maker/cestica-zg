@@ -68,9 +68,18 @@ if db_path.exists():
     if _E: print("\n".join("BAZA: " + e for e in _E)); sys.exit(1)
     data_db = json.dumps(_db, ensure_ascii=False).replace("</", "<\\/")
     print(f"baza pravila: {_n}")
+# potvrđene šifre kartografskih listova ISPU-a (nije obavezno): provjera prije ugradnje (tools/ispu/provjeri_sifre.py)
+data_ispu = "null"
+ispu_path = root / "src/ispu_sifre.json"
+if ispu_path.exists():
+    sys.path.insert(0, str(root / "tools/ispu")); import provjeri_sifre as _pis
+    _is = json.loads(ispu_path.read_text(encoding="utf-8")); _E, _W = _pis.provjeri(_is)
+    if _E: print("\n".join("ISPU ŠIFRE: " + e for e in _E)); sys.exit(1)
+    data_ispu = json.dumps(_is, ensure_ascii=False).replace("</", "<\\/")
+    print(f"ISPU šifre: {sum(1 for z in _is['zapisi'] if z.get('status') == 'potvrđeno')} potvrđenih")
 import datetime
 ver = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=2))).strftime("%d.%m.%Y. %H:%M")
-(root / "index.html").write_text(tpl.replace("/*RULES*/null", data).replace("/*RULES_SE*/null", data_se).replace("/*RULES_PP*/null", data_pp).replace("/*RULES_META*/null", data_meta).replace("/*RULES_KRK*/null", data_krk).replace("/*RULES_DB*/null", data_db).replace("/*VERSION*/", ver), encoding="utf-8")
+(root / "index.html").write_text(tpl.replace("/*RULES*/null", data).replace("/*RULES_SE*/null", data_se).replace("/*RULES_PP*/null", data_pp).replace("/*RULES_META*/null", data_meta).replace("/*RULES_KRK*/null", data_krk).replace("/*RULES_DB*/null", data_db).replace("/*ISPU_SIFRE*/null", data_ispu).replace("/*VERSION*/", ver), encoding="utf-8")
 # service worker: verzija = sažetak sadržaja stranice i ljuske, pa svaka promjena aplikacije daje novi sw.js
 import hashlib
 h = hashlib.sha256()

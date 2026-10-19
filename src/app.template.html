@@ -346,6 +346,7 @@ const RULES = /*RULES*/null;
 const RULES_SE = /*RULES_SE*/null;
 const RULES_PP = /*RULES_PP*/null;
 const RULES_META = /*RULES_META*/null; // izvor, verzija i status svake datoteke pravila (src/rules_meta.json)
+const ISPU_SIFRE = /*ISPU_SIFRE*/null; // potvrđene šifre listova ISPU-a (src/ispu_sifre.json; planovi-test.html, tools/ispu/provjeri_sifre.py)
 const RULES_DB = /*RULES_DB*/null; // baza urbanističkih pravila iz ČesticaHR Data Managera (src/baza/baza.json; docs/baza-uvoz.md)
 const RULES_KRK = /*RULES_KRK*/null; // PPUG Grada Krka (pilot), src/rules_krk.json
 const APP_VERSION = "/*VERSION*/";
@@ -1057,7 +1058,7 @@ const RKAT=new Map(); // ključ čestice -> {st, K, items, sel, img, e, dan, pra
 let RK_CTX=null;      // trenutna čestica: {key, parcel, ll, region, pl (Krk: evidencija planova), rows (Zagreb: namjena)}
 function rkKatalog(ll){return RASTER_KATALOZI.find(k=>ll.lng>=k.obuhvat[0]&&ll.lng<=k.obuhvat[2]&&ll.lat>=k.obuhvat[1]&&ll.lat<=k.obuhvat[3])||null}
 // --- vrsta kartografskog prikaza iz naziva lista; karta prometa nikad ne postaje karta namjene
-const RK_VRSTE={namjena:"korištenje i namjena površina",infra:"promet i komunalna infrastruktura",uvjeti:"uvjeti korištenja, uređenja i zaštite",pravila:"urbana pravila i način gradnje",ostalo:"ostali prikaz",nepoznato:"vrsta nije prepoznata"};
+const RK_VRSTE={namjena:"korištenje i namjena površina",promet:"promet",zastita:"zaštita prostora (priroda, baština)",infra:"promet i komunalna infrastruktura",uvjeti:"uvjeti korištenja, uređenja i zaštite",pravila:"urbana pravila i način gradnje",ostalo:"ostali prikaz",nepoznato:"vrsta nije prepoznata"};
 // naziv koji je samo šifra (npr. „HR_ISPU_GUP1_01333_R09_KN_1_1” ili „KN_1_1”) ne otkriva vrstu karte
 const rkSamoSifra=n=>{const r=String(n||"").trim(); return !r||/^HR[_-]ISPU/i.test(r)||/^[A-Z]{1,4}([_ .-]\d+)+$/i.test(r)||!/[a-zčćđšž]{4,}/i.test(r.replace(/HR_ISPU_\S+/gi,""));};
 function rkVrsta(naziv){
@@ -1076,8 +1077,17 @@ function rkVrsta(naziv){
 const RK_SIFRE={
   // "GUP1_01333_R09":{"KN_1_1":{vrsta:"namjena",naziv:"1. Korištenje i namjena prostora",izvor:"naslov na listu, ISPU WMS",datum:"GGGG-MM-DD"}},
 };
+// potvrđeni zapisi iz pregleda listova (planovi-test.html → JSON → src/ispu_sifre.json) pune tablicu
+const RK_IZ_JSON={namjena:"namjena",urbana_pravila:"pravila",promet:"promet",infrastruktura:"infra",zastita:"zastita",ostalo:"ostalo"};
+function rkSifreUvoz(d){
+  let n=0; for(const z of (d&&d.zapisi)||[]){
+    if(z.status!=="potvrđeno"||!z.naslov||!RK_IZ_JSON[z.vrsta]||!z.izvor||!/^\d{4}-\d\d-\d\d$/.test(z.datum_provjere||"")||!z.plan||!z.revizija||!z.sifra) continue;
+    const k=z.plan+"_"+z.revizija; (RK_SIFRE[k]=RK_SIFRE[k]||{})[z.sifra]={vrsta:RK_IZ_JSON[z.vrsta],naziv:z.naslov,izvor:z.izvor+(z.provjerio?", provjerio "+z.provjerio:""),datum:z.datum_provjere,plan:z.plan_naziv||null}; n++;}
+  return n;
+}
+rkSifreUvoz(ISPU_SIFRE);
 const rkSifra=I=>{if(!I) return null; const T=RK_SIFRE[I.vrsta+I.br+"_"+I.sifra+"_R"+String(I.rev).padStart(2,"0")]; return T&&T[I.karta]||null;};
-const RK_VORD={namjena:0,pravila:1,uvjeti:2,infra:3,ostalo:4,nepoznato:5};
+const RK_VORD={namjena:0,pravila:1,uvjeti:2,zastita:2,promet:3,infra:3,ostalo:4,nepoznato:5};
 const RK_PORD={DPU:0,UPU:1,GUP:2,PPU:3,PPUG:3,PPUO:3,PPGZ:3,PP:3};
 const rkWords=s=>new Set(norm(s).toLowerCase().split(" ").filter(w=>w.length>3&&!/^(urbanisticki|urbanistickog|plana|plan|uredenja|odluka|donosenju|izmjenama|dopunama|izmjene|dopune|procisceni|tekst|odredbi|provodenje|detaljni|detaljnog|grada|opcine|generalni|generalnog|prostorni|prostornog)$/.test(w)));
 function rkFetchText(url,ms){
