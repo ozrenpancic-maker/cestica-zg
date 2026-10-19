@@ -920,7 +920,7 @@ function krkAreaHtml(P,area){
   if(os&&os.st==="ok"){const d=os.d;
     if(d.katastar>0&&(!zk||Math.abs(d.katastar-zk.a)>=1)) h+=`<dt>Upisana u katastru</dt><dd><b>${fmt(d.katastar)} m²</b><small class="fx">posjedovni list (OSS)</small></dd>`;
     const dj=(d.dijelovi||[]).filter(x=>x.naziv&&x.povrsina>0);
-    if(dj.length>1||(dj.length===1&&dj[0].zgrada)) h+=`<dt>Dijelovi čestice</dt><dd>${dj.map(x=>esc(x.naziv.toLowerCase())+" "+fmt(x.povrsina)+" m²").join(" · ")}<small class="fx">kako su upisani u katastru (OSS)</small></dd>`;
+    if(dj.length>1||(dj.length===1&&dj[0].zgrada)) h+=`<dt>Dijelovi čestice</dt><dd>${dj.map(x=>esc(x.naziv.toLowerCase())+": "+fmt(x.povrsina)+" m²").join(" · ")}<small class="fx">kako su upisani u katastru (OSS)</small></dd>`;
   }
   h+=`</dl>`;
   if(zk){const r=(zk.a-g)/g*100;
