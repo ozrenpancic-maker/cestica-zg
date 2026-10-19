@@ -27,6 +27,8 @@ function boot(src){
       w.SVGElement.prototype.createSVGRect=function(){return {}}; }});
   // posrednik prema OSS-u u testovima je isključen (testovi ga uključuju gdje treba); adresa iz aplikacije ostaje u __OSS_URL
   try{dom.window.eval('window.__OSS_URL=SRC_KRK.oss; SRC_KRK.oss=""')}catch(e){}
+  // katalog ISPU (Zagreb) u testovima je isključen; testovi karata planova ga uključuju (__ISPU_OBUHVAT)
+  try{dom.window.eval('(()=>{const k=RASTER_KATALOZI.find(k=>k.tip==="wms"); window.__ISPU_OBUHVAT=k.obuhvat; k.obuhvat=[0,0,0,0];})()')}catch(e){}
   return {w:dom.window, errs};
 }
 // pravokutna čestica w × d metara
@@ -1199,7 +1201,64 @@ async function krkTests(){
   ok(errs.length===0,"bez JS grešaka u pilotu Krk: "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(krkTests).then(aiTests).then(projTests).then(ai2Tests).then(sunTests).then(()=>{
+// ---------------- Zagreb: karte prostornog plana iz ISPU WMS-a (lažni servis)
+async function ispuTests(){
+  const tick=ms=>new Promise(r=>setTimeout(r,ms));
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  E('RASTER_KATALOZI.find(k=>k.tip==="wms").obuhvat=__ISPU_OBUHVAT');
+  {const v=E("rkVrsta"); ok(v("1. Korištenje i namjena površina")==="namjena"&&v("4. Uvjeti korištenja, uređenja i zaštite prostora")==="uvjeti"&&v("3.1. Prometna i ulična mreža")==="infra"&&v("4.b Urbana pravila")==="pravila"&&v("")==="nepoznato"&&v("2. Mreža društvenih djelatnosti")==="ostalo","Karte planova: vrsta karte iz naziva (promet ne postaje namjena, uvjeti korištenja nisu namjena)");
+   const I=E("ispuIme")("HR_ISPU_GUP1_01333_R09_IS_1_1"); ok(I&&I.vrsta==="GUP"&&I.rev===9&&I.karta==="IS_1_1"&&I.sifra==="01333","ISPU: naziv sloja rastavljen na vrstu plana, šifru, oznaku revizije i kartu");}
+  const bb=(w0,s0,e0,n0)=>`<EX_GeographicBoundingBox><westBoundLongitude>${w0}</westBoundLongitude><eastBoundLongitude>${e0}</eastBoundLongitude><southBoundLatitude>${s0}</southBoundLatitude><northBoundLatitude>${n0}</northBoundLatitude></EX_GeographicBoundingBox>`;
+  const Z=bb(15.8,45.7,16.2,45.95), NO=bb(16.0,45.70,16.05,45.75);
+  const lay=(n,t,b)=>`<Layer queryable="0"><Name>${n}</Name><Title>${t}</Title>${b}</Layer>`;
+  const capsFull=`<?xml version="1.0"?><WMS_Capabilities version="1.3.0" xmlns="http://www.opengis.net/wms"><Capability><Request/><Layer><Title>PP Z21</Title><CRS>EPSG:3765</CRS><CRS>EPSG:4326</CRS><CRS>CRS:84</CRS>
+    <Layer><Title>GUP Grada Zagreba</Title>${lay("HR_ISPU_GUP1_01333_R09_KN_1","1. Korištenje i namjena površina",Z)}${lay("HR_ISPU_GUP1_01333_R10_KN_1","1. Korištenje i namjena površina",Z)}${lay("HR_ISPU_GUP1_01333_R10_IS_1_1","3.1. Prometna i ulična mreža",Z)}</Layer>
+    <Layer><Title>Prostorni plan Grada Zagreba</Title>${lay("HR_ISPU_PPU1_01333_R05_KN_1","1. Korištenje i namjena prostora",Z)}</Layer>
+    <Layer><Title>UPU Nekog područja</Title>${lay("HR_ISPU_UPU7_01333_R01_KN_1","1. Korištenje i namjena površina",NO)}</Layer></Layer></Capability></WMS_Capabilities>`;
+  const capsInfra=capsFull.replace(/<Layer><Title>GUP[\s\S]*<\/Layer><\/Layer><\/Capability>/,`<Layer><Title>GUP Grada Zagreba</Title>${lay("HR_ISPU_GUP1_01333_R10_IS_1_1","3.1. Prometna i ulična mreža",Z)}</Layer></Layer></Capability>`);
+  const capsNone=capsFull.replace(/<Layer><Title>GUP[\s\S]*<\/Layer><\/Layer><\/Capability>/,`<Layer><Title>UPU</Title>${lay("HR_ISPU_UPU7_01333_R01_KN_1","1. Korištenje i namjena površina",NO)}</Layer></Layer></Capability>`);
+  let caps=capsFull, down=new Set(["gis1"]), calls=[], shareMap={};
+  w.fetch=(u)=>{u=String(u); calls.push(u); const h=(u.match(/^https:\/\/(gis\d)\.mgipu\.hr/)||[])[1];
+    if(h){ if(down.has(h)) return Promise.reject(new TypeError("Failed to fetch"));
+      if(/GetCapabilities/.test(u)) return Promise.resolve({ok:true,status:200,headers:{get:()=>"text/xml"},text:()=>Promise.resolve(caps)});
+      if(/GetMap/.test(u)){const L=new URL(u).searchParams.get("LAYERS"); return Promise.resolve({ok:true,status:200,headers:{get:()=>"image/png"},blob:()=>Promise.resolve({_L:L})});}}
+    return Promise.reject(new Error("bez mreže u testu"));};
+  E("RK_PIX").share=async(blob)=>blob&&blob._L in shareMap?shareMap[blob._L]:0.8;
+  const run=async()=>{E("WMS_CAPS").clear(); E("RKAT").clear(); calls.length=0; const d=data(w,parcelRect(30,25),"2.2."); E("render")(d); for(let i=0;i<40&&!/Pouzdanost|Podaci nisu|nema lista|Prikazano je/.test(txt(w,"rkBox"));i++) await tick(25); await tick(30); return {d,t:txt(w,"rkBox")};};
+  let {d,t}=await run();
+  const S=()=>E("RKAT").get(w.__cur.key), it=()=>S().items[S().sel];
+  ok(/Karte prostornog plana \(GUP\/UPU\)/.test(txt(w,"sheet"))&&calls[0]&&/^https:\/\/gis2\.mgipu\.hr\/srv1\/PPRasterZ21_Public\/wms\?.*GetCapabilities/.test(calls[0]),"ISPU: Zagreb pita gis2 (potvrđeni poslužitelj) za GetCapabilities");
+  ok(S().items.length===4&&!S().items.some(x=>/UPU7/.test(x.id))&&it().id==="HR_ISPU_GUP1_01333_R10_KN_1","ISPU: pronađena 4 lista čiji okvir obuhvaća česticu; odabran list namjene GUP-a s najvišom oznakom revizije");
+  const opts=[...$(w,"rkSel").options].map(o=>o.textContent).join(" | ");
+  ok(/R09 · starija inačica/.test(opts)&&/Prometna i ulična mreža \(promet i komunalna infrastruktura\)/.test(opts)&&/Prostorni plan Grada Zagreba · 1\. Korištenje i namjena prostora/.test(opts),"ISPU: izbor karata s vrstom, oznakom revizije i starijom inačicom");
+  {const gm=calls.find(u=>/GetMap/.test(u)), q=gm&&new URL(gm).searchParams, B=E("rkBox")(d.parcel,1), b=q&&q.get("BBOX").split(",").map(Number), im=S().img, P0=d.parcel.geometry.coordinates[0][0], [e0,n0]=E("tmFwd")(P0[0],P0[1]);
+   const pts=w.document.querySelector("#rkBox .rkimg polygon").getAttribute("points").split(" ").map(p=>p.split(",").map(Number)), px0=[(e0-B.xmin)/(B.xmax-B.xmin)*800,(B.ymax-n0)/(B.ymax-B.ymin)*800];
+   ok(q&&q.get("CRS")==="EPSG:3765"&&q.get("LAYERS")==="HR_ISPU_GUP1_01333_R10_KN_1"&&q.get("VERSION")==="1.3.0"&&Math.abs(b[0]-B.xmin)<0.01&&Math.abs(b[3]-B.ymax)<0.01&&q.get("WIDTH")==="800","ISPU: GetMap u EPSG:3765 (E, N) za okvir oko čestice, samo odabrani sloj");
+   ok(im.st==="ok"&&Math.hypot(pts[0][0]-px0[0],pts[0][1]-px0[1])<1&&pts.every(([x,y])=>x>50&&x<750&&y>50&&y<750)&&/zatražen od servisa/.test(t),"ISPU: granica čestice ucrtana prema traženom okviru (odstupanje < 1 px)");}
+  {const R=E("PZREG").items; ok(R.get("upu-status").raz==="A"&&/važeći prema evidenciji aplikacije/.test(t)&&R.get("upu-aktualnost").raz==="C"&&/nije dokaz/.test(t)&&/2 inačice ove karte \(R10, R09\)/.test(t)&&R.get("upu-vrsta").raz==="B"&&R.get("upu-zona").raz==="C"&&/Detaljna zona nije potvrđena/.test(t),"ISPU: plan GUP važeći (A), aktualnost lista C (revizija nije dokaz), vrsta karte B, zona C");
+   ok(/80 % granice čestice prekriva sadržaj lista/.test(t)&&/WMS sloj ?HR_ISPU_GUP1_01333_R10_KN_1/.test(t),"ISPU: provjera sadržaja lista na čestici i naziv WMS sloja");}
+  setv(w,"rkSel","2","change"); await tick(30); t=txt(w,"rkBox");
+  ok(it().vrsta==="infra"&&/Odabrana karta je promet i komunalna infrastruktura, a ne karta namjene/.test(t),"ISPU: ručno odabrana karta prometa označena da nije karta namjene");
+  $(w,"rkMap").dispatchEvent(new w.Event("click",{bubbles:true})); {const ov=E("RK_MAP").layer, q=ov&&new URL(ov._url).searchParams;
+   ok(q&&q.get("CRS")==="CRS:84"&&q.get("TRANSPARENT")==="TRUE"&&q.get("LAYERS")==="HR_ISPU_GUP1_01333_R10_IS_1_1"&&$(w,"rkMap").textContent==="Ukloni s karte","ISPU: list na glavnoj karti (GetMap CRS:84 za prikaz)");}
+  $(w,"rkMap").dispatchEvent(new w.Event("click",{bubbles:true}));
+  // list bez sadržaja na čestici: aplikacija prelazi na sljedeći list iste vrste
+  shareMap={"HR_ISPU_GUP1_01333_R10_KN_1":0}; ({t}=await run()); for(let i=0;i<20&&it().id!=="HR_ISPU_PPU1_01333_R05_KN_1";i++) await tick(25); t=txt(w,"rkBox");
+  ok(it().id==="HR_ISPU_PPU1_01333_R05_KN_1"&&/Preskočeno jer na čestici nema sadržaja: 1\. Korištenje i namjena površina/.test(t)&&/bez sadržaja na čestici/.test([...$(w,"rkSel").options].map(o=>o.textContent).join("|")),"ISPU: list GUP-a bez sadržaja na čestici preskočen, prikazan list PPGZ-a");
+  shareMap={};
+  // rezervni poslužitelj kad gis2 ne odgovori
+  down=new Set(["gis1","gis2"]); ({t}=await run());
+  ok(S().host==="https://gis3.mgipu.hr/srv1/PPRasterZ21_Public/wms"&&calls.some(u=>/gis3.*GetMap/.test(u)),"ISPU: kad gis2 ne odgovori, koristi se rezervni poslužitelj koji odgovara");
+  down=new Set(["gis1","gis2","gis3","gis4"]); ({t}=await run());
+  ok(/Podaci nisu dostupni/.test(t)&&/Detaljna zona nije potvrđena/.test(t)&&/nisu utvrđeni/.test(t),"ISPU: servis nedostupan, jasna poruka bez izmišljene namjene");
+  down=new Set(["gis1"]); caps=capsNone; ({t}=await run());
+  ok(/U servisu ISPU nema lista prostornog plana/.test(t),"ISPU: bez lista na lokaciji jasna poruka");
+  caps=capsInfra; ({t}=await run());
+  ok(/nije prepoznata karta korištenja i namjene/.test(t)&&it().vrsta==="infra","ISPU: kad nema karte namjene, karta prometa ne postaje karta namjene");
+  ok(errs.length===0,"bez JS grešaka u kartama planova Zagreba: "+errs.join(" | "));
+}
+
+netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(ai2Tests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

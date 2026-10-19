@@ -1,4 +1,4 @@
-# Detaljna namjena: karte UPU-a iz rasterskog kataloga PGŽ
+# Karte prostornih planova iz rasterskih kataloga (PGŽ, ISPU)
 
 Kad korisnik odabere česticu na Krku, aplikacija u katalogu rasterskih karata prostornih planova Zavoda za prostorno uređenje PGŽ potraži listove UPU-a i DPU-a koji pokrivaju česticu. Zatim izreže kartu oko čestice i preko nje ucrta granicu čestice.
 
@@ -71,3 +71,50 @@ Drugi katalozi, npr. druge županije, dodaju se u `RASTER_KATALOZI` s adresom se
 ## Napomena za UPU 2 Kornić
 
 Na karti 1 zone su označene M1 i M2. U odredbama koje aplikacija ima (SN PGŽ 19/2016, čl. 37.) zone su M11 i M2. Tu razliku treba razjasniti s legendom donesenog plana i lokacijskom informacijom prije nego što se oznaka s karte poveže s pravilima.
+
+## Vrste kataloga
+
+U `RASTER_KATALOZI` svaki katalog ima `tip`. Kod ne ovisi o pojedinoj čestici ni o identifikatoru lista.
+
+| Tip | Katalog | Obuhvat | Kako radi |
+| --- | --- | --- | --- |
+| `arcgis` | PGŽ `PP_RASTERI` | Primorsko-goranska županija | upit po točki, `export` samo lista (`layerDefs`), granica prema vraćenom okviru |
+| `wms` | ISPU, Ministarstvo (`PPRasterZ21_Public`) | Grad Zagreb | popis slojeva iz `GetCapabilities`, listovi čiji okvir obuhvaća točku, `GetMap` za točno traženi okvir |
+
+Novi katalog dodaje se zapisom s adresom, obuhvatom i tipom. Za drugu županiju ISPU-a mijenja se samo naziv servisa (`PPRasterZxx_Public`), nakon provjere u pregledniku.
+
+## ISPU WMS (Zagreb)
+
+- **Poslužitelj:** prvi je `gis2.mgipu.hr`. U pregledniku je potvrđen 19. 10. 2026. (HTTP 200, CORS, 899 slojeva, EPSG:3765, EPSG:4326 i CRS:84).
+  - `gis3`, `gis4` i `gis1` koriste se samo ako gis2 ne odgovori.
+  - Prvi koji vrati ispravan `GetCapabilities` koristi se za cijelu česticu.
+- **Listovi:** slojevi bez podslojeva čiji `EX_GeographicBoundingBox` sadrži točku čestice.
+- **Naziv sloja:** `HR_ISPU_<vrsta><oznaka>_<šifra>_R<revizija>_<karta>`, npr. `HR_ISPU_GUP1_01333_R09_IS_1_1`.
+  - Oznaka revizije služi samo da se vide inačice iste karte.
+  - Ne dokazuje važenje lista: aktualnost lista je uvijek C.
+- **Vrsta karte** se određuje iz naziva (Title):
+  - korištenje i namjena;
+  - urbana pravila i način gradnje;
+  - uvjeti korištenja, uređenja i zaštite;
+  - promet i komunalna infrastruktura;
+  - ostalo ili nepoznato.
+
+  Karta prometa nikad ne postaje karta namjene. Ako među listovima nema karte namjene, to piše iznad karte.
+- **Redoslijed:**
+  - karta namjene prije ostalih;
+  - detaljniji plan prije općenitijeg (DPU, UPU, GUP, PPU);
+  - viša oznaka revizije prije niže; starije inačice su na kraju i označene.
+
+  Aplikacija ne odlučuje koji plan ima prednost: svi listovi su u izborniku.
+- **Izrez:**
+  - `GetMap` u EPSG:3765 (os E, N) za kvadrat oko čestice, 800 × 800 px, prozirna pozadina.
+  - WMS vraća točno traženi okvir, pa se granica crta prema njemu.
+  - Ako sloj ne podržava EPSG:3765, koristi se CRS:84.
+- **Sadržaj na čestici:** okvir sloja može biti veći od stvarnog sadržaja lista. Zato se slika očita u pregledniku i računa udio granice čestice koju prekriva sadržaj (ne proziran, ne bijel).
+  - List bez sadržaja na čestici aplikacija sama preskače i prelazi na sljedeći list iste vrste. To piše u prikazu.
+  - Ako se slika ne može očitati, piše „nije provjereno”.
+- **Glavna karta:** `GetMap` u CRS:84 za trenutni prikaz, ispod granice čestice.
+- **Status plana:**
+  - za GUP Grada Zagreba i Prostorni plan Grada Zagreba status je iz evidencije aplikacije (`rules_meta.json`, „na snazi”), dakle A za plan, ne za pojedini list;
+  - za GUP Sesvete i UPU-e evidencije nema, pa je status C.
+  - Javna evidencija planova za Zagreb, kao `IZRADA_PP` za PGŽ, još nije povezana.
