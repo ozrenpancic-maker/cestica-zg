@@ -138,7 +138,13 @@ async function zgOssTests(){
       ok(q.length===1&&(wms?/\?id=5$/.test(q[0]):/\?lat=45\.84\d*&lon=15\.97\d*/.test(q[0])),"Zagreb OSS: "+(wms?"s ID-om iz katastarskog sloja posrednik se pita po ID-u":"bez sloja karte posrednik se pita po točki unutar čestice")+" ("+(q[0]||"nema upita")+")");
       ok(/Grafička površina ?998 m²/.test(t)&&/iz katastarskog plana \(DGU\)/.test(t)&&/u gradskom sloju čestica 1\.0\d\d m²/.test(t),"Zagreb OSS: grafička površina iz DGU-a, uz površinu iz gradskog sloja");
       ok(/Upisana u zemljišnoj knjizi ?1\.012 m²/.test(t)&&/ZK uložak 777/.test(t)&&/Upisana u katastru ?1\.010 m²/.test(t),"Zagreb OSS: upisana površina u ZK i u katastru");
-      ok(/površinom iz gradskog sloja čestica \(1\.0\d\d m²\)/.test(t)&&Math.abs(w.__cur.area-d.area)<0.01,"Zagreb OSS: izračun ostaje na površini iz gradskog sloja");
+      ok(/računaju se s površinom: grafička \(1\.0\d\d m²\)/.test(t)&&Math.abs(w.__cur.area-d.area)<0.01,"Zagreb OSS: izračun prema zadanom ostaje na grafičkoj površini");
+      if(wms){ // usporedni kalkulator: odabir upisane površine u ZK
+        const g0=w.__gbp, t0=w.__tl; ok(!!$(w,"areaSel")&&/Korištena površina: 1\.0\d\d m² \(grafička; izvor: granica čestice u gradskom sloju/.test(t)&&/Upisana u ZK/.test(txt(w,"areaCmp")),"Zagreb: usporedni kalkulator s grafičkom, katastarskom i ZK površinom");
+        setv(w,"areaSel","zk","change"); await tick(10); const tz=txt(w,"sheet");
+        ok(/Korištena površina: 1\.012 m² \(upisana u zemljišnoj knjizi; izvor: zemljišna knjiga, OSS/.test(tz)&&/računaju se s površinom: upisana u zemljišnoj knjizi \(1\.012 m²\)/.test(tz)&&w.__tl!==t0,"Zagreb: izračun s odabranom ZK površinom (tlocrt "+t0+" → "+w.__tl+" m²)");
+        setv(w,"areaSel","graf","change"); await tick(10); ok(w.__gbp===g0&&w.__tl===t0,"Zagreb: povratak na grafičku površinu");
+      }
       w.eval("render")(d); await tick(10); ok(calls.filter(u=>u.startsWith("https://oss-test.example/")).length===1,"Zagreb OSS: ponovni prikaz ne šalje novi upit");
       $(w,"krkZkMan").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!!$(w,"krkZkIn"),"Zagreb: može se upisati druga upisana površina");
       ok(!errs.length,"Zagreb OSS: bez JS grešaka "+errs.join("; "));
@@ -923,7 +929,7 @@ async function krkTests(){
   $(w,"krkZkIn").value="642"; $(w,"krkZkOk").dispatchEvent(new w.Event("click",{bubbles:true}));
   let tz=txt(w,"sheet");
   ok(/Grafička površina ?600 m²/.test(tz)&&/Upisana u zemljišnoj knjizi ?642 m²/.test(tz)&&/\+7,0 % \(42 m²\)/.test(tz)&&/veća od 5 %/.test(tz)&&/geodetska izmjera/.test(tz),"Krk: grafička 600 i upisana 642 m², razlika +7 % uz objašnjenje");
-  ok(/računaju se s grafičkom površinom/.test(tz)&&Math.abs(E("KRK_CUR").area-600)<1.5,"Krk: izračun i dalje s grafičkom površinom");
+  ok(/računaju se s površinom: grafička \((599|600) m²\)/.test(tz)&&Math.abs(E("KRK_CUR").area-600)<1.5,"Krk: izračun prema zadanom s grafičkom površinom");
   ok(/ZK izvadak/.test(tz)&&!!$(w,"zkFile"),"Krk: odjeljak za ZK izvadak s učitavanjem PDF-a");
   $(w,"krkZkDel").dispatchEvent(new w.Event("click",{bubbles:true}));
   ok(!!$(w,"krkZkIn")&&!/642 m²/.test(txt(w,"sheet")),"Krk: upisanu površinu se može promijeniti");
@@ -982,6 +988,13 @@ async function krkTests(){
   const reinspect=async()=>{E("NET").cache.clear(); E("KAT").tiles.clear(); E("KAT").idx=null; w.localStorage.clear(); await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50); return txt(w,"sheet")};
   gp.IZGRADJENOST="izgrađeno"; mode="full";
   let tk=await reinspect(), C=w.__krkCalc;
+  {const A0=w.__krkCalc.A, g0=w.__krkCalc.gbpN;
+   ok(!!$(w,"areaSel")&&/Korištena površina: (599|600) m² \(grafička; izvor: granica čestice u katastarskom planu DGU\)/.test(txt(w,"sheet"))&&$(w,"areaSel").querySelector('option[value="zk"]').disabled,"Krk: odabir površine za izračun; ZK nedostupna dok nije upisana");
+   E("krkZkSet")(w.__cur.key,700,"rucno"); setv(w,"areaSel","zk","change"); await tick(10);
+   const C2=w.__krkCalc, tz=txt(w,"sheet");
+   ok(Math.abs(C2.A-A0*700/E("KRK_CUR").area)<1&&/Korištena površina: 700 m² \(upisana u zemljišnoj knjizi; izvor: zemljišna knjiga, ručni unos\)/.test(tz)&&/Upisana u ZK/.test(txt(w,"areaCmp")),"Krk: izračun sa ZK površinom 700 m² ("+Math.round(C2.A)+" m²), usporedna tablica");
+   setv(w,"areaSel","graf","change"); await tick(10); ok(Math.abs(w.__krkCalc.A-A0)<0.01&&Math.abs(w.__krkCalc.gbpN-g0)<0.01,"Krk: povratak na grafičku površinu");
+   E("krkZkSet")(w.__cur.key,0); E("renderKrk")(E("KRK_CUR"));}
   {const C=w.__krkCalc;
    ok(!!$(w,"tGrid")&&!!$(w,"tEdit"),"Krk: simulator kuće na čestici dostupan");
    $(w,"tEdit").dispatchEvent(new w.Event("click",{bubbles:true}));
