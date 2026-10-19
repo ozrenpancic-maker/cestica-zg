@@ -118,3 +118,27 @@ Novi katalog dodaje se zapisom s adresom, obuhvatom i tipom. Za drugu županiju 
   - za GUP Grada Zagreba i Prostorni plan Grada Zagreba status je iz evidencije aplikacije (`rules_meta.json`, „na snazi”), dakle A za plan, ne za pojedini list;
   - za GUP Sesvete i UPU-e evidencije nema, pa je status C.
   - Javna evidencija planova za Zagreb, kao `IZRADA_PP` za PGŽ, još nije povezana.
+
+## Šifre karata u ISPU-u (stanje 19. 10. 2026.)
+
+Stvarni test na točki u Zagrebu dao je 15 slojeva:
+
+- GUP (`HR_ISPU_GUP1_01333_R09_…`): `IS_1_1`, `IS_3_1`, `IS_4_1`, `KN_1_1`, `KN_1_2`, `KN_1_3`, `ZP_1_1`, `ZP_1_3`, `ZP_2_4`;
+- `HR_ISPU_PPZP_00021_R10_…`: `IS_1_1`, `IS_3_1`, `IS_4_1`, `KN_1_1`, `ZP_1_3`, `ZP_3_2`.
+
+**Što je provjereno:**
+
+- Grafički dio GUP-a Grada Zagreba (čl. 5. st. 1. t. B Odluke; [prikaz izmjena 2025.](https://zagreb.hr/userdocsimages/arhiva/prostorni_planovi/izid%20gup%20grada%20zagreba_2023-/druga%20ponovna%20javna%20rasprava/01_IZID%20GUP%202025_2PJR_prikaz%20izmjena%20kroz%20sve%20faze.pdf)) ima ove kartografske prikaze u mjerilu 1:5000:
+  - 1. Korištenje i namjena prostora;
+  - 2. Mreža gospodarskih i društvenih djelatnosti;
+  - 3a. Promet; 3b. Energetski sustav, pošta i telekomunikacije; 3c. Vodnogospodarski sustav i postupanje s otpadom;
+  - 4a. Urbana pravila; 4b. Procedure urbano-prostornog uređenja; 4c. Zaštićeni i evidentirani dijelovi prirode; 4d. Nepokretna kulturna dobra.
+- Objavljeno pravilo koje veže šifre ISPU-a (KN, IS, ZP i brojeve) uz te prikaze nisam našao. Prezentacija o ISPU-u navodi samo da su prikazi „imenovani i usklađeni prema dostavljenim uputama”, a te upute nisu objavljene. Navodi i da sustav ne razlikuje koji list pripada kojoj izmjeni plana ([izvor](https://www.prostorno-kkz.hr/attachments/article/79/Geoportal%20prostornih%20planova%20Maja_2_radionica%20[Compatibility%20Mode].pdf)).
+- Iste šifre ne znače isto u svakom planu. ParcelIQ za GUP Knina navodi `KN_1_3` kao kartu uličnih koridora i prometa. Broj prikaza ne odgovara skupinama: GUP Zagreba ima 2 + 3 + 4 prikaza, a ISPU 3 KN + 3 IS + 3 ZP sloja.
+
+**Zato aplikacija:**
+
+- šifre ne tumači. Vrstu karte čita samo iz naziva sloja u servisu, ako on nije šifra, ili iz provjerene tablice `RK_SIFRE` (za svaki plan i oznaku revizije, s izvorom i datumom);
+- tablicu puni tek nakon što se naslov pročita na cijelom listu (gumb „Otvori cijeli list” ili `planovi-test.html`). Tablica je zasad prazna;
+- plan veže uz evidenciju samo kad ga servis imenuje. Inače je status C („plan je prepoznat samo iz šifre sloja”);
+- za namjenu u Zagrebu koristi službeni vektorski sloj GIS baze planirane namjene (A), kao i dosad. Raster ISPU-a je kartografski dokaz.

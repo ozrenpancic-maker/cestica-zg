@@ -1254,7 +1254,21 @@ async function ispuTests(){
   down=new Set(["gis1"]); caps=capsNone; ({t}=await run());
   ok(/U servisu ISPU nema lista prostornog plana/.test(t),"ISPU: bez lista na lokaciji jasna poruka");
   caps=capsInfra; ({t}=await run());
-  ok(/nije prepoznata karta korištenja i namjene/.test(t)&&it().vrsta==="infra","ISPU: kad nema karte namjene, karta prometa ne postaje karta namjene");
+  ok(/nije karta korištenja i namjene/.test(t)&&it().vrsta==="infra","ISPU: kad nema karte namjene, karta prometa ne postaje karta namjene");
+  // stvarni oblik servisa (19. 10. 2026.): naslovi slojeva su samo šifre, bez naziva plana
+  {const G=["IS_1_1","IS_3_1","IS_4_1","KN_1_1","KN_1_2","KN_1_3","ZP_1_1","ZP_1_3","ZP_2_4"].map(k=>"HR_ISPU_GUP1_01333_R09_"+k), PZ=["IS_1_1","IS_3_1","IS_4_1","KN_1_1","ZP_1_3","ZP_3_2"].map(k=>"HR_ISPU_PPZP_00021_R10_"+k);
+   caps=`<?xml version="1.0"?><WMS_Capabilities version="1.3.0" xmlns="http://www.opengis.net/wms"><Capability><Layer><Title>PPRasterZ21_Public</Title><CRS>EPSG:3765</CRS><CRS>EPSG:4326</CRS><CRS>CRS:84</CRS>${[...G,...PZ].map(n=>lay(n,n,Z)).join("")}</Layer></Capability></WMS_Capabilities>`;
+   ({t}=await run()); const R=E("PZREG").items;
+   ok(S().items.length===15&&S().items.every(x=>x.vrsta==="nepoznato")&&/Karta namjene nije prepoznata: servis za sve listove daje samo šifre/.test(t)&&/Vrsta ovog lista nije potvrđena/.test(t)&&R.get("upu-vrsta").raz==="C","ISPU (stvarni nazivi): 15 listova, šifre KN, IS, ZP se ne tumače; vrsta C i jasno upozorenje");
+   ok(R.get("upu-status").raz==="C"&&/prepoznat samo iz šifre sloja/.test(t),"ISPU (stvarni nazivi): bez naziva plana u servisu status plana nije povezan s evidencijom (C)");
+   const fu=$(w,"rkFull"), q=fu&&new URL(fu.href).searchParams;
+   ok(q&&q.get("CRS")==="CRS:84"&&q.get("BBOX")==="15.8000000,45.7000000,16.2000000,45.9500000"&&q.get("TRANSPARENT")==="FALSE","ISPU: gumb za cijeli list (naslov i legenda) u okviru sloja");
+   ok(/Namjena prema službenom vektorskom sloju GUP-a: Stambena/.test(t),"ISPU: uz raster se prikazuje namjena iz službenog vektorskog sloja (A)");
+   // provjerena tablica šifri: tek tada list dobiva vrstu
+   E('RK_SIFRE["GUP1_01333_R09"]={"KN_1_1":{vrsta:"namjena",naziv:"1. Korištenje i namjena prostora",izvor:"test",datum:"2026-10-19"}}');
+   ({t}=await run());
+   ok(it().id==="HR_ISPU_GUP1_01333_R09_KN_1_1"&&it().karta==="1. Korištenje i namjena prostora"&&E("PZREG").items.get("upu-vrsta").raz==="A"&&/iz provjerene tablice šifri/.test(t)&&S().items.filter(x=>x.vrsta==="namjena").length===1,"ISPU: vrsta iz provjerene tablice (za taj plan i reviziju) odabire kartu namjene");
+   E('delete RK_SIFRE["GUP1_01333_R09"]');}
   ok(errs.length===0,"bez JS grešaka u kartama planova Zagreba: "+errs.join(" | "));
 }
 

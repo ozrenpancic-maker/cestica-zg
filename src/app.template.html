@@ -1058,15 +1058,25 @@ let RK_CTX=null;      // trenutna čestica: {key, parcel, ll, region, pl (Krk: e
 function rkKatalog(ll){return RASTER_KATALOZI.find(k=>ll.lng>=k.obuhvat[0]&&ll.lng<=k.obuhvat[2]&&ll.lat>=k.obuhvat[1]&&ll.lat<=k.obuhvat[3])||null}
 // --- vrsta kartografskog prikaza iz naziva lista; karta prometa nikad ne postaje karta namjene
 const RK_VRSTE={namjena:"korištenje i namjena površina",infra:"promet i komunalna infrastruktura",uvjeti:"uvjeti korištenja, uređenja i zaštite",pravila:"urbana pravila i način gradnje",ostalo:"ostali prikaz",nepoznato:"vrsta nije prepoznata"};
+// naziv koji je samo šifra (npr. „HR_ISPU_GUP1_01333_R09_KN_1_1” ili „KN_1_1”) ne otkriva vrstu karte
+const rkSamoSifra=n=>{const r=String(n||"").trim(); return !r||/^HR[_-]ISPU/i.test(r)||/^[A-Z]{1,4}([_ .-]\d+)+$/i.test(r)||!/[a-zčćđšž]{4,}/i.test(r.replace(/HR_ISPU_\S+/gi,""));};
 function rkVrsta(naziv){
   const t=norm(naziv).toLowerCase();
-  if(!t) return "nepoznato";
+  if(!t||rkSamoSifra(naziv)) return "nepoznato";
   if(/urban\w* pravil|oblici koristenja|nacin gradnje|nacini gradnje|procedur/.test(t)) return "pravila";
   if(/uvjet|zastit|ogranicenj/.test(t)) return "uvjeti";
   if(/promet|komunal|infrastruk|energet|vodoopskrb|odvodnj|telekomunik|elektroopskrb|plinoopskrb|ulicn|cest/.test(t)) return "infra";
   if(/namjen/.test(t)) return "namjena";
   return "ostalo";
 }
+// Provjerena tablica: šifra karte u ISPU-u -> vrsta i službeni naziv, posebno za svaki plan i oznaku revizije.
+// Upisuje se SAMO nakon provjere (naslov na samom listu ili metapodaci servisa), s izvorom i datumom.
+// Šifre KN, IS, ZP se ne tumače same po sebi: ista šifra u drugom planu može značiti drugu kartu
+// (npr. KN_1_3 je za GUP Knina karta prometa). Ključ: "<vrsta plana><oznaka>_<šifra>_R<revizija>".
+const RK_SIFRE={
+  // "GUP1_01333_R09":{"KN_1_1":{vrsta:"namjena",naziv:"1. Korištenje i namjena prostora",izvor:"naslov na listu, ISPU WMS",datum:"GGGG-MM-DD"}},
+};
+const rkSifra=I=>{if(!I) return null; const T=RK_SIFRE[I.vrsta+I.br+"_"+I.sifra+"_R"+String(I.rev).padStart(2,"0")]; return T&&T[I.karta]||null;};
 const RK_VORD={namjena:0,pravila:1,uvjeti:2,infra:3,ostalo:4,nepoznato:5};
 const RK_PORD={DPU:0,UPU:1,GUP:2,PPU:3,PPUG:3,PPUO:3,PPGZ:3,PP:3};
 const rkWords=s=>new Set(norm(s).toLowerCase().split(" ").filter(w=>w.length>3&&!/^(urbanisticki|urbanistickog|plana|plan|uredenja|odluka|donosenju|izmjenama|dopunama|izmjene|dopune|procisceni|tekst|odredbi|provodenje|detaljni|detaljnog|grada|opcine|generalni|generalnog|prostorni|prostornog)$/.test(w)));
@@ -1182,8 +1192,10 @@ const RK_WMS={
   async query(K,E,N,ll){
     const C=await wmsCaps(K), pt=ll;
     const hit=C.slojevi.filter(s=>s.bb&&s.bb.every(Number.isFinite)&&pt.lng>=s.bb[0]&&pt.lng<=s.bb[2]&&pt.lat>=s.bb[1]&&pt.lat<=s.bb[3]);
-    const items=hit.map(s=>{const I=ispuIme(s.name), pv=I?I.vrsta.replace(/\d+$/,""):((String(s.name+" "+s.title).match(/\b(DPU|UPU|GUP|PPUG|PPUO|PPU|PPGZ)\b/i)||[])[1]||"").toUpperCase();
-      return {id:s.name,plan:s.roditelj||s.title||s.name,planVrsta:pv||"plan",karta:s.title||(I?I.karta:s.name),vrsta:rkVrsta(s.title),s,I,crs:s.crs.includes("EPSG:3765")?"EPSG:3765":"CRS:84"};});
+    const items=hit.map(s=>{const I=ispuIme(s.name), pv=I?({PPZP:"PPU",PPGO:"PPU"}[I.vrsta]||I.vrsta.replace(/\d+$/,"")):((String(s.name+" "+s.title).match(/\b(DPU|UPU|GUP|PPUG|PPUO|PPU|PPGZ)\b/i)||[])[1]||"").toUpperCase();
+      const T=rkSifra(I), vt=rkVrsta(s.title), kod=rkSamoSifra(s.title);
+      return {id:s.name,plan:(s.roditelj&&!rkSamoSifra(s.roditelj)?s.roditelj:null)||(I?({GUP:"GUP",UPU:"UPU",DPU:"DPU",PPZP:"prostorni plan (PPZP)",PPGO:"prostorni plan (PPGO)"}[I.vrsta]||I.vrsta)+" "+I.sifra:s.name),planVrsta:pv||"plan",
+        karta:T?T.naziv:(!kod?s.title:"list "+(I?I.karta:s.name)),vrsta:T?T.vrsta:vt,vrstaIzvor:T?"tablica":vt!=="nepoznato"?"naziv":null,tablica:T,s,I,crs:s.crs.includes("EPSG:3765")?"EPSG:3765":"CRS:84"};});
     // inačice iste karte (ista vrsta, oznaka, šifra i karta, druga oznaka revizije)
     const grp=new Map(); for(const it of items){if(!it.I) continue; const k=it.I.vrsta+it.I.br+"_"+it.I.sifra+"_"+it.I.karta; (grp.get(k)||grp.set(k,[]).get(k)).push(it);}
     for(const g of grp.values()){const revs=g.map(x=>x.I.rev).sort((a,b)=>b-a); for(const it of g){it.revs=revs; it.starija=it.I.rev<revs[0];}}
@@ -1211,14 +1223,18 @@ const RK_WMS={
     }catch(e){ if(e.svc) throw e; /* bez CORS-a za sliku: prikaz izravno, bez provjere sadržaja */ }
     return {href,extent:{xmin:B.xmin,ymin:B.ymin,xmax:B.xmax,ymax:B.ymax},crs:it.crs,W,H,poly,scale,url:RK_WMS.getMapUrl(K,it,bbox,W,H,it.crs,false),okvir:"traženi",share,provjera};
   },
+  // cijeli list (naslov, legenda) u okviru sloja iz GetCapabilities: za provjeru vrste karte
+  fullUrl(K,it){const b=it.s.bb; if(!b||!b.every(Number.isFinite)) return null; const kx=Math.cos((b[1]+b[3])/2*Math.PI/180), ar=(b[3]-b[1])/((b[2]-b[0])*kx||1), W=1600, H=Math.max(200,Math.min(3200,Math.round(W*ar)));
+    return RK_WMS.getMapUrl(K,it,b,W,H,"CRS:84",false);},
   mapUrl(K,it,b,sz){const w=Math.min(2048,sz.x), h=Math.min(2048,sz.y);
     return RK_WMS.getMapUrl(K,it,[b.getWest(),b.getSouth(),b.getEast(),b.getNorth()],w,h,"CRS:84",true);},
   status(K,it,ctx){
-    const M=RULES_META||{}, t=norm(it.plan+" "+it.karta+" "+it.s.name).toLowerCase(), pv=it.planVrsta, d=pzDan();
-    const key=pv==="GUP"?(/sesvet/.test(t)?"SE":"GUP"):/^(PPU|PPUG|PPGZ|PP)$/.test(pv)?"PP":null, m=key?M[key]:null;
+    // plan se veže uz evidenciju samo kad ga servis imenuje (naziv sloja ili nadređenog sloja), ne iz same šifre
+    const M=RULES_META||{}, t=norm((it.s.roditelj||"")+" "+(it.s.title||"")).toLowerCase(), d=pzDan();
+    const key=/sesvet/.test(t)?"SE":/zagreb/.test(t)&&/\bgup\b|generaln\w* urbanisti/.test(t)?"GUP":/prostorn\w* plan\w* grada zagreba|\bppgz\b/.test(t)?"PP":null, m=key?M[key]:null;
     const na=m&&/^\s*na snazi/i.test(String(m.status||""));
     const st=na?"vazeci":"nepoznat";
-    const stTxt=na?`važeći prema evidenciji aplikacije (${m.naziv}${m.verzija?", "+m.verzija:""})`:key==="SE"?"evidencija aplikacije za GUP Sesvete ima samo prijedlog izmjena; status lista nije utvrđen":"plan s lista nije povezan s evidencijom planova u aplikaciji";
+    const stTxt=na?`važeći prema evidenciji aplikacije (${m.naziv}${m.verzija?", "+m.verzija:""})`:key==="SE"?"evidencija aplikacije za GUP Sesvete ima samo prijedlog izmjena; status lista nije utvrđen":!key&&it.I?`plan je prepoznat samo iz šifre sloja (${it.I.vrsta}${it.I.br}_${it.I.sifra}); servis ne navodi naziv plana, pa status nije povezan s evidencijom`:"plan s lista nije povezan s evidencijom planova u aplikaciji";
     const revs=it.revs||[], rv=it.I?it.I.rev:null;
     const aktNap=`Oznaka revizije${rv!=null?" R"+String(rv).padStart(2,"0"):""} u nazivu sloja nije dokaz da je list iz zadnje važeće odluke.`+(revs.length>1?` U servisu postoji ${revs.length} inačice ove karte (${revs.map(r=>"R"+String(r).padStart(2,"0")).join(", ")})${it.starija?"; ovo nije najviša oznaka":""}.`:"");
     return {st,stTxt,izvorSt:"plan prepoznat iz naziva sloja ISPU-a",
@@ -1229,7 +1245,7 @@ const RK_WMS={
   },
   rows(K,it){const S=RKAT.get(rkKey()), im=S&&S.img; return [
     ["Plan",esc(it.plan)+`<small class="fx">${esc(it.planVrsta)}</small>`],
-    ["Karta",esc(it.karta)+`<small class="fx">${esc(RK_VRSTE[it.vrsta])}</small>`],
+    ["Karta",esc(it.karta)+`<small class="fx">${esc(RK_VRSTE[it.vrsta])} · ${it.vrstaIzvor==="tablica"?"iz provjerene tablice šifri ("+esc(it.tablica.izvor)+", "+esc(it.tablica.datum)+")":it.vrstaIzvor==="naziv"?"prepoznato iz naziva lista u servisu":"servis daje samo šifru"+(it.I?" "+esc(it.I.karta):"")+"; vrsta nije potvrđena"}</small>`],
     ["Izvor karte",esc(K.naziv)+`<small class="fx">${esc((S&&S.host)||K.hosts[0])}</small>`],
     ["WMS sloj",esc(it.s.name)+`<small class="fx">koordinatni sustav ${esc(it.crs)}</small>`],
     ["Sadržaj na čestici",im&&im.st==="ok"?(im.share==null?"nije provjereno (slika se ne može očitati u pregledniku)":im.share===0?"list na čestici nema sadržaja":Math.round(im.share*100)+" % granice čestice prekriva sadržaj lista"):"–"]];},
@@ -1253,7 +1269,7 @@ function rkPlanStatus(a,feats){
 const snTxt=s=>{const m=String(s||"").match(/(\d{4})\D+(\d+)/); return m?(+m[2])+"/"+m[1]:String(s||"")};
 function rkPzSet(S,it,PS){
   pzSet("upu-list","List prostornog plana",it.plan+" · "+it.karta,pz("B",{izvor:S.K.naziv,obuhvat:"list čiji obuhvat sadrži točku čestice",datum:S.dan,metoda:S.K.tip==="arcgis"?"georeferencirani raster, sloj "+it._sloj.id+", OBJECTID "+it.OBJECTID:"georeferencirani raster, WMS sloj "+it.s.name}));
-  pzSet("upu-vrsta","Vrsta karte",RK_VRSTE[it.vrsta],it.vrsta==="nepoznato"?pz("C",{razlog:"naziv lista ne otkriva vrstu karte"}):pz("B",{metoda:"prepoznato iz naziva lista"}));
+  pzSet("upu-vrsta","Vrsta karte",RK_VRSTE[it.vrsta],it.vrsta==="nepoznato"?pz("C",{razlog:"servis za list daje samo šifru; šifra se ne tumači",provjera:"naslov na cijelom listu"}):it.vrstaIzvor==="tablica"?pz("A",{izvor:it.tablica.izvor,datum:it.tablica.datum,obuhvat:"ovaj plan i oznaka revizije"}):pz("B",{metoda:"prepoznato iz naziva lista u servisu"}));
   pzSet("upu-status","Status plana s lista",PS.stTxt,PS.statusP);
   pzSet("upu-aktualnost","Je li list iz zadnje važeće odluke",PS.aktV,PS.aktP);
   if(PS.izr.length) pzSet("upu-izrada","Izmjene plana u izradi",PS.izr.join("; ").slice(0,160),pz("C",{razlog:"uvjeti se mogu promijeniti",provjera:"nadležni upravni odjel"})); else pzDel("upu-izrada");
@@ -1304,9 +1320,11 @@ function rkInner(){
   let h="";
   if(PS.st!=="vazeci") h+=`<div class="verdict v-${PS.st==="van"?"no":"warn"}" style="margin:0 0 6px">Status plana: ${esc(PS.stTxt)}. ${PS.st==="van"?"Karta ne vrijedi za gradnju.":"Provjeri je li plan na snazi."}</div>`;
   if(PS.izr.length) h+=`<p class="flag">Za ovaj plan u izradi su izmjene (${esc(PS.izr.join("; ").slice(0,200))}). Karta i uvjeti mogu se promijeniti.</p>`;
-  const nam=S.items.some(x=>x.vrsta==="namjena");
-  if(!nam) h+=`<div class="verdict v-warn" style="margin:0 0 6px">Među listovima koji obuhvaćaju česticu nije prepoznata karta korištenja i namjene. Prikazana karta je druge vrste i ne određuje namjenu.</div>`;
-  else if(it.vrsta!=="namjena") h+=`<p class="flag">Odabrana karta je ${esc(RK_VRSTE[it.vrsta])}, a ne karta namjene.</p>`;
+  const nam=S.items.some(x=>x.vrsta==="namjena"), nep=S.items.filter(x=>x.vrsta==="nepoznato").length;
+  if(!nam) h+=`<div class="verdict v-warn" style="margin:0 0 6px">${nep?`Karta namjene nije prepoznata: servis za ${nep===S.items.length?"sve listove":nep+" listova"} daje samo šifre (npr. ${esc((S.items.find(x=>x.vrsta==="nepoznato").I||{}).karta||"")}), a aplikacija šifre ne tumači.`:"Među listovima koji obuhvaćaju česticu nije karta korištenja i namjene."} Prikazana karta ne određuje namjenu.</div>`;
+  if(it.vrsta==="nepoznato") h+=`<p class="flag">Vrsta ovog lista nije potvrđena. Otvori cijeli list i pročitaj naslov karte.</p>`;
+  else if(nam&&it.vrsta!=="namjena") h+=`<p class="flag">Odabrana karta je ${esc(RK_VRSTE[it.vrsta])}, a ne karta namjene.</p>`;
+  if(RK_CTX&&RK_CTX.region==="zg"&&RK_CTX.rows&&RK_CTX.rows.length){const m=RK_CTX.rows[0].p; h+=`<p class="meta">${pzTag(pz("A",{izvor:"Grad Zagreb, GIS baza planirane namjene"}))} Namjena prema službenom vektorskom sloju GUP-a: <b>${esc(m.Namjena||m.Analitika||"–")}</b> (odjeljak na vrhu). Raster ISPU-a ovdje je kartografski dokaz.</p>`;}
   const lbl=a=>`${a.plan} · ${a.karta}${a.vrsta!=="namjena"?" ("+RK_VRSTE[a.vrsta]+")":""}${a.I?" · R"+String(a.I.rev).padStart(2,"0"):""}${a.starija?" · starija inačica":""}${S.prazni.has(a.id)?" · bez sadržaja na čestici":""}`;
   h+=`<div class="kd" style="margin:0 0 6px"><label for="rkSel">Karta</label><select id="rkSel" class="bsel">${S.items.map((a,i)=>`<option value="${i}"${i===S.sel?" selected":""}>${esc(lbl(a))}</option>`).join("")}</select></div>`;
   if(S.preskoceno&&S.preskoceno.length) h+=`<p class="meta">Preskočeno jer na čestici nema sadržaja: ${esc(S.preskoceno.join("; "))}.</p>`;
@@ -1316,7 +1334,7 @@ function rkInner(){
     const pts=im.poly.map(r=>r.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" "));
     if(im.share===0) h+=`<div class="verdict v-warn" style="margin:0 0 6px">Ovaj list na čestici nema sadržaja (prozirno ili bijelo). Obuhvat lista ne znači da sadrži podatke za česticu.</div>`;
     h+=`<div class="rkimg" style="aspect-ratio:${im.W}/${im.H}"><img src="${esc(im.href)}" alt="Izrez karte ${esc(it.karta)} s granicom čestice" width="${im.W}" height="${im.H}"><svg viewBox="0 0 ${im.W} ${im.H}" preserveAspectRatio="none" aria-hidden="true">${pts.map(p=>`<polygon points="${p}" fill="rgba(0,200,220,.18)" stroke="#000" stroke-width="6"/><polygon points="${p}" fill="none" stroke="#00e0ff" stroke-width="3"/>`).join("")}</svg></div>`;
-    h+=`<div class="kd"><button type="button" class="ib" id="rkIn">Uvećaj</button><button type="button" class="ib" id="rkOut">Umanji</button><button type="button" class="ib" id="rkMap">${RK_MAP.on?"Ukloni s karte":"Prikaži na karti"}</button><a class="ib" href="${esc(im.url)}" target="_blank" rel="noopener">Otvori izrez</a></div>`;
+    h+=`<div class="kd"><button type="button" class="ib" id="rkIn">Uvećaj</button><button type="button" class="ib" id="rkOut">Umanji</button><button type="button" class="ib" id="rkMap">${RK_MAP.on?"Ukloni s karte":"Prikaži na karti"}</button><a class="ib" href="${esc(im.url)}" target="_blank" rel="noopener">Otvori izrez</a>${T.fullUrl?`<a class="ib" id="rkFull" href="${esc(T.fullUrl(S.K,it))}" target="_blank" rel="noopener">Otvori cijeli list</a>`:""}</div>`;
     h+=`<p class="meta">Prikazano je ${Math.round(im.extent.xmax-im.extent.xmin)} × ${Math.round(im.extent.ymax-im.extent.ymin)} m. Granica čestice (plavo) ucrtana je prema okviru koji je ${im.okvir==="vraćeni"?"vratio servis":"zatražen od servisa (WMS vraća točno taj okvir)"} (${esc(im.crs==="CRS:84"?"WGS84":"HTRS96/TM")}).</p>`;
   }
   h+=`<div class="verdict v-warn" style="margin:6px 0">Detaljna zona nije potvrđena.</div>`;
