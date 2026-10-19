@@ -124,18 +124,19 @@ function setv(w,id,v,ev="input"){const e=$(w,id); if(e.type==="checkbox") e.chec
 // ---------------- 2b. Zagreb: grafička i upisana površina iz OSS-a (posrednik traži česticu po točki)
 async function zgOssTests(){
   const tick=ms=>new Promise(r=>setTimeout(r,ms));
-  for(const [broj,expectOk] of [["1/1",true],["2/2",false]]){
+  for(const [broj,expectOk,wms] of [["1/1",true,false],["2/2",false,false],["1/1",true,true]]){
     const {w,errs}=boot(); const calls=[];
     try{w.localStorage.clear()}catch(e){}
     w.eval('SRC_KRK.oss="https://oss-test.example/"; OSS_RETRY.splice(0,OSS_RETRY.length,5)');
     w.fetch=(u)=>{u=String(u); calls.push(u);
+      if(u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/")) return wms?Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({type:"FeatureCollection",features:[{type:"Feature",properties:{CESTICA_ID:5,BROJ_CESTICE:"1/1",POVRSINA_GRAFICKA:998.4,POVRSINA_ATRIBUTNA:1010}}]})}):Promise.reject(new TypeError("Failed to fetch"));
       if(u.startsWith("https://oss-test.example/")) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({ok:true,id:"5",broj,ko:"ŠESTINE",katastar:1010,graficka:998.4,zk:[{broj,povrsina:1012,ulozak:"777",odjel:"Zemljišnoknjižni odjel Zagreb"}],dijelovi:[],dohvaceno:"2026-10-19T09:00:00Z"})});
       return Promise.reject(new Error("bez mreže u testu"));};
     const d=data(w,parcelRect(40,25),"2.2."); w.eval("render")(d); await tick(30);
     const t=txt(w,"sheet"), q=calls.filter(u=>u.startsWith("https://oss-test.example/"));
     if(expectOk){
-      ok(q.length===1&&/\?lat=45\.84\d*&lon=15\.97\d*/.test(q[0]),"Zagreb OSS: posrednik se pita po točki unutar čestice ("+(q[0]||"nema upita")+")");
-      ok(/Grafička površina ?998 m²/.test(t)&&/iz katastarskog plana \(DGU, OSS\)/.test(t)&&/u gradskom sloju čestica 1\.0\d\d m²/.test(t),"Zagreb OSS: grafička površina iz DGU-a, uz površinu iz gradskog sloja");
+      ok(q.length===1&&(wms?/\?id=5$/.test(q[0]):/\?lat=45\.84\d*&lon=15\.97\d*/.test(q[0])),"Zagreb OSS: "+(wms?"s ID-om iz katastarskog sloja posrednik se pita po ID-u":"bez sloja karte posrednik se pita po točki unutar čestice")+" ("+(q[0]||"nema upita")+")");
+      ok(/Grafička površina ?998 m²/.test(t)&&/iz katastarskog plana \(DGU\)/.test(t)&&/u gradskom sloju čestica 1\.0\d\d m²/.test(t),"Zagreb OSS: grafička površina iz DGU-a, uz površinu iz gradskog sloja");
       ok(/Upisana u zemljišnoj knjizi ?1\.012 m²/.test(t)&&/ZK uložak 777/.test(t)&&/Upisana u katastru ?1\.010 m²/.test(t),"Zagreb OSS: upisana površina u ZK i u katastru");
       ok(/površinom iz gradskog sloja čestica \(1\.0\d\d m²\)/.test(t)&&Math.abs(w.__cur.area-d.area)<0.01,"Zagreb OSS: izračun ostaje na površini iz gradskog sloja");
       w.eval("render")(d); await tick(10); ok(calls.filter(u=>u.startsWith("https://oss-test.example/")).length===1,"Zagreb OSS: ponovni prikaz ne šalje novi upit");
@@ -879,6 +880,7 @@ async function krkTests(){
   let mode="ok", calls=[];
   const okj=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b)});
   w.fetch=(u,o={})=>{u=String(u); calls.push(u);
+    if(u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/")) return mode==="wms"?okj({type:"FeatureCollection",features:[{type:"Feature",properties:{CESTICA_ID:1,BROJ_CESTICE:"2345/6",POVRSINA_GRAFICKA:600,POVRSINA_ATRIBUTNA:615}}]}):Promise.reject(new TypeError("Failed to fetch"));
     if(u.startsWith("https://oss-test.example/")){ if(mode==="ossFail") return Promise.reject(new TypeError("Failed to fetch"));
       if(mode==="oss403once"){mode="ok"; return Promise.resolve({ok:false,status:502,json:()=>Promise.resolve({ok:false,greska:"OSS HTTP 403"})});}
       if(!/\?id=1$/.test(u)) return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve({ok:false,greska:"OSS nema česticu s tim ID-om"})});
@@ -912,7 +914,7 @@ async function krkTests(){
   const OSS_URL=w.__OSS_URL; ok(/^https:\/\/cestica-oss\.ozren-pancic\.workers\.dev\/$/.test(OSS_URL),"Krk: adresa posrednika prema OSS-u je postavljena"); E("SRC_KRK").oss="";
   await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50);
   const t=txt(w,"sheet");
-  ok(calls.some(u=>u.endsWith("data/kat_krk/index.json"))&&calls.filter(u=>/data\/kat_krk\/-?\d+_-?\d+\.json$/.test(u)).length===1&&!calls.some(u=>u.includes("uredjenazemlja")),"Krk: čestica iz katastra uz aplikaciju (jedan kvadrat), bez DGU WFS-a");
+  ok(calls.some(u=>u.endsWith("data/kat_krk/index.json"))&&calls.filter(u=>/data\/kat_krk\/-?\d+_-?\d+\.json$/.test(u)).length===1&&!calls.some(u=>u.includes("uredjenazemlja")&&!u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/")),"Krk: čestica iz katastra uz aplikaciju (jedan kvadrat), bez DGU WFS-a");
   ok(!calls.some(u=>u.includes("services8.arcgis.com")),"Krk: zagrebački servisi se ne pozivaju");
   ok(/Otok Krk · pilot · Grad Krk/.test(t)&&/2345\/6/.test(t)&&/k\.o\. KORNIĆ/.test(t)&&/DGU, stanje 19\. 10\. 2026\./.test(t),"Krk: prikazani broj čestice, k.o. i stanje katastra");
   const A=E("KRK_CUR").area; ok(Math.abs(A-600)<1.5,"Krk: površina iz geometrije nakon pretvorbe "+(A||0).toFixed(2)+" m² (čestica 30 × 20 m)");
@@ -946,6 +948,10 @@ async function krkTests(){
   mode="ok"; $(w,"krkOssRetry").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20);
   ok(/Upisana u zemljišnoj knjizi ?642 m²/.test(txt(w,"sheet")),"Krk OSS: „Pokušaj ponovno” dohvaća površinu");
   mode="ok"; E("SRC_KRK").oss=""; E("OSSZK").clear(); E("renderKrk")(E("KRK_CUR"));
+  // izravno iz katastarskog sloja karte (bez posrednika): površina upisana u katastar
+  mode="wms"; E("KATW").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20); {const tw=txt(w,"sheet");
+   ok(calls.some(u=>u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/ows2-m/wms?")&&/REQUEST=GetFeatureInfo/.test(u))&&/Upisana u katastru ?615 m²/.test(tw)&&/posjedovni list \(DGU, katastarski sloj\)/.test(tw)&&/Razlika upisane u katastru i grafičke: \+2,5 %/.test(tw),"Krk: površina upisana u katastar izravno iz katastarskog sloja karte, bez posrednika");}
+  mode="ok"; E("KATW").clear(); E("renderKrk")(E("KRK_CUR"));
   // isti raspored odjeljaka kao Zagreb; gdje nema podataka piše da nisu dostupni
   {const tu=txt(w,"sheet"), hs=[...w.document.querySelectorAll("#sheet h2")].map(x=>x.textContent);
    ok(["Provjere","Uvjeti gradnje","Gradnja i naknade","Novac i kupnja","Sunce i energija","Dokumentacija i gdje se obratiti"].every(x=>hs.includes(x)),"Krk: isti odjeljci kao Zagreb ("+hs.join(", ")+")");

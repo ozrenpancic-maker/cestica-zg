@@ -604,7 +604,7 @@ async function loadParcelKrk(ll){
   if(!hits.length) return null; // cesta, more ili javna površina bez čestice
   const pr=I.prednost||[]; hits.sort((a,b)=>{const pa=pr.indexOf(a.ko), pb=pr.indexOf(b.ko); return (pa<0?99:pa)-(pb<0?99:pb)||(a.pov||0)-(b.pov||0);});
   const h=hits[0], K=I.ko[h.ko]||{};
-  return {type:"Feature",geometry:h.g,properties:{cid:h.id,broj:h.broj,ref:h.ko+"-"+h.broj,povrsinaKatastar:h.pov,ko:K.naziv||null,koRef:h.ko,izvor:"DGU DKP",preuzeto:I.preuzeto,preklapanje:hits.length>1?hits.slice(1).map(x=>(I.ko[x.ko]||{}).naziv+" "+x.broj):null}};
+  return {type:"Feature",geometry:h.g,properties:{cid:h.id,dguId:h.id,broj:h.broj,ref:h.ko+"-"+h.broj,povrsinaKatastar:h.pov,ko:K.naziv||null,koRef:h.ko,izvor:"DGU DKP",preuzeto:I.preuzeto,preklapanje:hits.length>1?hits.slice(1).map(x=>(I.ko[x.ko]||{}).naziv+" "+x.broj):null}};
 }
 
 // --- namjena (županijski sloj): procjena je li građevinsko područje
@@ -909,19 +909,52 @@ async function ossFetchInto(k,P,q,onUpd){
 }
 async function krkOssFetch(P,area){
   if(!P||P.cid==null) return; const k=String(P.cid);
-  return ossFetchInto(k,P,null,()=>{const el=document.getElementById("krkArea"); if(el&&KRK_CUR&&KRK_CUR.parcel&&String(KRK_CUR.parcel.properties.cid)===k) el.innerHTML=krkAreaHtml(P,area);});
+  const upd=()=>{const el=document.getElementById("krkArea"); if(el&&KRK_CUR&&KRK_CUR.parcel&&String(KRK_CUR.parcel.properties.cid)===k) el.innerHTML=krkAreaHtml(P,area);};
+  try{const c=turf.pointOnFeature(KRK_CUR.parcel).geometry.coordinates; katwFetchInto(k,c[1],c[0],upd);}catch(e){}
+  return ossFetchInto(k,P,null,upd);
 }
+// katastarski sloj karte (isti koji koriste OSS i Geoportal DGU): izravno iz preglednika, bez posrednika
+// daje CESTICA_ID, grafičku površinu i površinu upisanu u katastar (posjedovni list); provjereno 19. 10. 2026. (CORS dopušten)
+const KATW_URL="https://wms1-gs-oss.uredjenazemlja.hr/ows2-m/wms";
+const KATW=new Map();
+async function katwAt(lat,lon){
+  const [E,N]=tmFwd(lon,lat), d=1;
+  const q=new URLSearchParams({SERVICE:"WMS",VERSION:"1.3.0",REQUEST:"GetFeatureInfo",FORMAT:"image/png",TRANSPARENT:"true",QUERY_LAYERS:"oss:BZP_CESTICE",LAYERS:"oss:BZP_CESTICE",STYLES:"",INFO_FORMAT:"application/json",I:"50",J:"50",CRS:"EPSG:3765",WIDTH:"101",HEIGHT:"101",BBOX:[E-d,N-d,E+d,N+d].map(x=>x.toFixed(2)).join(","),FEATURE_COUNT:"1"});
+  const ac=new AbortController(), t=setTimeout(()=>ac.abort(),12000);
+  try{const r=await fetch(KATW_URL+"?"+q.toString(),{signal:ac.signal}); if(!r.ok) throw new Error("HTTP "+r.status);
+    const j=await r.json(), f=j&&j.features&&j.features[0]; if(!f) return null; const p=f.properties||{};
+    const n=v=>{const x=parseFloat(v); return Number.isFinite(x)?x:null};
+    return {id:p.CESTICA_ID!=null?String(p.CESTICA_ID):null,broj:p.BROJ_CESTICE||null,koMb:p.MATICNI_BROJ_KO!=null?String(p.MATICNI_BROJ_KO):null,graficka:n(p.POVRSINA_GRAFICKA),atributna:n(p.POVRSINA_ATRIBUTNA)};}
+  catch(e){throw new Error(e.name==="AbortError"?"ne odgovara":e.message||"mreža")}
+  finally{clearTimeout(t)}
+}
+function katwFetchInto(k,lat,lon,onUpd){
+  const cur=KATW.get(k); if(cur) return cur.p||Promise.resolve();
+  const p=(async()=>{let v; try{const d=await katwAt(lat,lon); v=d?{st:"ok",d}:{st:"none"}}catch(e){v={st:"err",e:e.message}}
+    KATW.set(k,v); if(v.st==="err") setTimeout(()=>{if(KATW.get(k)===v) KATW.delete(k)},30000); onUpd();})();
+  KATW.set(k,{st:"load",p}); return p;
+}
+// podatak iz sloja karte samo ako je za istu česticu
+function katwGet(P){const w=KATW.get(String(P.cid)); if(!w||w.st!=="ok") return null; const d=w.d;
+  if(P.dguId!=null) return String(d.id)===String(P.dguId)?d:null; return !P.broj||d.broj===P.broj?d:null;}
 // Zagreb: čestica iz gradskog sloja nema DGU-ov ID, pa posrednik česticu traži po točki unutar čestice
 function zgAreaP(parcel,key){
-  const p=parcel.properties, k="zg:"+key, os=OSSZK.get(k), d=os&&os.st==="ok"?os.d:null;
-  return {cid:k,broj:p.KATASTARSKA_CESTICA||null,povrsinaKatastar:d&&d.graficka>0?d.graficka:null,
-    gSrc:d&&d.graficka>0?"iz katastarskog plana (DGU, OSS)":"iz granice u gradskom sloju čestica (2023.)",geomNote:"u gradskom sloju čestica",
+  const p=parcel.properties, k="zg:"+key, os=OSSZK.get(k), d=os&&os.st==="ok"?os.d:null, w=katwGet({cid:k,broj:p.KATASTARSKA_CESTICA||null});
+  const gr=w&&w.graficka>0?w.graficka:d&&d.graficka>0?d.graficka:null;
+  return {cid:k,broj:p.KATASTARSKA_CESTICA||null,povrsinaKatastar:gr,
+    gSrc:gr?"iz katastarskog plana (DGU)":"iz granice u gradskom sloju čestica (2023.)",geomNote:"u gradskom sloju čestica",
     calcNote:"Uvjeti gradnje ispod računaju se s površinom iz gradskog sloja čestica"};
 }
 function zgOssFetch(parcel,key,area){
   if(!SRC_KRK.oss||!parcel) return; let c; try{c=turf.pointOnFeature(parcel).geometry.coordinates}catch(e){return}
-  const P0=zgAreaP(parcel,key);
-  return ossFetchInto(P0.cid,P0,"lat="+c[1].toFixed(7)+"&lon="+c[0].toFixed(7),()=>{const el=document.getElementById("zgArea"); if(el&&window.__cur&&window.__cur.key===key) el.innerHTML=krkAreaHtml(zgAreaP(parcel,key),area);});
+  const P0=zgAreaP(parcel,key), k=P0.cid;
+  const upd=()=>{const el=document.getElementById("zgArea"); if(el&&window.__cur&&window.__cur.key===key) el.innerHTML=krkAreaHtml(zgAreaP(parcel,key),area);};
+  return katwFetchInto(k,c[1],c[0],upd).then(()=>{
+    const w=KATW.get(k);
+    if(w&&w.st==="ok"&&w.d.broj&&P0.broj&&w.d.broj!==P0.broj){OSSZK.set(k,{st:"err",e:"OSS je na ovom mjestu vratio drugu česticu ("+w.d.broj+")"}); upd(); return;}
+    // ZK površina preko posrednika: po DGU ID-u ako ga sloj karte dao, inače po točki
+    return ossFetchInto(k,P0,w&&w.st==="ok"&&w.d.id?"id="+encodeURIComponent(w.d.id):"lat="+c[1].toFixed(7)+"&lon="+c[0].toFixed(7),upd);
+  });
 }
 // iz odgovora OSS-a: upisana površina ZK čestice/a povezanih s katastarskom česticom
 function krkOssZk(d){
@@ -932,10 +965,12 @@ function krkOssZk(d){
 function krkAreaHtml(P,area){
   const key=window.__cur&&window.__cur.key, man=key?krkZkGet(key):null, g=P.povrsinaKatastar||area;
   const os=krkOssGet(P), oz=os&&os.st==="ok"?krkOssZk(os.d):null, manual=window.__krkZkManual===key;
+  const kw=katwGet(P), kat=kw&&kw.atributna>0?{a:kw.atributna,src:"DGU, katastarski sloj"}:os&&os.st==="ok"&&os.d.katastar>0?{a:os.d.katastar,src:"OSS"}:null;
   const zk=man||(oz&&!manual?{a:oz.a,src:"oss"}:null);
   const today=os&&os.d&&os.d.dohvaceno?new Date(os.d.dohvaceno).toLocaleDateString("hr-HR"):"";
   let h=`<dl class="kv" style="margin-top:4px">`;
   h+=`<dt>Grafička površina</dt><dd><b>${fmt(g)} m²</b><small class="fx">${P.gSrc?esc(P.gSrc):"iz katastarskog plana (DGU"+(P.preuzeto?", stanje "+esc(P.preuzeto.split("-").reverse().join(". ")+".")+")":")")}${P.povrsinaKatastar&&Math.abs(P.povrsinaKatastar-area)>1?" · "+esc(P.geomNote||"iz ucrtane granice")+" "+fmt(area)+" m²":""}</small></dd>`;
+  if(kat) h+=`<dt>Upisana u katastru</dt><dd><b>${fmt(kat.a)} m²</b><small class="fx">posjedovni list (${esc(kat.src)})</small></dd>`;
   h+=`<dt>Upisana u zemljišnoj knjizi</dt><dd>`;
   if(zk){
     const src=zk.src==="izvadak"?"pročitano iz učitanog izvatka":zk.src==="oss"?`OSS${oz.ul.length?", ZK uložak "+esc(oz.ul.join(", ")):""}${oz.od.length?", "+esc(oz.od.join(", ")):""}${oz.n>1?" · zbroj "+oz.n+" ZK čestice":""} · neslužbeni javni podatak${today?", dohvaćeno "+esc(today):""}`:"upisao si ručno";
@@ -948,13 +983,13 @@ function krkAreaHtml(P,area){
   }
   h+=`</dd>`;
   if(os&&os.st==="ok"){const d=os.d;
-    if(d.katastar>0&&(!zk||Math.abs(d.katastar-zk.a)>=1)) h+=`<dt>Upisana u katastru</dt><dd><b>${fmt(d.katastar)} m²</b><small class="fx">posjedovni list (OSS)</small></dd>`;
     const dj=(d.dijelovi||[]).filter(x=>x.naziv&&x.povrsina>0);
     if(dj.length>1||(dj.length===1&&dj[0].zgrada)) h+=`<dt>Dijelovi čestice</dt><dd>${dj.map(x=>esc(x.naziv.toLowerCase())+": "+fmt(x.povrsina)+" m²").join(" · ")}<small class="fx">kako su upisani u katastru (OSS)</small></dd>`;
   }
   h+=`</dl>`;
-  if(zk){const r=(zk.a-g)/g*100;
-    h+=`<p class="${Math.abs(r)>5?"flag":"meta"}">Razlika: ${r>0?"+":""}${dec(r.toFixed(1))} % (${fmt(Math.abs(zk.a-g))} m²). ${Math.abs(r)>5?"Razlika je veća od 5 %. ":""}Grafička površina izračunata je iz katastarskog plana, koji je često digitaliziran sa starih planova, a upisana površina potječe iz zemljišne knjige; zato se često razlikuju. Nijedna nije nužno stvarna površina na terenu: točnu daje geodetska izmjera (elaborat). Kod veće razlike, prije kupnje ili gradnje, provjeri s ovlaštenim geodetom.</p>`;}
+  const up=zk||kat;
+  if(up){const r=(up.a-g)/g*100;
+    h+=`<p class="${Math.abs(r)>5?"flag":"meta"}">Razlika ${zk?"upisane u zemljišnoj knjizi":"upisane u katastru"} i grafičke: ${r>0?"+":""}${dec(r.toFixed(1))} % (${fmt(Math.abs(up.a-g))} m²). ${Math.abs(r)>5?"Razlika je veća od 5 %. ":""}Grafička površina izračunata je iz katastarskog plana, koji je često digitaliziran sa starih planova, a upisana površina potječe iz ${zk?"zemljišne knjige":"katastarskog operata"}; zato se često razlikuju. Nijedna nije nužno stvarna površina na terenu: točnu daje geodetska izmjera (elaborat). Kod veće razlike, prije kupnje ili gradnje, provjeri s ovlaštenim geodetom.</p>`;}
   else h+=`<p class="meta">Grafička i upisana površina često se razlikuju; nijedna nije nužno stvarna površina na terenu.</p>`;
   h+=`<p class="meta">${P.calcNote?esc(P.calcNote)+" ("+fmt(area)+" m²).":"Uvjeti gradnje ispod računaju se s grafičkom površinom."}</p>`;
   return h;
@@ -1053,7 +1088,7 @@ function renderKrk(d){
   sheet.innerHTML=h;
   sheet.querySelectorAll("details[data-k]").forEach(dd=>{if(OPEN.has(dd.dataset.k)) dd.open=true});
   sheet.scrollTop=keepScroll; krkKdUpdate();
-  if(parcel){ window.__areaCtx={key:window.__cur.key,refresh:()=>renderKrk(KRK_CUR),retry:()=>{OSSZK.delete(String(P.cid)); krkOssFetch(P,area);}};
+  if(parcel){ window.__areaCtx={key:window.__cur.key,refresh:()=>renderKrk(KRK_CUR),retry:()=>{OSSZK.delete(String(P.cid)); KATW.delete(String(P.cid)); krkOssFetch(P,area);}};
     try{finUpdate()}catch(err){console.error(err)} if(TL.layer){TL.zones=null; tDraw();} if(OPEN.has("sun")) sunDraw(); krkOssFetch(P,area); }
   else window.__areaCtx=null;
   try{PWA.loadedAt=Date.now(); if(parcel) pwaRememberParcel(); pwaNetUI();}catch(e){}
@@ -2286,7 +2321,7 @@ function render(d){
   restoreMap();
   sheet.innerHTML=h;
   restoreInputs(snap);
-  if(parcel){const k=favKey(parcel,ll); window.__areaCtx={key:k,refresh:()=>{const el=document.getElementById("zgArea"); if(el) el.innerHTML=krkAreaHtml(zgAreaP(parcel,k),area);},retry:()=>{OSSZK.delete("zg:"+k); zgOssFetch(parcel,k,area);}}; zgOssFetch(parcel,k,area);}
+  if(parcel){const k=favKey(parcel,ll); window.__areaCtx={key:k,refresh:()=>{const el=document.getElementById("zgArea"); if(el) el.innerHTML=krkAreaHtml(zgAreaP(parcel,k),area);},retry:()=>{OSSZK.delete("zg:"+k); KATW.delete("zg:"+k); zgOssFetch(parcel,k,area);}}; zgOssFetch(parcel,k,area);}
   else window.__areaCtx=null;
   if(!snap&&window.__cur) projApplyHouse(window.__cur.key);
   sheet.querySelectorAll("details[data-k]").forEach(dd=>{if(OPEN.has(dd.dataset.k)) dd.open=true});
@@ -3059,7 +3094,8 @@ function serviceList(){
   out.push({n:"Open-Meteo (visine terena)",u:"https://api.open-meteo.com/v1/elevation?latitude=45.81&longitude=15.98"});
   out.push({n:"Nominatim (pretraga adresa)",u:"https://nominatim.openstreetmap.org/status?format=json"});
   out.push({n:"Krk: katastarske čestice (uz aplikaciju)",u:KAT.base+"index.json",raw:true});
-  if(SRC_KRK.oss) out.push({n:"Krk: upisana površina (posrednik prema OSS-u)",u:SRC_KRK.oss+"?id=19311109",raw:true});
+  out.push({n:"Katastarski sloj karte DGU (grafička i upisana površina)",u:KATW_URL+"?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",raw:true});
+  if(SRC_KRK.oss) out.push({n:"Površina iz zemljišne knjige (posrednik prema OSS-u)",u:SRC_KRK.oss+"?id=19311109",raw:true});
   out.push({n:"Krk: namjena površina (PGŽ)",u:SRC_KRK.namjena.replace(/\/query$/,"")+"?f=json"});
   out.push({n:"Krk: evidencija prostornih planova (PGŽ)",u:SRC_KRK.planovi.replace(/\/query$/,"")+"?f=json"});
   out.push({n:"DGU katastar infrastrukture (WMS; provjera može li ga preglednik dohvatiti)",u:"https://ski.dgu.hr/inspire/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",raw:true});
