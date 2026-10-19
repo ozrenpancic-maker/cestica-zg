@@ -155,3 +155,13 @@ Okvir „Prije svega provjeri” sadrži uvjete koji mogu zaustaviti gradnju bez
 - Servis ne nudi EPSG:3857, pa se slike traže u EPSG:4326 (WMS 1.3.0, sloj `OI.OrthoimageCoverage`). Na zumu 13 i većem razlika u projekciji unutar jedne slike je zanemariva.
 - Crta se od zuma 13. Ostala pravila su kao za granice čestica („približi kartu”, „DGU ne odgovara”, izbor se pamti).
 - Nije provjereno u pregledniku na mobitelu (okruženje u kojem je pisano ne može dohvatiti geoportal.dgu.hr).
+
+## Cesta ne prati katastar
+
+Kad os ceste iz OpenStreetMapa prolazi kroz unutrašnjost odabrane čestice, aplikacija upozorava da se katastar i stvarno stanje vjerojatno ne poklapaju (primjer: Vranićeva ulica, Zagreb).
+
+- Mjeri se duljina osi unutar čestice umanjene 1,5 m (tolerancija crteža). Upozorenje se daje od 8 m nadalje.
+- Ne broje se kućni prilazi (`highway=service`) ni ceste uz rub čestice.
+- Ako je čestica uska (prosječna širina manja od 12 m), a os ide njome uzduž (barem pola poluopsega), čestica je vjerojatno sama put ili cesta i upozorenja nema.
+- Upozorenje je u „Prije svega provjeri” (pristup, stanje „!”) i u „Području za gradnju” (redak „Cesta i katastar”). Pouzdanost područja za gradnju tada je C.
+- Uzrok može biti neprovedena cesta u katastru ili krivo ucrtana cesta u OpenStreetMapu. Aplikacija ne odlučuje koje: upućuje na usporedbu s granicama čestica i ortofotom te na lokacijsku informaciju i geodeta.

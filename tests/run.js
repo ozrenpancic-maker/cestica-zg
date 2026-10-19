@@ -1380,11 +1380,16 @@ async function gpTests(){
   const G=E("gradivo")(A,base,3,5,road), G0=E("gradivo")(A,base,3,5,null), G1=E("gradivo")(A,base,3,null,road);
   ok(Math.abs(G.parcelArea-750)<8&&Math.abs(G.baseArea-456)<6&&Math.abs((G.baseArea-G.area)-48)<3&&G.st==="primijenjen"&&G.band,"Područje za gradnju: 30 × 25 m, 3 m od međa → 456 m²; cesta uz južnu stranu, 5 m od ruba → uklanja se pojas 2 × 24 = 48 m²");
   ok(G0.st==="ceste nisu učitane"&&Math.abs(G0.area-G0.baseArea)<0.01&&G1.st==="nema","Bez učitanih cesta ili bez pravila o pravcu odmak od ceste se ne primjenjuje, uz razlog");
+  const my=(c[0][1]+c[2][1])/2, kroz=[{ok:true,geom:[[c[0][0]-0.001,my],[c[1][0]+0.001,my]]}], svc=[{ok:true,svc:true,geom:kroz[0].geom}], ruba=[{ok:true,geom:[[c[0][0]-0.001,c[0][1]+0.5/110540],[c[1][0]+0.001,c[1][1]+0.5/110540]]}];
+  const Gk=E("gradivo")(A,base,3,5,kroz);
+  ok(G.kroz===0&&Gk.kroz>=27&&Gk.kroz<=31&&E("cestaKroz")(A,svc)===0&&E("cestaKroz")(A,ruba)===0&&(()=>{const P=parcelRect(60,6,{}), q=P.geometry.coordinates[0], y=(q[0][1]+q[2][1])/2; return E("gradivo")(P,P.geometry,0,null,[{ok:true,geom:[[q[0][0]-0.001,y],[q[1][0]+0.001,y]]}]).kroz===0})(),"Cesta kroz česticu: os ceste preko sredine čestice 30 m → oko 27 m unutar (umanjeno 1,5 m); cesta uz rub, 0,5 m unutra ili izvan, kućni prilaz i uska čestica puta (60 × 6 m, os uzduž) se ne broje");
   const rd=E("krkRegDist"); ok(JSON.stringify(rd({regulacija:{ostale:4,razvrstane:6}}))==='{"d":4,"max":6}'&&JSON.stringify(rd({regulacija:{opis:"javna cesta 6 m (najmanje 9 m od osi), nerazvrstana 4 m (najmanje 7 m od osi)"}}))==='{"d":4,"max":6}',"Krk: udaljenost od regulacijskog pravca iz PPUG-a (4 / 6 m) i UPU-a 2 (nerazvrstana 4 m, javna 6 m)");
   // prikaz u Zagrebu: s cestama iz OSM-a
   const d=data(w,A,"2.2."), envO={v:{roads:[],roadLines:road,stops:[]}}; d.env=envO; w.__env=d.envelope; E("OPEN").add("calc"); E("OPEN").add("gp"); E("render")(d);
   const t=txt(w,"sheet"), R=E("PZREG").items.get("gp-podrucje");
   ok(/Područje za gradnju/.test(t)&&/Geometrijski moguć tlocrt/.test(t)&&R&&R.raz==="C"&&/OpenStreetMapa/.test(R.razlog)&&E("gpLayer").getLayers().length===2,"Zagreb: obris i pojas uz cestu na karti; područje C jer je strana uz cestu procjena");
+  {const d2=data(w,A,"2.2."); d2.env={v:{roads:[],roadLines:kroz,stops:[]}}; w.__env=d2.envelope; E("render")(d2); const t2=txt(w,"sheet");
+   ok(/Os ceste iz OpenStreetMapa prolazi kroz česticu/.test(t2)&&/Cesta i katastar/.test(t2)&&/katastar i stvarno stanje/.test(E("PZREG").items.get("gp-podrucje").razlog)&&E("PZREG").items.get("gp-podrucje").raz==="C","Zagreb: cesta kroz česticu → upozorenje u „Prije svega provjeri” i u „Području za gradnju”, pouzdanost C");}
   $(w,"gpTog").dispatchEvent(new w.Event("click",{bubbles:true})); ok(E("gpLayer").getLayers().length===0,"Područje za gradnju: skrivanje s karte");
   $(w,"gpTog").dispatchEvent(new w.Event("click",{bubbles:true})); ok(E("gpLayer").getLayers().length===2,"Područje za gradnju: ponovni prikaz");
   {const f=E("pkFit")(2,600,150,240); ok(f.need===25&&f.free===210&&f.ok&&!E("pkFit")(4,200,120,60).ok,"Parkiranje: 2 mjesta = 25 m², slobodno 600 − 150 − 240 = 210 m² (stane); 4 mjesta na 200 m² čestici s 120 m² tlocrta i 60 m² zelenila ne stanu");}
