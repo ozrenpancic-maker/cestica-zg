@@ -194,3 +194,22 @@ Potvrdio Ozren 19. 10. 2026., usporedbom lista ISPU-a sa službenim grafičkim d
 - Svih 6 listova PPGZ-a (`PPZP_00021_R10`, IX. ID). Tri su u izvozu bila potvrđena prikazima GUP-a. To je drugi plan, pa su vraćena na nepotvrđeno. Provjera sada takav zapis odbija, a alat za pregled za list PPGZ-a ne nudi prikaze GUP-a.
 
 Potvrde vrijede samo za ovaj plan i ovu reviziju. Iste šifre u drugom planu ili drugoj reviziji ne koriste se.
+
+## Provjera na stvarnim servisima (19. 10. 2026.)
+
+Ozren je provjerio na probnoj stranici, na Android mobitelu (Chrome).
+
+**Krk, 735/76 k.o. Kornić (PGŽ katalog):**
+- aplikacija je sama našla UPU 2 Kornić, list namjene `618_karta1_i.tif`;
+- granica čestice leži na karti ispravno, uz oznake M1 i D2;
+- status plana je A (SN 19/2016), aktualnost lista B, zona C.
+
+**Zagreb, 1541/2 (ISPU WMS, gis2):**
+- aplikacija je sama odabrala kartu namjene GUP-a (`KN_1_1`, vrsta A iz potvrđene tablice);
+- granica čestice leži ispravno: granica zone na rasteru poklapa se s granicom namjene u gradskom vektorskom sloju;
+- aktualnost lista je C (list iz V. ID, dopuna), zona C.
+
+**Nije provjereno:**
+- „Prikaži na karti” (list na glavnoj karti) na mobitelu;
+- listovi PPGZ-a (6, nepotvrđeni);
+- drugi gradovi.
