@@ -317,6 +317,7 @@ ul.risk small{color:var(--muted)}
       <button type="button" class="ib fab" id="aiBtn" hidden aria-label="AI asistent">AI</button>
       <div id="lyrList">
         <label><input type="checkbox" id="lyrSat"> Satelit</label>
+        <label><input type="checkbox" id="lyrDof"> Ortofoto DGU <small id="lyrDofH" class="meta"></small></label>
         <label><input type="checkbox" id="lyrKat"> Granice čestica (DGU) <small id="lyrKatH" class="meta"></small></label>
         <label><input type="checkbox" id="lyrNam" checked> Namjena</label>
         <label><input type="checkbox" id="lyrInf" checked> Vodovi iz GUP-a</label>
@@ -478,6 +479,25 @@ function katSet(on){
   try{localStorage.setItem("lyrKat",on?"1":"0")}catch(e){}
   katHint();
 }
+// službeni digitalni ortofoto DGU-a (DOF5, 0,5 m; otvorena dozvola), kao slike preko podloge. Servis ne nudi EPSG:3857,
+// pa se traži u EPSG:4326 (WMS 1.3.0). Noviji snimak (2023./24.) je gore, stariji (2021./22.) popunjava mjesta koja noviji ne pokriva,
+// a ispod ostaje odabrana podloga (karta ili satelit).
+const DOF_SLOJEVI=[{u:"https://geoportal.dgu.hr/services/inspire/orthophoto_2021_2022/ows",g:"2021./22."},{u:"https://geoportal.dgu.hr/services/inspire/orthophoto_2023_2024/wms",g:"2023./24."}];
+const DOF_MINZ=13; let dofLayer=null, dofErr=0, dofOk=0;
+function dofHint(){const h=document.getElementById("lyrDofH"), c=document.getElementById("lyrDof"); if(!h||!c) return;
+  h.textContent=!c.checked?"":dofErr>=4&&!dofOk?"(DGU ne odgovara)":map.getZoom()<DOF_MINZ?"(približi kartu)":"";}
+function dofSet(on){
+  if(on){ if(!dofLayer){ if(!map.getPane("dofPane")){const pn=map.createPane("dofPane"); pn.style.zIndex=250; pn.style.pointerEvents="none";}
+      dofLayer=L.layerGroup(DOF_SLOJEVI.map(d=>{const t=L.tileLayer.wms(d.u,{layers:"OI.OrthoimageCoverage",styles:"",format:"image/png",transparent:true,version:"1.3.0",crs:L.CRS.EPSG4326,minZoom:DOF_MINZ,maxZoom:22,tileSize:512,pane:"dofPane",attribution:"Ortofoto "+d.g+" © DGU"});
+        t.on("tileerror",()=>{dofErr++; dofHint()}); t.on("tileload",()=>{dofOk++; dofHint()}); return t;})); }
+    dofLayer.addTo(map); }
+  else if(dofLayer) map.removeLayer(dofLayer);
+  try{localStorage.setItem("lyrDof",on?"1":"0")}catch(e){}
+  dofHint();
+}
+document.getElementById("lyrDof").onchange=e=>dofSet(e.target.checked);
+map.on("zoomend",dofHint);
+try{if(localStorage.getItem("lyrDof")==="1"){document.getElementById("lyrDof").checked=true; dofSet(true)}}catch(e){}
 document.getElementById("lyrKat").onchange=e=>katSet(e.target.checked);
 map.on("zoomend",katHint);
 try{if(localStorage.getItem("lyrKat")==="1"){document.getElementById("lyrKat").checked=true; katSet(true)}}catch(e){}

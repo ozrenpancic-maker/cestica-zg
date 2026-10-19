@@ -147,3 +147,11 @@ Okvir „Prije svega provjeri” sadrži uvjete koji mogu zaustaviti gradnju bez
 - Sloj se crta tek od zuma 16. Na manjem zumu uz prekidač piše „približi kartu”. Ako DGU ne odgovara, piše „DGU ne odgovara”.
 - Radi preko obične karte i preko satelita, a iznad karata prostornih planova. Izbor se pamti na uređaju.
 - Izgled crteža (boju i debljinu linija, brojeve čestica) određuje DGU.
+
+## Ortofoto DGU
+
+- Prekidač „Ortofoto DGU” u „Slojevima” prikazuje službeni digitalni ortofoto Državne geodetske uprave (DOF5, otvorena dozvola) preko odabrane podloge.
+- Noviji snimak (`orthophoto_2023_2024`) crta se iznad starijeg (`orthophoto_2021_2022`), pa stariji popunjava mjesta koja noviji ne pokriva. Gdje nema ni jednog, vidi se podloga (karta ili Esri satelit).
+- Servis ne nudi EPSG:3857, pa se slike traže u EPSG:4326 (WMS 1.3.0, sloj `OI.OrthoimageCoverage`). Na zumu 13 i većem razlika u projekciji unutar jedne slike je zanemariva.
+- Crta se od zuma 13. Ostala pravila su kao za granice čestica („približi kartu”, „DGU ne odgovara”, izbor se pamti).
+- Nije provjereno u pregledniku na mobitelu (okruženje u kojem je pisano ne može dohvatiti geoportal.dgu.hr).

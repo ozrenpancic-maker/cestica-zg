@@ -1366,6 +1366,10 @@ async function katTests(){
   ok(c&&!c.checked&&!E("katLayer"),"Granice čestica: sloj je isključen dok ga korisnik ne uključi");
   E("map").setZoom(13); c.checked=true; c.onchange({target:c}); const L0=E("katLayer");
   ok(L0&&E("map").hasLayer(L0)&&L0.wmsParams.layers==="oss:BZP_CESTICE"&&L0.options.minZoom===16&&L0.options.pane==="katPane"&&/približi/.test(w.document.getElementById("lyrKatH").textContent),"Granice čestica: DGU WMS oss:BZP_CESTICE od zuma 16, iznad karata planova; na manjem zumu piše „približi kartu”");
+  const d=w.document.getElementById("lyrDof"); d.checked=true; d.onchange({target:d}); const D=E("dofLayer"), Ls=D.getLayers();
+  const u=new w.URL(Ls[1].getTileUrl(Object.assign(w.L.point(17795,11655),{z:16}))), bb=u.searchParams.get("bbox").split(",").map(Number);
+  ok(E("map").hasLayer(D)&&Ls.length===2&&/orthophoto_2023_2024/.test(Ls[1]._url)&&u.searchParams.get("layers")==="OI.OrthoimageCoverage"&&u.searchParams.get("crs")==="EPSG:4326"&&bb[0]>45&&bb[0]<47&&bb[1]>15&&bb[1]<16&&bb[2]>bb[0],"Ortofoto DGU: noviji (2023./24.) iznad starijeg snimka, EPSG:4326 s redoslijedom osi lat, lon (WMS 1.3.0)");
+  d.checked=false; d.onchange({target:d}); ok(!E("map").hasLayer(D),"Ortofoto DGU: isključivanje uklanja sloj");
   c.checked=false; c.onchange({target:c}); ok(!E("map").hasLayer(L0)&&w.localStorage.getItem("lyrKat")==="0","Granice čestica: isključivanje uklanja sloj i pamti izbor");
 }
 async function gpTests(){
