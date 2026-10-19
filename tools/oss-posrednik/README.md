@@ -9,7 +9,7 @@ Zato mali Cloudflare Worker (`worker.js`) za zadani `CESTICA_ID` (`?id=`) ili za
 - `dijelovi[]` – dijelovi čestice (npr. kuća, dvorište) s površinama.
 - `graficka` – samo za upit po točki: grafička površina iz OSS-ovog sloja čestica (WMS GetFeatureInfo `oss:BZP_CESTICE`, isti sloj koji OSS koristi kad se klikne na kartu; ne traži ključ, provjereno 19. 10. 2026.).
 
-Imena, adrese i udjeli posjednika i vlasnika se **ne prosljeđuju**. Odgovor se pamti 6 sati (Cloudflare cache).
+Imena, adrese i udjeli posjednika i vlasnika se **ne prosljeđuju**. Odgovor se pamti 24 sata (Cloudflare cache). Posrednik ne ponavlja upite; aplikacija nakon greške pokuša još jednom nakon 3 s, da OSS ne dobiva niz upita.
 
 `CESTICA_ID` je isti broj koji je u katastarskim podacima uz aplikaciju (`data/kat_krk`, prvo polje zapisa); provjereno na čestici 735/58 k.o. Kornić (19311109).
 

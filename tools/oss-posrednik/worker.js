@@ -5,7 +5,7 @@
 
 const OSS = "https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info?parcelId=";
 const ALLOWED = ["https://ozrenpancic-maker.github.io"]; // stranice koje smiju čitati odgovor (produkcija i proba su na istom originu)
-const CACHE_S = 6 * 3600; // odgovor OSS-a pamti se 6 sati
+const CACHE_S = 24 * 3600; // odgovor OSS-a pamti se 24 sata (manje upita prema OSS-u)
 
 const arr = x => (x == null ? [] : Array.isArray(x) ? x : [x]);
 // OSS u XML-u omata liste u istoimeni element: <parcelParts><parcelParts>…</parcelParts></parcelParts>
@@ -54,7 +54,8 @@ function cors(origin) {
   if (ALLOWED.includes(origin)) h["Access-Control-Allow-Origin"] = origin;
   return h;
 }
-const out = (o, status, origin) => new Response(JSON.stringify(o), { status, headers: cors(origin) });
+let COLO = null; // Cloudflareov podatkovni centar koji je obradio upit (za dijagnostiku odbijanja s OSS-a)
+const out = (o, status, origin) => new Response(JSON.stringify(COLO ? { ...o, cf: COLO } : o), { status, headers: cors(origin) });
 
 // WGS84 -> HTRS96/TM (EPSG:3765), Snyder (USGS 1395); ista formula kao u aplikaciji (greška ispod 2 cm)
 function tmFwd(lon, lat) {
@@ -80,12 +81,8 @@ async function cesticaNaTocki(lat, lon) {
   return { id: p.CESTICA_ID, broj: p.BROJ_CESTICE || null, koMb: p.MATICNI_BROJ_KO != null ? String(p.MATICNI_BROJ_KO) : null, graficka: num(p.POVRSINA_GRAFICKA), atributna: num(p.POVRSINA_ATRIBUTNA), datum: p.DATUM || null };
 }
 async function parcelInfo(id) {
-  let r, last;
-  for (let n = 0; n < 2; n++) { // OSS povremeno odbije upit (403); jedan ponovni pokušaj
-    r = await fetch(OSS + id, { headers: { "Accept": "application/json, text/xml;q=0.5", ...UA }, signal: AbortSignal.timeout(12000) });
-    if (r.ok || r.status === 404 || r.status === 204) break;
-    last = r.status; await new Promise(res => setTimeout(res, 700));
-  }
+  // bez ponavljanja ovdje: ponovni pokušaj radi aplikacija, da OSS ne dobiva niz upita
+  const r = await fetch(OSS + id, { headers: { "Accept": "application/json, text/xml;q=0.5", ...UA }, signal: AbortSignal.timeout(12000) }), last = null;
   if (r.status === 404 || r.status === 204) return { status: 404 };
   if (!r.ok) return { status: 502, greska: "OSS HTTP " + (last || r.status) };
   const txt = await r.text(); let d;
@@ -97,6 +94,7 @@ async function parcelInfo(id) {
 export default {
   async fetch(req, env, ctx) {
     const origin = req.headers.get("Origin") || "";
+    COLO = req.cf && req.cf.colo ? String(req.cf.colo) : null;
     if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: { ...cors(origin), "Access-Control-Allow-Methods": "GET", "Access-Control-Max-Age": "86400" } });
     if (req.method !== "GET") return out({ ok: false, greska: "samo GET" }, 405, origin);
     const sp = new URL(req.url).searchParams;

@@ -1,0 +1,63 @@
+# Prijedlog: status tereta i plombe preko OSS posrednika
+
+**Status: prijedlog za odobrenje. `worker.js` nije mijenjan ni objavljen.**
+
+## Cilj
+
+Uz upisanu površinu posrednik bi vraćao samo dva statusa, bez ikakvih osobnih podataka:
+
+- `teretiUpisa`: broj upisa u C listu (teretovnici). `0` znači da upisa nema, `null` da podatak nije poznat.
+- `plomba`: ima li na ulošku plombu (upis u tijeku): `true`, `false` ili `null`.
+
+Aplikacija to ne smije prikazati kao potvrdu da je vlasništvo pravno čisto. Prikaz:
+
+- „C list: nema upisa (javni uvid OSS, datum)” ili „C list: 2 upisa”;
+- uvijek uz rečenicu: „To nije potvrda pravnog stanja. Mjerodavan je zemljišnoknjižni izvadak.”
+
+Oznaka pouzdanosti:
+
+- **A**: za sam podatak iz javnog uvida, s datumom i obuhvatom „javni uvid; mjerodavan je ZK izvadak”;
+- **C**: kad podatak nije dostupan.
+
+## Što još ne znamo
+
+`parcel-info`, koji posrednik danas čita, nema podatke o teretima ni plombama. Za to treba drugi OSS upit:
+
+```
+/oss/public/lr/lr-unit?lrUnitNumber=<uložak>&mainBookId=<glavna knjiga>&historicalOverview=false
+```
+
+Taj upit koristi i `oss-test.html`. Struktura odgovora nije provjerena, ni naziv polja za plombu ni oblik C lista. Bez stvarnog primjera kod se ne piše. Polja se ne izmišljaju.
+
+**Potrebno od tebe:** pokreni `oss-test.html` na probnoj stranici za jednu česticu i pošalji mi rezultat. Stranica skriva imena, adrese i OIB-e, ali tekst upisa u C listu može sadržavati ime vjerovnika ili druge osobe. Prije slanja provjeri i po potrebi obriši takav tekst. Za izradu trebam samo nazive polja i strukturu.
+
+## Sigurnosne izmjene u prijedlogu
+
+1. **Samo dopušteni izlaz.** Nova funkcija `sazmiUlozak()` iz odgovora uzima samo:
+   - broj stavki C lista;
+   - logičku oznaku plombe;
+   - datum stanja.
+
+   Nijedan tekst upisa, ime, adresa, udio ni iznos ne izlazi iz Workera. Odgovor se ne prosljeđuje u cijelosti nikad, ni u slučaju greške.
+2. **Bez logova.**
+   - U kodu nema `console.log`; to vrijedi i danas.
+   - Odgovor OSS-a, puni ZK izvadak i parametri se ne zapisuju nigdje.
+   - U Cloudflareu je preporuka da *Workers Logs / Observability* i *Logpush* ostanu isključeni za `cestica-oss`. Provjerava se u postavkama Workera; ja to ne mogu vidjeti.
+   - Cloudflareova osnovna analitika i dalje bilježi broj upita i adresu (ID čestice). To nije osobni podatak o vlasniku.
+3. **Cache samo sažetka.** U cache (24 h) ide isključivo sažeti objekt s brojevima i oznakama, kao i danas za površine. Sirovi odgovor se ne sprema.
+4. **Provjera ulaza.**
+   - `lrUnitNumber` i `mainBookId` smiju biti samo brojevi (do 12 znamenki).
+   - Uložak se uzima iz `parcel-info` iste čestice, ne iz upita korisnika. Tako se posrednik ne može koristiti za pretragu proizvoljnih uložaka.
+5. **Isti izvori i isti broj upita prema OSS-u.**
+   - Odgovor smije primiti samo `https://ozrenpancic-maker.github.io`.
+   - Posrednik ne ponavlja upite.
+   - Upit za uložak radi se samo kad aplikacija izričito traži status (`?id=…&ulozak=1`), ne pri svakom dohvatu površine.
+6. **Napomena u svakom odgovoru:** `"napomena": "Javni uvid OSS-a; ne potvrđuje pravno stanje. Mjerodavan je ZK izvadak."`
+7. **Test bez mreže.** U `test.mjs` dodaje se primjer s *izmišljenim* imenima u C listu i plombi. Test provjerava da ni jedno ime ni tekst upisa ne izađe iz Workera.
+
+## Redoslijed
+
+1. Ti pošalješ primjer odgovora `lr-unit` (bez osobnih podataka).
+2. Ja napišem izmjenu kao zasebnu datoteku (`worker.next.js`) s testovima. `worker.js` ostaje kakav jest.
+3. Ti pregledaš i odobriš.
+4. Ti objaviš Worker u Cloudflareu. Tek tada aplikacija dobiva prikaz statusa, isprva samo na probnoj stranici.

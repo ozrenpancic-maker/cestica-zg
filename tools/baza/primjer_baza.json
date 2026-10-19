@@ -1,0 +1,151 @@
+{
+ "verzija_sheme": "1.0",
+ "izvor": "ČesticaHR Data Manager",
+ "verzija_izvora": "primjer formata",
+ "izvezeno": "2026-10-19",
+ "napomena": "Primjer formata izrađen iz pravila koja su već ručno provjerena u aplikaciji (src/rules_krk.json). Nije uvezen u aplikaciju.",
+ "planovi": [
+  {
+   "id": "PPUG-KRK",
+   "naziv": "Prostorni plan uređenja Grada Krka",
+   "vrsta": "PPUG",
+   "jls": "Grad Krk",
+   "obuhvat": {
+    "jls": [
+     "Grad Krk"
+    ],
+    "opis": "cijelo područje Grada Krka",
+    "gis": {
+     "status": "potvrđeno",
+     "sloj": "PGŽ NAMJENA_POVRSINA_NOVO (OPCINA_GRAD = KRK)"
+    }
+   },
+   "status_vazenja": "važeći",
+   "odluke": [
+    {
+     "id": "PPUG-KRK-2020-PT",
+     "naziv": "Prostorni plan uređenja Grada Krka, odredbe za provedbu (pročišćeni tekst)",
+     "vrsta": "pročišćeni tekst",
+     "glasilo": "Službene novine Primorsko-goranske županije",
+     "broj": "29/2020",
+     "url": "http://www.sn.pgz.hr/default.asp?Link=odluke&id=42441"
+    }
+   ]
+  }
+ ],
+ "pravila": [
+  {
+   "id": "PPUG-KRK-obit-kig",
+   "plan_id": "PPUG-KRK",
+   "odluka_id": "PPUG-KRK-2020-PT",
+   "vrsta": "uvjet",
+   "parametar": "kig",
+   "vrijednost": 0.25,
+   "jedinica": "",
+   "operator": "max",
+   "clanak": "22",
+   "citat": "najveći dopušteni koeficijent izgrađenosti (kig) iznosi … 0,25",
+   "primjenjivost": {
+    "zone": [
+     "GPN-*",
+     "NA*"
+    ],
+    "izgradenost": [
+     "izgrađeno"
+    ],
+    "vrste_gradnje": [
+     "obiteljska kuća"
+    ],
+    "nacin_gradnje": [
+     "slobodnostojeća"
+    ],
+    "zahvat": [
+     "nova gradnja"
+    ]
+   },
+   "pravni_status": {
+    "razina": "potvrđeno",
+    "datum_provjere": "2026-10-18",
+    "provjerio": "ručno, cijeli pročišćeni tekst",
+    "metoda": "ručno"
+   },
+   "gis_status": {
+    "razina": "potvrđeno",
+    "sloj": "PGŽ NAMJENA_POVRSINA_NOVO",
+    "atribut": "OZNAKA_NAMJENE, IZGRADJENOST",
+    "datum_provjere": "2026-10-18"
+   }
+  },
+  {
+   "id": "PPUG-KRK-obit-minC",
+   "plan_id": "PPUG-KRK",
+   "odluka_id": "PPUG-KRK-2020-PT",
+   "vrsta": "uvjet",
+   "parametar": "min_cestica",
+   "vrijednost": 500,
+   "jedinica": "m²",
+   "operator": "min",
+   "clanak": "22",
+   "citat": "za slobodnostojeće građevine: 500 m2 … za dvojne i ugrađene građevine: 300 m2",
+   "primjenjivost": {
+    "zone": [
+     "GPN-*",
+     "NA*"
+    ],
+    "izgradenost": [
+     "izgrađeno"
+    ],
+    "vrste_gradnje": [
+     "obiteljska kuća"
+    ],
+    "nacin_gradnje": [
+     "slobodnostojeća"
+    ],
+    "zahvat": [
+     "nova gradnja"
+    ]
+   },
+   "pravni_status": {
+    "razina": "potvrđeno",
+    "datum_provjere": "2026-10-18",
+    "provjerio": "ručno, cijeli pročišćeni tekst",
+    "metoda": "ručno"
+   },
+   "gis_status": {
+    "razina": "potvrđeno",
+    "sloj": "PGŽ NAMJENA_POVRSINA_NOVO",
+    "atribut": "OZNAKA_NAMJENE, IZGRADJENOST",
+    "datum_provjere": "2026-10-18"
+   }
+  },
+  {
+   "id": "PPUG-KRK-meda",
+   "plan_id": "PPUG-KRK",
+   "odluka_id": "PPUG-KRK-2020-PT",
+   "vrsta": "uvjet",
+   "parametar": "udaljenost_meda",
+   "vrijednost": "h/2, najmanje 4 m",
+   "jedinica": "",
+   "operator": "tekst",
+   "clanak": "33",
+   "citat": "moraju biti udaljene najmanje pola visine (h/2) od granice građevinske čestice, ali ne manje od 4,0 metra",
+   "primjenjivost": {
+    "zone": [
+     "GPN-*",
+     "NA*"
+    ],
+    "vrste_gradnje": [
+     "sve"
+    ]
+   },
+   "pravni_status": {
+    "razina": "kandidat",
+    "metoda": "automatski"
+   },
+   "gis_status": {
+    "razina": "kandidat"
+   },
+   "napomena": "Primjer kandidata: isti navod kao u aplikaciji, ovdje označen kao automatski izdvojen da se vidi prikaz kandidata."
+  }
+ ]
+}

@@ -49,8 +49,8 @@ console.log("handler OK");
   globalThis.fetch = async (u) => new Response(JSON.stringify({ type: "FeatureCollection", features: [] }), { status: 200 });
   const r2 = await W.fetch(new Request("https://w.dev/?lat=45.8&lon=15.98"), {}, { waitUntil() {} }); assert.equal(r2.status, 404);
   const r3 = await W.fetch(new Request("https://w.dev/?lat=48&lon=15.98"), {}, { waitUntil() {} }); assert.equal(r3.status, 400);
-  // 403 pa uspjeh: posrednik ponovi upit
-  let n = 0; globalThis.fetch = async () => (++n === 1 ? new Response("", { status: 403 }) : new Response(xml, { status: 200 }));
-  const r4 = await W.fetch(new Request("https://w.dev/?id=19311109"), {}, { waitUntil() {} }); assert.equal(r4.status, 200); assert.equal(n, 2);
+  // 403: posrednik ne ponavlja upit (ponavlja aplikacija), vraća grešku
+  let n = 0; globalThis.fetch = async () => (++n, new Response("", { status: 403 }));
+  const r4 = await W.fetch(new Request("https://w.dev/?id=19311109"), {}, { waitUntil() {} }); assert.equal(r4.status, 502); assert.equal(n, 1); assert.equal((await r4.json()).greska, "OSS HTTP 403");
   console.log("koordinata OK");
 }
