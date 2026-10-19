@@ -54,7 +54,8 @@ function cors(origin) {
   if (ALLOWED.includes(origin)) h["Access-Control-Allow-Origin"] = origin;
   return h;
 }
-const out = (o, status, origin) => new Response(JSON.stringify(o), { status, headers: cors(origin) });
+let COLO = null; // Cloudflareov podatkovni centar koji je obradio upit (za dijagnostiku odbijanja s OSS-a)
+const out = (o, status, origin) => new Response(JSON.stringify(COLO ? { ...o, cf: COLO } : o), { status, headers: cors(origin) });
 
 // WGS84 -> HTRS96/TM (EPSG:3765), Snyder (USGS 1395); ista formula kao u aplikaciji (greška ispod 2 cm)
 function tmFwd(lon, lat) {
@@ -97,6 +98,7 @@ async function parcelInfo(id) {
 export default {
   async fetch(req, env, ctx) {
     const origin = req.headers.get("Origin") || "";
+    COLO = req.cf && req.cf.colo ? String(req.cf.colo) : null;
     if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: { ...cors(origin), "Access-Control-Allow-Methods": "GET", "Access-Control-Max-Age": "86400" } });
     if (req.method !== "GET") return out({ ok: false, greska: "samo GET" }, 405, origin);
     const sp = new URL(req.url).searchParams;
