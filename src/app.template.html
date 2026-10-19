@@ -226,6 +226,8 @@ details p{font-size:13.5px;margin:6px 0}
 .pz{font-style:normal;font-size:10.5px;font-weight:700;display:inline-block;min-width:16px;text-align:center;padding:0 4px;border-radius:8px;margin-left:4px;vertical-align:1px;cursor:help}
 .pz-A{background:var(--ok-bg);color:var(--ok)} .pz-B{background:#e8eefc;color:#2b4a9a} .pz-C{background:var(--warn-bg);color:var(--warn)}
 @media (prefers-color-scheme:dark){.pz-B{background:#1e2a44;color:#9fb6ff}}
+.tipcmp{list-style:none;margin:6px 0;padding:0}.tipcmp li{margin:0 0 6px}.tipcmp .tipb{display:block;width:100%;text-align:left;font:inherit;font-size:14px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);cursor:pointer}
+.tipcmp .tipb>span{display:block;font-size:13px;font-weight:600;margin-top:2px}.tipcmp li.sel .tipb{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
 .pzt{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}.pzt td{padding:4px 2px;border-top:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}.pzt td:first-child{width:26px}
 .buygrid select{max-width:100%;width:100%;text-overflow:ellipsis}
 .bgrid>*{min-width:0}
@@ -700,6 +702,22 @@ function pzArea(P,area){
   }catch(e){}
 }
 // uvjeti koje aplikacija ne može potvrditi iz javnih podataka; prikazuju se uvijek, za svaki tip gradnje
+// ================= USPOREDBA TIPOVA GRADNJE (Faza B, korak 1) =================
+// Svaki tip i način gradnje: brojčani uvjeti iz pravila (najmanja čestica, kig, kis, visina) za istu površinu.
+// Ishod je samo „brojčani uvjeti ispunjeni / nisu ispunjeni”; aplikacija nijedan tip ne proglašava dopuštenim,
+// jer za sve vrijede i uvjeti koje ne može provjeriti (pristup, parkiranje, opremljenost, regulacijski pravac).
+const TIP_STANJE={ok:["good","brojčani uvjeti ispunjeni"],provj:["","čestica manja od propisane: potrebna dodatna provjera"],rub:["","čestica na granici (do 5 % manja)"],izn:["","samo iznimno (čestica)"],mala:["bad","čestica premala"],tl:["bad","tlocrt manji od najmanjeg"],zabr:["bad","nije dopušteno u ovom području"],vel:["","čestica veća od najveće"],nema:["","pravilo ne navodi uvjete"]};
+function tipCmpHtml(rows,A,izvor){
+  if(!rows||rows.length<2) return "";
+  const open=OPEN.has("tipcmp")?" open":"";
+  let h=`<details class="acc" data-k="tipcmp"${open}><summary><span>Usporedba tipova gradnje</span><b>${rows.filter(r=>r.stanje==="ok").length} od ${rows.length} s ispunjenim brojčanim uvjetima</b></summary><div class="acc-body">`;
+  h+=`<p class="meta" style="margin-top:0">Teorijski, iz kig-a i kis-a za ${fmt(A)} m²${izvor?" ("+esc(izvor)+")":""}. „Brojčani uvjeti ispunjeni” ne znači da je gradnja dopuštena: za svaki tip vrijede i uvjeti označeni s C (pristup, parkiranje, komunalna opremljenost, regulacijski pravac).</p><ul class="tipcmp">`;
+  for(const r of rows){const st=TIP_STANJE[r.stanje]||TIP_STANJE.nema;
+    h+=`<li${r.odabran?' class="sel"':""}><button type="button" class="tipb" data-tipcmp="${esc(r.key)}" aria-pressed="${r.odabran?"true":"false"}"><b>${esc(r.naziv)}</b>${r.oblik?" · "+esc(r.oblik):""} ${pzTag(r.pz)}<span class="${st[0]}">${esc(st[1])}</span>`+
+      `<small class="fx">${[r.minC?"najmanja čestica "+fmt(r.minC)+" m²"+(r.minCIzn?" (iznimno "+fmt(r.minCIzn)+")":""):null,r.tl!=null?"tlocrt do "+fmt(r.tl)+" m²":null,r.gbp!=null?"GBP do "+fmt(r.gbp)+" m²":null,r.visina?"visina "+dec(r.visina)+" m":null,r.etaze||null].filter(Boolean).map(esc).join(" · ")}</small></button></li>`;}
+  h+=`</ul><p class="meta">Dodirni tip za detaljan izračun ispod. Pouzdanost: izračun je najviše B; ako je zona tvoja pretpostavka, C.</p></div></details>`;
+  return h;
+}
 function pzOtvoreno(extra){
   pzSet("ot-pristup","Pristup s javne prometne površine",null,pz("C",{razlog:"širina i pravni status pristupa nisu provjereni; ulica iz OpenStreetMapa je procjena",provjera:"lokacijska informacija, katastar (čestica puta)"}));
   pzSet("ot-regulacija","Regulacijski pravac",null,pz("C",{razlog:"nije u javnim podacima",provjera:"lokacijska informacija"}));
@@ -854,6 +872,13 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   const pzG=pzSet("calc-gbp","Najveći GBP (teorijski, kis)",fmt(gbpN)+" m²",pzCalc({metoda:"površina "+fmt(A)+" m² × kis "+dec(P.kis)},[pzA,pzR,pzZ,pzS]));
   if(env) pzSet("calc-prostor","Prostor za građevinu nakon odmaka od međa",fmt(env.area)+" m²",pzCalc({metoda:RS.meda.min+" m od međa, bez regulacijskog pravca"},[pzA,pzR,pzZ]));
   if(env) L.geoJSON(env.geom,{style:{color:"#1f6f54",weight:2,dashArray:"4 3",fillColor:"#1f6f54",fillOpacity:.25},interactive:false}).addTo(krkEnvLayer);
+  {const zab=RS.grupa&&RS.grupa.zabranjeno||[], rows=[], ON={slob:"slobodnostojeća",dvoj:"dvojna",ugr:"ugrađena"};
+   for(const [k,T2] of Object.entries(RS.tipovi||{})){
+     const ob=(T2.oblici||RS.oblici||[["slob"],["dvoj"],["ugr"]]).map(o=>o[0]).filter(o=>T2[o]&&typeof T2[o]==="object");
+     for(const o of ob){const P2=T2[o], t2=Math.min(A*P2.izg,P2.tlMax||Infinity), g2=Math.min(A*P2.kis,T2.gbpMax||Infinity), mOk=A>=P2.minC, mEx=!mOk&&!!P2.minCIznimno&&A>=P2.minCIznimno;
+       const stanje=zab.includes(o)?"zabr":!mOk&&!mEx?"mala":P2.tlMin&&t2<P2.tlMin?"tl":P2.maxC&&A>P2.maxC?"vel":mEx?"izn":"ok";
+       rows.push({key:"krk|"+k+"|"+o,naziv:T2.naziv,oblik:ON[o]||o,minC:P2.minC,minCIzn:P2.minCIznimno,tl:t2,gbp:g2,visina:T2.visina,etaze:T2.etaze,stanje,odabran:T2===T&&o===oblSel,pz:pzCalc({},[pzA,pzR,pzZ,pzS])});}}
+   window.__tipCmp=rows; h+=tipCmpHtml(rows,A,AS&&AS.naziv?AS.naziv+" površina":null);}
   const chips=[(minOk?"čestica dovoljna":minEx?"čestica: samo iznimno":"čestica premala"),"tlocrt do "+fmt(tl)+" m²","GBP do "+fmt(gbpN)+" m²","visina "+dec(T.visina)+" m"];
   h+=`<div class="chips">${chips.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`;
   const row=(l,v,cls="")=>`<div class="row"><span>${l}</span><span class="${cls}">${v}</span></div>`;
@@ -2866,6 +2891,11 @@ function render(d){
         const smallX=pp.minC&&A<pp.minC?(smallParcelRule(zone)||(minCond?minCond.txt:null)):null;
         const okC=pp.minC?(A>=pp.minC?"good":A>=pp.minC*0.95||smallX?"":"bad"):"";
         const sumC=[pp.minC?(A>=pp.minC?"čestica dovoljna":A>=pp.minC*0.95?"čestica na granici":smallX?"manja od propisane: potrebna dodatna provjera":"čestica premala"):null,pp.izg?"tlocrt do "+fmt(A*pp.izg)+" m²":null,gbpMax?"GBP do "+fmt(gbpMax)+" m²":null].filter(Boolean).join(" · ");
+        {const pzA=PZREG.items.get(AS&&AS.k?"pov-"+AS.k:"pov-graf")||PZREG.items.get("pov-graf"), rows=TIPOVI.map(([t,n])=>{const p=parseParams(nk,t); if(!p.minC&&!p.izg&&!p.kis&&!p.gbp) return null;
+            let g=p.kis?Math.min(A*p.kis,p.gbp||Infinity):(p.gbp||null); const est=!g&&p.izg; if(est) g=A*p.izg*2.5;
+            const stanje=!p.minC||A>=p.minC?"ok":A>=p.minC*0.95?"rub":(smallParcelRule(zone)||RP.find(x=>x.id==="minC"&&x.status==="provjera"))?"provj":"mala";
+            return {key:"zg|"+t,naziv:"Kuća",oblik:n,minC:p.minC,tl:p.izg?A*p.izg:null,gbp:g,etaze:est?"GBP procjena (tlocrt × 2,5)":null,stanje,odabran:t===TIP,pz:pzCalc({},[pzA,pzR,pzZ,PZREG.items.get("pravilo-karta")])};}).filter(Boolean);
+         window.__tipCmp=rows; h+=tipCmpHtml(rows,A,AS&&AS.naziv?AS.naziv+" površina":null);}
         h+=`<details class="acc" data-k="calc"><summary><span>Izračun za ovu česticu</span><b class="${okC}">${esc(sumC)}</b></summary><div class="calc">`;
         if(AP){const calcZ=a=>{let g=pp.kis?Math.min(a*pp.kis,pp.gbp||Infinity):(pp.gbp||null); if(!g&&pp.izg) g=a*pp.izg*2.5; return {min:pp.minC?a>=pp.minC:null,tl:pp.izg?a*pp.izg:null,gbp:g};};
           window.__areaCmp={P:AP,area,share,calc:calcZ,rerender:()=>{if(window.__lastData) render(window.__lastData)}}; h+=areaCmpHtml(AP,area,share,calcZ);}
@@ -2985,6 +3015,9 @@ const STD={osn:0.85, sred:1.0, vis:1.3};
 const FLOORS={P:{f:1.00,n:1,label:"prizemnica"},PPk:{f:0.96,n:1.75,label:"P + potkrovlje"},P1:{f:0.93,n:2,label:"P + 1"},P1Pk:{f:0.91,n:2.75,label:"P + 1 + Pk"},P2:{f:0.90,n:3,label:"P + 2"}}; // n = broj tlocrta u GBP-u (potkrovlje 75 %, kao u simulatoru); P2: nastavak trenda (procjena)
 const PODRUM_EUR={kljuc:850, roh:550}; // procjena po m² podruma
 sheet.addEventListener("change",e=>{ if(e.target.id==="zahvatSel"){ZAHVAT=e.target.value;try{localStorage.setItem("zahvat",ZAHVAT)}catch(err){} OPEN.add("calc"); if(window.__lastData) render(window.__lastData);} });
+sheet.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-tipcmp]"); if(!b) return; const [r,t,o]=b.dataset.tipcmp.split("|"); OPEN.add("tipcmp");
+  if(r==="krk"&&KRK_CUR){KRK_TIP.tip=t; KRK_TIP.oblik=o; try{localStorage.setItem("krkTip",JSON.stringify(KRK_TIP))}catch(err){} renderKrk(KRK_CUR);}
+  else if(r==="zg"&&window.__lastData){TIP=t; try{localStorage.setItem("tip",TIP)}catch(err){} OPEN.add("calc"); render(window.__lastData);} });
 sheet.addEventListener("change",e=>{ if(e.target.id==="tipSel"){TIP=e.target.value;try{localStorage.setItem("tip",TIP)}catch(err){} OPEN.add("calc"); if(window.__lastData) render(window.__lastData);} });
 
 // ================= JEDINSTVENI FINANCIJSKI MODEL =================

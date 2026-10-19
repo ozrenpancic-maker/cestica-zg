@@ -58,6 +58,7 @@ function setv(w,id,v,ev="input"){const e=$(w,id); if(e.type==="checkbox") e.chec
   const s=w.document.getElementById("sheet").textContent;
   ok(s.includes("potrebna dodatna provjera"),"2.2: čestica 450 m² označena kao 'potrebna dodatna provjera'");
   ok(!/čestica premala/.test(s),"2.2: čestica 450 m² nije označena kao 'čestica premala'");
+  {const R=w.__tipCmp; ok(R&&R.length===3&&R.every(r=>r.stanje!=="mala"&&r.stanje!=="ok")&&R.every(r=>r.pz.raz!=="A"),"Faza B: usporedba tipova u Zagrebu (2.2, 450 m²): nijedan tip nije 'ispunjeno' ni 'premala', nego dodatna provjera");}
   ok(s.includes("manjim od 600 m²"),"2.2: prikazana je odredba o česticama manjim od 600 m²");
   // 30 × 25 m = 750 m²
   w.eval("render")(data(w,parcelRect(30,25),"2.2."));
@@ -1121,6 +1122,11 @@ async function krkTests(){
   ok(C&&C.plan==="UPU 2 Kornić"&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpN-200)<0.01&&C.gbpP===null&&C.minOk,"UPU 2 Kornić, obiteljska slobodnostojeća 600 m²: tlocrt 150, GBP 200 (kis 0,75, granica 200 sa svim građevinama)");
   ok(/UPU 2 Kornić/.test(tk)&&/7,5 m/.test(tk)&&/javna cesta 6 m/.test(tk)&&/19\/2016/.test(tk)&&!/čl\. 15\./.test(tk),"UPU 2: visina 7,5 m, udaljenosti od ceste, izvor SN 19/2016; neizgrađeni dio nije blokiran jer UPU postoji");
   {const R=E("PZREG").items; ok(R.get("zona-korisnik").raz==="C"&&R.get("zona-korisnik").korisnik&&R.get("calc-tlocrt").raz==="C"&&R.get("calc-gbp").raz==="C"&&/Teorijski izračun, razina C: .*tvoja pretpostavka/.test(tk)&&/nisu dopuštena gradnja/.test(tk),"UPU 2: izračun za zonu koju je odabrao korisnik ima razinu C (korisnička pretpostavka), ne potvrđeno");}
+  {const rows=w.__tipCmp, t=txt(w,"sheet");
+   ok(rows&&rows.length>=4&&rows.every(r=>r.pz.raz==="C")&&rows.some(r=>r.naziv==="Obiteljska kuća"&&r.oblik==="slobodnostojeća"&&Math.abs(r.tl-150)<0.5&&Math.abs(r.gbp-200)<0.5&&r.odabran)&&/Usporedba tipova gradnje/.test(t)&&/ne znači da je gradnja dopuštena/.test(t)&&!/(?<!ne znači da je gradnja )dopušten[ao]? (je|gradnja)/i.test(t.replace(/nije dopušteno u ovom području|nisu dopuštena gradnja/g,"")),"Faza B: usporedba tipova za UPU 2 (zona korisnika: svi C), nijedan tip nije proglašen dopuštenim");
+   const b=w.document.querySelector('[data-tipcmp="krk|visobit|slob"]'); b&&b.dispatchEvent(new w.Event("click",{bubbles:true}));
+   ok(b&&w.__krkCalc&&w.__krkCalc.tip==="visobit"&&w.document.querySelector('[data-tipcmp="krk|visobit|slob"]').getAttribute("aria-pressed")==="true","Faza B: dodir na tip u usporedbi bira taj tip za detaljan izračun");
+   w.document.querySelector('[data-tipcmp="krk|obit|slob"]').dispatchEvent(new w.Event("click",{bubbles:true})); tk=txt(w,"sheet");}
   ok(/Zona se ne može odrediti automatski/.test(tk)&&$(w,"krkZona").value==="M11"&&/Izračun je za zonu koju si odabrao \(M11\)\. Detaljna zona nije potvrđena/.test(tk),"UPU 2: izračun za zonu koju je korisnik odabrao, uz oznaku da nije potvrđena");
   ok(!/Model visina procjenjuje/.test(tk),"UPU 2: iznimka za kosi teren ne vrijedi za obiteljsku kuću");
   setv(w,"krkTip","visobit","change"); ok(/Model visina procjenjuje nagib okoline na oko 5 %/.test(txt(w,"sheet"))&&/10,5 m/.test(txt(w,"sheet")),"UPU 2, višeobiteljska: iznimka za kosi teren (10,5 m) s procjenom nagiba");
