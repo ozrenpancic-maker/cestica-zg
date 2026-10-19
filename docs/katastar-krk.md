@@ -23,6 +23,11 @@ Preuzete katastarske općine (24): Baška 315834, Batomalj 315842, Bogovići 315
 
 Broj čestice, k.o., površina iz geometrije i grafička površina iz katastra, granica na karti, stanje podataka. Grafička površina nije nužno ista kao površina upisana u posjedovni list ili zemljišnu knjigu.
 
+Uz grafičku površinu prikazuje se i **površina upisana u zemljišnu knjigu**:
+- automatski iz OSS-a preko posrednika (`tools/oss-posrednik`, uključuje se upisom adrese u `SRC_KRK.oss`), uz broj ZK uloška, površinu iz posjedovnog lista i dijelove čestice; podatak je neslužben;
+- ili ručnim unosom / iz učitanog PDF izvatka (ima prednost pred OSS-om).
+Uvjeti gradnje i dalje se računaju s grafičkom površinom.
+
 ## Osvježavanje
 
 Preuzeti ZIP-ove istom PowerShell naredbom (popis brojeva gore), raspakirati u `ko-<broj>/` i pokrenuti obje skripte.
