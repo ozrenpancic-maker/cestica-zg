@@ -17,6 +17,7 @@ MOCK=r"""async()=>{
   window.fetch=(u,o={})=>{u=String(u);
     if(u.includes("data/kat_krk/")){const W2=ring.map(([e,n])=>tmInv(e,n)).map(([a,b])=>[Math.round(a*1e6),Math.round(b*1e6)]), enc=[W2[0][0],W2[0][1]]; for(let i=1;i<W2.length;i++) enc.push(W2[i][0]-W2[i-1][0],W2[i][1]-W2[i-1][1]); const key=Math.floor(ll.lat/0.009)+"_"+Math.floor(ll.lng/0.013);
       if(u.endsWith("index.json")) return ok({v:1,preuzeto:"2026-10-19",dlat:0.009,dlon:0.013,prednost:[],ko:{"315907":{naziv:"KORNIĆ"}},kvadrati:[key]}); return ok([[1,"2345/6","315907",600,[[enc]]]]);}
+    if(u.includes("cestica-oss.ozren-pancic.workers.dev")) return ok({ok:true,id:"1",broj:"2345/6",koMb:"315907",ko:"KORNIĆ",katastar:642,zk:[{broj:"2345/6",povrsina:642,ulozak:"5126",odjel:"Zemljišnoknjižni odjel Krk"}],dijelovi:[{naziv:"KUĆA, LEDINE",povrsina:85,zgrada:true},{naziv:"TERASA",povrsina:35,zgrada:false},{naziv:"DVORIŠTE",povrsina:522,zgrada:false}],dohvaceno:"2026-10-19T08:35:33Z"});
     if(u.includes("NAMJENA_POVRSINA_NOVO")) return ok({type:"FeatureCollection",features:/esriGeometryPolygon/.test(o.body||"")?[{type:"Feature",geometry:half(w[0][0]-1e-4,mid),properties:gp},{type:"Feature",geometry:half(mid,w[1][0]+1e-4),properties:ag}]:[{type:"Feature",geometry:null,properties:gp}]});
     if(u.includes("IZRADA_PP")) return ok({type:"FeatureCollection",features:plans.map(p=>({type:"Feature",geometry:null,properties:p}))});
     if(u.includes("open-meteo")) return ok({elevation:[40,42,40,38,40]});

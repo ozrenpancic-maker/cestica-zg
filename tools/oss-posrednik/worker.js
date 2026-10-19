@@ -1,0 +1,128 @@
+// Čestica HR – posrednik prema javnom OSS-u (oss.uredjenazemlja.hr) za upisanu površinu čestice.
+// Cloudflare Worker. Poziv: GET https://<worker>/?id=<CESTICA_ID>
+// Vraća SAMO površine, dijelove čestice i oznake ZK uloška. Imena, adrese i udjeli posjednika/vlasnika se NE prosljeđuju.
+// OSS-ova adresa /oss/public/cad/parcel-info nije službeno dokumentirano sučelje i može se promijeniti bez najave.
+
+const OSS = "https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info?parcelId=";
+const ALLOWED = ["https://ozrenpancic-maker.github.io"]; // stranice koje smiju čitati odgovor (produkcija i proba su na istom originu)
+const CACHE_S = 6 * 3600; // odgovor OSS-a pamti se 6 sati
+
+const arr = x => (x == null ? [] : Array.isArray(x) ? x : [x]);
+// OSS u XML-u omata liste u istoimeni element: <parcelParts><parcelParts>…</parcelParts></parcelParts>
+const list = x => {
+  if (x == null || x === "") return [];
+  if (Array.isArray(x)) return x;
+  if (typeof x === "object") { const k = Object.keys(x); if (k.length === 1 && typeof x[k[0]] === "object") return arr(x[k[0]]); }
+  return [x];
+};
+const num = v => { const n = parseFloat(String(v ?? "").replace(",", ".")); return Number.isFinite(n) ? n : null; };
+
+// Mali XML parser (OSS ponekad vraća XML umjesto JSON-a): elementi i tekst, bez atributa.
+function xmlToObj(s) {
+  s = s.replace(/<\?[\s\S]*?\?>/g, "").replace(/<!--[\s\S]*?-->/g, "");
+  const ent = t => t.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d)).replace(/&amp;/g, "&");
+  const re = /<(\/?)([A-Za-z_][\w.-]*)[^>]*?(\/?)>|([^<]+)/g;
+  const root = { kids: {} }, stack = [root]; let m;
+  while ((m = re.exec(s))) {
+    const top = stack[stack.length - 1];
+    if (m[4] != null) { if (m[4].trim()) top.text = (top.text || "") + ent(m[4].trim()); continue; }
+    const [, close, name, self] = m;
+    if (close) { const n = stack.pop(); const val = Object.keys(n.kids).length ? n.kids : (n.text ?? ""); const p = stack[stack.length - 1]; add(p.kids, name, val); continue; }
+    if (self) { add(top.kids, name, ""); continue; }
+    stack.push({ kids: {} });
+  }
+  function add(o, k, v) { if (k in o) { if (!Array.isArray(o[k]) || !o[k].__multi) { o[k] = [o[k]]; o[k].__multi = true; } o[k].push(v); } else o[k] = v; }
+  const k = Object.keys(root.kids); return k.length === 1 ? root.kids[k[0]] : root.kids;
+}
+
+function sazmi(d) {
+  const odjeli = {};
+  for (const u of list(d.lrUnitsFromParcelLinks)) odjeli[String(u.lrUnitId)] = { odjel: u.institutionName || null, vrsta: u.lrUnitTypeName || null, status: u.statusName || null };
+  const zk = list(d.parcelLinks).map(l => {
+    const u = l.lrUnit || {}; const o = odjeli[String(u.lrUnitId)] || {};
+    return { broj: l.parcelNumber != null ? String(l.parcelNumber) : null, povrsina: num(l.area), opis: l.address || null,
+      ulozak: u.lrUnitNumber != null ? String(u.lrUnitNumber) : null, glavnaKnjiga: u.mainBookName || null, odjel: o.odjel || null, vrstaUloska: o.vrsta || null, statusUloska: o.status || null };
+  });
+  const dijelovi = list(d.parcelParts).map(p => ({ naziv: p.name || null, povrsina: num(p.area), zgrada: String(p.building) === "true" }));
+  return { ok: true, id: d.parcelId != null ? String(d.parcelId) : null, broj: d.parcelNumber != null ? String(d.parcelNumber) : null,
+    koMb: d.cadMunicipalityRegNum != null ? String(d.cadMunicipalityRegNum) : null, ko: d.cadMunicipalityName || null,
+    katastar: num(d.area), zk, dijelovi, izvor: "OSS (oss.uredjenazemlja.hr), neslužbeni javni podaci", dohvaceno: new Date().toISOString() };
+}
+
+function cors(origin) {
+  const h = { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=3600", "Vary": "Origin" };
+  if (ALLOWED.includes(origin)) h["Access-Control-Allow-Origin"] = origin;
+  return h;
+}
+const out = (o, status, origin) => new Response(JSON.stringify(o), { status, headers: cors(origin) });
+
+// WGS84 -> HTRS96/TM (EPSG:3765), Snyder (USGS 1395); ista formula kao u aplikaciji (greška ispod 2 cm)
+function tmFwd(lon, lat) {
+  const a = 6378137, f = 1 / 298.257222101, k0 = 0.9999, lon0 = 16.5, E0 = 500000, e2 = f * (2 - f), ep2 = e2 / (1 - e2), r = Math.PI / 180;
+  const M = p => { const e4 = e2 * e2, e6 = e4 * e2; return a * ((1 - e2 / 4 - 3 * e4 / 64 - 5 * e6 / 256) * p - (3 * e2 / 8 + 3 * e4 / 32 + 45 * e6 / 1024) * Math.sin(2 * p) + (15 * e4 / 256 + 45 * e6 / 1024) * Math.sin(4 * p) - (35 * e6 / 3072) * Math.sin(6 * p)); };
+  const phi = lat * r, s = Math.sin(phi), c = Math.cos(phi), t = Math.tan(phi);
+  const N = a / Math.sqrt(1 - e2 * s * s), T = t * t, C = ep2 * c * c, A = (lon - lon0) * r * c;
+  const E = E0 + k0 * N * (A + (1 - T + C) * A ** 3 / 6 + (5 - 18 * T + T * T + 72 * C - 58 * ep2) * A ** 5 / 120);
+  const Nn = k0 * (M(phi) + N * t * (A * A / 2 + (5 - T + 9 * C + 4 * C * C) * A ** 4 / 24 + (61 - 58 * T + T * T + 600 * C - 330 * ep2) * A ** 6 / 720));
+  return [E, Nn];
+}
+const WMS = "https://wms1-gs-oss.uredjenazemlja.hr/ows2-m/wms";
+const UA = { "User-Agent": "CesticaHR/1.0 (+https://ozrenpancic-maker.github.io/cestica-zg/)" };
+// katastarska čestica na točki: isti sloj koji OSS koristi kad se klikne na kartu (WMS GetFeatureInfo)
+async function cesticaNaTocki(lat, lon) {
+  const [E, N] = tmFwd(lon, lat), d = 1;
+  const q = new URLSearchParams({ SERVICE: "WMS", VERSION: "1.3.0", REQUEST: "GetFeatureInfo", FORMAT: "image/png", TRANSPARENT: "true", QUERY_LAYERS: "oss:BZP_CESTICE", LAYERS: "oss:BZP_CESTICE", STYLES: "", INFO_FORMAT: "application/json", I: "50", J: "50", CRS: "EPSG:3765", WIDTH: "101", HEIGHT: "101", BBOX: [E - d, N - d, E + d, N + d].map(x => x.toFixed(2)).join(","), FEATURE_COUNT: "1" });
+  const r = await fetch(WMS + "?" + q, { headers: { Accept: "application/json", ...UA }, signal: AbortSignal.timeout(12000) });
+  if (!r.ok) throw new Error("OSS karta HTTP " + r.status);
+  const j = await r.json(), f = j && j.features && j.features[0];
+  if (!f) return null;
+  const p = f.properties || {};
+  return { id: p.CESTICA_ID, broj: p.BROJ_CESTICE || null, koMb: p.MATICNI_BROJ_KO != null ? String(p.MATICNI_BROJ_KO) : null, graficka: num(p.POVRSINA_GRAFICKA), atributna: num(p.POVRSINA_ATRIBUTNA), datum: p.DATUM || null };
+}
+async function parcelInfo(id) {
+  let r, last;
+  for (let n = 0; n < 2; n++) { // OSS povremeno odbije upit (403); jedan ponovni pokušaj
+    r = await fetch(OSS + id, { headers: { "Accept": "application/json, text/xml;q=0.5", ...UA }, signal: AbortSignal.timeout(12000) });
+    if (r.ok || r.status === 404 || r.status === 204) break;
+    last = r.status; await new Promise(res => setTimeout(res, 700));
+  }
+  if (r.status === 404 || r.status === 204) return { status: 404 };
+  if (!r.ok) return { status: 502, greska: "OSS HTTP " + (last || r.status) };
+  const txt = await r.text(); let d;
+  try { d = txt.trim().startsWith("<") ? xmlToObj(txt) : JSON.parse(txt); } catch (e) { return { status: 502, greska: "OSS je vratio nečitljiv odgovor" }; }
+  if (!d || (d.parcelId == null && d.area == null)) return { status: 404 };
+  return { status: 200, o: sazmi(d) };
+}
+
+export default {
+  async fetch(req, env, ctx) {
+    const origin = req.headers.get("Origin") || "";
+    if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: { ...cors(origin), "Access-Control-Allow-Methods": "GET", "Access-Control-Max-Age": "86400" } });
+    if (req.method !== "GET") return out({ ok: false, greska: "samo GET" }, 405, origin);
+    const sp = new URL(req.url).searchParams;
+    let id = sp.get("id") || "", tocka = null;
+    const lat = parseFloat(sp.get("lat")), lon = parseFloat(sp.get("lon"));
+    if (!id && Number.isFinite(lat) && Number.isFinite(lon)) {
+      if (lat < 42 || lat > 46.6 || lon < 13 || lon > 19.5) return out({ ok: false, greska: "točka je izvan Hrvatske" }, 400, origin);
+      try { tocka = await cesticaNaTocki(lat, lon); } catch (e) { return out({ ok: false, greska: e.message || "OSS karta ne odgovara" }, 502, origin); }
+      if (!tocka || tocka.id == null) return out({ ok: false, greska: "na toj točki OSS nema katastarsku česticu" }, 404, origin);
+      id = String(tocka.id);
+    }
+    if (!/^\d{1,12}$/.test(id)) return out({ ok: false, greska: "neispravan id" }, 400, origin);
+
+    const cache = caches.default, ck = new Request("https://cache.local/oss/" + id);
+    const hit = await cache.match(ck);
+    let o;
+    if (hit) { o = await hit.json(); o.izCachea = true; }
+    else {
+      let res;
+      try { res = await parcelInfo(id); } catch (e) { return out({ ok: false, greska: "OSS ne odgovara (" + (e.name || "greška") + ")" }, 502, origin); }
+      if (res.status === 404) return out({ ok: false, greska: "OSS nema česticu s tim ID-om" }, 404, origin);
+      if (res.status !== 200) return out({ ok: false, greska: res.greska }, 502, origin);
+      o = res.o;
+      ctx.waitUntil(cache.put(ck, new Response(JSON.stringify(o), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_S } })));
+    }
+    if (tocka) { o.graficka = tocka.graficka; o.stanjeKarte = tocka.datum; if (!o.koMb) o.koMb = tocka.koMb; }
+    return out(o, 200, origin);
+  }
+};

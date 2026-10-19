@@ -24,6 +24,8 @@ function boot(){
       const ctx=new Proxy({},{get:(t,k)=>k in t?t[k]:(()=>{}),set:(t,k,v)=>(t[k]=v,true)});
       w.HTMLCanvasElement.prototype.getContext=function(){return ctx};
       w.SVGElement.prototype.createSVGRect=function(){return {}}; }});
+  // posrednik prema OSS-u u testovima je isključen (testovi ga uključuju gdje treba); adresa iz aplikacije ostaje u __OSS_URL
+  try{dom.window.eval('window.__OSS_URL=SRC_KRK.oss; SRC_KRK.oss=""')}catch(e){}
   return {w:dom.window, errs};
 }
 // pravokutna čestica w × d metara
@@ -117,6 +119,32 @@ function setv(w,id,v,ev="input"){const e=$(w,id); if(e.type==="checkbox") e.chec
   setv(w,"bYard","8000");
   ok(w.__fin.items.some(i=>i.k==="okolis"&&i.base===8000),"uređenje okoliša ulazi kao korisnički unos");
   ok(errs.length===0,"bez JS grešaka u financijama: "+errs.join(" | "));
+}
+
+// ---------------- 2b. Zagreb: grafička i upisana površina iz OSS-a (posrednik traži česticu po točki)
+async function zgOssTests(){
+  const tick=ms=>new Promise(r=>setTimeout(r,ms));
+  for(const [broj,expectOk] of [["1/1",true],["2/2",false]]){
+    const {w,errs}=boot(); const calls=[];
+    try{w.localStorage.clear()}catch(e){}
+    w.eval('SRC_KRK.oss="https://oss-test.example/"; OSS_RETRY.splice(0,2,5,5)');
+    w.fetch=(u)=>{u=String(u); calls.push(u);
+      if(u.startsWith("https://oss-test.example/")) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({ok:true,id:"5",broj,ko:"ŠESTINE",katastar:1010,graficka:998.4,zk:[{broj,povrsina:1012,ulozak:"777",odjel:"Zemljišnoknjižni odjel Zagreb"}],dijelovi:[],dohvaceno:"2026-10-19T09:00:00Z"})});
+      return Promise.reject(new Error("bez mreže u testu"));};
+    const d=data(w,parcelRect(40,25),"2.2."); w.eval("render")(d); await tick(30);
+    const t=txt(w,"sheet"), q=calls.filter(u=>u.startsWith("https://oss-test.example/"));
+    if(expectOk){
+      ok(q.length===1&&/\?lat=45\.84\d*&lon=15\.97\d*/.test(q[0]),"Zagreb OSS: posrednik se pita po točki unutar čestice ("+(q[0]||"nema upita")+")");
+      ok(/Grafička površina ?998 m²/.test(t)&&/iz katastarskog plana \(DGU, OSS\)/.test(t)&&/u gradskom sloju čestica 1\.0\d\d m²/.test(t),"Zagreb OSS: grafička površina iz DGU-a, uz površinu iz gradskog sloja");
+      ok(/Upisana u zemljišnoj knjizi ?1\.012 m²/.test(t)&&/ZK uložak 777/.test(t)&&/Upisana u katastru ?1\.010 m²/.test(t),"Zagreb OSS: upisana površina u ZK i u katastru");
+      ok(/površinom iz gradskog sloja čestica \(1\.0\d\d m²\)/.test(t)&&Math.abs(w.__cur.area-d.area)<0.01,"Zagreb OSS: izračun ostaje na površini iz gradskog sloja");
+      w.eval("render")(d); await tick(10); ok(calls.filter(u=>u.startsWith("https://oss-test.example/")).length===1,"Zagreb OSS: ponovni prikaz ne šalje novi upit");
+      $(w,"krkZkMan").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!!$(w,"krkZkIn"),"Zagreb: može se upisati druga upisana površina");
+      ok(!errs.length,"Zagreb OSS: bez JS grešaka "+errs.join("; "));
+    }else{
+      ok(/OSS je na ovom mjestu vratio drugu česticu \(2\/2\)/.test(t)&&!!$(w,"krkZkIn")&&!/1\.012 m²/.test(t),"Zagreb OSS: ako OSS na točki ima drugi broj čestice, vrijednost se ne prikazuje");
+    }
+  }
 }
 
 // ---------------- 3. Kupnja zemljišta
@@ -851,6 +879,10 @@ async function krkTests(){
   let mode="ok", calls=[];
   const okj=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b)});
   w.fetch=(u,o={})=>{u=String(u); calls.push(u);
+    if(u.startsWith("https://oss-test.example/")){ if(mode==="ossFail") return Promise.reject(new TypeError("Failed to fetch"));
+      if(mode==="oss403once"){mode="ok"; return Promise.resolve({ok:false,status:502,json:()=>Promise.resolve({ok:false,greska:"OSS HTTP 403"})});}
+      if(!/\?id=1$/.test(u)) return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve({ok:false,greska:"OSS nema česticu s tim ID-om"})});
+      return okj({ok:true,id:"1",broj:"2345/6",koMb:"315907",ko:"KORNIĆ",katastar:640,zk:[{broj:"2345/6",povrsina:642,ulozak:"5126",odjel:"Zemljišnoknjižni odjel Krk"}],dijelovi:[{naziv:"KUĆA",povrsina:85,zgrada:true},{naziv:"DVORIŠTE",povrsina:557,zgrada:false}],dohvaceno:"2026-10-19T08:00:00Z"}); }
     if(u.includes("data/kat_krk/")){ if(mode==="dguFail") return Promise.reject(new TypeError("Failed to fetch"));
       // čestica iz trenutnog prstena (HTRS96/TM → WGS84), kodirana kao u tools/katastar/pripremi_krk.py
       const W=ring.map(([e,n])=>E("tmInv")(e,n)).map(([a,b])=>[Math.round(a*1e6),Math.round(b*1e6)]), enc=[W[0][0],W[0][1]];
@@ -877,13 +909,54 @@ async function krkTests(){
     return Promise.reject(new Error("neočekivan zahtjev "+u));
   };
   const tick=ms=>new Promise(r=>setTimeout(r,ms));
+  const OSS_URL=w.__OSS_URL; ok(/^https:\/\/cestica-oss\.ozren-pancic\.workers\.dev\/$/.test(OSS_URL),"Krk: adresa posrednika prema OSS-u je postavljena"); E("SRC_KRK").oss="";
   await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50);
   const t=txt(w,"sheet");
   ok(calls.some(u=>u.endsWith("data/kat_krk/index.json"))&&calls.filter(u=>/data\/kat_krk\/-?\d+_-?\d+\.json$/.test(u)).length===1&&!calls.some(u=>u.includes("uredjenazemlja")),"Krk: čestica iz katastra uz aplikaciju (jedan kvadrat), bez DGU WFS-a");
   ok(!calls.some(u=>u.includes("services8.arcgis.com")),"Krk: zagrebački servisi se ne pozivaju");
-  ok(/Otok Krk · pilot · Grad Krk/.test(t)&&/2345\/6/.test(t)&&/k\.o\. KORNIĆ/.test(t)&&/digitalni katastarski plan \(stanje 19\. 10\. 2026\.\)/.test(t),"Krk: prikazani broj čestice, k.o. i stanje katastra");
+  ok(/Otok Krk · pilot · Grad Krk/.test(t)&&/2345\/6/.test(t)&&/k\.o\. KORNIĆ/.test(t)&&/DGU, stanje 19\. 10\. 2026\./.test(t),"Krk: prikazani broj čestice, k.o. i stanje katastra");
   const A=E("KRK_CUR").area; ok(Math.abs(A-600)<1.5,"Krk: površina iz geometrije nakon pretvorbe "+(A||0).toFixed(2)+" m² (čestica 30 × 20 m)");
-  ok(/grafička površina u katastru 600 m²/.test(t),"Krk: prikazana i grafička površina iz katastra");
+  ok(/Grafička površina ?600 m²/.test(t)&&/Upisana u zemljišnoj knjizi/.test(t)&&!!$(w,"krkZkIn"),"Krk: grafička površina iz katastra i polje za površinu iz zemljišne knjige");
+  // ručni unos upisane površine: obje vrijednosti i razlika
+  $(w,"krkZkIn").value="642"; $(w,"krkZkOk").dispatchEvent(new w.Event("click",{bubbles:true}));
+  let tz=txt(w,"sheet");
+  ok(/Grafička površina ?600 m²/.test(tz)&&/Upisana u zemljišnoj knjizi ?642 m²/.test(tz)&&/\+7,0 % \(42 m²\)/.test(tz)&&/veća od 5 %/.test(tz)&&/geodetska izmjera/.test(tz),"Krk: grafička 600 i upisana 642 m², razlika +7 % uz objašnjenje");
+  ok(/računaju se s grafičkom površinom/.test(tz)&&Math.abs(E("KRK_CUR").area-600)<1.5,"Krk: izračun i dalje s grafičkom površinom");
+  ok(/ZK izvadak/.test(tz)&&!!$(w,"zkFile"),"Krk: odjeljak za ZK izvadak s učitavanjem PDF-a");
+  $(w,"krkZkDel").dispatchEvent(new w.Event("click",{bubbles:true}));
+  ok(!!$(w,"krkZkIn")&&!/642 m²/.test(txt(w,"sheet")),"Krk: upisanu površinu se može promijeniti");
+  // upisana površina automatski iz OSS-a preko posrednika
+  ok(!calls.some(u=>u.includes("oss-test.example")),"Krk: bez adrese posrednika OSS se ne poziva");
+  E("SRC_KRK").oss="https://oss-test.example/"; E("OSSZK").clear(); E("renderKrk")(E("KRK_CUR"));
+  ok(/dohvaćam iz OSS-a/.test(txt(w,"sheet")),"Krk OSS: dok traje dohvat prikazuje se da se površina dohvaća");
+  await tick(20); let to=txt(w,"sheet");
+  ok(calls.includes("https://oss-test.example/?id=1")&&/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&/ZK uložak 5126/.test(to)&&/neslužbeni javni podatak/.test(to)&&/\+7,0 % \(42 m²\)/.test(to),"Krk OSS: upisana površina 642 m² dohvaćena automatski, s uloškom i razlikom");
+  ok(/Upisana u katastru ?640 m²/.test(to)&&/kuća: 85 m² · dvorište: 557 m²/.test(to)&&Math.abs(E("KRK_CUR").area-600)<1.5,"Krk OSS: površina iz posjedovnog lista i dijelovi čestice; izračun ostaje na grafičkoj");
+  $(w,"krkZkMan").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!!$(w,"krkZkIn"),"Krk OSS: može se upisati druga površina");
+  $(w,"krkZkIn").value="650"; $(w,"krkZkOk").dispatchEvent(new w.Event("click",{bubbles:true}));
+  ok(/Upisana u zemljišnoj knjizi ?650 m²/.test(txt(w,"sheet"))&&/upisao si ručno/.test(txt(w,"sheet")),"Krk OSS: ručni unos ima prednost");
+  $(w,"krkZkDel").dispatchEvent(new w.Event("click",{bubbles:true})); ok(/Upisana u zemljišnoj knjizi ?642 m²/.test(txt(w,"sheet")),"Krk OSS: brisanjem ručnog unosa vraća se OSS vrijednost");
+  E("OSS_RETRY").splice(0,2,5,5);
+  // povremeno odbijanje: prvi upit 403, drugi uspije
+  mode="oss403once"; E("OSSZK").clear(); E("renderKrk")(E("KRK_CUR")); await tick(60); to=txt(w,"sheet");
+  ok(/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&calls.filter(u=>u.includes("oss-test.example")).length>=2,"Krk OSS: nakon povremenog odbijanja (403) ponovni pokušaj uspije");
+  mode="ossFail"; E("OSSZK").clear(); let n0=calls.length; E("renderKrk")(E("KRK_CUR")); await tick(80); to=txt(w,"sheet");
+  ok(/OSS: podaci nisu dostupni/.test(to)&&!!$(w,"krkZkIn")&&!/642 m²/.test(to)&&calls.slice(n0).filter(u=>u.includes("oss-test.example")).length===3,"Krk OSS: kad OSS ne odgovara ni nakon 2 ponovna pokušaja, poruka i ručni unos (bez izmišljene vrijednosti)");
+  ok(!!$(w,"krkOssRetry")&&[...w.document.querySelectorAll("#krkArea a")].some(a=>a.href==="https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info?parcelId=1"),"Krk OSS: gumbi „Pokušaj ponovno” i „Otvori česticu u OSS-u”");
+  mode="ok"; $(w,"krkOssRetry").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20);
+  ok(/Upisana u zemljišnoj knjizi ?642 m²/.test(txt(w,"sheet")),"Krk OSS: „Pokušaj ponovno” dohvaća površinu");
+  mode="ok"; E("SRC_KRK").oss=""; E("OSSZK").clear(); E("renderKrk")(E("KRK_CUR"));
+  // isti raspored odjeljaka kao Zagreb; gdje nema podataka piše da nisu dostupni
+  {const tu=txt(w,"sheet"), hs=[...w.document.querySelectorAll("#sheet h2")].map(x=>x.textContent);
+   ok(["Provjere","Uvjeti gradnje","Gradnja i naknade","Novac i kupnja","Sunce i energija","Dokumentacija i gdje se obratiti"].every(x=>hs.includes(x)),"Krk: isti odjeljci kao Zagreb ("+hs.join(", ")+")");
+   ok(!!$(w,"saveBtn")&&!!$(w,"shareBtn")&&!!$(w,"printBtn"),"Krk: spremanje, dijeljenje i ispis kao za Zagreb");
+   ok(/Procjena cijene gradnje\s*nije dostupno/.test(tu)&&/Priključci i dozvole\s*nije dostupno/.test(tu)&&/Postojeće zgrade i dogradnja\s*nije dostupno/.test(tu)&&/Podaci nisu dostupni za ovo područje/.test(tu)&&/okolicu Zagreba i ne vrijede za otok Krk/.test(tu),"Krk: odjeljci bez podataka označeni „nije dostupno” s razlogom");
+   ok(!!$(w,"sunDate")&&!!$(w,"pvGo"),"Krk: sunce i sunčana elektrana dostupni");
+   setv(w,"yPrice","60000"); const B=w.__fin&&w.__fin.buy;
+   ok(B&&near(B.rows.find(r=>r.k==="porez").v,1800)&&Math.abs(B.area-600)<1.5,"Krk: kupnja zemljišta – porez na promet 3 % od 60.000 € = 1.800 €, površina 600 m²");
+   $(w,"saveBtn").dispatchEvent(new w.Event("click",{bubbles:true}));
+   ok(JSON.parse(w.localStorage.getItem("favs")||"[]").some(f=>/^krk:/.test(f.key)&&f.ces==="2345/6"),"Krk: čestica se može spremiti");
+   const sc=E("sunCompute")(); ok(sc&&Math.abs(sc.lat-45.0274)<0.01,"Krk: položaj Sunca računa se za česticu na Krku");}
   ok(/Građevinsko područje naselja \(Kornić\)/.test(t)&&/GPN-1/.test(t)&&/P3/.test(t)&&/(4[5-9]|5[0-5]) %P3/.test(t),"Krk: namjena iz županijskog sloja s udjelima (GPN-1 i P3 otprilike po pola)");
   ok(/neizgrađeno/.test(t)&&/obvezu urbanističkog plana/.test(t),"Krk: neizgrađeni dio GP-a uz upozorenje o mogućoj obvezi UPU-a");
   ok(/U izradi: Prostorni plan uređenja općine ili grada \(Krk\)/.test(t)&&!/državni plan/.test(t)&&!/stari plan/.test(t),"Krk: plan u izradi istaknut; državni plan i planovi van snage se ne prikazuju");
@@ -903,6 +976,12 @@ async function krkTests(){
   const reinspect=async()=>{E("NET").cache.clear(); E("KAT").tiles.clear(); E("KAT").idx=null; w.localStorage.clear(); await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50); return txt(w,"sheet")};
   gp.IZGRADJENOST="izgrađeno"; mode="full";
   let tk=await reinspect(), C=w.__krkCalc;
+  {const C=w.__krkCalc;
+   ok(!!$(w,"tGrid")&&!!$(w,"tEdit"),"Krk: simulator kuće na čestici dostupan");
+   $(w,"tEdit").dispatchEvent(new w.Event("click",{bubbles:true}));
+   const R=w.__sim, tlc=R&&R.C.find(c=>c.label==="Tlocrt (izgrađenost)"), gb=R&&R.C.find(c=>c.label==="GBP nadzemno");
+   ok(R&&tlc&&gb&&tlc.val.includes(E("fmt")(C.tl))&&gb.val.includes(E("fmt")(C.gbpN))&&!R.C.some(c=>c.label==="Tip kuće")&&!$(w,"tToFin"),"Krk simulator: provjere tlocrta ("+(tlc&&tlc.val)+") i GBP-a prema pravilu Krka");
+   E("tReset")();}
   ok(C&&C.st==="ok"&&Math.abs(C.A-600)<1.5&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpN-200)<0.01&&Math.abs(C.gbpP-200)<0.01&&C.minOk,"Krk, obiteljska slobodnostojeća na 600 m²: tlocrt 150, GBP nadzemno 200, s podrumom ukupno najviše 200 m² (GBP iz pojmovnika uključuje sve)");
   ok(C.env>255&&C.env<272,"Krk: prostor za kuću 4 m od međa oko 264 m² (22 × 12 m): "+C.env);
   ok(/PPUG Krk/.test(tk)&&/naselje NA2/.test(tk)&&/čl\. 22\./.test(tk)&&/6,5 m/.test(tk)&&/40 %/.test(tk)&&/„najveća dopuštena visina obiteljske kuće iznosi 6,5m“/.test(tk),"Krk: prikaz pravila s člancima i navodima iz plana");
@@ -1016,7 +1095,7 @@ async function krkTests(){
   ok(errs.length===0,"bez JS grešaka u pilotu Krk: "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(krkTests).then(aiTests).then(projTests).then(ai2Tests).then(sunTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(krkTests).then(aiTests).then(projTests).then(ai2Tests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
