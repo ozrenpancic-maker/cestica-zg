@@ -148,7 +148,7 @@ async function zgOssTests(){
         setv(w,"areaSel","zk","change"); await tick(10); const tz=txt(w,"sheet");
         ok(/Korištena površina: 1\.012 m² \(upisana u zemljišnoj knjizi; izvor: zemljišna knjiga, OSS/.test(tz)&&/računaju se s površinom: upisana u zemljišnoj knjizi \(1\.012 m²\)/.test(tz)&&w.__tl!==t0,"Zagreb: izračun s odabranom ZK površinom (tlocrt "+t0+" → "+w.__tl+" m²)");
         setv(w,"areaSel","graf","change"); await tick(10); ok(w.__gbp===g0&&w.__tl===t0,"Zagreb: povratak na grafičku površinu");
-        {await tick(5); const R=w.eval("PZREG").items, ct=R.get("calc-tlocrt"); ok(ct&&ct.raz!=="A"&&R.get("namjena").raz==="A"&&R.get("pravilo-karta")&&R.get("pravilo-karta").raz==="B"&&/Pouzdanost podataka/.test(txt(w,"sheet"))&&/Pristup s javne prometne površine/.test(txt(w,"pzBox"))&&/Teorijski izračun/.test(txt(w,"sheet")),"Zagreb: oznake A/B/C (namjena A, granica pravila B, izračun najviše B) i popis otvorenih uvjeta");}
+        {await tick(5); const R=w.eval("PZREG").items, ct=R.get("calc-tlocrt"); ok(ct&&ct.raz!=="A"&&R.get("namjena").raz==="A"&&R.get("pravilo-karta")&&R.get("pravilo-karta").raz==="B"&&/Pouzdanost podataka/.test(txt(w,"sheet"))&&/Pristup s (javne )?prometne površine/.test(txt(w,"pzBox"))&&/Teorijski izračun/.test(txt(w,"sheet")),"Zagreb: oznake A/B/C (namjena A, granica pravila B, izračun najviše B) i popis otvorenih uvjeta");}
       }
       w.eval("render")(d); await tick(10); ok(calls.filter(u=>u.startsWith("https://oss-test.example/")).length===1,"Zagreb OSS: ponovni prikaz ne šalje novi upit");
       $(w,"krkZkMan").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!!$(w,"krkZkIn"),"Zagreb: može se upisati druga upisana površina");
@@ -1009,7 +1009,7 @@ async function krkTests(){
     plans.splice(-3,3); plans.push({GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAN SNAGE",NAZIV:"UPU 2 - Kornić (stari)",SN_BROJ:"2005-01"});
     t=await rr(); ok(/van snage \(povijesni plan\)/.test(t)&&/ne vrijedi za gradnju/.test(t)&&R.get("upu-status").raz==="C","UPU karta: plan van snage prikazan kao povijesni, C");
     plans.pop(); await rr();
-    const pzt=txt(w,"pzBox"); ok(/Pouzdanost podataka/.test(txt(w,"sheet"))&&/Pristup s javne prometne površine/.test(pzt)&&/Regulacijski pravac/.test(pzt)&&/Parkirna mjesta/.test(pzt)&&/Komunalna opremljenost/.test(pzt)&&/Grafička površina/.test(pzt)&&/nije pravno dopuštena|ne znači da je gradnja pravno dopuštena/.test(pzt),"Pouzdanost: popis s otvorenim uvjetima (pristup, regulacija, parking, opremljenost) i napomenom o pravnoj dopuštenosti");
+    const pzt=txt(w,"pzBox"); ok(/Pouzdanost podataka/.test(txt(w,"sheet"))&&/Pristup s (javne )?prometne površine/.test(pzt)&&/Regulacijski pravac/.test(pzt)&&/Parkir/.test(pzt)&&/Komunalna opremljenost/.test(pzt)&&/Grafička površina/.test(pzt)&&/nije pravno dopuštena|ne znači da je gradnja pravno dopuštena/.test(pzt),"Pouzdanost: popis s otvorenim uvjetima (pristup, regulacija, parking, opremljenost) i napomenom o pravnoj dopuštenosti");
     ok(R.get("namjena").raz==="A"&&R.get("pov-graf").raz==="A"&&(!R.get("pravilo")||R.get("pravilo").raz==="A")&&[...R.values()].every(x=>!/^calc-/.test(x.id)||x.raz!=="A"),"Pouzdanost: namjena i površina A, nijedan izračun nije A");}
    rkMode="none"; E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k); E("RKAT").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20); ok(/nema karte UPU-a ni DPU-a/.test(txt(w,"rkBox")),"UPU karta: bez karte na lokaciji jasna poruka");
    rkMode="fail"; E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k); E("RKAT").clear(); E("renderKrk")(E("KRK_CUR")); for(let i=0;i<60&&!/Podaci nisu/.test(txt(w,"rkBox"));i++) await tick(100); ok(/Podaci nisu dostupni/.test(txt(w,"rkBox"))&&/Detaljna zona nije potvrđena/.test(txt(w,"rkBox")),"UPU karta: kad katalog ne odgovara, poruka bez izmišljene zone");
@@ -1108,6 +1108,8 @@ async function krkTests(){
   await reinspect(); C=w.__krkCalc; ok(!C.minOk&&!C.minEx&&/premala/.test(txt(w,"sheet")),"Krk: čestica 360 m² je premala za slobodnostojeću obiteljsku kuću");
   ring.splice(0,5,[E0-11,N0-10],[E0+11,N0-10],[E0+11,N0+10],[E0-11,N0+10],[E0-11,N0-10]);
   await reinspect(); C=w.__krkCalc; ok(!C.minOk&&C.minEx&&/samo iznimno/.test(txt(w,"sheet")),"Krk: čestica 440 m²: samo iznimno (400 m² u okruženju formiranih čestica)");
+  ok(w.__areaCmp&&w.__areaCmp.calc(440).min==="izn"&&w.__areaCmp.calc(520).min===true&&w.__areaCmp.calc(380).min===false,"Krk: usporedba površina razlikuje 'samo iznimno' (kao izračun), ne samo ispunjeno / nije ispunjeno");
+
   ring.splice(0,5,...ring0);
   // naselje Krk (NA1): nije u izravnoj provedbi
   gp.NASELJE="Krk"; await reinspect(); C=w.__krkCalc;
@@ -1127,6 +1129,8 @@ async function krkTests(){
    const b=w.document.querySelector('[data-tipcmp="krk|visobit|slob"]'); b&&b.dispatchEvent(new w.Event("click",{bubbles:true}));
    ok(b&&w.__krkCalc&&w.__krkCalc.tip==="visobit"&&w.document.querySelector('[data-tipcmp="krk|visobit|slob"]').getAttribute("aria-pressed")==="true","Faza B: dodir na tip u usporedbi bira taj tip za detaljan izračun");
    w.document.querySelector('[data-tipcmp="krk|obit|slob"]').dispatchEvent(new w.Event("click",{bubbles:true})); tk=txt(w,"sheet");}
+  {const t=txt(w,"sheet"), R=E("PZREG").items;
+   ok(/Prije svega provjeri/.test(t)&&/Parkiranje na čestici.*Plan traži 2 PGM po stanu; za 1 stan najmanje 2 mjesta/.test(t)&&/Broj stanova iz tipa građevine: 1/.test(t)&&/Detaljni plan \(UPU\)/.test(t)&&R.get("ot-upu").raz==="A"&&R.get("ot-pristup").raz==="C"&&/Komunalna opremljenost/.test(t),"Faza B: prekidači na Krku (UPU 2: UPU vrijedi (A), 2 PGM po stanu za obiteljsku kuću, pristup C, opremljenost)");}
   ok(/Zona se ne može odrediti automatski/.test(tk)&&$(w,"krkZona").value==="M11"&&/Izračun je za zonu koju si odabrao \(M11\)\. Detaljna zona nije potvrđena/.test(tk),"UPU 2: izračun za zonu koju je korisnik odabrao, uz oznaku da nije potvrđena");
   ok(!/Model visina procjenjuje/.test(tk),"UPU 2: iznimka za kosi teren ne vrijedi za obiteljsku kuću");
   setv(w,"krkTip","visobit","change"); ok(/Model visina procjenjuje nagib okoline na oko 5 %/.test(txt(w,"sheet"))&&/10,5 m/.test(txt(w,"sheet")),"UPU 2, višeobiteljska: iznimka za kosi teren (10,5 m) s procjenom nagiba");
@@ -1300,7 +1304,97 @@ async function ispuTests(){
   ok(errs.length===0,"bez JS grešaka u kartama planova Zagreba: "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(ai2Tests).then(sunTests).then(()=>{
+// ---------------- „Moja investicija”, faza I: model građevine, predlošci, simulator → procjena gradnje, faze
+async function investTests(){
+  const {w,errs}=boot(); try{w.localStorage.clear()}catch(e){}
+  const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  const PD=E("predlozakDims");
+  {const a=PD(150,"2"), b=PD(100,"1"), c=PD(200,"2.5");
+   ok(Math.abs(a.tl-75)<1e-9&&a.w===10&&a.d===7.5&&Math.abs(b.tl-100)<1e-9&&b.w===11.5&&b.d===8.7&&Math.abs(c.tl-200/2.75)<1e-9,"Predlošci: 150 m² P+1 → tlocrt 75 m², 10 × 7,5 m; 100 m² P → 11,5 × 8,7 m; P+1+Pk dijeli s 2,75");}
+  const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"77/1",KATASTARSKA_OPCINA:"REMETE"}), d=data(w,A,"2.2.");
+  w.__env=d.envelope; E("OPEN").add("tloc"); E("OPEN").add("bfaze"); E("render")(d);
+  ok(/Postavi kuću u „Simulatoru kuće na čestici”|Za automatsko povezivanje postavi kuću/.test(txt(w,"bLink")),"Bez simulatora: kalkulator objašnjava kako se povezuje");
+  setv(w,"tFl","2","change"); setv(w,"tPred","150","change"); await tick(20);
+  const TL=E("TL"); let M=w.__zgrada, H=w.__fin.house;
+  ok(TL.w===10&&TL.d===7.5&&M&&M.tlocrt===75&&M.gbpN===150&&M.gbpPoEtazama.length===2&&M.etazeNadzemne===2&&M.katnost==="2","Model građevine: predložak 150 m², P+1 → 10 × 7,5 m, dvije etaže po 75 m²");
+  ok(+$(w,"bArea").value===150&&$(w,"bFloors").value==="P1"&&Math.abs(H.foot-75)<1e-9&&/Povezano sa simulatorom/.test(txt(w,"bLink")),"Simulator automatski puni procjenu gradnje (150 m², P + 1, tlocrt 75 m²)");
+  // ručno provjerljiv primjer: klasična, ključ u ruke, standardni: 1.400 × 1,0 × 0,93 = 1.302 €/m²; 150 m² → 195.300 €
+  {const F=H.faze, f=k=>F.find(x=>x.k===k).v;
+   ok(Math.abs(H.unit-1302)<1e-9&&Math.abs(H.gradnja-195300)<1e-6&&Math.abs(f("zem")-5859)<1e-6&&Math.abs(f("kon")-42966)<1e-6&&Math.abs(f("ins")-33201)<1e-6&&Math.abs(F.reduce((a,x)=>a+x.v,0)-H.gradnja)<1e-6,"Faze: 1.302 €/m² × 150 m² = 195.300 €; iskop 5.859 €, konstrukcija 42.966 €, instalacije 33.201 €; zbroj faza = gradnja");}
+  ok(M.krov.tip==="dvo"&&M.krov.nagib===30&&M.krov.sljemeAzimut===90,"Krov: dvostrešni 30°, sljeme uzduž dulje strane (širina 10 m, istok–zapad) → azimut 90°");
+  // rotacija mijenja smjer krova, ne površinu ni cijenu
+  const g0=w.__fin.house.gradnja; TL.rot=30; E("tDraw")(); await tick(10);
+  ok(w.__zgrada.krov.sljemeAzimut===120&&Math.abs(w.__fin.house.gradnja-g0)<1e-6&&w.__zgrada.tlocrt===75,"Okret 30°: sljeme na 120°, tlocrt i cijena gradnje isti");
+  // promjena katnosti: isti predložak, P → tlocrt 150 m²
+  setv(w,"tFl","1","change"); await tick(10);
+  ok(TL.w===14&&Math.abs(TL.d-10.7)<1e-9&&+$(w,"bArea").value===Math.round(14*10.7)&&$(w,"bFloors").value==="P","Predložak 150 m² kao prizemnica: 14 × 10,7 m, kalkulator prati katnost");
+  setv(w,"tFl","2","change"); await tick(10);
+  // ručna izmjena površine ostaje; simulator je ne poništava; povratak na simulator
+  setv(w,"bArea","200"); setv(w,"tW","11"); await tick(10);
+  ok(+$(w,"bArea").value===200&&/ručno izmijenjeni/.test(txt(w,"bLink"))&&!!$(w,"bAuto")&&TL.pred==="","Ručno upisana površina (200 m²) ostaje kad se kuća promijeni; predložak prelazi u vlastite dimenzije");
+  $(w,"bAuto").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(10);
+  ok(+$(w,"bArea").value===Math.round(11*7.5*2)&&/Povezano sa simulatorom/.test(txt(w,"bLink")),"Vrati na simulator: površina opet iz kuće (11 × 7,5 m × 2 = 165 m²)");
+  // ručni iznos faze i ručna jedinična cijena; povratak na automatske
+  const g1=w.__fin.house.gradnja, kr=w.__fin.house.faze.find(x=>x.k==="krov").auto;
+  setv(w,"bF_krov","20000"); 
+  ok(Math.abs(w.__fin.house.gradnja-(g1-kr+20000))<1e-6&&/tvoj unos/.test(txt(w,"bFv_krov")),"Ručni iznos faze (krov 20.000 €) zamjenjuje samo tu fazu");
+  setv(w,"tW","12"); await tick(10);
+  ok(+$(w,"bF_krov").value===20000&&w.__fin.house.faze.find(x=>x.k==="krov").v===20000,"Promjena kuće ne poništava ručni iznos faze");
+  setv(w,"bUnit","1000"); ok(Math.abs(w.__fin.house.unit-1000)<1e-9,"Ručna jedinična cijena 1.000 €/m² GBP");
+  $(w,"bFazeAuto").dispatchEvent(new w.Event("click",{bubbles:true}));
+  ok(!$(w,"bUnit").value&&!$(w,"bF_krov").value&&Math.abs(w.__fin.house.unit-1302)<1e-9,"Vrati na automatske: cijena i faze ponovno iz modela");
+  // roh-bau: faze 5–8 nisu uključene, faze 1–4 nose cijelu cijenu roh-baua
+  setv(w,"bPhase","roh","change"); H=w.__fin.house;
+  ok(H.faze.filter(f=>!f.ukljuceno&&f.k!=="pod").length===4&&H.faze.filter(f=>!f.ukljuceno).every(f=>f.v===0)&&Math.abs(H.gradnja-H.hA*H.unit)<1e-6&&/nije uključeno u roh-bau/.test(txt(w,"bFv_zav")),"Roh-bau: faze 5–8 nisu uključene, zbroj faza 1–4 = površina × cijena roh-baua");
+  setv(w,"bPhase","kljuc","change");
+  // prijava korisnika (19. 10. 2026.): 60 m² prizemnica s podrumom davala je 58.560 € „temelja” jer je podrum bio u fazi 2
+  {const F=E("finHouse")({hA:60,t:"klas",std:"sred",ph:"kljuc",fl:"P",base:true}).house, f=k=>F.faze.find(x=>x.k===k);
+   ok(Math.abs(f("tem").v-7560)<1e-6&&Math.abs(f("pod").v-51000)<1e-6&&f("pod").naziv.startsWith("2a. Podrum"),"60 m² prizemnica s podrumom: temelji 7.560 € (9 %), podrum posebno 51.000 € (60 m² × 850 €/m²)");
+   const F2=E("finHouse")({hA:60,t:"mont",std:"sred",ph:"kljuc",fl:"P",base:false}).house;
+   ok(Math.abs(F2.faze.find(x=>x.k==="tem").v-14040)<1e-6&&F2.faze.find(x=>x.k==="pod").v===0,"60 m² montažna bez podruma: temelji s pločom 14.040 €, podruma nema");}
+  // pamćenje: kuća s ručnom fazom i simulator s krovom
+  setv(w,"bF_sto","9000"); setv(w,"tKrov","cet","change"); await tick(450);
+  E("render")(data(w,parcelRect(30,25,{KATASTARSKA_CESTICA:"78/1",KATASTARSKA_OPCINA:"REMETE"}),"2.2.")); w.__env=d.envelope; E("render")(d); await tick(20);
+  ok(+$(w,"bF_sto").value===9000&&E("TL").krov==="cet"&&$(w,"tKrov").value==="cet","Ručna faza i oblik krova pamte se uz česticu");
+  ok(/Udjeli faza .* pretpostavka aplikacije/.test(txt(w,"bFazeNote"))&&/Faza 1 obuhvaća samo iskop i nasip za temelje/.test(txt(w,"bFazeNote")),"Pretpostavke raspodjele i granica prema „Pripremi terena” navedene su uz faze");
+  ok(errs.length===0,"bez JS grešaka (moja investicija, faza I): "+errs.join(" | "));
+}
+
+// ---------------- Faza B, korak 2: područje za gradnju (odmak od međa i ceste)
+async function gpTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"90/1",KATASTARSKA_OPCINA:"REMETE"}), T=w.turf;
+  const base=T.buffer(A,-3/1000,{units:"kilometers"}).geometry;
+  const c=A.geometry.coordinates[0], dy=5/110540, road=[{ok:true,geom:[[c[0][0]-0.001,c[0][1]-dy],[c[1][0]+0.001,c[1][1]-dy]]}];
+  const G=E("gradivo")(A,base,3,5,road), G0=E("gradivo")(A,base,3,5,null), G1=E("gradivo")(A,base,3,null,road);
+  ok(Math.abs(G.parcelArea-750)<8&&Math.abs(G.baseArea-456)<6&&Math.abs((G.baseArea-G.area)-48)<3&&G.st==="primijenjen"&&G.band,"Područje za gradnju: 30 × 25 m, 3 m od međa → 456 m²; cesta uz južnu stranu, 5 m od ruba → uklanja se pojas 2 × 24 = 48 m²");
+  ok(G0.st==="ceste nisu učitane"&&Math.abs(G0.area-G0.baseArea)<0.01&&G1.st==="nema","Bez učitanih cesta ili bez pravila o pravcu odmak od ceste se ne primjenjuje, uz razlog");
+  const rd=E("krkRegDist"); ok(JSON.stringify(rd({regulacija:{ostale:4,razvrstane:6}}))==='{"d":4,"max":6}'&&JSON.stringify(rd({regulacija:{opis:"javna cesta 6 m (najmanje 9 m od osi), nerazvrstana 4 m (najmanje 7 m od osi)"}}))==='{"d":4,"max":6}',"Krk: udaljenost od regulacijskog pravca iz PPUG-a (4 / 6 m) i UPU-a 2 (nerazvrstana 4 m, javna 6 m)");
+  // prikaz u Zagrebu: s cestama iz OSM-a
+  const d=data(w,A,"2.2."), envO={v:{roads:[],roadLines:road,stops:[]}}; d.env=envO; w.__env=d.envelope; E("OPEN").add("calc"); E("OPEN").add("gp"); E("render")(d);
+  const t=txt(w,"sheet"), R=E("PZREG").items.get("gp-podrucje");
+  ok(/Područje za gradnju/.test(t)&&/Geometrijski moguć tlocrt/.test(t)&&R&&R.raz==="C"&&/OpenStreetMapa/.test(R.razlog)&&E("gpLayer").getLayers().length===2,"Zagreb: obris i pojas uz cestu na karti; područje C jer je strana uz cestu procjena");
+  $(w,"gpTog").dispatchEvent(new w.Event("click",{bubbles:true})); ok(E("gpLayer").getLayers().length===0,"Područje za gradnju: skrivanje s karte");
+  $(w,"gpTog").dispatchEvent(new w.Event("click",{bubbles:true})); ok(E("gpLayer").getLayers().length===2,"Područje za gradnju: ponovni prikaz");
+  {const f=E("pkFit")(2,600,150,240); ok(f.need===25&&f.free===210&&f.ok&&!E("pkFit")(4,200,120,60).ok,"Parkiranje: 2 mjesta = 25 m², slobodno 600 − 150 − 240 = 210 m² (stane); 4 mjesta na 200 m² čestici s 120 m² tlocrta i 60 m² zelenila ne stanu");}
+  {const d2=data(w,A,"2.2."); d2.env=envO; const u=d2.checks.find(r=>r.c.id==="upu"); u.v=[{properties:{TextString:"UPU Test"}}]; E("render")(d2); const t2=txt(w,"sheet");
+   ok(/Prije svega provjeri/.test(t2)&&/mogu zaustaviti gradnju/.test(t2)&&/u obuhvatu urbanističkog plana uređenja \(UPU Test\)/.test(t2)&&E("PZREG").items.get("ot-upu").raz==="A","Zagreb: obvezni UPU na čestici je zapreka na vrhu uvjeta gradnje (A, iz sloja 4b)");
+   ok(/Uz rub čestice prepoznata je ulica iz OpenStreetMapa/.test(t2),"Zagreb: pristup prikazuje prepoznatu ulicu kao procjenu");}
+  // cesta 2 m od ruba čestice (os ceste 5 m od ruba): južni rub je uz cestu, bočni rubovi nisu
+  {const dy5=5/110540, road5=[{ok:true,geom:[[c[0][0]-0.001,c[0][1]-dy5],[c[1][0]+0.001,c[1][1]-dy5]]}], B=E("streetBand")(A,road5,4);
+   const ba=B?T.area(T.intersect(A,B)):0; ok(B&&Math.abs(ba-30*4)<15,"Cesta 2 m od ruba čestice (os 5 m): prepoznat samo južni rub, pojas 4 m × 30 m ≈ 120 m² (bočni rubovi nisu uz cestu)");}
+  // OpenStreetMap: sadržaji ne odgovaraju, ceste da → pristup i pojas uz cestu i dalje rade
+  {const calls=[]; w.fetch=(u)=>{u=decodeURIComponent(String(u)); calls.push(u); if(/amenity|bus_stop/.test(u)) return Promise.reject(new TypeError("Failed to fetch"));
+     if(/interpreter/.test(u)) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({elements:[{type:"way",tags:{highway:"residential",name:"Test ulica"},geometry:[{lat:45.84,lon:15.969},{lat:45.84,lon:15.971}]}]})});
+     return Promise.reject(new Error("x"));};
+   E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k);
+   const env=await E("loadEnv")({lat:45.8401,lng:15.9702},A);
+   ok(env&&env.roadLines.length===1&&env.roads[0].name==="Test ulica"&&env.poiErr===true&&calls.some(u=>/around:20,/.test(u)),"OpenStreetMap: ceste se dohvaćaju zasebnim brzim upitom (20 m oko čestice); pad upita za sadržaje ne ruši pristup");
+   ok(/ceste su učitane/.test(E("envHtml")({v:env})),"Okolina: kad sadržaji nisu dostupni, to piše, a ceste se prikazuju");}
+  ok(errs.length===0,"bez JS grešaka (područje za gradnju): "+errs.join(" | "));
+}
+
+netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(ai2Tests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
