@@ -883,7 +883,7 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   h+=`<div class="chips">${chips.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`;
   const row=(l,v,cls="")=>`<div class="row"><span>${l}</span><span class="${cls}">${v}</span></div>`;
   h+=`<details class="acc" data-k="krkCalc" open><summary><span>Izračun za ovu česticu</span><b class="${minOk&&tlOk?"good":minEx?"":"bad"}">${esc(chips.slice(0,3).join(" · "))}</b></summary><div class="calc">`;
-  if(PP){const sh=A0/area, calcK=a=>({min:a>=P.minC,tl:Math.min(a*P.izg,P.tlMax||Infinity),gbp:Math.min(a*P.kis,T.gbpMax||Infinity)});
+  if(PP){const sh=A0/area, calcK=a=>({min:a>=P.minC?true:P.minCIznimno&&a>=P.minCIznimno?"izn":false,tl:Math.min(a*P.izg,P.tlMax||Infinity),gbp:Math.min(a*P.kis,T.gbpMax||Infinity)});
     window.__areaCmp={P:PP,area,share:sh,calc:calcK,rerender:()=>{if(KRK_CUR) renderKrk(KRK_CUR)}}; h+=areaCmpHtml(PP,area,sh,calcK);}
   if(Math.abs(A0-area)>1) h+=row(isUpu?"Dio čestice u GP-u naselja":"Izgrađeni dio GP-a naselja na čestici",`${fmt(A)} od ${fmt(Aall)} m²`);
   h+=row(`Najmanja čestica ${fmt(P.minC)} m²`,minOk?"ispunjeno":minEx?"samo iznimno":"premala",minOk?"good":minEx?"":"bad");
@@ -1499,7 +1499,7 @@ function areaCmpHtml(P,area,share,calc){
     h+=`<table class="rp acmpt"><thead><tr><th></th>${R.map(x=>`<th${x.c.k===S.k?' class="sel"':""}>${nm[x.c.k]}</th>`).join("")}</tr></thead><tbody>`;
     h+=`<tr><th>Površina</th>${R.map(x=>td(x,fmt(x.c.a)+" m²")).join("")}</tr>`;
     if(share<0.999) h+=`<tr><th>Građevinski dio</th>${R.map(x=>td(x,fmt(x.A)+" m²")).join("")}</tr>`;
-    if(R.some(x=>x.r.min!=null)) h+=`<tr><th>Najmanja čestica</th>${R.map(x=>td(x,x.r.min==null?"–":x.r.min?"ispunjeno":"nije ispunjeno")).join("")}</tr>`;
+    if(R.some(x=>x.r.min!=null)) h+=`<tr><th>Najmanja čestica</th>${R.map(x=>td(x,x.r.min==null?"–":x.r.min===true?"ispunjeno":({izn:"samo iznimno",rub:"na granici (do 5 % manja)",provj:"potrebna dodatna provjera"}[x.r.min]||"nije ispunjeno"))).join("")}</tr>`;
     if(R.some(x=>x.r.tl)) h+=`<tr><th>Najveći tlocrt</th>${R.map(x=>td(x,x.r.tl?fmt(x.r.tl)+" m²":"–")).join("")}</tr>`;
     if(R.some(x=>x.r.gbp)) h+=`<tr><th>Najveći GBP</th>${R.map(x=>td(x,x.r.gbp?fmt(x.r.gbp)+" m²":"–")).join("")}</tr>`;
     h+=`</tbody></table><p class="meta">Informativna usporedba istim pravilom; označeni stupac koristi se u izračunu. Prostor za kuću na karti uvijek se crta iz granice čestice. Mjerodavnu površinu utvrđuje geodetska izmjera.</p>`;
@@ -2897,7 +2897,7 @@ function render(d){
             return {key:"zg|"+t,naziv:"Kuća",oblik:n,minC:p.minC,tl:p.izg?A*p.izg:null,gbp:g,etaze:est?"GBP procjena (tlocrt × 2,5)":null,stanje,odabran:t===TIP,pz:pzCalc({},[pzA,pzR,pzZ,PZREG.items.get("pravilo-karta")])};}).filter(Boolean);
          window.__tipCmp=rows; h+=tipCmpHtml(rows,A,AS&&AS.naziv?AS.naziv+" površina":null);}
         h+=`<details class="acc" data-k="calc"><summary><span>Izračun za ovu česticu</span><b class="${okC}">${esc(sumC)}</b></summary><div class="calc">`;
-        if(AP){const calcZ=a=>{let g=pp.kis?Math.min(a*pp.kis,pp.gbp||Infinity):(pp.gbp||null); if(!g&&pp.izg) g=a*pp.izg*2.5; return {min:pp.minC?a>=pp.minC:null,tl:pp.izg?a*pp.izg:null,gbp:g};};
+        if(AP){const smallX0=!!(pp.minC&&(smallParcelRule(zone)||minCond)), calcZ=a=>{let g=pp.kis?Math.min(a*pp.kis,pp.gbp||Infinity):(pp.gbp||null); if(!g&&pp.izg) g=a*pp.izg*2.5; return {min:pp.minC?(a>=pp.minC?true:a>=pp.minC*0.95?"rub":smallX0?"provj":false):null,tl:pp.izg?a*pp.izg:null,gbp:g};};
           window.__areaCmp={P:AP,area,share,calc:calcZ,rerender:()=>{if(window.__lastData) render(window.__lastData)}}; h+=areaCmpHtml(AP,area,share,calcZ);}
         h+=`<div class="kd" style="margin:0 0 6px"><label for="tipSel">Tip kuće</label><select id="tipSel" class="bsel">${TIPOVI.map(x=>`<option value="${x[0]}"${x[0]===TIP?" selected":""}>${x[1]}</option>`).join("")}</select></div><div class="kd" style="margin:0 0 6px"><label for="zahvatSel">Zahvat</label><select id="zahvatSel" class="bsel">${ZAHVATI.map(x=>`<option value="${x[0]}"${x[0]===ZAHVAT?" selected":""}>${x[1]}</option>`).join("")}</select></div>`;
         if(ZAHVAT!=="nova"){const zi=zahvatItems(zone,ZAHVAT);

@@ -1108,6 +1108,8 @@ async function krkTests(){
   await reinspect(); C=w.__krkCalc; ok(!C.minOk&&!C.minEx&&/premala/.test(txt(w,"sheet")),"Krk: čestica 360 m² je premala za slobodnostojeću obiteljsku kuću");
   ring.splice(0,5,[E0-11,N0-10],[E0+11,N0-10],[E0+11,N0+10],[E0-11,N0+10],[E0-11,N0-10]);
   await reinspect(); C=w.__krkCalc; ok(!C.minOk&&C.minEx&&/samo iznimno/.test(txt(w,"sheet")),"Krk: čestica 440 m²: samo iznimno (400 m² u okruženju formiranih čestica)");
+  ok(w.__areaCmp&&w.__areaCmp.calc(440).min==="izn"&&w.__areaCmp.calc(520).min===true&&w.__areaCmp.calc(380).min===false,"Krk: usporedba površina razlikuje 'samo iznimno' (kao izračun), ne samo ispunjeno / nije ispunjeno");
+
   ring.splice(0,5,...ring0);
   // naselje Krk (NA1): nije u izravnoj provedbi
   gp.NASELJE="Krk"; await reinspect(); C=w.__krkCalc;
