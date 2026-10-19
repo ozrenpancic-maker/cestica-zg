@@ -1068,8 +1068,13 @@ function rkVrsta(naziv){
   if(/uvjet|zastit|ogranicenj/.test(t)) return "uvjeti";
   if(/promet|komunal|infrastruk|energet|vodoopskrb|odvodnj|telekomunik|elektroopskrb|plinoopskrb|ulicn|cest/.test(t)) return "infra";
   if(/namjen/.test(t)) return "namjena";
-  return "ostalo";
+  if(/drustven|gospodarsk|djelatnost/.test(t)) return "ostalo";
+  return "nepoznato"; // naziv bez opisa vrste (npr. samo plan i izmjena) ne određuje vrstu karte
 }
+// Title sloja ISPU-a, npr. „GUP grada Zagreba - V. ID (dopuna) ID KN_1_1”: naziv plana i izmjena iz koje je list (metapodatak servisa)
+function ispuTitle(t){const r=String(t||"").trim(), m=r.match(/^(.*?)\s+-\s+(.*)$/), iz=r.match(/\b([IVXLC]+)\.\s*ID\b/);
+  return {plan:m&&!rkSamoSifra(m[1])?m[1].trim():null,izmjena:iz?iz[1]+". izmjene i dopune":null,dopuna:/\(dopuna\)/i.test(r)};}
+const rkGenericki=t=>/web map service|^wms$|geoserver/i.test(String(t||""));
 // Provjerena tablica: šifra karte u ISPU-u -> vrsta i službeni naziv, posebno za svaki plan i oznaku revizije.
 // Upisuje se SAMO nakon provjere (naslov na samom listu ili metapodaci servisa), s izvorom i datumom.
 // Šifre KN, IS, ZP se ne tumače same po sebi: ista šifra u drugom planu može značiti drugu kartu
@@ -1203,9 +1208,9 @@ const RK_WMS={
     const C=await wmsCaps(K), pt=ll;
     const hit=C.slojevi.filter(s=>s.bb&&s.bb.every(Number.isFinite)&&pt.lng>=s.bb[0]&&pt.lng<=s.bb[2]&&pt.lat>=s.bb[1]&&pt.lat<=s.bb[3]);
     const items=hit.map(s=>{const I=ispuIme(s.name), pv=I?({PPZP:"PPU",PPGO:"PPU"}[I.vrsta]||I.vrsta.replace(/\d+$/,"")):((String(s.name+" "+s.title).match(/\b(DPU|UPU|GUP|PPUG|PPUO|PPU|PPGZ)\b/i)||[])[1]||"").toUpperCase();
-      const T=rkSifra(I), vt=rkVrsta(s.title), kod=rkSamoSifra(s.title);
-      return {id:s.name,plan:(s.roditelj&&!rkSamoSifra(s.roditelj)?s.roditelj:null)||(I?({GUP:"GUP",UPU:"UPU",DPU:"DPU",PPZP:"prostorni plan (PPZP)",PPGO:"prostorni plan (PPGO)"}[I.vrsta]||I.vrsta)+" "+I.sifra:s.name),planVrsta:pv||"plan",
-        karta:T?T.naziv:(!kod?s.title:"list "+(I?I.karta:s.name)),vrsta:T?T.vrsta:vt,vrstaIzvor:T?"tablica":vt!=="nepoznato"?"naziv":null,tablica:T,s,I,crs:s.crs.includes("EPSG:3765")?"EPSG:3765":"CRS:84"};});
+      const T=rkSifra(I), vt=rkVrsta(s.title), kod=rkSamoSifra(s.title), TT=ispuTitle(s.title);
+      return {id:s.name,TT,plan:TT.plan||(s.roditelj&&!rkSamoSifra(s.roditelj)&&!rkGenericki(s.roditelj)?s.roditelj:null)||(I?({GUP:"GUP",UPU:"UPU",DPU:"DPU",PPZP:"prostorni plan (PPZP)",PPGO:"prostorni plan (PPGO)"}[I.vrsta]||I.vrsta)+" "+I.sifra:s.name),planVrsta:pv||"plan",
+        karta:T?T.naziv:vt!=="nepoznato"&&!kod?s.title:"list "+(I?I.karta:s.name)+(TT.izmjena?" ("+TT.izmjena+(TT.dopuna?", dopuna":"")+")":""),vrsta:T?T.vrsta:vt,vrstaIzvor:T?"tablica":vt!=="nepoznato"?"naziv":null,tablica:T,s,I,crs:s.crs.includes("EPSG:3765")?"EPSG:3765":"CRS:84"};});
     // inačice iste karte (ista vrsta, oznaka, šifra i karta, druga oznaka revizije)
     const grp=new Map(); for(const it of items){if(!it.I) continue; const k=it.I.vrsta+it.I.br+"_"+it.I.sifra+"_"+it.I.karta; (grp.get(k)||grp.set(k,[]).get(k)).push(it);}
     for(const g of grp.values()){const revs=g.map(x=>x.I.rev).sort((a,b)=>b-a); for(const it of g){it.revs=revs; it.starija=it.I.rev<revs[0];}}
@@ -1240,16 +1245,17 @@ const RK_WMS={
     return RK_WMS.getMapUrl(K,it,[b.getWest(),b.getSouth(),b.getEast(),b.getNorth()],w,h,"CRS:84",true);},
   status(K,it,ctx){
     // plan se veže uz evidenciju samo kad ga servis imenuje (naziv sloja ili nadređenog sloja), ne iz same šifre
-    const M=RULES_META||{}, t=norm((it.s.roditelj||"")+" "+(it.s.title||"")).toLowerCase(), d=pzDan();
+    const M=RULES_META||{}, t=norm((rkGenericki(it.s.roditelj)?"":(it.s.roditelj||""))+" "+(it.s.title||"")).toLowerCase(), d=pzDan();
     const key=/sesvet/.test(t)?"SE":/zagreb/.test(t)&&/\bgup\b|generaln\w* urbanisti/.test(t)?"GUP":/prostorn\w* plan\w* grada zagreba|\bppgz\b/.test(t)?"PP":null, m=key?M[key]:null;
     const na=m&&/^\s*na snazi/i.test(String(m.status||""));
     const st=na?"vazeci":"nepoznat";
     const stTxt=na?`važeći prema evidenciji aplikacije (${m.naziv}${m.verzija?", "+m.verzija:""})`:key==="SE"?"evidencija aplikacije za GUP Sesvete ima samo prijedlog izmjena; status lista nije utvrđen":!key&&it.I?`plan je prepoznat samo iz šifre sloja (${it.I.vrsta}${it.I.br}_${it.I.sifra}); servis ne navodi naziv plana, pa status nije povezan s evidencijom`:"plan s lista nije povezan s evidencijom planova u aplikaciji";
     const revs=it.revs||[], rv=it.I?it.I.rev:null;
-    const aktNap=`Oznaka revizije${rv!=null?" R"+String(rv).padStart(2,"0"):""} u nazivu sloja nije dokaz da je list iz zadnje važeće odluke.`+(revs.length>1?` U servisu postoji ${revs.length} inačice ove karte (${revs.map(r=>"R"+String(r).padStart(2,"0")).join(", ")})${it.starija?"; ovo nije najviša oznaka":""}.`:"");
+    const izm=it.TT&&it.TT.izmjena?`Servis navodi da je list iz ${it.TT.izmjena}${it.TT.dopuna?" (dopuna; list ne mora pokrivati cijeli plan)":""}${m&&m.verzija?"; zadnja odluka u evidenciji aplikacije: "+m.verzija:""}. Jesu li kasnije izmjene mijenjale ovaj list, nije provjereno. `:"";
+    const aktNap=izm+`Oznaka revizije${rv!=null?" R"+String(rv).padStart(2,"0"):""} u nazivu sloja nije dokaz da je list iz zadnje važeće odluke.`+(revs.length>1?` U servisu postoji ${revs.length} inačice ove karte (${revs.map(r=>"R"+String(r).padStart(2,"0")).join(", ")})${it.starija?"; ovo nije najviša oznaka":""}.`:"");
     return {st,stTxt,izvorSt:"plan prepoznat iz naziva sloja ISPU-a",
       statusP:na?pz("A",{izvor:m.naziv+(m.verzija?", "+m.verzija:""),obuhvat:"plan (ne pojedini list)",datum:d,razlog:"veza lista i plana izvedena iz naziva sloja"}):pz("C",{razlog:stTxt,provjera:"Službeni glasnik Grada Zagreba, lokacijska informacija"}),
-      aktV:it.starija?"starija inačica u servisu":"nije potvrđeno",
+      aktV:it.starija?"starija inačica u servisu":it.TT&&it.TT.izmjena?"list iz "+it.TT.izmjena+"; nije potvrđeno da je zadnji":"nije potvrđeno",
       aktP:pz("C",{razlog:"servis ne navodi odluku ni datum lista; oznaka revizije nije dokaz važenja",provjera:"grafički dio zadnje odluke (Službeni glasnik Grada Zagreba), lokacijska informacija"}),
       aktNap,izr:[]};
   },

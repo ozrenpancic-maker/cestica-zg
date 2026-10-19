@@ -1264,6 +1264,11 @@ async function ispuTests(){
    const fu=$(w,"rkFull"), q=fu&&new URL(fu.href).searchParams;
    ok(q&&q.get("CRS")==="CRS:84"&&q.get("BBOX")==="15.8000000,45.7000000,16.2000000,45.9500000"&&q.get("TRANSPARENT")==="FALSE","ISPU: gumb za cijeli list (naslov i legenda) u okviru sloja");
    ok(/Namjena prema službenom vektorskom sloju GUP-a: Stambena/.test(t),"ISPU: uz raster se prikazuje namjena iz službenog vektorskog sloja (A)");
+   // stvarni Title iz servisa (izvoz 19. 10. 2026.): plan i izmjena, bez vrste karte; nadređeni sloj „GeoServer Web Map Service”
+   caps=`<?xml version="1.0"?><WMS_Capabilities version="1.3.0" xmlns="http://www.opengis.net/wms"><Capability><Layer><Title>GeoServer Web Map Service</Title><CRS>EPSG:3765</CRS><CRS>CRS:84</CRS>${G.map(n=>lay(n,"GUP grada Zagreba - V. ID (dopuna) ID "+n.slice(-6),Z)).join("")}${PZ.map(n=>lay(n,"PPGZ Grad Zagreb - IX. ID  "+n.slice(-6),Z)).join("")}</Layer></Capability></WMS_Capabilities>`;
+   ({t}=await run()); {const R=E("PZREG").items, g=S().items.find(x=>x.id==="HR_ISPU_GUP1_01333_R09_KN_1_1"), pp=S().items.find(x=>x.id==="HR_ISPU_PPZP_00021_R10_KN_1_1");
+    ok(S().items.every(x=>x.vrsta==="nepoznato")&&g.plan==="GUP grada Zagreba"&&pp.plan==="PPGZ Grad Zagreb"&&g.karta==="list KN_1_1 (V. izmjene i dopune, dopuna)"&&!S().items.some(x=>/GeoServer/.test(x.plan)),"ISPU (stvarni Title): naziv plana i izmjena iz servisa; vrsta karte ostaje nepotvrđena; generički nadređeni sloj nije plan");
+    ok(/Servis navodi da je list iz V\. izmjene i dopune \(dopuna/.test(t)&&R.get("upu-aktualnost").raz==="C"&&/nije potvrđeno da je zadnji/.test(t)&&R.get("upu-status").raz==="A","ISPU (stvarni Title): izmjena iz koje je list prikazana, aktualnost C, plan GUP prepoznat iz naziva u servisu");}
    // provjerena tablica šifri: tek tada list dobiva vrstu
    E('RK_SIFRE["GUP1_01333_R09"]={"KN_1_1":{vrsta:"namjena",naziv:"1. Korištenje i namjena prostora",izvor:"test",datum:"2026-10-19"}}');
    ({t}=await run());
