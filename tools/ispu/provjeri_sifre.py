@@ -29,6 +29,15 @@ def provjeri(d):
         plan, rev, sifra = (m[1].upper() + m[2] + "_" + m[3]), "R" + m[4], m[5]
         if (z.get("plan"), z.get("revizija"), z.get("sifra")) != (plan, rev, sifra):
             g.append(f"{k}: plan, revizija ili šifra ne odgovaraju nazivu sloja")
+        # plan odabran u pregledu mora odgovarati planu sloja (npr. list PPGZ-a ne smije se potvrditi prikazom GUP-a)
+        pn, vp, tt = str(z.get("plan_naziv") or ""), m[1].upper(), str(z.get("title_u_servisu") or "")
+        if z.get("status") == "potvrđeno" and pn:
+            if pn.startswith("GUP") and vp != "GUP":
+                g.append(f"{k}: sloj je plana {vp} ({tt.split(' - ')[0] or '?'}), a potvrđen je prikazom plana '{pn}'")
+            if vp == "GUP" and not pn.startswith("GUP") and pn != "drugi plan":
+                g.append(f"{k}: sloj je GUP, a potvrđen je prikazom plana '{pn}'")
+            if re.match(r"^PPGZ\b", tt) and pn.startswith("GUP"):
+                g.append(f"{k}: Title u servisu navodi PPGZ, a potvrđen je prikazom GUP-a")
         if z.get("status") == "potvrđeno":
             for p in ("naslov", "vrsta", "izvor", "datum_provjere"):
                 if not str(z.get(p) or "").strip():

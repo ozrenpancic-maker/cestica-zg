@@ -1206,6 +1206,8 @@ async function ispuTests(){
   const tick=ms=>new Promise(r=>setTimeout(r,ms));
   const {w,errs}=boot(); const E=x=>w.eval(x);
   E('RASTER_KATALOZI.find(k=>k.tip==="wms").obuhvat=__ISPU_OBUHVAT');
+  // ugrađena tablica šifri (src/ispu_sifre.json) se sprema i prazni; na kraju se testira sa stvarnim potvrdama
+  E('window.__RKS=JSON.parse(JSON.stringify(RK_SIFRE)); for(const k in RK_SIFRE) delete RK_SIFRE[k]');
   {const v=E("rkVrsta"); ok(v("1. Korištenje i namjena površina")==="namjena"&&v("4. Uvjeti korištenja, uređenja i zaštite prostora")==="uvjeti"&&v("3.1. Prometna i ulična mreža")==="infra"&&v("4.b Urbana pravila")==="pravila"&&v("")==="nepoznato"&&v("2. Mreža društvenih djelatnosti")==="ostalo","Karte planova: vrsta karte iz naziva (promet ne postaje namjena, uvjeti korištenja nisu namjena)");
    const I=E("ispuIme")("HR_ISPU_GUP1_01333_R09_IS_1_1"); ok(I&&I.vrsta==="GUP"&&I.rev===9&&I.karta==="IS_1_1"&&I.sifra==="01333","ISPU: naziv sloja rastavljen na vrstu plana, šifru, oznaku revizije i kartu");}
   const bb=(w0,s0,e0,n0)=>`<EX_GeographicBoundingBox><westBoundLongitude>${w0}</westBoundLongitude><eastBoundLongitude>${e0}</eastBoundLongitude><southBoundLatitude>${s0}</southBoundLatitude><northBoundLatitude>${n0}</northBoundLatitude></EX_GeographicBoundingBox>`;
@@ -1281,7 +1283,14 @@ async function ispuTests(){
      {sloj:"HR_ISPU_GUP1_01333_R09_ZP_1_1",plan:"GUP1_01333",revizija:"R09",sifra:"ZP_1_1",status:"potvrđeno",naslov:"4a. Urbana pravila",vrsta:"urbana_pravila",izvor:"x",datum_provjere:"19.10.2026."}]});
    ({t}=await run()); const pr=S().items.find(x=>x.id==="HR_ISPU_GUP1_01333_R09_IS_1_1"), kn=S().items.find(x=>x.id==="HR_ISPU_GUP1_01333_R09_KN_1_2"), zp=S().items.find(x=>x.id==="HR_ISPU_GUP1_01333_R09_ZP_1_1");
    ok(n===1&&pr.vrsta==="promet"&&pr.karta==="3a. Promet"&&kn.vrsta==="nepoznato"&&zp.vrsta==="nepoznato"&&/nije prepoznata/.test(t),"ISPU: uvoz JSON-a pregleda listova (samo potpuni potvrđeni zapis; nepotvrđeni i oni bez ispravnog datuma se ne koriste)");
-   E('delete RK_SIFRE["GUP1_01333_R09"]');}
+   E('delete RK_SIFRE["GUP1_01333_R09"]');
+   // stvarne potvrde (src/ispu_sifre.json, 19. 10. 2026.): 8 listova GUP-a; IS_4_1 i PPGZ nepotvrđeni
+   if(Object.keys(E("__RKS")).length){E('Object.assign(RK_SIFRE,__RKS)');
+    caps=`<?xml version="1.0"?><WMS_Capabilities version="1.3.0" xmlns="http://www.opengis.net/wms"><Capability><Layer><Title>GeoServer Web Map Service</Title><CRS>EPSG:3765</CRS><CRS>CRS:84</CRS>${G.map(n=>lay(n,"GUP grada Zagreba - V. ID (dopuna) ID "+n.slice(-6),Z)).join("")}${PZ.map(n=>lay(n,"PPGZ Grad Zagreb - IX. ID  "+n.slice(-6),Z)).join("")}</Layer></Capability></WMS_Capabilities>`;
+    ({t}=await run()); const by=id=>S().items.find(x=>x.id===id), R=E("PZREG").items;
+    ok(it().id==="HR_ISPU_GUP1_01333_R09_KN_1_1"&&it().vrsta==="namjena"&&it().karta==="1. Korištenje i namjena prostora"&&R.get("upu-vrsta").raz==="A"&&by("HR_ISPU_GUP1_01333_R09_KN_1_2").vrsta==="pravila"&&by("HR_ISPU_GUP1_01333_R09_IS_1_1").vrsta==="promet"&&by("HR_ISPU_GUP1_01333_R09_IS_4_1").vrsta==="nepoznato"&&S().items.filter(x=>x.id.includes("PPZP")).every(x=>x.vrsta==="nepoznato"),"ISPU (potvrđene šifre GUP-a): automatski odabrana karta namjene KN_1_1 (A); IS_4_1 i listovi PPGZ-a ostaju nepotvrđeni");
+    ok(R.get("upu-aktualnost").raz==="C"&&/V\. izmjene i dopune/.test(t)&&/Detaljna zona nije potvrđena/.test(t)&&!/Karta namjene nije prepoznata/.test(t),"ISPU (potvrđene šifre GUP-a): aktualnost lista i zona i dalje C");}
+  }
   ok(errs.length===0,"bez JS grešaka u kartama planova Zagreba: "+errs.join(" | "));
 }
 

@@ -172,3 +172,25 @@ python3 build.py                                                # ugradnja (pono
 ```
 
 U aplikaciju (`RK_SIFRE`) ulaze samo potvrđeni zapisi s naslovom, vrstom, izvorom i datumom. Takav list dobiva vrstu s oznakom A. Format je u `tools/ispu/primjer_sifre.json` (izmišljeni plan).
+
+## Potvrđene šifre (src/ispu_sifre.json)
+
+Potvrdio Ozren 19. 10. 2026., usporedbom lista ISPU-a sa službenim grafičkim dijelom važećeg GUP-a (zagreb.hr, SGGZ 9/16). GUP grada Zagreba, V. ID (dopuna), revizija R09:
+
+| Šifra | Prikaz | Vrsta |
+| --- | --- | --- |
+| KN_1_1 | 1. Korištenje i namjena prostora | namjena |
+| KN_1_3 | 2. Mreža gospodarskih i društvenih djelatnosti | ostalo |
+| IS_1_1 | 3a. Promet | promet |
+| IS_3_1 | 3b. Energetski sustav, pošta i telekomunikacije | infrastruktura |
+| KN_1_2 | 4a. Urbana pravila | urbana pravila |
+| ZP_2_4 | 4b. Procedure urbano-prostornog uređenja | ostalo |
+| ZP_1_1 | 4c. Zaštićeni i evidentirani dijelovi prirode | zaštita |
+| ZP_1_3 | 4d. Nepokretna kulturna dobra | zaštita |
+
+**Nepotvrđeno:**
+
+- `IS_4_1` (GUP).
+- Svih 6 listova PPGZ-a (`PPZP_00021_R10`, IX. ID). Tri su u izvozu bila potvrđena prikazima GUP-a. To je drugi plan, pa su vraćena na nepotvrđeno. Provjera sada takav zapis odbija, a alat za pregled za list PPGZ-a ne nudi prikaze GUP-a.
+
+Potvrde vrijede samo za ovaj plan i ovu reviziju. Iste šifre u drugom planu ili drugoj reviziji ne koriste se.
