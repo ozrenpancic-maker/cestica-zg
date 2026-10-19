@@ -1361,6 +1361,13 @@ async function investTests(){
 }
 
 // ---------------- Faza B, korak 2: područje za gradnju (odmak od međa i ceste)
+async function katTests(){
+  const {w}=boot(); const E=x=>w.eval(x), c=w.document.getElementById("lyrKat");
+  ok(c&&!c.checked&&!E("katLayer"),"Granice čestica: sloj je isključen dok ga korisnik ne uključi");
+  E("map").setZoom(13); c.checked=true; c.onchange({target:c}); const L0=E("katLayer");
+  ok(L0&&E("map").hasLayer(L0)&&L0.wmsParams.layers==="oss:BZP_CESTICE"&&L0.options.minZoom===16&&L0.options.pane==="katPane"&&/približi/.test(w.document.getElementById("lyrKatH").textContent),"Granice čestica: DGU WMS oss:BZP_CESTICE od zuma 16, iznad karata planova; na manjem zumu piše „približi kartu”");
+  c.checked=false; c.onchange({target:c}); ok(!E("map").hasLayer(L0)&&w.localStorage.getItem("lyrKat")==="0","Granice čestica: isključivanje uklanja sloj i pamti izbor");
+}
 async function gpTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
   const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"90/1",KATASTARSKA_OPCINA:"REMETE"}), T=w.turf;
@@ -1394,7 +1401,7 @@ async function gpTests(){
   ok(errs.length===0,"bez JS grešaka (područje za gradnju): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(ai2Tests).then(sunTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

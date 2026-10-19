@@ -140,3 +140,10 @@ Okvir „Prije svega provjeri” sadrži uvjete koji mogu zaustaviti gradnju bez
 - Ceste se dohvaćaju posebnim malim upitom: ceste do 20 m od ruba čestice, 10 s na poslužitelju. Ako svi poslužitelji odbiju, upit se ponavlja jednom.
 - Sadržaji u blizini (stanice, vrtić, škola, trgovina, ljekarna) idu posebnim upitom. Ako on padne, ceste i pristup i dalje rade, a u „Okolini” piše da sadržaji nisu dostupni.
 - Rub čestice smatra se rubom uz cestu ako je barem pola njegove duljine (3 od 5 točaka) do 12 m od osi ceste. Tako se prepoznaje i čestica 1–2 m od ceste, a bočni rubovi okomiti na cestu ne.
+
+## Granice čestica na karti
+
+- U „Slojevima” je prekidač „Granice čestica (DGU)”. Prikazuje granice svih katastarskih čestica iz istog sloja DGU-a (`oss:BZP_CESTICE`) iz kojeg aplikacija čita grafičku površinu.
+- Sloj se crta tek od zuma 16. Na manjem zumu uz prekidač piše „približi kartu”. Ako DGU ne odgovara, piše „DGU ne odgovara”.
+- Radi preko obične karte i preko satelita, a iznad karata prostornih planova. Izbor se pamti na uređaju.
+- Izgled crteža (boju i debljinu linija, brojeve čestica) određuje DGU.
