@@ -10,7 +10,7 @@ Prikaz za Krk:
 
 | Odjeljak | Izvor | Stanje |
 |---|---|---|
-| Katastarska čestica (broj, k.o., površina, granica) | DGU, INSPIRE WFS `api.uredjenazemlja.hr/services/inspire/cp/wfs` | **u kodu, nije provjereno uživo** (vidi niže) |
+| Katastarska čestica (broj, k.o., površina, granica) | DGU, digitalni katastarski plan (ATOM po k.o.), `data/kat_krk/` | provjereno prema izvornim podacima (`docs/katastar-krk.md`); živi WFS ne radi (ORA-01000) |
 | Namjena, građevinsko područje, izgrađeno ili neizgrađeno, udjeli na čestici | PGŽ, `STANJE/NAMJENA_POVRSINA_NOVO` | provjereno upitima na servis |
 | Važeći planovi i planovi u izradi na lokaciji | PGŽ, `STANJE/IZRADA_PP` | provjereno upitima na servis |
 | Nagib terena, pristup i okolina | Open-Meteo, OpenStreetMap | isti kod kao za Zagreb |
