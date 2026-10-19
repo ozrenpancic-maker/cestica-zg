@@ -851,8 +851,14 @@ async function krkTests(){
   let mode="ok", calls=[];
   const okj=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b)});
   w.fetch=(u,o={})=>{u=String(u); calls.push(u);
-    if(u.includes("api.uredjenazemlja.hr")){ if(mode==="dguFail") return Promise.reject(new TypeError("Failed to fetch"));
-      const q=new URL(u).searchParams; return okj({type:"FeatureCollection",features:q.get("typeNames")==="cp:CadastralZoning"?[czFeat]:[cpFeat]}); }
+    if(u.includes("data/kat_krk/")){ if(mode==="dguFail") return Promise.reject(new TypeError("Failed to fetch"));
+      // čestica iz trenutnog prstena (HTRS96/TM → WGS84), kodirana kao u tools/katastar/pripremi_krk.py
+      const W=ring.map(([e,n])=>E("tmInv")(e,n)).map(([a,b])=>[Math.round(a*1e6),Math.round(b*1e6)]), enc=[W[0][0],W[0][1]];
+      for(let i=1;i<W.length;i++) enc.push(W[i][0]-W[i-1][0],W[i][1]-W[i-1][1]);
+      const key=Math.floor(ll.lat/0.009)+"_"+Math.floor(ll.lng/0.013);
+      if(u.endsWith("index.json")) return okj({v:1,podrucje:"krk",preuzeto:"2026-10-19",dlat:0.009,dlon:0.013,prednost:["338427"],ko:{"315907":{naziv:"KORNIĆ"},"338427":{naziv:"OMIŠALJ-NJIVICE"}},kvadrati:[key]});
+      if(u.endsWith(key+".json")) return okj([[1,"2345/6","315907",600,[[enc]]],[2,"9/9","315907",50,[[[W[0][0]+5000,W[0][1]+5000,100,0,0,100,-100,0]]]]]);
+      return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null)}); }
     if(u.includes("NAMJENA_POVRSINA_NOVO")){ const poly=/esriGeometryPolygon/.test(o.body||"");
       if(mode==="crikvenica") return okj({type:"FeatureCollection",features:[{type:"Feature",geometry:null,properties:{...gp,OPCINA_GRAD:"CRIKVENICA"}}]});
       if(mode==="full") return okj({type:"FeatureCollection",features:[{type:"Feature",geometry:half(wgsRing[0][0]-1e-3,wgsRing[1][0]+1e-3),properties:gp}]});
@@ -873,13 +879,11 @@ async function krkTests(){
   const tick=ms=>new Promise(r=>setTimeout(r,ms));
   await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50);
   const t=txt(w,"sheet");
-  ok(calls.some(u=>u.includes("api.uredjenazemlja.hr")&&/EPSG%3A%3A3765/.test(u)&&/typeNames=cp%3ACadastralParcel/.test(u)),"Krk: čestica se traži u DGU WFS-u u HTRS96/TM");
-  const bb=(()=>{const u=calls.find(x=>x.includes("typeNames=cp%3ACadastralParcel")); return new URL(u).searchParams.get("bbox").split(",").slice(0,4).map(Number)})();
-  ok(Math.abs((bb[0]+bb[2])/2-E0)<0.01&&Math.abs((bb[1]+bb[3])/2-N0)<0.01&&bb[2]-bb[0]<=2.01,"Krk: upit je mali okvir (±1 m) oko dodirnute točke");
+  ok(calls.some(u=>u.endsWith("data/kat_krk/index.json"))&&calls.filter(u=>/data\/kat_krk\/-?\d+_-?\d+\.json$/.test(u)).length===1&&!calls.some(u=>u.includes("uredjenazemlja")),"Krk: čestica iz katastra uz aplikaciju (jedan kvadrat), bez DGU WFS-a");
   ok(!calls.some(u=>u.includes("services8.arcgis.com")),"Krk: zagrebački servisi se ne pozivaju");
-  ok(/Otok Krk · pilot · Grad Krk/.test(t)&&/2345\/6/.test(t)&&/k\.o\. KORNIĆ/.test(t),"Krk: prikazani broj čestice i k.o. iz DGU-a");
+  ok(/Otok Krk · pilot · Grad Krk/.test(t)&&/2345\/6/.test(t)&&/k\.o\. KORNIĆ/.test(t)&&/digitalni katastarski plan \(stanje 19\. 10\. 2026\.\)/.test(t),"Krk: prikazani broj čestice, k.o. i stanje katastra");
   const A=E("KRK_CUR").area; ok(Math.abs(A-600)<1.5,"Krk: površina iz geometrije nakon pretvorbe "+(A||0).toFixed(2)+" m² (čestica 30 × 20 m)");
-  ok(/u katastru 600 m²/.test(t),"Krk: prikazana i površina upisana u katastru");
+  ok(/grafička površina u katastru 600 m²/.test(t),"Krk: prikazana i grafička površina iz katastra");
   ok(/Građevinsko područje naselja \(Kornić\)/.test(t)&&/GPN-1/.test(t)&&/P3/.test(t)&&/(4[5-9]|5[0-5]) %P3/.test(t),"Krk: namjena iz županijskog sloja s udjelima (GPN-1 i P3 otprilike po pola)");
   ok(/neizgrađeno/.test(t)&&/obvezu urbanističkog plana/.test(t),"Krk: neizgrađeni dio GP-a uz upozorenje o mogućoj obvezi UPU-a");
   ok(/U izradi: Prostorni plan uređenja općine ili grada \(Krk\)/.test(t)&&!/državni plan/.test(t)&&!/stari plan/.test(t),"Krk: plan u izradi istaknut; državni plan i planovi van snage se ne prikazuju");
@@ -896,7 +900,7 @@ async function krkTests(){
   ok(/nagib u okolini/.test(t)&&/Kornić test/.test(t),"Krk: nagib i pristup (OSM) rade kao u Zagrebu");
   ok(w.__cur&&w.__cur.region==="krk"&&w.__cur.ces==="2345/6"&&w.__lastData===null,"Krk: stanje odabrane čestice postavljeno, zagrebački podaci očišćeni");
   // izgrađeni dio GP-a naselja Kornić (NA2), cijela čestica u GP-u: izračun prema čl. 22. PPUG-a Krka
-  const reinspect=async()=>{E("NET").cache.clear(); w.localStorage.clear(); await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50); return txt(w,"sheet")};
+  const reinspect=async()=>{E("NET").cache.clear(); E("KAT").tiles.clear(); E("KAT").idx=null; w.localStorage.clear(); await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50); return txt(w,"sheet")};
   gp.IZGRADJENOST="izgrađeno"; mode="full";
   let tk=await reinspect(), C=w.__krkCalc;
   ok(C&&C.st==="ok"&&Math.abs(C.A-600)<1.5&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpN-200)<0.01&&Math.abs(C.gbpP-200)<0.01&&C.minOk,"Krk, obiteljska slobodnostojeća na 600 m²: tlocrt 150, GBP nadzemno 200, s podrumom ukupno najviše 200 m² (GBP iz pojmovnika uključuje sve)");
@@ -939,7 +943,7 @@ async function krkTests(){
   setv(w,"krkTip","stamb","change"); C=w.__krkCalc; ok(C.tip==="stamb"&&C.oblik==="slob"&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpN-450)<1.2,"UPU 2, stambena građevina (čl. 40.): samo slobodnostojeća, kis 0,75 bez granice tipa = 450 m²");
   setv(w,"krkTip","obit","change");
   setv(w,"krkOblik","ugr","change"); C=w.__krkCalc; ok(C.oblik==="ugr"&&Math.abs(C.tl-100)<0.01,"UPU 2, ugrađena obiteljska: tlocrt najviše 100 m²");
-  setv(w,"krkOblik","dvoj","change"); C=w.__krkCalc; ok(Math.abs(C.tl-150)<0.1,"UPU 2, dvojna: tlocrt 150 m² (kig 0,25 × 600 = 150)");
+  setv(w,"krkOblik","dvoj","change"); C=w.__krkCalc; ok(Math.abs(C.tl-150)<0.5,"UPU 2, dvojna: tlocrt 150 m² (kig 0,25 × 600 = 150)");
   setv(w,"krkZona","druga","change"); ok(w.__krkCalc===null&&/samo u zonama M11 i M2/.test(txt(w,"sheet")),"UPU 2, druga zona: bez izračuna, uz razlog (čl. 37.)");
   setv(w,"krkZona","M11","change"); setv(w,"krkOblik","slob","change");
   plans.pop();
@@ -963,10 +967,10 @@ async function krkTests(){
   mode="ag"; tk=await reinspect(); ok(w.__krkCalc===null&&/nije u građevinskom području naselja/.test(tk),"Krk: izvan GP-a nema uvjeta za kuće");
   mode="ok"; gp.IZGRADJENOST="neizgrađeno";
   // DGU nedostupan (npr. preglednik ne smije dohvatiti servis): namjena za točku i jasna poruka
-  mode="dguFail"; calls=[]; E("NET").cache.clear(); w.localStorage.clear();
+  mode="dguFail"; calls=[]; E("NET").cache.clear(); E("KAT").tiles.clear(); E("KAT").idx=null; E("SKI").idxs={}; w.localStorage.clear();
   await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50);
   const t2=txt(w,"sheet");
-  ok(/Katastar DGU: Podaci nisu dostupni/.test(t2)&&/Namjena je određena za dodirnutu točku/.test(t2)&&/Građevinsko područje naselja/.test(t2),"Krk bez DGU-a: 'Podaci nisu dostupni', namjena za točku i dalje radi");
+  ok(/Katastar: Podaci nisu dostupni/.test(t2)&&/Namjena je određena za dodirnutu točku/.test(t2)&&/Građevinsko područje naselja/.test(t2),"Krk bez katastarskih podataka: 'Podaci nisu dostupni', namjena za točku i dalje radi");
   // točka unutar obuhvata, ali u drugoj jedinici (kopno)
   mode="crikvenica"; E("NET").cache.clear(); w.localStorage.clear();
   await E("inspect")(w.L.latLng(45.17,14.69)); await tick(50);

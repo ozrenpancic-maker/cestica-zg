@@ -544,7 +544,6 @@ const PGZ="https://gisportal.pgz.hr/server/rest/services/STANJE/";
 const SRC_KRK={
   namjena:PGZ+"NAMJENA_POVRSINA_NOVO/FeatureServer/0/query",
   planovi:PGZ+"IZRADA_PP/FeatureServer/0/query",
-  cp:"https://api.uredjenazemlja.hr/services/inspire/cp/wfs"
 };
 
 // --- HTRS96/TM (EPSG:3765): poprečna Merkatorova projekcija, GRS80, srednji meridijan 16,5°, k0 0,9999, E0 500 000 m.
@@ -573,36 +572,37 @@ function geomTo4326(g){
   const conv=c=>Array.isArray(c[0])?c.map(conv):(Math.abs(c[0])>180||Math.abs(c[1])>90?tmInv(c[0],c[1]):[c[0],c[1]]);
   return g&&g.coordinates?{type:g.type,coordinates:conv(g.coordinates)}:null;
 }
-// prva jednostavna vrijednost za zadani ključ, bilo gdje u (ugniježđenim) svojstvima INSPIRE objekta
-function deepFind(o,keys,depth=0){
-  if(!o||typeof o!=="object"||depth>6) return null;
-  for(const k of Object.keys(o)){ if(keys.includes(k.toLowerCase())){const v=o[k];
-    if(v!=null&&typeof v!=="object"&&String(v).trim()!=="") return v;
-    if(v&&typeof v==="object"){const n=deepFind(v,["value","text","#text","spelling","_"],depth+1); if(n!=null) return n;}}}
-  for(const k of Object.keys(o)){const v=o[k]; if(v&&typeof v==="object"){const r=deepFind(v,keys,depth+1); if(r!=null) return r;}}
-  return null;
+// --- katastarske čestice za Krk: DGU-ov digitalni katastarski plan (ATOM, po k.o.), pripremljen uz aplikaciju u data/kat_krk/
+// (tools/katastar/pripremi_krk.py). Živi DGU WFS se ne koristi: vraća grešku baze (ORA-01000) ili ne odgovara.
+const KAT={base:"data/kat_krk/",idx:null,tiles:new Map()};
+async function katIndex(){
+  if(KAT.idx) return KAT.idx;
+  const j=await skiFetch(KAT.base+"index.json");
+  if(!j||j.v!==1||!j.ko) throw new Error("neispravan indeks katastra");
+  j.set=new Set(j.kvadrati); KAT.idx=j; return j;
 }
-// WFS upit oko točke (±m metara) u HTRS96/TM; DGU ograničava upit na 1000 objekata i dijagonalu od 2 km
-function dguQuery(type,ll,m=1,count=20){
-  const [E,N]=tmFwd(ll.lng,ll.lat);
-  const p=new URLSearchParams({service:"WFS",version:"2.0.0",request:"GetFeature",typeNames:type,count:String(count),outputFormat:"application/json",
-    bbox:[E-m,N-m,E+m,N+m].map(v=>v.toFixed(2)).join(",")+",urn:ogc:def:crs:EPSG::3765"});
-  return getJSON(SRC_KRK.cp+"?"+p.toString(),{},15000);
+function katTile(key){
+  if(KAT.tiles.has(key)) return KAT.tiles.get(key);
+  const p=skiFetch(KAT.base+key+".json",20000).then(a=>{ if(!Array.isArray(a)) throw new Error("neispravan kvadrat katastra"); return a; });
+  KAT.tiles.set(key,p); p.catch(()=>KAT.tiles.delete(key));
+  if(KAT.tiles.size>12) KAT.tiles.delete(KAT.tiles.keys().next().value);
+  return p;
 }
-async function loadParcelDGU(ll){
-  const [cp,cz]=await Promise.all([dguQuery("cp:CadastralParcel",ll,1,20),settle(dguQuery("cp:CadastralZoning",ll,1,5))]);
-  const pt=turf.point([ll.lng,ll.lat]);
-  for(const f of (cp&&cp.features)||[]){
-    const g=geomTo4326(f.geometry); if(!g||!/Polygon/.test(g.type)) continue;
-    let inside=false; try{inside=turf.booleanPointInPolygon(pt,g)}catch(e){}
-    if(!inside) continue;
-    const P=f.properties||{};
-    const ref=deepFind(P,["nationalcadastralreference"]), label=deepFind(P,["label"])||(ref?String(ref).split(/[\/\-:]/).slice(1).join("/"):null);
-    const av=deepFind(P,["areavalue"]); let ko=null, koRef=null;
-    const z=cz.v&&cz.v.features&&cz.v.features[0]; if(z){const Z=z.properties||{}; ko=deepFind(Z,["name","geographicalname","label"]); koRef=deepFind(Z,["nationalcadastalzoningreference","nationalcadastralzoningreference"]);}
-    return {type:"Feature",geometry:g,properties:{broj:label?String(label):null,ref:ref?String(ref):null,povrsinaKatastar:av!=null&&isFinite(+av)?+av:null,ko:ko?String(ko):null,koRef:koRef?String(koRef):null,izvor:"DGU"}};
+// prsten: [lon0, lat0, dlon1, dlat1, …] u milijuntinkama stupnja
+function katRing(r){const out=[]; let x=0,y=0; for(let i=0;i<r.length;i+=2){x+=r[i]; y+=r[i+1]; out.push([x/1e6,y/1e6]);} return out;}
+function katGeom(P){const polys=P.map(pr=>pr.map(katRing)); return polys.length===1?{type:"Polygon",coordinates:polys[0]}:{type:"MultiPolygon",coordinates:polys};}
+async function loadParcelKrk(ll){
+  const I=await katIndex(), key=Math.floor(ll.lat/I.dlat)+"_"+Math.floor(ll.lng/I.dlon);
+  if(!I.set.has(key)) return null; // izvan obuhvata pripremljenog katastra (more)
+  const arr=await katTile(key), pt=turf.point([ll.lng,ll.lat]), hits=[];
+  for(const [id,broj,ko,pov,P] of arr){
+    const g=katGeom(P); let inside=false; try{inside=turf.booleanPointInPolygon(pt,g)}catch(e){}
+    if(inside) hits.push({id,broj,ko,pov,g});
   }
-  return null; // u upitu nema čestice koja sadrži točku (more, cesta bez čestice ili rub)
+  if(!hits.length) return null; // cesta, more ili javna površina bez čestice
+  const pr=I.prednost||[]; hits.sort((a,b)=>{const pa=pr.indexOf(a.ko), pb=pr.indexOf(b.ko); return (pa<0?99:pa)-(pb<0?99:pb)||(a.pov||0)-(b.pov||0);});
+  const h=hits[0], K=I.ko[h.ko]||{};
+  return {type:"Feature",geometry:h.g,properties:{broj:h.broj,ref:h.ko+"-"+h.broj,povrsinaKatastar:h.pov,ko:K.naziv||null,koRef:h.ko,izvor:"DGU DKP",preuzeto:I.preuzeto,preklapanje:hits.length>1?hits.slice(1).map(x=>(I.ko[x.ko]||{}).naziv+" "+x.broj):null}};
 }
 
 // --- namjena (županijski sloj): procjena je li građevinsko područje
@@ -844,9 +844,9 @@ async function inspectKrk(ll){
   selLayer.clearLayers(); infLayer.clearLayers(); skiLayer.clearLayers(); TL.layer=null; TL.marker=null; TL.rotM=null; TL.center=null; TL.zones=null;
   window.__lastData=null; window.__infra=null; window.__ski=null; window.__env=null; KRK_CUR=null;
   L.circleMarker(ll,{radius:5,color:"#000",weight:2,fillColor:"#fff",fillOpacity:1}).addTo(selLayer);
-  sheet.innerHTML='<p class="hint"><span class="spin"></span>Otok Krk (pilot): tražim česticu u katastru DGU i namjenu iz županijskog sloja…</p>';
+  sheet.innerHTML='<p class="hint"><span class="spin"></span>Otok Krk (pilot): tražim česticu u katastru i namjenu iz županijskog sloja…</p>';
   const [ces,nam,pl]=await Promise.all([
-    settle(loadParcelDGU(ll)),
+    settle(loadParcelKrk(ll)),
     settle(pointQuery(SRC_KRK.namjena,ll,"*",false)),
     settle(pointQuery(SRC_KRK.planovi,ll,"GRAD_OPCINA,VRSTA_PP,STATUS_PP,NAZIV,SN_BROJ,SN_LINK,PDF_LINK_PUBLIC,DatumStNaSnPlana,DatumDonOdlIzr",false))
   ]);
@@ -892,10 +892,11 @@ function renderKrk(d){
   // čestica
   if(parcel){
     h+=`<p class="eyebrow">Katastarska čestica${P.ko?" · k.o. "+esc(P.ko):P.koRef?" · k.o. br. "+esc(P.koRef):""}</p><p class="parcel">${esc(P.broj||"?")}</p>`;
-    h+=`<p class="meta">${fmt(area)} m² (iz geometrije)${P.povrsinaKatastar?" · u katastru "+fmt(P.povrsinaKatastar)+" m²":""} · izvor: DGU, katastarske čestice (INSPIRE)</p>`;
+    h+=`<p class="meta">${fmt(area)} m² (iz geometrije)${P.povrsinaKatastar?" · grafička površina u katastru "+fmt(P.povrsinaKatastar)+" m²":""} · izvor: DGU, digitalni katastarski plan${P.preuzeto?" (stanje "+esc(P.preuzeto.split("-").reverse().join(". ")+".")+")":""}</p>`;
+    if(P.preklapanje) h+=`<p class="meta">Na ovoj točki preklapaju se stara i nova izmjera (${esc(P.preklapanje.join(", "))}); prikazana je čestica novije izmjere.</p>`;
   }else{
     h+=`<p class="eyebrow">Lokacija</p><p class="parcel">${ll.lat.toFixed(5)}, ${ll.lng.toFixed(5)}</p>`;
-    h+=ces.e?`<p class="err">Katastar DGU: Podaci nisu dostupni (${esc(ces.e)}). Namjena je određena za dodirnutu točku.</p>`:`<p class="meta">Ovdje u katastru DGU nije pronađena čestica (more, cesta ili rub čestice). Namjena je određena za dodirnutu točku.</p>`;
+    h+=ces.e?`<p class="err">Katastar: Podaci nisu dostupni (${esc(ces.e)}). Namjena je određena za dodirnutu točku.</p>`:`<p class="meta">Ovdje u katastru nije pronađena čestica (more, cesta ili rub čestice). Namjena je određena za dodirnutu točku.</p>`;
   }
   // namjena
   if(nam.e&&!rows.length) h+=`<p class="err">Namjena (Primorsko-goranska županija): Podaci nisu dostupni (${esc(nam.e)}).</p>`;
@@ -932,7 +933,7 @@ function renderKrk(d){
   h+=krkRulesHtml(d);
   h+=G("troskovi")+krkCostHtml(d,inPilot,jlsName)+G("analiza");
   h+=`<div class="links"><a href="https://geoportal.dgu.hr/#/?lng=${ll.lng.toFixed(6)}&lat=${ll.lat.toFixed(6)}&zoom=9&layerconfig=17013&mode=2d" target="_blank" rel="noopener">Geoportal DGU</a><a href="https://oss.uredjenazemlja.hr/public-services/search-cad-parcel" target="_blank" rel="noopener">Katastar (OSS)</a><a href="https://vidiplan.pgz.hr/" target="_blank" rel="noopener">VidiPlan (PGŽ)</a><a href="https://www.google.com/maps?q=${ll.lat},${ll.lng}" target="_blank" rel="noopener">Google Maps</a></div>`;
-  h+=`<p class="note">Pilot za otok Krk. Izvori: Državna geodetska uprava, katastarske čestice (INSPIRE WFS); Primorsko-goranska županija, namjena površina i evidencija prostornih planova (gisportal.pgz.hr); OpenStreetMap; Open-Meteo. Pravno mjerodavna je lokacijska informacija nadležnog upravnog odjela.</p>`;
+  h+=`<p class="note">Pilot za otok Krk. Izvori: Državna geodetska uprava, digitalni katastarski plan (ATOM, preuzet uz aplikaciju); Primorsko-goranska županija, namjena površina i evidencija prostornih planova (gisportal.pgz.hr); OpenStreetMap; Open-Meteo. Pravno mjerodavna je lokacijska informacija nadležnog upravnog odjela.</p>`;
   h+=G(null);
   restoreMap();
   sheet.innerHTML=h;
@@ -2936,7 +2937,7 @@ function serviceList(){
   out.push({n:"OpenStreetMap Overpass (okolina)",u:"https://overpass-api.de/api/status",raw:true});
   out.push({n:"Open-Meteo (visine terena)",u:"https://api.open-meteo.com/v1/elevation?latitude=45.81&longitude=15.98"});
   out.push({n:"Nominatim (pretraga adresa)",u:"https://nominatim.openstreetmap.org/status?format=json"});
-  out.push({n:"Krk: katastarske čestice (DGU WFS)",u:SRC_KRK.cp+"?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=2.0.0",raw:true});
+  out.push({n:"Krk: katastarske čestice (uz aplikaciju)",u:KAT.base+"index.json",raw:true});
   out.push({n:"Krk: namjena površina (PGŽ)",u:SRC_KRK.namjena.replace(/\/query$/,"")+"?f=json"});
   out.push({n:"Krk: evidencija prostornih planova (PGŽ)",u:SRC_KRK.planovi.replace(/\/query$/,"")+"?f=json"});
   out.push({n:"DGU katastar infrastrukture (WMS; provjera može li ga preglednik dohvatiti)",u:"https://ski.dgu.hr/inspire/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",raw:true});

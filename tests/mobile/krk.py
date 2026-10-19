@@ -15,7 +15,8 @@ MOCK=r"""async()=>{
     {GRAD_OPCINA:"Krk",VRSTA_PP:"PPUO/G",STATUS_PP:"U IZRADI",NAZIV:"Odluka o izradi",SN_BROJ:"2025-07"},{GRAD_OPCINA:"Primorsko-goranska županija",VRSTA_PP:"PPŽ",STATUS_PP:"VAŽEĆI",NAZIV:"Odredbe za provedbu, pročišćeni tekst",SN_BROJ:"2024-12"}];
   const ok=b=>Promise.resolve(new Response(JSON.stringify(b),{status:200,headers:{"Content-Type":"application/json"}}));
   window.fetch=(u,o={})=>{u=String(u);
-    if(u.includes("uredjenazemlja")) return ok({type:"FeatureCollection",features:/CadastralZoning/.test(u)?[{type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{name:"KORNIĆ"}}]:[{type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{label:"2345/6",areaValue:600}}]});
+    if(u.includes("data/kat_krk/")){const W2=ring.map(([e,n])=>tmInv(e,n)).map(([a,b])=>[Math.round(a*1e6),Math.round(b*1e6)]), enc=[W2[0][0],W2[0][1]]; for(let i=1;i<W2.length;i++) enc.push(W2[i][0]-W2[i-1][0],W2[i][1]-W2[i-1][1]); const key=Math.floor(ll.lat/0.009)+"_"+Math.floor(ll.lng/0.013);
+      if(u.endsWith("index.json")) return ok({v:1,preuzeto:"2026-10-19",dlat:0.009,dlon:0.013,prednost:[],ko:{"315907":{naziv:"KORNIĆ"}},kvadrati:[key]}); return ok([[1,"2345/6","315907",600,[[enc]]]]);}
     if(u.includes("NAMJENA_POVRSINA_NOVO")) return ok({type:"FeatureCollection",features:/esriGeometryPolygon/.test(o.body||"")?[{type:"Feature",geometry:half(w[0][0]-1e-4,mid),properties:gp},{type:"Feature",geometry:half(mid,w[1][0]+1e-4),properties:ag}]:[{type:"Feature",geometry:null,properties:gp}]});
     if(u.includes("IZRADA_PP")) return ok({type:"FeatureCollection",features:plans.map(p=>({type:"Feature",geometry:null,properties:p}))});
     if(u.includes("open-meteo")) return ok({elevation:[40,42,40,38,40]});
