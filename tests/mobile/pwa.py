@@ -42,7 +42,7 @@ with sync_playwright() as p:
     print("1. Manifest i instalacija (Chrome DevTools)")
     man = cdp.send("Page.getAppManifest"); parsed = json.loads(man.get("data") or "{}")
     ok(man.get("url", "").endswith("/cestica-zg/manifest.webmanifest") and not man.get("errors"), "manifest se učitava bez grešaka: " + json.dumps(man.get("errors")))
-    ok(parsed.get("name") == "ČesticaZG" and parsed.get("display") == "standalone", "naziv ČesticaZG, prikaz standalone (bez adresne trake)")
+    ok(parsed.get("name") == "Čestica HR" and parsed.get("display") == "standalone", "naziv Čestica HR, prikaz standalone (bez adresne trake)")
     sizes = {(i["sizes"], i.get("purpose", "any")) for i in parsed.get("icons", [])}
     ok(("192x192", "any") in sizes and ("512x512", "any") in sizes and ("512x512", "maskable") in sizes, "ikone 192, 512 i maskable")
     try: idd = cdp.send("Page.getAppId"); ok(idd.get("appId", "").startswith(BASE), "id aplikacije unutar /cestica-zg/: " + str(idd.get("appId")))

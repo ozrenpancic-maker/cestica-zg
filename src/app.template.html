@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Čestica Zagreb</title>
+<title>Čestica HR</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#1f6f54">
@@ -276,7 +276,7 @@ ul.risk small{color:var(--muted)}
 <body>
 <div id="app">
   <header>
-    <h1>Čestica ZG</h1>
+    <h1>Čestica HR</h1>
     <input id="q" type="search" placeholder="Adresa ili čestica, npr. Šestine 4027/1" autocomplete="off">
     <button class="ib" id="go" type="button">Traži</button>
     <button class="ib" id="me" type="button" aria-label="Prikaži moju lokaciju" title="Prikaži moju lokaciju">◎</button>
@@ -2534,7 +2534,7 @@ function projExport(k){
 function projParseImport(text){
   if(typeof text!=="string"||text.length>PROJ_MAX_BYTES) return {ok:false,msg:"Datoteka je prevelika ili nije tekst."};
   let j; try{j=JSON.parse(text)}catch(e){return {ok:false,msg:"Datoteka nije ispravan JSON."}}
-  if(!j||j.app!=="ČesticaZG"||j.vrsta!=="projekt") return {ok:false,msg:"Ovo nije izvoz projekta iz ČesticaZG."};
+  if(!j||(j.app!=="ČesticaZG"&&j.app!=="Čestica HR")||j.vrsta!=="projekt") return {ok:false,msg:"Ovo nije izvoz projekta iz aplikacije Čestica HR."};
   if(j.verzija!==PROJ_V) return {ok:false,msg:"Nepoznata verzija izvoza ("+String(j.verzija).slice(0,10)+")."};
   const k=j.cestica&&typeof j.cestica.key==="string"&&j.cestica.key.length<=80?j.cestica.key:null; if(!k) return {ok:false,msg:"U datoteci nema oznake čestice."};
   const P=j.proj||{}, out={proj:{}};

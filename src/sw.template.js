@@ -1,4 +1,4 @@
-// ČesticaZG service worker. Verziju upisuje build.py; svaka nova objava mijenja ovu datoteku, pa preglednik vidi ažuriranje.
+// Čestica HR (ranije ČesticaZG) service worker. Verziju upisuje build.py; svaka nova objava mijenja ovu datoteku, pa preglednik vidi ažuriranje.
 // Načela:
 //  - sprema se SAMO ljuska aplikacije (stranica, manifest, ikone, knjižnice Leaflet i Turf iz vendor/); fontovi bez interneta padaju na sistemski font;
 //  - službeni mrežni podaci (katastar, GUP, slojevi Grada, OSM, Nominatim, Open-Meteo, AI) NIKAD se ne presreću ni spremaju;
@@ -39,7 +39,7 @@ self.addEventListener("fetch", (e) => {
         return r;
       } catch (err) {
         const c = await caches.open(SHELL);
-        return (await c.match("./index.html")) || (await c.match("./")) || new Response("<h1>ČesticaZG</h1><p>Nema interneta, a aplikacija još nije spremljena na uređaj.</p>", { headers: { "content-type": "text/html; charset=utf-8" } });
+        return (await c.match("./index.html")) || (await c.match("./")) || new Response("<h1>Čestica HR</h1><p>Nema interneta, a aplikacija još nije spremljena na uređaj.</p>", { headers: { "content-type": "text/html; charset=utf-8" } });
       }
     })());
     return;

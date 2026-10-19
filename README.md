@@ -1,4 +1,4 @@
-# Čestica ZG
+# Čestica HR (ranije Čestica ZG)
 
 Mobilna web aplikacija: dodirneš zemljište u Zagrebu i dobiješ katastarsku česticu, namjenu iz prostornih planova, urbano pravilo GUP-a s uvjetima gradnje, provjere rizika (UPU, klizišta, zaštita, voda), pristup i okolinu, procjenu doprinosa, priključaka i cijene gradnje te popis dokumentacije s adresama ureda.
 
