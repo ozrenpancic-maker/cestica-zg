@@ -7,7 +7,7 @@ Cilj: jedan model građevine povezuje simulator kuće na čestici sa svim izrač
 | Faza | Sadržaj | Stanje |
 | --- | --- | --- |
 | I | Predlošci kuća, zajednički model građevine, simulator → procjena gradnje, troškovi po fazama | ugrađeno (Zagreb) |
-| II | Priprema terena, temelji, prilaz, doprinosi i naknade iz modela | planirano |
+| II | Temelji, prilaz, obujam za komunalni doprinos iz modela; priprema terena (postojeći odjeljak) | ugrađeno (Zagreb; obujam i na Krku) |
 | III | Krovne plohe, rotacija, PVGIS, zasjenjenje | planirano |
 | IV | Vremensko-financijski plan, prekretnice, usporedba scenarija | planirano |
 
@@ -57,9 +57,9 @@ Cijena gradnje (površina × jedinična cijena) dijeli se na faze 1–8. Udjeli 
 
 | Faza | Udio | U roh-bau |
 | --- | --- | --- |
-| 1. Iskop i nasip za temelje | 3 % | da |
-| 2. Temelji i temeljna ploča | 9 % | da |
-| 2a. Podrum (iskop, zidovi i ploča; samo ako je odabran) | 850 €/m² tlocrta × standard (ključ u ruke) | da |
+| 1. Iskop i nasip za temelje | izračun iz stavki (faza II) | da |
+| 2. Temelji i temeljna ploča | izračun iz stavki (faza II) | da |
+| 2a. Podrum (iskop jame, zidovi i strop; samo ako je odabran) | 850 €/m² tlocrta × standard (ključ u ruke) | da |
 | 3. Konstrukcija, zidovi i međukatne ploče | 22 % | da |
 | 4. Krov i pokrov | 9 % | da |
 | 5. Vanjska stolarija i zatvaranje | 9 % | ne |
@@ -67,9 +67,9 @@ Cijena gradnje (površina × jedinična cijena) dijeli se na faze 1–8. Udjeli 
 | 7. Fasada i izolacija | 9 % | ne |
 | 8. Unutarnji završni radovi | 22 % | ne |
 
-- Faze 1–4 zajedno čine 43 %, što odgovara omjeru roh-bau / ključ u ruke za klasičnu gradnju (600 / 1.400 €/m²).
-- Za roh-bau se cijena roh-baua dijeli samo na faze 1–4.
-- Temeljna ploča montažne kuće pribraja se fazi 2. Podrum je posebna stavka 2a, a ne dio temelja (ispravak 19. 10. 2026.: 60 m² prizemnica s podrumom prije je u „temeljima” imala 58.560 €).
+- Faze 1–4 su u fazi I zajedno činile 43 % (1 = 3 %, 2 = 9 %), što odgovara omjeru roh-bau / ključ u ruke za klasičnu gradnju (600 / 1.400 €/m²). Od faze II faze 1 i 2 su izračun (vidi „Faza II”), a udjeli ostalih faza su nepromijenjeni.
+- Za roh-bau se cijena roh-baua dijeli samo na faze 3–4 (22/43 i 9/43); faze 1–2 su izračun.
+- Podrum je posebna stavka 2a, a ne dio temelja (ispravak 19. 10. 2026.: 60 m² prizemnica s podrumom prije je u „temeljima” imala 58.560 €).
 
 **Bez dvostrukog obračuna:**
 
@@ -90,11 +90,12 @@ Cijena gradnje (površina × jedinična cijena) dijeli se na faze 1–8. Udjeli 
 
 Uz faze se ispisuje cijela formula jedinične cijene.
 
-**Ručno provjerljiv primjer** (iz testova): klasična gradnja, ključ u ruke, standardni, P+1, 150 m².
+**Ručno provjerljiv primjer** (iz testova, od faze II): klasična gradnja, ključ u ruke, standardni, P+1, 150 m² (simulator 10 × 7,5 m).
 
-- Jedinična cijena: 1.400 × 1,0 × 0,93 = 1.302 €/m².
-- Gradnja: 1.302 € × 150 m² = 195.300 €.
-- Iskop i nasip za temelje 3 % = 5.859 €; konstrukcija 22 % = 42.966 €; instalacije 17 % = 33.201 €.
+- Jedinična cijena: 1.400 × 1,0 × 0,93 = 1.302 €/m²; 1.302 € × 150 m² = 195.300 €.
+- Faze 3–8: 88 % od 195.300 € = 171.864 € (konstrukcija 22 % = 42.966 €, instalacije 17 % = 33.201 €).
+- Faza 1 (75 m² tlocrta × 40–90 €/m²): 3.000–6.750 €, sredina 4.875 €. Faza 2 (75 m² × 72–155 €/m²): 5.400–11.625 €, sredina 8.512,5 €.
+- Gradnja: 171.864 + 4.875 + 8.512,5 = 185.251,5 €.
 
 ### Pouzdanost
 
@@ -165,3 +166,59 @@ Kad os ceste iz OpenStreetMapa prolazi kroz unutrašnjost odabrane čestice, apl
 - Ako je čestica uska (prosječna širina manja od 12 m), a os ide njome uzduž (barem pola poluopsega), čestica je vjerojatno sama put ili cesta i upozorenja nema.
 - Upozorenje je u „Prije svega provjeri” (pristup, stanje „!”) i u „Području za gradnju” (redak „Cesta i katastar”). Pouzdanost područja za gradnju tada je C.
 - Uzrok može biti neprovedena cesta u katastru ili krivo ucrtana cesta u OpenStreetMapu. Aplikacija ne odlučuje koje: upućuje na usporedbu s granicama čestica i ortofotom te na lokacijsku informaciju i geodeta.
+
+## Faza II
+
+### Temelji (faze 1 i 2)
+
+Faze 1 (iskop i nasip za temelje) i 2 (temelji) više nisu udio cijene po m², nego zbroj stavki po m² tlocrta. Izvor svih jediničnih cijena: emajstor.hr, „Temeljna ploča – cijena temelja za kuću 2026” (cjenik i tablica primjera za kuću 100 m²).
+
+| Stavka | €/m² tlocrta | Faza |
+| --- | --- | --- |
+| Iskop (humus i iskop za tampon) | 10–20 (primjer 100 m²: 1.000–2.000 €) | 1 |
+| Tamponski nasip 50 cm, zbijen | 30–70 | 1 |
+| Podložni beton C12/15 | 15–25 | 2 |
+| Hidroizolacija ispod ploče | 10–20 | 2 |
+| Toplinska izolacija ispod ploče (XPS 2 × 10 cm) | 12–30 | 2 |
+| Armiranobetonska ploča 25 cm (oplata, armatura, beton) | 35–80 | 2 |
+| Trakasti temelji (samo za tip „trakasti temelji + ploča na tlu”) | 70–150 €/m traka | 2 |
+
+- Faza 1: 40–90 €/m², faza 2: 72–155 €/m². Zajedno 112–245 €/m².
+- **Provjera s tvojom procjenom:** prizemnica 60 m² s pločom → 6.720–14.700 € (sredina 10.710 €). Tvoja procjena je 7.500–15.000 €.
+- Trakasti temelji: duljina traka je opseg kuće iz simulatora (bez simulatora 4 × √tlocrt). Unutarnje nosive zidove dodaješ ručno u polju „m traka”.
+- S podrumom faza 1 je 0 (iskop je u podrumu 2a), a faza 2 je ploča podruma.
+- **Klasična gradnja:** cijena po m² uključuje temelje, pa se njihov udio (12 %, kod roh-baua 12/43) zamjenjuje izračunom. Ukupna cijena gradnje zato je manja nego u fazi I (za 150 m² P+1 oko 10.000 €).
+- **Montažna:** cijena po m² ne uključuje temelje (prije se dodavalo 90 €/m² tlocrta), pa faze 3–8 nose punu cijenu, a temelji se dodaju.
+- U „Troškovima po fazama” uz faze 1 i 2 ispisana je svaka stavka s rasponom i formulom. Raspon gradnje: ±10 % na faze iz udjela, a za temelje rasponi stavki.
+- Ručni iznos faze i dalje zamjenjuje izračun.
+
+### Prilaz
+
+- Novo polje „Prilaz od ceste”: vrsta, duljina i širina (zadano 3 m). Stavka „Prilaz” ulazi u gradnju i u rezervu. „Uređenje okoliša” je sada bez prilaza.
+- Cijene (emajstor.hr, „Asfaltiranje” i „Popločavanje dvorišta”, 2026.):
+  - asfalt: 27–43 €/m² (iskop, 50 cm šljunka, priprema i asfalt 6 cm);
+  - betonski opločnici: 70–140 €/m² (iskop do 40 cm 15–30 € + opločnici s tamponom do 50 cm 55–110 €);
+  - šljunak: 14–26 €/m², **izvedeno** (asfalt s pripremom 27–43 € − jednoslojni asfalt 6 cm 13–17 €).
+- Duljina: kad nije upisana, procjenjuje se kao najkraća udaljenost od kuće u simulatoru do osi ceste iz OpenStreetMapa, umanjena za 3 m (polovica kolnika); kućni prilazi (`service`) se ne broje. To je procjena (C) i piše uz stavku.
+
+### Obujam za komunalni doprinos iz modela
+
+Prema Pravilniku o načinu utvrđivanja obujma i površine građevina u svrhu obračuna komunalnog doprinosa (NN 15/2019):
+
+- obujam je stvarni obujam zatvorenih dijelova (čl. 3);
+- mjeri se od gornje kote poda prema tlu do unutarnje plohe krova (čl. 4);
+- ne računa se prostor ispod dijela kosog krova nižeg od 1,2 m, temelji ni strehe (čl. 5).
+
+Model: (podrum + pune etaže) × tlocrt × visina etaže + garaža (jedna etaža) + prostor pod kosim krovom gdje je visina barem 1,2 m (numerička integracija po tlocrtu, mreža 5 cm).
+
+**Pretpostavke aplikacije (nisu iz propisa):** krov počinje na stropu zadnje pune etaže; kad je potkrovlje, nadozid je 1,2 m; debljina krova se zanemaruje (obujam je zato malo veći od stvarnog).
+
+**Ručno provjerljiv primjer:** 10 × 8 m prizemnica, 3 m, dvostrešni 30°, sljeme uzduž: 240 m³ + 2 × 10 × tg 30° / 2 × (4² − 2,078²) ≈ 67 m³ = 307 m³. Krov od 10° (najviše 0,7 m) ne dodaje ništa.
+
+- Zagreb: koristi se kad je procjena gradnje povezana sa simulatorom (inače kao prije: površina × 3 m).
+- Krk: obujam u „Komunalnom doprinosu (Grad Krk)” puni se iz modela; ručni upis ostaje.
+- Službeno vrijedi obujam iz projekta.
+
+### Priprema terena
+
+Odjeljak „Priprema terena” već postoji (ručne količine, rasponi cijena, prijedlog iskopa i nasipa iz nagiba i tlocrta simulatora). U fazi II nije mijenjan; faza 1 i dalje obuhvaća samo iskop i nasip za temelje.

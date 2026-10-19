@@ -1098,6 +1098,9 @@ async function krkTests(){
   // komunalni doprinos (SN 43/2018, čl. 6.): zona po naselju, iznos u kunama preračunat u eure
   await reinspect();
   ok(+$(w,"krkKdVol").value===600&&$(w,"krkKdRate").value==="15.93"&&/II\. zona \(naselje Kornić\): 120,00 kn\/m³ = 15,93 €\/m³/.test(txt(w,"sheet")),"Krk komunalni doprinos: Kornić je II. zona, 120 kn = 15,93 €/m³; obujam 200 m² × 3 m = 600 m³");
+  {const M={w:10,d:8,visinaEtaze:3,etazeNadzemne:2,podrum:false,garaza:0,potkrovlje:false,krov:{tip:"ravni",nagib:0,sljeme:"duz"}};
+   E("krkKdVolSync")(M); const v1=+$(w,"krkKdVol").value; setv(w,"krkKdVol","555"); E("krkKdVolSync")(Object.assign({},M,{w:12}));
+   ok(v1===480&&/Obujam iz modela kuće/.test(txt(w,"krkKdVolNote"))&&+$(w,"krkKdVol").value===555,"Krk: obujam za komunalni doprinos iz modela kuće (2 × 80 m² × 3 m = 480 m³); ručni upis ostaje"); setv(w,"krkKdVol","600");}
   ok(/9\.558 €/.test(txt(w,"krkKdOut"))&&/43\/2018/.test(txt(w,"sheet"))&&/18,32 €\/m³/.test(txt(w,"sheet")),"Krk: 600 m³ × 15,93 € = 9.558 €; tablica zona (I. zona 18,32 €/m³)");
   setv(w,"krkKdRate","10"); ok(/6\.000 €/.test(txt(w,"krkKdOut")),"Krk: 600 m³ × 10 €/m³ = 6.000 €");
   setv(w,"krkKdRed","0.3","change"); ok(/2\.500 €/.test(txt(w,"krkKdOut"))&&/prvih 500 m³/.test(txt(w,"krkKdOut")),"Krk, čl. 10.: 30 % samo za prvih 500 m³ (500 × 10 × 0,3 + 100 × 10 = 2.500 €)");
@@ -1320,7 +1323,11 @@ async function investTests(){
   ok(+$(w,"bArea").value===150&&$(w,"bFloors").value==="P1"&&Math.abs(H.foot-75)<1e-9&&/Povezano sa simulatorom/.test(txt(w,"bLink")),"Simulator automatski puni procjenu gradnje (150 m², P + 1, tlocrt 75 m²)");
   // ručno provjerljiv primjer: klasična, ključ u ruke, standardni: 1.400 × 1,0 × 0,93 = 1.302 €/m²; 150 m² → 195.300 €
   {const F=H.faze, f=k=>F.find(x=>x.k===k).v;
-   ok(Math.abs(H.unit-1302)<1e-9&&Math.abs(H.gradnja-195300)<1e-6&&Math.abs(f("zem")-5859)<1e-6&&Math.abs(f("kon")-42966)<1e-6&&Math.abs(f("ins")-33201)<1e-6&&Math.abs(F.reduce((a,x)=>a+x.v,0)-H.gradnja)<1e-6,"Faze: 1.302 €/m² × 150 m² = 195.300 €; iskop 5.859 €, konstrukcija 42.966 €, instalacije 33.201 €; zbroj faza = gradnja");}
+   // faze 1–2 iz stavki za 75 m² tlocrta: iskop + tampon 40–90 €/m² → 3.000–6.750 € (sredina 4.875); ploča 72–155 €/m² → 5.400–11.625 € (sredina 8.512,5)
+   // ostale faze 88 % od 195.300 € = 171.864 €; gradnja 171.864 + 4.875 + 8.512,5 = 185.251,5 €
+   ok(Math.abs(H.unit-1302)<1e-9&&Math.abs(f("zem")-4875)<1e-6&&Math.abs(f("tem")-8512.5)<1e-6&&Math.abs(f("kon")-42966)<1e-6&&Math.abs(f("ins")-33201)<1e-6&&Math.abs(H.gradnja-185251.5)<1e-6&&Math.abs(F.reduce((a,x)=>a+x.v,0)-H.gradnja)<1e-6&&H.tm.opseg===35,"Faze: 1.302 €/m² × 150 m²; temelji iz stavki za 75 m² tlocrta (iskop i tampon 4.875 €, ploča 8.512,5 €), konstrukcija 42.966 €, instalacije 33.201 €; gradnja 185.251,5 €");
+   ok(H.ob&&H.autoVol===H.ob.v&&H.ob.etV===450&&H.ob.kr>0&&/Obujam iz modela kuće/.test(txt(w,"kdVolNote"))&&/NN 15\/2019/.test(txt(w,"kdVolNote")),"Komunalni doprinos: obujam iz modela (2 etaže × 75 m² × 3 m = 450 m³ + prostor pod krovom viši od 1,2 m), uz pravila Pravilnika");
+   ok(/Podložni beton/.test(txt(w,"bFv_tem"))&&/Tamponski nasip/.test(txt(w,"bFv_zem"))&&/emajstor/.test(txt(w,"bFazeNote")),"Uz faze 1 i 2 ispisane su stavke temelja s rasponima i izvor cijena");}
   ok(M.krov.tip==="dvo"&&M.krov.nagib===30&&M.krov.sljemeAzimut===90,"Krov: dvostrešni 30°, sljeme uzduž dulje strane (širina 10 m, istok–zapad) → azimut 90°");
   // rotacija mijenja smjer krova, ne površinu ni cijenu
   const g0=w.__fin.house.gradnja; TL.rot=30; E("tDraw")(); await tick(10);
@@ -1345,18 +1352,32 @@ async function investTests(){
   ok(!$(w,"bUnit").value&&!$(w,"bF_krov").value&&Math.abs(w.__fin.house.unit-1302)<1e-9,"Vrati na automatske: cijena i faze ponovno iz modela");
   // roh-bau: faze 5–8 nisu uključene, faze 1–4 nose cijelu cijenu roh-baua
   setv(w,"bPhase","roh","change"); H=w.__fin.house;
-  ok(H.faze.filter(f=>!f.ukljuceno&&f.k!=="pod").length===4&&H.faze.filter(f=>!f.ukljuceno).every(f=>f.v===0)&&Math.abs(H.gradnja-H.hA*H.unit)<1e-6&&/nije uključeno u roh-bau/.test(txt(w,"bFv_zav")),"Roh-bau: faze 5–8 nisu uključene, zbroj faza 1–4 = površina × cijena roh-baua");
+  ok(H.faze.filter(f=>!f.ukljuceno&&f.k!=="pod").length===4&&H.faze.filter(f=>!f.ukljuceno).every(f=>f.v===0)&&Math.abs(H.gradnja-(H.hA*H.unit*31/43+H.tm.zem.v+H.tm.tem.v))<1e-6&&/nije uključeno u roh-bau/.test(txt(w,"bFv_zav")),"Roh-bau: faze 5–8 nisu uključene; konstrukcija i krov 31/43 cijene roh-baua, temelji iz stavki");
   setv(w,"bPhase","kljuc","change");
   // prijava korisnika (19. 10. 2026.): 60 m² prizemnica s podrumom davala je 58.560 € „temelja” jer je podrum bio u fazi 2
   {const F=E("finHouse")({hA:60,t:"klas",std:"sred",ph:"kljuc",fl:"P",base:true}).house, f=k=>F.faze.find(x=>x.k===k);
-   ok(Math.abs(f("tem").v-7560)<1e-6&&Math.abs(f("pod").v-51000)<1e-6&&f("pod").naziv.startsWith("2a. Podrum"),"60 m² prizemnica s podrumom: temelji 7.560 € (9 %), podrum posebno 51.000 € (60 m² × 850 €/m²)");
-   const F2=E("finHouse")({hA:60,t:"mont",std:"sred",ph:"kljuc",fl:"P",base:false}).house;
-   ok(Math.abs(F2.faze.find(x=>x.k==="tem").v-14040)<1e-6&&F2.faze.find(x=>x.k==="pod").v===0,"60 m² montažna bez podruma: temelji s pločom 14.040 €, podruma nema");}
+   ok(Math.abs(f("tem").v-6810)<1e-6&&f("zem").v===0&&Math.abs(f("pod").v-51000)<1e-6&&f("pod").naziv.startsWith("2a. Podrum"),"60 m² prizemnica s podrumom: ploča 4.320–9.300 € (sredina 6.810 €), iskop je u podrumu, podrum posebno 51.000 € (60 m² × 850 €/m²)");
+   const F1=E("finHouse")({hA:60,t:"klas",std:"sred",ph:"kljuc",fl:"P",base:false}).house, t1=F1.tm;
+   ok(Math.abs(t1.zem.lo+t1.tem.lo-6720)<1e-6&&Math.abs(t1.zem.hi+t1.tem.hi-14700)<1e-6,"60 m² prizemnica, temeljna ploča: faze 1–2 od 6.720 do 14.700 € (korisnikova procjena 7.500–15.000 €)");
+   const F2=E("finHouse")({hA:60,t:"mont",std:"sred",ph:"kljuc",fl:"P",base:false}).house, ost=F2.faze.filter(x=>!["zem","tem","pod"].includes(x.k)).reduce((a,x)=>a+x.v,0);
+   ok(Math.abs(F2.faze.find(x=>x.k==="tem").v-6810)<1e-6&&Math.abs(F2.faze.find(x=>x.k==="zem").v-3900)<1e-6&&Math.abs(ost-96000)<1e-6&&F2.faze.find(x=>x.k==="pod").v===0,"60 m² montažna: cijena po m² ne uključuje temelje, pa faze 3–8 nose punih 96.000 €, a temelji (3.900 + 6.810 €) se dodaju");
+   const F3=E("finHouse")({hA:60,t:"klas",std:"sred",ph:"kljuc",fl:"P",base:false,tem:"trake"}).house.tm;
+   ok(Math.abs(F3.L-4*Math.sqrt(60))<1e-9&&F3.tem.items[0].n.startsWith("Trakasti")&&Math.abs(F3.tem.lo-(60*72+70*F3.L))<1e-6,"Trakasti temelji: duljina traka = opseg (bez simulatora 4 × √60 m) × 70–150 €/m, uz ploču na tlu");}
+  // prilaz: duljina × širina × cijena po m²
+  {const P=E("finHouse")({hA:100,t:"klas",std:"sred",ph:"kljuc",fl:"P",prV:"asfalt",prL:12,prW:3}).items.find(i=>i.k==="prilaz");
+   const P0=E("finHouse")({hA:100,t:"klas",std:"sred",ph:"kljuc",fl:"P",prV:"",prL:12}).items.find(i=>i.k==="prilaz");
+   const Pa=E("finHouse")({hA:100,t:"klas",std:"sred",ph:"kljuc",fl:"P",prV:"oplocnici",prAuto:8.5}).items.find(i=>i.k==="prilaz");
+   ok(P&&P.lo===36*27&&P.hi===36*43&&P.group==="gradnja"&&!P0&&Pa&&Pa.lo===8.5*3*70&&/OpenStreetMapa/.test(Pa.formula),"Prilaz: asfalt 12 × 3 m × 27–43 €/m² = 972–1.548 €; bez vrste nije uključen; bez upisane duljine koristi procjenu iz simulatora (8,5 m)");}
+  // obujam za komunalni doprinos iz modela (Pravilnik NN 15/2019)
+  {const O=E("obujamModel"), m=(o)=>Object.assign({w:10,d:8,visinaEtaze:3,etazeNadzemne:1,podrum:false,garaza:0,potkrovlje:false,krov:{tip:"ravni",nagib:0,sljeme:"duz"}},o);
+   const r=O(m({})), p=O(m({podrum:true})), k=O(m({krov:{tip:"dvo",nagib:30,sljeme:"duz"}})), n=O(m({krov:{tip:"dvo",nagib:10,sljeme:"duz"}}));
+   // dvostrešni 30°, raspon 8 m: visina ≥ 1,2 m od 2,08 m od strehe; obujam = 2 × 10 × tg30/2 × (4² − 2,078²) ≈ 67,4 m³
+   ok(r.v===240&&p.v===480&&Math.abs(k.kr-67.4)<1.5&&n.kr===0,"Obujam iz modela: 10 × 8 m × 3 m = 240 m³; s podrumom 480 m³; dvostrešni 30° dodaje oko 67 m³ prostora višeg od 1,2 m; krov od 10° (najviše 0,7 m) ne dodaje ništa");}
   // pamćenje: kuća s ručnom fazom i simulator s krovom
   setv(w,"bF_sto","9000"); setv(w,"tKrov","cet","change"); await tick(450);
   E("render")(data(w,parcelRect(30,25,{KATASTARSKA_CESTICA:"78/1",KATASTARSKA_OPCINA:"REMETE"}),"2.2.")); w.__env=d.envelope; E("render")(d); await tick(20);
   ok(+$(w,"bF_sto").value===9000&&E("TL").krov==="cet"&&$(w,"tKrov").value==="cet","Ručna faza i oblik krova pamte se uz česticu");
-  ok(/Udjeli faza .* pretpostavka aplikacije/.test(txt(w,"bFazeNote"))&&/Faza 1 obuhvaća samo iskop i nasip za temelje/.test(txt(w,"bFazeNote")),"Pretpostavke raspodjele i granica prema „Pripremi terena” navedene su uz faze");
+  ok(/Udjeli ostalih faza .* pretpostavka aplikacije/.test(txt(w,"bFazeNote"))&&/Faza 1 obuhvaća samo iskop i nasip za temelje/.test(txt(w,"bFazeNote")),"Pretpostavke raspodjele i granica prema „Pripremi terena” navedene su uz faze");
   ok(errs.length===0,"bez JS grešaka (moja investicija, faza I): "+errs.join(" | "));
 }
 
