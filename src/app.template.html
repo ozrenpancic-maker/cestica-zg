@@ -888,8 +888,8 @@ function krkZkSet(key,a,src){try{if(a>0) localStorage.setItem("krkZK:"+key,JSON.
 // upisana površina iz OSS-a (preko posrednika); cache po CESTICA_ID
 const OSSZK=new Map();
 function krkOssGet(P){return SRC_KRK.oss&&P&&P.cid!=null?OSSZK.get(String(P.cid))||null:null}
-// OSS povremeno odbije upit posrednika (HTTP 403); zato do dva ponovna pokušaja s razmakom (ms)
-const OSS_RETRY=[2000,4000];
+// OSS povremeno odbije upit posrednika (HTTP 403); jedan ponovni pokušaj, da se OSS ne opterećuje
+const OSS_RETRY=[3000];
 async function krkOssOnce(P,k,q){
   const ac=new AbortController(), t=setTimeout(()=>ac.abort(),20000);
   try{const r=await fetch(SRC_KRK.oss+"?"+(q||"id="+encodeURIComponent(k)),{signal:ac.signal}); const j=await r.json().catch(()=>null);

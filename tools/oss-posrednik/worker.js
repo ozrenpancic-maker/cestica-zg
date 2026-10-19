@@ -5,7 +5,7 @@
 
 const OSS = "https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info?parcelId=";
 const ALLOWED = ["https://ozrenpancic-maker.github.io"]; // stranice koje smiju čitati odgovor (produkcija i proba su na istom originu)
-const CACHE_S = 6 * 3600; // odgovor OSS-a pamti se 6 sati
+const CACHE_S = 24 * 3600; // odgovor OSS-a pamti se 24 sata (manje upita prema OSS-u)
 
 const arr = x => (x == null ? [] : Array.isArray(x) ? x : [x]);
 // OSS u XML-u omata liste u istoimeni element: <parcelParts><parcelParts>…</parcelParts></parcelParts>
@@ -81,12 +81,8 @@ async function cesticaNaTocki(lat, lon) {
   return { id: p.CESTICA_ID, broj: p.BROJ_CESTICE || null, koMb: p.MATICNI_BROJ_KO != null ? String(p.MATICNI_BROJ_KO) : null, graficka: num(p.POVRSINA_GRAFICKA), atributna: num(p.POVRSINA_ATRIBUTNA), datum: p.DATUM || null };
 }
 async function parcelInfo(id) {
-  let r, last;
-  for (let n = 0; n < 2; n++) { // OSS povremeno odbije upit (403); jedan ponovni pokušaj
-    r = await fetch(OSS + id, { headers: { "Accept": "application/json, text/xml;q=0.5", ...UA }, signal: AbortSignal.timeout(12000) });
-    if (r.ok || r.status === 404 || r.status === 204) break;
-    last = r.status; await new Promise(res => setTimeout(res, 700));
-  }
+  // bez ponavljanja ovdje: ponovni pokušaj radi aplikacija, da OSS ne dobiva niz upita
+  const r = await fetch(OSS + id, { headers: { "Accept": "application/json, text/xml;q=0.5", ...UA }, signal: AbortSignal.timeout(12000) }), last = null;
   if (r.status === 404 || r.status === 204) return { status: 404 };
   if (!r.ok) return { status: 502, greska: "OSS HTTP " + (last || r.status) };
   const txt = await r.text(); let d;
