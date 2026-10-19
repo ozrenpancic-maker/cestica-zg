@@ -59,6 +59,7 @@ Cijena gradnje (površina × jedinična cijena) dijeli se na faze 1–8. Udjeli 
 | --- | --- | --- |
 | 1. Iskop i nasip za temelje | 3 % | da |
 | 2. Temelji i temeljna ploča | 9 % | da |
+| 2a. Podrum (iskop, zidovi i ploča; samo ako je odabran) | 850 €/m² tlocrta × standard (ključ u ruke) | da |
 | 3. Konstrukcija, zidovi i međukatne ploče | 22 % | da |
 | 4. Krov i pokrov | 9 % | da |
 | 5. Vanjska stolarija i zatvaranje | 9 % | ne |
@@ -68,7 +69,7 @@ Cijena gradnje (površina × jedinična cijena) dijeli se na faze 1–8. Udjeli 
 
 - Faze 1–4 zajedno čine 43 %, što odgovara omjeru roh-bau / ključ u ruke za klasičnu gradnju (600 / 1.400 €/m²).
 - Za roh-bau se cijena roh-baua dijeli samo na faze 1–4.
-- Temeljna ploča montažne kuće i podrum pribrajaju se fazi 2.
+- Temeljna ploča montažne kuće pribraja se fazi 2. Podrum je posebna stavka 2a, a ne dio temelja (ispravak 19. 10. 2026.: 60 m² prizemnica s podrumom prije je u „temeljima” imala 58.560 €).
 
 **Bez dvostrukog obračuna:**
 

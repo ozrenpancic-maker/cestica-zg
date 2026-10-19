@@ -3080,7 +3080,7 @@ const PODRUM_EUR={kljuc:850, roh:550}; // procjena po m² podruma
 // omjerom roh-bau / ključ u ruke za klasičnu gradnju (600 / 1.400 €/m² ≈ 43 %: faze 1–4 zajedno 43 %).
 // Faza 1 ovdje je samo iskop i nasip za temelje; dodatni zemljani radovi su u „Pripremi terena” (bez dvostrukog obračuna).
 // Faze 9 (okoliš, prilaz) i 10 (projekti, nadzor, rezerva) su posebne stavke modela.
-const FAZE=[["zem","1. Iskop i nasip za temelje",0.03,true],["tem","2. Temelji i temeljna ploča",0.09,true],["kon","3. Konstrukcija, zidovi i međukatne ploče",0.22,true],["krov","4. Krov i pokrov",0.09,true],
+const FAZE=[["zem","1. Iskop i nasip za temelje",0.03,true],["tem","2. Temelji i temeljna ploča",0.09,true],["pod","2a. Podrum: iskop, zidovi i ploča (samo ako je odabran)",0,true],["kon","3. Konstrukcija, zidovi i međukatne ploče",0.22,true],["krov","4. Krov i pokrov",0.09,true],
   ["sto","5. Vanjska stolarija i zatvaranje",0.09,false],["ins","6. Instalacije (struja, voda, odvodnja, grijanje i hlađenje)",0.17,false],["fas","7. Fasada i izolacija",0.09,false],["zav","8. Unutarnji završni radovi",0.22,false]];
 const FAZE_ROH=FAZE.filter(f=>f[3]).reduce((a,f)=>a+f[2],0);
 const STD_NAZ={osn:"ekonomični",sred:"standardni",vis:"viši"};
@@ -3144,8 +3144,8 @@ function finHouse(I,rate){
   const t=BUILD[I.t]?I.t:"klas", std=STD[I.std]?I.std:"sred", ph=BUILD.klas[I.ph]?I.ph:"kljuc", flK=FLOORS[I.fl]?I.fl:"P", fl=FLOORS[flK], hA=I.hA||0, base=!!I.base;
   const unitAuto=BUILD[t][ph]*STD[std]*fl.f, unitM=I.unitM>0&&I.unitM<20000?I.unitM:null, unit=unitM||unitAuto, foot=hA/fl.n;
   // faze 1–8: automatski udio osnovne cijene; ručni iznos faze zamjenjuje automatski (ne poništava se novim izračunom)
-  const osn=hA*unit, faze=FAZE.map(([k,n,sh,roh])=>{let a=ph==="roh"?(roh?osn*sh/FAZE_ROH:0):osn*sh; if(k==="tem") a+=foot*BUILD[t].temelj+(base?foot*PODRUM_EUR[ph]*STD[std]:0);
-    const m=I.faze&&I.faze[k]!=null&&I.faze[k]>=0?+I.faze[k]:null; return {k,naziv:n,auto:a,rucno:m,v:m!=null?m:a,ukljuceno:ph!=="roh"||roh};});
+  const osn=hA*unit, faze=FAZE.map(([k,n,sh,roh])=>{let a=ph==="roh"?(roh?osn*sh/FAZE_ROH:0):osn*sh; if(k==="tem") a+=foot*BUILD[t].temelj; if(k==="pod") a=base?foot*PODRUM_EUR[ph]*STD[std]:0;
+    const m=I.faze&&I.faze[k]!=null&&I.faze[k]>=0?+I.faze[k]:null; return {k,naziv:n,auto:a,rucno:m,v:m!=null?m:a,ukljuceno:k==="pod"?base:(ph!=="roh"||roh)};});
   const gradnja=faze.reduce((a,f)=>a+f.v,0), gradAuto=faze.filter(f=>f.rucno==null).reduce((a,f)=>a+f.v,0), gradRuc=gradnja-gradAuto;
   const autoVol=Math.round((hA+(base?foot:0))*ETAZA_M);
   const vol=I.volManual?(I.vol||0):autoVol;
@@ -3246,8 +3246,8 @@ function finUpdate(){
   if(g("bFaze")&&F.house){const H=F.house;
     const u=g("bUnit"); if(u) u.placeholder=fmt(H.unitAuto);
     for(const f of H.faze){const e=g("bF_"+f.k), o=g("bFv_"+f.k); if(e) e.placeholder=f.ukljuceno?fmt(f.auto):"—";
-      if(o) o.textContent=f.rucno!=null?`tvoj unos (automatski bi bilo ${fmt(f.auto)} €)`:f.ukljuceno?`procjena: ${fmt(f.auto)} €`:"nije uključeno u roh-bau";}
-    const n=g("bFazeNote"); if(n) n.innerHTML=`Zbroj faza 1–8: <b>${fmt(H.gradnja)} €</b>. Jedinična cijena ${fmt(H.unit)} €/m² GBP${H.unitM?" (tvoja)":` = ${fmt(BUILD[H.t][H.ph])} €/m² (${H.t==="mont"?"montažna":"klasična"}, ${H.ph==="roh"?"roh-bau":"ključ u ruke"}) × ${String(STD[H.std]).replace(".",",")} (${STD_NAZ[H.std]}) × ${String(H.fl.f).replace(".",",")} (${H.fl.label})`}. Udjeli faza (${FAZE.map(f=>Math.round(f[2]*100)+" %").join(", ")}) su pretpostavka aplikacije, a ne cjenik. Faza 1 obuhvaća samo iskop i nasip za temelje; dodatni zemljani radovi upisuju se u „Pripremi terena”. Uređenje okoliša (faza 9) te projekti, nadzor i rezerva (faza 10) posebne su stavke, pa se ništa ne broji dvaput.`;}
+      if(o) o.textContent=f.rucno!=null?`tvoj unos (automatski bi bilo ${fmt(f.auto)} €)`:f.ukljuceno?`procjena: ${fmt(f.auto)} €${f.k==="pod"?` (${fmt(H.foot)} m² × ${fmt(PODRUM_EUR[H.ph]*STD[H.std])} €/m²)`:""}`:f.k==="pod"?"bez podruma":"nije uključeno u roh-bau";}
+    const n=g("bFazeNote"); if(n) n.innerHTML=`Zbroj faza 1–8: <b>${fmt(H.gradnja)} €</b>. Jedinična cijena ${fmt(H.unit)} €/m² GBP${H.unitM?" (tvoja)":` = ${fmt(BUILD[H.t][H.ph])} €/m² (${H.t==="mont"?"montažna":"klasična"}, ${H.ph==="roh"?"roh-bau":"ključ u ruke"}) × ${String(STD[H.std]).replace(".",",")} (${STD_NAZ[H.std]}) × ${String(H.fl.f).replace(".",",")} (${H.fl.label})`}. Udjeli faza (${FAZE.filter(f=>f[2]>0).map(f=>Math.round(f[2]*100)+" %").join(", ")}) su pretpostavka aplikacije, a ne cjenik. Podrum je posebna stavka (2a), nije dio temelja. Faza 1 obuhvaća samo iskop i nasip za temelje; dodatni zemljani radovi upisuju se u „Pripremi terena”. Uređenje okoliša (faza 9) te projekti, nadzor i rezerva (faza 10) posebne su stavke, pa se ništa ne broji dvaput.`;}
   if(g("bOut")&&F.house){
     const H=F.house, grid=document.querySelector(".bgrid[data-gbp]"), gbp=grid?+grid.dataset.gbp||0:0, tl=grid?+grid.dataset.tlocrt||0:0;
     let h="";

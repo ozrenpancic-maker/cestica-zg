@@ -1343,8 +1343,13 @@ async function investTests(){
   ok(!$(w,"bUnit").value&&!$(w,"bF_krov").value&&Math.abs(w.__fin.house.unit-1302)<1e-9,"Vrati na automatske: cijena i faze ponovno iz modela");
   // roh-bau: faze 5–8 nisu uključene, faze 1–4 nose cijelu cijenu roh-baua
   setv(w,"bPhase","roh","change"); H=w.__fin.house;
-  ok(H.faze.filter(f=>!f.ukljuceno).length===4&&H.faze.filter(f=>!f.ukljuceno).every(f=>f.v===0)&&Math.abs(H.gradnja-H.hA*H.unit)<1e-6&&/nije uključeno u roh-bau/.test(txt(w,"bFv_zav")),"Roh-bau: faze 5–8 nisu uključene, zbroj faza 1–4 = površina × cijena roh-baua");
+  ok(H.faze.filter(f=>!f.ukljuceno&&f.k!=="pod").length===4&&H.faze.filter(f=>!f.ukljuceno).every(f=>f.v===0)&&Math.abs(H.gradnja-H.hA*H.unit)<1e-6&&/nije uključeno u roh-bau/.test(txt(w,"bFv_zav")),"Roh-bau: faze 5–8 nisu uključene, zbroj faza 1–4 = površina × cijena roh-baua");
   setv(w,"bPhase","kljuc","change");
+  // prijava korisnika (19. 10. 2026.): 60 m² prizemnica s podrumom davala je 58.560 € „temelja” jer je podrum bio u fazi 2
+  {const F=E("finHouse")({hA:60,t:"klas",std:"sred",ph:"kljuc",fl:"P",base:true}).house, f=k=>F.faze.find(x=>x.k===k);
+   ok(Math.abs(f("tem").v-7560)<1e-6&&Math.abs(f("pod").v-51000)<1e-6&&f("pod").naziv.startsWith("2a. Podrum"),"60 m² prizemnica s podrumom: temelji 7.560 € (9 %), podrum posebno 51.000 € (60 m² × 850 €/m²)");
+   const F2=E("finHouse")({hA:60,t:"mont",std:"sred",ph:"kljuc",fl:"P",base:false}).house;
+   ok(Math.abs(F2.faze.find(x=>x.k==="tem").v-14040)<1e-6&&F2.faze.find(x=>x.k==="pod").v===0,"60 m² montažna bez podruma: temelji s pločom 14.040 €, podruma nema");}
   // pamćenje: kuća s ručnom fazom i simulator s krovom
   setv(w,"bF_sto","9000"); setv(w,"tKrov","cet","change"); await tick(450);
   E("render")(data(w,parcelRect(30,25,{KATASTARSKA_CESTICA:"78/1",KATASTARSKA_OPCINA:"REMETE"}),"2.2.")); w.__env=d.envelope; E("render")(d); await tick(20);
