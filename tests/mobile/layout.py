@@ -31,8 +31,20 @@ with sync_playwright() as p:
         print(w,h,"scrollW",sw,"small",small,"overflow",over)
         if w==390:
             pg.click('#tabs button[data-tab=troskovi]'); pg.wait_for_timeout(300); pg.screenshot(path=OUT+"/m_390_trosk.png")
-            pg.click('#tabs button[data-tab=karta]'); pg.wait_for_timeout(300); pg.screenshot(path=OUT+"/m_390_peek.png")
+            pg.click('#tabs button[data-tab=karta]'); pg.wait_for_timeout(300); pg.screenshot(path=OUT+"/m_390_min.png")
+            st=pg.evaluate("UI.state"); fab=pg.locator('#panelFab').is_visible(); tabs=pg.locator('#tabs').is_visible()
+            print("KARTA:",st,"gumb",fab,"tabovi",tabs, "OK" if st=="min" and fab and not tabs else "PROBLEM")
             pg.click('#lyrBtn'); pg.wait_for_timeout(100); pg.screenshot(path=OUT+"/m_390_layers.png"); pg.click('#lyrBtn')
+            pg.click('#panelFab'); pg.wait_for_timeout(300); print("GUMB→",pg.evaluate("UI.state")); pg.screenshot(path=OUT+"/m_390_peek.png")
+            # povlačenje gumba prema gore otvara pola ekrana
+            pg.click('#tabs button[data-tab=karta]'); pg.wait_for_timeout(300)
+            bb=pg.locator('#panelFab').bounding_box(); x=bb["x"]+bb["width"]/2; y=bb["y"]+bb["height"]/2
+            pg.mouse.move(x,y); pg.mouse.down(); pg.mouse.move(x,y-150,steps=6); pg.mouse.up(); pg.wait_for_timeout(300); print("GUMB povuci→",pg.evaluate("UI.state"))
+            # povlačenje ručke prema dolje iz sažetka skriva panel
+            pg.evaluate("setState('peek')"); pg.wait_for_timeout(300)
+            g=pg.locator('#grab').bounding_box(); gx=g["x"]+g["width"]/2; gy=g["y"]+g["height"]/2
+            pg.mouse.move(gx,gy); pg.mouse.down(); pg.mouse.move(gx,gy+200,steps=8); pg.mouse.up(); pg.wait_for_timeout(300); print("RUČKA dolje→",pg.evaluate("UI.state"))
+            pg.click('#panelFab'); pg.wait_for_timeout(300)
             pg.click('#tabs button[data-tab=analiza]'); pg.wait_for_timeout(300)
             pg.click('.card[data-go=sec-uvjeti]'); pg.wait_for_timeout(500); pg.screenshot(path=OUT+"/m_390_full.png")
             pg.click('#tabs button[data-tab=spremljeno]'); pg.wait_for_timeout(300); pg.screenshot(path=OUT+"/m_390_fav.png")

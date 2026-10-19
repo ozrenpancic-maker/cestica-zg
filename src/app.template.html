@@ -69,6 +69,10 @@ body.net-busy #netbar{opacity:1}
   #panel.st-half{height:52%}
   #panel.st-full{height:min(100%,calc(var(--vvh,100dvh) - 70px))}
   #panel.st-peek #sheet{overflow:hidden}
+  /* skriveni panel: cijeli ekran je karta, a na desnoj strani ostaje prozirni gumb */
+  #panel.st-min{height:0;border:0;box-shadow:none;overflow:hidden}
+  .app-min #tabs{display:none}
+  .app-min #panelFab{display:flex}
   .m-only{display:block}
   .cards.m-only{display:grid}
   .tab-analiza .grp[data-g=troskovi],.tab-karta .grp[data-g=troskovi]{display:none}
@@ -229,6 +233,9 @@ ol.zi{font-size:13.5px;padding-left:18px}
 .pvbars{display:flex;gap:3px;align-items:flex-end;height:80px;margin:8px 0 2px}.pvbars div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}.pvbars span{display:block;width:100%;background:var(--warn);border-radius:3px 3px 0 0}.pvbars small{font-size:10px;color:var(--muted)}
 .favc{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0}
 @media (max-height:500px) and (max-width:899px){#tabs button{min-height:44px;flex-direction:row;gap:6px} #panel.st-half{height:60%}}
+#panelFab{display:none;position:absolute;right:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:1001;align-items:center;gap:8px;min-height:48px;max-width:70%;padding:0 16px;border:1px solid var(--line);border-radius:24px;background:color-mix(in srgb,var(--panel) 72%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:var(--fg);font:inherit;font-weight:600;box-shadow:0 2px 12px rgba(0,0,0,.18);touch-action:none;cursor:pointer}
+#panelFab span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#panelFab b{font-size:18px;line-height:1;color:var(--accent)}
 @media (max-width:899px){.ib{white-space:normal;text-align:center} #sheet,#aux,#ai{container-type:inline-size}}
 @container (max-width:330px){.bgrid{grid-template-columns:1fr;gap:2px 0}.bgrid>label{margin-top:6px}.kd .ib,a.ib{max-width:100%}}
 .infk dd{color:var(--muted)}
@@ -300,6 +307,7 @@ ul.risk small{color:var(--muted)}
     <div id="netbar" aria-hidden="true"></div>
     <div id="netState" class="pwabar" role="status" hidden></div>
     <div id="updBar" class="pwabar" role="alert" hidden>Dostupna je nova verzija aplikacije. <button type="button" class="ib" id="updYes">Ažuriraj</button> <button type="button" class="ib" id="updNo">Kasnije</button><br><small>Tvoje čestice, scenariji i unosi ostaju spremljeni.</small></div>
+    <button type="button" id="panelFab" aria-label="Prikaži podatke o čestici"><b aria-hidden="true">▴</b><span id="panelFabT">Podaci</span></button>
     <div id="panel" class="st-peek">
       <div id="grab" role="button" tabindex="0" aria-label="Povećaj panel"><span></span></div>
       <section id="sheet" aria-live="polite">
@@ -2967,9 +2975,12 @@ function peekPx(){
   let h=end?end.getBoundingClientRect().bottom-top+sheet.scrollTop+12:110;
   return Math.max(96,Math.min(280,Math.round(h+grab.offsetHeight)));
 }
+// prozirni gumb kad je panel skriven: broj odabrane čestice ili „Podaci”
+function fabUpdate(){const t=document.getElementById("panelFabT"); if(!t) return; const c=window.__cur; t.textContent=c&&c.ces?"Čestica "+c.ces:c?"Odabrana lokacija":"Podaci";}
 function setState(st,{keepScroll}={}){
   if(!isMobile()) return;
-  UI.state=st; panel.classList.remove("st-peek","st-half","st-full"); panel.classList.add("st-"+st);
+  UI.state=st; panel.classList.remove("st-min","st-peek","st-half","st-full"); panel.classList.add("st-"+st);
+  appEl.classList.toggle("app-min",st==="min"); fabUpdate();
   panel.style.height=""; if(st==="peek"){panel.style.setProperty("--peek",peekPx()+"px"); if(!keepScroll) sheet.scrollTop=0;}
   grab.setAttribute("aria-label",st==="full"?"Smanji panel":"Povećaj panel");
   setTimeout(()=>map.invalidateSize(),220);
@@ -2980,7 +2991,7 @@ function setTab(t,{scrollTo}={}){
   document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-current",b.dataset.tab===t?"page":"false"));
   if(t==="spremljeno"){showFavs(); setState(isMobile()?"full":UI.state); return;}
   auxClose(); try{aiCloseP()}catch(e){}
-  if(t==="karta"){setState("peek"); return;}
+  if(t==="karta"){setState("min"); return;}
   if(UI.state==="peek") setState("half");
   if(!scrollTo&&t==="troskovi"){const g=sheet.querySelector('.grp[data-g=troskovi]'); if(g) setTimeout(()=>{sheet.scrollTop=Math.max(0,g.offsetTop-8)},isMobile()?240:0);}
   if(!scrollTo&&t==="analiza") sheet.scrollTop=0;
@@ -2994,16 +3005,23 @@ document.getElementById("tabs").addEventListener("click",e=>{const b=e.target.cl
 (function(){
   let y0=null,h0=0,t0=0,moved=false;
   const start=e=>{ if(!isMobile()) return; y0=e.clientY; h0=panel.getBoundingClientRect().height; t0=Date.now(); moved=false; panel.classList.add("dragging"); grab.setPointerCapture&&grab.setPointerCapture(e.pointerId); };
-  const move=e=>{ if(y0==null) return; const dy=y0-e.clientY; if(Math.abs(dy)>4) moved=true; const max=panel.parentNode.getBoundingClientRect().height-6; panel.style.height=Math.max(80,Math.min(max,h0+dy))+"px"; };
+  const move=e=>{ if(y0==null) return; const dy=y0-e.clientY; if(Math.abs(dy)>4) moved=true; const max=panel.parentNode.getBoundingClientRect().height-6; panel.style.height=Math.max(40,Math.min(max,h0+dy))+"px"; };
   const end=e=>{ if(y0==null) return; panel.classList.remove("dragging");
     const H=panel.parentNode.getBoundingClientRect().height, h=panel.getBoundingClientRect().height, v=(y0-e.clientY)/Math.max(1,Date.now()-t0); y0=null;
     if(!moved){setState(UI.state==="peek"?"half":UI.state==="half"?"full":"peek"); return;}
-    const stops=[["peek",peekPx()],["half",H*0.52],["full",H]];
-    let st; if(v>0.6) st=UI.state==="peek"?"half":"full"; else if(v<-0.6) st=UI.state==="full"?"half":"peek";
+    const stops=[["min",0],["peek",peekPx()],["half",H*0.52],["full",H]];
+    let st; if(v>0.6) st=UI.state==="peek"?"half":"full"; else if(v<-0.6) st=UI.state==="full"?"half":UI.state==="half"?"peek":"min";
     else st=stops.reduce((a,b)=>Math.abs(b[1]-h)<Math.abs(a[1]-h)?b:a)[0];
     setState(st); };
   grab.addEventListener("pointerdown",start); grab.addEventListener("pointermove",move); grab.addEventListener("pointerup",end); grab.addEventListener("pointercancel",end);
   grab.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault(); setState(UI.state==="full"?"peek":UI.state==="peek"?"half":"full");} });
+  // prozirni gumb: dodir otvara sažetak, povlačenje prema gore otvara pola ili cijeli ekran
+  const fab=document.getElementById("panelFab"); let fy=null;
+  fab.addEventListener("pointerdown",e=>{fy=e.clientY; fab.setPointerCapture&&fab.setPointerCapture(e.pointerId);});
+  fab.addEventListener("pointerup",e=>{ if(fy==null) return; const dy=fy-e.clientY, H=panel.parentNode.getBoundingClientRect().height; fy=null;
+    setState(dy>H*0.45?"full":dy>40?"half":"peek"); });
+  fab.addEventListener("pointercancel",()=>{fy=null});
+  fab.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault(); setState("peek");} });
 })();
 // kartice sažetka (otvaraju skupinu i odjeljak)
 function cardsHtml(){
@@ -3030,13 +3048,14 @@ document.getElementById("lyrSun").addEventListener("change",e=>{ SUN.on=e.target
 document.getElementById("menuBtn").addEventListener("click",()=>{const m=document.getElementById("menu"); m.hidden=!m.hidden;});
 document.getElementById("menu").addEventListener("click",e=>{ if(e.target.closest("a,button")) document.getElementById("menu").hidden=true; });
 // zapamti položaj karte
-map.on("moveend",()=>{ if(PWA.gpsMove){PWA.gpsMove=false; return} /* prikaz GPS lokacije ne sprema se */ try{const c=map.getCenter(); localStorage.setItem("mapv",JSON.stringify([+c.lat.toFixed(6),+c.lng.toFixed(6),map.getZoom()]))}catch(e){}});
+map.on("moveend",()=>{ if(PWA.gpsMove){PWA.gpsMove=false; PWA.gpsC=map.getCenter(); return} /* prikaz GPS lokacije ne sprema se */
+  if(PWA.gpsC&&map.getCenter().distanceTo(PWA.gpsC)<2) return; PWA.gpsC=null; /* ni kad se karta samo promijeni veličinu (skrivanje panela) */ try{const c=map.getCenter(); localStorage.setItem("mapv",JSON.stringify([+c.lat.toFixed(6),+c.lng.toFixed(6),map.getZoom()]))}catch(e){}});
 // virtualna tipkovnica: panel prati vidljivi dio ekrana, a polje za unos ostaje vidljivo
 if(window.visualViewport){const vv=window.visualViewport; const f=()=>document.documentElement.style.setProperty("--vvh",vv.height+"px"); vv.addEventListener("resize",f); f();}
 panel.addEventListener("focusin",e=>{ if(!isMobile()) return; if(!/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; if(UI.state!=="full") setState("full",{keepScroll:true}); setTimeout(()=>{try{e.target.scrollIntoView({block:"center"})}catch(err){}},260); });
 // ponovni pokušaj nakon neuspjelog dohvata
 sheet.addEventListener("click",e=>{ if(e.target.classList&&e.target.classList.contains("retry")&&window.__lastLL){ inspect(window.__lastLL); } });
-MQ_M.addEventListener("change",()=>{ if(isMobile()) setState(UI.state); else {panel.classList.remove("st-peek","st-half","st-full"); panel.style.height="";} map.invalidateSize(); });
+MQ_M.addEventListener("change",()=>{ if(isMobile()) setState(UI.state); else {panel.classList.remove("st-min","st-peek","st-half","st-full"); appEl.classList.remove("app-min"); panel.style.height="";} map.invalidateSize(); });
 setTab(UI.tab==="spremljeno"?"analiza":UI.tab); setState("peek");
 
 // --- verzija i provjera novije verzije (GitHub Pages drži stranicu u predmemoriji do 10 min)
@@ -3590,7 +3609,7 @@ window.addEventListener("pagehide",pwaSaveState);
 // --- tipka ili gesta Natrag: dok je otvoren izbornik, panel ili prikaz, Natrag ga zatvara; na osnovnom prikazu izlazi
 function pwaIsBase(){
   const menu=document.getElementById("menu"), lay=document.getElementById("layers"), ai=document.getElementById("ai");
-  return menu.hidden&&!lay.classList.contains("open")&&aux.hidden&&(!ai||ai.hidden)&&(!isMobile()||UI.state==="peek");
+  return menu.hidden&&!lay.classList.contains("open")&&aux.hidden&&(!ai||ai.hidden)&&(!isMobile()||UI.state==="peek"||UI.state==="min");
 }
 function pwaSyncGuard(){
   const base=pwaIsBase();
@@ -3604,7 +3623,7 @@ function pwaCloseTop(){
   if(ai&&!ai.hidden){aiCloseP(); return}
   if(!aux.hidden){auxClose(); if(UI.tab==="spremljeno") setTab(UI.hadParcel?"analiza":"karta"); return}
   if(isMobile()&&UI.state==="full"){setState("half"); return}
-  if(isMobile()&&UI.state==="half"){setTab("karta"); return}
+  if(isMobile()&&UI.state==="half"){setState("peek"); return}
 }
 window.addEventListener("popstate",()=>{
   if(PWA.ignorePop){PWA.ignorePop=false; return}
