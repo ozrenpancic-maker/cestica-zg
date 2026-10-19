@@ -24,6 +24,8 @@ function boot(){
       const ctx=new Proxy({},{get:(t,k)=>k in t?t[k]:(()=>{}),set:(t,k,v)=>(t[k]=v,true)});
       w.HTMLCanvasElement.prototype.getContext=function(){return ctx};
       w.SVGElement.prototype.createSVGRect=function(){return {}}; }});
+  // posrednik prema OSS-u u testovima je isključen (testovi ga uključuju gdje treba); adresa iz aplikacije ostaje u __OSS_URL
+  try{dom.window.eval('window.__OSS_URL=SRC_KRK.oss; SRC_KRK.oss=""')}catch(e){}
   return {w:dom.window, errs};
 }
 // pravokutna čestica w × d metara
@@ -117,6 +119,32 @@ function setv(w,id,v,ev="input"){const e=$(w,id); if(e.type==="checkbox") e.chec
   setv(w,"bYard","8000");
   ok(w.__fin.items.some(i=>i.k==="okolis"&&i.base===8000),"uređenje okoliša ulazi kao korisnički unos");
   ok(errs.length===0,"bez JS grešaka u financijama: "+errs.join(" | "));
+}
+
+// ---------------- 2b. Zagreb: grafička i upisana površina iz OSS-a (posrednik traži česticu po točki)
+async function zgOssTests(){
+  const tick=ms=>new Promise(r=>setTimeout(r,ms));
+  for(const [broj,expectOk] of [["1/1",true],["2/2",false]]){
+    const {w,errs}=boot(); const calls=[];
+    try{w.localStorage.clear()}catch(e){}
+    w.eval('SRC_KRK.oss="https://oss-test.example/"; OSS_RETRY.splice(0,2,5,5)');
+    w.fetch=(u)=>{u=String(u); calls.push(u);
+      if(u.startsWith("https://oss-test.example/")) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({ok:true,id:"5",broj,ko:"ŠESTINE",katastar:1010,graficka:998.4,zk:[{broj,povrsina:1012,ulozak:"777",odjel:"Zemljišnoknjižni odjel Zagreb"}],dijelovi:[],dohvaceno:"2026-10-19T09:00:00Z"})});
+      return Promise.reject(new Error("bez mreže u testu"));};
+    const d=data(w,parcelRect(40,25),"2.2."); w.eval("render")(d); await tick(30);
+    const t=txt(w,"sheet"), q=calls.filter(u=>u.startsWith("https://oss-test.example/"));
+    if(expectOk){
+      ok(q.length===1&&/\?lat=45\.84\d*&lon=15\.97\d*/.test(q[0]),"Zagreb OSS: posrednik se pita po točki unutar čestice ("+(q[0]||"nema upita")+")");
+      ok(/Grafička površina ?998 m²/.test(t)&&/iz katastarskog plana \(DGU, OSS\)/.test(t)&&/u gradskom sloju čestica 1\.0\d\d m²/.test(t),"Zagreb OSS: grafička površina iz DGU-a, uz površinu iz gradskog sloja");
+      ok(/Upisana u zemljišnoj knjizi ?1\.012 m²/.test(t)&&/ZK uložak 777/.test(t)&&/Upisana u katastru ?1\.010 m²/.test(t),"Zagreb OSS: upisana površina u ZK i u katastru");
+      ok(/površinom iz gradskog sloja čestica \(1\.0\d\d m²\)/.test(t)&&Math.abs(w.__cur.area-d.area)<0.01,"Zagreb OSS: izračun ostaje na površini iz gradskog sloja");
+      w.eval("render")(d); await tick(10); ok(calls.filter(u=>u.startsWith("https://oss-test.example/")).length===1,"Zagreb OSS: ponovni prikaz ne šalje novi upit");
+      $(w,"krkZkMan").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!!$(w,"krkZkIn"),"Zagreb: može se upisati druga upisana površina");
+      ok(!errs.length,"Zagreb OSS: bez JS grešaka "+errs.join("; "));
+    }else{
+      ok(/OSS je na ovom mjestu vratio drugu česticu \(2\/2\)/.test(t)&&!!$(w,"krkZkIn")&&!/1\.012 m²/.test(t),"Zagreb OSS: ako OSS na točki ima drugi broj čestice, vrijednost se ne prikazuje");
+    }
+  }
 }
 
 // ---------------- 3. Kupnja zemljišta
@@ -881,7 +909,7 @@ async function krkTests(){
     return Promise.reject(new Error("neočekivan zahtjev "+u));
   };
   const tick=ms=>new Promise(r=>setTimeout(r,ms));
-  const OSS_URL=E("SRC_KRK").oss; ok(/^https:\/\/cestica-oss\.ozren-pancic\.workers\.dev\/$/.test(OSS_URL),"Krk: adresa posrednika prema OSS-u je postavljena"); E("SRC_KRK").oss="";
+  const OSS_URL=w.__OSS_URL; ok(/^https:\/\/cestica-oss\.ozren-pancic\.workers\.dev\/$/.test(OSS_URL),"Krk: adresa posrednika prema OSS-u je postavljena"); E("SRC_KRK").oss="";
   await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50);
   const t=txt(w,"sheet");
   ok(calls.some(u=>u.endsWith("data/kat_krk/index.json"))&&calls.filter(u=>/data\/kat_krk\/-?\d+_-?\d+\.json$/.test(u)).length===1&&!calls.some(u=>u.includes("uredjenazemlja")),"Krk: čestica iz katastra uz aplikaciju (jedan kvadrat), bez DGU WFS-a");
@@ -1067,7 +1095,7 @@ async function krkTests(){
   ok(errs.length===0,"bez JS grešaka u pilotu Krk: "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(krkTests).then(aiTests).then(projTests).then(ai2Tests).then(sunTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(krkTests).then(aiTests).then(projTests).then(ai2Tests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

@@ -2,11 +2,12 @@
 
 Aplikacija iz preglednika ne može izravno čitati OSS (`oss.uredjenazemlja.hr`): OSS ne dopušta upite s drugih stranica (CORS), što je provjereno 19. 10. 2026. testnom stranicom („Failed to fetch”), dok isti upit otvoren izravno u pregledniku radi.
 
-Zato mali Cloudflare Worker (`worker.js`) za zadani `CESTICA_ID` pita OSS i vraća **samo**:
+Zato mali Cloudflare Worker (`worker.js`) za zadani `CESTICA_ID` (`?id=`) ili za točku (`?lat=&lon=`, za Zagreb, gdje gradski sloj čestica nema DGU-ov ID) pita OSS i vraća **samo**:
 
 - `zk[]` – ZK čestice povezane s katastarskom česticom: broj, **upisana površina**, ZK uložak, glavna knjiga, ZK odjel;
 - `katastar` – površina iz posjedovnog lista;
 - `dijelovi[]` – dijelovi čestice (npr. kuća, dvorište) s površinama.
+- `graficka` – samo za upit po točki: grafička površina iz OSS-ovog sloja čestica (WMS GetFeatureInfo `oss:BZP_CESTICE`, isti sloj koji OSS koristi kad se klikne na kartu; ne traži ključ, provjereno 19. 10. 2026.).
 
 Imena, adrese i udjeli posjednika i vlasnika se **ne prosljeđuju**. Odgovor se pamti 6 sati (Cloudflare cache).
 

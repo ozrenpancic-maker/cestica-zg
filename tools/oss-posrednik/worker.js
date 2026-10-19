@@ -56,29 +56,73 @@ function cors(origin) {
 }
 const out = (o, status, origin) => new Response(JSON.stringify(o), { status, headers: cors(origin) });
 
+// WGS84 -> HTRS96/TM (EPSG:3765), Snyder (USGS 1395); ista formula kao u aplikaciji (greška ispod 2 cm)
+function tmFwd(lon, lat) {
+  const a = 6378137, f = 1 / 298.257222101, k0 = 0.9999, lon0 = 16.5, E0 = 500000, e2 = f * (2 - f), ep2 = e2 / (1 - e2), r = Math.PI / 180;
+  const M = p => { const e4 = e2 * e2, e6 = e4 * e2; return a * ((1 - e2 / 4 - 3 * e4 / 64 - 5 * e6 / 256) * p - (3 * e2 / 8 + 3 * e4 / 32 + 45 * e6 / 1024) * Math.sin(2 * p) + (15 * e4 / 256 + 45 * e6 / 1024) * Math.sin(4 * p) - (35 * e6 / 3072) * Math.sin(6 * p)); };
+  const phi = lat * r, s = Math.sin(phi), c = Math.cos(phi), t = Math.tan(phi);
+  const N = a / Math.sqrt(1 - e2 * s * s), T = t * t, C = ep2 * c * c, A = (lon - lon0) * r * c;
+  const E = E0 + k0 * N * (A + (1 - T + C) * A ** 3 / 6 + (5 - 18 * T + T * T + 72 * C - 58 * ep2) * A ** 5 / 120);
+  const Nn = k0 * (M(phi) + N * t * (A * A / 2 + (5 - T + 9 * C + 4 * C * C) * A ** 4 / 24 + (61 - 58 * T + T * T + 600 * C - 330 * ep2) * A ** 6 / 720));
+  return [E, Nn];
+}
+const WMS = "https://wms1-gs-oss.uredjenazemlja.hr/ows2-m/wms";
+const UA = { "User-Agent": "CesticaHR/1.0 (+https://ozrenpancic-maker.github.io/cestica-zg/)" };
+// katastarska čestica na točki: isti sloj koji OSS koristi kad se klikne na kartu (WMS GetFeatureInfo)
+async function cesticaNaTocki(lat, lon) {
+  const [E, N] = tmFwd(lon, lat), d = 1;
+  const q = new URLSearchParams({ SERVICE: "WMS", VERSION: "1.3.0", REQUEST: "GetFeatureInfo", FORMAT: "image/png", TRANSPARENT: "true", QUERY_LAYERS: "oss:BZP_CESTICE", LAYERS: "oss:BZP_CESTICE", STYLES: "", INFO_FORMAT: "application/json", I: "50", J: "50", CRS: "EPSG:3765", WIDTH: "101", HEIGHT: "101", BBOX: [E - d, N - d, E + d, N + d].map(x => x.toFixed(2)).join(","), FEATURE_COUNT: "1" });
+  const r = await fetch(WMS + "?" + q, { headers: { Accept: "application/json", ...UA }, signal: AbortSignal.timeout(12000) });
+  if (!r.ok) throw new Error("OSS karta HTTP " + r.status);
+  const j = await r.json(), f = j && j.features && j.features[0];
+  if (!f) return null;
+  const p = f.properties || {};
+  return { id: p.CESTICA_ID, broj: p.BROJ_CESTICE || null, koMb: p.MATICNI_BROJ_KO != null ? String(p.MATICNI_BROJ_KO) : null, graficka: num(p.POVRSINA_GRAFICKA), atributna: num(p.POVRSINA_ATRIBUTNA), datum: p.DATUM || null };
+}
+async function parcelInfo(id) {
+  let r, last;
+  for (let n = 0; n < 2; n++) { // OSS povremeno odbije upit (403); jedan ponovni pokušaj
+    r = await fetch(OSS + id, { headers: { "Accept": "application/json, text/xml;q=0.5", ...UA }, signal: AbortSignal.timeout(12000) });
+    if (r.ok || r.status === 404 || r.status === 204) break;
+    last = r.status; await new Promise(res => setTimeout(res, 700));
+  }
+  if (r.status === 404 || r.status === 204) return { status: 404 };
+  if (!r.ok) return { status: 502, greska: "OSS HTTP " + (last || r.status) };
+  const txt = await r.text(); let d;
+  try { d = txt.trim().startsWith("<") ? xmlToObj(txt) : JSON.parse(txt); } catch (e) { return { status: 502, greska: "OSS je vratio nečitljiv odgovor" }; }
+  if (!d || (d.parcelId == null && d.area == null)) return { status: 404 };
+  return { status: 200, o: sazmi(d) };
+}
+
 export default {
   async fetch(req, env, ctx) {
     const origin = req.headers.get("Origin") || "";
     if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: { ...cors(origin), "Access-Control-Allow-Methods": "GET", "Access-Control-Max-Age": "86400" } });
     if (req.method !== "GET") return out({ ok: false, greska: "samo GET" }, 405, origin);
-    const id = new URL(req.url).searchParams.get("id") || "";
+    const sp = new URL(req.url).searchParams;
+    let id = sp.get("id") || "", tocka = null;
+    const lat = parseFloat(sp.get("lat")), lon = parseFloat(sp.get("lon"));
+    if (!id && Number.isFinite(lat) && Number.isFinite(lon)) {
+      if (lat < 42 || lat > 46.6 || lon < 13 || lon > 19.5) return out({ ok: false, greska: "točka je izvan Hrvatske" }, 400, origin);
+      try { tocka = await cesticaNaTocki(lat, lon); } catch (e) { return out({ ok: false, greska: e.message || "OSS karta ne odgovara" }, 502, origin); }
+      if (!tocka || tocka.id == null) return out({ ok: false, greska: "na toj točki OSS nema katastarsku česticu" }, 404, origin);
+      id = String(tocka.id);
+    }
     if (!/^\d{1,12}$/.test(id)) return out({ ok: false, greska: "neispravan id" }, 400, origin);
 
     const cache = caches.default, ck = new Request("https://cache.local/oss/" + id);
     const hit = await cache.match(ck);
-    if (hit) { const o = await hit.json(); o.izCachea = true; return out(o, 200, origin); }
-
-    let r;
-    try { r = await fetch(OSS + id, { headers: { "Accept": "application/json, text/xml;q=0.5", "User-Agent": "CesticaHR/1.0 (+https://ozrenpancic-maker.github.io/cestica-zg/)" }, signal: AbortSignal.timeout(12000) }); }
-    catch (e) { return out({ ok: false, greska: "OSS ne odgovara (" + (e.name || "greška") + ")" }, 502, origin); }
-    if (r.status === 404 || r.status === 204) return out({ ok: false, greska: "OSS nema česticu s tim ID-om" }, 404, origin);
-    if (!r.ok) return out({ ok: false, greska: "OSS HTTP " + r.status }, 502, origin);
-    const txt = await r.text(); let d;
-    try { d = txt.trim().startsWith("<") ? xmlToObj(txt) : JSON.parse(txt); } catch (e) { return out({ ok: false, greska: "OSS je vratio nečitljiv odgovor" }, 502, origin); }
-    if (!d || (d.parcelId == null && d.area == null)) return out({ ok: false, greska: "OSS nema česticu s tim ID-om" }, 404, origin);
-    const o = sazmi(d);
-    ctx.waitUntil(cache.put(ck, new Response(JSON.stringify(o), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_S } })));
+    let o;
+    if (hit) { o = await hit.json(); o.izCachea = true; }
+    else {
+      let res;
+      try { res = await parcelInfo(id); } catch (e) { return out({ ok: false, greska: "OSS ne odgovara (" + (e.name || "greška") + ")" }, 502, origin); }
+      if (res.status === 404) return out({ ok: false, greska: "OSS nema česticu s tim ID-om" }, 404, origin);
+      if (res.status !== 200) return out({ ok: false, greska: res.greska }, 502, origin);
+      o = res.o;
+      ctx.waitUntil(cache.put(ck, new Response(JSON.stringify(o), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_S } })));
+    }
+    if (tocka) { o.graficka = tocka.graficka; o.stanjeKarte = tocka.datum; if (!o.koMb) o.koMb = tocka.koMb; }
     return out(o, 200, origin);
   }
 };
-

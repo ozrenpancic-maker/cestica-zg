@@ -32,3 +32,25 @@ globalThis.fetch = async () => new Response("", { status: 500 });
 r = await W.fetch(new Request("https://w.dev/?id=1"), {}, ctx); assert.equal(r.status, 502);
 globalThis.fetch = realFetch;
 console.log("handler OK");
+// način po koordinati: WMS GetFeatureInfo vraća CESTICA_ID i grafičku površinu, zatim parcel-info
+{
+  const gfi = { type: "FeatureCollection", features: [{ type: "Feature", properties: { CESTICA_ID: 19311109, BROJ_CESTICE: "735/58", MATICNI_BROJ_KO: 315907, POVRSINA_ATRIBUTNA: 642, POVRSINA_GRAFICKA: 599.1, DATUM: "2024-06-07Z" } }] };
+  let seen = [];
+  globalThis.caches = { default: { match: async () => null, put: async () => {} } };
+  globalThis.fetch = async (u) => { u = String(u); seen.push(u);
+    if (u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/")) return new Response(JSON.stringify(gfi), { status: 200, headers: { "Content-Type": "application/json" } });
+    return new Response(xml, { status: 200, headers: { "Content-Type": "application/xml" } }); };
+  const r = await W.fetch(new Request("https://w.dev/?lat=45.0446537&lon=14.6153292"), {}, { waitUntil() {} });
+  const o = await r.json();
+  const bb = new URL(seen[0]).searchParams.get("BBOX").split(",").map(Number);
+  assert.ok(Math.abs((bb[0] + bb[2]) / 2 - 351529.99) < 0.05 && Math.abs((bb[1] + bb[3]) / 2 - 4991136.17) < 0.05, "pretvorba u HTRS96/TM");
+  assert.equal(r.status, 200); assert.equal(o.graficka, 599.1); assert.equal(o.zk[0].povrsina, 642); assert.ok(seen[1].endsWith("parcelId=19311109"));
+  assert.ok(!/TESTN/.test(JSON.stringify(o)));
+  globalThis.fetch = async (u) => new Response(JSON.stringify({ type: "FeatureCollection", features: [] }), { status: 200 });
+  const r2 = await W.fetch(new Request("https://w.dev/?lat=45.8&lon=15.98"), {}, { waitUntil() {} }); assert.equal(r2.status, 404);
+  const r3 = await W.fetch(new Request("https://w.dev/?lat=48&lon=15.98"), {}, { waitUntil() {} }); assert.equal(r3.status, 400);
+  // 403 pa uspjeh: posrednik ponovi upit
+  let n = 0; globalThis.fetch = async () => (++n === 1 ? new Response("", { status: 403 }) : new Response(xml, { status: 200 }));
+  const r4 = await W.fetch(new Request("https://w.dev/?id=19311109"), {}, { waitUntil() {} }); assert.equal(r4.status, 200); assert.equal(n, 2);
+  console.log("koordinata OK");
+}
