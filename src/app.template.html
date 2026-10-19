@@ -223,6 +223,10 @@ details p{font-size:13.5px;margin:6px 0}
 .kind{font-style:normal;font-size:10.5px;font-weight:600;padding:0 5px;border-radius:8px;margin-left:4px;white-space:nowrap;vertical-align:1px}
 .kind-propis{background:var(--ok-bg);color:var(--ok)} .kind-procjena{background:var(--warn-bg);color:var(--warn)} .kind-unos{background:#e8eefc;color:#2b4a9a}
 @media (prefers-color-scheme:dark){.kind-unos{background:#1e2a44;color:#9fb6ff}}
+.pz{font-style:normal;font-size:10.5px;font-weight:700;display:inline-block;min-width:16px;text-align:center;padding:0 4px;border-radius:8px;margin-left:4px;vertical-align:1px;cursor:help}
+.pz-A{background:var(--ok-bg);color:var(--ok)} .pz-B{background:#e8eefc;color:#2b4a9a} .pz-C{background:var(--warn-bg);color:var(--warn)}
+@media (prefers-color-scheme:dark){.pz-B{background:#1e2a44;color:#9fb6ff}}
+.pzt{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}.pzt td{padding:4px 2px;border-top:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}.pzt td:first-child{width:26px}
 .buygrid select{max-width:100%;width:100%;text-overflow:ellipsis}
 .bgrid>*{min-width:0}
 .ck li{display:block;padding:10px 0;border-top:1px solid var(--line);font-size:13.5px}
@@ -654,6 +658,55 @@ function krkPlans(feats){
 }
 const safeLink=u=>/^https?:\/\//i.test(String(u||"").trim())?String(u).trim():null;
 
+// ================= POUZDANOST PODATAKA (A / B / C) =================
+// A = službeno potvrđeno: podatak kako ga objavljuje službeni izvor (uz izvor, datum i obuhvat provjere).
+// B = izračunato ili preliminarno: rezultat aplikacije iz podataka (GIS presjek, geometrija, raster, simulacija).
+// C = nepotvrđeno: nepoznato, korisnička pretpostavka ili treba provjeru izvan aplikacije.
+// Pravila: izračun nikad nije bolji od B; ako mu je bilo koji ulaz C, i rezultat je C. Korisnički odabir je uvijek C.
+// Službeni GIS podatak (A) potvrđuje samo sebe, ne i pravnu dopuštenost gradnje (nju aplikacija ne utvrđuje).
+const PZ_RAZ={A:"službeno potvrđeno",B:"izračunato ili preliminarno",C:"nepotvrđeno"};
+function pz(raz,o){return Object.freeze({...(o||{}),raz:PZ_RAZ[raz]?raz:"C"})}
+function pzCalc(o,ulazi){const u=(ulazi||[]).filter(Boolean), slabi=u.filter(x=>x.raz==="C");
+  return pz(slabi.length||!u.length?"C":"B",{...o,ulazi:u,razlog:[o&&o.razlog,...slabi.map(x=>x.naziv+": "+(x.razlog||"nepotvrđeno"))].filter(Boolean).join("; ")||(!u.length?"ulazni podaci nisu poznati":null)});}
+function pzUser(o){return pz("C",{...o,korisnik:true,razlog:"tvoja pretpostavka"+(o&&o.razlog?"; "+o.razlog:"")})}
+const pzTag=p=>p?`<em class="pz pz-${p.raz}" title="${esc(p.raz+" – "+PZ_RAZ[p.raz]+(p.izvor?" · "+p.izvor:"")+(p.datum?" · "+p.datum:"")+(p.razlog?" · "+p.razlog:""))}">${p.raz}</em>`:"";
+// registar za trenutnu česticu: ključni podaci s oznakom (temelj za izvještaj i popis „što još provjeriti”)
+const PZREG={key:null,items:new Map(),t:0};
+function pzReset(key){PZREG.key=key; PZREG.items.clear();}
+function pzSet(id,naziv,vrijednost,p){ if(!p) return null; const it={id,naziv,vrijednost:vrijednost==null?null:String(vrijednost),...p,naziv}; PZREG.items.set(id,it); clearTimeout(PZREG.t); PZREG.t=setTimeout(pzUpd,0); return it; }
+function pzDel(id){if(PZREG.items.delete(id)){clearTimeout(PZREG.t); PZREG.t=setTimeout(pzUpd,0);}}
+function pzList(){return [...PZREG.items.values()]}
+function pzUpd(){const el=document.getElementById("pzBox"); if(el) el.innerHTML=pzInner();}
+function pzInner(){
+  const L=pzList(); if(!L.length) return `<p class="meta">Podaci se još učitavaju.</p>`;
+  const n=r=>L.filter(x=>x.raz===r).length, ord={C:0,B:1,A:2};
+  let h=`<p class="meta" style="margin-top:0">${["A","B","C"].map(r=>`${pzTag(pz(r))} ${PZ_RAZ[r]}: ${n(r)}`).join(" · ")}</p>`;
+  const C=L.filter(x=>x.raz==="C");
+  if(C.length) h+=`<div class="verdict v-warn" style="margin:6px 0">Prije kupnje ili gradnje provjeri ${C.length} ${C.length===1?"stavku":C.length<5?"stavke":"stavki"} označenih s C.</div>`;
+  h+=`<table class="pzt"><tbody>${L.slice().sort((a,b)=>ord[a.raz]-ord[b.raz]).map(x=>`<tr><td>${pzTag(x)}</td><td><b>${esc(x.naziv)}</b>${x.vrijednost?": "+esc(x.vrijednost):""}<small class="fx">${esc([x.izvor,x.obuhvat,x.datum?"provjereno "+x.datum:null,x.metoda].filter(Boolean).join(" · "))}</small>${x.razlog?`<small class="fx">${esc(x.razlog)}</small>`:""}${x.provjera?`<small class="fx">Gdje provjeriti: ${esc(x.provjera)}</small>`:""}</td></tr>`).join("")}</tbody></table>`;
+  h+=`<p class="meta">A znači da je podatak preuzet iz službenog izvora; to ne znači da je gradnja pravno dopuštena. Pravnu dopuštenost aplikacija ne utvrđuje: potvrđuje je lokacijska informacija i projekt.</p>`;
+  return h;
+}
+function pzSecHtml(){return `<h2 id="sec-pouzdanost">Pouzdanost podataka</h2><div id="pzBox">${pzInner()}</div>`}
+const pzDan=()=>new Date().toISOString().slice(0,10);
+// površine čestice (A iz službenih izvora; ručni unos je C)
+function pzArea(P,area){
+  try{const I=areaInfo(P,area), d=pzDan();
+    if(I.graf&&I.graf.a) pzSet("pov-graf","Grafička površina",fmt(I.graf.a)+" m²",pz("A",{izvor:I.graf.src,obuhvat:"čestica",datum:d}));
+    if(I.kat) pzSet("pov-kat","Površina upisana u katastru",fmt(I.kat.a)+" m²",pz("A",{izvor:I.kat.src,obuhvat:"čestica",datum:d})); else pzDel("pov-kat");
+    if(I.zk) pzSet("pov-zk","Površina upisana u zemljišnoj knjizi",fmt(I.zk.a)+" m²",/ručni/.test(I.zk.src)?pzUser({izvor:I.zk.src,provjera:"ZK izvadak"}):pz("A",{izvor:I.zk.src,obuhvat:/OSS/.test(I.zk.src)?"javni uvid; mjerodavan je ZK izvadak":"čestica",datum:d}));
+    else pzDel("pov-zk");
+  }catch(e){}
+}
+// uvjeti koje aplikacija ne može potvrditi iz javnih podataka; prikazuju se uvijek, za svaki tip gradnje
+function pzOtvoreno(extra){
+  pzSet("ot-pristup","Pristup s javne prometne površine",null,pz("C",{razlog:"širina i pravni status pristupa nisu provjereni; ulica iz OpenStreetMapa je procjena",provjera:"lokacijska informacija, katastar (čestica puta)"}));
+  pzSet("ot-regulacija","Regulacijski pravac",null,pz("C",{razlog:"nije u javnim podacima",provjera:"lokacijska informacija"}));
+  pzSet("ot-komunalno","Komunalna opremljenost (voda, odvodnja, struja)",null,pz("C",{razlog:"blizina voda nije potvrda mogućnosti priključka",provjera:"komunalna i elektroenergetska poduzeća"}));
+  pzSet("ot-parking","Parkirna mjesta na čestici",null,pz("C",{razlog:"broj mjesta ovisi o veličini i namjeni građevine; smještaj na čestici nije provjeren",provjera:"odredbe plana, idejno rješenje"}));
+  for(const [id,n,p] of extra||[]) pzSet(id,n,null,p);
+}
+
 let KRK_CUR=null;
 // podaci trenutne čestice za zajedničke odjeljke (sunce, elektrana, simulator…): Zagreb ili Krk
 function curData(){return window.__lastData||(KRK_CUR?{parcel:KRK_CUR.parcel,ll:KRK_CUR.ll,slope:KRK_CUR.slope,env:KRK_CUR.env,krk:true}:null)}
@@ -750,6 +803,8 @@ function krkRulesHtml(d){
       `<div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label><select id="krkZona" class="bsel">${opts.map(o=>`<option value="${esc(o[0])}">${esc(o[1])}</option>`).join("")}</select></div>`+
       `<div class="verdict v-warn">Detaljna zona nije potvrđena. Izračun uvjeta gradnje radi se tek kad odabereš zonu.</div><p class="meta">${esc(RS.zonaNapomena||"")} Zonu možeš očitati na karti UPU-a u odjeljku „Detaljna namjena (UPU)”; mjerodavna je lokacijska informacija.</p>`;
   }
+  if(zona) pzSet("zona-korisnik","Zona u UPU-u (tvoj odabir)",zona,pzUser({provjera:"legenda donesenog plana, lokacijska informacija"})); else pzDel("zona-korisnik");
+  for(const k of ["pravilo","calc-tlocrt","calc-gbp","calc-prostor"]) pzDel(k);
   if(zona&&RS.zoneSet&&RS.zoneSet[zona]) RS={...RS,...RS.zoneSet[zona]};
   if(!RS.tipovi){ // zona bez pravila za kuće (npr. „druga zona”)
     const sel0=(id,opts,v)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===v?" selected":""}>${esc(o[1])}</option>`).join("")}</select>`;
@@ -791,6 +846,12 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
     if(g&&g.geometry) env={geom:g.geometry,area:turf.area(g)};}}catch(e){}
   window.__env=env?{geom:env.geom,area:env.area}:null; // za simulator kuće (isti kao za Zagreb)
   window.__krkCalc={plan:RS.kod,A,tl,gbpN,gbpP,kis:P.kis,minOk,minEx,env:env?Math.round(env.area):null,tip:Object.keys(RS.tipovi).find(k=>RS.tipovi[k]===T),oblik:oblSel,st:S.st,kosi};
+  // pouzdanost izračuna: nikad bolja od B; zona koju je korisnik odabrao (UPU) ili nepotvrđen uvjet daje C
+  const pzA=PZREG.items.get(AS&&AS.k?"pov-"+AS.k:"pov-graf")||PZREG.items.get("pov-graf"), pzR=pzSet("pravilo","Pravila gradnje",RS.kod+" · "+T.naziv+", čl. "+T.clanak,/^\s*(na snazi|važeći)/i.test(String(I.status||""))?pz("A",{izvor:I.naziv+(I.sn?", "+I.sn:""),obuhvat:"tekst odredbi, ručno prenesen u aplikaciju",razlog:/izradi/i.test(I.status)?"izmjene plana su u izradi":null}):pz("C",{izvor:I.naziv,razlog:"status plana: "+(I.status||"nepoznat"),provjera:"Službene novine, lokacijska informacija"}));
+  const pzZ=isUpu?PZREG.items.get("zona-korisnik"):PZREG.items.get("namjena"), pzS=S.st==="provjera"?pz("C",{naziv:"Uvjet iz plana",razlog:S.msg||"potrebna dodatna provjera"}):null;
+  const pzT=pzSet("calc-tlocrt","Najveći tlocrt (teorijski, kig)",fmt(tl)+" m²",pzCalc({metoda:"površina "+fmt(A)+" m² × kig "+dec(P.izg)},[pzA,pzR,pzZ,pzS]));
+  const pzG=pzSet("calc-gbp","Najveći GBP (teorijski, kis)",fmt(gbpN)+" m²",pzCalc({metoda:"površina "+fmt(A)+" m² × kis "+dec(P.kis)},[pzA,pzR,pzZ,pzS]));
+  if(env) pzSet("calc-prostor","Prostor za građevinu nakon odmaka od međa",fmt(env.area)+" m²",pzCalc({metoda:RS.meda.min+" m od međa, bez regulacijskog pravca"},[pzA,pzR,pzZ]));
   if(env) L.geoJSON(env.geom,{style:{color:"#1f6f54",weight:2,dashArray:"4 3",fillColor:"#1f6f54",fillOpacity:.25},interactive:false}).addTo(krkEnvLayer);
   const chips=[(minOk?"čestica dovoljna":minEx?"čestica: samo iznimno":"čestica premala"),"tlocrt do "+fmt(tl)+" m²","GBP do "+fmt(gbpN)+" m²","visina "+dec(T.visina)+" m"];
   h+=`<div class="chips">${chips.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`;
@@ -802,11 +863,13 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   h+=row(`Najmanja čestica ${fmt(P.minC)} m²`,minOk?"ispunjeno":minEx?"samo iznimno":"premala",minOk?"good":minEx?"":"bad");
   if(minEx) h+=`<p class="meta">Iznimno ${fmt(P.minCIznimno)} m², ako je čestica u okruženju već formiranih (izgrađenih) građevnih čestica. To potvrđuje lokacijska informacija.</p>`;
   if(P.maxC){h+=row(`Najveća čestica ${fmt(P.maxC)} m²`,A>P.maxC?"veća od najveće":"ispunjeno",A>P.maxC?"":"good"); if(A>P.maxC) h+=`<p class="meta">Građevna čestica za kuću smije biti najviše ${fmt(P.maxC)} m²; veća čestica se dijeli ili se za kuću formira manja građevna čestica. Izračun ispod je za cijelu površinu, pa je potrebna dodatna provjera.</p>`;}
-  h+=row(`Najveći tlocrt (kig ${dec(P.izg)}${P.tlMax?", najviše "+fmt(P.tlMax)+" m²":""})`,fmt(tl)+" m²",tlOk?"":"bad");
+  if(pzT.raz==="C") h+=`<div class="verdict v-warn" style="margin:4px 0">Teorijski izračun, razina C: ${esc(pzT.razlog)}. Brojke nisu dopuštena gradnja.</div>`;
+  else h+=`<p class="meta" style="margin:4px 0">Teorijski izračun iz kig-a i kis-a ${pzTag(pzT)}. Ne uzima u obzir pristup, parkiranje, komunalnu opremljenost ni regulacijski pravac (vidi „Pouzdanost podataka”).</p>`;
+  h+=row(`Najveći tlocrt (kig ${dec(P.izg)}${P.tlMax?", najviše "+fmt(P.tlMax)+" m²":""}) ${pzTag(pzT)}`,fmt(tl)+" m²",tlOk?"":"bad");
   if(!tlOk) h+=`<p class="meta">Najmanji dopušteni tlocrt je ${fmt(P.tlMin)} m², a ova čestica dopušta manje; gradnja ovog tipa nije moguća.</p>`;
-  if(RS.kisUkupni){h+=row(`Najveći GBP (kis ${dec(P.kis)}${T.gbpMax?", najviše "+fmt(T.gbpMax)+" m²":""})`,fmt(gbpN)+" m²");
+  if(RS.kisUkupni){h+=row(`Najveći GBP (kis ${dec(P.kis)}${T.gbpMax?", najviše "+fmt(T.gbpMax)+" m²":""}) ${pzTag(pzG)}`,fmt(gbpN)+" m²");
     if(T.kosi&&T.kosi.kis) h+=`<p class="meta">Na terenu nagiba većem od ${T.kosi.nagib} % kis može biti ${dec(T.kosi.kis)} (GBP do ${fmt(Math.min(A*T.kosi.kis,T.gbpMax))} m²).</p>`;}
-  else{h+=row(`Najveći GBP nadzemno (kis ${dec(P.kis)}${T.gbpMax?", najviše "+fmt(T.gbpMax)+" m²":""})`,fmt(gbpN)+" m²")+row(`GBP s podrumom (kis ${dec(P.kisPodrum)}${T.gbpUkupno&&T.gbpMax?", ukupno najviše "+fmt(T.gbpMax)+" m²":""})`,fmt(gbpP)+" m²");
+  else{h+=row(`Najveći GBP nadzemno (kis ${dec(P.kis)}${T.gbpMax?", najviše "+fmt(T.gbpMax)+" m²":""}) ${pzTag(pzG)}`,fmt(gbpN)+" m²")+row(`GBP s podrumom (kis ${dec(P.kisPodrum)}${T.gbpUkupno&&T.gbpMax?", ukupno najviše "+fmt(T.gbpMax)+" m²":""})`,fmt(gbpP)+" m²");
     if(T.gbpNapomena) h+=`<p class="meta">${esc(T.gbpNapomena)}</p>`;}
   if(T.kosi&&T.kosi.kis&&!RS.kisUkupni) h+=`<p class="meta">Na terenu nagiba većem od ${T.kosi.nagib} % kis može biti ${dec(T.kosi.kis)}.</p>`;
   h+=row("Etaže",esc(T.etaze))+row("Najveća visina",esc(T.visinaOpis||dec(T.visina)+" m"));
@@ -1018,6 +1081,32 @@ async function rkExport(K,item,parcel,scale){
   const W=j.width||800, H=j.height||800, px=([e,n])=>[(e-x.xmin)/(x.xmax-x.xmin)*W,(x.ymax-n)/(x.ymax-x.ymin)*H];
   return {href:safeLink(j.href),extent:x,W,H,poly:B.pts.map(r=>r.map(px)),scale,url:K.url+"/export?"+q.toString().replace("f=json","f=image")};
 }
+// --- identifikacija plana s lista i njegov status u evidenciji planova (važeći / u izradi / van snage)
+// List se veže uz plan po vrsti i broju („UPU 2”), a ako broja nema, po riječima naziva. Pretražuju se samo planovi
+// koje evidencija daje za istu točku. Datum ili odluku lista katalog ne navodi, pa aktualnost lista nije potvrđena.
+const rkPlanOz=s=>{const m=String(s||"").match(/\b(UPU|DPU)\s*-?\s*(\d+(?:[.,]\d+)*)/i); return m?m[1].toUpperCase()+" "+m[2].replace(/,/g,"."):null};
+const rkRijeci=s=>new Set(norm(String(s||"")).split(/[^a-z0-9]+/).filter(w=>w.length>3&&!/^(urbanisticki|urbanistickog|plana|plan|uredenja|odluka|donosenju|izmjenama|dopunama|izmjene|dopune|procisceni|tekst|odredbi|provodenje|detaljni|detaljnog|grada|opcine)$/.test(w)));
+function rkPlanStatus(it,feats){
+  const all=(feats||[]).map(f=>f.properties||f).filter(p=>p&&(p.VRSTA_PP==="UPU"||p.VRSTA_PP==="DPU"));
+  const oz=rkPlanOz(it.PLAN_NAZIV)||rkPlanOz(it.KARTA_NAZIV), vr=oz?oz.split(" ")[0]:(it._sloj&&it._sloj.vrsta);
+  let hit=oz?all.filter(p=>rkPlanOz(p.NAZIV)===oz):[];
+  if(!hit.length){const W=rkRijeci(it.PLAN_NAZIV); if(W.size) hit=all.filter(p=>p.VRSTA_PP===vr&&[...rkRijeci(p.NAZIV)].filter(w=>W.has(w)).length>=Math.min(2,W.size));}
+  const st=p=>String(p.STATUS_PP||"").toUpperCase();
+  const vaz=hit.filter(p=>st(p)==="VAŽEĆI").sort((a,b)=>snKey(a.SN_BROJ)-snKey(b.SN_BROJ)), izr=hit.filter(p=>st(p)==="U IZRADI"), van=hit.filter(p=>st(p)==="VAN SNAGE");
+  return {oz,vaz,izr,van,zadnja:vaz.length?vaz[vaz.length-1]:null,
+    st:vaz.length?"vazeci":van.length?"van":izr.length?"izrada":"nepoznat"};
+}
+const snTxt=s=>{const m=String(s||"").match(/(\d{4})\D+(\d+)/); return m?(+m[2])+"/"+m[1]:String(s||"")};
+function rkPzSet(S,it,PS){
+  const d=S.dan, iz=S.K.naziv;
+  pzSet("upu-list","List detaljnog plana",(it.PLAN_NAZIV||"plan")+" · "+(it.KARTA_NAZIV||it.Name||"list"),pz("B",{izvor:iz,obuhvat:"prostorni upit na točki čestice",datum:d,metoda:"georeferencirani raster, sloj "+it._sloj.id+", OBJECTID "+it.OBJECTID}));
+  pzSet("upu-status","Status plana s lista",PS.st==="vazeci"?"važeći, zadnja odluka SN "+snTxt(PS.zadnja.SN_BROJ):PS.st==="van"?"van snage":PS.st==="izrada"?"samo u izradi":"nije pronađen u evidenciji",
+    PS.st==="vazeci"?pz("A",{izvor:"PGŽ, evidencija prostornih planova",obuhvat:"na točki",datum:d}):pz("C",{razlog:PS.st==="van"?"evidencija plan vodi kao van snage; list je povijesni":"plan s lista nije povezan s evidencijom planova",provjera:"nadležni upravni odjel, lokacijska informacija"}));
+  pzSet("upu-aktualnost","Je li list iz zadnje važeće odluke",PS.st==="vazeci"?(PS.vaz.length>1?"nije potvrđeno":"vjerojatno (evidencija nema izmjena nakon donošenja)"):"nije potvrđeno",
+    PS.st==="vazeci"&&PS.vaz.length===1&&!PS.izr.length?pz("B",{izvor:"PGŽ, evidencija prostornih planova",razlog:"katalog ne navodi odluku ni datum lista"}):pz("C",{razlog:"katalog ne navodi odluku ni datum lista"+(PS.vaz.length>1?"; plan ima "+PS.vaz.length+" odluke (donošenje i izmjene)":""),provjera:"grafički dio zadnje odluke (Službene novine), lokacijska informacija"}));
+  if(PS.izr.length) pzSet("upu-izrada","Izmjene plana u izradi",PS.izr.map(p=>p.NAZIV||"").join("; ").slice(0,160),pz("C",{izvor:"PGŽ, evidencija prostornih planova",razlog:"uvjeti se mogu promijeniti",provjera:"nadležni upravni odjel"})); else pzDel("upu-izrada");
+  pzSet("upu-zona","Detaljna zona",null,pz("C",{razlog:"skenirana karta nema digitalnu legendu; oznaka nije očitana",provjera:"legenda donesenog plana, lokacijska informacija"}));
+}
 function rkKey(){return window.__cur&&window.__cur.key}
 async function rkStart(parcel,ll){
   const key=rkKey(), K=rkKatalog(ll); if(!key||!parcel||!K||RKAT.has(key)) return;
@@ -1039,10 +1128,21 @@ function rkInner(){
   const S=RKAT.get(rkKey());
   if(!S) return `<p class="meta">Katalog karata prostornih planova nije dostupan za ovo područje.</p>`;
   if(S.st==="load") return `<p class="hint"><span class="spin"></span>Tražim kartu UPU-a u katalogu ${esc(S.K.id.toUpperCase())}…</p>`;
-  if(S.st==="err") return `<p class="err">Katalog karata planova (${esc(S.K.naziv)}): Podaci nisu dostupni (${esc(S.e)}).</p><p class="meta"><b>Detaljna zona nije potvrđena.</b></p>`;
-  if(S.st==="none") return `<p class="meta">Za ovu točku katalog karata PGŽ nema karte UPU-a ni DPU-a. Vrijede uvjeti iz prostornog plana grada ili općine.</p>`;
-  const it=S.items[S.sel], L=it._sloj, im=S.img||{};
-  let h=`<div class="kd" style="margin:0 0 6px"><label for="rkSel">Karta</label><select id="rkSel" class="bsel">${S.items.map((a,i)=>`<option value="${i}"${i===S.sel?" selected":""}>${esc((a.PLAN_NAZIV||"plan")+" · "+(a.KARTA_NAZIV||a.Name||"list"))}</option>`).join("")}</select></div>`;
+  if(S.st!=="ok"){for(const k of ["upu-list","upu-status","upu-aktualnost","upu-izrada"]) pzDel(k);}
+  if(S.st==="err"){pzSet("upu-zona","Detaljna zona",null,pz("C",{razlog:"katalog karata nije odgovorio",provjera:"lokacijska informacija"}));
+    return `<p class="err">Katalog karata planova (${esc(S.K.naziv)}): Podaci nisu dostupni (${esc(S.e)}).</p><p class="meta"><b>Detaljna zona nije potvrđena.</b></p>`;}
+  if(S.st==="none"){const up=KRK_CUR&&KRK_CUR.pl&&!KRK_CUR.pl.e?krkPlans(KRK_CUR.pl.v).upu:[];
+    if(up.length){pzSet("upu-zona","Detaljna zona",null,pz("C",{razlog:"evidencija navodi detaljni plan, a katalog za točku nema kartu",provjera:"grafički dio plana, lokacijska informacija"}));
+      return `<div class="verdict v-warn">Evidencija planova za ovu točku navodi ${esc(up.map(p=>p.VRSTA_PP+(p.NAZIV?" ("+String(p.NAZIV).slice(0,80)+")":"")).join(", "))}, ali katalog karata PGŽ za nju nema list. Kartu plana pogledaj u Službenim novinama ili traži lokacijsku informaciju.</div><p class="meta"><b>Detaljna zona nije potvrđena.</b></p>`;}
+    pzDel("upu-zona");
+    return `<p class="meta">Za ovu točku katalog karata PGŽ nema karte UPU-a ni DPU-a, a ni evidencija planova ne navodi detaljni plan. Uvjete daje prostorni plan grada ili općine.</p>`;}
+  const it=S.items[S.sel], L=it._sloj, im=S.img||{}, PS=rkPlanStatus(it,KRK_CUR&&KRK_CUR.pl&&KRK_CUR.pl.v);
+  rkPzSet(S,it,PS);
+  const stTxt=PS.st==="vazeci"?`važeći${PS.zadnja.SN_BROJ?", zadnja odluka u evidenciji: SN "+esc(snTxt(PS.zadnja.SN_BROJ)):""}${PS.vaz.length>1?` (${PS.vaz.length} odluke: donošenje i izmjene)`:""}`:PS.st==="van"?"van snage (povijesni plan)":PS.st==="izrada"?"evidencija ga vodi samo kao plan u izradi":"plan s lista nije pronađen u evidenciji planova za ovu točku";
+  let h="";
+  if(PS.st!=="vazeci") h+=`<div class="verdict v-${PS.st==="van"?"no":"warn"}" style="margin:0 0 6px">Status plana: ${stTxt}. ${PS.st==="van"?"Karta ne vrijedi za gradnju.":"Provjeri je li plan na snazi."}</div>`;
+  if(PS.izr.length) h+=`<p class="flag">Za ovaj plan u izradi su izmjene (${esc(PS.izr.map(p=>p.NAZIV||"").join("; ").slice(0,200))}). Karta i uvjeti mogu se promijeniti.</p>`;
+  h+=`<div class="kd" style="margin:0 0 6px"><label for="rkSel">Karta</label><select id="rkSel" class="bsel">${S.items.map((a,i)=>`<option value="${i}"${i===S.sel?" selected":""}>${esc((a.PLAN_NAZIV||"plan")+" · "+(a.KARTA_NAZIV||a.Name||"list"))}</option>`).join("")}</select></div>`;
   if(im.st==="load") h+=`<p class="hint"><span class="spin"></span>Dohvaćam izrez karte oko čestice…</p>`;
   else if(im.st==="err") h+=`<p class="err">Izrez karte: Podaci nisu dostupni (${esc(im.e)}).</p>`;
   else if(im.st==="ok"&&im.href){
@@ -1058,9 +1158,11 @@ function rkInner(){
     `<tr><th>Karta</th><td>${esc(it.KARTA_NAZIV||"–")}${it.MJERILO?" · 1:"+fmt(it.MJERILO):""}<small class="fx">datoteka ${esc(it.Name||"–")}${it.KARTA_SIFRA?" · šifra "+esc(it.KARTA_SIFRA):""}</small></td></tr>`+
     `<tr><th>Izvor karte</th><td>${esc(S.K.naziv)}<small class="fx">${esc(S.K.url)}</small></td></tr>`+
     `<tr><th>GIS sloj</th><td>sloj ${L.id} ${esc(L.naziv)} (${esc(L.grupa)}) · OBJECTID ${esc(String(it.OBJECTID))}</td></tr>`+
+    `<tr><th>Status plana</th><td>${pzTag(PZREG.items.get("upu-status"))} ${stTxt}<small class="fx">evidencija prostornih planova PGŽ, na točki čestice</small></td></tr>`+
+    `<tr><th>Aktualnost lista</th><td>${pzTag(PZREG.items.get("upu-aktualnost"))} ${esc(PZREG.items.get("upu-aktualnost").vrijednost)}<small class="fx">Katalog ne navodi odluku ni datum lista.${it.STANJE_1212!=null&&it.STANJE_1212!==""?" Polje STANJE_1212 = „"+esc(String(it.STANJE_1212))+"” (značenje polja nije potvrđeno, ne koristi se).":""}</small></td></tr>`+
     `<tr><th>Datum provjere</th><td>${esc(S.dan)}</td></tr>`+
-    `<tr><th>Pouzdanost</th><td>preliminarno: georeferencirani raster; plan i list pronađeni prostornim upitom, zona nije očitana</td></tr></tbody></table>`;
-  h+=`<p class="meta">Razine podataka: <b>vektor</b> (namjena iz PPUG-a, županijski sloj), <b>preliminarno</b> (karta UPU-a iz rastera), <b>pravno potvrđeno</b> (samo lokacijska informacija nadležnog upravnog tijela).${S.err&&S.err.length?" Dio kataloga nije odgovorio: "+esc(S.err.join("; "))+".":""}</p>`;
+    `<tr><th>Pouzdanost</th><td>${pzTag(PZREG.items.get("upu-list"))} list i granica: preliminarno (georeferencirani raster, prostorni upit)<br>${pzTag(PZREG.items.get("upu-zona"))} detaljna zona: nije očitana ni potvrđena</td></tr></tbody></table>`;
+  h+=`<p class="meta">Razine podataka: <b>A</b> službeno (namjena iz županijskog vektora, status plana iz evidencije), <b>B</b> preliminarno (karta UPU-a iz rastera, preklop granice), <b>C</b> nepotvrđeno (zona, aktualnost lista). Pravno mjerodavna je samo lokacijska informacija nadležnog upravnog tijela.${S.err&&S.err.length?" Dio kataloga nije odgovorio: "+esc(S.err.join("; "))+".":""}</p>`;
   return h;
 }
 // karta UPU-a kao sloj na glavnoj karti (export za trenutni prikaz, Web Mercator)
@@ -1255,6 +1357,7 @@ function krkOssZk(d){
   return {a,n:z.length,ul,od};
 }
 function krkAreaHtml(P,area){
+  pzArea(P,area);
   const key=window.__cur&&window.__cur.key, man=key?krkZkGet(key):null, g=P.povrsinaKatastar||area;
   const os=krkOssGet(P), oz=os&&os.st==="ok"?krkOssZk(os.d):null, manual=window.__krkZkManual===key;
   const kw=katwGet(P), kat=kw&&kw.atributna>0?{a:kw.atributna,src:"DGU, katastarski sloj"}:os&&os.st==="ok"&&os.d.katastar>0?{a:os.d.katastar,src:"OSS"}:null;
@@ -1303,6 +1406,20 @@ sheet.addEventListener("click",e=>{
   if(e.target.id==="krkOssRetry") A.retry();
   if(e.target.id==="krkZkMan"){window.__krkZkManual=window.__cur.key; A.refresh();}
 });
+// osnovni podaci Krka s oznakama pouzdanosti (namjena, planovi, otvoreni uvjeti)
+function krkPzBase(d){
+  const {rows,nam,pl}=d, dan=pzDan();
+  if(rows&&rows.length){const m=rows[0].p;
+    pzSet("namjena","Namjena (prostorni plan grada ili općine)",krkZoneLabel(m),pz("A",{izvor:"PGŽ, sloj NAMJENA_POVRSINA_NOVO"+(m.IZVOR_PODATAKA?" ("+m.IZVOR_PODATAKA+")":""),obuhvat:"oznaka na čestici",datum:dan}));
+    if(rows.length>1||rows[0].share!=null) pzSet("namjena-udio","Udio zona na čestici",rows.map(r=>(r.p.OZNAKA_NAMJENE||"?")+(r.share!=null?" "+Math.round(r.share*100)+" %":"")).join(", "),pz("B",{metoda:"GIS presjek granice čestice i sloja namjene",izvor:"PGŽ i DGU"}));
+    if(m.IZGRADJENOST) pzSet("izgradenost","Izgrađenost dijela građevinskog područja",m.IZGRADJENOST,pz("A",{izvor:"PGŽ, sloj NAMJENA_POVRSINA_NOVO",obuhvat:"oznaka na čestici",datum:dan}));
+  }else if(nam&&nam.e) pzSet("namjena","Namjena",null,pz("C",{razlog:"servis namjene nije odgovorio",provjera:"prostorni plan, lokacijska informacija"}));
+  if(pl&&!pl.e){const K=krkPlans(pl.v);
+    for(const p of K.vazeci) pzSet("plan-"+p.VRSTA_PP,"Važeći plan: "+(PP_VRSTE[p.VRSTA_PP]||p.VRSTA_PP),(p.NAZIV||"")+(p.SN_BROJ?" · SN "+snTxt(p.SN_BROJ):""),pz("A",{izvor:"PGŽ, evidencija prostornih planova",obuhvat:"na točki",datum:dan}));
+    if(K.izrada.length) pzSet("plan-izrada","Planovi u izradi",K.izrada.map(p=>(PP_VRSTE[p.VRSTA_PP]||p.VRSTA_PP)+(p.GRAD_OPCINA?" ("+p.GRAD_OPCINA+")":"")).join("; "),pz("C",{izvor:"PGŽ, evidencija prostornih planova",razlog:"uvjeti se mogu promijeniti",provjera:"nadležni upravni odjel"}));
+  }else if(pl&&pl.e) pzSet("plan-evidencija","Evidencija prostornih planova",null,pz("C",{razlog:"servis nije odgovorio",provjera:"nadležni upravni odjel"}));
+  pzOtvoreno();
+}
 function renderKrk(d){
   KRK_CUR=d;
   const {ll,parcel,area,rows,ces,nam,pl,slope,env}=d, R=REGIJE.krk;
@@ -1314,6 +1431,7 @@ function renderKrk(d){
     namjena:rows[0]?krkZoneLabel(rows[0].p):null,analitika:null,risks:null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:null};
   const keepScroll=env?sheet.scrollTop:0;
   GRP=null; window.__areaCmp=null;
+  pzReset(window.__cur.key); krkPzBase(d);
   let h=G("sum")+`<p id="printHead" class="print-only"></p><div id="printMap"></div><p class="eyebrow">Otok Krk · pilot${jlsName?" · "+esc(jlsName):""}</p>`;
   if(jls&&!R.jls[jls]){
     h+=`<div class="verdict v-warn">Lokacija je u jedinici ${esc(jls)}, izvan područja aplikacije (Grad Zagreb i pilot otok Krk).</div><div id="sumEnd"></div>`;
@@ -1377,6 +1495,7 @@ function renderKrk(d){
   if(parcel) h+=moneyHtml(key,area);
   h+=G("analiza");
   if(parcel){ h+=`<h2 id="sec-sunce">Sunce i energija</h2>`+sunHtml()+pvHtml(); if(FEATURES.seis) h+=seisHtml(ll); }
+  h+=pzSecHtml();
   h+=`<h2>Dokumentacija i gdje se obratiti</h2>`+naHtml("Popis dokumenata i nadležnih ureda","Popis ureda i dokumenata u aplikaciji izrađen je za Grad Zagreb. Za Krk se za lokacijsku informaciju i dozvole obrati upravnom odjelu nadležnom za prostorno uređenje i gradnju.");
   h+=`<div class="links"><a href="https://geoportal.dgu.hr/#/?lng=${ll.lng.toFixed(6)}&lat=${ll.lat.toFixed(6)}&zoom=9&layerconfig=17013&mode=2d" target="_blank" rel="noopener">Geoportal DGU</a><a href="https://oss.uredjenazemlja.hr/public-services/search-cad-parcel" target="_blank" rel="noopener">Katastar (OSS)</a><a href="https://vidiplan.pgz.hr/" target="_blank" rel="noopener">VidiPlan (PGŽ)</a><a href="https://www.google.com/maps?q=${ll.lat},${ll.lng}" target="_blank" rel="noopener">Google Maps</a></div>`;
   h+=`<p class="note">Pilot za otok Krk. Izvori: Državna geodetska uprava, digitalni katastarski plan (ATOM, preuzet uz aplikaciju); Primorsko-goranska županija, namjena površina i evidencija prostornih planova (gisportal.pgz.hr); OpenStreetMap; Open-Meteo. Pravno mjerodavna je lokacijska informacija nadležnog upravnog odjela.</p>`;
@@ -2433,6 +2552,11 @@ function render(d){
     risks:checks?checks.filter(r=>r.v&&r.v.length).map(r=>r.c.label):null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:envelope?Math.round(envelope.area):null};
   if(!snap&&parcel) projApplySim(window.__cur.key);
   GRP=null; let zkH=""; window.__areaCmp=null;
+  pzReset(window.__cur.key);
+  if(rows.length){const m=rows[0].p; pzSet("namjena","Namjena (GUP)",m.Namjena||m.Analitika,pz("A",{izvor:"Grad Zagreb, GIS baza planirane namjene (2023.)"+(m.Naziv_plana?", "+m.Naziv_plana:""),obuhvat:"oznaka na čestici",datum:pzDan()}));
+    if(rows.length>1||rows[0].share!=null) pzSet("namjena-udio","Udio zona na čestici",rows.map(r=>(r.p.Namjena||r.p.Analitika||"?")+(r.share!=null?" "+Math.round(r.share*100)+" %":"")).join(", "),pz("B",{metoda:"GIS presjek granice čestice i sloja namjene"}));}
+  else if(nam&&nam.e) pzSet("namjena","Namjena",null,pz("C",{razlog:"servis namjene nije odgovorio",provjera:"lokacijska informacija"}));
+  pzOtvoreno();
   let h=G("sum")+`<p id="printHead" class="print-only"></p><div id="printMap"></div>`;
   if(checks) h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(favKey(parcel,ll))?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="shareBtn">Podijeli</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button>${parcel?`<button type="button" class="ib" id="geoDl">Preuzmi GeoJSON čestice</button>`:""}</div>`;
   // Čestica
@@ -2505,7 +2629,11 @@ function render(d){
     h+=`<p class="rule-title"><span class="rule-code">${esc(isPP?"PPGZ":code)}</span>${esc(rule.naziv)}</p><p class="meta">${isPP?"Točka 2.3.1. Odredbi za provedbu Prostornog plana Grada Zagreba (izmjene i dopune 2017.; izmjene 2025. ove uvjete ne mijenjaju). Vrijedi u građevinskim područjima naselja izvan GUP-ova; potvrdi lokacijskom informacijom.":`Članak ${esc(rule.clanak)}. `}${isPP?"":se?"Odluke o GUP-u Sesveta (prijedlog izmjena za ponovnu javnu raspravu, lipanj 2026.)":"Odluke o GUP-u Grada Zagreba (pročišćeni tekst 2025.)"}</p>`;
     {const M=RULES_META&&RULES_META[isPP?"PP":se?"SE":"GUP"]; if(M) h+=`<p class="meta">Izvor: <a href="${esc(M.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(M.naziv)}</a>, ${esc(M.verzija)} · status: ${esc(M.status)}</p>`;}
     if(!se&&upx.v&&upx.v.length) h+=`<p class="flag">Ovdje vrijedi i iznimka iz urbanih pravila. Pogledaj stavke koje počinju s "iznimno".</p>`;
+    const M0=RULES_META&&RULES_META[isPP?"PP":se?"SE":"GUP"];
+    const pzR=pzSet("pravilo","Pravila gradnje",(isPP?"PPGZ":code)+" · "+rule.naziv+(rule.clanak?", čl. "+rule.clanak:""),se?pz("C",{izvor:M0?M0.naziv:"GUP Sesvete",razlog:"prijedlog izmjena za javnu raspravu, nije doneseni tekst",provjera:"lokacijska informacija"}):pz("A",{izvor:M0?M0.naziv+(M0.verzija?", "+M0.verzija:""):"Odluka o GUP-u",obuhvat:"tekst odredbi"}));
+    if(!isPP) pzSet("pravilo-karta","Granica urbanog pravila na čestici",code,pz("B",{izvor:"karta urbanih pravila iz ponovne javne rasprave GUP-a (2024.)",razlog:"granice u donesenom planu mogu odstupati",metoda:"točka čestice u sloju urbanih pravila"}));
     const zone=main?pickZone(rule,main.p.Analitika):null;
+    const pzZ=zone?pzSet("zona","Zona unutar pravila",zone.zona,pz("B",{metoda:"automatski prema namjeni "+(main.p.Analitika||""),izvor:"GIS baza planirane namjene i tekst pravila"})):null;
     if(zone){
       h+=`<p class="meta">Zona: ${esc(zone.zona)}</p>`;
       window.__rule.zona=zone.zona;
@@ -2529,6 +2657,10 @@ function render(d){
         let gbpMax=pp.kis?Math.min(A*pp.kis,pp.gbp||Infinity):(pp.gbp||null), gbpEst=false;
         if(!gbpMax&&pp.izg){gbpMax=A*pp.izg*2.5; gbpEst=true;}
         window.__tl=pp.izg?Math.round(A*pp.izg):null; window.__gbp=gbpMax?Math.round(gbpMax):null;
+        {const pzA=PZREG.items.get(AS&&AS.k?"pov-"+AS.k:"pov-graf")||PZREG.items.get("pov-graf"), uv=[pzA,pzR,pzZ,PZREG.items.get("pravilo-karta"),ZAHVAT!=="nova"?pz("C",{naziv:"Zahvat",razlog:"posebne odredbe za zahvat nisu u izračunu"}):null,exHit.length?pz("C",{naziv:"Iznimka u pravilu",razlog:"spominje ulicu uz česticu"}):null];
+         if(pp.izg) pzSet("calc-tlocrt","Najveći tlocrt (teorijski, kig)",fmt(A*pp.izg)+" m²",pzCalc({metoda:"površina "+fmt(A)+" m² × "+Math.round(pp.izg*100)+" %"},uv));
+         if(gbpMax) pzSet("calc-gbp","Najveći GBP (teorijski)",fmt(gbpMax)+" m²",pzCalc({metoda:gbpEst?"procjena: tlocrt × 2,5 etaže":"površina × kis "+String(pp.kis).replace(".",",")},uv));
+         if(envelope&&envelope.area!=null) pzSet("calc-prostor","Prostor za građevinu nakon odmaka od međa",fmt(envelope.area)+" m²",pzCalc({metoda:String(envelope.d).replace(".",",")+" m od međa, bez regulacijskog pravca",razlog:envelope.est?"udaljenost od međa je procjena":null},envelope.est?[pzA,pz("C",{naziv:"Udaljenost od međa",razlog:envelope.est})]:[pzA,pzR]));}
         // posebne odredbe za čestice manje od propisane (rekonstrukcija, zamjenska građevina, interpolacija)
         const minCond=RP.find(x=>x.id==="minC"&&x.status==="provjera");
         const smallX=pp.minC&&A<pp.minC?(smallParcelRule(zone)||(minCond?minCond.txt:null)):null;
@@ -2542,6 +2674,7 @@ function render(d){
           h+=`<div class="verdict v-warn" style="margin:4px 0">${esc(ZAHVATI.find(x=>x[0]===ZAHVAT)[1])}: potrebna dodatna provjera. Za taj zahvat vrijede posebne odredbe pravila; brojke ispod su za novu gradnju.</div>`;
           h+=zi.length?`<ol class="zi">${zi.map(i=>`<li>${esc(i)}</li>`).join("")}</ol>`:`<p class="meta">Pravilo nema posebnih odredbi za ovaj zahvat, pa vrijede pravila za novu gradnju. Dogradnja i nadogradnja smatraju se rekonstrukcijom.</p>`;
           h+=`<p class="meta">Za rekonstrukciju je potrebna postojeća legalna građevina (dozvola ili rješenje o izvedenom stanju).</p>`;}
+        {const t=PZREG.items.get("calc-tlocrt")||PZREG.items.get("calc-gbp"); if(t) h+=t.raz==="C"?`<div class="verdict v-warn" style="margin:4px 0">Teorijski izračun, razina C: ${esc(t.razlog)}. Brojke nisu dopuštena gradnja.</div>`:`<p class="meta" style="margin:4px 0">Teorijski izračun iz pravila ${pzTag(t)}. Ne uzima u obzir pristup, parkiranje, komunalnu opremljenost ni regulacijski pravac (vidi „Pouzdanost podataka”).</p>`;}
         if(!pp.minC&&!pp.izg&&!pp.kis) h+=`<p class="flag">Pravilo ne navodi posebne uvjete za ovaj tip kuće; provjeri detaljna pravila.</p>`;
         if(buildArea!=null&&buildArea<area-1) h+=`<div class="row"><span>Građevinski dio čestice</span><span>${fmt(buildArea)} od ${fmt(area)} m²</span></div>`;
         if(envelope&&envelope.area!=null){const tl=pp.izg?A*pp.izg:null, lim=tl&&envelope.area<tl;
@@ -2552,7 +2685,7 @@ function render(d){
           h+=`<div class="row"><span>Min. čestica ${fmt(pp.minC)} m² (nova gradnja)</span><span class="${ok?"good":edge||smallX?"":"bad"}">${ok?"ispunjeno":edge?"na granici":smallX?"potrebna dodatna provjera":"premala"}</span></div>`;
           if(edge) h+=`<p class="meta">Čestica je do 5 % manja od propisane. To je dopušteno samo ako se dio čestice ustupa za ulicu ili pristupni put.</p>`;
           if(smallX&&!edge) h+=`<p class="flag">Čestica je manja od propisane za novu gradnju, ali pravilo ima posebnu odredbu za takve čestice (npr. za rekonstrukciju, zamjensku građevinu ili interpolaciju). Je li gradnja moguća ovisi o tome postoji li građevina i o položaju među susjednim zgradama, pa to potvrđuje lokacijska informacija.</p><p class="meta">Odredba iz pravila: „${esc(smallX)}“</p>`;}
-        if(pp.izg) h+=`<div class="row"><span>Najveći tlocrt (${Math.round(pp.izg*100)} %)</span><span>${fmt(A*pp.izg)} m²</span></div>`;
+        if(pp.izg) h+=`<div class="row"><span>Najveći tlocrt (${Math.round(pp.izg*100)} %) ${pzTag(PZREG.items.get("calc-tlocrt"))}</span><span>${fmt(A*pp.izg)} m²</span></div>`;
         if(gbpMax&&gbpEst) h+=`<div class="row"><span>Najveći GBP (procjena: tlocrt × 2,5 etaže, jer plan ne propisuje kis)</span><span>${fmt(gbpMax)} m²</span></div>`;
         else if(gbpMax) h+=`<div class="row"><span>Najveći GBP${pp.kis?" (kis "+String(pp.kis).replace(".",",")+")":""}${pp.gbp&&pp.kis&&A*pp.kis>pp.gbp?", ograničeno na "+fmt(pp.gbp):""}</span><span>${fmt(gbpMax)} m²</span></div>`;
         if(pp.teren) h+=`<div class="row"><span>Min. prirodni teren (${Math.round(pp.teren*100)} %)</span><span>${fmt(A*pp.teren)} m²</span></div>`;
@@ -2615,6 +2748,7 @@ function render(d){
     parcel?{P:zgAreaP(parcel,favKey(parcel,ll)),area,share:area&&buildArea!=null?buildArea/area:1}:null);
   if(parcel) h+=G("troskovi")+moneyHtml(favKey(parcel,ll),area)+G("analiza");
   if(parcel){ h+=`<h2 id="sec-sunce">Sunce i energija</h2>`+sunHtml()+pvHtml(); if(FEATURES.seis) h+=seisHtml(ll); }
+  h+=pzSecHtml();
   if(checks) h+=docsHtml(d);
   h+=`<div class="links"><a href="https://oss.uredjenazemlja.hr/public-services/search-cad-parcel" target="_blank" rel="noopener">Katastar (OSS)</a><a href="https://geoportal.zagreb.hr/Karta" target="_blank" rel="noopener">Geoportal Zagreb</a><a href="https://geoportal.dgu.hr/#/?lng=${ll.lng.toFixed(6)}&lat=${ll.lat.toFixed(6)}&zoom=9&layerconfig=17013&mode=2d" target="_blank" rel="noopener">Geoportal DGU</a><a href="https://www.zzpugz.hr/gup-grada-zagreba" target="_blank" rel="noopener">GUP (Zavod)</a><a href="https://www.google.com/maps?q=${ll.lat},${ll.lng}" target="_blank" rel="noopener">Google Maps</a></div>`;
   h+=`<p class="note">Izvori: katastarske čestice Grada Zagreba (2023.), GIS baza planirane namjene (2023.), karta urbanih pravila iz ponovne javne rasprave GUP-a (2024.) i tekst Odluke o GUP-u s izmjenama 2025. Granice pravila u konačnom planu mogu malo odstupati. Procjena je orijentacijska; pravno mjerodavna je lokacijska informacija Gradskog ureda.</p>`;

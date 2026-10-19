@@ -145,6 +145,7 @@ async function zgOssTests(){
         setv(w,"areaSel","zk","change"); await tick(10); const tz=txt(w,"sheet");
         ok(/Korištena površina: 1\.012 m² \(upisana u zemljišnoj knjizi; izvor: zemljišna knjiga, OSS/.test(tz)&&/računaju se s površinom: upisana u zemljišnoj knjizi \(1\.012 m²\)/.test(tz)&&w.__tl!==t0,"Zagreb: izračun s odabranom ZK površinom (tlocrt "+t0+" → "+w.__tl+" m²)");
         setv(w,"areaSel","graf","change"); await tick(10); ok(w.__gbp===g0&&w.__tl===t0,"Zagreb: povratak na grafičku površinu");
+        {await tick(5); const R=w.eval("PZREG").items, ct=R.get("calc-tlocrt"); ok(ct&&ct.raz!=="A"&&R.get("namjena").raz==="A"&&R.get("pravilo-karta")&&R.get("pravilo-karta").raz==="B"&&/Pouzdanost podataka/.test(txt(w,"sheet"))&&/Pristup s javne prometne površine/.test(txt(w,"pzBox"))&&/Teorijski izračun/.test(txt(w,"sheet")),"Zagreb: oznake A/B/C (namjena A, granica pravila B, izračun najviše B) i popis otvorenih uvjeta");}
       }
       w.eval("render")(d); await tick(10); ok(calls.filter(u=>u.startsWith("https://oss-test.example/")).length===1,"Zagreb OSS: ponovni prikaz ne šalje novi upit");
       $(w,"krkZkMan").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!!$(w,"krkZkIn"),"Zagreb: može se upisati druga upisana površina");
@@ -992,6 +993,21 @@ async function krkTests(){
    $(w,"rkMap").dispatchEvent(new w.Event("click",{bubbles:true})); const ov=E("RK_MAP").layer;
    ok(ov&&/bboxSR=3857/.test(ov._url)&&/f=image/.test(ov._url)&&/7097/.test(decodeURIComponent(ov._url))&&$(w,"rkMap").textContent==="Ukloni s karte","UPU karta: prikaz na glavnoj karti (export u Web Mercatoru)");
    $(w,"rkMap").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!E("RK_MAP").layer,"UPU karta: uklanjanje s karte");
+   // pouzdanost A/B/C: model i pravila kombiniranja
+   {const pz=E("pz"), pc=E("pzCalc"), pu=E("pzUser"), a=pz("A",{naziv:"a"}), b=pz("B",{naziv:"b"}), c=pz("C",{naziv:"c",razlog:"x"});
+    ok(pc({},[a,a]).raz==="B"&&pc({},[a,b]).raz==="B"&&pc({},[a,c]).raz==="C"&&pc({},[]).raz==="C"&&pu({}).raz==="C"&&pu({}).korisnik===true&&pz("Z").raz==="C"&&/c: x/.test(pc({},[a,c]).razlog),"Pouzdanost: izračun najviše B, svaki C ulaz daje C, korisnički odabir je C");}
+   {const R=E("PZREG").items; ok(R.get("upu-list").raz==="B"&&R.get("upu-zona").raz==="C"&&R.get("upu-status").raz==="C"&&/nije pronađen u evidenciji/.test(txt(w,"rkBox"))&&/Status plana/.test(txt(w,"rkBox")),"UPU karta: list B, zona C; plan koji nije u evidenciji ima status C");
+    plans.push({GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Odluka o donošenju Urbanističkog plana uređenja UPU 2 - Kornić",SN_BROJ:"2016-19"});
+    const rr=async()=>{E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k); E("RKAT").clear(); await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50); for(let i=0;i<40&&!(E("RKAT").get(w.__cur.key)||{}).img;i++) await tick(50); await tick(20); return txt(w,"rkBox");};
+    let t=await rr(); ok(R.get("upu-status").raz==="A"&&/važeći, zadnja odluka u evidenciji: SN 19\/2016/.test(t)&&R.get("upu-aktualnost").raz==="B"&&/vjerojatno/.test(t),"UPU karta: list povezan s važećim UPU-om 2 iz evidencije (A), aktualnost B kad nema izmjena");
+    plans.push({GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Odluka o izmjenama i dopunama UPU 2 - Kornić",SN_BROJ:"2021-05"});
+    plans.push({GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"U IZRADI",NAZIV:"Odluka o izradi II. izmjena UPU 2 - Kornić",SN_BROJ:"2025-11"});
+    t=await rr(); ok(/SN 5\/2021/.test(t)&&/2 odluke/.test(t)&&R.get("upu-aktualnost").raz==="C"&&/u izradi su izmjene/.test(t)&&R.get("upu-izrada").raz==="C","UPU karta: nakon izmjena aktualnost lista C, izmjene u izradi označene");
+    plans.splice(-3,3); plans.push({GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAN SNAGE",NAZIV:"UPU 2 - Kornić (stari)",SN_BROJ:"2005-01"});
+    t=await rr(); ok(/van snage \(povijesni plan\)/.test(t)&&/ne vrijedi za gradnju/.test(t)&&R.get("upu-status").raz==="C","UPU karta: plan van snage prikazan kao povijesni, C");
+    plans.pop(); await rr();
+    const pzt=txt(w,"pzBox"); ok(/Pouzdanost podataka/.test(txt(w,"sheet"))&&/Pristup s javne prometne površine/.test(pzt)&&/Regulacijski pravac/.test(pzt)&&/Parkirna mjesta/.test(pzt)&&/Komunalna opremljenost/.test(pzt)&&/Grafička površina/.test(pzt)&&/nije pravno dopuštena|ne znači da je gradnja pravno dopuštena/.test(pzt),"Pouzdanost: popis s otvorenim uvjetima (pristup, regulacija, parking, opremljenost) i napomenom o pravnoj dopuštenosti");
+    ok(R.get("namjena").raz==="A"&&R.get("pov-graf").raz==="A"&&(!R.get("pravilo")||R.get("pravilo").raz==="A")&&[...R.values()].every(x=>!/^calc-/.test(x.id)||x.raz!=="A"),"Pouzdanost: namjena i površina A, nijedan izračun nije A");}
    rkMode="none"; E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k); E("RKAT").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20); ok(/nema karte UPU-a ni DPU-a/.test(txt(w,"rkBox")),"UPU karta: bez karte na lokaciji jasna poruka");
    rkMode="fail"; E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k); E("RKAT").clear(); E("renderKrk")(E("KRK_CUR")); for(let i=0;i<60&&!/Podaci nisu/.test(txt(w,"rkBox"));i++) await tick(100); ok(/Podaci nisu dostupni/.test(txt(w,"rkBox"))&&/Detaljna zona nije potvrđena/.test(txt(w,"rkBox")),"UPU karta: kad katalog ne odgovara, poruka bez izmišljene zone");
    rkMode="ok"; E("RKAT").clear(); E("renderKrk")(E("KRK_CUR")); await tick(30);}
@@ -1102,6 +1118,7 @@ async function krkTests(){
   setv(w,"krkZona","M11","change"); tk=txt(w,"sheet"); C=w.__krkCalc;
   ok(C&&C.plan==="UPU 2 Kornić"&&Math.abs(C.tl-150)<0.5&&Math.abs(C.gbpN-200)<0.01&&C.gbpP===null&&C.minOk,"UPU 2 Kornić, obiteljska slobodnostojeća 600 m²: tlocrt 150, GBP 200 (kis 0,75, granica 200 sa svim građevinama)");
   ok(/UPU 2 Kornić/.test(tk)&&/7,5 m/.test(tk)&&/javna cesta 6 m/.test(tk)&&/19\/2016/.test(tk)&&!/čl\. 15\./.test(tk),"UPU 2: visina 7,5 m, udaljenosti od ceste, izvor SN 19/2016; neizgrađeni dio nije blokiran jer UPU postoji");
+  {const R=E("PZREG").items; ok(R.get("zona-korisnik").raz==="C"&&R.get("zona-korisnik").korisnik&&R.get("calc-tlocrt").raz==="C"&&R.get("calc-gbp").raz==="C"&&/Teorijski izračun, razina C: .*tvoja pretpostavka/.test(tk)&&/nisu dopuštena gradnja/.test(tk),"UPU 2: izračun za zonu koju je odabrao korisnik ima razinu C (korisnička pretpostavka), ne potvrđeno");}
   ok(/Zona se ne može odrediti automatski/.test(tk)&&$(w,"krkZona").value==="M11"&&/Izračun je za zonu koju si odabrao \(M11\)\. Detaljna zona nije potvrđena/.test(tk),"UPU 2: izračun za zonu koju je korisnik odabrao, uz oznaku da nije potvrđena");
   ok(!/Model visina procjenjuje/.test(tk),"UPU 2: iznimka za kosi teren ne vrijedi za obiteljsku kuću");
   setv(w,"krkTip","visobit","change"); ok(/Model visina procjenjuje nagib okoline na oko 5 %/.test(txt(w,"sheet"))&&/10,5 m/.test(txt(w,"sheet")),"UPU 2, višeobiteljska: iznimka za kosi teren (10,5 m) s procjenom nagiba");

@@ -28,6 +28,22 @@ Kad korisnik odabere česticu na Krku, aplikacija u katalogu rasterskih karata p
 4. Granica čestice iz DGU-a pretvara se u piksele prema okviru (`extent`) koji je servis stvarno vratio, a ne prema traženom.
 5. Na glavnoj karti isti list se prikazuje kao `export` za trenutni prikaz u Web Mercatoru (`bboxSR=imageSR=3857`, `f=image`). Prikazuje se ispod granice čestice.
 
+## Status i aktualnost lista
+
+- List se veže uz plan iz evidencije planova PGŽ (`IZRADA_PP`) za istu točku:
+  - prvo po vrsti i broju („UPU 2”);
+  - ako broja nema, po riječima iz naziva.
+- **Status plana:**
+  - važeći (A, uz zadnju odluku u evidenciji);
+  - van snage (povijesni plan, C, upozorenje „karta ne vrijedi za gradnju”);
+  - samo u izradi ili nije pronađen (C).
+- **Aktualnost lista:** katalog ne navodi odluku ni datum lista.
+  - Ako evidencija ima samo jednu važeću odluku i nema izmjena u izradi: B („vjerojatno”).
+  - Inače C: treba provjeriti grafički dio zadnje odluke.
+- Izmjene plana u izradi prikazuju se kao upozorenje (C).
+- Polje `STANJE_1212` prikazuje se samo kao zapis. Njegovo značenje nije potvrđeno, pa se ne koristi.
+- Ako evidencija za točku navodi UPU/DPU, a katalog nema list, aplikacija to kaže. Ne zaključuje da vrijedi samo prostorni plan grada ili općine.
+
 ## Što se prikazuje
 
 - **Plan, karta i izvor:** plan, karta (naziv, mjerilo, datoteka, šifra), izvor karte, GIS sloj i OBJECTID.
@@ -40,9 +56,12 @@ Kad korisnik odabere česticu na Krku, aplikacija u katalogu rasterskih karata p
 
 ## Uvjeti gradnje
 
+- Oznake pouzdanosti A/B/C opisane su u `docs/pouzdanost.md`.
+
 - Za UPU s pravilima po zonama izračun se radi tek kad korisnik sam odabere zonu.
 - Odabir se pamti posebno za svaku česticu i ne prenosi se na druge.
 - Uz izračun piše da zona nije potvrđena.
+- Izračun za zonu koju je odabrao korisnik uvijek ima razinu C (korisnička pretpostavka).
 - Ranija zadana vrijednost (M11 kao pretpostavka) je uklonjena.
 
 ## Proširenje
