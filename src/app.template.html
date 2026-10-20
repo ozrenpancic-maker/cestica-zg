@@ -160,6 +160,22 @@ details p{font-size:13.5px;margin:6px 0}
 .bgrid input[type=number],.bsel{font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg);max-width:100%}
 .bgrid input[type=number]{width:6em}
 .actions{display:flex;justify-content:flex-end;flex-wrap:wrap;margin:-4px 0 6px}
+/* sažetak na vrhu analize */
+.saz{margin:12px 0 6px;order:3}
+.saz-l{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+.saz-l li+li{border-top:1px solid var(--line)}
+.saz-b{all:unset;box-sizing:border-box;display:flex;gap:10px;align-items:flex-start;width:100%;padding:10px 12px;cursor:pointer;min-height:48px}
+.saz-b:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.saz-b i{flex:0 0 24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:700;font-size:13px;margin-top:1px}
+.saz-ok i{background:var(--ok-bg);color:var(--ok)}.saz-warn i,.saz-q i{background:var(--warn-bg);color:var(--warn)}.saz-no i{background:var(--no-bg);color:var(--no)}
+.saz-b span{flex:1;min-width:0}.saz-b b{display:block;font-size:14.5px}.saz-b small{display:block;color:var(--muted);font-size:13px;margin-top:1px;line-height:1.35}
+.saz-b em{font-style:normal;color:var(--muted);font-size:20px;line-height:1;margin-top:2px}
+.saz-c{all:unset;cursor:pointer;display:block;margin:8px 2px 0;font-size:13px;color:var(--warn);font-weight:600}
+.pog>.acc-body>h2:first-child{display:none}
+.pog>.acc-body{padding:8px 10px 10px}
+.pog .acc{margin-top:8px}
+.calc .row>span{min-width:0;overflow-wrap:anywhere}
+@media print{.pog>.acc-body>h2:first-child{display:block}}
 /* „Više informacija”: dulja pojašnjenja su sklopljena */
 details.vise{margin:2px 0 6px}
 details.vise>summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--accent);padding:3px 0;min-height:28px}
@@ -907,6 +923,7 @@ function skiPrek(){
   return {stanje:far?"warn":"ok",tekst:parts.join(" · ")+". Blizina voda nije potvrda da je priključak moguć.",pz:pz("C",{izvor:"DGU, katastar infrastrukture",razlog:"blizina evidentiranog voda nije potvrda priključka"+(far?"; neki vod je dalje od 50 m ili nije pronađen":""),provjera:"komunalna i elektroenergetska poduzeća"})};
 }
 function prekHtml(L){
+  window.__prek=L||null;
   if(!L||!L.length) return "";
   const ic={ok:["chk-ok","✓"],warn:["chk-warn","!"],no:["chk-no","✕"],"?":["chk-warn","?"]};
   for(const x of L) if(x.id&&x.pz) pzSet(x.id,x.naziv,x.tekst.slice(0,160),x.pz);
@@ -4508,7 +4525,71 @@ function viseInfo(root){
     p.parentNode.insertBefore(d,p); grp.forEach(x=>d.appendChild(x));
   }
 }
-new MutationObserver(()=>{clearTimeout(VISE.t); VISE.t=setTimeout(()=>{try{viseInfo()}catch(e){}},30);}).observe(sheet,{childList:true,subtree:true});
+new MutationObserver(()=>{clearTimeout(VISE.t); VISE.t=setTimeout(()=>{try{viseInfo()}catch(e){} try{pogWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){console.error(e)}},30);}).observe(sheet,{childList:true,subtree:true});
+
+// ================= POGLAVLJA KAO KARTICE =================
+// Poglavlja analize (naslov h2 i sadržaj do sljedećeg naslova) sklapaju se u kartice. Naslov ostaje unutra (zbog poveznica
+// i izvještaja), a u zaglavlju kartice je kratko stanje. Otvorene kartice pamte se kao i ostali odjeljci (OPEN).
+const POG=["Rizici i upozorenja","Provjere","Komunalna infrastruktura","Pristup i okolina","Karte prostornog plana","Uvjeti gradnje","Sunce i energija","Pouzdanost podataka","Dokumentacija i gdje se obratiti","Novac i kupnja"];
+const pogSlug=t=>"pog:"+t.toLowerCase().replace(/[^a-zčćđšž]+/g,"-").slice(0,30);
+function pogStanje(body,t){
+  const q=s=>body.querySelector(s), tx=e=>e?e.textContent.replace(/\s+/g," ").trim():"";
+  if(/^Rizici/.test(t)){const r=q(".rsum"); return r?[...r.children].map(x=>tx(x).split(" ")[0]).join(" · "):"";}
+  if(/^Pouzdanost/.test(t)){const m=tx(q("#pzBox p.meta")).match(/A[^:]*:\s*(\d+).*?B[^:]*:\s*(\d+).*?C[^:]*:\s*(\d+)/); return m?`A ${m[1]} · B ${m[2]} · C ${m[3]}`:"";}
+  if(/^Provjere/.test(t)){const v=q(".verdict"); return v?(v.classList.contains("v-ok")?"bez ograničenja":"ima ograničenja"):"";}
+  if(/^Pristup/.test(t)){const c=q(".chk"); return c?(c.classList.contains("chk-ok")?"kolni pristup":"provjeri pristup"):"";}
+  if(/^Uvjeti gradnje/.test(t)){const n=[...body.querySelectorAll(".prek .chk-no")].length; const r=(tx(q(".rule-title")).match(/^[\d.]+[a-z]?/)||[""])[0]; return (r?"pravilo "+r:"")+(n?(r?" · ":"")+n+" zapreka":"");}
+  if(/^Komunalna/.test(t)){const dd=[...body.querySelectorAll("dl dd, table td")].slice(0,3).map(tx).map(x=>(x.match(/(\d+[.,]?\d*\s*m)\b/)||[])[1]).filter(Boolean); return dd.length?dd.join(" · "):"";}
+  const v=q(".verdict,.chk b"), x=tx(v); return x.length>32?x.slice(0,30)+"…":x;
+}
+function pogWrap(){
+  for(const h of [...sheet.querySelectorAll(".grp>h2")]){
+    const t=h.textContent.trim(); if(!POG.some(p=>t.startsWith(p))||h.classList.contains("m-only")) continue;
+    const k=pogSlug(t), d=document.createElement("details"); d.className="acc pog"; d.dataset.k=k; if(OPEN.has(k)) d.open=true;
+    d.innerHTML=`<summary><span>${esc(t)}</span><b></b></summary><div class="acc-body"></div>`; const body=d.lastElementChild;
+    h.parentNode.insertBefore(d,h); let n=h; while(n&&!(n!==h&&n.tagName==="H2")){const nx=n.nextElementSibling; body.appendChild(n); n=nx;}
+  }
+  for(const d of sheet.querySelectorAll("details.pog")){const b=d.querySelector(":scope>summary>b"), body=d.querySelector(":scope>.acc-body"), t=d.querySelector(":scope>summary>span").textContent; const st=pogStanje(body,t); if(b&&b.textContent!==st) b.textContent=st;}
+}
+// otvori odjeljak (i sve iznad njega) i pomakni se do njega
+function pogIdi(el){ if(!el) return; for(let p=el;p;p=p.parentElement) if(p.tagName==="DETAILS") p.open=true;
+  const tab=el.closest('.grp[data-g=troskovi]')?"troskovi":"analiza"; if(isMobile()&&UI.tab!==tab) setTab(tab);
+  if(isMobile()&&UI.state!=="full") setState("full");
+  setTimeout(()=>{const r=el.getBoundingClientRect(), sr=sheet.getBoundingClientRect(); sheet.scrollTop+=r.top-sr.top-8;},isMobile()?260:30); }
+
+// ================= SAŽETAK NA VRHU ANALIZE =================
+// Pet kratkih odgovora; dodir otvara odgovarajući odjeljak. Svaki odgovor je preuzet iz odjeljka ispod (isti izvor i oznaka).
+function sazetakUpdate(){
+  const g=sheet.querySelector('.grp[data-g=sum]'), d=curData(); if(!g||!d||!d.parcel) return;
+  let box=document.getElementById("sazetak");
+  if(!box){box=document.createElement("div"); box.id="sazetak"; box.className="saz"; const z=g.querySelector("ul.zones")||document.getElementById("sumEnd"); if(z) z.after(box); else g.appendChild(box);}
+  const tx=e=>e?e.textContent.replace(/\s+/g," ").trim():"", sumB=k=>tx(sheet.querySelector(`details[data-k="${k}"]>summary>b`));
+  const P=window.__prek||[], pr=id=>P.find(x=>x.id===id), rows=[];
+  // 1. smije li se graditi
+  {const v=g.querySelector(".verdict"), cls=v?(v.classList.contains("v-no")?"no":v.classList.contains("v-warn")?"warn":"ok"):"?", zap=P.filter(x=>x.stanje==="no");
+   const st=zap.length?"no":cls; rows.push({st,q:"Smije li se graditi?",a:(tx(v).replace(/ Čestica je u više zona, vidi udjele\./,"").slice(0,90)||"Podaci nisu dostupni")+(zap.length?" Zapreka: "+zap.map(x=>x.naziv).join(", ")+".":""),go:'.prek, #sec-uvjeti'});}
+  // 2. koliko velika kuća
+  {const c=sumB("calc"), G=window.__gp; rows.push({st:c?(/premala|nije dovoljna|ne zadovoljava/i.test(c)?"no":"ok"):"?",q:"Koliko velika kuća?",a:(c||"Izračun još nije dostupan")+(G&&G.area?` · područje za gradnju ${fmt(G.area)} m²`:""),go:'details[data-k="calc"]'});}
+  // 3. tereti (ZK)
+  {const k=String(d.krk?d.parcel.properties.cid:(window.__cur&&window.__cur.key?zgAreaP(d.parcel,window.__cur.key).cid:"")), U=ZKU.get(k)||(OSSZK.get(k)&&OSSZK.get(k).d&&OSSZK.get(k).d.ulosci);
+   if(U&&U.length){const c=U.reduce((a,u)=>a+(u.C&&u.C.upisa||0),0), pl=U.some(u=>u.plomba); rows.push({st:pl?"no":c?"warn":"ok",q:"Ima li tereta?",a:(pl?"Plomba (upis u tijeku). ":"")+(c?`Teretovnica: ${c} ${c===1?"upis":"upisa"}`:"Teretovnica bez upisa")+` · javni uvid OSS, uložak ${U.map(u=>u.ulozak).join(", ")}`,go:'details[data-k="zk"]'});}
+   else rows.push({st:"?",q:"Ima li tereta?",a:OSSZK.get(k)&&OSSZK.get(k).st==="load"?"Dohvaćam iz OSS-a…":"Podaci nisu dostupni; provjeri ZK izvadak.",go:'details[data-k="zk"]'});}
+  // 4. pristup i komunalije
+  {const a=pr("ot-pristup"), k=pr("ot-komunalno"), st=[a,k].some(x=>x&&x.stanje==="no")?"no":[a,k].some(x=>x&&(x.stanje==="warn"||x.stanje==="?"))?"warn":a||k?"ok":"?";
+   const first=x=>x?String(x.tekst).split(/(?<=\.)\s/)[0].replace(/\.$/,""):"";
+   rows.push({st,q:"Pristup i komunalije",a:[first(a),k?String(k.tekst).split(". ")[0]:""].filter(Boolean).join(" · ")||"Podaci nisu dostupni",go:'#sec-uvjeti'});}
+  // 5. trošak
+  {const F=window.__fin; let a, st="?";
+   if(F&&F.total&&F.total.base){a=`${F.total.hasBuy?"Ukupno sa zemljištem":"Gradnja s naknadama"}: ${fmt(F.total.lo)}–${fmt(F.total.hi)} € (procjena)`; st="ok";}
+   else a=d.krk?"Procjena cijene gradnje za Krk nije dostupna; komunalni doprinos je u „Troškovima”.":"Postavi kuću u simulatoru ili upiši površinu u procjeni gradnje.";
+   rows.push({st,q:"Koliko bi koštalo?",a,go:d.krk?'details[data-k="krkKd"]':'details[data-k="total"], details[data-k="build"]'});}
+  const C=[...PZREG.items.values()].filter(x=>x.raz==="C").length, ic={ok:"✓",warn:"!",no:"✕","?":"?"};
+  const h=`<p class="eyebrow" style="margin:0 0 4px">Sažetak</p><ul class="saz-l">${rows.map(r=>`<li class="saz-${r.st==="?"?"q":r.st}"><button type="button" class="saz-b" data-saz="${esc(r.go)}"><i aria-hidden="true">${ic[r.st]}</i><span><b>${esc(r.q)}</b><small>${esc(r.a)}</small></span><em aria-hidden="true">›</em></button></li>`).join("")}</ul>`+
+    (C?`<button type="button" class="saz-c" data-saz="#sec-pouzdanost">Prije kupnje provjeri ${C} ${C===1?"stavku označenu":"stavki označenih"} s C ›</button>`:"");
+  if(box.dataset.h!==h){box.innerHTML=h; box.dataset.h=h;}
+  const cards=g.querySelector(".cards"); if(cards) cards.style.display="none"; // stare kartice sažetka zamijenio je ovaj sažetak
+}
+sheet.addEventListener("click",e=>{const b=e.target.closest("[data-saz]"); if(!b) return; const el=sheet.querySelector(b.dataset.saz.split(",").map(x=>x.trim()).find(x=>sheet.querySelector(x))||"#__none"); pogIdi(el);});
 
 // ================= IZVJEŠTAJ (PDF) =================
 // Gumb „Ispiši / spremi PDF” slaže poseban dokument za ispis: naslovnica s kartom i ključnim brojevima, sažetak, pa
@@ -4719,7 +4800,7 @@ function setTab(t,{scrollTo}={}){
   if(UI.state==="peek") setState("half");
   if(!scrollTo&&t==="troskovi"){const g=sheet.querySelector('.grp[data-g=troskovi]'); if(g) setTimeout(()=>{sheet.scrollTop=Math.max(0,g.offsetTop-8)},isMobile()?240:0);}
   if(!scrollTo&&t==="analiza") sheet.scrollTop=0;
-  if(scrollTo){const el=document.getElementById(scrollTo); if(el){ if(isMobile()&&UI.state!=="full") setState("full"); setTimeout(()=>{sheet.scrollTop=el.offsetTop-8},isMobile()?240:0);}}
+  if(scrollTo){const el=document.getElementById(scrollTo); if(el) pogIdi(el);}
 }
 function auxOpen(html){try{aiCloseP()}catch(e){} aux.innerHTML=`<div class="actions" style="justify-content:flex-start"><button type="button" class="ib" id="auxBack">← Natrag na česticu</button></div>`+html; aux.hidden=false; sheet.hidden=true; aux.scrollTop=0;}
 function auxClose(){aux.hidden=true; sheet.hidden=false;}

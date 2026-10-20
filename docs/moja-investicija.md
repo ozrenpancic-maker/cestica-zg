@@ -304,3 +304,12 @@ Ceste iz OpenStreetMapa (iste kao za pristup i pojas uz cestu) ucrtavaju se u sv
 - **Presjek:** ako pravac presjeka siječe cestu do 25 m izvan međa, presjek se produži do ceste i kolnik se nacrta na razini terena, s nazivom. Stvarna visina kolnika nije poznata.
 - **3D:** blok terena se proširi do 14 m izvan čestice prema cesti, a cesta je položena na teren.
 - **Širina:** iz oznake `width` u OpenStreetMapu kad postoji, inače procjena prema vrsti ceste (ulica 5 m, lokalna 6 m, sporedna 7 m, glavna 8 m, servisni put 3,5 m, poljski put 3 m); to piše uz skicu.
+
+## Pregledno sučelje (20. 10. 2026.)
+
+- **Više informacija:** dulja pojašnjenja (uzastopni sivi odlomci od 110 znakova nadalje) sklapaju se pod „ⓘ Više informacija”. U izvještaju su otvorena.
+- **Sažetak na vrhu analize:** pet odgovora s oznakom stanja (✓, !, ✕, ?): smije li se graditi, koliko velika kuća, ima li tereta, pristup i komunalije, koliko bi koštalo. Ispod je poveznica na stavke označene s C. Dodir otvara odgovarajući odjeljak.
+  - Odgovori su preuzeti iz odjeljaka ispod (isti izvor i oznaka pouzdanosti). Sažetak ne računa ništa novo.
+  - Zamjenjuje stare četiri kartice na mobitelu.
+- **Poglavlja kao kartice:** rizici, provjere, komunalna infrastruktura, pristup i okolina, karte planova, uvjeti gradnje, sunce i energija, novac i kupnja, pouzdanost i dokumentacija sklopljeni su u kartice s kratkim stanjem u zaglavlju. Otvorene kartice ostaju otvorene pri ponovnom prikazu.
+- **Gumbi** na vrhu analize prelamaju se u novi red umjesto da izlaze iz okvira.

@@ -1431,6 +1431,20 @@ async function skicaTests(){
   TL.sljeme="pop"; E("skicaRender")(); ok(/sljeme \+8,89/.test($(w,"skicaOut").textContent),"Sljeme uzduž kraće strane: presjek uz sljeme, sljeme 6 + tg30° × 10/2 = +8,89 m");
   ok(errs.length===0,"bez JS grešaka (skica): "+errs.join(" | "));
 }
+async function sazTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"96/1",KATASTARSKA_OPCINA:"REMETE"}), d=data(w,A,"2.2.");
+  w.__env=d.envelope; E("render")(d); await tick(80);
+  const S=$(w,"sazetak"), rows=S?[...S.querySelectorAll(".saz-b")]:[];
+  ok(rows.length===5&&/Smije li se graditi\?/.test(S.textContent)&&/Koliko velika kuća\?/.test(S.textContent)&&/tlocrt do/.test(rows[1].textContent)&&/Ima li tereta\?/.test(S.textContent)&&/Koliko bi koštalo\?/.test(S.textContent),"Sažetak: pet odgovora na vrhu analize (gradnja, veličina, tereti, pristup, trošak)");
+  const P=[...w.document.querySelectorAll("details.pog")].map(x=>x.querySelector("summary span").textContent);
+  ok(P.includes("Uvjeti gradnje")&&P.some(t=>/^Rizici/.test(t))&&P.includes("Pouzdanost podataka")&&[...w.document.querySelectorAll("details.pog")].every(x=>!x.open),"Poglavlja analize su sklopljene kartice (uvjeti gradnje, rizici, pouzdanost…)");
+  rows[1].dispatchEvent(new w.Event("click",{bubbles:true})); await tick(60);
+  const calc=w.document.querySelector('details[data-k="calc"]'); ok(calc.open&&calc.closest("details.pog").open,"Dodir na odgovor u sažetku otvara odjeljak i poglavlje u kojem je");
+  E("render")(d); await tick(80); ok(w.document.querySelector('details[data-k="calc"]').closest("details.pog").open,"Otvoreno poglavlje ostaje otvoreno nakon ponovnog prikaza");
+  {const R=E("buildReport")(), secs=[...R.querySelectorAll(".rpt-h h2")].map(h=>h.textContent); ok(secs.includes("Uvjeti gradnje")&&secs.includes("Rizici i provjere")&&R.querySelector(".rpt-sec .rule-title"),"Izvještaj i dalje sadrži poglavlja iz sklopljenih kartica"); R.remove();}
+  ok(errs.length===0,"bez JS grešaka (sažetak i kartice): "+errs.join(" | "));
+}
 async function gpTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
   const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"90/1",KATASTARSKA_OPCINA:"REMETE"}), T=w.turf;
@@ -1480,7 +1494,7 @@ async function gpTests(){
   ok(errs.length===0,"bez JS grešaka (područje za gradnju): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
