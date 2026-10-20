@@ -1245,6 +1245,13 @@ async function krkTests(){
   ok(nomi&&nomi.searchParams.get("viewbox")==="14.40,45.26,14.90,44.86"&&!/Zagreb/.test(nomi.searchParams.get("q")),"pretraga 'Kornić 12' traži na otoku Krku");
   w.document.getElementById("q").value="Ilica 1"; await E("search")();
   ok(/Zagreb/.test(nomi.searchParams.get("q")),"pretraga 'Ilica 1' i dalje traži u Zagrebu");
+  // kućni broj: odabire se rezultat s istim kućnim brojem; ako ga nema, napomena da je prikazana ulica
+  {const ulica={lat:"45.0300",lon:"14.6000",class:"highway",type:"residential",address:{road:"Ulica Ledine",village:"Kornić"}}, kuca={lat:"45.0291",lon:"14.5952",class:"place",type:"house",address:{road:"Ulica Ledine",house_number:"31",village:"Kornić"}};
+   let res=[ulica,kuca]; w.fetch=(u)=>{u=String(u); if(u.includes("nominatim")){nomi=new URL(u); return okj(res)} return Promise.reject(new Error("x"))};
+   w.document.getElementById("q").value="Ledine 31 Kornić"; await E("search")(); await tick(20);
+   const c1=E("SRCH").ll; ok(nomi.searchParams.get("addressdetails")==="1"&&Math.abs(c1.lat-45.0291)<1e-6&&!E("SRCH").note,"pretraga: od više rezultata odabire se onaj s istim kućnim brojem (31)");
+   res=[ulica]; w.document.getElementById("q").value="Ledine 31, Kornić"; await E("search")(); await tick(20);
+   ok(Math.abs(E("SRCH").ll.lat-45.03)<1e-6&&/Kućni broj 31 nije pronađen u OpenStreetMapu/.test(E("SRCH").note.txt)&&/Ulica Ledine/.test(E("SRCH").note.txt),"pretraga: kad OpenStreetMap nema kućni broj, napomena da je prikazana točka ulice, ne kuće");}
   // stanje servisa uključuje izvore za Krk
   const sl=E("serviceList")().map(x=>x.n).join("|"); ok(/Krk: katastarske čestice/.test(sl)&&/Krk: namjena/.test(sl)&&/Krk: evidencija/.test(sl),"stanje servisa provjerava i izvore za Krk");
   ok(errs.length===0,"bez JS grešaka u pilotu Krk: "+errs.join(" | "));
@@ -1625,6 +1632,28 @@ async function pristTests(){
   ok(/oko 16 m od međe/.test(txt(w,"sheet"))&&(E("window.__risks")||[]).some(f=>f.t==="Pristup javnoj prometnici"&&f.cat==="potencijalno"),"Pristup: cesta oko 16 m od međe → upozorenje i rizik");
   ok(errs.length===0,"Pristup: bez JS grešaka "+errs.join(" | "));
 }
+async function adrTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms)), fs=require("fs"), path=require("path");
+  let nomi=0; w.fetch=(u)=>{u=String(u); const m=u.match(/data\/adr\/(.+\.json)$/); if(m){ const f=path.join(__dirname,"..","data","adr",m[1]); return Promise.resolve({ok:fs.existsSync(f),status:fs.existsSync(f)?200:404,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(f,"utf8")))}); }
+    if(u.includes("nominatim")){nomi++; return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve([])});} return Promise.reject(new Error("bez mreže u testu"));};
+  const T=async q=>{const k=E("KRK_MJESTA").test(E("norm")(q)); return E("adrTrazi")(q,k?"krk":"zg");};
+  {const A=await T("Ledine 31 Kornić"); ok(A&&Math.abs(A.ll.lat-45.04474)<0.00002&&Math.abs(A.ll.lng-14.61521)<0.00002&&/registra adresa DGU-a: Ledine 31, Kornić/.test(A.note.txt),"Adrese DGU: „Ledine 31 Kornić” → točka kućnog broja 31 (45,04474, 14,61521), ne sredina ulice iz OpenStreetMapa");}
+  {const A=await T("Ledine 999 Kornić"); ok(A&&A.note.cls==="flag"&&/Kućni broj 999 nije u registru/.test(A.note.txt),"Adrese DGU: nepostojeći kućni broj → sredina ulice, uz upozorenje");}
+  {const A=await T("Vranićeva 11"); ok(A&&Math.abs(A.ll.lat-45.848)<0.003&&/Vranićeva ulica/.test(A.note.txt),"Adrese DGU: „Vranićeva 11” bez naselja → Vranićeva ulica u Zagrebu (ne u Sopu ili Preseki)");}
+  {const A=await T("Ilica 1"); ok(A&&/Ilica 1, Zagreb/.test(A.note.txt)&&Math.abs(A.ll.lat-45.8133)<0.003,"Adrese DGU: „Ilica 1” u Zagrebu");}
+  {const A=await T("Nepostojeća ulica 5"); ok(A===null,"Adrese DGU: nepoznata ulica → pretraga ide u OpenStreetMap");}
+  // uzorak od 300 adresa (Krk s naseljem, Zagreb bez naselja): pogodak točne kuće
+  {const pick=(arr,n,seed)=>{let x=seed, o=[]; for(let i=0;i<n;i++){x=(x*1103515245+12345)%2147483648; o.push(arr[x%arr.length]);} return o;};
+   let ok2=0, tot=0, prom=[];
+   for(const [reg,n] of [["krk",150],["zg",150]]){ const I=JSON.parse(fs.readFileSync(path.join(__dirname,"..","data","adr","ulice_"+reg+".json"),"utf8")).ulice.filter(r=>reg==="krk"||r[0]==="Zagreb");
+     for(const r of pick(I,n,reg==="krk"?7:11)){ const B=JSON.parse(fs.readFileSync(path.join(__dirname,"..","data","adr","b",String(r[2]).padStart(3,"0")+".json"),"utf8"))[r[0]+"|"+r[1]]; const p=B[Math.floor(B.length/2)];
+       const q=reg==="krk"?`${r[1]} ${p[0]} ${r[0]}`:`${r[1]} ${p[0]}`; const A=await E("adrTrazi")(q,reg); tot++;
+       if(A&&Math.abs(A.ll.lat-p[2]/1e6)<1e-6&&Math.abs(A.ll.lng-p[1]/1e6)<1e-6) ok2++; else if(prom.length<5) prom.push(q); } }
+   ok(ok2/tot>=0.95,`Adrese DGU: uzorak od ${tot} adresa, točna kuća za ${ok2} (${Math.round(ok2/tot*100)} %)${prom.length?"; promašaji npr. "+prom.join(" · "):""}`);}
+  w.document.getElementById("q").value="Ledine 31 Kornić"; await E("search")(); await tick(30);
+  ok(nomi===0&&Math.abs(E("SRCH").ll.lat-45.04474)<0.00002,"Pretraga: službena adresa ima prednost, OpenStreetMap se ne pita");
+  ok(errs.length===0,"Adrese: bez JS grešaka "+errs.join(" | "));
+}
 async function gpTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
   const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"90/1",KATASTARSKA_OPCINA:"REMETE"}), T=w.turf;
@@ -1674,7 +1703,7 @@ async function gpTests(){
   ok(errs.length===0,"bez JS grešaka (područje za gradnju): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(pristTests).then(okuTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

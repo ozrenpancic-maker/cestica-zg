@@ -95,3 +95,10 @@ Ozren je tražio prikaz posjedovnice I i II, vlastovnice i teretovnice i odabrao
 - Test: `node tools/oss-posrednik/test.next.mjs`.
 - Aplikacija već šalje `&ulozak=1`. Sadašnji Worker taj parametar zanemaruje, pa se ništa ne mijenja dok se ne objavi nova verzija. Nakon objave u „Vlasnici i tereti (ZK izvadak)” prikazuje se sažetak uloška, a ulazi i u PDF izvještaj.
 - **Za objavu (Ozren):** pregledaj `worker.next.js`, kopiraj ga preko `worker.js` u Cloudflareu (Workers → cestica-oss → Edit code → Deploy) i provjeri da su Workers Logs i Logpush isključeni.
+
+
+## 20. 10. 2026.: OSS povremeno odbija (403)
+- Zaglavlja kao OSS-ova stranica (Accept-Language, Referer, Origin), User-Agent „Mozilla/5.0 (compatible; CesticaHR/1.0; +…)”.
+- Jedan ponovni pokušaj u posredniku nakon 0,9–1,8 s kad OSS vrati 403, 429 ili 5xx (najviše dva upita po koraku).
+- Sažetak uloška pamti se 24 h po glavnoj knjizi i broju uloška (više čestica u istom ulošku → jedan upit).
+- Dijagnostika: `oss-dijag.html` na probnoj stranici (12 čestica oko točke, jedna po jedna).
