@@ -172,6 +172,10 @@ details p{font-size:13.5px;margin:6px 0}
 #map.in-print{position:absolute;inset:0}
 @media print{
   header,.layers,.leaflet-control-zoom,.actions,#tabs,#grab,#menu,#netbar,.cards,.m-only,#aux,#ai,#aiBtn{display:none!important}
+  /* oznake za pomicanje i okretanje kuće (simulator) ne idu u izvještaj; kuća ostaje */
+  .t-handle,#panelFab{display:none!important}
+  /* stupci, oznake stanja i obojane pozadine moraju se ispisati (preglednik inače izostavlja pozadine) */
+  body,.pvbars span,.chk,.verdict,.kind,.acc>summary,.sk-svg{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .grp{display:block!important}
   #panel{position:static!important;height:auto!important;display:block!important;box-shadow:none!important;border:0!important}
   #sheet{display:block!important}
@@ -255,7 +259,7 @@ details p{font-size:13.5px;margin:6px 0}
 .st-ok{background:var(--ok-bg);color:var(--ok)} .st-warn{background:var(--warn-bg);color:var(--warn)} .st-muted{background:var(--line);color:var(--muted)}
 .exhit{background:var(--warn-bg)}
 ol.zi{font-size:13.5px;padding-left:18px}
-.pvbars{display:flex;gap:3px;align-items:flex-end;height:80px;margin:8px 0 2px}.pvbars div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}.pvbars span{display:block;width:100%;background:var(--warn);border-radius:3px 3px 0 0}.pvbars small{font-size:10px;color:var(--muted)}
+.pvbars{display:flex;gap:3px;align-items:flex-end;height:96px;margin:8px 0 2px}.pvbars b{font-size:9px;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;margin-bottom:2px}.pvbars div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}.pvbars span{display:block;width:100%;background:var(--warn);border-radius:3px 3px 0 0}.pvbars small{font-size:10px;color:var(--muted)}
 .favc{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0}
 @media (max-height:500px) and (max-width:899px){#tabs button{min-height:44px;flex-direction:row;gap:6px} #panel.st-half{height:60%}}
 #panelFab{display:none;position:absolute;right:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:1001;align-items:center;gap:8px;min-height:48px;max-width:70%;padding:0 16px;border:1px solid var(--line);border-radius:24px;background:color-mix(in srgb,var(--panel) 72%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:var(--fg);font:inherit;font-weight:600;box-shadow:0 2px 12px rgba(0,0,0,.18);touch-action:none;cursor:pointer}
@@ -2749,7 +2753,7 @@ async function pvRun(){
     let h=`<div class="calc" style="background:var(--panel)"><div class="row"><span>Zračenje na plohu panela <em class="kind kind-propis">model ERA5</em></span><span>${fmt(r.annual)} kWh/m² godišnje</span></div>`;
     h+=frow(`Proizvodnja ${kindTag("procjena")}`,`${fmt(E)} kWh godišnje`,{bold:true,f:`${fmt(r.annual)} kWh/m² × ${String(kwp).replace(".",",")} kWp × ${String(PV_PR).replace(".",",")}${sh?` × (1 − ${Math.round(sh*100)} %)`:""}`});
     h+=frow("Specifična proizvodnja",`${fmt(E/(kwp||1))} kWh/kWp`);
-    h+=`</div><div class="pvbars">${r.monthly.map((x,i)=>`<div><span style="height:${Math.round(60*x/mx)}px" title="${fmt(x*kwp*PV_PR*(1-sh))} kWh"></span><small>${M[i]}</small></div>`).join("")}</div>`;
+    h+=`</div><div class="pvbars" role="img" aria-label="Proizvodnja po mjesecima, kWh">${r.monthly.map((x,i)=>`<div><b>${fmt(x*kwp*PV_PR*(1-sh))}</b><span style="height:${Math.round(60*x/mx)}px" title="${fmt(x*kwp*PV_PR*(1-sh))} kWh"></span><small>${M[i]}</small></div>`).join("")}</div><p class="meta" style="margin-top:0">Proizvodnja po mjesecima u kWh (iznad stupaca).</p>`;
     h+=`<p class="meta">Izvor: Open-Meteo, povijesni podaci ERA5 (Copernicus), satno zračenje na nagnutu plohu, prosjek ${r.years.join(", ")}. Pretpostavke: omjer učinkovitosti sustava ${String(PV_PR).replace(".",",")} (gubici temperature, izmjenjivača, kabela i prljavštine), ${PV_KWP_M2.toString().replace(".",",")} kWp po m² panela. Model ERA5 ima rezoluciju oko 25 km i ne vidi lokalnu sjenu; zato je zasjenjenje tvoj unos. Za ponudu traži izračun izvođača.</p>`;
     o.innerHTML=h; const s=document.getElementById("pvSum"); if(s) s.textContent=`oko ${fmt(E)} kWh/god.`;
   }catch(e){o.innerHTML=`<p class="err">Proizvodnja se ne može izračunati: ${esc(e.message)}. Nijedna procjena nije prikazana jer nema podataka.</p>`}
