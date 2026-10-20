@@ -61,3 +61,19 @@ Taj upit koristi i `oss-test.html`. Struktura odgovora nije provjerena, ni naziv
 2. Ja napišem izmjenu kao zasebnu datoteku (`worker.next.js`) s testovima. `worker.js` ostaje kakav jest.
 3. Ti pregledaš i odobriš.
 4. Ti objaviš Worker u Cloudflareu. Tek tada aplikacija dobiva prikaz statusa, isprva samo na probnoj stranici.
+
+## Proširenje (20. 10. 2026.): sva četiri dijela uloška
+
+Ozren je tražio prikaz posjedovnice I i II, vlastovnice i teretovnice i odabrao opseg „struktura + tekst tereta”.
+
+| Dio | Što posrednik vraća | Što ne vraća |
+| --- | --- | --- |
+| Posjedovnica I (A I) | čestice u ulošku: broj, k.o., način uporabe, površina | — |
+| Posjedovnica II (A II) | redni broj, datum i broj zaprimanja, puni tekst upisa (npr. zabilježba legalizacije) | — |
+| Vlastovnica (B) | broj vlasnika, udio svakog (1/2, 1/4 …), vrsta (fizička ili pravna osoba, ako OSS to razlikuje) | imena, OIB, adrese, datum rođenja |
+| Teretovnica (C) | redni broj, vrsta upisa, datum i broj zaprimanja, puni tekst upisa; plomba | OIB (u tekstu se 11 znamenki zamjenjuje s „[OIB]”) |
+
+- Tekst upisa u A II i C može sadržavati ime vjerovnika ili druge osobe; to je izričit izbor korisnika. Aplikacija ga prikazuje samo na zaslonu i u izvještaju; posrednik ga ne sprema (cache 24 h samo za odgovor bez B imena) i ne zapisuje u logove.
+- Uz prikaz uvijek piše: „Javni uvid OSS-a; nije službeni izvadak i ne potvrđuje pravno stanje. Mjerodavan je ZK izvadak.”
+- Nazivi polja i dalje se ne izmišljaju: za izradu treba uzorak odgovora `lr-unit`. Uzorak bez osobnih podataka pravi stranica `oss-uzorak.html` na probnoj adresi (sve u pregledniku, svaki tekst zamijenjen duljinom).
+- Redoslijed ostaje: uzorak → `worker.next.js` s testovima → Ozren pregleda i odobri → Ozren objavi Worker.
