@@ -340,3 +340,32 @@ Ceste iz OpenStreetMapa (iste kao za pristup i pojas uz cestu) ucrtavaju se u sv
 - Kamera obuhvati česticu, nagnuta je 62° i polako se okreće. „Zaustavi” ili povlačenje zaustavlja okretanje.
 - Kad se pogled iscrta (ili nakon 8 s), sprema se slika i ulazi u PDF izvještaj u poglavlje „Kuća na čestici”. Ako preglednik ne dopusti čitanje slike, izvještaj je bez nje.
 - Bez WebGL-a piše da preglednik ne podržava 3D prikaz.
+
+## Procjena vrijednosti zemljišta (Troškovi → Novac i kupnja)
+
+- **Referentni podaci (B, uz broj kupoprodaja):** Grad Zagreb, *Izvješće o tržištu nekretnina za 2025.*, građevinsko zemljište:
+  prosjek po naselju (53 naselja), po veličini čestice (7 razreda) i rasponi po namjeni (S/M1/M2 niska 50–900, M visoka 300–1.200,
+  K 200–500, G 120–330, I 30–200 €/m²). Izvješće navodi da je evaluirano približno 30 % ugovora i da su prosjeci ponderirani
+  površinom, pa su orijentir, ne procjena. Naselje se predlaže samo kad se ime k.o. poklapa s imenom naselja; odabir korisnika je C.
+- **Plan približnih vrijednosti (ISPU):** izravno čitanje iz preglednika blokira CORS (test 20. 10. 2026., `ppv-test.html`).
+  Zasad korisnik prepisuje vrijednost bloka s karte (C). Automatski dohvat moguć je samo preko posrednika (Worker), uz odobrenje.
+- **Usporedbe korisnika:** do 12 redaka (prodano / oglas, €/m², opis). Raspon i medijan računaju se **samo iz ostvarenih kupoprodaja**,
+  najmanje 3 (5+ → srednja polovina P25–P75, inače min–max). Oglasi se prikazuju odvojeno kao tražene cijene. Bez 3 kupoprodaje:
+  „Podaci nisu dostupni”. Rezultat je uvijek C.
+- **Čimbenici:** samo kvalitativno (↑/↓), bez izmišljenih postotaka: veličinski razred, udio namjene za gradnju, nagib ≥ 15 %,
+  ograničenja iz provjera, Natura 2000 / zaštićeno područje.
+- Gumb „Upiši medijan u kupnju zemljišta” prenosi medijan × površina u „Kupnja zemljišta” samo na dodir. Usporedbe se spremaju
+  i izvoze s projektom (`proj.vrij`). Krk: referentni podaci nisu dostupni, usporedbe rade.
+
+## 3D model kuće (low-poly, za planiranje)
+
+- `v3dModel()` gradi kuću u lokalnim metrima (širina, dubina, zakret iz simulatora) kao skup `fill-extrusion` tijela s bojom, bazom, visinom i razinom detalja.
+- Dijelovi: podest/temeljna ploča (0,45 m, 20 cm šira od zidova, jasan dodir s terenom), zidovi do vijenca, krov sa strehom (0,5 m) i zabatnim prepustom (0,3 m),
+  krov u slojevima naizmjenične boje (dojam crijepa), tamna letva sljemena (orijentacija krova), ravni krov s atikom, prozori s okvirom po etažama, ulazna vrata s nadstrešnicom
+  na strani prema najbližoj cesti (bez cesta: prema jugu), garaža s vratima.
+- Svjetlo i sjena: sunce s jugozapada (azimut 215°, 40° iznad obzora); sjena je obuhvat tlocrta i tlocrta pomaknutog od sunca, u tri prozirna sloja (meki rub).
+- Razine detalja: krov sa 6 slojeva ispod zooma 18,6, sa 14 slojeva iznad; prozori, vrata i nadstrešnica od zooma 17,6; paneli samo izbliza.
+- Oznaka čestice stoji na vrhu granice najdaljem od kuće i ne prima dodir.
+- Priprema: solarni paneli (prekidač „Paneli”, iz površine i orijentacije u odjeljku Solarna elektrana, na kosini najbližoj odabranoj orijentaciji ili u redovima na ravnom krovu);
+  prilaz (iz procjene gradnje: vrsta i širina, od ulaza do najbliže ceste, boja po vrsti); sloj terase postoji, ali je prazan dok aplikacija nema unos za terasu.
+- Prikaz je ilustracija za planiranje, ne arhitektonski projekt.
