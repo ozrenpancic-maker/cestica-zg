@@ -1597,6 +1597,30 @@ async function okuTests(){
   ok(!E("OKU.res")&&!E("OKU.layer")&&!!$(w,"okuGo"),"Okućnica: „Ukloni prijedlog” briše prikaz; kuća i simulator ostaju");
   ok(errs.length===0,"Okućnica: bez JS grešaka "+errs.join(" | "));
 }
+async function pristTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"55/1",KATASTARSKA_OPCINA:"REMETE"}), c=A.geometry.coordinates[0], dy=m=>m/110540;
+  const ces=(m,hw="residential")=>[{ok:true,hw,name:"Ulica Test",geom:[[c[0][0]-0.001,c[0][1]-dy(m)],[c[1][0]+0.001,c[1][1]-dy(m)]]}];
+  const O=E("pristupOcjena");
+  {const a=O(A,ces(4)), b=O(A,ces(9)), d=O(A,ces(18)), e=O(A,[{ok:false,hw:"footway",geom:ces(4)[0].geom}]), f=O(A,ces(6.5,"primary"));
+   ok(a.st==="uz"&&Math.abs(a.gap-1.5)<0.3&&a.duljinaUz>=28,"Pristup: os ulice 4 m od međe, pola kolnika 2,5 m → rub kolnika 1,5 m od međe: čestica je uz cestu (uzduž oko 30 m)");
+   ok(b.st==="blizu"&&Math.abs(b.gap-6.5)<0.3&&d.st==="daleko"&&e.st==="nema"&&f.st==="uz","Pristup: razmak 6,5 m → pojas ceste ili čestica između; 15,5 m → daleko; samo pješačka staza → nema ceste; glavna cesta (8 m) s osi 6,5 m od međe → uz cestu");}
+  // čestica između: katastarski sloj vraća istu česticu na sredini razmaka i na osi ceste → čestica ceste
+  const strip={type:"Polygon",coordinates:[[[0,0],[100,0],[100,9],[0,9],[0,0]].map(([x,y])=>[460000+x,5077000+y])]};
+  w.fetch=(u)=>{u=String(u); if(u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/")) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({type:"FeatureCollection",features:[{type:"Feature",geometry:strip,properties:{CESTICA_ID:777,BROJ_CESTICE:"1234/9",POVRSINA_GRAFICKA:900,POVRSINA_ATRIBUTNA:900}}]})}); return Promise.reject(new Error("bez mreže u testu"));};
+  const d=data(w,A,"2.2."); d.env={v:{roads:[{name:"Ulica Test",hw:"residential",ok:true}],roadLines:ces(9),stops:[]}}; w.__env=d.envelope; E("render")(d); await tick(80);
+  {const t=txt(w,"sheet"), P=E("window.__prek")||[], pr=P.find(x=>x.id==="ot-pristup");
+   ok(/oko 6,[56] m od međe/.test(t)&&/Između je čestica 1234\/9, ista na kojoj je i cesta/.test(t)&&pr&&pr.stanje!=="warn"&&/Kolni pristup/.test(t),"Pristup: između je čestica na kojoj je i cesta (katastar DGU) → nije upozorenje „nema pristupa”");
+   ok(!(E("window.__risks")||[]).some(f=>f.t==="Pristup javnoj prometnici"),"Pristup: rizik „Pristup javnoj prometnici” se ne javlja kad je cesta preko čestice ceste");}
+  // druga čestica između (nije čestica ceste)
+  let n=0; w.fetch=(u)=>{u=String(u); if(u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/")){const k=++n; return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({type:"FeatureCollection",features:[{type:"Feature",geometry:strip,properties:k%2?{CESTICA_ID:888,BROJ_CESTICE:"55/2",POVRSINA_GRAFICKA:300}:{CESTICA_ID:999,BROJ_CESTICE:"4000/1",POVRSINA_GRAFICKA:5000}}]})});} return Promise.reject(new Error("bez mreže u testu"));};
+  E("PRIST.map").clear(); E("render")(d); await tick(80);
+  {const t=txt(w,"sheet"), pr=(E("window.__prek")||[]).find(x=>x.id==="ot-pristup"); ok(/Između je čestica (55\/2|4000\/1)/.test(t)&&!/ista na kojoj je i cesta/.test(t)&&/služnost/.test(t)&&pr.stanje==="warn","Pristup: između je druga (možda privatna) čestica → upozorenje s brojem čestice i služnosti");}
+  // cesta daleko
+  E("PRIST.map").clear(); const d3=data(w,A,"2.2."); d3.env={v:{roads:[{name:"Ulica Test",hw:"residential",ok:true}],roadLines:ces(18),stops:[]}}; E("render")(d3); await tick(40);
+  ok(/oko 16 m od međe/.test(txt(w,"sheet"))&&(E("window.__risks")||[]).some(f=>f.t==="Pristup javnoj prometnici"&&f.cat==="potencijalno"),"Pristup: cesta oko 16 m od međe → upozorenje i rizik");
+  ok(errs.length===0,"Pristup: bez JS grešaka "+errs.join(" | "));
+}
 async function gpTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
   const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"90/1",KATASTARSKA_OPCINA:"REMETE"}), T=w.turf;
@@ -1620,7 +1644,7 @@ async function gpTests(){
   {const f=E("pkFit")(2,600,150,240); ok(f.need===25&&f.free===210&&f.ok&&!E("pkFit")(4,200,120,60).ok,"Parkiranje: 2 mjesta = 25 m², slobodno 600 − 150 − 240 = 210 m² (stane); 4 mjesta na 200 m² čestici s 120 m² tlocrta i 60 m² zelenila ne stanu");}
   {const d2=data(w,A,"2.2."); d2.env=envO; const u=d2.checks.find(r=>r.c.id==="upu"); u.v=[{properties:{TextString:"UPU Test"}}]; E("render")(d2); const t2=txt(w,"sheet");
    ok(/Prije svega provjeri/.test(t2)&&/mogu zaustaviti gradnju/.test(t2)&&/u obuhvatu urbanističkog plana uređenja \(UPU Test\)/.test(t2)&&E("PZREG").items.get("ot-upu").raz==="A","Zagreb: obvezni UPU na čestici je zapreka na vrhu uvjeta gradnje (A, iz sloja 4b)");
-   ok(/Uz rub čestice prepoznata je ulica iz OpenStreetMapa/.test(t2),"Zagreb: pristup prikazuje prepoznatu ulicu kao procjenu");}
+   ok(/Čestica graniči s cestom/.test(t2)&&/Pravni status i širina pristupa nisu provjereni/.test(t2),"Zagreb: pristup prikazuje prepoznatu ulicu kao procjenu");}
   // cesta 2 m od ruba čestice (os ceste 5 m od ruba): južni rub je uz cestu, bočni rubovi nisu
   {const dy5=5/110540, road5=[{ok:true,geom:[[c[0][0]-0.001,c[0][1]-dy5],[c[1][0]+0.001,c[1][1]-dy5]]}], B=E("streetBand")(A,road5,4);
    const ba=B?T.area(T.intersect(A,B)):0; ok(B&&Math.abs(ba-30*4)<15,"Cesta 2 m od ruba čestice (os 5 m): prepoznat samo južni rub, pojas 4 m × 30 m ≈ 120 m² (bočni rubovi nisu uz cestu)");}
@@ -1646,7 +1670,7 @@ async function gpTests(){
   ok(errs.length===0,"bez JS grešaka (područje za gradnju): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(okuTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(pristTests).then(okuTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
