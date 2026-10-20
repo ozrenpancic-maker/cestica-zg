@@ -128,17 +128,18 @@ function setv(w,id,v,ev="input"){const e=$(w,id); if(e.type==="checkbox") e.chec
 // ---------------- 2b. Zagreb: grafička i upisana površina iz OSS-a (posrednik traži česticu po točki)
 async function zgOssTests(){
   const tick=ms=>new Promise(r=>setTimeout(r,ms));
-  for(const [broj,expectOk,wms] of [["1/1",true,false],["2/2",false,false],["1/1",true,true]]){
-    const {w,errs}=boot(); const calls=[];
+  for(const [broj,expectOk,wms] of [["1/1",true,false],["2/2",false,false],["1/1",true,true],["1/1",true,"multi"],["1/1",false,"drugi"]]){
+    const {w,errs}=boot(); const calls=[]; let wmsN=0;
     try{w.localStorage.clear()}catch(e){}
     w.eval('SRC_KRK.oss="https://oss-test.example/"; OSS_RETRY.splice(0,OSS_RETRY.length,5)');
     w.fetch=(u)=>{u=String(u); calls.push(u);
-      if(u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/")) return wms?Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({type:"FeatureCollection",features:[{type:"Feature",properties:{CESTICA_ID:5,BROJ_CESTICE:"1/1",POVRSINA_GRAFICKA:998.4,POVRSINA_ATRIBUTNA:1010}}]})}):Promise.reject(new TypeError("Failed to fetch"));
+      if(u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/")){ const n=wmsN++, drugi=wms==="drugi"||(wms==="multi"&&n===0); return wms?Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({type:"FeatureCollection",features:[{type:"Feature",properties:drugi?{CESTICA_ID:9,BROJ_CESTICE:"7/3",POVRSINA_GRAFICKA:300,POVRSINA_ATRIBUTNA:300}:{CESTICA_ID:5,BROJ_CESTICE:"1/1",POVRSINA_GRAFICKA:998.4,POVRSINA_ATRIBUTNA:1010}}]})}):Promise.reject(new TypeError("Failed to fetch"));}
       if(u.startsWith("https://oss-test.example/")) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({ok:true,id:"5",broj,ko:"ŠESTINE",katastar:1010,graficka:998.4,zk:[{broj,povrsina:1012,ulozak:"777",odjel:"Zemljišnoknjižni odjel Zagreb"}],dijelovi:[],dohvaceno:"2026-10-19T09:00:00Z"})});
       return Promise.reject(new Error("bez mreže u testu"));};
     const d=data(w,parcelRect(40,25),"2.2."); w.eval("render")(d); await tick(30);
     const t=txt(w,"sheet"), q=calls.filter(u=>u.startsWith("https://oss-test.example/"));
     if(expectOk){
+      if(wms==="multi") ok(wmsN>=2,"Zagreb OSS: na prvoj točki je susjedna čestica, druga točka unutar čestice nađe pravu ("+wmsN+" upita sloju)");
       ok(q.length===1&&(wms?/\?id=5&ulozak=1$/.test(q[0]):/\?lat=45\.84\d*&lon=15\.97\d*&ulozak=1$/.test(q[0])),"Zagreb OSS: "+(wms?"s ID-om iz katastarskog sloja posrednik se pita po ID-u":"bez sloja karte posrednik se pita po točki unutar čestice")+" ("+(q[0]||"nema upita")+")");
       ok(/Grafička površina ?998 m²/.test(t)&&/iz katastarskog plana \(DGU\)/.test(t)&&/u gradskom sloju čestica 1\.0\d\d m²/.test(t),"Zagreb OSS: grafička površina iz DGU-a, uz površinu iz gradskog sloja");
       ok(/Upisana u zemljišnoj knjizi ?1\.012 m²/.test(t)&&/ZK uložak 777/.test(t)&&/Upisana u katastru ?1\.010 m²/.test(t),"Zagreb OSS: upisana površina u ZK i u katastru");
@@ -154,7 +155,8 @@ async function zgOssTests(){
       $(w,"krkZkMan").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!!$(w,"krkZkIn"),"Zagreb: može se upisati druga upisana površina");
       ok(!errs.length,"Zagreb OSS: bez JS grešaka "+errs.join("; "));
     }else{
-      ok(/OSS je na ovom mjestu vratio drugu česticu \(2\/2\)/.test(t)&&!!$(w,"krkZkIn")&&!/1\.012 m²/.test(t),"Zagreb OSS: ako OSS na točki ima drugi broj čestice, vrijednost se ne prikazuje");
+      if(wms==="drugi") ok(/u katastru DGU na mjestu ove čestice je čestica 7\/3/.test(t)&&/dijeljena ili spojena/.test(t)&&q.length===0&&wmsN>=3,"Zagreb OSS: kad nijedna točka unutar čestice nema isti broj u katastru DGU, poruka s brojem čestice iz katastra (bez upita posredniku)");
+      else ok(/OSS je na ovom mjestu vratio drugu česticu \(2\/2\)/.test(t)&&!!$(w,"krkZkIn")&&!/1\.012 m²/.test(t),"Zagreb OSS: ako OSS na točki ima drugi broj čestice, vrijednost se ne prikazuje");
     }
   }
 }
@@ -922,7 +924,7 @@ async function krkTests(){
     {GRAD_OPCINA:"Primorsko-goranska županija",VRSTA_PP:"PPŽ",STATUS_PP:"VAŽEĆI",NAZIV:"PPŽ, pročišćeni tekst",SN_BROJ:"2024-12",SN_LINK:"javascript:alert(1)"},
     {GRAD_OPCINA:"Krk",VRSTA_PP:"PPUO/G",STATUS_PP:"VAN SNAGE",NAZIV:"stari plan",SN_BROJ:"1978-31"},
     {GRAD_OPCINA:"Republika Hrvatska",VRSTA_PP:"DPPR",STATUS_PP:"U IZRADI",NAZIV:"državni plan",SN_BROJ:"2024-48"}];
-  let mode="ok", calls=[], rkMode="ok", rkCalls=[];
+  let mode="ok", calls=[], rkMode="ok", rkCalls=[], ossOpt=null, ulN=0;
   const okj=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b)});
   w.fetch=(u,o={})=>{u=String(u); calls.push(u);
     if(u.startsWith("https://gisportal.pgz.hr/server/rest/services/PP_RASTERI/PP_RASTERI/MapServer/")){ rkCalls.push(u);
@@ -937,6 +939,9 @@ async function krkTests(){
     if(u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/")) return mode==="wms"?okj({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{CESTICA_ID:1,BROJ_CESTICE:"2345/6",MATICNI_BROJ_KO:315907,KATASTARSKA_OPCINA_ID:1239,POVRSINA_GRAFICKA:600,POVRSINA_ATRIBUTNA:615}}]}):Promise.reject(new TypeError("Failed to fetch"));
     if(u.startsWith("https://oss-test.example/")){ if(mode==="ossFail") return Promise.reject(new TypeError("Failed to fetch"));
       if(mode==="oss403once"){mode="ok"; return Promise.resolve({ok:false,status:502,json:()=>Promise.resolve({ok:false,greska:"OSS HTTP 403"})});}
+      ossOpt=o;
+      if(mode==="ulGreska"&&ulN++<2) return okj({ok:true,id:"1",broj:"2345/6",koMb:"315907",ko:"KORNIĆ",katastar:640,zk:[{broj:"2345/6",povrsina:642,ulozak:"5126"}],dijelovi:[],ulosciGreska:"OSS uložak HTTP 403"});
+      if(mode==="noZk") return okj({ok:true,id:"1",broj:"2345/6",ko:"KORNIĆ",katastar:640,zk:[],dijelovi:[],ulosci:[]});
       if(!/\?id=1&ulozak=1$/.test(u)) return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve({ok:false,greska:"OSS nema česticu s tim ID-om"})});
       return okj({ok:true,id:"1",broj:"2345/6",koMb:"315907",ko:"KORNIĆ",katastar:640,zk:[{broj:"2345/6",povrsina:642,ulozak:"5126",odjel:"Zemljišnoknjižni odjel Krk"}],
         ulosci:[{ulozak:"5126",glavnaKnjiga:"KORNIĆ",odjel:"Zemljišnoknjižni odjel Krk",status:"Aktivan",vrsta:"VLASNIČKI",zadnjiDnevnik:"Z-100/2024",plomba:false,plombi:0,
@@ -1048,6 +1053,18 @@ async function krkTests(){
   ok(!!$(w,"krkOssRetry")&&[...w.document.querySelectorAll("#krkArea a")].some(a=>a.href==="https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info?parcelId=1"),"Krk OSS: gumbi „Pokušaj ponovno” i „Otvori česticu u OSS-u”");
   mode="ok"; $(w,"krkOssRetry").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20);
   ok(/Upisana u zemljišnoj knjizi ?642 m²/.test(txt(w,"sheet")),"Krk OSS: „Pokušaj ponovno” dohvaća površinu");
+  ok(ossOpt&&ossOpt.cache==="no-store","Krk OSS: upit posredniku zaobilazi predmemoriju preglednika (inače bi sat vremena dobivao isti neuspjeli odgovor)");
+  // uložak: OSS dvaput odbije upit za uložak, treći pokušaj uspije
+  E("OSS_UL_RETRY").splice(0,E("OSS_UL_RETRY").length,15,15); mode="ulGreska"; ulN=0; E("OSSZK").clear(); E("ZKU").clear(); E("renderKrk")(E("KRK_CUR")); await tick(8);
+  ok(/OSS je odbio upit za ZK uložak 5126; ponovni pokušaj/.test(txt(w,"zkOss"))&&/642 m²/.test(txt(w,"krkArea")),"Krk OSS: dok OSS odbija upit za uložak, površina je prikazana, a uz uložak piše da slijedi ponovni pokušaj");
+  await tick(80); ok(/ZK uložak 5126/.test(txt(w,"zkOss"))&&/Teretovnica: 1 upis/.test(txt(w,"zkOss"))&&ulN===3,"Krk OSS: uložak stiže nakon ponovnih pokušaja (ukupno 3 upita)");
+  // uložak i dalje ne stiže: poruka i gumb
+  mode="ulGreska"; ulN=-10; E("OSSZK").clear(); E("ZKU").clear(); E("renderKrk")(E("KRK_CUR")); await tick(90);
+  ok(/ZK uložak 5126 nije dohvaćen: OSS ne odgovara/.test(txt(w,"zkOss"))&&!!$(w,"zkUlRetry"),"Krk OSS: kad uložak ne stigne ni nakon ponovnih pokušaja, poruka i gumb „Pokušaj ponovno”");
+  mode="ok"; $(w,"zkUlRetry").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20); ok(/ZK uložak 5126/.test(txt(w,"zkOss"))&&/Bez plombe/.test(txt(w,"zkOss")),"Krk OSS: „Pokušaj ponovno” uz uložak dohvaća uložak");
+  mode="noZk"; E("OSSZK").clear(); E("ZKU").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20);
+  ok(/ne povezuje ni s jednim ZK uloškom/.test(txt(w,"zkOss"))&&!$(w,"zkUlRetry"),"Krk OSS: kad OSS česticu ne povezuje s uloškom, to piše (bez gumba za ponovni pokušaj)");
+  mode="ok"; E("OSSZK").clear(); E("ZKU").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20);
   mode="ok"; E("SRC_KRK").oss=""; E("OSSZK").clear(); E("renderKrk")(E("KRK_CUR"));
   // izravno iz katastarskog sloja karte (bez posrednika): površina upisana u katastar
   mode="wms"; E("KATW").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20); {const tw=txt(w,"sheet");

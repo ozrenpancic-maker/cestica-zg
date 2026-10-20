@@ -1273,11 +1273,12 @@ function krkZkSet(key,a,src){try{if(a>0) localStorage.setItem("krkZK:"+key,JSON.
 const OSSZK=new Map();
 function krkOssGet(P){return SRC_KRK.oss&&P&&P.cid!=null?OSSZK.get(String(P.cid))||null:null}
 // OSS povremeno odbije upit posrednika (HTTP 403); jedan ponovni pokušaj, da se OSS ne opterećuje
-const OSS_RETRY=[3000];
+const OSS_RETRY=[3000], OSS_UL_RETRY=[3000,8000];
 async function krkOssOnce(P,k,q){
   const ac=new AbortController(), t=setTimeout(()=>ac.abort(),20000);
+  // posrednik šalje „max-age=3600”: bez no-store preglednik bi sat vremena vraćao isti (i neuspjeli) odgovor
   // „ulozak=1”: posrednik uz površinu vraća i sažetak ZK uloška (A I, A II, udjeli bez osoba, teretovnica, plomba), ako to podržava
-  try{const r=await fetch(SRC_KRK.oss+"?"+(q||"id="+encodeURIComponent(k))+"&ulozak=1",{signal:ac.signal}); const j=await r.json().catch(()=>null);
+  try{const r=await fetch(SRC_KRK.oss+"?"+(q||"id="+encodeURIComponent(k))+"&ulozak=1",{signal:ac.signal,cache:"no-store"}); const j=await r.json().catch(()=>null);
     if(r.ok&&j&&j.ok) return j.broj&&P.broj&&j.broj!==P.broj?{st:"err",e:"OSS je na ovom mjestu vratio drugu česticu ("+j.broj+")"}:{st:"ok",d:j};
     return {st:"err",e:(j&&j.greska)||("HTTP "+r.status),retry:r.status!==404&&r.status!==400};}
   catch(e){return {st:"err",e:e.name==="AbortError"?"OSS ne odgovara":"mreža ili posrednik nedostupan",retry:true}}
@@ -1292,9 +1293,13 @@ async function ossFetchInto(k,P,q,onUpd){
   OSSZK.set(k,v); if(v.st==="err") setTimeout(()=>{if(OSSZK.get(k)===v) OSSZK.delete(k)},30000);
   onUpd();
   // OSS povremeno odbije upit za uložak (čestica je tada već stigla): jedan ponovni pokušaj nakon 3 s, samo za uložak
-  if(v.st==="ok"&&v.d&&v.d.ulosciGreska&&!(v.d.ulosci&&v.d.ulosci.length)){ await new Promise(r=>setTimeout(r,OSS_RETRY[0]||3000));
-    const v2=await krkOssOnce(P,k,q); if(v2.st==="ok"&&v2.d&&v2.d.ulosci&&v2.d.ulosci.length&&OSSZK.get(k)===v){OSSZK.set(k,v2); onUpd();}
-    else setTimeout(()=>{if(OSSZK.get(k)===v) OSSZK.delete(k)},30000); } // i dalje bez uloška: kod sljedećeg otvaranja čestice pokušaj ponovno
+  let cur=v;
+  for(const ms of OSS_UL_RETRY){ if(!(cur.st==="ok"&&cur.d&&cur.d.ulosciGreska&&!(cur.d.ulosci&&cur.d.ulosci.length))||OSSZK.get(k)!==cur) break;
+    cur.ulPokusaj=(cur.ulPokusaj||0)+1; onUpd(); await new Promise(r=>setTimeout(r,ms)); if(OSSZK.get(k)!==cur) return;
+    const v2=await krkOssOnce(P,k,q); if(OSSZK.get(k)!==cur) return;
+    if(v2.st==="ok"&&v2.d&&v2.d.ulosci&&v2.d.ulosci.length){OSSZK.set(k,v2); onUpd(); return;}
+    if(v2.st==="ok"&&v2.d){v2.ulPokusaj=cur.ulPokusaj; OSSZK.set(k,v2); cur=v2;} }
+  if(cur.ulPokusaj){cur.ulGotovo=true; onUpd(); setTimeout(()=>{if(OSSZK.get(k)===cur) OSSZK.delete(k)},30000);} // i dalje bez uloška: kod sljedećeg otvaranja čestice pokušaj ponovno
 }
 async function krkOssFetch(P,area){
   if(!P||P.cid==null) return; const k=String(P.cid);
@@ -1386,11 +1391,24 @@ function zkOssHtml(U){
   }
   return h+`</div>`;
 }
+const zkHash=s=>{let h=0; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))|0; return s.length+"."+h;};
+// kad uloška nema: zašto (dohvaćanje, OSS odbija, čestica nije povezana s uloškom), uz ponovni pokušaj
+function zkOssStanje(v){
+  if(!SRC_KRK.oss||!v) return "";
+  const P=(t,btn)=>`<p class="flag" style="margin:0 0 8px">${t}${btn?` <button type="button" class="ib" id="zkUlRetry" style="min-height:32px;padding:0 10px">Pokušaj ponovno</button>`:""}</p>`;
+  if(v.st==="load") return `<p class="meta" style="margin:0 0 8px"><span class="spin"></span>Dohvaćam ZK uložak iz OSS-a…${v.n?" (ponovni pokušaj)":""}</p>`;
+  if(v.st==="err") return P(`ZK uložak nije dohvaćen: ${esc(/403/.test(v.e)?"OSS trenutno odbija upite (to se povremeno događa)":v.e)}.`,true);
+  const d=v.d||{}, zk=(d.zk||[]).filter(z=>z.ulozak), br=[...new Set(zk.map(z=>z.ulozak))];
+  if(d.ulosciGreska&&!v.ulGotovo) return `<p class="meta" style="margin:0 0 8px"><span class="spin"></span>OSS je odbio upit za ZK uložak${br.length?" "+esc(br.join(", ")):""}; ponovni pokušaj ${v.ulPokusaj||1} od ${OSS_UL_RETRY.length}…</p>`;
+  if(d.ulosciGreska) return P(`ZK uložak${br.length?" "+esc(br.join(", ")):""} nije dohvaćen: OSS ne odgovara (${esc(d.ulosciGreska)}). Pokušaj za minutu.`,true);
+  if(!br.length) return P(`OSS ovu katastarsku česticu ne povezuje ni s jednim ZK uloškom. Čestica možda nije upisana u zemljišnu knjigu ili veza katastra i zemljišne knjige nije uspostavljena; uložak potraži pretragom na OSS-u ili u zemljišnoknjižnom odjelu.`,false);
+  return P(`ZK uložak ${esc(br.join(", "))} postoji, ali njegov sadržaj nije dohvaćen.`,true);
+}
 // zadnji uspješno dohvaćeni uložak po čestici: ponovni dohvat ili ponovni prikaz ne smiju izbrisati ono što je već prikazano
 const ZKU=new Map();
 function zkOssRefresh(k){
   const el=document.getElementById("zkOss"), v=OSSZK.get(String(k)); if(!el) return;
-  let U=v&&v.st==="ok"&&v.d&&v.d.ulosci; if(U&&U.length) ZKU.set(String(k),U); else U=ZKU.get(String(k))||null; const nh=U&&U.length?zkOssHtml(U):""; if(el.dataset.h!==String(nh.length)+":"+String(k)||el.innerHTML===""&&nh){keepPos(()=>{el.innerHTML=nh; el.dataset.h=String(nh.length)+":"+String(k);});}
+  let U=v&&v.st==="ok"&&v.d&&v.d.ulosci; if(U&&U.length) ZKU.set(String(k),U); else U=ZKU.get(String(k))||null; const nh=U&&U.length?zkOssHtml(U):zkOssStanje(v), hh=zkHash(nh)+":"+String(k); if(el.dataset.h!==hh||el.innerHTML===""&&nh){keepPos(()=>{el.innerHTML=nh; el.dataset.h=hh;});}
   if(U&&U.length&&!ZK.res){const s=document.getElementById("zkSum"), c=U.reduce((a,u)=>a+(u.C&&u.C.upisa||0),0), pl=U.some(u=>u.plomba); if(s) s.textContent=(pl?"plomba · ":"")+(c?"tereti: "+c:"bez tereta")+" (OSS)";}
 }
 // katastarski sloj karte (isti koji koriste OSS i Geoportal DGU): izravno iz preglednika, bez posrednika
@@ -1928,9 +1946,13 @@ function zgOssFetch(parcel,key,area){
   if(!SRC_KRK.oss||!parcel) return; let c; try{c=turf.pointOnFeature(parcel).geometry.coordinates}catch(e){return}
   const P0=zgAreaP(parcel,key), k=P0.cid;
   const upd=()=>{const el=document.getElementById("zgArea"); if(el&&window.__cur&&window.__cur.key===key){keepPos(()=>{el.innerHTML=krkAreaHtml(zgAreaP(parcel,key),area); areaCmpRefresh();}); zkOssRefresh(k);}};
-  return katwFetchInto(k,c[1],c[0],upd).then(()=>{
-    const w=KATW.get(k);
-    if(w&&w.st==="ok"&&w.d.broj&&P0.broj&&w.d.broj!==P0.broj){OSSZK.set(k,{st:"err",e:"OSS je na ovom mjestu vratio drugu česticu ("+w.d.broj+")"}); upd(); return;}
+  return katwFetchInto(k,c[1],c[0],upd).then(async()=>{
+    let w=KATW.get(k);
+    // gradski sloj čestica (2023.) i katastar DGU nisu uvijek jednaki: na prvoj točki može biti susjedna čestica, pa se probaju druge točke unutar čestice
+    if(w&&w.st==="ok"&&w.d.broj&&P0.broj&&w.d.broj!==P0.broj){ const prvi=w.d.broj;
+      for(const [lo,la] of okoTocke(parcel).slice(1)){ let d=null; try{d=await katwAt(la,lo);}catch(e){} if(d&&d.broj===P0.broj){KATW.set(k,{st:"ok",d}); c=[lo,la]; upd(); break;} }
+      w=KATW.get(k);
+      if(w.d.broj!==P0.broj){OSSZK.set(k,{st:"err",e:"u katastru DGU na mjestu ove čestice je čestica "+prvi+" (gradski sloj iz 2023. i katastar se razlikuju; čestica je možda dijeljena ili spojena)"}); upd(); return;}}
     // ZK površina preko posrednika: po DGU ID-u ako ga sloj karte dao, inače po točki
     return ossFetchInto(k,P0,w&&w.st==="ok"&&w.d.id?"id="+encodeURIComponent(w.d.id):"lat="+c[1].toFixed(7)+"&lon="+c[0].toFixed(7),upd);
   });
@@ -1992,7 +2014,7 @@ sheet.addEventListener("click",e=>{
   const A=window.__areaCtx; if(!A||!window.__cur||A.key!==window.__cur.key) return;
   if(e.target.id==="krkZkOk"){const v=parseFloat(String(document.getElementById("krkZkIn").value).replace(",",".")); if(v>0){krkZkSet(window.__cur.key,v,"rucno"); A.refresh();}}
   if(e.target.id==="krkZkDel"){krkZkSet(window.__cur.key,0); window.__krkZkManual=null; A.refresh();}
-  if(e.target.id==="krkOssRetry") A.retry();
+  if(e.target.id==="krkOssRetry"||e.target.id==="zkUlRetry") A.retry();
   if(e.target.id==="krkZkMan"){window.__krkZkManual=window.__cur.key; A.refresh();}
 });
 // osnovni podaci Krka s oznakama pouzdanosti (namjena, planovi, otvoreni uvjeti)
