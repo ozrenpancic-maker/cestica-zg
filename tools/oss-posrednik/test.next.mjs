@@ -72,6 +72,7 @@ console.log("worker.next: uložak OK");
   assert.ok(o1.ulosciGreska && r1.headers.get("Cache-Control") === "no-store", "odgovor s greškom uloška: no-store");
   assert.ok(![...store.keys()].some(k => /oss-lr/.test(k)), "neuspjeli uložak se ne pamti");
   const r2 = await W.fetch(new Request("https://w.dev/?id=abc"), {}, ctx); assert.equal(r2.status, 400); assert.equal(r2.headers.get("Cache-Control"), "no-store");
+  store.delete("https://cache.local/oss-blok"); // pauza nakon odbijanja (vidi test ispod)
   globalThis.fetch = async u => { u = String(u); calls.push(u); return /lr-unit/.test(u) ? new Response("[]", { status: 200, headers: { "Content-Type": "application/json" } }) : new Response(xml, { status: 200, headers: { "Content-Type": "application/xml" } }); };
   const r3 = await W.fetch(new Request("https://w.dev/?id=19311109&ulozak=1"), {}, ctx), o3b = await r3.json();
   assert.deepEqual(o3b.ulosci, []); assert.ok(![...store.keys()].some(k => /oss-lr/.test(k)), "prazan uložak se ne pamti 24 sata");
@@ -80,14 +81,19 @@ console.log("worker.next: uložak OK");
   assert.equal(o4.ulosci.length, 1); assert.equal(r4.headers.get("Cache-Control"), "public, max-age=3600"); assert.ok([...store.keys()].some(k => /oss-lr/.test(k)));
   console.log("worker.next: predmemorija grešaka i praznog uloška OK");
 }
-// OSS odbije prvi upit (403): posrednik jednom ponovi nakon kratke stanke; zaglavlja kao OSS-ova stranica; uložak se pamti po broju uloška
+// OSS odbije upit (403): posrednik ne ponavlja, 90 s ne pita OSS (pauza), zaglavlja kao OSS-ova stranica; uložak se pamti po broju uloška
 {
   store = new Map(); calls.length = 0; let n = 0; const hdr = [];
-  globalThis.fetch = async (u, o) => { u = String(u); calls.push(u); hdr.push(o && o.headers || {}); if (/lr-unit/.test(u)) { n++; return n === 1 ? new Response("x", { status: 403 }) : new Response(JSON.stringify(lr), { status: 200, headers: { "Content-Type": "application/json" } }); } return new Response(xml, { status: 200, headers: { "Content-Type": "application/xml" } }); };
+  globalThis.fetch = async (u, o) => { u = String(u); calls.push(u); hdr.push(o && o.headers || {}); if (/lr-unit/.test(u)) { n++; return n === 1 ? new Response("x", { status: 403, headers: { server: "BigIP", "content-type": "text/html" } }) : new Response(JSON.stringify(lr), { status: 200, headers: { "Content-Type": "application/json" } }); } return new Response(xml, { status: 200, headers: { "Content-Type": "application/xml" } }); };
   const r1 = await W.fetch(new Request("https://w.dev/?id=19311109&ulozak=1"), {}, ctx), o1 = await r1.json();
-  assert.equal(o1.ulosci.length, 1); assert.equal(n, 2, "jedan ponovni pokušaj"); assert.ok(hdr.every(h => h.Referer === "https://oss.uredjenazemlja.hr/" && /CesticaHR/.test(h["User-Agent"]) && /hr-HR/.test(h["Accept-Language"])));
-  // druga čestica u istom ulošku: bez novog upita za uložak
-  const before = n; store.delete([...store.keys()].find(k => /oss-lr\//.test(k)));
-  await W.fetch(new Request("https://w.dev/?id=19311109&ulozak=1"), {}, ctx); assert.equal(n, before, "uložak iz predmemorije po broju");
-  console.log("worker.next: ponovni pokušaj nakon 403 i predmemorija uloška OK");
+  assert.equal(n, 1, "bez ponavljanja nakon 403"); assert.ok(o1.ulosciGreska && /HTTP 403, BigIP, text\/html/.test(o1.ulosciGreska) && o1.blok, o1.ulosciGreska);
+  assert.ok(hdr.every(h => h.Referer === "https://oss.uredjenazemlja.hr/" && /CesticaHR/.test(h["User-Agent"]) && /hr-HR/.test(h["Accept-Language"])));
+  const before = calls.length, r2 = await W.fetch(new Request("https://w.dev/?id=19311110"), {}, ctx), o2 = await r2.json();
+  assert.equal(calls.length, before, "za vrijeme pauze nema upita prema OSS-u"); assert.equal(r2.status, 503); assert.ok(o2.blok && /odbija upite posrednika/.test(o2.greska));
+  // nakon pauze: uložak stiže i pamti se po broju uloška (druga čestica u istom ulošku bez novog upita)
+  store.delete("https://cache.local/oss-blok");
+  const r3 = await W.fetch(new Request("https://w.dev/?id=19311109&ulozak=1"), {}, ctx), o3 = await r3.json(); assert.equal(o3.ulosci.length, 1); assert.equal(n, 2);
+  store.delete([...store.keys()].find(k => /oss-lr\//.test(k)));
+  await W.fetch(new Request("https://w.dev/?id=19311109&ulozak=1"), {}, ctx); assert.equal(n, 2, "uložak iz predmemorije po broju");
+  console.log("worker.next: odbijanje (403) → pauza bez ponavljanja, predmemorija uloška OK");
 }

@@ -1339,7 +1339,8 @@ async function krkOssOnce(P,k,q){
   // „ulozak=1”: posrednik uz površinu vraća i sažetak ZK uloška (A I, A II, udjeli bez osoba, teretovnica, plomba), ako to podržava
   try{const r=await fetch(SRC_KRK.oss+"?"+(q||"id="+encodeURIComponent(k))+"&ulozak=1",{signal:ac.signal,cache:"no-store"}); const j=await r.json().catch(()=>null);
     if(r.ok&&j&&j.ok) return j.broj&&P.broj&&j.broj!==P.broj?{st:"err",e:"OSS je na ovom mjestu vratio drugu česticu ("+j.broj+")"}:{st:"ok",d:j};
-    return {st:"err",e:(j&&j.greska)||("HTTP "+r.status),retry:r.status!==404&&r.status!==400};}
+    // kad OSS odbija posrednika (blok, 403), automatski ponovni pokušaj samo produžuje odbijanje: tada samo gumb „Pokušaj ponovno”
+    return {st:"err",e:(j&&j.greska)||("HTTP "+r.status),retry:r.status!==404&&r.status!==400&&!(j&&j.blok)&&!/403/.test(j&&j.greska||"")};}
   catch(e){return {st:"err",e:e.name==="AbortError"?"OSS ne odgovara":"mreža ili posrednik nedostupan",retry:true}}
   finally{clearTimeout(t)}
 }
@@ -1353,11 +1354,12 @@ async function ossFetchInto(k,P,q,onUpd){
   onUpd();
   // OSS povremeno odbije upit za uložak (čestica je tada već stigla): jedan ponovni pokušaj nakon 3 s, samo za uložak
   let cur=v;
-  for(const ms of OSS_UL_RETRY){ if(!(cur.st==="ok"&&cur.d&&cur.d.ulosciGreska&&!(cur.d.ulosci&&cur.d.ulosci.length))||OSSZK.get(k)!==cur) break;
+  for(const ms of OSS_UL_RETRY){ if(!(cur.st==="ok"&&cur.d&&cur.d.ulosciGreska&&!(cur.d.ulosci&&cur.d.ulosci.length))||cur.d.blok||OSSZK.get(k)!==cur) break;
     cur.ulPokusaj=(cur.ulPokusaj||0)+1; onUpd(); await new Promise(r=>setTimeout(r,ms)); if(OSSZK.get(k)!==cur) return;
     const v2=await krkOssOnce(P,k,q); if(OSSZK.get(k)!==cur) return;
     if(v2.st==="ok"&&v2.d&&v2.d.ulosci&&v2.d.ulosci.length){OSSZK.set(k,v2); onUpd(); return;}
     if(v2.st==="ok"&&v2.d){v2.ulPokusaj=cur.ulPokusaj; OSSZK.set(k,v2); cur=v2;} }
+  if(cur.st==="ok"&&cur.d&&cur.d.blok) cur.ulGotovo=true;
   if(cur.ulPokusaj){cur.ulGotovo=true; onUpd(); setTimeout(()=>{if(OSSZK.get(k)===cur) OSSZK.delete(k)},30000);} // i dalje bez uloška: kod sljedećeg otvaranja čestice pokušaj ponovno
 }
 async function krkOssFetch(P,area){
@@ -2041,7 +2043,7 @@ function krkAreaHtml(P,area){
     h+=`${isti?"":`<b>${fmt(zk.a)} m²</b>`}<small class="fx">${src} · <button type="button" class="ib" id="${zk.src==="oss"?"krkZkMan":"krkZkDel"}" style="min-height:28px;padding:0 8px">${zk.src==="oss"?"upiši drugu":"promijeni"}</button></small>`;
   }else{
     const st=os&&os.st==="load"?`<small class="fx"><span class="spin"></span>dohvaćam iz OSS-a…${os.n?" (ponovni pokušaj "+os.n+")":""}</small>`:"";
-    const why=os&&os.st==="err"?(/403/.test(os.e)?"OSS trenutno odbija upite (to se povremeno događa); pokušaj ponovno za minutu ili otvori česticu u OSS-u, ili upiši površinu iz izvatka":`OSS: podaci nisu dostupni (${esc(os.e)}); upiši je iz izvatka ili učitaj PDF izvatka ispod`):os&&os.st==="ok"&&!oz?"OSS nema upisanu površinu za ovu česticu; upiši je iz izvatka ili učitaj PDF izvatka ispod":SRC_KRK.oss&&!manual?"upiši je iz izvatka ili učitaj PDF izvatka ispod":"nije javno dostupna; upiši je iz izvatka ili učitaj PDF izvatka ispod";
+    const why=os&&os.st==="err"?(/403|odbija/.test(os.e)?"OSS trenutno odbija upite (to se povremeno događa); pokušaj ponovno za minutu ili otvori česticu u OSS-u, ili upiši površinu iz izvatka":`OSS: podaci nisu dostupni (${esc(os.e)}); upiši je iz izvatka ili učitaj PDF izvatka ispod`):os&&os.st==="ok"&&!oz?"OSS nema upisanu površinu za ovu česticu; upiši je iz izvatka ili učitaj PDF izvatka ispod":SRC_KRK.oss&&!manual?"upiši je iz izvatka ili učitaj PDF izvatka ispod":"nije javno dostupna; upiši je iz izvatka ili učitaj PDF izvatka ispod";
     h+=st||`<span class="kd" style="margin:0"><input id="krkZkIn" type="number" inputmode="decimal" min="1" step="1" placeholder="m² iz izvatka" style="width:8em"><button type="button" class="ib" id="krkZkOk">Spremi</button></span><small class="fx">${why}</small>`;
     if(os&&os.st==="err") h+=`<span class="kd" style="margin:4px 0 0"><button type="button" class="ib" id="krkOssRetry">Pokušaj ponovno</button><a class="ib" href="${/^zg:/.test(String(P.cid))?"https://oss.uredjenazemlja.hr/public-services/search-cad-parcel":"https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info?parcelId="+encodeURIComponent(P.cid)}" target="_blank" rel="noopener">Otvori česticu u OSS-u</a></span>`;
   }
