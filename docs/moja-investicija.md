@@ -322,7 +322,14 @@ Ceste iz OpenStreetMapa (iste kao za pristup i pojas uz cestu) ucrtavaju se u sv
 - U ekološkoj mreži piše da može biti potrebna ocjena prihvatljivosti za ekološku mrežu (Zakon o zaštiti prirode).
 - Pouzdanost je A. Kad servis ne odgovori, piše „Podaci nisu dostupni” i oznaka je C.
 
-**Poplave:** još nisu uključene. Servis Hrvatskih voda (`servisi.voda.hr/public_ows/wms`) i nazivi slojeva provjeravaju se stranicom `okolis-test.html` na probnoj adresi, jer odavde nisu dostupni.
+**Zaštićena područja prirode:** Bioportal, WMS `services.bioportal.hr/wms`, sloj `zasticeno_podrucje_poligoni`.
+- Upit je GetFeatureInfo (JSON) u do pet točaka unutar čestice.
+- Polja provjerena 20. 10. 2026. na Parku prirode Medvednica: `naziv`, `kategorija_zastite`, `podkategorija_zastite`, `naziv_akt`.
+- U zaštićenom području piše da mogu biti potrebni uvjeti zaštite prirode. Pouzdanost je A.
+
+**Poplave:** karte opasnosti od poplava Hrvatskih voda poslužuje `preglednik.voda.hr/geocluster/wms`. Taj servis ne dopušta čitanje drugim stranicama (CORS; test 20. 10. 2026.). Javni `servisi.voda.hr/public_ows/wms` ima samo tri sloja, a među njima nema karata opasnosti.
+- Zato aplikacija zasad daje samo poveznicu na kartu opasnosti od poplava, s oznakom C.
+- Automatska provjera moguća je preko zasebnog posrednika (Cloudflare Worker), ako se odobri.
 
 **Izvor u sažetku:** ispod svakog odgovora je izvor, datum i oznaka pouzdanosti, iz registra pouzdanosti (isti podatak kao u odjeljku).
 

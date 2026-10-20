@@ -1309,10 +1309,30 @@ async function loadNatura(parcel){
   const f=await polyQuery(NATURA_URL,parcel.geometry,"SITECODE,SITENAME,SITETYPE,RELEASE_DATE,MS",false);
   return f.map(x=>x.properties||{}).filter(p=>!p.MS||p.MS==="HR").map(p=>({kod:p.SITECODE,ime:p.SITENAME,tip:p.SITETYPE,datum:p.RELEASE_DATE}));
 }
-function okolisStart(parcel,key){
-  if(!parcel||!key||OKO.has(key)) return; const st={natura:{st:"load"}}; OKO.set(key,st);
-  loadNatura(parcel).then(v=>{st.natura={st:"ok",v}}).catch(e=>{st.natura={st:"err",e:e.message||"servis ne odgovara"}; setTimeout(()=>{if(OKO.get(key)===st) OKO.delete(key)},30000);}).finally(okolisRefresh);
+// zaštićena područja (Zakon o zaštiti prirode): Bioportal, WMS sloj zasticeno_podrucje_poligoni, GetFeatureInfo u nekoliko
+// točaka unutar čestice. Polja provjerena 20. 10. 2026.: naziv, kategorija_zastite, podkategorija_zastite, naziv_akt.
+const BIOP_URL="https://services.bioportal.hr/wms";
+function okoTocke(parcel){
+  const pts=[]; try{pts.push(turf.pointOnFeature(parcel).geometry.coordinates);}catch(e){}
+  try{const c=turf.centroid(parcel).geometry.coordinates, bb=turf.bbox(parcel); for(const q of [[bb[0],bb[1]],[bb[2],bb[1]],[bb[2],bb[3]],[bb[0],bb[3]]]){const p=[(c[0]*0.4+q[0]*0.6),(c[1]*0.4+q[1]*0.6)]; if(turf.booleanPointInPolygon(turf.point(p),parcel)) pts.push(p);}}catch(e){}
+  return pts.slice(0,5);
 }
+async function loadZasticena(parcel){
+  const out=new Map();
+  for(const [lon,lat] of okoTocke(parcel)){ const d=0.00005;
+    const q=new URLSearchParams({SERVICE:"WMS",VERSION:"1.3.0",REQUEST:"GetFeatureInfo",LAYERS:"zasticeno_podrucje_poligoni",QUERY_LAYERS:"zasticeno_podrucje_poligoni",STYLES:"",CRS:"EPSG:4326",
+      BBOX:[lat-d,lon-d,lat+d,lon+d].map(v=>v.toFixed(7)).join(","),WIDTH:"101",HEIGHT:"101",I:"50",J:"50",INFO_FORMAT:"application/json",FEATURE_COUNT:"5",FORMAT:"image/png",propertyName:"naziv,kategorija_zastite,podkategorija_zastite,naziv_akt,zasticeno_podrucje_id"});
+    const j=await getJSON(BIOP_URL+"?"+q.toString(),{},12000);
+    for(const f of (j&&j.features)||[]){const p=f.properties||{}, k=String(p.zasticeno_podrucje_id||p.naziv||f.id); if(!out.has(k)) out.set(k,{naziv:p.naziv||"",kat:p.kategorija_zastite||"",pod:p.podkategorija_zastite||"",akt:p.naziv_akt||""});} }
+  return [...out.values()];
+}
+function okolisStart(parcel,key){
+  if(!parcel||!key||OKO.has(key)) return; const st={natura:{st:"load"},zast:{st:"load"}}; OKO.set(key,st);
+  const fail=()=>setTimeout(()=>{if(OKO.get(key)===st) OKO.delete(key)},30000);
+  loadNatura(parcel).then(v=>{st.natura={st:"ok",v}}).catch(e=>{st.natura={st:"err",e:e.message||"servis ne odgovara"}; fail();}).finally(okolisRefresh);
+  loadZasticena(parcel).then(v=>{st.zast={st:"ok",v}}).catch(e=>{st.zast={st:"err",e:e.message||"servis ne odgovara"}; fail();}).finally(okolisRefresh);
+}
+const ZAST_KAT=s=>String(s||"").replace(/\b([A-ZČĆĐŠŽ])([A-ZČĆĐŠŽ]+)\b/g,(m,a,b)=>a+b.toLowerCase());
 function okolisInner(){
   const key=window.__cur&&window.__cur.key, st=key&&OKO.get(key); if(!st) return "";
   const N=st.natura; let h=`<ul class="checks" style="margin-top:6px">`;
@@ -1323,7 +1343,18 @@ function okolisInner(){
     h+=`<li class="chk chk-ok"><b>✓ Izvan ekološke mreže Natura 2000 ${pzTag(p)}</b><span>Čestica nije u području ekološke mreže.</span></li>`; }
   else { const p=pzSet("oko-natura","Ekološka mreža Natura 2000",N.v.map(x=>x.kod).join(", "),pz("A",{izvor:"EEA, Natura 2000 (podaci Republike Hrvatske)",obuhvat:"presjek s česticom",datum:pzDan()}));
     h+=`<li class="chk chk-warn"><b>! U ekološkoj mreži Natura 2000 ${pzTag(p)}</b><span>${N.v.map(x=>`${esc(x.ime||"")} (${esc(x.kod||"")}, ${esc(NAT_TIP[x.tip]||x.tip||"")})`).join("; ")}. Za zahvate u ekološkoj mreži može biti potrebna ocjena prihvatljivosti za ekološku mrežu (Zakon o zaštiti prirode); provjeri s nadležnim upravnim tijelom prije projektiranja.</span></li>`; }
-  h+=`</ul><p class="meta">Natura 2000: Europska agencija za okoliš (EEA), granice područja koje dostavlja Republika Hrvatska${N.st==="ok"&&N.v[0]&&N.v[0].datum?", stanje "+esc(new Date(N.v[0].datum).toLocaleDateString("hr-HR")):""}. Pregled na <a href="https://www.bioportal.hr/gis/" target="_blank" rel="noopener">Bioportalu</a>.</p>`;
+  const Z=st.zast||{st:"load"};
+  if(Z.st==="load") h+=`<li class="chk chk-warn"><b>Zaštićena područja prirode</b><span><span class="spin"></span>provjeravam…</span></li>`;
+  else if(Z.st==="err"){ pzSet("oko-zast","Zaštićena područja prirode",null,pz("C",{razlog:"Bioportal nije odgovorio",provjera:"Bioportal (bioportal.hr), javna ustanova za zaštićena područja"}));
+    h+=`<li class="chk chk-warn"><b>? Zaštićena područja prirode</b><span>Podaci nisu dostupni (${esc(Z.e)}).</span></li>`; }
+  else if(!Z.v.length){ const p=pzSet("oko-zast","Zaštićena područja prirode","izvan",pz("A",{izvor:"Bioportal, zaštićena područja (Ministarstvo zaštite okoliša i zelene tranzicije)",obuhvat:"točke unutar čestice",datum:pzDan()}));
+    h+=`<li class="chk chk-ok"><b>✓ Izvan zaštićenog područja prirode ${pzTag(p)}</b><span>U točkama unutar čestice nema zaštićenog područja (park prirode, značajni krajobraz, park-šuma i sl.).</span></li>`; }
+  else { const p=pzSet("oko-zast","Zaštićena područja prirode",Z.v.map(x=>x.kat+" "+ZAST_KAT(x.naziv)).join(", "),pz("A",{izvor:"Bioportal, zaštićena područja (Ministarstvo zaštite okoliša i zelene tranzicije)",obuhvat:"točke unutar čestice",datum:pzDan()}));
+    h+=`<li class="chk chk-warn"><b>! U zaštićenom području prirode ${pzTag(p)}</b><span>${Z.v.map(x=>`${esc(x.kat||"zaštićeno područje")}${x.pod?" ("+esc(x.pod)+")":""} ${esc(ZAST_KAT(x.naziv))}`).join("; ")}. Za gradnju u zaštićenom području mogu biti potrebni uvjeti zaštite prirode; provjeri s javnom ustanovom koja upravlja područjem i u prostornom planu.</span></li>`; }
+  // poplave: karte opasnosti Hrvatskih voda nisu dostupne drugim stranicama (preglednik ne dopušta čitanje), pa samo poveznica
+  pzSet("oko-poplave","Opasnost od poplava",null,pz("C",{razlog:"karte opasnosti od poplava nisu dostupne aplikaciji",provjera:"preglednik Hrvatskih voda (karte opasnosti od poplava)"}));
+  h+=`<li class="chk chk-warn"><b>? Opasnost od poplava</b><span>Aplikacija karte opasnosti od poplava ne može čitati automatski. Provjeri česticu na karti Hrvatskih voda (velika, srednja i mala vjerojatnost poplave).<span class="kd" style="margin:4px 0 0"><a class="ib" href="https://preglednik.voda.hr/?lang=hr&topic=Opasnosti%20od%20poplava" target="_blank" rel="noopener">Otvori kartu opasnosti od poplava</a></span></span></li>`;
+  h+=`</ul><p class="meta">Zaštićena područja: Bioportal (Ministarstvo zaštite okoliša i zelene tranzicije). Natura 2000: Europska agencija za okoliš (EEA), granice područja koje dostavlja Republika Hrvatska${N.st==="ok"&&N.v[0]&&N.v[0].datum?", stanje "+esc(new Date(N.v[0].datum).toLocaleDateString("hr-HR")):""}. Pregled na <a href="https://www.bioportal.hr/gis/" target="_blank" rel="noopener">Bioportalu</a>.</p>`;
   return h;
 }
 function okolisRefresh(){const b=document.getElementById("okolisBox"); if(!b) return; const nh=okolisInner(); if(b.innerHTML!==nh) keepPos(()=>{b.innerHTML=nh;});}
@@ -2021,7 +2052,7 @@ function renderKrk(d){
   else if(slope&&slope.e) h+=`<p class="meta">Nagib terena: Podaci nisu dostupni (${esc(slope.e)}).</p>`;
   else if(!env) h+=`<p class="hint"><span class="spin"></span>Učitavam teren, pristup i infrastrukturu…</p>`;
   if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`;
-  h+=naHtml("Klizišta, poplave, zaštita i druga ograničenja","Za Zagreb aplikacija provjerava gradske slojeve ograničenja; za Krk takvi slojevi još nisu uključeni. Ograničenja provjeri u prostornom planu (popis ispod) i lokacijskom informacijom.");
+  h+=naHtml("Klizišta, kulturna baština, vodozaštita i druga ograničenja iz plana","Za Zagreb aplikacija provjerava gradske slojeve ograničenja; za Krk takvi slojevi još nisu uključeni (zaštićena područja prirode i Natura 2000 provjeravaju se iznad). Ograničenja provjeri u prostornom planu (popis ispod) i lokacijskom informacijom.");
   h+=krkInfraHtml(env?d.ski||{e:"nije učitano"}:null);
   h+=env?envHtml(env):envHtml(null);
   // planovi
@@ -4718,7 +4749,10 @@ function sazetakUpdate(){
    rows.push({srcTxt:F&&F.total&&F.total.base?"procjena aplikacije prema cjenicima 2026. (B)":"",st,q:"Koliko bi koštalo?",a,go:d.krk?'details[data-k="krkKd"]':'details[data-k="total"], details[data-k="build"]'});}
   // 6. priroda (Natura 2000); poplave se dodaju kad se potvrdi servis Hrvatskih voda
   {const key=window.__cur&&window.__cur.key, O=key&&OKO.get(key), N=O&&O.natura;
-   rows.push({src:["oko-natura"],st:!N||N.st!=="ok"?"?":N.v.length?"warn":"ok",q:"Priroda i poplave",a:(!N||N.st==="load"?"Provjeravam ekološku mrežu…":N.st==="err"?"Natura 2000: podaci nisu dostupni":N.v.length?"U ekološkoj mreži Natura 2000: "+N.v.map(x=>x.ime).join(", ")+"; može biti potrebna ocjena prihvatljivosti":"Izvan ekološke mreže Natura 2000")+" · poplave: provjera još nije uključena",go:"#okolisBox"});}
+   const Z=O&&O.zast, zt=!Z||Z.st==="load"?"zaštićena područja: provjeravam…":Z.st==="err"?"zaštićena područja: podaci nisu dostupni":Z.v.length?"u zaštićenom području: "+Z.v.map(x=>x.kat+" "+ZAST_KAT(x.naziv)).join(", "):"izvan zaštićenog područja";
+   const nt=!N||N.st==="load"?"Natura 2000: provjeravam…":N.st==="err"?"Natura 2000: podaci nisu dostupni":N.v.length?"u ekološkoj mreži Natura 2000 ("+N.v.map(x=>x.ime).join(", ")+")":"izvan ekološke mreže Natura 2000";
+   const any=(N&&N.st==="ok"&&N.v.length)||(Z&&Z.st==="ok"&&Z.v.length), done=N&&N.st==="ok"&&Z&&Z.st==="ok";
+   rows.push({src:["oko-natura","oko-zast"],st:any?"warn":done?"ok":"?",q:"Priroda i poplave",a:nt.charAt(0).toUpperCase()+nt.slice(1)+" · "+zt+" · poplave: provjeri na karti Hrvatskih voda",go:"#okolisBox"});}
   const C=[...PZREG.items.values()].filter(x=>x.raz==="C").length, ic={ok:"✓",warn:"!",no:"✕","?":"?"};
   const srcOf=r=>{ if(r.srcTxt) return r.srcTxt; const its=(r.src||[]).map(id=>PZREG.items.get(id)).filter(Boolean); if(!its.length) return "";
     const seen=new Set(); return its.map(it=>{const t=(it.izvor||it.razlog||"").replace(/\s+/g," ").slice(0,90); const k=t+it.raz; if(seen.has(k)) return null; seen.add(k); return `${t}${it.datum?", "+it.datum.split("-").reverse().join(". ")+".":""} (${it.raz})`;}).filter(Boolean).join(" · "); };
