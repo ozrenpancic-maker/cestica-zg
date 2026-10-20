@@ -427,3 +427,12 @@ Prikaz se slaže kao prije; `izbWrap()` zatim premješta postojeće odjeljke (is
   pita se koja je čestica na sredini razmaka i na osi ceste. Ista čestica → čestica ceste, nema upozorenja. Druga čestica → upozorenje s brojem čestice (provjeriti javno dobro ili služnost).
   Više od 10 m ili bez kolne ceste do 20 m → upozorenje i rizik „Pristup javnoj prometnici”.
 - Pojas uz cestu (odmak od regulacijskog pravca) koristi isto mjerilo (rub kolnika do 10 m od međe) umjesto 12 m od osi.
+
+## Pretraga adrese: službeni kućni brojevi DGU-a
+- Izvor: DGU, „Adrese” (INSPIRE AD), usluga preuzimanja `https://geoportal.dgu.hr/services/atom/ad/xml` → `INSPIRE_Addresses_(AD).zip` (cijela RH, ETRS89/LAEA).
+  Feed navodi „ograničenje javnog pristupa prema čl. 13. st. 1. t. (e) INSPIRE Direktive”, a data.gov.hr za isti skup „Otvorenu dozvolu”: uvjete treba potvrditi s DGU-om.
+- `tools/adrese/pripremi_adrese.py` uzima samo ulicu, kućni broj (s dodatkom, npr. 12A, 1/1), naselje i točku za otok Krk i područje Zagreba (okviri u skripti):
+  `data/adr/ulice_krk.json`, `data/adr/ulice_zg.json` (ulice s naseljem, skupinom i sredinom) i `data/adr/b/NNN.json` (kućni brojevi po ulicama, 128 skupina). Oko 267.000 adresa, 7,5 MB.
+- Pretraga: kućni broj iz upita, ulica po riječima naziva (točna riječ ispred iste riječi u drugom padežu), naselje kao prednost (u Zagrebu bez naselja prednost Zagreb).
+  Pogodak → točka kuće (napomena s izvorom); broj nije u registru → sredina ulice uz upozorenje; ulica nije pronađena → OpenStreetMap (Nominatim) kao prije.
+- Test: uzorak od 300 adresa, točna kuća za oko 98 %.

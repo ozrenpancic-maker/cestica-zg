@@ -6391,8 +6391,33 @@ function pwaGpsNote(){
 
 // --- pretraga adrese (Nominatim, Zagreb; naselja otoka Krka u obuhvatu otoka)
 const SRCH={note:null,ll:null};
+// službeni kućni brojevi: DGU, Adrese (INSPIRE AD), pripremljeno uz aplikaciju u data/adr/ (tools/adrese/pripremi_adrese.py)
+const ADR={base:"data/adr/",idx:{},b:new Map(),gen:new Set(["ULICA","CESTA","TRG","PUT","ODVOJAK","PROLAZ"])};
+function adrIdx(reg){ if(!ADR.idx[reg]){ ADR.idx[reg]=skiFetch(ADR.base+"ulice_"+reg+".json",15000).then(j=>{ if(!j||j.v!==1||!Array.isArray(j.ulice)) throw new Error("neispravan popis ulica");
+    j.U=j.ulice.map(r=>({nas:r[0],ul:r[1],b:r[2],n:r[3],c:[r[4]/1e6,r[5]/1e6],t:norm(r[1]).split(" ").filter(x=>x&&!ADR.gen.has(x)),nt:norm(r[0]).split(" ")})); return j; }); ADR.idx[reg].catch(()=>{delete ADR.idx[reg];}); } return ADR.idx[reg]; }
+function adrB(b){ if(!ADR.b.has(b)){ const p=skiFetch(ADR.base+"b/"+String(b).padStart(3,"0")+".json",15000); ADR.b.set(b,p); p.catch(()=>ADR.b.delete(b)); } return ADR.b.get(b); }
+// riječ upita odgovara riječi naziva i kad je u drugom padežu (Vranićeva / Vranićevoj, Ledine / Ledinama)
+const adrTok=(q,t)=>q===t||(t.length>=4&&q.length>=4&&(q.startsWith(t.slice(0,Math.max(3,t.length-2)))||t.startsWith(q.slice(0,Math.max(3,q.length-2)))));
+function adrParse(q){ const m=q.match(/(?:^|[\s,])(\d{1,4}\s?[a-zA-Z]?(?:\/\d{1,3})?)(?=[\s,]|$)/); const broj=m?m[1].replace(/\s/g,"").toUpperCase():null;
+  const rest=m?q.slice(0,m.index)+" "+q.slice(m.index+m[0].length):q; return {broj,t:norm(rest).split(" ").filter(Boolean)}; }
+function adrUlica(I,P,reg){ let best=null;
+  for(const u of I.U){ if(!u.t.length) continue; const hitU=u.t.every(t=>P.t.some(q=>adrTok(q,t))); if(!hitU) continue;
+    const hitN=u.nt.every(t=>P.t.some(q=>adrTok(q,t))), used=P.t.filter(q=>u.t.some(t=>adrTok(q,t))||u.nt.some(t=>adrTok(q,t))&&hitN).length, extra=P.t.length-used;
+    // točna riječ vrijedi više od iste riječi u drugom padežu (Vranićeva ulica ispred Vraničke ulice)
+    const ex=u.t.filter(t=>P.t.includes(t)).length, sc=u.t.length*6+ex*4+(hitN?6:reg==="zg"&&u.nas==="Zagreb"?2:0)-extra*3+Math.min(1,u.n/50);
+    if(!best||sc>best.sc) best={u,sc}; }
+  return best&&best.sc>0?best.u:null; }
+async function adrTrazi(q,reg){
+  const P=adrParse(q); if(!P.t.length) return null;
+  const I=await adrIdx(reg), u=adrUlica(I,P,reg); if(!u) return null;
+  const nazv=`${u.ul}${u.ul!==u.nas?", "+u.nas:""}`, nb=b=>`${u.ul} ${b}${u.ul!==u.nas?", "+u.nas:""}`;
+  if(!P.broj) return {ll:L.latLng(u.c[1],u.c[0]),note:{cls:"meta",txt:`Ulica iz registra adresa DGU-a: ${esc(nazv)} (prikazana je sredina ulice; za kuću upiši i kućni broj).`}};
+  const B=await adrB(u.b), L2=B&&B[u.nas+"|"+u.ul]||[], h=L2.find(p=>String(p[0]).toUpperCase()===P.broj)||(/\D$/.test(P.broj)?null:L2.find(p=>String(p[0]).toUpperCase().replace(/\D+$/,"")===P.broj));
+  if(h) return {ll:L.latLng(h[2]/1e6,h[1]/1e6),note:{cls:"meta",txt:`Adresa iz registra adresa DGU-a: ${esc(nb(h[0]))} (stanje ${esc(I.preuzeto.split("-").reverse().join(". "))}.). Točka kućnog broja; provjeri na karti je li to tvoja čestica.`}};
+  return {ll:L.latLng(u.c[1],u.c[0]),note:{cls:"flag",txt:`Kućni broj ${esc(P.broj)} nije u registru adresa DGU-a za ${esc(nazv)}; prikazana je sredina ulice. Približi kartu i dodirni svoju kuću ili upiši broj čestice.`}};
+}
 function srchNote(){ const n=SRCH.note, d=curData(); if(!n||!d||!d.ll||!SRCH.ll||Math.abs(d.ll.lat-SRCH.ll.lat)>1e-9||Math.abs(d.ll.lng-SRCH.ll.lng)>1e-9) return;
-  if(document.getElementById("srchNote")) return; const b=document.createElement("p"); b.className="flag"; b.id="srchNote"; b.innerHTML=n.txt; sheet.insertBefore(b,sheet.firstChild); }
+  if(document.getElementById("srchNote")) return; const b=document.createElement("p"); b.className=n.cls||"flag"; b.id="srchNote"; b.innerHTML=n.txt; sheet.insertBefore(b,sheet.firstChild); }
 const KRK_MJESTA=/\b(KRK|MALINSKA|BASKA|PUNAT|OMISALJ|NJIVICE|VRBNIK|DOBRINJ|SILO|KORNIC|PINEZICI|KOSTERNA|BRZAC|LINARDICI|GARICA|SVETI VID|KLIMNO|SOLINE|RISIKA|STARA BASKA|DRAGA BASCANSKA|JURANDVOR|BATOMALJ|CIZICI|NENADICI|LUKEZIC|MILOHNICI)\b/;
 async function search(){
   const q=document.getElementById("q").value.trim(); if(!q) return;
@@ -6402,13 +6427,15 @@ async function search(){
   try{
     // pilot Krk: naselja na otoku traže se u obuhvatu otoka, sve ostalo u Zagrebu
     const krk=KRK_MJESTA.test(norm(q));
+    // prvo službeni registar adresa DGU-a (pripremljen uz aplikaciju), pa OpenStreetMap
+    try{ const A=await adrTrazi(q,krk?"krk":"zg"); if(A){ SRCH.note=A.note; SRCH.ll=A.ll; map.setView(A.ll,18); inspect(A.ll); return; } }catch(e){}
     const p=new URLSearchParams(krk?{q,format:"json",limit:"8",addressdetails:"1",countrycodes:"hr",viewbox:"14.40,45.26,14.90,44.86",bounded:"1"}:{q:q+", Zagreb",format:"json",limit:"8",addressdetails:"1",countrycodes:"hr",viewbox:"15.75,46.0,16.25,45.6",bounded:"1"});
     const a=await getJSON("https://nominatim.openstreetmap.org/search?"+p.toString());
     if(!a[0]){sheet.innerHTML='<p class="err">Adresa nije pronađena. Probaj drukčije napisati ili dodirni kartu.</p>';return}
     // kućni broj: OpenStreetMap nema sve kućne brojeve; bez točnog broja vraća ulicu (često daleko od kuće), pa to treba reći
     const kb=(q.match(/\b(\d{1,4}\s?[a-zA-Z]?)\b(?!\s*\/)/)||[])[1], kbN=kb?kb.replace(/\s/g,"").toLowerCase():null;
     const hit=kbN?a.find(x=>x.address&&String(x.address.house_number||"").replace(/\s/g,"").toLowerCase()===kbN):null, best=hit||a[0];
-    SRCH.note=kbN&&!hit?{q,txt:`Kućni broj ${kb} nije pronađen u OpenStreetMapu, pa je prikazana čestica uz ${esc(best.address&&best.address.road?best.address.road:"ulicu")} (točka ulice, ne kuće). To može biti i stotinjak metara od tvoje kuće: približi kartu i dodirni svoju kuću ili upiši broj čestice.`}:null;
+    SRCH.note=kbN&&!hit?{q,cls:"flag",txt:`Kućni broj ${kb} nije pronađen u OpenStreetMapu, pa je prikazana čestica uz ${esc(best.address&&best.address.road?best.address.road:"ulicu")} (točka ulice, ne kuće). To može biti i stotinjak metara od tvoje kuće: približi kartu i dodirni svoju kuću ili upiši broj čestice.`}:null;
     const ll=L.latLng(+best.lat,+best.lon); SRCH.ll=ll; map.setView(ll,SRCH.note?17:18); inspect(ll);
   }catch(e){sheet.innerHTML='<p class="err">Pretraga nije uspjela: '+esc(e.message)+'</p>'}
 }
