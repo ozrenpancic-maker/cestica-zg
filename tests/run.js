@@ -1537,6 +1537,18 @@ async function okuTests(){
    ok(/nema dovoljno slobodnog prostora/.test(r3.napomene.join(" "))&&!r3.items.parking,"Okućnica: kad nema mjesta, to piše i ništa se ne crta");}
   // bez cesta i bez parkinga
   {const r4=Iz({...I,ceste:[],post:{...post,mjesta:0,vrt:0}}); ok(!r4.items.parking&&!r4.items.vrt&&r4.items.staza&&/nisu učitane/.test(r4.napomene.join(" ")),"Okućnica: bez učitanih cesta pristup je pretpostavljen (uz napomenu); bez parkinga i vrta samo staza i travnjak");}
+  // Faza 2: terasa, pomoćni objekt, tipovi okućnice
+  {const r5=Iz({...I,post:{...post,tip:"obiteljska",terasa:20,pomocni:true,pomM2:12}}), t5=r5.items.terasa, p5=r5.items.pomocni;
+   const touch=oA(oX(t5.g,rect(-5.3,-0.3,5.3,8.3)))>0.5&&oA(oX(t5.g,rect(-5,0,5,8)))<0.01;
+   ok(t5&&Math.abs(r5.povrsine.terasa-20)<1.5&&t5.strana!=="S"&&touch,"Okućnica faza 2: terasa oko 20 m² uz zid kuće koji nije ulazni (strana "+(t5&&t5.strana)+")");
+   const bb=p5&&w.turf.bbox({type:"Feature",geometry:p5.g,properties:{}});
+   ok(p5&&Math.abs(r5.povrsine.pomocni-12)<0.5&&bb[1]>=-19.02&&bb[3]<=19.02&&bb[0]>=-14.02&&bb[2]<=14.02&&(bb[1]+bb[3])/2>4&&/udaljenost od međe/.test(r5.napomene.join(" ")),"Okućnica faza 2: pomoćni objekt 12 m², 1 m od međe, u dijelu čestice dalje od ceste, uz napomenu da pravila treba provjeriti");
+   const ks=Object.keys(r5.items); let prek=0; for(let i=0;i<ks.length;i++) for(let j=i+1;j<ks.length;j++) prek+=oA(oX(r5.items[ks[i]].g,r5.items[ks[j]].g));
+   ok(prek<0.5&&ks.every(k=>oA(oX(r5.items[k].g,rect(-5,0,5,8)))<0.01),"Okućnica faza 2: terasa i pomoćni objekt ne preklapaju ostale dijelove ni kuću");
+   const rm=Iz({...I,post:{...post,tip:"mediteranska",terasa:30,vrt:15}}), rn=Iz({...I,post:{...post,tip:"minimalisticka",terasa:15,vrt:0}});
+   ok(rm.tip==="mediteranska"&&Math.abs(rm.povrsine.terasa-30)<2&&rm.items.terasa.dub===4&&rn.items.staza.sirina===1.5&&!rn.items.vrt&&E("okuV")("travnjak","mediteranska").n.startsWith("Mediteranski vrt"),"Okućnica faza 2: tipovi (mediteranska terasa 30 m² dubine 4 m i šljunak/nasadi; minimalistička bez vrta, šira staza)");
+   const rz=Iz({parcel:rect(-6,-6.7,6,6.7),kuce:[kv(0,0,11,9)],kucaC:[0,0],rot:0,w:11,d:9,H:6,ceste:[[[-20,-11],[20,-11]]],nagib:null,post:{...post,terasa:20,pomocni:true}});
+   ok(!rz.items.terasa&&/nema mjesta za terasu/.test(rz.napomene.join(" "))&&!rz.items.pomocni,"Okućnica faza 2: kad nema mjesta za terasu ili pomoćni objekt, to piše");}
   // kroz aplikaciju: gumb, karta, skica, 3D, izvještaj, projekt
   const A=parcelRect(30,40,{KATASTARSKA_CESTICA:"77/1",KATASTARSKA_OPCINA:"REMETE"}), c=A.geometry.coordinates[0], dy=4/110540;
   const d=data(w,A,"2.2.",{env:{v:{roads:[],roadLines:[{ok:true,hw:"residential",name:"Ulica Test",geom:[[c[0][0]-0.001,c[0][1]-dy],[c[1][0]+0.001,c[1][1]-dy]]}],stops:[]}}});
@@ -1561,6 +1573,14 @@ async function okuTests(){
   {const ex=E("projExport")(E("window.__cur.key")), im=E("projParseImport")(JSON.stringify(ex)), pg=E("projGet")(E("window.__cur.key"));
    ok(im.ok&&im.data.proj.oku&&im.data.proj.oku.on&&im.data.proj.oku.mjesta===1&&pg.okucnica&&pg.okucnica.povrsine&&pg.okucnica.povrsine.parking===12.5,"Okućnica: postavke u izvozu projekta, površine u projektu");}
   {const Rp=E("buildReport")(); ok(/Automatski prijedlog okućnice – ilustrativno/.test(Rp.textContent),"Okućnica u izvještaju"); Rp.remove();}
+  // Faza 2 u aplikaciji
+  setv(w,"okuTip","mediteranska","change"); await tick(300);
+  {const P2=E("okuPost")(E("window.__cur.key")); ok(P2.tip==="mediteranska"&&P2.terasa===30&&P2.vrt===15&&$(w,"okuTer").value==="30"&&/Mediteranski vrt/.test(txt(w,"okuOut"))&&/Terasa/.test(txt(w,"okuOut")),"Okućnica faza 2: odabir tipa postavlja zadane veličine (terasa 30 m², vrt 15 m²) i izgled");}
+  setv(w,"okuPom",true,"change"); await tick(300);
+  {const R2=E("OKU.res"); ok(R2.items.pomocni&&R2.items.terasa&&E("window.__oku").povrsine.pomocni>11&&E("window.__oku").povrsine.terasa>0,"Okućnica faza 2: pomoćni objekt i terasa u prijedlogu i površinama za druge module");
+   const D3=E("v3dData")(); ok(D3.kuca.features.some(f=>f.properties.k==="pomocni"&&f.properties.h===2.5)&&D3.kuca.features.some(f=>f.properties.k==="terasa"),"Okućnica faza 2 u 3D: pomoćni objekt (2,5 m) i terasa kao tijela");
+   E("skicaRender")(); ok($(w,"skicaOut").querySelectorAll('path[fill="#7a685b"]').length===1&&$(w,"skicaOut").querySelectorAll('path[fill="#d09772"]').length===1,"Okućnica faza 2 na skici: terasa i pomoćni objekt");
+   ok(/Pomoćni objekt \(spremište\) \(prijedlog/.test(E("legendaHtml")({skica:true})),"Okućnica faza 2: u legendi");}
   $(w,"okuOff").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(250);
   ok(!E("OKU.res")&&!E("OKU.layer")&&!!$(w,"okuGo"),"Okućnica: „Ukloni prijedlog” briše prikaz; kuća i simulator ostaju");
   ok(errs.length===0,"Okućnica: bez JS grešaka "+errs.join(" | "));
