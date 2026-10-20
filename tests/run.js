@@ -1025,6 +1025,9 @@ async function krkTests(){
   await tick(20); let to=txt(w,"sheet");
   {const zo=txt(w,"zkOss"); ok(/ZK uložak 5126/.test(zo)&&/Bez plombe/.test(zo)&&/Teretovnica: 1 upis/.test(zo)&&/50\.000,00 EUR/.test(zo)&&/izvedenom stanju/.test(zo)&&/2 vlasnika u 2 udjela: Suvlasnički dio: 1\/2/.test(zo)&&/Imena vlasnika aplikacija ne prikazuje/.test(zo)&&/tereti: 1 \(OSS\)/.test(txt(w,"zkSum"))&&E("PZREG").items.get("zk-ulozak5126").raz==="A","Krk OSS: ZK uložak iz javnog uvida (posjedovnica I i II, udjeli bez imena, teretovnica s tekstom, plomba), oznaka A");}
   ok(E("zkTxt")("<span class='lr-entry-black' >Zaprimljeno 21.03.2016.<br><br>Zabilježuje se &amp; dalje</span>")==="Zaprimljeno 21.03.2016.<br>Zabilježuje se &amp; dalje","ZK upis: HTML iz OSS-a pretvara se u čisti tekst s prijelomom reda");
+  ok(E("zkTxt")("zabilježuje se da<br>je za evidentiranje kuće")==="zabilježuje se da je za evidentiranje kuće","ZK upis: jednostruki prijelom usred rečenice postaje razmak");
+  // ponovni prikaz (npr. kad stigne nagib ili okolina) ne smije izbrisati uložak koji je već stigao
+  E("renderKrk")(E("KRK_CUR")); await tick(5); ok(/ZK uložak 5126/.test(txt(w,"zkOss"))&&/tereti: 1 \(OSS\)/.test(txt(w,"zkSum")),"Krk OSS: uložak ostaje prikazan i nakon ponovnog prikaza čestice");
   ok(calls.includes("https://oss-test.example/?id=1&ulozak=1")&&/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&/ZK uložak 5126/.test(to)&&/neslužbeni javni podatak/.test(to)&&/\+7,0 % \(42 m²\)/.test(to),"Krk OSS: upisana površina 642 m² dohvaćena automatski, s uloškom i razlikom");
   ok(/Upisana u katastru ?640 m²/.test(to)&&/kuća: 85 m² · dvorište: 557 m²/.test(to)&&Math.abs(E("KRK_CUR").area-600)<1.5,"Krk OSS: površina iz posjedovnog lista i dijelovi čestice; izračun ostaje na grafičkoj");
   $(w,"krkZkMan").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!!$(w,"krkZkIn"),"Krk OSS: može se upisati druga površina");
