@@ -1252,7 +1252,8 @@ async function ossFetchInto(k,P,q,onUpd){
   onUpd();
   // OSS povremeno odbije upit za uložak (čestica je tada već stigla): jedan ponovni pokušaj nakon 3 s, samo za uložak
   if(v.st==="ok"&&v.d&&v.d.ulosciGreska&&!(v.d.ulosci&&v.d.ulosci.length)){ await new Promise(r=>setTimeout(r,OSS_RETRY[0]||3000));
-    const v2=await krkOssOnce(P,k,q); if(v2.st==="ok"&&v2.d&&v2.d.ulosci&&v2.d.ulosci.length&&OSSZK.get(k)===v){OSSZK.set(k,v2); onUpd();} }
+    const v2=await krkOssOnce(P,k,q); if(v2.st==="ok"&&v2.d&&v2.d.ulosci&&v2.d.ulosci.length&&OSSZK.get(k)===v){OSSZK.set(k,v2); onUpd();}
+    else setTimeout(()=>{if(OSSZK.get(k)===v) OSSZK.delete(k)},30000); } // i dalje bez uloška: kod sljedećeg otvaranja čestice pokušaj ponovno
 }
 async function krkOssFetch(P,area){
   if(!P||P.cid==null) return; const k=String(P.cid);
@@ -1986,7 +1987,7 @@ function renderKrk(d){
   sheet.querySelectorAll("details[data-k]").forEach(dd=>{if(OPEN.has(dd.dataset.k)) dd.open=true});
   sheet.scrollTop=keepScroll; krkKdUpdate();
   if(parcel){ window.__areaCtx={key:window.__cur.key,refresh:()=>renderKrk(KRK_CUR),retry:()=>{OSSZK.delete(String(P.cid)); KATW.delete(String(P.cid)); krkOssFetch(P,area);}};
-    try{finUpdate()}catch(err){console.error(err)} if(TL.layer){TL.zones=null; tDraw();} if(OPEN.has("sun")) sunDraw(); krkOssFetch(P,area); rkStart({parcel,ll,region:"krk",pl}); }
+    try{finUpdate()}catch(err){console.error(err)} if(TL.layer){TL.zones=null; tDraw();} if(OPEN.has("sun")) sunDraw(); krkOssFetch(P,area); zkOssRefresh(String(P.cid)); rkStart({parcel,ll,region:"krk",pl}); }
   else window.__areaCtx=null;
   try{PWA.loadedAt=Date.now(); if(parcel) pwaRememberParcel(); pwaNetUI();}catch(e){}
   if(isMobile()){ if(!UI.hadParcel&&parcel){UI.hadParcel=true; if(UI.state==="peek") setState("half"); else setState(UI.state,{keepScroll:true});} else setState(UI.state,{keepScroll:true}); }
@@ -3650,7 +3651,7 @@ function render(d){
   restoreMap();
   sheet.innerHTML=h;
   restoreInputs(snap);
-  if(parcel){const k=favKey(parcel,ll); window.__areaCtx={key:k,refresh:()=>{const el=document.getElementById("zgArea"); if(el) el.innerHTML=krkAreaHtml(zgAreaP(parcel,k),area); areaCmpRefresh();},retry:()=>{OSSZK.delete("zg:"+k); KATW.delete("zg:"+k); zgOssFetch(parcel,k,area);}}; zgOssFetch(parcel,k,area);}
+  if(parcel){const k=favKey(parcel,ll); window.__areaCtx={key:k,refresh:()=>{const el=document.getElementById("zgArea"); if(el) el.innerHTML=krkAreaHtml(zgAreaP(parcel,k),area); areaCmpRefresh();},retry:()=>{OSSZK.delete("zg:"+k); KATW.delete("zg:"+k); zgOssFetch(parcel,k,area);}}; zgOssFetch(parcel,k,area); zkOssRefresh(zgAreaP(parcel,k).cid);}
   else window.__areaCtx=null;
   if(parcel) rkStart({parcel,ll,region:"zg",rows});
   if(!snap&&window.__cur) projApplyHouse(window.__cur.key);
