@@ -1298,7 +1298,8 @@ async function inspectKrk(ll){
   const parcel=ces.v||null, area=parcel?turf.area(parcel.geometry):null;
   let rows=(nam.v||[]).map(f=>({p:f.properties||{},share:null,geom:null}));
   if(parcel){
-    L.geoJSON(parcel.geometry,{style:{color:"#111",weight:3,fill:false},interactive:false}).addTo(selLayer);
+    const plK=L.geoJSON(parcel.geometry,{style:{color:"#111",weight:3,fill:false},interactive:false}).addTo(selLayer);
+    window.__lastBounds=plK.getBounds(); // okvir za „Uredi na karti”, ispis i povratak na česticu
     try{const z=await polyQuery(SRC_KRK.namjena,parcel.geometry,"*",true);
       rows=z.map(f=>{let share=null; try{const i=turf.intersect(parcel.geometry,f.geometry); share=i?turf.area(i)/area:0}catch(e){} return {p:f.properties||{},share,geom:f.geometry}})
            .filter(r=>r.share===null||r.share>0.005).sort((a,b)=>(b.share??0)-(a.share??0));
@@ -2178,6 +2179,8 @@ function renderKrk(d){
 
 async function inspect(ll){
   if(isOffline()){pwaOfflineInspect(); return}
+  // nova čestica: ništa od prethodne (okvir karte, pravila, granice) ne smije ostati, ni kad se prelazi Zagreb ↔ Krk
+  window.__lastBounds=null; window.__tl=null; window.__gbp=null; window.__ruleP=null; window.__rule=null; window.__prist=null;
   krkEnvLayer.clearLayers(); KRK_CUR=null; RK_CTX=null; gpLayer.clearLayers(); window.__gp=null; if(RK_MAP.layer){map.removeLayer(RK_MAP.layer); RK_MAP.layer=null;} RK_MAP.on=false;
   if(regionOf(ll)==="krk") return inspectKrk(ll);
   const id=++clickId;
