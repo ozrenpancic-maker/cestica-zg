@@ -1282,7 +1282,7 @@ async function ossFetchInto(k,P,q,onUpd){
 }
 async function krkOssFetch(P,area){
   if(!P||P.cid==null) return; const k=String(P.cid);
-  const upd=()=>{const el=document.getElementById("krkArea"); if(el&&KRK_CUR&&KRK_CUR.parcel&&String(KRK_CUR.parcel.properties.cid)===k){el.innerHTML=krkAreaHtml(P,area); areaCmpRefresh(); zkOssRefresh(k);}};
+  const upd=()=>{const el=document.getElementById("krkArea"); if(el&&KRK_CUR&&KRK_CUR.parcel&&String(KRK_CUR.parcel.properties.cid)===k){keepPos(()=>{el.innerHTML=krkAreaHtml(P,area); areaCmpRefresh();}); zkOssRefresh(k);}};
   try{const c=turf.pointOnFeature(KRK_CUR.parcel).geometry.coordinates; katwFetchInto(k,c[1],c[0],upd);}catch(e){}
   return ossFetchInto(k,P,null,upd);
 }
@@ -1313,7 +1313,7 @@ function zkOssHtml(U){
 const ZKU=new Map();
 function zkOssRefresh(k){
   const el=document.getElementById("zkOss"), v=OSSZK.get(String(k)); if(!el) return;
-  let U=v&&v.st==="ok"&&v.d&&v.d.ulosci; if(U&&U.length) ZKU.set(String(k),U); else U=ZKU.get(String(k))||null; const nh=U&&U.length?zkOssHtml(U):""; if(el.dataset.h!==String(nh.length)+":"+String(k)||el.innerHTML===""&&nh){el.innerHTML=nh; el.dataset.h=String(nh.length)+":"+String(k);}
+  let U=v&&v.st==="ok"&&v.d&&v.d.ulosci; if(U&&U.length) ZKU.set(String(k),U); else U=ZKU.get(String(k))||null; const nh=U&&U.length?zkOssHtml(U):""; if(el.dataset.h!==String(nh.length)+":"+String(k)||el.innerHTML===""&&nh){keepPos(()=>{el.innerHTML=nh; el.dataset.h=String(nh.length)+":"+String(k);});}
   if(U&&U.length&&!ZK.res){const s=document.getElementById("zkSum"), c=U.reduce((a,u)=>a+(u.C&&u.C.upisa||0),0), pl=U.some(u=>u.plomba); if(s) s.textContent=(pl?"plomba · ":"")+(c?"tereti: "+c:"bez tereta")+" (OSS)";}
 }
 // katastarski sloj karte (isti koji koriste OSS i Geoportal DGU): izravno iz preglednika, bez posrednika
@@ -1850,7 +1850,7 @@ function zgAreaP(parcel,key){
 function zgOssFetch(parcel,key,area){
   if(!SRC_KRK.oss||!parcel) return; let c; try{c=turf.pointOnFeature(parcel).geometry.coordinates}catch(e){return}
   const P0=zgAreaP(parcel,key), k=P0.cid;
-  const upd=()=>{const el=document.getElementById("zgArea"); if(el&&window.__cur&&window.__cur.key===key){el.innerHTML=krkAreaHtml(zgAreaP(parcel,key),area); areaCmpRefresh(); zkOssRefresh(k);}};
+  const upd=()=>{const el=document.getElementById("zgArea"); if(el&&window.__cur&&window.__cur.key===key){keepPos(()=>{el.innerHTML=krkAreaHtml(zgAreaP(parcel,key),area); areaCmpRefresh();}); zkOssRefresh(k);}};
   return katwFetchInto(k,c[1],c[0],upd).then(()=>{
     const w=KATW.get(k);
     if(w&&w.st==="ok"&&w.d.broj&&P0.broj&&w.d.broj!==P0.broj){OSSZK.set(k,{st:"err",e:"OSS je na ovom mjestu vratio drugu česticu ("+w.d.broj+")"}); upd(); return;}
@@ -1938,10 +1938,10 @@ function renderKrk(d){
   const jls=krkJls(rows,pl), jlsName=jls?(R.jls[jls]||null):null, inPilot=jls===R.pilot;
   const P=parcel?parcel.properties:{};
   const ptc=parcel?(()=>{try{const c=turf.pointOnFeature(parcel).geometry.coordinates; return {lat:c[1],lng:c[0]}}catch(e){return ll}})():ll;
-  window.__lastLL=ll;
+  window.__lastLL=ll; const prevKeyK=window.__cur&&window.__cur.key;
   window.__cur={key:"krk:"+(P.ref||P.broj||(ll.lat.toFixed(6)+","+ll.lng.toFixed(6))),region:"krk",ll:{lat:ptc.lat,lng:ptc.lng},ces:P.broj||null,ko:P.ko||null,area,buildArea:null,code:null,
     namjena:rows[0]?krkZoneLabel(rows[0].p):null,analitika:null,risks:null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:null};
-  const keepScroll=env?sheet.scrollTop:0;
+  const keepScroll=prevKeyK===window.__cur.key?scrollAnchor():null; // ista čestica: zadrži mjesto čitanja
   GRP=null; window.__areaCmp=null;
   pzReset(window.__cur.key); krkPzBase(d);
   let h=G("sum")+`<p id="printHead" class="print-only"></p><div id="printMap"></div><p class="eyebrow">Otok Krk · pilot${jlsName?" · "+esc(jlsName):""}</p>`;
@@ -2016,7 +2016,7 @@ function renderKrk(d){
   restoreMap();
   sheet.innerHTML=h;
   sheet.querySelectorAll("details[data-k]").forEach(dd=>{if(OPEN.has(dd.dataset.k)) dd.open=true});
-  sheet.scrollTop=keepScroll; krkKdUpdate();
+  sheetPost(); scrollRestore(keepScroll); krkKdUpdate();
   if(parcel){ window.__areaCtx={key:window.__cur.key,refresh:()=>renderKrk(KRK_CUR),retry:()=>{OSSZK.delete(String(P.cid)); KATW.delete(String(P.cid)); krkOssFetch(P,area);}};
     try{finUpdate()}catch(err){console.error(err)} if(TL.layer){TL.zones=null; tDraw();} if(OPEN.has("sun")) sunDraw(); krkOssFetch(P,area); zkOssRefresh(String(P.cid)); rkStart({parcel,ll,region:"krk",pl}); }
   else window.__areaCtx=null;
@@ -3447,7 +3447,7 @@ function render(d){
   const prevKey=window.__cur&&window.__cur.key, snap=prevKey&&prevKey===favKey(d.parcel,d.ll)?snapInputs():null;
   window.__lastData=d;
   const {ll,parcel,area,rows,ces,nam,up,upx,gn,checks,env,envelope,slope,zgrade,infra,sun}=d;
-  const keepScroll=checks?sheet.scrollTop:0;
+  const keepScroll=prevKey&&prevKey===favKey(d.parcel,d.ll)?scrollAnchor():null; // ista čestica: zadrži mjesto čitanja
   // dio čestice u namjeni koja dopušta gradnju
   let buildArea=null;
   if(area&&rows.length&&rows.every(r=>r.share!=null)){
@@ -3687,7 +3687,7 @@ function render(d){
   if(parcel) rkStart({parcel,ll,region:"zg",rows});
   if(!snap&&window.__cur) projApplyHouse(window.__cur.key);
   sheet.querySelectorAll("details[data-k]").forEach(dd=>{if(OPEN.has(dd.dataset.k)) dd.open=true});
-  sheet.scrollTop=keepScroll;
+  sheetPost(); scrollRestore(keepScroll);
   try{finUpdate()}catch(err){console.error(err); const o=document.getElementById("bOut")||document.getElementById("buyOut"); if(o) o.innerHTML=`<p class="err">Izračun trenutno nije uspio (${esc(err.message)}). Ostatak aplikacije radi normalno.</p>`}
   dogUpdate();
   if(TL.layer){TL.zones=null; tDraw();}
@@ -4555,6 +4555,23 @@ function pogWrap(){
   }
   for(const d of sheet.querySelectorAll("details.pog")){const b=d.querySelector(":scope>summary>b"), body=d.querySelector(":scope>.acc-body"), t=d.querySelector(":scope>summary>span").textContent; const st=pogStanje(body,t); if(b&&b.textContent!==st) b.textContent=st;}
 }
+// odmah nakon slaganja prikaza: sklapanje pojašnjenja, kartice poglavlja i sažetak (prije vraćanja položaja čitanja)
+// promjena sadržaja iznad mjesta čitanja ne smije pomaknuti tekst koji se čita (Safari nema „scroll anchoring”)
+function keepPos(fn){ const A=sheet.scrollTop>0?scrollAnchor():null; fn(); if(A) scrollRestore(A); }
+function sheetPost(){ try{viseInfo()}catch(e){} try{pogWrap()}catch(e){} try{sazetakUpdate()}catch(e){} }
+// položaj čitanja: zadnji odjeljak čiji je vrh iznad vrha panela i koliko je pomaknut; poslije ponovnog prikaza isti odjeljak
+// vraća se na isto mjesto, i kad se visina sadržaja iznad promijeni (npr. stigne uložak ili se sklope pojašnjenja)
+function scrollAnchor(){
+  const top=sheet.getBoundingClientRect().top; let best=null;
+  for(const e of sheet.querySelectorAll("details[data-k],h2[id],#sazetak")){ const r=e.getBoundingClientRect(); if(!r.height) continue;
+    if(r.top<=top+4) best={k:e.dataset&&e.dataset.k?`details[data-k="${e.dataset.k}"]`:"#"+e.id,off:r.top-top}; else break; }
+  return {a:best,st:sheet.scrollTop};
+}
+function scrollRestore(A){
+  if(!A){sheet.scrollTop=0; return;}
+  sheet.scrollTop=A.st; if(!A.a) return; const e=sheet.querySelector(A.a.k); if(!e) return;
+  const top=sheet.getBoundingClientRect().top, r=e.getBoundingClientRect(); if(!r.height) return; sheet.scrollTop+=(r.top-top)-A.a.off;
+}
 // otvori odjeljak (i sve iznad njega) i pomakni se do njega
 function pogIdi(el){ if(!el) return; for(let p=el;p;p=p.parentElement) if(p.tagName==="DETAILS") p.open=true;
   const tab=el.closest('.grp[data-g=troskovi]')?"troskovi":"analiza"; if(isMobile()&&UI.tab!==tab) setTab(tab);
@@ -4590,7 +4607,7 @@ function sazetakUpdate(){
   const C=[...PZREG.items.values()].filter(x=>x.raz==="C").length, ic={ok:"✓",warn:"!",no:"✕","?":"?"};
   const h=`<p class="eyebrow" style="margin:0 0 4px">Sažetak</p><ul class="saz-l">${rows.map(r=>`<li class="saz-${r.st==="?"?"q":r.st}"><button type="button" class="saz-b" data-saz="${esc(r.go)}"><i aria-hidden="true">${ic[r.st]}</i><span><b>${esc(r.q)}</b><small>${esc(r.a)}</small></span><em aria-hidden="true">›</em></button></li>`).join("")}</ul>`+
     (C?`<button type="button" class="saz-c" data-saz="#sec-pouzdanost">Prije kupnje provjeri ${C} ${C===1?"stavku označenu":"stavki označenih"} s C ›</button>`:"");
-  if(box.dataset.h!==h){box.innerHTML=h; box.dataset.h=h;}
+  if(box.dataset.h!==h){keepPos(()=>{box.innerHTML=h; box.dataset.h=h;});}
   const cards=g.querySelector(".cards"); if(cards) cards.style.display="none"; // stare kartice sažetka zamijenio je ovaj sažetak
 }
 sheet.addEventListener("click",e=>{const b=e.target.closest("[data-saz]"); if(!b) return; const el=sheet.querySelector(b.dataset.saz.split(",").map(x=>x.trim()).find(x=>sheet.querySelector(x))||"#__none"); pogIdi(el);});
