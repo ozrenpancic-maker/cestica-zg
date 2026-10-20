@@ -1458,6 +1458,31 @@ async function katTests(){
   d.checked=false; d.onchange({target:d}); ok(!E("map").hasLayer(D),"Ortofoto DGU: isključivanje uklanja sloj");
   c.checked=false; c.onchange({target:c}); ok(!E("map").hasLayer(L0)&&w.localStorage.getItem("lyrKat")==="0","Granice čestica: isključivanje uklanja sloj i pamti izbor");
 }
+async function zg3dTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), root=path.join(__dirname,"..");
+  let nf=0; w.fetch=(u)=>{u=String(u); nf++; const m=u.match(/data\/zg3d\/(index\.json|t\/[\d_-]+\.json)$/);
+    if(m){ const f=path.join(root,"data","zg3d",m[1]); if(fs.existsSync(f)) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(f,"utf8")))}); }
+    return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null)}); };
+  const rect=(lon,lat,wm,dm)=>({type:"Feature",geometry:{type:"Polygon",coordinates:[[[lon,lat],[lon+wm/(111320*Math.cos(lat*Math.PI/180)),lat],[lon+wm/(111320*Math.cos(lat*Math.PI/180)),lat+dm/110540],[lon,lat+dm/110540],[lon,lat]]]},properties:{KATASTARSKA_CESTICA:"1/1",KATASTARSKA_OPCINA:"SESVETE",GRADSKA_CETVRT:"Sesvete"}});
+  const A=rect(16.1110,45.8310,25,30), K=rect(15.9700,45.8400,25,30); // Sesvete (ima podataka) i Šestine (nema)
+  const R=await E("zg3dLoad")(A);
+  ok(R.st==="ok"&&R.list.length>20&&R.list.every(b=>b.dist<=80&&b.faces.length>0&&b.foot[0].length>=3&&b.wall>=0),"ZG3D: za česticu u Sesvetama učitane okolne zgrade (krug do 80 m) s tlocrtom, visinom i krovnim plohama");
+  ok(R.list.every(b=>!w.turf.booleanPointInPolygon(w.turf.point(b.c),A)),"ZG3D: postojeća zgrada na samoj čestici se ne prikazuje (kuća iz simulatora se crta zasebno)");
+  {const gdn=R.godine; ok(Object.keys(gdn).every(k=>k==="8"||k==="22")&&/2008|2022/.test(E("zg3dNapomena")(R)),"ZG3D: napomena navodi godine snimanja i da model ne mora odgovarati stanju");}
+  const F=E("zg3dFeatures")(R.list); ok(F.length>R.list.length*2&&F.every(f=>f.properties.h>f.properties.b&&f.geometry.coordinates[0].length>=4)&&F.some(f=>f.properties.c==="#a39e96"),"ZG3D: tijela za 3D pogled (zidovi i krov kao stepenice) imaju ispravne visine");
+  ok(E("zg3dGet")(A)===R||E("zg3dGet")(A).list.length===R.list.length,"ZG3D: rezultat je dostupan sinkrono za skicu");
+  const n0=nf; const R2=await E("zg3dLoad")(A); ok(nf===n0&&R2.list.length===R.list.length,"ZG3D: ponovni upit za istu česticu ne dohvaća ništa ponovno");
+  const R3=await E("zg3dLoad")(K); ok(R3.st==="nema"&&R3.list.length===0&&!E("zg3dNapomena")(R3),"ZG3D: izvan područja s podacima nema zgrada i nema napomene (bez izmišljanja)");
+  // skica: s okolnim zgradama ima puno više ploha i napomenu; bez njih ostaje kao prije
+  const d=data(w,A,"2.2.",{slope:{v:{h:200,slope:5,down:"jug",az:180}}}); w.__env=d.envelope; E("OPEN").add("tloc"); E("OPEN").add("skica"); E("render")(d);
+  const TL=E("TL"); TL.w=10; TL.d=8; TL.rot=0; TL.fl="2"; TL.fh=3; TL.podrum=false; TL.krov="dvo"; TL.nagib=30; TL.sljeme="duz"; TL.gar=false;
+  const c=w.turf.centroid(A).geometry.coordinates; TL.center=c; E("tDraw")(); E("skicaRender")();
+  {const o=$(w,"skicaOut"), s3=o.querySelectorAll("svg.sk-svg")[2], n=s3?s3.querySelectorAll("polygon").length:0, t=o.textContent;
+   if(process.env.ZG3D_DUMP&&s3) fs.writeFileSync(process.env.ZG3D_DUMP,s3.outerHTML);
+   ok(n>200&&/Okolne zgrade: neslužbeni 3D model Grada Zagreba/.test(t)&&/zgrade na samoj čestici nisu prikazane/.test(t)&&!errs.length,"Skica, 3D: okolne zgrade (zidovi i krovne plohe) su nacrtane uz napomenu o izvoru ("+n+" ploha)");}
+  {const d2=data(w,K,"2.2.",{slope:{v:{h:200,slope:5,down:"jug",az:180}}}); w.__env=d2.envelope; E("render")(d2); TL.center=w.turf.centroid(K).geometry.coordinates; E("tDraw")(); E("skicaRender")();
+   const o=$(w,"skicaOut"), s3=o.querySelectorAll("svg.sk-svg")[2]; ok(s3&&s3.querySelectorAll("polygon").length<30&&!/Okolne zgrade/.test(o.textContent),"Skica, 3D: bez podataka o okolnim zgradama skica je kao prije");}
+}
 async function skicaTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
   const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"95/1",KATASTARSKA_OPCINA:"REMETE"}), d=data(w,A,"2.2.",{slope:{v:{h:200,slope:10,down:"jug",az:180}}});
@@ -1725,7 +1750,7 @@ async function gpTests(){
   ok(errs.length===0,"bez JS grešaka (područje za gradnju): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

@@ -478,7 +478,7 @@ ul.risk small{color:var(--muted)}
   <div id="menu" hidden><p class="meta" id="ver" style="margin:0 0 6px"></p><a href="#" id="statBtn2" class="ib">Stanje servisa</a><a href="#" id="goKrk" class="ib">Otok Krk (pilot)</a><label id="aiOnRow" class="aion" hidden><input type="checkbox" id="aiOn"> AI asistent (testno)</label></div>
   <main>
     <div id="map"></div>
-    <div id="v3d" hidden role="dialog" aria-label="3D pogled na česticu"><div class="v3d-bar"><b id="v3dTtl">3D pogled</b><span class="v3d-act"><button type="button" class="ib" id="v3dRot">Zaustavi</button><button type="button" class="ib" id="v3dPod">Karta</button><label><input type="checkbox" id="v3dKat" checked> Čestice</label><label title="Solarni paneli prema odjeljku Solarna elektrana"><input type="checkbox" id="v3dPv"> Paneli</label><button type="button" class="ib" id="v3dClose" aria-label="Zatvori">✕</button></span></div><div id="v3dMap"></div><p class="v3d-note" id="v3dNote"></p></div>
+    <div id="v3d" hidden role="dialog" aria-label="3D pogled na česticu"><div class="v3d-bar"><b id="v3dTtl">3D pogled</b><span class="v3d-act"><button type="button" class="ib" id="v3dRot">Zaustavi</button><button type="button" class="ib" id="v3dPod">Karta</button><label><input type="checkbox" id="v3dKat" checked> Čestice</label><label id="v3dOkolL" hidden title="Okolne zgrade iz neslužbenog 3D modela Grada Zagreba (ZG3D)"><input type="checkbox" id="v3dOkol" checked> Okolne zgrade</label><label title="Solarni paneli prema odjeljku Solarna elektrana"><input type="checkbox" id="v3dPv"> Paneli</label><button type="button" class="ib" id="v3dClose" aria-label="Zatvori">✕</button></span></div><div id="v3dMap"></div><p class="v3d-note" id="v3dNote"></p></div>
     <div class="layers" id="layers">
       <button type="button" class="ib fab" id="lyrBtn" aria-expanded="false" aria-controls="lyrList">Slojevi</button>
       <button type="button" class="ib fab" id="aiBtn" hidden aria-label="AI asistent">AI</button>
@@ -2255,6 +2255,7 @@ async function inspect(ll){
   if(parcel){try{const b=turf.buffer(parcel.geometry,-0.0008,{units:"kilometers"});qGeom=b&&b.geometry?b.geometry:parcel.geometry}catch(e){qGeom=parcel.geometry}}
   const slopeP=settle(loadSlope(parcel,ll));
   const zgradeP=parcel?settle(loadZgrade(parcel)):null;
+  if(parcel) zg3dLoad(parcel).then(()=>{try{skicaUpdate()}catch(e){}});
   const checks=await Promise.all(CHECKS.map(c=>settle(
     c.corridor?corridorQuery(c,parcel,ll):
     (qGeom?polyQuery(c.url,qGeom,c.fields,!!c.draw):pointQuery(c.url,ll,c.fields,!!c.draw))
@@ -2963,7 +2964,8 @@ function skica3D(d,T){
   const pr=(p,z)=>[p[0]*r[0]+p[1]*r[1], -(p[0]*f[0]+p[1]*f[1])*Math.sin(el)-z*Math.cos(el)], dep=p=>p[0]*f[0]+p[1]*f[1];
   const F=tFloors(), fh=TL.fh, V=F.full*fh+(F.pk?1.2:0);
   // teren: pravokutnik oko čestice (+6 m), s mrežom svakih 5 m
-  const all=rings.flat(); let x0=Math.min(...all.map(p=>p[0]))-6, x1=Math.max(...all.map(p=>p[0]))+6, y0=Math.min(...all.map(p=>p[1]))-6, y1=Math.max(...all.map(p=>p[1]))+6;
+  const all=rings.flat(); const ZN=zg3dGet(d.parcel), NB=ZN&&ZN.list&&ZN.list.length?ZN.list:null, mg=NB?36:6; // s okolnim zgradama blok terena je širi
+  let x0=Math.min(...all.map(p=>p[0]))-mg, x1=Math.max(...all.map(p=>p[0]))+mg, y0=Math.min(...all.map(p=>p[1]))-mg, y1=Math.max(...all.map(p=>p[1]))+mg;
   // ako je cesta blizu, blok terena se proširi da je obuhvati (najviše 14 m izvan čestice)
   {const CE0=skCeste(d,c0,[x0-8,y0-8,x1+8,y1+8]), cp=CE0.flatMap(c=>c.polys.flat()); if(cp.length){x0=Math.max(x0-8,Math.min(x0,...cp.map(p=>p[0]))); x1=Math.min(x1+8,Math.max(x1,...cp.map(p=>p[0]))); y0=Math.max(y0-8,Math.min(y0,...cp.map(p=>p[1]))); y1=Math.min(y1+8,Math.max(y1,...cp.map(p=>p[1])));}}
   const CE3=skCeste(d,c0,[x0,y0,x1,y1]);
@@ -2975,6 +2977,15 @@ function skica3D(d,T){
   const box=(R4,top,base,podrum)=>{R4=ccw(R4); for(let i=0;i<4;i++){const a=R4[i], b=R4[(i+1)%4], za=Math.min(zt(a),podrum?Math.min(0,zt(a)):0), zb=Math.min(zt(b),podrum?Math.min(0,zt(b)):0);
       Q([[a,za],[b,zb],[b,top],[a,top]],shade(a,b,base),"#3b3b3b",1);} };
   box(hR,V,[38,30,88],TL.podrum); if(gR) box(gR,2.8,[38,20,82],false);
+  // okolne zgrade (ZG3D): zidovi do vijenca i krovne plohe po modelu; neutralno sivo da se kuća iz simulatora ističe
+  let nbN=0;
+  if(NB){ const sh3=(nx,ny,nz,base)=>{const L=Math.hypot(nx,ny,nz)||1, k=Math.max(0,(nx*-0.5+ny*-0.6+nz*0.62)/L); return `hsl(${base[0]},${base[1]}%,${Math.round(base[2]-14+k*24)}%)`;};
+    for(const B of NB){ const cl=P(B.c); if(cl[0]<x0||cl[0]>x1||cl[1]<y0||cl[1]>y1) continue; nbN++; const zg=zt(cl);
+      for(const rg of B.foot){ const Rg=ccw(rg.map(P)); for(let i=0;i<Rg.length;i++){const a=Rg[i], b=Rg[(i+1)%Rg.length]; Q([[a,zt(a)],[b,zt(b)],[b,zg+B.wall],[a,zg+B.wall]],shade(a,b,[40,6,86]),"#8a8a8a",0.5);} }
+      for(const rg of B.foot){ const Rg=ccw(rg.map(P)); Q(Rg.map(q=>[q,zg+B.wall]),"#c9c5bd","#8a8a8a",0.4,Rg.reduce((u,q)=>u+dep(q),0)/Rg.length+0.3); } // poklopac na visini vijenca (ispod krovnih ploha), da zid nije šupalj ni gdje model nema krova
+      for(const f of B.faces){ const pts=f.map(q=>[P(q),zg+q[2]]); let nx=0,ny=0,nz=0;
+        for(let i=0;i<pts.length;i++){const a=pts[i], b=pts[(i+1)%pts.length]; nx+=(a[0][1]-b[0][1])*(a[1]+b[1]); ny+=(a[1]-b[1])*(a[0][0]+b[0][0]); nz+=(a[0][0]-b[0][0])*(a[0][1]+b[0][1]);}
+        if(nz<0){nx=-nx;ny=-ny;nz=-nz;} Q(pts,sh3(nx,ny,nz,[22,8,66]),"#777",0.5); } } }
   if(gR) Q(ccw(gR).map(p=>[p,2.8]),"#9c9c9c","#3b3b3b",1);
   const C=[(hR[0][0]+hR[2][0])/2,(hR[0][1]+hR[2][1])/2], RO=[18,55,48];
   if(TL.krov==="ravni") Q(hR.map(p=>[p,V]),"#a3a3a3","#3b3b3b",1.2);
@@ -3012,7 +3023,7 @@ function skica3D(d,T){
   const nb=kut, nt=[kut[0],kut[1]+6]; g+=`<line x1="${X(pr(nb,zt(nb)))}" y1="${Y(pr(nb,zt(nb)))}" x2="${X(pr(nt,zt(nt)))}" y2="${Y(pr(nt,zt(nt)))}" stroke="#222" stroke-width="2" marker-end="url(#sk3A)"/><text x="${X(pr(nt,zt(nt)))}" y="${(+Y(pr(nt,zt(nt)))-6).toFixed(1)}">S</text>`;
   const defs=`<defs><marker id="sk3A" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,1L10,5L0,9z" fill="#222"/></marker></defs>`;
   return `<div class="sk-blok"><p class="eyebrow" style="margin:10px 0 4px">3D prikaz (skica)</p><svg class="sk-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="3D skica kuće na terenu">${defs}${g}</svg>`+
-    `<p class="meta">Pogled odozgo pod 30° sa strane ${T?`prema kojoj teren pada (${COMP(taz)})`:"juga"}, bez uvećanja visina; mreža na terenu je svakih 5 m, a na bokovima bloka terena vidi se nagib. Kuća je smještena tako da je pod u razini terena u njezinoj sredini; na nižoj strani vidi se dio zida ispod te razine (podrum ili podnožje).${CE3.length?" Sivo: cesta iz OpenStreetMapa položena na teren.":""} Teren je ravnina iz nagiba okoline (C).</p></div>`;
+    `<p class="meta">Pogled odozgo pod 30° sa strane ${T?`prema kojoj teren pada (${COMP(taz)})`:"juga"}, bez uvećanja visina; mreža na terenu je svakih 5 m, a na bokovima bloka terena vidi se nagib. Kuća je smještena tako da je pod u razini terena u njezinoj sredini; na nižoj strani vidi se dio zida ispod te razine (podrum ili podnožje).${CE3.length?" Sivo: cesta iz OpenStreetMapa položena na teren.":""}${nbN?" "+esc(zg3dNapomena(ZN)):""} Teren je ravnina iz nagiba okoline (C).</p></div>`;
 }
 function skicaPresjek(d,T){
   const c0=TL.center, P=skLocal(c0), rings=skRings(d.parcel.geometry).map(r=>r.map(P)), hR=tRect().geometry.coordinates[0].map(P);
@@ -3070,6 +3081,84 @@ async function loadZgrade(parcel){
   return {area:a,n:geoms.length,geoms};
 }
 
+// --- okolne zgrade: ZG3D 2022 (3D modeli postojećih zgrada, Grad Zagreb, Otvorena dozvola), pripremljeno uz aplikaciju u data/zg3d/ (tools/zg3d/pripremi_zg3d.py)
+// Kvadrati ~450 x 470 m; zgrada = tlocrt + visina do najnižeg dijela krova + krovne plohe (decimetri, delta-kodirano, visine relativno na najnižu točku zgrade).
+const ZG3D={base:"data/zg3d/",idx:null,tiles:new Map(),cache:new Map(),res:new Map(),R:80};
+function zg3dKey(parcel){try{const c=turf.centroid(parcel).geometry.coordinates; return c[0].toFixed(6)+","+c[1].toFixed(6)}catch(e){return ""}}
+async function zg3dIdx(){
+  if(ZG3D.idx!==null) return ZG3D.idx||null;
+  try{const r=await fetch(ZG3D.base+"index.json"); ZG3D.idx=r.ok?await r.json():false;}catch(e){ZG3D.idx=false}
+  return ZG3D.idx||null;
+}
+function zg3dDec(t,idx){
+  const kx=Math.cos((t.lat0+idx.dlat/2)*Math.PI/180)*1113200, ky=1105400, out=[];
+  const dec=(a,n)=>{const P=[]; let x=0,y=0,z=0; for(let i=0;i+n<=a.length;i+=n){x+=a[i]; y+=a[i+1]; if(n===3) z+=a[i+2]; P.push(n===3?[t.lon0+x/kx,t.lat0+y/ky,z/10]:[t.lon0+x/kx,t.lat0+y/ky]);} return P;};
+  for(const r of t.b){ const foot=r[2].map(a=>dec(a,2)), faces=r[3].map(a=>dec(a,3)); if(!foot.length||!foot[0].length) continue;
+    let sx=0,sy=0; for(const q of foot[0]){sx+=q[0];sy+=q[1];}
+    out.push({y:r[0],wall:r[1]/10,foot,faces,c:[sx/foot[0].length,sy/foot[0].length]}); }
+  return out;
+}
+function zg3dTile(k,idx){
+  let p=ZG3D.tiles.get(k);
+  if(!p){ p=fetch(ZG3D.base+"t/"+k+".json").then(r=>r.ok?r.json():null).then(j=>j?zg3dDec(j,idx):[]).catch(()=>[]); ZG3D.tiles.set(k,p); }
+  return p;
+}
+// najmanja udaljenost točke od ruba čestice u metrima (ravninska aproksimacija)
+function zg3dDist(rings,p){
+  const mx=111320*Math.cos(p[1]*Math.PI/180), my=110540; let best=1e9;
+  for(const r of rings) for(let i=0;i<r.length-1;i++){
+    const ax=(r[i][0]-p[0])*mx, ay=(r[i][1]-p[1])*my, bx=(r[i+1][0]-p[0])*mx, by=(r[i+1][1]-p[1])*my, ex=bx-ax, ey=by-ay, L=ex*ex+ey*ey;
+    const t=L>0?Math.max(0,Math.min(1,-(ax*ex+ay*ey)/L)):0, dx=ax+ex*t, dy=ay+ey*t, d=Math.hypot(dx,dy); if(d<best) best=d; }
+  return best;
+}
+// zgrade u krugu ZG3D.R metara od čestice (bez postojećih zgrada na samoj čestici); {st:"ok"|"nema", list}
+function zg3dLoad(parcel){
+  const key=zg3dKey(parcel); if(!key||!parcel) return Promise.resolve({st:"nema",list:[]});
+  if(ZG3D.cache.has(key)) return ZG3D.cache.get(key);
+  const pr=(async()=>{
+    const idx=await zg3dIdx(); if(!idx) return {st:"nema",list:[]};
+    const have=new Set(idx.kvadrati), c=turf.centroid(parcel).geometry.coordinates;
+    if(!have.has(Math.floor(c[1]/idx.dlat)+"_"+Math.floor(c[0]/idx.dlon))) return {st:"nema",list:[]};
+    const bb=turf.bbox(turf.buffer(parcel,ZG3D.R/1000,{units:"kilometers"})), keys=[];
+    for(let i=Math.floor(bb[1]/idx.dlat);i<=Math.floor(bb[3]/idx.dlat);i++) for(let j=Math.floor(bb[0]/idx.dlon);j<=Math.floor(bb[2]/idx.dlon);j++) if(have.has(i+"_"+j)) keys.push(i+"_"+j);
+    const all=(await Promise.all(keys.map(k=>zg3dTile(k,idx)))).flat(), rings=skRings(parcel.geometry), list=[];
+    for(const b of all){
+      if(b.c[0]<bb[0]-0.0006||b.c[0]>bb[2]+0.0006||b.c[1]<bb[1]-0.0004||b.c[1]>bb[3]+0.0004) continue;
+      let inside=false; try{inside=turf.booleanPointInPolygon(turf.point(b.c),parcel)}catch(e){}
+      if(inside) continue; // postojeća zgrada na samoj čestici: ne prikazuje se (kuća iz simulatora se crta zasebno)
+      let dist=1e9; for(const q of b.foot[0]) dist=Math.min(dist,zg3dDist(rings,q));
+      if(dist<=ZG3D.R){ b.dist=dist; list.push(b); } }
+    return {st:"ok",list,godine:list.reduce((a,b)=>{a[b.y]=(a[b.y]||0)+1; return a;},{})};
+  })().then(r=>{ZG3D.res.set(key,r); return r;}).catch(()=>{const r={st:"nema",list:[]}; ZG3D.res.set(key,r); return r;});
+  ZG3D.cache.set(key,pr); return pr;
+}
+function zg3dGet(parcel){return parcel?ZG3D.res.get(zg3dKey(parcel))||null:null}
+// zadrži dio plohe na kojem je visina >= z (ploha je ravnina, pa je visina linearna duž rubova)
+function zg3dClip(poly,z){
+  const out=[]; for(let i=0;i<poly.length;i++){const a=poly[i], b=poly[(i+1)%poly.length], fa=a[2]-z, fb=b[2]-z;
+    if(fa>=0) out.push(a);
+    if((fa>=0)!==(fb>=0)){const t=fa/(fa-fb); out.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,z]);} }
+  return out;
+}
+// tijela za 3D pogled (fill-extrusion): zidovi do vijenca i krov kao stepenice od 0,35 m
+function zg3dFeatures(list){
+  const F=[], C={zid:"#d9d5cc",krov:"#a39e96"}, st=0.35;
+  const add=(ring,b,h,c)=>{ if(ring.length<3||h-b<0.02) return; const r=ring.map(q=>[+q[0].toFixed(7),+q[1].toFixed(7)]); r.push(r[0]);
+    F.push({type:"Feature",geometry:{type:"Polygon",coordinates:[r]},properties:{b:+b.toFixed(2),h:+h.toFixed(2),c}}); };
+  for(const B of list){
+    for(const r of B.foot) add(r,0,B.wall,C.zid);
+    for(const f of B.faces){ let z0=1e9,z1=-1e9; for(const q of f){ if(q[2]<z0) z0=q[2]; if(q[2]>z1) z1=q[2]; }
+      if(z1-z0<0.15){ add(f,B.wall,z1,C.krov); continue; }
+      add(f,B.wall,z0,C.zid);
+      const n=Math.max(1,Math.ceil((z1-z0)/st)), sl=(z1-z0)/n;
+      for(let i=0;i<n;i++){ const zi=z0+i*sl; add(i?zg3dClip(f,zi+1e-6):f,zi,Math.min(z1,zi+sl),C.krov); } } }
+  return F;
+}
+function zg3dNapomena(Z){
+  if(!Z||!Z.list||!Z.list.length) return "";
+  const g=Z.godine||{}, god=Object.keys(g).map(k=>(k==="8"?"2008.":k==="22"?"2022.":k)+" ("+g[k]+")").join(", ");
+  return `Okolne zgrade: neslužbeni 3D model Grada Zagreba (ZG3D, Otvorena dozvola), ${Z.list.length} zgrada u krugu do ${ZG3D.R} m; godina snimanja ${god}. Visine i krovovi su prema modelu i ne moraju odgovarati današnjem stanju; zgrade na samoj čestici nisu prikazane.`;
+}
 // --- koridori: dohvat linija u krugu i provjera stvarne udaljenosti
 async function corridorQuery(c,parcel,ll){
   const geom=parcel?parcel.geometry:{type:"Point",coordinates:[ll.lng,ll.lat]};
@@ -5207,7 +5296,7 @@ function v3dStyle(D){
       osm:{type:"raster",tiles:["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],tileSize:256,maxzoom:19,attribution:"© OpenStreetMap"},
       dem:{type:"raster-dem",tiles:["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],tileSize:256,maxzoom:15,encoding:"terrarium",attribution:"Teren: Terrain Tiles (Mapzen, AWS)"},
       kat:{type:"raster",tiles:["https://wms1-gs-oss.uredjenazemlja.hr/ows2-m/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=oss:BZP_CESTICE&STYLES=&SRS=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=512&HEIGHT=512&FORMAT=image/png&TRANSPARENT=true"],tileSize:512,minzoom:15,attribution:"Katastar © DGU"},
-      parcel:{type:"geojson",data:D.parcel},gp:{type:"geojson",data:D.gp},kuca:{type:"geojson",data:D.kuca},sjena:{type:"geojson",data:D.sjena},prilaz:{type:"geojson",data:D.prilaz},terasa:{type:"geojson",data:D.terasa},oku:{type:"geojson",data:D.oku||{type:"FeatureCollection",features:[]}}},
+      parcel:{type:"geojson",data:D.parcel},okol:{type:"geojson",data:D.okol||{type:"FeatureCollection",features:[]}},gp:{type:"geojson",data:D.gp},kuca:{type:"geojson",data:D.kuca},sjena:{type:"geojson",data:D.sjena},prilaz:{type:"geojson",data:D.prilaz},terasa:{type:"geojson",data:D.terasa},oku:{type:"geojson",data:D.oku||{type:"FeatureCollection",features:[]}}},
     layers:[{id:"sat",type:"raster",source:"sat",layout:{visibility:V3D.pod==="sat"?"visible":"none"}},{id:"osm",type:"raster",source:"osm",layout:{visibility:V3D.pod==="osm"?"visible":"none"}},
       {id:"kat",type:"raster",source:"kat",paint:{"raster-opacity":0.75}},
       {id:"gp",type:"fill",source:"gp",paint:{"fill-color":"#22a35a","fill-opacity":0.2}},
@@ -5216,6 +5305,7 @@ function v3dStyle(D){
       {id:"prilaz",type:"fill",source:"prilaz",paint:{"fill-color":["get","c"],"fill-opacity":0.92}},
       {id:"terasa",type:"fill",source:"terasa",paint:{"fill-color":"#c9c2b4","fill-opacity":0.95}},
       {id:"sjena",type:"fill",source:"sjena",paint:{"fill-color":"#141414","fill-opacity":["get","op"],"fill-antialias":false}},
+      {id:"okol",type:"fill-extrusion",source:"okol",paint:{"fill-extrusion-color":["get","c"],"fill-extrusion-height":["get","h"],"fill-extrusion-base":["get","b"],"fill-extrusion-opacity":1,"fill-extrusion-vertical-gradient":true}},
       ex("kuca",["==",["get","lod"],0],{}),ex("kuca-lo",["==",["get","lod"],1],{maxzoom:V3M.lodZ}),ex("kuca-hi",["all",["==",["get","lod"],2],["!=",["get","k"],"pv"]],{minzoom:V3M.lodZ}),ex("pv",["==",["get","k"],"pv"],{minzoom:V3M.lodZ,layout:{visibility:V3D.pv?"visible":"none"}}),ex("kuca-det",["==",["get","lod"],3],{minzoom:V3M.detZ})],
     light:{anchor:"map",position:[1.15,V3M.sunAz,V3M.sunPolar],color:"#ffffff",intensity:0.42},
     terrain:{source:"dem",exaggeration:1}};
@@ -5228,6 +5318,8 @@ async function v3dOpen(){
   document.getElementById("v3dTtl").textContent="3D pogled · čestica "+D.broj;
   note.textContent="Učitavam 3D pogled…";
   try{await v3dLib();}catch(e){note.textContent="3D pogled nije dostupan: "+e.message+"."; return;}
+  if(!D.krk){ try{await Promise.race([zg3dLoad(D.parcel),new Promise(r=>setTimeout(r,4000))]);}catch(e){} const Z=zg3dGet(D.parcel); if(Z&&Z.list.length){D.okol={type:"FeatureCollection",features:zg3dFeatures(Z.list)}; D.okolN=Z; } }
+  {const ol=document.getElementById("v3dOkolL"); ol.hidden=!D.okolN; document.getElementById("v3dOkol").checked=true;}
   const gl=(()=>{try{const c=document.createElement("canvas"); return !!(c.getContext("webgl2")||c.getContext("webgl"));}catch(e){return false}})();
   if(!gl&&!(window.maplibregl&&maplibregl.__test)){note.textContent="Ovaj preglednik ne podržava 3D prikaz (WebGL)."; return;}
   if(V3D.map){try{V3D.map.remove()}catch(e){} V3D.map=null;}
@@ -5242,6 +5334,7 @@ async function v3dOpen(){
   // kamera: cijela čestica u kadru, pa nagib (s nagibom se kadar smanji, zato malo bliže)
   try{const bb=turf.bbox(turf.buffer(D.parcel,0.004,{units:"kilometers"})); m.fitBounds([[bb[0],bb[1]],[bb[2],bb[3]]],{padding:30,duration:0,maxZoom:20}); m.setZoom(Math.min(20,m.getZoom()+0.4)); m.setPitch(62); m.setBearing(-20);}catch(e){}
   let gotov=false; const fin=()=>{ if(gotov) return; gotov=true; note.textContent="Teren: model visina oko 30 m (grub, C). Kuća: pojednostavljeni model iz simulatora (visina do vijenca, krov sa strehom, prozori i ulaz prema cesti, sjena za sunce s jugozapada). Granice: katastar DGU. Satelitska snimka: Esri. Prikaz je ilustracija, ne projekt.";
+    if(D.okolN) note.textContent+=" "+zg3dNapomena(D.okolN);
     try{V3D.snap.set(D.key,m.getCanvas().toDataURL("image/jpeg",0.86));}catch(e){} };
   m.once("load",()=>{try{const at=m.getContainer().querySelector(".maplibregl-ctrl-attrib"); if(at&&isMobile()) at.classList.remove("maplibregl-compact-show");}catch(e){}}); // na mobitelu izvori sklopljeni (ikona ⓘ), da ne prekrivaju model
   m.once("idle",fin); setTimeout(fin,8000); // ako neki sloj ne odgovori, slika se ipak spremi nakon 8 s
@@ -5253,6 +5346,7 @@ document.getElementById("v3dClose").addEventListener("click",v3dClose);
 document.getElementById("v3dRot").addEventListener("click",e=>{V3D.rot=!V3D.rot; e.currentTarget.textContent=V3D.rot?"Zaustavi":"Okreći";});
 document.getElementById("v3dPod").addEventListener("click",e=>{V3D.pod=V3D.pod==="sat"?"osm":"sat"; e.currentTarget.textContent=V3D.pod==="sat"?"Karta":"Satelit"; const m=V3D.map; if(m){m.setLayoutProperty("sat","visibility",V3D.pod==="sat"?"visible":"none"); m.setLayoutProperty("osm","visibility",V3D.pod==="osm"?"visible":"none");}});
 document.getElementById("v3dPv").addEventListener("change",e=>{V3D.pv=e.target.checked; const m=V3D.map; if(m) m.setLayoutProperty("pv","visibility",V3D.pv?"visible":"none");});
+document.getElementById("v3dOkol").addEventListener("change",e=>{const m=V3D.map; if(m&&m.getLayer("okol")) m.setLayoutProperty("okol","visibility",e.target.checked?"visible":"none");});
 document.getElementById("v3dKat").addEventListener("change",e=>{const m=V3D.map; if(m) m.setLayoutProperty("kat","visibility",e.target.checked?"visible":"none");});
 
 // ================= LEGENDA BOJA (karta, analiza, skica, izvještaj) =================
