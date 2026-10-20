@@ -481,7 +481,7 @@ async function sunTests(){
   ok(Math.abs(sp(zd("2026-06-21",9),45.815,15.98).az-90)<25&&Math.abs(sp(zd("2026-06-21",17),45.815,15.98).az-270)<25,"ujutro je Sunce na istoku, popodne na zapadu");
   // elektrana: zračenje 100 W/m² svaki sat
   let called=0;
-  w.fetch=(u)=>{called++; const t=[],v=[]; for(const y of [2023,2024,2025]){const n=(y===2024?366:365)*24; for(let i=0;i<n;i++){const d=new Date(Date.UTC(y,0,1)+i*3600e3); t.push(d.toISOString().slice(0,13)+":00"); v.push(100);}}
+  w.fetch=(u)=>{if(!/open-meteo/.test(String(u))) return Promise.reject(new Error("bez mreže u testu")); called++; const t=[],v=[]; for(const y of [2023,2024,2025]){const n=(y===2024?366:365)*24; for(let i=0;i<n;i++){const d=new Date(Date.UTC(y,0,1)+i*3600e3); t.push(d.toISOString().slice(0,13)+":00"); v.push(100);}}
     ok(/tilt=30/.test(u)&&/azimuth=0/.test(u)&&/global_tilted_irradiance/.test(u),"zahtjev za zračenje šalje nagib i orijentaciju");
     return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({hourly:{time:t,global_tilted_irradiance:v}})})};
   const r=await w.eval("pvFetch")(45.8,15.98,30,0);
@@ -1437,15 +1437,30 @@ async function skicaTests(){
 async function sazTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
   const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"96/1",KATASTARSKA_OPCINA:"REMETE"}), d=data(w,A,"2.2.");
+  let natBody=null; w.fetch=(u,o)=>{u=String(u); if(/Natura2000Sites\/MapServer\/2\/query/.test(u)){natBody=o&&o.body; return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({type:"FeatureCollection",features:[{type:"Feature",properties:{SITECODE:"HR2000583",SITENAME:"Medvednica",SITETYPE:"B",RELEASE_DATE:1735689600000,MS:"HR"}}]})});}
+    if(/services\.bioportal\.hr\/wms/.test(u)&&/zasticeno_podrucje_poligoni/.test(u)) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({type:"FeatureCollection",features:[{type:"Feature",id:"zasticeno_podrucje_poligoni.4594",properties:{zasticeno_podrucje_id:4594,kategorija_zastite:"Park prirode",podkategorija_zastite:"",naziv:"MEDVEDNICA",naziv_akt:"Zapadni dio Medvednice"}}]})});
+    return Promise.reject(new Error("bez mreže u testu"));};
   w.__env=d.envelope; E("render")(d); await tick(80);
+  {const t=txt(w,"okolisBox"); ok(/U zaštićenom području prirode/.test(t)&&/Park prirode Medvednica/.test(t)&&/uvjeti zaštite prirode/.test(t)&&E("PZREG").items.get("oko-zast").raz==="A"&&/Opasnost od poplava/.test(t)&&!!$(w,"okolisBox").querySelector('a[href*="preglednik.voda.hr"]')&&E("PZREG").items.get("oko-poplave").raz==="C","Zaštićena područja (Bioportal): Park prirode Medvednica, oznaka A; poplave: poveznica na kartu Hrvatskih voda, C");}
+  {const t=txt(w,"okolisBox"); ok(/U ekološkoj mreži Natura 2000/.test(t)&&/Medvednica \(HR2000583, POVS/.test(t)&&/ocjena prihvatljivosti/.test(t)&&E("PZREG").items.get("oko-natura").raz==="A"&&/esriSpatialRelIntersects/.test(decodeURIComponent(natBody||"")),"Natura 2000: presjek čestice sa slojem EEA; područje, kod i vrsta (POVS), oznaka A");}
   const S=$(w,"sazetak"), rows=S?[...S.querySelectorAll(".saz-b")]:[];
-  ok(rows.length===5&&/Smije li se graditi\?/.test(S.textContent)&&/Koliko velika kuća\?/.test(S.textContent)&&/tlocrt do/.test(rows[1].textContent)&&/Ima li tereta\?/.test(S.textContent)&&/Koliko bi koštalo\?/.test(S.textContent),"Sažetak: pet odgovora na vrhu analize (gradnja, veličina, tereti, pristup, trošak)");
+  ok(rows.length===6&&/Smije li se graditi\?/.test(S.textContent)&&/Koliko velika kuća\?/.test(S.textContent)&&/tlocrt do/.test(rows[1].textContent)&&/Ima li tereta\?/.test(S.textContent)&&/Koliko bi koštalo\?/.test(S.textContent),"Sažetak: šest odgovora na vrhu analize (gradnja, veličina, tereti, pristup, trošak, priroda), uz izvor");
+  ok(/Grad Zagreb, GIS baza planirane namjene/.test(rows[0].textContent)&&/\(A\)/.test(rows[0].textContent)&&/Medvednica/.test(rows[5].textContent),"Sažetak: uz odgovor izvor i oznaka pouzdanosti; Natura 2000 u retku „Priroda i poplave”");
   const P=[...w.document.querySelectorAll("details.pog")].map(x=>x.querySelector("summary span").textContent);
   ok(P.includes("Uvjeti gradnje")&&P.some(t=>/^Rizici/.test(t))&&P.includes("Pouzdanost podataka")&&[...w.document.querySelectorAll("details.pog")].every(x=>!x.open),"Poglavlja analize su sklopljene kartice (uvjeti gradnje, rizici, pouzdanost…)");
   rows[1].dispatchEvent(new w.Event("click",{bubbles:true})); await tick(60);
   const calc=w.document.querySelector('details[data-k="calc"]'); ok(calc.open&&calc.closest("details.pog").open,"Dodir na odgovor u sažetku otvara odjeljak i poglavlje u kojem je");
   E("render")(d); await tick(80); ok(w.document.querySelector('details[data-k="calc"]').closest("details.pog").open,"Otvoreno poglavlje ostaje otvoreno nakon ponovnog prikaza");
   {const R=E("buildReport")(), secs=[...R.querySelectorAll(".rpt-h h2")].map(h=>h.textContent); ok(secs.includes("Uvjeti gradnje")&&secs.includes("Rizici i provjere")&&R.querySelector(".rpt-sec .rule-title"),"Izvještaj i dalje sadrži poglavlja iz sklopljenih kartica"); R.remove();}
+  // 3D pogled: lažni MapLibre bilježi stil i kameru
+  {const made=[]; w.maplibregl={__test:true,Map:class{constructor(o){this.o=o; this.h={}; made.push(this);} addControl(){} on(e,f){this.h[e]=f} once(e,f){this.h["1"+e]=f} getBearing(){return 0} setBearing(){} getCanvas(){return {toDataURL:()=>"data:image/jpeg;base64,AAAA"}} remove(){} setLayoutProperty(l,k,v){this.lp=[l,k,v]}},
+     NavigationControl:class{},Marker:class{constructor(o){this.o=o} setLngLat(){return this} addTo(){return this}}};
+   const TL=E("TL"); TL.center=null; E("tDraw")(); await E("v3dOpen")(); const M=made[0], st=M&&M.o.style;
+   ok(M&&!$(w,"v3d").hidden&&st.terrain&&st.terrain.source==="dem"&&st.sources.dem.encoding==="terrarium"&&st.sources.kat.tiles[0].includes("oss:BZP_CESTICE")&&st.sources.kat.tiles[0].includes("{bbox-epsg-3857}")&&st.layers.some(l=>l.type==="fill-extrusion")&&M.o.pitch>=55,"3D pogled: satelit, model terena, granice DGU i kuća kao 3D tijelo, nagnuta kamera");
+   ok(st.sources.kuca.data.features.length>=2&&st.sources.kuca.data.features[0].properties.h>=3,"3D pogled: kuća iz simulatora s visinom do vijenca (i slojevima krova)");
+   M.fitBounds=()=>{}; M.setZoom=()=>{}; M.getZoom=()=>18; M.setPitch=()=>{}; M.h["1idle"](); ok(E("V3D").snap.size===1,"3D pogled: nakon iscrtavanja sprema se slika za izvještaj");
+   const R=E("buildReport")(); ok(R.querySelector(".rpt-3d img")&&/3D pogled/.test(R.textContent),"Izvještaj: slika 3D pogleda u poglavlju „Kuća na čestici”"); R.remove();
+   $(w,"v3dClose").dispatchEvent(new w.Event("click",{bubbles:true})); ok($(w,"v3d").hidden,"3D pogled se zatvara");}
   ok(errs.length===0,"bez JS grešaka (sažetak i kartice): "+errs.join(" | "));
 }
 async function gpTests(){

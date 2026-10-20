@@ -313,3 +313,30 @@ Ceste iz OpenStreetMapa (iste kao za pristup i pojas uz cestu) ucrtavaju se u sv
   - Zamjenjuje stare četiri kartice na mobitelu.
 - **Poglavlja kao kartice:** rizici, provjere, komunalna infrastruktura, pristup i okolina, karte planova, uvjeti gradnje, sunce i energija, novac i kupnja, pouzdanost i dokumentacija sklopljeni su u kartice s kratkim stanjem u zaglavlju. Otvorene kartice ostaju otvorene pri ponovnom prikazu.
 - **Gumbi** na vrhu analize prelamaju se u novi red umjesto da izlaze iz okvira.
+
+## Natura 2000, izvor u sažetku, 3D pogled (20. 10. 2026.)
+
+**Natura 2000:** u „Provjerama” (Zagreb i Krk) i u sažetku (redak „Priroda i poplave”).
+- Izvor: Europska agencija za okoliš (EEA), ArcGIS sloj `ProtectedSites/Natura2000Sites/MapServer/2`. To su granice područja koje dostavlja Republika Hrvatska.
+- Upit je presjek s česticom, a vraća SITECODE, SITENAME i SITETYPE: A = POP (ptice), B = POVS (vrste i stanišni tipovi), C = oboje.
+- U ekološkoj mreži piše da može biti potrebna ocjena prihvatljivosti za ekološku mrežu (Zakon o zaštiti prirode).
+- Pouzdanost je A. Kad servis ne odgovori, piše „Podaci nisu dostupni” i oznaka je C.
+
+**Zaštićena područja prirode:** Bioportal, WMS `services.bioportal.hr/wms`, sloj `zasticeno_podrucje_poligoni`.
+- Upit je GetFeatureInfo (JSON) u do pet točaka unutar čestice.
+- Polja provjerena 20. 10. 2026. na Parku prirode Medvednica: `naziv`, `kategorija_zastite`, `podkategorija_zastite`, `naziv_akt`.
+- U zaštićenom području piše da mogu biti potrebni uvjeti zaštite prirode. Pouzdanost je A.
+
+**Poplave:** karte opasnosti od poplava Hrvatskih voda poslužuje `preglednik.voda.hr/geocluster/wms`. Taj servis ne dopušta čitanje drugim stranicama (CORS; test 20. 10. 2026.). Javni `servisi.voda.hr/public_ows/wms` ima samo tri sloja, a među njima nema karata opasnosti.
+- Zato aplikacija zasad daje samo poveznicu na kartu opasnosti od poplava, s oznakom C.
+- Automatska provjera moguća je preko zasebnog posrednika (Cloudflare Worker), ako se odobri.
+
+**Izvor u sažetku:** ispod svakog odgovora je izvor, datum i oznaka pouzdanosti, iz registra pouzdanosti (isti podatak kao u odjeljku).
+
+**3D pogled:** gumb „3D” na karti.
+- Biblioteka MapLibre GL 4.7.1 (`vendor/maplibre-gl-4.7.1`, licenca BSD-3) učitava se tek kad se pogled otvori. Nije u predmemoriji aplikacije.
+- Satelit (Esri) ili OpenStreetMap; teren iz Terrain Tiles (Mapzen/AWS, oko 30 m).
+- Granice čestica DGU (WMS u EPSG:3857), odabrana čestica (žuto), područje za gradnju (zeleno) i kuća iz simulatora. Kuća je 3D tijelo do vijenca, s krovom od šest slojeva koji se sužavaju prema sljemenu; garaža je visoka 2,8 m.
+- Kamera obuhvati česticu, nagnuta je 62° i polako se okreće. „Zaustavi” ili povlačenje zaustavlja okretanje.
+- Kad se pogled iscrta (ili nakon 8 s), sprema se slika i ulazi u PDF izvještaj u poglavlje „Kuća na čestici”. Ako preglednik ne dopusti čitanje slike, izvještaj je bez nje.
+- Bez WebGL-a piše da preglednik ne podržava 3D prikaz.
