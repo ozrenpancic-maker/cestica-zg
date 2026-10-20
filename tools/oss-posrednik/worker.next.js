@@ -195,6 +195,8 @@ export default {
     }
     if (tocka) { o.graficka = tocka.graficka; o.stanjeKarte = tocka.datum; if (!o.koMb) o.koMb = tocka.koMb; }
     // uložak samo kad ga aplikacija izričito traži; broj i glavna knjiga uzimaju se iz parcel-info iste čestice, ne iz upita
+    // uložak koji je već u predmemoriji šalje se i bez „ulozak=1” (bez upita prema OSS-u)
+    if (sp.get("ulozak") !== "1") { try { const h2 = await cache.match(new Request("https://cache.local/oss-lr/" + id)); if (h2) o.ulosci = await h2.json(); } catch (e) {} }
     if (sp.get("ulozak") === "1") {
       const ck2 = new Request("https://cache.local/oss-lr/" + id), hit2 = await cache.match(ck2);
       if (hit2) o.ulosci = await hit2.json();

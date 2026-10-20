@@ -109,3 +109,5 @@ Ozren je tražio prikaz posjedovnice I i II, vlastovnice i teretovnice i odabrao
 - U poruci greške: status, zaglavlje `Server` i vrsta odgovora OSS-a (bez sadržaja), za dijagnostiku.
 - Predmemorija čestice i uloška 3 dana (aplikacija prikazuje datum dohvata); ulošci jedne čestice jedan po jedan.
 - Aplikacija ne ponavlja automatski kad OSS odbija; ostaje gumb „Pokušaj ponovno”.
+- Aplikacija pri otvaranju čestice traži samo površinu (`?id=…`, jedan upit prema OSS-u); uložak (`&ulozak=1`) tek kad korisnik otvori odjeljak ZK ili dodirne „Ima li tereta?”.
+  Posrednik uložak iz predmemorije šalje i bez `ulozak=1` (bez upita prema OSS-u).
