@@ -1028,6 +1028,8 @@ async function krkTests(){
   ok(E("zkTxt")("zabilježuje se da<br>je za evidentiranje kuće")==="zabilježuje se da je za evidentiranje kuće","ZK upis: jednostruki prijelom usred rečenice postaje razmak");
   // ponovni prikaz (npr. kad stigne nagib ili okolina) ne smije izbrisati uložak koji je već stigao
   E("renderKrk")(E("KRK_CUR")); await tick(5); ok(/ZK uložak 5126/.test(txt(w,"zkOss"))&&/tereti: 1 \(OSS\)/.test(txt(w,"zkSum")),"Krk OSS: uložak ostaje prikazan i nakon ponovnog prikaza čestice");
+  // kad se dohvat ponovi (npr. nakon isteka) i traje, već prikazani uložak ne nestaje
+  {const k="1", v=E("OSSZK").get(k); E("OSSZK").set(k,{st:"load"}); E("renderKrk")(E("KRK_CUR")); await tick(5); ok(/ZK uložak 5126/.test(txt(w,"zkOss")),"Krk OSS: uložak ostaje vidljiv dok traje ponovni dohvat"); E("OSSZK").set(k,v); E("renderKrk")(E("KRK_CUR")); await tick(5);}
   ok(calls.includes("https://oss-test.example/?id=1&ulozak=1")&&/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&/ZK uložak 5126/.test(to)&&/neslužbeni javni podatak/.test(to)&&/\+7,0 % \(42 m²\)/.test(to),"Krk OSS: upisana površina 642 m² dohvaćena automatski, s uloškom i razlikom");
   ok(/Upisana u katastru ?640 m²/.test(to)&&/kuća: 85 m² · dvorište: 557 m²/.test(to)&&Math.abs(E("KRK_CUR").area-600)<1.5,"Krk OSS: površina iz posjedovnog lista i dijelovi čestice; izračun ostaje na grafičkoj");
   $(w,"krkZkMan").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!!$(w,"krkZkIn"),"Krk OSS: može se upisati druga površina");
@@ -1038,7 +1040,7 @@ async function krkTests(){
   // povremeno odbijanje: prvi upit 403, drugi uspije
   mode="oss403once"; E("OSSZK").clear(); E("renderKrk")(E("KRK_CUR")); await tick(60); to=txt(w,"sheet");
   ok(/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&calls.filter(u=>u.includes("oss-test.example")).length>=2,"Krk OSS: nakon povremenog odbijanja (403) ponovni pokušaj uspije");
-  mode="ossFail"; E("OSSZK").clear(); let n0=calls.length; E("renderKrk")(E("KRK_CUR")); await tick(80); to=txt(w,"sheet");
+  mode="ossFail"; E("OSSZK").clear(); E("ZKU").clear(); let n0=calls.length; E("renderKrk")(E("KRK_CUR")); await tick(80); to=txt(w,"sheet");
   ok(/OSS: podaci nisu dostupni/.test(to)&&!!$(w,"krkZkIn")&&!/642 m²/.test(to)&&calls.slice(n0).filter(u=>u.includes("oss-test.example")).length===2,"Krk OSS: kad OSS ne odgovara ni nakon ponovnog pokušaja, poruka i ručni unos (bez izmišljene vrijednosti)");
   ok(!!$(w,"krkOssRetry")&&[...w.document.querySelectorAll("#krkArea a")].some(a=>a.href==="https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info?parcelId=1"),"Krk OSS: gumbi „Pokušaj ponovno” i „Otvori česticu u OSS-u”");
   mode="ok"; $(w,"krkOssRetry").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20);
