@@ -1393,6 +1393,24 @@ async function katTests(){
   d.checked=false; d.onchange({target:d}); ok(!E("map").hasLayer(D),"Ortofoto DGU: isključivanje uklanja sloj");
   c.checked=false; c.onchange({target:c}); ok(!E("map").hasLayer(L0)&&w.localStorage.getItem("lyrKat")==="0","Granice čestica: isključivanje uklanja sloj i pamti izbor");
 }
+async function skicaTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"95/1",KATASTARSKA_OPCINA:"REMETE"}), d=data(w,A,"2.2.",{slope:{v:{h:200,slope:10,down:"jug",az:180}}});
+  w.__env=d.envelope; E("OPEN").add("tloc"); E("OPEN").add("skica"); E("render")(d);
+  const TL=E("TL"); TL.w=10; TL.d=8; TL.rot=0; TL.fl="2"; TL.fh=3; TL.podrum=false; TL.krov="dvo"; TL.nagib=30; TL.sljeme="duz"; TL.gar=false; TL.center=null; E("tDraw")(); E("skicaRender")();
+  const o=$(w,"skicaOut"), sv=o.querySelectorAll("svg.sk-svg"), me=[...o.querySelectorAll(".sk-me")].map(t=>t.textContent).sort(), t=o.textContent;
+  ok(sv.length===3&&JSON.stringify(me)===JSON.stringify(["25,0","25,0","30,0","30,0"]),"Skica: tlocrt, presjek i 3D prikaz; međe s duljinama stranica (30 × 25 m)");
+  const dd=[...o.querySelectorAll(".sk-d")].map(x=>parseFloat(x.textContent.replace(",","."))).sort((a,b)=>a-b);
+  ok(dd.length===4&&Math.abs(dd[0]-8.5)<0.15&&Math.abs(dd[1]-8.5)<0.15&&Math.abs(dd[2]-10)<0.15&&Math.abs(dd[3]-10)<0.15,"Skica: kuća 10 × 8 m u sredini čestice 30 × 25 m → udaljenosti od međa 10 i 8,5 m");
+  // presjek prema jugu (pad 10 %): međe na +1,25 (sjever, 12,5 m uzbrdo) i −1,25; vijenac +6,00; sljeme 6 + tg30° × 8/2 = +8,31 (presjek okomit na sljeme istok–zapad)
+  ok(/međa \+1,25/.test(t)&&/međa −1,25/.test(t)&&/\+6,00/.test(t)&&/sljeme \+8,31/.test(t)&&/razlika oko 0,8 m/.test(t),"Skica, presjek: međe ±1,25 m, vijenac +6,00, sljeme +8,31 m, razlika terena ispod kuće 0,8 m (8 m × 10 %)");
+  ok(E("PZREG").items.get("sk-teren").raz==="C"&&/Copernicus DEM/.test(t)&&/nije projekt/.test(t),"Skica: teren iz modela visina označen kao C, uz napomenu da skica nije projekt");
+  {const s3=$(w,"skicaOut").querySelectorAll("svg.sk-svg")[2], n=s3?s3.querySelectorAll("polygon").length:0;
+   // teren: 2 vidljiva boka + ploha; područje za gradnju; čestica; sjena; 4 zida; krov dvostrešni: 2 plohe + 2 zabata
+   ok(n===2+1+1+1+1+4+4&&/3D prikaz/.test($(w,"skicaOut").textContent)&&/bez uvećanja visina/.test($(w,"skicaOut").textContent),"Skica, 3D: blok terena s dva vidljiva boka, područje za gradnju, čestica, kuća (4 zida) i dvostrešni krov (2 plohe, 2 zabata)");}
+  TL.sljeme="pop"; E("skicaRender")(); ok(/sljeme \+8,89/.test($(w,"skicaOut").textContent),"Sljeme uzduž kraće strane: presjek uz sljeme, sljeme 6 + tg30° × 10/2 = +8,89 m");
+  ok(errs.length===0,"bez JS grešaka (skica): "+errs.join(" | "));
+}
 async function gpTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
   const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"90/1",KATASTARSKA_OPCINA:"REMETE"}), T=w.turf;
@@ -1431,7 +1449,7 @@ async function gpTests(){
   ok(errs.length===0,"bez JS grešaka (područje za gradnju): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
