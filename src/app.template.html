@@ -5375,7 +5375,7 @@ sheet.addEventListener("scroll",()=>{const b=document.getElementById("izbTop"); 
 // odmah nakon slaganja prikaza: sklapanje pojašnjenja, kategorije izbornika i sažetak (prije vraćanja položaja čitanja)
 // promjena sadržaja iznad mjesta čitanja ne smije pomaknuti tekst koji se čita (Safari nema „scroll anchoring”)
 function keepPos(fn){ const A=sheet.scrollTop>0?scrollAnchor():null; fn(); if(A) scrollRestore(A); }
-function sheetPost(){ try{viseInfo()}catch(e){} try{izbWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){} }
+function sheetPost(){ try{srchNote()}catch(e){} try{viseInfo()}catch(e){} try{izbWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){} }
 // položaj čitanja: zadnji odjeljak čiji je vrh iznad vrha panela i koliko je pomaknut; poslije ponovnog prikaza isti odjeljak
 // vraća se na isto mjesto, i kad se visina sadržaja iznad promijeni (npr. stigne uložak ili se sklope pojašnjenja)
 function scrollAnchor(){
@@ -6390,6 +6390,9 @@ function pwaGpsNote(){
 }
 
 // --- pretraga adrese (Nominatim, Zagreb; naselja otoka Krka u obuhvatu otoka)
+const SRCH={note:null,ll:null};
+function srchNote(){ const n=SRCH.note, d=curData(); if(!n||!d||!d.ll||!SRCH.ll||Math.abs(d.ll.lat-SRCH.ll.lat)>1e-9||Math.abs(d.ll.lng-SRCH.ll.lng)>1e-9) return;
+  if(document.getElementById("srchNote")) return; const b=document.createElement("p"); b.className="flag"; b.id="srchNote"; b.innerHTML=n.txt; sheet.insertBefore(b,sheet.firstChild); }
 const KRK_MJESTA=/\b(KRK|MALINSKA|BASKA|PUNAT|OMISALJ|NJIVICE|VRBNIK|DOBRINJ|SILO|KORNIC|PINEZICI|KOSTERNA|BRZAC|LINARDICI|GARICA|SVETI VID|KLIMNO|SOLINE|RISIKA|STARA BASKA|DRAGA BASCANSKA|JURANDVOR|BATOMALJ|CIZICI|NENADICI|LUKEZIC|MILOHNICI)\b/;
 async function search(){
   const q=document.getElementById("q").value.trim(); if(!q) return;
@@ -6399,10 +6402,14 @@ async function search(){
   try{
     // pilot Krk: naselja na otoku traže se u obuhvatu otoka, sve ostalo u Zagrebu
     const krk=KRK_MJESTA.test(norm(q));
-    const p=new URLSearchParams(krk?{q,format:"json",limit:"1",countrycodes:"hr",viewbox:"14.40,45.26,14.90,44.86",bounded:"1"}:{q:q+", Zagreb",format:"json",limit:"1",countrycodes:"hr",viewbox:"15.75,46.0,16.25,45.6",bounded:"1"});
+    const p=new URLSearchParams(krk?{q,format:"json",limit:"8",addressdetails:"1",countrycodes:"hr",viewbox:"14.40,45.26,14.90,44.86",bounded:"1"}:{q:q+", Zagreb",format:"json",limit:"8",addressdetails:"1",countrycodes:"hr",viewbox:"15.75,46.0,16.25,45.6",bounded:"1"});
     const a=await getJSON("https://nominatim.openstreetmap.org/search?"+p.toString());
     if(!a[0]){sheet.innerHTML='<p class="err">Adresa nije pronađena. Probaj drukčije napisati ili dodirni kartu.</p>';return}
-    const ll=L.latLng(+a[0].lat,+a[0].lon); map.setView(ll,18); inspect(ll);
+    // kućni broj: OpenStreetMap nema sve kućne brojeve; bez točnog broja vraća ulicu (često daleko od kuće), pa to treba reći
+    const kb=(q.match(/\b(\d{1,4}\s?[a-zA-Z]?)\b(?!\s*\/)/)||[])[1], kbN=kb?kb.replace(/\s/g,"").toLowerCase():null;
+    const hit=kbN?a.find(x=>x.address&&String(x.address.house_number||"").replace(/\s/g,"").toLowerCase()===kbN):null, best=hit||a[0];
+    SRCH.note=kbN&&!hit?{q,txt:`Kućni broj ${kb} nije pronađen u OpenStreetMapu, pa je prikazana čestica uz ${esc(best.address&&best.address.road?best.address.road:"ulicu")} (točka ulice, ne kuće). To može biti i stotinjak metara od tvoje kuće: približi kartu i dodirni svoju kuću ili upiši broj čestice.`}:null;
+    const ll=L.latLng(+best.lat,+best.lon); SRCH.ll=ll; map.setView(ll,SRCH.note?17:18); inspect(ll);
   }catch(e){sheet.innerHTML='<p class="err">Pretraga nije uspjela: '+esc(e.message)+'</p>'}
 }
 document.getElementById("go").onclick=search;

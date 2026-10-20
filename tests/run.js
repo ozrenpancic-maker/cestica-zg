@@ -1245,6 +1245,13 @@ async function krkTests(){
   ok(nomi&&nomi.searchParams.get("viewbox")==="14.40,45.26,14.90,44.86"&&!/Zagreb/.test(nomi.searchParams.get("q")),"pretraga 'Kornić 12' traži na otoku Krku");
   w.document.getElementById("q").value="Ilica 1"; await E("search")();
   ok(/Zagreb/.test(nomi.searchParams.get("q")),"pretraga 'Ilica 1' i dalje traži u Zagrebu");
+  // kućni broj: odabire se rezultat s istim kućnim brojem; ako ga nema, napomena da je prikazana ulica
+  {const ulica={lat:"45.0300",lon:"14.6000",class:"highway",type:"residential",address:{road:"Ulica Ledine",village:"Kornić"}}, kuca={lat:"45.0291",lon:"14.5952",class:"place",type:"house",address:{road:"Ulica Ledine",house_number:"31",village:"Kornić"}};
+   let res=[ulica,kuca]; w.fetch=(u)=>{u=String(u); if(u.includes("nominatim")){nomi=new URL(u); return okj(res)} return Promise.reject(new Error("x"))};
+   w.document.getElementById("q").value="Ledine 31 Kornić"; await E("search")(); await tick(20);
+   const c1=E("SRCH").ll; ok(nomi.searchParams.get("addressdetails")==="1"&&Math.abs(c1.lat-45.0291)<1e-6&&!E("SRCH").note,"pretraga: od više rezultata odabire se onaj s istim kućnim brojem (31)");
+   res=[ulica]; w.document.getElementById("q").value="Ledine 31, Kornić"; await E("search")(); await tick(20);
+   ok(Math.abs(E("SRCH").ll.lat-45.03)<1e-6&&/Kućni broj 31 nije pronađen u OpenStreetMapu/.test(E("SRCH").note.txt)&&/Ulica Ledine/.test(E("SRCH").note.txt),"pretraga: kad OpenStreetMap nema kućni broj, napomena da je prikazana točka ulice, ne kuće");}
   // stanje servisa uključuje izvore za Krk
   const sl=E("serviceList")().map(x=>x.n).join("|"); ok(/Krk: katastarske čestice/.test(sl)&&/Krk: namjena/.test(sl)&&/Krk: evidencija/.test(sl),"stanje servisa provjerava i izvore za Krk");
   ok(errs.length===0,"bez JS grešaka u pilotu Krk: "+errs.join(" | "));
