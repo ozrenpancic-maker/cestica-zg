@@ -169,6 +169,7 @@ details p{font-size:13.5px;margin:6px 0}
 .saz-b i{flex:0 0 24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:700;font-size:13px;margin-top:1px}
 .saz-ok i{background:var(--ok-bg);color:var(--ok)}.saz-warn i,.saz-q i{background:var(--warn-bg);color:var(--warn)}.saz-no i{background:var(--no-bg);color:var(--no)}
 .saz-b span{flex:1;min-width:0}.saz-b b{display:block;font-size:14.5px}.saz-b small{display:block;color:var(--muted);font-size:13px;margin-top:1px;line-height:1.35}
+.saz-b small.saz-src{font-size:11.5px;opacity:.8;margin-top:2px}
 .saz-b em{font-style:normal;color:var(--muted);font-size:20px;line-height:1;margin-top:2px}
 .saz-c{all:unset;cursor:pointer;display:block;margin:8px 2px 0;font-size:13px;color:var(--warn);font-weight:600}
 .pog>.acc-body>h2:first-child{display:none}
@@ -1286,6 +1287,36 @@ async function krkOssFetch(P,area){
   try{const c=turf.pointOnFeature(KRK_CUR.parcel).geometry.coordinates; katwFetchInto(k,c[1],c[0],upd);}catch(e){}
   return ossFetchInto(k,P,null,upd);
 }
+// ================= OKOLIŠ: EKOLOŠKA MREŽA NATURA 2000 (i poplave, kad se potvrdi servis) =================
+// Natura 2000: Europska agencija za okoliš (EEA), granice područja koje dostavljaju države članice (za Hrvatsku Ministarstvo
+// zaštite okoliša i zelene tranzicije / Bioportal). ArcGIS sloj 2 „Habitats and Birds Directive Sites”: SITECODE, SITENAME,
+// SITETYPE (A = POP, područje očuvanja značajno za ptice; B = POVS, za vrste i stanišne tipove; C = oboje), RELEASE_DATE.
+const NATURA_URL="https://bio.discomap.eea.europa.eu/arcgis/rest/services/ProtectedSites/Natura2000Sites/MapServer/2/query";
+const OKO=new Map();
+const NAT_TIP={A:"POP – područje očuvanja značajno za ptice",B:"POVS – područje očuvanja značajno za vrste i stanišne tipove",C:"POP i POVS"};
+async function loadNatura(parcel){
+  const f=await polyQuery(NATURA_URL,parcel.geometry,"SITECODE,SITENAME,SITETYPE,RELEASE_DATE,MS",false);
+  return f.map(x=>x.properties||{}).filter(p=>!p.MS||p.MS==="HR").map(p=>({kod:p.SITECODE,ime:p.SITENAME,tip:p.SITETYPE,datum:p.RELEASE_DATE}));
+}
+function okolisStart(parcel,key){
+  if(!parcel||!key||OKO.has(key)) return; const st={natura:{st:"load"}}; OKO.set(key,st);
+  loadNatura(parcel).then(v=>{st.natura={st:"ok",v}}).catch(e=>{st.natura={st:"err",e:e.message||"servis ne odgovara"}; setTimeout(()=>{if(OKO.get(key)===st) OKO.delete(key)},30000);}).finally(okolisRefresh);
+}
+function okolisInner(){
+  const key=window.__cur&&window.__cur.key, st=key&&OKO.get(key); if(!st) return "";
+  const N=st.natura; let h=`<ul class="checks" style="margin-top:6px">`;
+  if(N.st==="load") h+=`<li class="chk chk-warn"><b>Ekološka mreža Natura 2000</b><span><span class="spin"></span>provjeravam…</span></li>`;
+  else if(N.st==="err"){ pzSet("oko-natura","Ekološka mreža Natura 2000",null,pz("C",{razlog:"servis EEA nije odgovorio",provjera:"Bioportal (bioportal.hr), upravno tijelo za zaštitu prirode"}));
+    h+=`<li class="chk chk-warn"><b>? Ekološka mreža Natura 2000</b><span>Podaci nisu dostupni (${esc(N.st==="err"?N.e:"")}). Provjeri na Bioportalu.</span></li>`; }
+  else if(!N.v.length){ const p=pzSet("oko-natura","Ekološka mreža Natura 2000","izvan",pz("A",{izvor:"EEA, Natura 2000 (podaci Republike Hrvatske)",obuhvat:"presjek s česticom",datum:pzDan()}));
+    h+=`<li class="chk chk-ok"><b>✓ Izvan ekološke mreže Natura 2000 ${pzTag(p)}</b><span>Čestica nije u području ekološke mreže.</span></li>`; }
+  else { const p=pzSet("oko-natura","Ekološka mreža Natura 2000",N.v.map(x=>x.kod).join(", "),pz("A",{izvor:"EEA, Natura 2000 (podaci Republike Hrvatske)",obuhvat:"presjek s česticom",datum:pzDan()}));
+    h+=`<li class="chk chk-warn"><b>! U ekološkoj mreži Natura 2000 ${pzTag(p)}</b><span>${N.v.map(x=>`${esc(x.ime||"")} (${esc(x.kod||"")}, ${esc(NAT_TIP[x.tip]||x.tip||"")})`).join("; ")}. Za zahvate u ekološkoj mreži može biti potrebna ocjena prihvatljivosti za ekološku mrežu (Zakon o zaštiti prirode); provjeri s nadležnim upravnim tijelom prije projektiranja.</span></li>`; }
+  h+=`</ul><p class="meta">Natura 2000: Europska agencija za okoliš (EEA), granice područja koje dostavlja Republika Hrvatska${N.st==="ok"&&N.v[0]&&N.v[0].datum?", stanje "+esc(new Date(N.v[0].datum).toLocaleDateString("hr-HR")):""}. Pregled na <a href="https://www.bioportal.hr/gis/" target="_blank" rel="noopener">Bioportalu</a>.</p>`;
+  return h;
+}
+function okolisRefresh(){const b=document.getElementById("okolisBox"); if(!b) return; const nh=okolisInner(); if(b.innerHTML!==nh) keepPos(()=>{b.innerHTML=nh;});}
+
 // --- ZK uložak iz javnog uvida OSS-a (sažetak posrednika): posjedovnica I i II, vlastovnica bez osoba, teretovnica, plomba
 // tekst upisa: posrednik šalje običan tekst s novim redovima; HTML koji bi ipak stigao (stara verzija) uklanja se
 const zkTxt=t=>esc(String(t||"").replace(/<br\s*\/?>/gi,"\n").replace(/<[^>]*>/g,"").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/[ \t]+/g," ").trim()).replace(/\n\s*\n+/g,"<br>").replace(/\n/g," "); // dvostruki prijelom = novi odlomak; jednostruki (OSS ga stavlja usred rečenice) = razmak
@@ -1978,6 +2009,7 @@ function renderKrk(d){
     h+=`<ul class="checks" style="margin-top:6px"><li class="chk chk-${sev}"><b>Teren</b><span>Nadmorska visina oko ${s.h} m, nagib u okolini oko ${Math.round(s.slope)} %, pada prema ${s.down}u.${s.slope>=20?" Strm teren: računaj s potpornim zidovima i skupljim temeljima.":s.slope>=10?" Umjereno strm teren.":""}</span></li></ul><p class="meta">Nagib je iz modela visina rezolucije oko 90 m.</p>`;}
   else if(slope&&slope.e) h+=`<p class="meta">Nagib terena: Podaci nisu dostupni (${esc(slope.e)}).</p>`;
   else if(!env) h+=`<p class="hint"><span class="spin"></span>Učitavam teren, pristup i infrastrukturu…</p>`;
+  if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`;
   h+=naHtml("Klizišta, poplave, zaštita i druga ograničenja","Za Zagreb aplikacija provjerava gradske slojeve ograničenja; za Krk takvi slojevi još nisu uključeni. Ograničenja provjeri u prostornom planu (popis ispod) i lokacijskom informacijom.");
   h+=krkInfraHtml(env?d.ski||{e:"nije učitano"}:null);
   h+=env?envHtml(env):envHtml(null);
@@ -2018,7 +2050,7 @@ function renderKrk(d){
   sheet.querySelectorAll("details[data-k]").forEach(dd=>{if(OPEN.has(dd.dataset.k)) dd.open=true});
   sheetPost(); scrollRestore(keepScroll); krkKdUpdate();
   if(parcel){ window.__areaCtx={key:window.__cur.key,refresh:()=>renderKrk(KRK_CUR),retry:()=>{OSSZK.delete(String(P.cid)); KATW.delete(String(P.cid)); krkOssFetch(P,area);}};
-    try{finUpdate()}catch(err){console.error(err)} if(TL.layer){TL.zones=null; tDraw();} if(OPEN.has("sun")) sunDraw(); krkOssFetch(P,area); zkOssRefresh(String(P.cid)); rkStart({parcel,ll,region:"krk",pl}); }
+    try{finUpdate()}catch(err){console.error(err)} if(TL.layer){TL.zones=null; tDraw();} if(OPEN.has("sun")) sunDraw(); krkOssFetch(P,area); zkOssRefresh(String(P.cid)); okolisStart(parcel,window.__cur.key); rkStart({parcel,ll,region:"krk",pl}); }
   else window.__areaCtx=null;
   try{PWA.loadedAt=Date.now(); if(parcel) pwaRememberParcel(); pwaNetUI();}catch(e){}
   if(isMobile()){ if(!UI.hadParcel&&parcel){UI.hadParcel=true; if(UI.state==="peek") setState("half"); else setState(UI.state,{keepScroll:true});} else setState(UI.state,{keepScroll:true}); }
@@ -3523,6 +3555,7 @@ function render(d){
     else if(!hits.length) h+=`<p class="verdict v-warn" style="margin:6px 0">Provjere nisu uspjele jer servisi ne odgovaraju. To ne znači da ograničenja nema; pokušaj ponovno kasnije.</p>`;
     if(slope&&slope.v){const s=slope.v, sev=s.slope>=20?"no":s.slope>=10?"warn":"ok";
       h+=`<ul class="checks" style="margin-top:6px"><li class="chk chk-${sev}"><b>Teren</b><span>Nadmorska visina oko ${s.h} m, nagib u okolini oko ${Math.round(s.slope)} %, pada prema ${s.down}u.${s.slope>=20?" Strm teren: računaj s potpornim zidovima, skupljim temeljima i geotehničkim elaboratom.":s.slope>=10?" Umjereno strm teren: moguć podrum ili suteren, ali i veći trošak iskopa.":""}</span></li></ul><p class="meta">Nagib je iz modela visina rezolucije oko 90 m, pa ne vidi lokalne strmine na samoj čestici.</p>`;}
+    if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`;
     if(clear.length) h+=`<details><summary>Što je provjereno i čisto (${clear.length})</summary><ol>${clear.map(t=>`<li>${esc(t)}</li>`).join("")}</ol></details>`;
     if(errs.length) h+=`<p class="err">Nisu odgovorili: ${esc(errs.join(", "))}. <button type="button" class="ib retry">Pokušaj ponovno</button></p>`;
   }
@@ -3682,7 +3715,7 @@ function render(d){
   restoreMap();
   sheet.innerHTML=h;
   restoreInputs(snap);
-  if(parcel){const k=favKey(parcel,ll); window.__areaCtx={key:k,refresh:()=>{const el=document.getElementById("zgArea"); if(el) el.innerHTML=krkAreaHtml(zgAreaP(parcel,k),area); areaCmpRefresh();},retry:()=>{OSSZK.delete("zg:"+k); KATW.delete("zg:"+k); zgOssFetch(parcel,k,area);}}; zgOssFetch(parcel,k,area); zkOssRefresh(zgAreaP(parcel,k).cid);}
+  if(parcel){const k=favKey(parcel,ll); window.__areaCtx={key:k,refresh:()=>{const el=document.getElementById("zgArea"); if(el) el.innerHTML=krkAreaHtml(zgAreaP(parcel,k),area); areaCmpRefresh();},retry:()=>{OSSZK.delete("zg:"+k); KATW.delete("zg:"+k); zgOssFetch(parcel,k,area);}}; zgOssFetch(parcel,k,area); zkOssRefresh(zgAreaP(parcel,k).cid); okolisStart(parcel,k);}
   else window.__areaCtx=null;
   if(parcel) rkStart({parcel,ll,region:"zg",rows});
   if(!snap&&window.__cur) projApplyHouse(window.__cur.key);
@@ -4588,24 +4621,29 @@ function sazetakUpdate(){
   const P=window.__prek||[], pr=id=>P.find(x=>x.id===id), rows=[];
   // 1. smije li se graditi
   {const v=g.querySelector(".verdict"), cls=v?(v.classList.contains("v-no")?"no":v.classList.contains("v-warn")?"warn":"ok"):"?", zap=P.filter(x=>x.stanje==="no");
-   const st=zap.length?"no":cls; rows.push({st,q:"Smije li se graditi?",a:(tx(v).replace(/ Čestica je u više zona, vidi udjele\./,"").slice(0,90)||"Podaci nisu dostupni")+(zap.length?" Zapreka: "+zap.map(x=>x.naziv).join(", ")+".":""),go:'.prek, #sec-uvjeti'});}
+   const st=zap.length?"no":cls; rows.push({src:["namjena","ot-upu"],st,q:"Smije li se graditi?",a:(tx(v).replace(/ Čestica je u više zona, vidi udjele\./,"").slice(0,90)||"Podaci nisu dostupni")+(zap.length?" Zapreka: "+zap.map(x=>x.naziv).join(", ")+".":""),go:'.prek, #sec-uvjeti'});}
   // 2. koliko velika kuća
-  {const c=sumB("calc"), G=window.__gp; rows.push({st:c?(/premala|nije dovoljna|ne zadovoljava/i.test(c)?"no":"ok"):"?",q:"Koliko velika kuća?",a:(c||"Izračun još nije dostupan")+(G&&G.area?` · područje za gradnju ${fmt(G.area)} m²`:""),go:'details[data-k="calc"]'});}
+  {const c=sumB("calc"), G=window.__gp; rows.push({src:["pravilo","gp-podrucje"],st:c?(/premala|nije dovoljna|ne zadovoljava/i.test(c)?"no":"ok"):"?",q:"Koliko velika kuća?",a:(c||"Izračun još nije dostupan")+(G&&G.area?` · područje za gradnju ${fmt(G.area)} m²`:""),go:'details[data-k="calc"]'});}
   // 3. tereti (ZK)
   {const k=String(d.krk?d.parcel.properties.cid:(window.__cur&&window.__cur.key?zgAreaP(d.parcel,window.__cur.key).cid:"")), U=ZKU.get(k)||(OSSZK.get(k)&&OSSZK.get(k).d&&OSSZK.get(k).d.ulosci);
-   if(U&&U.length){const c=U.reduce((a,u)=>a+(u.C&&u.C.upisa||0),0), pl=U.some(u=>u.plomba); rows.push({st:pl?"no":c?"warn":"ok",q:"Ima li tereta?",a:(pl?"Plomba (upis u tijeku). ":"")+(c?`Teretovnica: ${c} ${c===1?"upis":"upisa"}`:"Teretovnica bez upisa")+` · javni uvid OSS, uložak ${U.map(u=>u.ulozak).join(", ")}`,go:'details[data-k="zk"]'});}
+   if(U&&U.length){const c=U.reduce((a,u)=>a+(u.C&&u.C.upisa||0),0), pl=U.some(u=>u.plomba); rows.push({src:U.map(u=>"zk-ulozak"+(u.ulozak||"")),st:pl?"no":c?"warn":"ok",q:"Ima li tereta?",a:(pl?"Plomba (upis u tijeku). ":"")+(c?`Teretovnica: ${c} ${c===1?"upis":"upisa"}`:"Teretovnica bez upisa")+` · javni uvid OSS, uložak ${U.map(u=>u.ulozak).join(", ")}`,go:'details[data-k="zk"]'});}
    else rows.push({st:"?",q:"Ima li tereta?",a:OSSZK.get(k)&&OSSZK.get(k).st==="load"?"Dohvaćam iz OSS-a…":"Podaci nisu dostupni; provjeri ZK izvadak.",go:'details[data-k="zk"]'});}
   // 4. pristup i komunalije
   {const a=pr("ot-pristup"), k=pr("ot-komunalno"), st=[a,k].some(x=>x&&x.stanje==="no")?"no":[a,k].some(x=>x&&(x.stanje==="warn"||x.stanje==="?"))?"warn":a||k?"ok":"?";
    const first=x=>x?String(x.tekst).split(/(?<=\.)\s/)[0].replace(/\.$/,""):"";
-   rows.push({st,q:"Pristup i komunalije",a:[first(a),k?String(k.tekst).split(". ")[0]:""].filter(Boolean).join(" · ")||"Podaci nisu dostupni",go:'#sec-uvjeti'});}
+   rows.push({src:["ot-pristup","ot-komunalno"],st,q:"Pristup i komunalije",a:[first(a),k?String(k.tekst).split(". ")[0]:""].filter(Boolean).join(" · ")||"Podaci nisu dostupni",go:'#sec-uvjeti'});}
   // 5. trošak
   {const F=window.__fin; let a, st="?";
    if(F&&F.total&&F.total.base){a=`${F.total.hasBuy?"Ukupno sa zemljištem":"Gradnja s naknadama"}: ${fmt(F.total.lo)}–${fmt(F.total.hi)} € (procjena)`; st="ok";}
    else a=d.krk?"Procjena cijene gradnje za Krk nije dostupna; komunalni doprinos je u „Troškovima”.":"Postavi kuću u simulatoru ili upiši površinu u procjeni gradnje.";
-   rows.push({st,q:"Koliko bi koštalo?",a,go:d.krk?'details[data-k="krkKd"]':'details[data-k="total"], details[data-k="build"]'});}
+   rows.push({srcTxt:F&&F.total&&F.total.base?"procjena aplikacije prema cjenicima 2026. (B)":"",st,q:"Koliko bi koštalo?",a,go:d.krk?'details[data-k="krkKd"]':'details[data-k="total"], details[data-k="build"]'});}
+  // 6. priroda (Natura 2000); poplave se dodaju kad se potvrdi servis Hrvatskih voda
+  {const key=window.__cur&&window.__cur.key, O=key&&OKO.get(key), N=O&&O.natura;
+   rows.push({src:["oko-natura"],st:!N||N.st!=="ok"?"?":N.v.length?"warn":"ok",q:"Priroda i poplave",a:(!N||N.st==="load"?"Provjeravam ekološku mrežu…":N.st==="err"?"Natura 2000: podaci nisu dostupni":N.v.length?"U ekološkoj mreži Natura 2000: "+N.v.map(x=>x.ime).join(", ")+"; može biti potrebna ocjena prihvatljivosti":"Izvan ekološke mreže Natura 2000")+" · poplave: provjera još nije uključena",go:"#okolisBox"});}
   const C=[...PZREG.items.values()].filter(x=>x.raz==="C").length, ic={ok:"✓",warn:"!",no:"✕","?":"?"};
-  const h=`<p class="eyebrow" style="margin:0 0 4px">Sažetak</p><ul class="saz-l">${rows.map(r=>`<li class="saz-${r.st==="?"?"q":r.st}"><button type="button" class="saz-b" data-saz="${esc(r.go)}"><i aria-hidden="true">${ic[r.st]}</i><span><b>${esc(r.q)}</b><small>${esc(r.a)}</small></span><em aria-hidden="true">›</em></button></li>`).join("")}</ul>`+
+  const srcOf=r=>{ if(r.srcTxt) return r.srcTxt; const its=(r.src||[]).map(id=>PZREG.items.get(id)).filter(Boolean); if(!its.length) return "";
+    const seen=new Set(); return its.map(it=>{const t=(it.izvor||it.razlog||"").replace(/\s+/g," ").slice(0,90); const k=t+it.raz; if(seen.has(k)) return null; seen.add(k); return `${t}${it.datum?", "+it.datum.split("-").reverse().join(". ")+".":""} (${it.raz})`;}).filter(Boolean).join(" · "); };
+  const h=`<p class="eyebrow" style="margin:0 0 4px">Sažetak</p><ul class="saz-l">${rows.map(r=>`<li class="saz-${r.st==="?"?"q":r.st}"><button type="button" class="saz-b" data-saz="${esc(r.go)}"><i aria-hidden="true">${ic[r.st]}</i><span><b>${esc(r.q)}</b><small>${esc(r.a)}</small>${srcOf(r)?`<small class="saz-src">${esc(srcOf(r))}</small>`:""}</span><em aria-hidden="true">›</em></button></li>`).join("")}</ul>`+
     (C?`<button type="button" class="saz-c" data-saz="#sec-pouzdanost">Prije kupnje provjeri ${C} ${C===1?"stavku označenu":"stavki označenih"} s C ›</button>`:"");
   if(box.dataset.h!==h){keepPos(()=>{box.innerHTML=h; box.dataset.h=h;});}
   const cards=g.querySelector(".cards"); if(cards) cards.style.display="none"; // stare kartice sažetka zamijenio je ovaj sažetak

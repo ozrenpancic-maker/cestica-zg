@@ -481,7 +481,7 @@ async function sunTests(){
   ok(Math.abs(sp(zd("2026-06-21",9),45.815,15.98).az-90)<25&&Math.abs(sp(zd("2026-06-21",17),45.815,15.98).az-270)<25,"ujutro je Sunce na istoku, popodne na zapadu");
   // elektrana: zračenje 100 W/m² svaki sat
   let called=0;
-  w.fetch=(u)=>{called++; const t=[],v=[]; for(const y of [2023,2024,2025]){const n=(y===2024?366:365)*24; for(let i=0;i<n;i++){const d=new Date(Date.UTC(y,0,1)+i*3600e3); t.push(d.toISOString().slice(0,13)+":00"); v.push(100);}}
+  w.fetch=(u)=>{if(!/open-meteo/.test(String(u))) return Promise.reject(new Error("bez mreže u testu")); called++; const t=[],v=[]; for(const y of [2023,2024,2025]){const n=(y===2024?366:365)*24; for(let i=0;i<n;i++){const d=new Date(Date.UTC(y,0,1)+i*3600e3); t.push(d.toISOString().slice(0,13)+":00"); v.push(100);}}
     ok(/tilt=30/.test(u)&&/azimuth=0/.test(u)&&/global_tilted_irradiance/.test(u),"zahtjev za zračenje šalje nagib i orijentaciju");
     return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({hourly:{time:t,global_tilted_irradiance:v}})})};
   const r=await w.eval("pvFetch")(45.8,15.98,30,0);
@@ -1437,9 +1437,13 @@ async function skicaTests(){
 async function sazTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
   const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"96/1",KATASTARSKA_OPCINA:"REMETE"}), d=data(w,A,"2.2.");
+  let natBody=null; w.fetch=(u,o)=>{u=String(u); if(/Natura2000Sites\/MapServer\/2\/query/.test(u)){natBody=o&&o.body; return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({type:"FeatureCollection",features:[{type:"Feature",properties:{SITECODE:"HR2000583",SITENAME:"Medvednica",SITETYPE:"B",RELEASE_DATE:1735689600000,MS:"HR"}}]})});}
+    return Promise.reject(new Error("bez mreže u testu"));};
   w.__env=d.envelope; E("render")(d); await tick(80);
+  {const t=txt(w,"okolisBox"); ok(/U ekološkoj mreži Natura 2000/.test(t)&&/Medvednica \(HR2000583, POVS/.test(t)&&/ocjena prihvatljivosti/.test(t)&&E("PZREG").items.get("oko-natura").raz==="A"&&/esriSpatialRelIntersects/.test(decodeURIComponent(natBody||"")),"Natura 2000: presjek čestice sa slojem EEA; područje, kod i vrsta (POVS), oznaka A");}
   const S=$(w,"sazetak"), rows=S?[...S.querySelectorAll(".saz-b")]:[];
-  ok(rows.length===5&&/Smije li se graditi\?/.test(S.textContent)&&/Koliko velika kuća\?/.test(S.textContent)&&/tlocrt do/.test(rows[1].textContent)&&/Ima li tereta\?/.test(S.textContent)&&/Koliko bi koštalo\?/.test(S.textContent),"Sažetak: pet odgovora na vrhu analize (gradnja, veličina, tereti, pristup, trošak)");
+  ok(rows.length===6&&/Smije li se graditi\?/.test(S.textContent)&&/Koliko velika kuća\?/.test(S.textContent)&&/tlocrt do/.test(rows[1].textContent)&&/Ima li tereta\?/.test(S.textContent)&&/Koliko bi koštalo\?/.test(S.textContent),"Sažetak: šest odgovora na vrhu analize (gradnja, veličina, tereti, pristup, trošak, priroda), uz izvor");
+  ok(/Grad Zagreb, GIS baza planirane namjene/.test(rows[0].textContent)&&/\(A\)/.test(rows[0].textContent)&&/Medvednica/.test(rows[5].textContent),"Sažetak: uz odgovor izvor i oznaka pouzdanosti; Natura 2000 u retku „Priroda i poplave”");
   const P=[...w.document.querySelectorAll("details.pog")].map(x=>x.querySelector("summary span").textContent);
   ok(P.includes("Uvjeti gradnje")&&P.some(t=>/^Rizici/.test(t))&&P.includes("Pouzdanost podataka")&&[...w.document.querySelectorAll("details.pog")].every(x=>!x.open),"Poglavlja analize su sklopljene kartice (uvjeti gradnje, rizici, pouzdanost…)");
   rows[1].dispatchEvent(new w.Event("click",{bubbles:true})); await tick(60);
