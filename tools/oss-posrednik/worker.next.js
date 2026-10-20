@@ -72,7 +72,17 @@ function tmFwd(lon, lat) {
   return [E, Nn];
 }
 const WMS = "https://wms1-gs-oss.uredjenazemlja.hr/ows2-m/wms";
-const UA = { "User-Agent": "CesticaHR/1.0 (+https://ozrenpancic-maker.github.io/cestica-zg/)" };
+// OSS povremeno odbija upite koji ne izgledaju kao upiti njegove stranice (HTTP 403). Zaglavlja su ona koja šalje i OSS-ova
+// stranica (jezik, izvor, vrsta upita); posrednik se i dalje predstavlja svojim imenom u User-Agentu.
+const UA = { "User-Agent": "Mozilla/5.0 (compatible; CesticaHR/1.0; +https://ozrenpancic-maker.github.io/cestica-zg/)",
+  "Accept-Language": "hr-HR,hr;q=0.9,en;q=0.5", "Referer": "https://oss.uredjenazemlja.hr/", "Origin": "https://oss.uredjenazemlja.hr" };
+// jedan ponovni pokušaj u posredniku nakon kratke stanke kad OSS odbije (403, 429) ili ne odgovori (5xx); ukupno najviše dva upita
+const spavaj = ms => new Promise(r => setTimeout(r, ms));
+async function ossFetch(u, h) {
+  let r = await fetch(u, { headers: { ...h, ...UA }, signal: AbortSignal.timeout(12000) });
+  if (r.status === 403 || r.status === 429 || r.status >= 500) { await spavaj(900 + Math.floor(Math.random() * 900)); r = await fetch(u, { headers: { ...h, ...UA }, signal: AbortSignal.timeout(12000) }); }
+  return r;
+}
 // katastarska čestica na točki: isti sloj koji OSS koristi kad se klikne na kartu (WMS GetFeatureInfo)
 async function cesticaNaTocki(lat, lon) {
   const [E, N] = tmFwd(lon, lat), d = 1;
@@ -86,7 +96,7 @@ async function cesticaNaTocki(lat, lon) {
 }
 async function parcelInfo(id) {
   // bez ponavljanja ovdje: ponovni pokušaj radi aplikacija, da OSS ne dobiva niz upita
-  const r = await fetch(OSS + id, { headers: { "Accept": "application/json, text/xml;q=0.5", ...UA }, signal: AbortSignal.timeout(12000) }), last = null;
+  const r = await ossFetch(OSS + id, { "Accept": "application/json, text/plain, */*" }), last = null;
   if (r.status === 404 || r.status === 204) return { status: 404 };
   if (!r.ok) return { status: 502, greska: "OSS HTTP " + (last || r.status) };
   const txt = await r.text(); let d;
@@ -133,9 +143,14 @@ function sazmiUlozak(u) {
 async function ulozak(broj, mb) {
   if (!/^\d{1,12}$/.test(String(broj)) || !/^\d{1,12}$/.test(String(mb))) return null;
   const q = new URLSearchParams({ lrUnitNumber: String(broj), mainBookId: String(mb), historicalOverview: "false" });
-  const r = await fetch(OSS_LR + "?" + q, { headers: { Accept: "application/json", ...UA }, signal: AbortSignal.timeout(12000) });
+  // isti uložak dijeli više čestica: sažetak se pamti po broju uloška i glavnoj knjizi (manje upita prema OSS-u)
+  const cache = caches.default, ck = new Request("https://cache.local/oss-ul/" + mb + "/" + broj), hit = await cache.match(ck);
+  if (hit) return await hit.json();
+  const r = await ossFetch(OSS_LR + "?" + q, { Accept: "application/json, text/plain, */*" });
   if (!r.ok) throw new Error("OSS uložak HTTP " + r.status);
-  return sazmiUlozak(await r.json());
+  const o = sazmiUlozak(await r.json());
+  if (o) await cache.put(ck, new Response(JSON.stringify(o), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_S } }));
+  return o;
 }
 
 export default {
