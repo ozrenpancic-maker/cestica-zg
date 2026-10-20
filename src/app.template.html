@@ -774,6 +774,8 @@ const SRC_KRK={
   planovi:PGZ+"IZRADA_PP/FeatureServer/0/query",
   // posrednik prema javnom OSS-u za upisanu (ZK) površinu; prazno = isključeno (tools/oss-posrednik)
   oss:"https://cestica-oss.ozren-pancic.workers.dev/",
+  // rezervni posrednik (Deno Deploy, drugi IP-jevi): pita se jednom, samo kad prvi javi blok/403, mrežnu grešku ili grešku poslužitelja
+  oss2:"https://cestica-oss.ozrenpancic-maker.deno.net/",
 };
 
 // --- HTRS96/TM (EPSG:3765): poprečna Merkatorova projekcija, GRS80, srednji meridijan 16,5°, k0 0,9999, E0 500 000 m.
@@ -1333,16 +1335,22 @@ const OSSZK=new Map();
 function krkOssGet(P){return SRC_KRK.oss&&P&&P.cid!=null?OSSZK.get(String(P.cid))||null:null}
 // OSS povremeno odbije upit posrednika (HTTP 403); jedan ponovni pokušaj, da se OSS ne opterećuje
 const OSS_RETRY=[3000], OSS_UL_RETRY=[3000,8000];
-async function krkOssOnce(P,k,q,ul){
+async function krkOssJedan(base,P,k,q,ul){
   const ac=new AbortController(), t=setTimeout(()=>ac.abort(),20000);
   // posrednik šalje „max-age=3600”: bez no-store preglednik bi sat vremena vraćao isti (i neuspjeli) odgovor
   // „ulozak=1”: posrednik uz površinu vraća i sažetak ZK uloška (A I, A II, udjeli bez osoba, teretovnica, plomba), ako to podržava
-  try{const r=await fetch(SRC_KRK.oss+"?"+(q||"id="+encodeURIComponent(k))+(ul?"&ulozak=1":""),{signal:ac.signal,cache:"no-store"}); const j=await r.json().catch(()=>null);
+  try{const r=await fetch(base+"?"+(q||"id="+encodeURIComponent(k))+(ul?"&ulozak=1":""),{signal:ac.signal,cache:"no-store"}); const j=await r.json().catch(()=>null);
     if(r.ok&&j&&j.ok) return j.broj&&P.broj&&j.broj!==P.broj?{st:"err",e:"OSS je na ovom mjestu vratio drugu česticu ("+j.broj+")"}:{st:"ok",d:j};
     // kad OSS odbija posrednika (blok, 403), automatski ponovni pokušaj samo produžuje odbijanje: tada samo gumb „Pokušaj ponovno”
-    return {st:"err",e:(j&&j.greska)||("HTTP "+r.status),retry:r.status!==404&&r.status!==400&&!(j&&j.blok)&&!/403/.test(j&&j.greska||"")};}
-  catch(e){return {st:"err",e:e.name==="AbortError"?"OSS ne odgovara":"mreža ili posrednik nedostupan",retry:true}}
+    return {st:"err",e:(j&&j.greska)||("HTTP "+r.status),retry:r.status!==404&&r.status!==400&&!(j&&j.blok)&&!/403/.test(j&&j.greska||""),rez:r.status!==404&&r.status!==400};}
+  catch(e){return {st:"err",e:e.name==="AbortError"?"OSS ne odgovara":"mreža ili posrednik nedostupan",retry:true,rez:true}}
   finally{clearTimeout(t)}
+}
+// prvo glavni posrednik (Cloudflare); ako je odbijen ili nedostupan, isti upit jednom ide na rezervni (Deno). 404/400 su pravi odgovori, bez rezerve.
+async function krkOssOnce(P,k,q,ul){
+  let r=await krkOssJedan(SRC_KRK.oss,P,k,q,ul);
+  if(r.st==="err"&&r.rez&&SRC_KRK.oss2){const r2=await krkOssJedan(SRC_KRK.oss2,P,k,q,ul); if(r2.st==="ok"||r2.rez===false) return r2;}
+  return r;
 }
 // dohvat površine s ponovnim pokušajima; stanje u OSSZK pod ključem k, onUpd osvježava prikaz.
 // ZK uložak (vlasništvo, tereti) dohvaća se zasebno, tek kad se otvori odjeljak ZK (zkUlFetch): OSS ograničava broj upita,
