@@ -1032,6 +1032,9 @@ async function krkTests(){
   {const k="1", v=E("OSSZK").get(k); E("OSSZK").set(k,{st:"load"}); E("renderKrk")(E("KRK_CUR")); await tick(5); ok(/ZK uložak 5126/.test(txt(w,"zkOss")),"Krk OSS: uložak ostaje vidljiv dok traje ponovni dohvat"); E("OSSZK").set(k,v); E("renderKrk")(E("KRK_CUR")); await tick(5);}
   ok(calls.includes("https://oss-test.example/?id=1&ulozak=1")&&/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&/ZK uložak 5126/.test(to)&&/neslužbeni javni podatak/.test(to)&&/\+7,0 % \(42 m²\)/.test(to),"Krk OSS: upisana površina 642 m² dohvaćena automatski, s uloškom i razlikom");
   ok(/Upisana u katastru ?640 m²/.test(to)&&/kuća: 85 m² · dvorište: 557 m²/.test(to)&&Math.abs(E("KRK_CUR").area-600)<1.5,"Krk OSS: površina iz posjedovnog lista i dijelovi čestice; izračun ostaje na grafičkoj");
+  ok(/Katastar \(640 m²\) i zemljišna knjiga \(642 m²\) se ne slažu, razlika 2 m²/.test(to),"Krk OSS: kad se katastar i zemljišna knjiga ne slažu, prikazuju se obje površine i upozorenje");
+  {E("OSSZK").set("x1",{st:"ok",d:{ok:true,broj:"1/1",katastar:660,zk:[{broj:"1/1",povrsina:660,ulozak:"9"}],dijelovi:[]}}); const h2=E("krkAreaHtml")({cid:"x1",broj:"1/1"},655);
+   ok(/Upisana površina/.test(h2)&&/katastar \(posjedovni list\) i zemljišna knjiga se slažu/.test(h2)&&!/Upisana u katastru/.test(h2)&&!/se ne slažu/.test(h2),"Kad se katastar i zemljišna knjiga slažu, prikazuje se jedan redak „Upisana površina”"); E("OSSZK").delete("x1");}
   $(w,"krkZkMan").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!!$(w,"krkZkIn"),"Krk OSS: može se upisati druga površina");
   $(w,"krkZkIn").value="650"; $(w,"krkZkOk").dispatchEvent(new w.Event("click",{bubbles:true}));
   ok(/Upisana u zemljišnoj knjizi ?650 m²/.test(txt(w,"sheet"))&&/upisao si ručno/.test(txt(w,"sheet")),"Krk OSS: ručni unos ima prednost");

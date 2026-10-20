@@ -1873,11 +1873,14 @@ function krkAreaHtml(P,area){
   const today=os&&os.d&&os.d.dohvaceno?new Date(os.d.dohvaceno).toLocaleDateString("hr-HR"):"";
   let h=`<dl class="kv" style="margin-top:4px">`;
   h+=`<dt>Grafička površina</dt><dd><b>${fmt(g)} m²</b><small class="fx">${P.gSrc?esc(P.gSrc):"iz katastarskog plana (DGU"+(P.preuzeto?", stanje "+esc(P.preuzeto.split("-").reverse().join(". ")+".")+")":")")}${P.povrsinaKatastar&&Math.abs(P.povrsinaKatastar-area)>1?" · "+esc(P.geomNote||"iz ucrtane granice")+" "+fmt(area)+" m²":""}</small></dd>`;
-  if(kat) h+=`<dt>Upisana u katastru</dt><dd><b>${fmt(kat.a)} m²</b><small class="fx">posjedovni list (${esc(kat.src)})</small></dd>`;
-  h+=`<dt>Upisana u zemljišnoj knjizi</dt><dd>`;
+  // katastar i zemljišna knjiga trebali bi se slagati, ali često nisu usklađeni: kad se slažu, jedan redak; kad ne, oba i upozorenje
+  const isti=kat&&zk&&Math.abs(kat.a-zk.a)<1;
+  if(kat&&!isti) h+=`<dt>Upisana u katastru</dt><dd><b>${fmt(kat.a)} m²</b><small class="fx">posjedovni list (${esc(kat.src)})</small></dd>`;
+  h+=isti?`<dt>Upisana površina</dt><dd>`:`<dt>Upisana u zemljišnoj knjizi</dt><dd>`;
+  if(isti) h+=`<b>${fmt(zk.a)} m²</b><small class="fx">✓ katastar (posjedovni list) i zemljišna knjiga se slažu</small>`;
   if(zk){
     const src=zk.src==="izvadak"?"pročitano iz učitanog izvatka":zk.src==="oss"?`OSS${oz.ul.length?", ZK uložak "+esc(oz.ul.join(", ")):""}${oz.od.length?", "+esc(oz.od.join(", ")):""}${oz.n>1?" · zbroj "+oz.n+" ZK čestice":""} · neslužbeni javni podatak${today?", dohvaćeno "+esc(today):""}`:"upisao si ručno";
-    h+=`<b>${fmt(zk.a)} m²</b><small class="fx">${src} · <button type="button" class="ib" id="${zk.src==="oss"?"krkZkMan":"krkZkDel"}" style="min-height:28px;padding:0 8px">${zk.src==="oss"?"upiši drugu":"promijeni"}</button></small>`;
+    h+=`${isti?"":`<b>${fmt(zk.a)} m²</b>`}<small class="fx">${src} · <button type="button" class="ib" id="${zk.src==="oss"?"krkZkMan":"krkZkDel"}" style="min-height:28px;padding:0 8px">${zk.src==="oss"?"upiši drugu":"promijeni"}</button></small>`;
   }else{
     const st=os&&os.st==="load"?`<small class="fx"><span class="spin"></span>dohvaćam iz OSS-a…${os.n?" (ponovni pokušaj "+os.n+")":""}</small>`:"";
     const why=os&&os.st==="err"?(/403/.test(os.e)?"OSS trenutno odbija upite (to se povremeno događa); pokušaj ponovno za minutu ili otvori česticu u OSS-u, ili upiši površinu iz izvatka":`OSS: podaci nisu dostupni (${esc(os.e)}); upiši je iz izvatka ili učitaj PDF izvatka ispod`):os&&os.st==="ok"&&!oz?"OSS nema upisanu površinu za ovu česticu; upiši je iz izvatka ili učitaj PDF izvatka ispod":SRC_KRK.oss&&!manual?"upiši je iz izvatka ili učitaj PDF izvatka ispod":"nije javno dostupna; upiši je iz izvatka ili učitaj PDF izvatka ispod";
@@ -1890,6 +1893,7 @@ function krkAreaHtml(P,area){
     if(dj.length>1||(dj.length===1&&dj[0].zgrada)) h+=`<dt>Dijelovi čestice</dt><dd>${dj.map(x=>esc(x.naziv.toLowerCase())+": "+fmt(x.povrsina)+" m²").join(" · ")}<small class="fx">kako su upisani u katastru (OSS)</small></dd>`;
   }
   h+=`</dl>`;
+  if(kat&&zk&&!isti) h+=`<p class="flag">Katastar (${fmt(kat.a)} m²) i zemljišna knjiga (${fmt(zk.a)} m²) se ne slažu, razlika ${fmt(Math.abs(kat.a-zk.a))} m². To znači da podaci dviju evidencija nisu usklađeni, što je čest slučaj. Prije kupnje provjeri u zemljišnoknjižnom odjelu ili s geodetom koja je površina točna.</p>`;
   const up=zk||kat;
   if(up){const r=(up.a-g)/g*100;
     h+=`<p class="${Math.abs(r)>5?"flag":"meta"}">Razlika ${zk?"upisane u zemljišnoj knjizi":"upisane u katastru"} i grafičke: ${r>0?"+":""}${dec(r.toFixed(1))} % (${fmt(Math.abs(up.a-g))} m²). ${Math.abs(r)>5?"Razlika je veća od 5 %. ":""}Grafička površina izračunata je iz katastarskog plana, koji je često digitaliziran sa starih planova, a upisana površina potječe iz ${zk?"zemljišne knjige":"katastarskog operata"}; zato se često razlikuju. Nijedna nije nužno stvarna površina na terenu: točnu daje geodetska izmjera (elaborat). Kod veće razlike, prije kupnje ili gradnje, provjeri s ovlaštenim geodetom.</p>`;}
