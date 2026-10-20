@@ -140,7 +140,7 @@ async function zgOssTests(){
     const t=txt(w,"sheet"), q=calls.filter(u=>u.startsWith("https://oss-test.example/"));
     if(expectOk){
       if(wms==="multi") ok(wmsN>=2,"Zagreb OSS: na prvoj točki je susjedna čestica, druga točka unutar čestice nađe pravu ("+wmsN+" upita sloju)");
-      ok(q.length===1&&(wms?/\?id=5&ulozak=1$/.test(q[0]):/\?lat=45\.84\d*&lon=15\.97\d*&ulozak=1$/.test(q[0])),"Zagreb OSS: "+(wms?"s ID-om iz katastarskog sloja posrednik se pita po ID-u":"bez sloja karte posrednik se pita po točki unutar čestice")+" ("+(q[0]||"nema upita")+")");
+      ok(q.length===1&&(wms?/\?id=5$/.test(q[0]):/\?lat=45\.84\d*&lon=15\.97\d*$/.test(q[0])),"Zagreb OSS: "+(wms?"s ID-om iz katastarskog sloja posrednik se pita po ID-u":"bez sloja karte posrednik se pita po točki unutar čestice")+" ("+(q[0]||"nema upita")+")");
       ok(/Grafička površina ?998 m²/.test(t)&&/iz katastarskog plana \(DGU\)/.test(t)&&/u gradskom sloju čestica 1\.0\d\d m²/.test(t),"Zagreb OSS: grafička površina iz DGU-a, uz površinu iz gradskog sloja");
       ok(/Upisana u zemljišnoj knjizi ?1\.012 m²/.test(t)&&/ZK uložak 777/.test(t)&&/Upisana u katastru ?1\.010 m²/.test(t),"Zagreb OSS: upisana površina u ZK i u katastru");
       ok(/računaju se s površinom: grafička \(1\.0\d\d m²\)/.test(t)&&Math.abs(w.__cur.area-d.area)<0.01,"Zagreb OSS: izračun prema zadanom ostaje na grafičkoj površini");
@@ -941,9 +941,12 @@ async function krkTests(){
     if(u.startsWith("https://oss-test.example/")){ if(mode==="ossFail") return Promise.reject(new TypeError("Failed to fetch"));
       if(mode==="oss403once"){mode="ok"; return Promise.resolve({ok:false,status:502,json:()=>Promise.resolve({ok:false,greska:"OSS HTTP 403"})});}
       ossOpt=o;
-      if(mode==="ulGreska"&&ulN++<2) return okj({ok:true,id:"1",broj:"2345/6",koMb:"315907",ko:"KORNIĆ",katastar:640,zk:[{broj:"2345/6",povrsina:642,ulozak:"5126"}],dijelovi:[],ulosciGreska:"OSS uložak HTTP 403"});
+      const povrsinaBezUl={ok:true,id:"1",broj:"2345/6",koMb:"315907",ko:"KORNIĆ",katastar:640,zk:[{broj:"2345/6",povrsina:642,ulozak:"5126"}],dijelovi:[]};
+      if((mode==="ulGreska"||mode==="ul403"||mode==="bezUl")&&!/ulozak=1/.test(u)) return okj(povrsinaBezUl);
+      if(mode==="ulGreska"&&ulN++<2) return okj({...povrsinaBezUl,ulosciGreska:"OSS uložak HTTP 502"});
+      if(mode==="ul403"){ulN++; return okj({...povrsinaBezUl,ulosciGreska:"OSS je odbio upit (HTTP 403, BigIP, text/html)",blok:true});}
       if(mode==="noZk") return okj({ok:true,id:"1",broj:"2345/6",ko:"KORNIĆ",katastar:640,zk:[],dijelovi:[],ulosci:[]});
-      if(!/\?id=1&ulozak=1$/.test(u)) return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve({ok:false,greska:"OSS nema česticu s tim ID-om"})});
+      if(!/\?id=1(&ulozak=1)?$/.test(u)) return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve({ok:false,greska:"OSS nema česticu s tim ID-om"})});
       return okj({ok:true,id:"1",broj:"2345/6",koMb:"315907",ko:"KORNIĆ",katastar:640,zk:[{broj:"2345/6",povrsina:642,ulozak:"5126",odjel:"Zemljišnoknjižni odjel Krk"}],
         ulosci:[{ulozak:"5126",glavnaKnjiga:"KORNIĆ",odjel:"Zemljišnoknjižni odjel Krk",status:"Aktivan",vrsta:"VLASNIČKI",zadnjiDnevnik:"Z-100/2024",plomba:false,plombi:0,
           A1:[{broj:"2345/6",ko:"KORNIĆ",opis:"KUĆA I DVORIŠTE",povrsina:642,dijelovi:[]}],A2:{upisa:1,upisi:[{rb:"3.1",tekst:"ZABILJEŽBA rješenja o izvedenom stanju"}]},
@@ -1040,7 +1043,7 @@ async function krkTests(){
   E("renderKrk")(E("KRK_CUR")); await tick(5); ok(/ZK uložak 5126/.test(txt(w,"zkOss"))&&/tereti: 1 \(OSS\)/.test(txt(w,"zkSum")),"Krk OSS: uložak ostaje prikazan i nakon ponovnog prikaza čestice");
   // kad se dohvat ponovi (npr. nakon isteka) i traje, već prikazani uložak ne nestaje
   {const k="1", v=E("OSSZK").get(k); E("OSSZK").set(k,{st:"load"}); E("renderKrk")(E("KRK_CUR")); await tick(5); ok(/ZK uložak 5126/.test(txt(w,"zkOss")),"Krk OSS: uložak ostaje vidljiv dok traje ponovni dohvat"); E("OSSZK").set(k,v); E("renderKrk")(E("KRK_CUR")); await tick(5);}
-  ok(calls.includes("https://oss-test.example/?id=1&ulozak=1")&&/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&/ZK uložak 5126/.test(to)&&/neslužbeni javni podatak/.test(to)&&/\+7,0 % \(42 m²\)/.test(to),"Krk OSS: upisana površina 642 m² dohvaćena automatski, s uloškom i razlikom");
+  ok(calls.includes("https://oss-test.example/?id=1")&&/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&/ZK uložak 5126/.test(to)&&/neslužbeni javni podatak/.test(to)&&/\+7,0 % \(42 m²\)/.test(to),"Krk OSS: upisana površina 642 m² dohvaćena automatski, s uloškom i razlikom");
   ok(/Upisana u katastru ?640 m²/.test(to)&&/kuća: 85 m² · dvorište: 557 m²/.test(to)&&Math.abs(E("KRK_CUR").area-600)<1.5,"Krk OSS: površina iz posjedovnog lista i dijelovi čestice; izračun ostaje na grafičkoj");
   ok(/Katastar \(640 m²\) i zemljišna knjiga \(642 m²\) se ne slažu, razlika 2 m²/.test(to),"Krk OSS: kad se katastar i zemljišna knjiga ne slažu, prikazuju se obje površine i upozorenje");
   {E("OSSZK").set("x1",{st:"ok",d:{ok:true,broj:"1/1",katastar:660,zk:[{broj:"1/1",povrsina:660,ulozak:"9"}],dijelovi:[]}}); const h2=E("krkAreaHtml")({cid:"x1",broj:"1/1"},655);
@@ -1051,21 +1054,28 @@ async function krkTests(){
   $(w,"krkZkDel").dispatchEvent(new w.Event("click",{bubbles:true})); ok(/Upisana u zemljišnoj knjizi ?642 m²/.test(txt(w,"sheet")),"Krk OSS: brisanjem ručnog unosa vraća se OSS vrijednost");
   E("OSS_RETRY").splice(0,E("OSS_RETRY").length,5);
   // povremeno odbijanje: prvi upit 403, drugi uspije
-  mode="oss403once"; E("OSSZK").clear(); E("renderKrk")(E("KRK_CUR")); await tick(60); to=txt(w,"sheet");
-  ok(/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&calls.filter(u=>u.includes("oss-test.example")).length>=2,"Krk OSS: nakon povremenog odbijanja (403) ponovni pokušaj uspije");
+  mode="oss403once"; E("OSSZK").clear(); const c403=calls.length; E("renderKrk")(E("KRK_CUR")); await tick(60); to=txt(w,"sheet");
+  ok(/OSS trenutno odbija upite/.test(to)&&!/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&calls.slice(c403).filter(u=>u.includes("oss-test.example")).length===1&&!!$(w,"krkOssRetry"),"Krk OSS: kad OSS odbija (403), nema automatskog ponavljanja (ne produžuje odbijanje); poruka i gumb „Pokušaj ponovno”");
+  $(w,"krkOssRetry").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(30); to=txt(w,"sheet");
+  ok(/Upisana u zemljišnoj knjizi ?642 m²/.test(to),"Krk OSS: „Pokušaj ponovno” nakon odbijanja dohvaća površinu");
   mode="ossFail"; E("OSSZK").clear(); E("ZKU").clear(); let n0=calls.length; E("renderKrk")(E("KRK_CUR")); await tick(80); to=txt(w,"sheet");
   ok(/OSS: podaci nisu dostupni/.test(to)&&!!$(w,"krkZkIn")&&!/642 m²/.test(to)&&calls.slice(n0).filter(u=>u.includes("oss-test.example")).length===2,"Krk OSS: kad OSS ne odgovara ni nakon ponovnog pokušaja, poruka i ručni unos (bez izmišljene vrijednosti)");
   ok(!!$(w,"krkOssRetry")&&[...w.document.querySelectorAll("#krkArea a")].some(a=>a.href==="https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info?parcelId=1"),"Krk OSS: gumbi „Pokušaj ponovno” i „Otvori česticu u OSS-u”");
   mode="ok"; $(w,"krkOssRetry").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20);
   ok(/Upisana u zemljišnoj knjizi ?642 m²/.test(txt(w,"sheet")),"Krk OSS: „Pokušaj ponovno” dohvaća površinu");
   ok(ossOpt&&ossOpt.cache==="no-store","Krk OSS: upit posredniku zaobilazi predmemoriju preglednika (inače bi sat vremena dobivao isti neuspjeli odgovor)");
-  // uložak: OSS dvaput odbije upit za uložak, treći pokušaj uspije
-  E("OSS_UL_RETRY").splice(0,E("OSS_UL_RETRY").length,15,15); mode="ulGreska"; ulN=0; E("OSSZK").clear(); E("ZKU").clear(); E("renderKrk")(E("KRK_CUR")); await tick(8);
-  ok(/OSS je odbio upit za ZK uložak 5126; ponovni pokušaj/.test(txt(w,"zkOss"))&&/642 m²/.test(txt(w,"krkArea")),"Krk OSS: dok OSS odbija upit za uložak, površina je prikazana, a uz uložak piše da slijedi ponovni pokušaj");
+  // uložak se dohvaća tek kad se otvori odjeljak ZK (manje upita prema OSS-u)
+  const zkD=()=>w.document.querySelector('details[data-k="zk"]'), otvoriZk=async()=>{const d=zkD(); d.open=false; await tick(5); d.open=true; await tick(5);};
+  mode="bezUl"; ulN=0; E("OSSZK").clear(); E("ZKU").clear(); n0=calls.length; E("renderKrk")(E("KRK_CUR")); await tick(20);
+  ok(calls.slice(n0).every(u=>!/ulozak=1/.test(u))&&/vlasništvo i tereti dohvaćaju se iz OSS-a kad otvoriš ovaj odjeljak/.test(txt(w,"zkOss"))&&/642 m²/.test(txt(w,"krkArea")),"Krk OSS: kod otvaranja čestice dohvaća se samo površina; uložak tek kad se otvori odjeljak ZK");
+  mode="ok"; await otvoriZk(); await tick(20); ok(calls.slice(n0).some(u=>/\?id=1&ulozak=1$/.test(u))&&/ZK uložak 5126/.test(txt(w,"zkOss"))&&/Bez plombe/.test(txt(w,"zkOss")),"Krk OSS: otvaranjem odjeljka ZK stiže uložak");
+  // OSS dvaput ne odgovori (502), treći pokušaj uspije
+  E("OSS_UL_RETRY").splice(0,E("OSS_UL_RETRY").length,15,15); mode="ulGreska"; ulN=0; E("OSSZK").clear(); E("ZKU").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20); await otvoriZk(); await tick(3);
+  ok(!/Teretovnica/.test(txt(w,"zkOss"))&&/(Dohvaćam ZK uložak|ponovni pokušaj)/.test(txt(w,"zkOss"))&&/642 m²/.test(txt(w,"krkArea")),"Krk OSS: dok OSS ne odgovara za uložak, površina je prikazana, a uz uložak piše da se dohvaća");
   await tick(80); ok(/ZK uložak 5126/.test(txt(w,"zkOss"))&&/Teretovnica: 1 upis/.test(txt(w,"zkOss"))&&ulN===3,"Krk OSS: uložak stiže nakon ponovnih pokušaja (ukupno 3 upita)");
-  // uložak i dalje ne stiže: poruka i gumb
-  mode="ulGreska"; ulN=-10; E("OSSZK").clear(); E("ZKU").clear(); E("renderKrk")(E("KRK_CUR")); await tick(90);
-  ok(/ZK uložak 5126 nije dohvaćen: OSS ne odgovara/.test(txt(w,"zkOss"))&&!!$(w,"zkUlRetry"),"Krk OSS: kad uložak ne stigne ni nakon ponovnih pokušaja, poruka i gumb „Pokušaj ponovno”");
+  // OSS odbija (403): bez ponavljanja, poruka i gumb
+  mode="ul403"; ulN=0; E("OSSZK").clear(); E("ZKU").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20); await otvoriZk(); await tick(60);
+  ok(ulN===1&&/ZK uložak 5126 nije dohvaćen: OSS trenutno odbija upite/.test(txt(w,"zkOss"))&&/BigIP/.test(txt(w,"zkOss"))&&!!$(w,"zkUlRetry"),"Krk OSS: kad OSS odbija upit za uložak, nema automatskog ponavljanja; poruka (s odgovorom OSS-a) i gumb „Pokušaj ponovno”");
   mode="ok"; $(w,"zkUlRetry").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20); ok(/ZK uložak 5126/.test(txt(w,"zkOss"))&&/Bez plombe/.test(txt(w,"zkOss")),"Krk OSS: „Pokušaj ponovno” uz uložak dohvaća uložak");
   mode="noZk"; E("OSSZK").clear(); E("ZKU").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20);
   ok(/ne povezuje ni s jednim ZK uloškom/.test(txt(w,"zkOss"))&&!$(w,"zkUlRetry"),"Krk OSS: kad OSS česticu ne povezuje s uloškom, to piše (bez gumba za ponovni pokušaj)");

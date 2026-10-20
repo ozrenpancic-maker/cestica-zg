@@ -102,3 +102,12 @@ Ozren je tražio prikaz posjedovnice I i II, vlastovnice i teretovnice i odabrao
 - Jedan ponovni pokušaj u posredniku nakon 0,9–1,8 s kad OSS vrati 403, 429 ili 5xx (najviše dva upita po koraku).
 - Sažetak uloška pamti se 24 h po glavnoj knjizi i broju uloška (više čestica u istom ulošku → jedan upit).
 - Dijagnostika: `oss-dijag.html` na probnoj stranici (12 čestica oko točke, jedna po jedna).
+
+## 20. 10. 2026. (navečer): OSS ograničava broj upita
+- Metrika Workera: prema oss.uredjenazemlja.hr 160 odgovora 2xx i 374 odgovora 4xx u 24 h; korisnik: „pokaže par puta za redom i onda više neće” → ograničenje broja upita.
+- Posrednik više ne ponavlja upit nakon 403/429; nakon odbijanja 90 s ne šalje upite OSS-u (odgovor 503, `blok: true`), da se odbijanje ne produžuje.
+- U poruci greške: status, zaglavlje `Server` i vrsta odgovora OSS-a (bez sadržaja), za dijagnostiku.
+- Predmemorija čestice i uloška 3 dana (aplikacija prikazuje datum dohvata); ulošci jedne čestice jedan po jedan.
+- Aplikacija ne ponavlja automatski kad OSS odbija; ostaje gumb „Pokušaj ponovno”.
+- Aplikacija pri otvaranju čestice traži samo površinu (`?id=…`, jedan upit prema OSS-u); uložak (`&ulozak=1`) tek kad korisnik otvori odjeljak ZK ili dodirne „Ima li tereta?”.
+  Posrednik uložak iz predmemorije šalje i bez `ulozak=1` (bez upita prema OSS-u).

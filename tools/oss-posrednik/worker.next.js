@@ -7,7 +7,8 @@
 const OSS = "https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info?parcelId=";
 const OSS_LR = "https://oss.uredjenazemlja.hr/oss/public/lr/lr-unit";
 const ALLOWED = ["https://ozrenpancic-maker.github.io"]; // stranice koje smiju čitati odgovor (produkcija i proba su na istom originu)
-const CACHE_S = 24 * 3600; // odgovor OSS-a pamti se 24 sata (manje upita prema OSS-u)
+const CACHE_S = 3 * 24 * 3600; // odgovor OSS-a pamti se 3 dana (manje upita prema OSS-u; aplikacija prikazuje datum dohvata)
+const BLOK_S = 90; // kad OSS odbije (403/429), posrednik ga 90 s ne pita ništa, da se odbijanje ne produžuje novim upitima
 
 const arr = x => (x == null ? [] : Array.isArray(x) ? x : [x]);
 // OSS u XML-u omata liste u istoimeni element: <parcelParts><parcelParts>…</parcelParts></parcelParts>
@@ -78,9 +79,19 @@ const UA = { "User-Agent": "Mozilla/5.0 (compatible; CesticaHR/1.0; +https://ozr
   "Accept-Language": "hr-HR,hr;q=0.9,en;q=0.5", "Referer": "https://oss.uredjenazemlja.hr/", "Origin": "https://oss.uredjenazemlja.hr" };
 // jedan ponovni pokušaj u posredniku nakon kratke stanke kad OSS odbije (403, 429) ili ne odgovori (5xx); ukupno najviše dva upita
 const spavaj = ms => new Promise(r => setTimeout(r, ms));
+const BLOK = new Request("https://cache.local/oss-blok");
+class OssBlok extends Error { constructor(m) { super(m); this.blok = true; } }
 async function ossFetch(u, h) {
+  const b = await caches.default.match(BLOK);
+  if (b) throw new OssBlok("OSS trenutno odbija upite posrednika; pokušaj ponovno za minutu-dvije (" + (await b.text()) + ")");
   let r = await fetch(u, { headers: { ...h, ...UA }, signal: AbortSignal.timeout(12000) });
-  if (r.status === 403 || r.status === 429 || r.status >= 500) { await spavaj(900 + Math.floor(Math.random() * 900)); r = await fetch(u, { headers: { ...h, ...UA }, signal: AbortSignal.timeout(12000) }); }
+  if (r.status >= 500) { await spavaj(700 + Math.floor(Math.random() * 700)); r = await fetch(u, { headers: { ...h, ...UA }, signal: AbortSignal.timeout(12000) }); }
+  if (r.status === 403 || r.status === 429) {
+    // bez ponavljanja: odbijanje je obično ograničenje broja upita, a svaki novi upit ga produžuje. Za dijagnostiku samo poslužitelj i vrsta odgovora.
+    const opis = "HTTP " + r.status + ", " + (r.headers.get("server") || "poslužitelj ?") + ", " + ((r.headers.get("content-type") || "?").split(";")[0]);
+    try { await caches.default.put(BLOK, new Response(opis, { headers: { "Cache-Control": "max-age=" + BLOK_S } })); } catch (e) {}
+    throw new OssBlok("OSS je odbio upit (" + opis + ")");
+  }
   return r;
 }
 // katastarska čestica na točki: isti sloj koji OSS koristi kad se klikne na kartu (WMS GetFeatureInfo)
@@ -96,7 +107,7 @@ async function cesticaNaTocki(lat, lon) {
 }
 async function parcelInfo(id) {
   // bez ponavljanja ovdje: ponovni pokušaj radi aplikacija, da OSS ne dobiva niz upita
-  const r = await ossFetch(OSS + id, { "Accept": "application/json, text/plain, */*" }), last = null;
+  let r; try { r = await ossFetch(OSS + id, { "Accept": "application/json, text/plain, */*" }); } catch (e) { if (e.blok) return { status: 503, greska: e.message, blok: true }; throw e; } const last = null;
   if (r.status === 404 || r.status === 204) return { status: 404 };
   if (!r.ok) return { status: 502, greska: "OSS HTTP " + (last || r.status) };
   const txt = await r.text(); let d;
@@ -178,12 +189,14 @@ export default {
       let res;
       try { res = await parcelInfo(id); } catch (e) { return out({ ok: false, greska: "OSS ne odgovara (" + (e.name || "greška") + ")" }, 502, origin); }
       if (res.status === 404) return out({ ok: false, greska: "OSS nema česticu s tim ID-om" }, 404, origin);
-      if (res.status !== 200) return out({ ok: false, greska: res.greska }, 502, origin);
+      if (res.status !== 200) return out({ ok: false, greska: res.greska, ...(res.blok ? { blok: true } : {}) }, res.blok ? 503 : 502, origin);
       o = res.o;
       ctx.waitUntil(cache.put(ck, new Response(JSON.stringify(o), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_S } })));
     }
     if (tocka) { o.graficka = tocka.graficka; o.stanjeKarte = tocka.datum; if (!o.koMb) o.koMb = tocka.koMb; }
     // uložak samo kad ga aplikacija izričito traži; broj i glavna knjiga uzimaju se iz parcel-info iste čestice, ne iz upita
+    // uložak koji je već u predmemoriji šalje se i bez „ulozak=1” (bez upita prema OSS-u)
+    if (sp.get("ulozak") !== "1") { try { const h2 = await cache.match(new Request("https://cache.local/oss-lr/" + id)); if (h2) o.ulosci = await h2.json(); } catch (e) {} }
     if (sp.get("ulozak") === "1") {
       const ck2 = new Request("https://cache.local/oss-lr/" + id), hit2 = await cache.match(ck2);
       if (hit2) o.ulosci = await hit2.json();
@@ -192,8 +205,9 @@ export default {
         if ((o.zk || []).some(z => z.ulozak && !z._mb)) { try { const fr = await parcelInfo(id); if (fr.status === 200) { o = { ...fr.o, ...(tocka ? { graficka: o.graficka, stanjeKarte: o.stanjeKarte } : {}) }; ctx.waitUntil(cache.put(ck, new Response(JSON.stringify(fr.o), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_S } }))); } } catch (e) {} }
         const zk = (o.zk || []).filter(z => z.ulozak && z._mb).slice(0, 3);
         // prazan rezultat (čestica bez povezanog uloška ili nepotpun odgovor OSS-a) se ne pamti, da se sljedeći put pokuša ponovno
-        try { o.ulosci = (await Promise.all(zk.map(z => ulozak(z.ulozak, z._mb)))).filter(Boolean); if (o.ulosci.length) ctx.waitUntil(cache.put(ck2, new Response(JSON.stringify(o.ulosci), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_S } }))); }
-        catch (e) { o.ulosciGreska = e.message || "OSS uložak ne odgovara"; }
+        // ulošci jedan po jedan (ne istodobno), da OSS ne dobije nalet upita
+        try { o.ulosci = []; for (const z of zk) { const u = await ulozak(z.ulozak, z._mb); if (u) o.ulosci.push(u); } if (o.ulosci.length) ctx.waitUntil(cache.put(ck2, new Response(JSON.stringify(o.ulosci), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_S } }))); }
+        catch (e) { o.ulosciGreska = e.message || "OSS uložak ne odgovara"; if (e.blok) o.blok = true; }
       }
     }
     o = { ...o, zk: (o.zk || []).map(({ _mb, ...z }) => z) };

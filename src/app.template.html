@@ -1333,33 +1333,45 @@ const OSSZK=new Map();
 function krkOssGet(P){return SRC_KRK.oss&&P&&P.cid!=null?OSSZK.get(String(P.cid))||null:null}
 // OSS povremeno odbije upit posrednika (HTTP 403); jedan ponovni pokušaj, da se OSS ne opterećuje
 const OSS_RETRY=[3000], OSS_UL_RETRY=[3000,8000];
-async function krkOssOnce(P,k,q){
+async function krkOssOnce(P,k,q,ul){
   const ac=new AbortController(), t=setTimeout(()=>ac.abort(),20000);
   // posrednik šalje „max-age=3600”: bez no-store preglednik bi sat vremena vraćao isti (i neuspjeli) odgovor
   // „ulozak=1”: posrednik uz površinu vraća i sažetak ZK uloška (A I, A II, udjeli bez osoba, teretovnica, plomba), ako to podržava
-  try{const r=await fetch(SRC_KRK.oss+"?"+(q||"id="+encodeURIComponent(k))+"&ulozak=1",{signal:ac.signal,cache:"no-store"}); const j=await r.json().catch(()=>null);
+  try{const r=await fetch(SRC_KRK.oss+"?"+(q||"id="+encodeURIComponent(k))+(ul?"&ulozak=1":""),{signal:ac.signal,cache:"no-store"}); const j=await r.json().catch(()=>null);
     if(r.ok&&j&&j.ok) return j.broj&&P.broj&&j.broj!==P.broj?{st:"err",e:"OSS je na ovom mjestu vratio drugu česticu ("+j.broj+")"}:{st:"ok",d:j};
-    return {st:"err",e:(j&&j.greska)||("HTTP "+r.status),retry:r.status!==404&&r.status!==400};}
+    // kad OSS odbija posrednika (blok, 403), automatski ponovni pokušaj samo produžuje odbijanje: tada samo gumb „Pokušaj ponovno”
+    return {st:"err",e:(j&&j.greska)||("HTTP "+r.status),retry:r.status!==404&&r.status!==400&&!(j&&j.blok)&&!/403/.test(j&&j.greska||"")};}
   catch(e){return {st:"err",e:e.name==="AbortError"?"OSS ne odgovara":"mreža ili posrednik nedostupan",retry:true}}
   finally{clearTimeout(t)}
 }
-// dohvat s ponovnim pokušajima; stanje u OSSZK pod ključem k, onUpd osvježava prikaz
+// dohvat površine s ponovnim pokušajima; stanje u OSSZK pod ključem k, onUpd osvježava prikaz.
+// ZK uložak (vlasništvo, tereti) dohvaća se zasebno, tek kad se otvori odjeljak ZK (zkUlFetch): OSS ograničava broj upita,
+// a većina pregleda čestice uložak ne treba, pa se tako broj upita prema OSS-u otprilike prepolovi.
+const OSSQ=new Map();
 async function ossFetchInto(k,P,q,onUpd){
-  if(!SRC_KRK.oss||OSSZK.has(k)) return;
+  if(!SRC_KRK.oss) return; OSSQ.set(k,{P,q,onUpd}); if(OSSZK.has(k)) return;
   OSSZK.set(k,{st:"load"}); onUpd();
-  let v=await krkOssOnce(P,k,q);
-  for(let n=0;v.st==="err"&&v.retry&&n<OSS_RETRY.length;n++){OSSZK.set(k,{st:"load",n:n+1}); onUpd(); await new Promise(r=>setTimeout(r,OSS_RETRY[n])); v=await krkOssOnce(P,k,q);}
+  let v=await krkOssOnce(P,k,q,false);
+  for(let n=0;v.st==="err"&&v.retry&&n<OSS_RETRY.length;n++){OSSZK.set(k,{st:"load",n:n+1}); onUpd(); await new Promise(r=>setTimeout(r,OSS_RETRY[n])); v=await krkOssOnce(P,k,q,false);}
   OSSZK.set(k,v); if(v.st==="err") setTimeout(()=>{if(OSSZK.get(k)===v) OSSZK.delete(k)},30000);
   onUpd();
-  // OSS povremeno odbije upit za uložak (čestica je tada već stigla): jedan ponovni pokušaj nakon 3 s, samo za uložak
-  let cur=v;
-  for(const ms of OSS_UL_RETRY){ if(!(cur.st==="ok"&&cur.d&&cur.d.ulosciGreska&&!(cur.d.ulosci&&cur.d.ulosci.length))||OSSZK.get(k)!==cur) break;
-    cur.ulPokusaj=(cur.ulPokusaj||0)+1; onUpd(); await new Promise(r=>setTimeout(r,ms)); if(OSSZK.get(k)!==cur) return;
-    const v2=await krkOssOnce(P,k,q); if(OSSZK.get(k)!==cur) return;
-    if(v2.st==="ok"&&v2.d&&v2.d.ulosci&&v2.d.ulosci.length){OSSZK.set(k,v2); onUpd(); return;}
-    if(v2.st==="ok"&&v2.d){v2.ulPokusaj=cur.ulPokusaj; OSSZK.set(k,v2); cur=v2;} }
-  if(cur.ulPokusaj){cur.ulGotovo=true; onUpd(); setTimeout(()=>{if(OSSZK.get(k)===cur) OSSZK.delete(k)},30000);} // i dalje bez uloška: kod sljedećeg otvaranja čestice pokušaj ponovno
+  if(v.st==="ok"&&window.__zkOpen===k) zkUlFetch(k); // odjeljak ZK je već otvoren
 }
+async function zkUlFetch(k,force){
+  k=String(k); const Q=OSSQ.get(k), v=OSSZK.get(k); if(!Q||!v||v.st!=="ok") return;
+  if(!force&&(v.ulLoad||v.ulGotovo||(v.d.ulosci&&v.d.ulosci.length)||ZKU.has(k))) return;
+  v.ulLoad=true; v.ulGotovo=false; v.ulPokusaj=0; Q.onUpd();
+  let r=await krkOssOnce(Q.P,k,Q.q,true);
+  for(const ms of OSS_UL_RETRY){ if(OSSZK.get(k)!==v) return;
+    const greska=r.st==="ok"?r.d.ulosciGreska:r.e, nastavi=greska&&!(r.st==="ok"&&r.d.ulosci&&r.d.ulosci.length)&&!(r.st==="ok"?r.d.blok:false)&&!/403|odbija/.test(greska)&&r.retry!==false;
+    if(!nastavi) break; v.ulPokusaj++; Q.onUpd(); await new Promise(x=>setTimeout(x,ms)); r=await krkOssOnce(Q.P,k,Q.q,true); }
+  if(OSSZK.get(k)!==v) return;
+  if(r.st==="ok"&&r.d){ r.ulGotovo=true; OSSZK.set(k,r); }
+  else { v.ulLoad=false; v.ulGotovo=true; v.d={...v.d,ulosciGreska:r.e,blok:/403|odbija/.test(r.e||"")}; }
+  Q.onUpd();
+}
+// odjeljak ZK otvoren: dohvati uložak trenutne čestice
+sheet.addEventListener("toggle",e=>{const d=e.target; if(!(d.matches&&d.matches('details[data-k="zk"]'))) return; const k=window.__zkK; window.__zkOpen=d.open?k:null; if(d.open&&k) zkUlFetch(k);},true);
 async function krkOssFetch(P,area){
   if(!P||P.cid==null) return; const k=String(P.cid);
   const upd=()=>{const el=document.getElementById("krkArea"); if(el&&KRK_CUR&&KRK_CUR.parcel&&String(KRK_CUR.parcel.properties.cid)===k){keepPos(()=>{el.innerHTML=krkAreaHtml(P,area); areaCmpRefresh();}); zkOssRefresh(k);}};
@@ -1458,15 +1470,17 @@ function zkOssStanje(v){
   if(v.st==="load") return `<p class="meta" style="margin:0 0 8px"><span class="spin"></span>Dohvaćam ZK uložak iz OSS-a…${v.n?" (ponovni pokušaj)":""}</p>`;
   if(v.st==="err") return P(`ZK uložak nije dohvaćen: ${esc(/403/.test(v.e)?"OSS trenutno odbija upite (to se povremeno događa)":v.e)}.`,true);
   const d=v.d||{}, zk=(d.zk||[]).filter(z=>z.ulozak), br=[...new Set(zk.map(z=>z.ulozak))];
-  if(d.ulosciGreska&&!v.ulGotovo) return `<p class="meta" style="margin:0 0 8px"><span class="spin"></span>OSS je odbio upit za ZK uložak${br.length?" "+esc(br.join(", ")):""}; ponovni pokušaj ${v.ulPokusaj||1} od ${OSS_UL_RETRY.length}…</p>`;
-  if(d.ulosciGreska) return P(`ZK uložak${br.length?" "+esc(br.join(", ")):""} nije dohvaćen: OSS ne odgovara (${esc(d.ulosciGreska)}). Pokušaj za minutu.`,true);
+  if(v.ulLoad&&v.ulPokusaj) return `<p class="meta" style="margin:0 0 8px"><span class="spin"></span>OSS je odbio upit za ZK uložak${br.length?" "+esc(br.join(", ")):""}; ponovni pokušaj ${v.ulPokusaj} od ${OSS_UL_RETRY.length}…</p>`;
+  if(v.ulLoad) return `<p class="meta" style="margin:0 0 8px"><span class="spin"></span>Dohvaćam ZK uložak${br.length?" "+esc(br.join(", ")):""} iz OSS-a…</p>`;
+  if(!v.ulGotovo&&!d.ulosciGreska&&br.length) return `<p class="meta" style="margin:0 0 8px">ZK uložak ${esc(br.join(", "))}: vlasništvo i tereti dohvaćaju se iz OSS-a kad otvoriš ovaj odjeljak. <button type="button" class="ib" id="zkUlRetry" style="min-height:32px;padding:0 10px">Dohvati uložak</button></p>`;
+  if(d.ulosciGreska) return P(`ZK uložak${br.length?" "+esc(br.join(", ")):""} nije dohvaćen: ${/403|odbija/.test(d.ulosciGreska)?"OSS trenutno odbija upite (ograničava broj upita)":"OSS ne odgovara"} (${esc(d.ulosciGreska)}). Pokušaj za minutu-dvije.`,true);
   if(!br.length) return P(`OSS ovu katastarsku česticu ne povezuje ni s jednim ZK uloškom. Čestica možda nije upisana u zemljišnu knjigu ili veza katastra i zemljišne knjige nije uspostavljena; uložak potraži pretragom na OSS-u ili u zemljišnoknjižnom odjelu.`,false);
   return P(`ZK uložak ${esc(br.join(", "))} postoji, ali njegov sadržaj nije dohvaćen.`,true);
 }
 // zadnji uspješno dohvaćeni uložak po čestici: ponovni dohvat ili ponovni prikaz ne smiju izbrisati ono što je već prikazano
 const ZKU=new Map();
 function zkOssRefresh(k){
-  const el=document.getElementById("zkOss"), v=OSSZK.get(String(k)); if(!el) return;
+  const el=document.getElementById("zkOss"), v=OSSZK.get(String(k)); window.__zkK=String(k); if(!el) return;
   let U=v&&v.st==="ok"&&v.d&&v.d.ulosci; if(U&&U.length) ZKU.set(String(k),U); else U=ZKU.get(String(k))||null; const nh=U&&U.length?zkOssHtml(U):zkOssStanje(v), hh=zkHash(nh)+":"+String(k); if(el.dataset.h!==hh||el.innerHTML===""&&nh){keepPos(()=>{el.innerHTML=nh; el.dataset.h=hh;});}
   if(U&&U.length&&!ZK.res){const s=document.getElementById("zkSum"), c=U.reduce((a,u)=>a+(u.C&&u.C.upisa||0),0), pl=U.some(u=>u.plomba); if(s) s.textContent=(pl?"plomba · ":"")+(c?"tereti: "+c:"bez tereta")+" (OSS)";}
 }
@@ -2041,7 +2055,7 @@ function krkAreaHtml(P,area){
     h+=`${isti?"":`<b>${fmt(zk.a)} m²</b>`}<small class="fx">${src} · <button type="button" class="ib" id="${zk.src==="oss"?"krkZkMan":"krkZkDel"}" style="min-height:28px;padding:0 8px">${zk.src==="oss"?"upiši drugu":"promijeni"}</button></small>`;
   }else{
     const st=os&&os.st==="load"?`<small class="fx"><span class="spin"></span>dohvaćam iz OSS-a…${os.n?" (ponovni pokušaj "+os.n+")":""}</small>`:"";
-    const why=os&&os.st==="err"?(/403/.test(os.e)?"OSS trenutno odbija upite (to se povremeno događa); pokušaj ponovno za minutu ili otvori česticu u OSS-u, ili upiši površinu iz izvatka":`OSS: podaci nisu dostupni (${esc(os.e)}); upiši je iz izvatka ili učitaj PDF izvatka ispod`):os&&os.st==="ok"&&!oz?"OSS nema upisanu površinu za ovu česticu; upiši je iz izvatka ili učitaj PDF izvatka ispod":SRC_KRK.oss&&!manual?"upiši je iz izvatka ili učitaj PDF izvatka ispod":"nije javno dostupna; upiši je iz izvatka ili učitaj PDF izvatka ispod";
+    const why=os&&os.st==="err"?(/403|odbija/.test(os.e)?"OSS trenutno odbija upite (to se povremeno događa); pokušaj ponovno za minutu ili otvori česticu u OSS-u, ili upiši površinu iz izvatka":`OSS: podaci nisu dostupni (${esc(os.e)}); upiši je iz izvatka ili učitaj PDF izvatka ispod`):os&&os.st==="ok"&&!oz?"OSS nema upisanu površinu za ovu česticu; upiši je iz izvatka ili učitaj PDF izvatka ispod":SRC_KRK.oss&&!manual?"upiši je iz izvatka ili učitaj PDF izvatka ispod":"nije javno dostupna; upiši je iz izvatka ili učitaj PDF izvatka ispod";
     h+=st||`<span class="kd" style="margin:0"><input id="krkZkIn" type="number" inputmode="decimal" min="1" step="1" placeholder="m² iz izvatka" style="width:8em"><button type="button" class="ib" id="krkZkOk">Spremi</button></span><small class="fx">${why}</small>`;
     if(os&&os.st==="err") h+=`<span class="kd" style="margin:4px 0 0"><button type="button" class="ib" id="krkOssRetry">Pokušaj ponovno</button><a class="ib" href="${/^zg:/.test(String(P.cid))?"https://oss.uredjenazemlja.hr/public-services/search-cad-parcel":"https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info?parcelId="+encodeURIComponent(P.cid)}" target="_blank" rel="noopener">Otvori česticu u OSS-u</a></span>`;
   }
@@ -2073,7 +2087,8 @@ sheet.addEventListener("click",e=>{
   const A=window.__areaCtx; if(!A||!window.__cur||A.key!==window.__cur.key) return;
   if(e.target.id==="krkZkOk"){const v=parseFloat(String(document.getElementById("krkZkIn").value).replace(",",".")); if(v>0){krkZkSet(window.__cur.key,v,"rucno"); A.refresh();}}
   if(e.target.id==="krkZkDel"){krkZkSet(window.__cur.key,0); window.__krkZkManual=null; A.refresh();}
-  if(e.target.id==="krkOssRetry"||e.target.id==="zkUlRetry") A.retry();
+  if(e.target.id==="krkOssRetry") A.retry();
+  if(e.target.id==="zkUlRetry"&&window.__zkK){ const v=OSSZK.get(window.__zkK); if(v&&v.st==="ok") zkUlFetch(window.__zkK,true); else A.retry(); }
   if(e.target.id==="krkZkMan"){window.__krkZkManual=window.__cur.key; A.refresh();}
 });
 // osnovni podaci Krka s oznakama pouzdanosti (namjena, planovi, otvoreni uvjeti)
@@ -5412,7 +5427,8 @@ function sazetakUpdate(){
   // 3. tereti (ZK)
   {const k=String(d.krk?d.parcel.properties.cid:(window.__cur&&window.__cur.key?zgAreaP(d.parcel,window.__cur.key).cid:"")), U=ZKU.get(k)||(OSSZK.get(k)&&OSSZK.get(k).d&&OSSZK.get(k).d.ulosci);
    if(U&&U.length){const c=U.reduce((a,u)=>a+(u.C&&u.C.upisa||0),0), pl=U.some(u=>u.plomba); rows.push({src:U.map(u=>"zk-ulozak"+(u.ulozak||"")),st:pl?"no":c?"warn":"ok",q:"Ima li tereta?",a:(pl?"Plomba (upis u tijeku). ":"")+(c?`Teretovnica: ${c} ${c===1?"upis":"upisa"}`:"Teretovnica bez upisa")+` · javni uvid OSS, uložak ${U.map(u=>u.ulozak).join(", ")}`,go:'details[data-k="zk"]'});}
-   else rows.push({st:"?",q:"Ima li tereta?",a:OSSZK.get(k)&&OSSZK.get(k).st==="load"?"Dohvaćam iz OSS-a…":"Podaci nisu dostupni; provjeri ZK izvadak.",go:'details[data-k="zk"]'});}
+   else {const v=OSSZK.get(k), br=v&&v.st==="ok"&&v.d&&(v.d.zk||[]).filter(z=>z.ulozak).map(z=>z.ulozak);
+     rows.push({st:"?",q:"Ima li tereta?",a:v&&(v.st==="load"||v.ulLoad)?"Dohvaćam iz OSS-a…":br&&br.length&&!v.ulGotovo?`ZK uložak ${[...new Set(br)].join(", ")}: dodirni za vlasništvo i terete (OSS)`:"Podaci nisu dostupni; provjeri ZK izvadak.",go:'details[data-k="zk"]'});}}
   // 4. pristup i komunalije
   {const a=pr("ot-pristup"), k=pr("ot-komunalno"), st=[a,k].some(x=>x&&x.stanje==="no")?"no":[a,k].some(x=>x&&(x.stanje==="warn"||x.stanje==="?"))?"warn":a||k?"ok":"?";
    const first=x=>x?String(x.tekst).split(/(?<=\.)\s/)[0].replace(/\.$/,""):"";
