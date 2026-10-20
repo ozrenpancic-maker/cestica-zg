@@ -512,8 +512,9 @@ async function sunTests(){
   w.eval("setTab")("troskovi"); w.eval("setTab")("analiza");
   ok(w.document.getElementById("bArea").value==="177","unos ostaje nakon promjene kartice");
   const groups=[...w.document.querySelectorAll("#sheet .grp")].map(g=>g.dataset.g);
-  ok(groups.includes("sum")&&groups.includes("analiza")&&groups.includes("troskovi"),"sadržaj je podijeljen u skupine sažetak, analiza i troškovi");
-  ok(!!w.document.querySelector('.grp[data-g=troskovi] details[data-k="buy"]')&&!!w.document.querySelector('.grp[data-g=troskovi] details[data-k="build"]')&&!!w.document.querySelector('.grp[data-g=analiza] details[data-k="zk"]'),"moduli su u ispravnim skupinama");
+  ok(groups.includes("sum")&&groups.includes("izb"),"sadržaj je podijeljen na sažetak i izbornik kategorija");
+  ok(!!w.document.querySelector('details.izb[data-n="5"] details[data-k="buy"]')&&!!w.document.querySelector('details.izb[data-n="5"] details[data-k="build"]')&&!!w.document.querySelector('details.izb[data-n="3"] details[data-k="zk"]'),"moduli su u ispravnim kategorijama (kupnja i gradnja u 05, ZK u 03)");
+  w.eval("setTab")("troskovi"); ok(w.document.querySelector('details.izb[data-n="5"]').open,"kartica „Troškovi” otvara kategoriju 05"); w.eval("setTab")("analiza");
   w.eval("setTab")("spremljeno");
   ok(!w.document.getElementById("aux").hidden&&w.document.getElementById("sheet").hidden,"Spremljeno se otvara bez brisanja analize");
   w.document.getElementById("auxBack").dispatchEvent(new w.Event("click",{bubbles:true}));
@@ -1475,12 +1476,24 @@ async function sazTests(){
    [...w.document.querySelectorAll("#vUsp .vkDel")][0].dispatchEvent(new w.Event("click",{bubbles:true}));
    ok(w.document.querySelectorAll("#vUsp .vk").length===3&&/Podaci nisu dostupni/.test(V())&&/upisano 2/.test(V()),"Vrijednost zemljišta: uklanjanje usporedbe; s dvije kupoprodaje nema raspona");
    const ex=E("projExport")(E("window.__cur.key")), im=E("projParseImport")(JSON.stringify(ex)); ok(im.ok&&im.data.proj.vrij&&im.data.proj.vrij.usp.length===3&&im.data.proj.vrij.nas==="ZAGREB","Vrijednost zemljišta: usporedbe se izvoze i uvoze s projektom");}
-  const P=[...w.document.querySelectorAll("details.pog")].map(x=>x.querySelector("summary span").textContent);
-  ok(P.includes("Uvjeti gradnje")&&P.some(t=>/^Rizici/.test(t))&&P.includes("Pouzdanost podataka")&&[...w.document.querySelectorAll("details.pog")].every(x=>!x.open),"Poglavlja analize su sklopljene kartice (uvjeti gradnje, rizici, pouzdanost…)");
+  // glavni izbornik: 6 numeriranih kategorija s postojećim modulima
+  {const K=[...w.document.querySelectorAll("details.izb")], nm=K.map(x=>x.querySelector("summary .izb-n").textContent+" "+x.querySelector("summary>span").firstChild.textContent), cat=sel=>{const e=w.document.querySelector(sel); const d=e&&e.closest("details.izb"); return d?+d.dataset.n:0;};
+   ok(JSON.stringify(nm)===JSON.stringify(["01 Prostorni planovi i namjena","02 Gradnja i simulator kuće","03 Rizici i pravne provjere","04 Pristup i infrastruktura","05 Troškovi i investicija","06 Projekt i dokumentacija"])&&K.every(x=>!x.open),"Izbornik: šest numeriranih kategorija (01–06) ovim redoslijedom, sve sklopljene");
+   ok(cat("ul.zones")===1&&(!w.document.querySelector("#sec-upu")||cat("#sec-upu")===1)&&cat("#sec-uvjeti")===2&&cat('details[data-k="tipcmp"]')===2&&cat('details[data-k="calc"]')===2&&cat('details[data-k="tloc"]')===2&&cat('details[data-k="oku"]')===2&&cat('details[data-k="skica"]')===2&&cat('details[data-k="sun"]')===2&&cat('details[data-k="pv"]')===2,"Izbornik 01–02: namjena i karte plana; uvjeti gradnje, usporedba tipova, izračun, simulator, okućnica, skica, sunce i elektrana");
+   const h4=[...w.document.querySelectorAll("h2")].filter(h=>/^(Komunalna|Pristup)/.test(h.textContent));
+   ok(cat('details[data-k="zk"]')===3&&cat("#sec-rizici")===3&&cat("#okolisBox")===3&&cat("#sec-provjere")===3&&h4.length>=2&&h4.every(h=>+h.closest("details.izb").dataset.n===4),"Izbornik 03–04: ZK i tereti, rizici, priroda; pristup i komunalna infrastruktura");
+   ok(["vrij","buy","build","prep","kd","costs","total","scen"].every(k=>cat(`details[data-k="${k}"]`)===5)&&["proj","ph3","ph4","cklist"].every(k=>cat(`details[data-k="${k}"]`)===6)&&cat("#pzBox")===6,"Izbornik 05–06: troškovi, kupnja, scenariji; projekt, dozvole, kontrolna lista, pouzdanost");
+   ok(!w.document.querySelector('.grp[data-g=analiza]')&&!w.document.querySelector('.grp[data-g=troskovi]')&&K.every(d=>!d.querySelector(".izb-prazno")),"Izbornik: svi odjeljci su raspoređeni, nijedna kategorija nije prazna");
+   const c5=[...w.document.querySelectorAll('details.izb[data-n="5"] .izb-c')].map(x=>x.textContent); ok(c5.includes("Sunčana elektrana: isplativost")&&c5.includes("Procjena cijene gradnje")&&w.document.querySelectorAll('[data-k="pv"]').length===1,"Izbornik: prečaci na module; isplativost elektrane iz 05 otvara isti kalkulator (bez kopije)");}
   rows[1].dispatchEvent(new w.Event("click",{bubbles:true})); await tick(60);
-  const calc=w.document.querySelector('details[data-k="calc"]'); ok(calc.open&&calc.closest("details.pog").open,"Dodir na odgovor u sažetku otvara odjeljak i poglavlje u kojem je");
-  E("render")(d); await tick(80); ok(w.document.querySelector('details[data-k="calc"]').closest("details.pog").open,"Otvoreno poglavlje ostaje otvoreno nakon ponovnog prikaza");
-  {const R=E("buildReport")(), secs=[...R.querySelectorAll(".rpt-h h2")].map(h=>h.textContent); ok(secs.includes("Uvjeti gradnje")&&secs.includes("Rizici i provjere")&&R.querySelector(".rpt-sec .rule-title"),"Izvještaj i dalje sadrži poglavlja iz sklopljenih kartica"); R.remove();}
+  const calc=w.document.querySelector('details[data-k="calc"]'); ok(calc.open&&calc.closest("details.izb").open&&calc.closest("details.izb").dataset.n==="2","Dodir na odgovor u sažetku otvara kategoriju i modul u njoj");
+  {const k3=w.document.querySelector('details.izb[data-n="3"]'); k3.open=true; await tick(30); const k2=w.document.querySelector('details.izb[data-n="2"]'), bk=k3.querySelector(".izb-back");
+   ok(!k2.open&&k3.open&&bk&&!bk.hidden&&/Natrag na 02/.test(bk.textContent),"Izbornik: otvorena je jedna glavna kategorija; gumb za povratak na prethodnu");
+   bk.dispatchEvent(new w.Event("click",{bubbles:true})); await tick(40); ok(k2.open&&!k3.open,"Izbornik: povratak na prethodnu kategoriju");}
+  E("render")(d); await tick(80); ok(w.document.querySelector('details[data-k="calc"]').closest("details.izb").open,"Otvorena kategorija ostaje otvorena nakon ponovnog prikaza");
+  {const S=$(w,"sazetak"), mi=S.querySelector(".saz-mini"), g0=S.querySelector("li"); ok(S.querySelector("details.saz-d")&&mi&&/Gradnja/.test(mi.textContent)&&/Tereti/.test(mi.textContent),"Sažetak: sklopivo zaglavlje s kratkim stanjima");
+   ok(g0.classList.contains("saz-info")&&/Namjena je potvrđena; uvjeti za konkretnu gradnju nisu potvrđeni/.test(g0.textContent),"Sažetak: potvrđena namjena bez zelene kvačice (uvjeti gradnje nisu potvrđeni)");}
+  {const R=E("buildReport")(), secs=[...R.querySelectorAll(".rpt-h h2")].map(h=>h.textContent); ok(secs.includes("Uvjeti gradnje")&&secs.includes("Rizici i provjere")&&R.querySelector(".rpt-sec .rule-title"),"Izvještaj i dalje sadrži poglavlja (neovisno o izborniku)"); R.remove();}
   // 3D pogled: lažni MapLibre bilježi stil i kameru
   {const made=[]; w.maplibregl={__test:true,Map:class{constructor(o){this.o=o; this.h={}; made.push(this);} addControl(){} on(e,f){this.h[e]=f} once(e,f){this.h["1"+e]=f} getBearing(){return 0} setBearing(){} getCanvas(){return {toDataURL:()=>"data:image/jpeg;base64,AAAA"}} remove(){} setLayoutProperty(l,k,v){this.lp=[l,k,v]}},
      NavigationControl:class{},Marker:class{constructor(o){this.o=o} setLngLat(){return this} addTo(){return this}}};
@@ -1501,6 +1514,56 @@ async function sazTests(){
    const R=E("buildReport")(); ok(R.querySelector(".rpt-3d img")&&/3D pogled/.test(R.textContent),"Izvještaj: slika 3D pogleda u poglavlju „Kuća na čestici”"); R.remove();
    $(w,"v3dClose").dispatchEvent(new w.Event("click",{bubbles:true})); ok($(w,"v3d").hidden,"3D pogled se zatvara");}
   ok(errs.length===0,"bez JS grešaka (sažetak i kartice): "+errs.join(" | "));
+}
+async function okuTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  const Iz=E("okuIzracun"), oA=E("oA"), oX=E("oX"), rect=(x0,y0,x1,y1)=>({type:"Polygon",coordinates:[[[x0,y0],[x1,y0],[x1,y1],[x0,y1],[x0,y0]]]});
+  const kv=(cx,cy,ww,dd)=>({zid:[[cx-ww/2,cy-dd/2],[cx+ww/2,cy-dd/2],[cx+ww/2,cy+dd/2],[cx-ww/2,cy+dd/2]],van:[[cx-ww/2-.6,cy-dd/2-.6],[cx+ww/2+.6,cy-dd/2-.6],[cx+ww/2+.6,cy+dd/2+.6],[cx-ww/2-.6,cy+dd/2+.6]]});
+  const post={on:true,mjesta:2,vrt:30,prW:3,pomak:0};
+  // čestica 30 × 40 m, cesta uz južnu među, kuća 10 × 8 m malo prema sjeveru
+  const I={parcel:rect(-15,-20,15,20),kuce:[kv(0,4,10,8)],kucaC:[0,4],rot:0,w:10,d:8,H:7,ceste:[[[-40,-24],[40,-24]]],nagib:5,post};
+  const r=Iz(I), it=r.items, P=r.povrsine;
+  ok(it.parking&&it.parking.mjesta===2&&Math.abs(P.parking-25)<0.5&&it.prilaz&&P.prilaz>2&&it.staza&&it.vrt&&it.travnjak,"Okućnica: parking za 2 mjesta (2 × 2,5 × 5 m = 25 m²), prilaz, staza, vrt i travnjak");
+  {const bb=w.turf.bbox({type:"Feature",geometry:it.parking.g,properties:{}}); ok(bb[1]<-17&&r.pristup.poznat&&r.ulaz.strana==="S","Okućnica: parking uz južnu među prema cesti; ulaz u kuću na strani prema pristupu");}
+  {const ks=Object.keys(it); let prek=0; for(let i=0;i<ks.length;i++) for(let j=i+1;j<ks.length;j++) prek+=oA(oX(it[ks[i]].g,it[ks[j]].g));
+   const sum=ks.reduce((a,k)=>a+oA(it[k].g),0), kuca=oA(rect(-5.6,-0.6,5.6,8.6));
+   ok(prek<0.5&&Math.abs(sum+kuca-1200)<2&&ks.every(k=>oA(oX(it[k].g,I.parcel))>=oA(it[k].g)-0.05)&&ks.every(k=>oA(oX(it[k].g,rect(-5,0,5,8)))<0.01),"Okućnica: dijelovi se ne preklapaju, svi su unutar čestice i izvan kuće; zajedno s kućom pokrivaju cijelu česticu");}
+  ok(Math.abs(P.vrt-30)<4&&w.turf.bbox({type:"Feature",geometry:it.vrt.g,properties:{}})[3]<16,"Okućnica: vrt oko 30 m² na sunčanom dijelu (ne u sjeni sjeverno od kuće)");
+  // uska čestica: 11 × 30 m, kuća 8 m široka → nema mjesta uz kuću za parking pa je kompaktan prijedlog
+  {const r2=Iz({parcel:rect(-5.5,-15,5.5,15),kuce:[kv(0,0,8,9)],kucaC:[0,0],rot:0,w:8,d:9,H:6,ceste:[[[-30,-17],[30,-17]]],nagib:null,post});
+   ok(/uska/.test(r2.napomene.join(" "))&&r2.items.parking&&r2.items.parking.mjesta>=1,"Okućnica: na uskoj čestici kompaktan prijedlog, uz napomenu");}
+  // bez prostora: kuća gotovo cijelu česticu
+  {const r3=Iz({parcel:rect(-6,-5,6,5),kuce:[kv(0,0,11,9)],kucaC:[0,0],rot:0,w:11,d:9,H:6,ceste:[],nagib:null,post});
+   ok(/nema dovoljno slobodnog prostora/.test(r3.napomene.join(" "))&&!r3.items.parking,"Okućnica: kad nema mjesta, to piše i ništa se ne crta");}
+  // bez cesta i bez parkinga
+  {const r4=Iz({...I,ceste:[],post:{...post,mjesta:0,vrt:0}}); ok(!r4.items.parking&&!r4.items.vrt&&r4.items.staza&&/nisu učitane/.test(r4.napomene.join(" ")),"Okućnica: bez učitanih cesta pristup je pretpostavljen (uz napomenu); bez parkinga i vrta samo staza i travnjak");}
+  // kroz aplikaciju: gumb, karta, skica, 3D, izvještaj, projekt
+  const A=parcelRect(30,40,{KATASTARSKA_CESTICA:"77/1",KATASTARSKA_OPCINA:"REMETE"}), c=A.geometry.coordinates[0], dy=4/110540;
+  const d=data(w,A,"2.2.",{env:{v:{roads:[],roadLines:[{ok:true,hw:"residential",name:"Ulica Test",geom:[[c[0][0]-0.001,c[0][1]-dy],[c[1][0]+0.001,c[1][1]-dy]]}],stops:[]}}});
+  w.__env=d.envelope; E("OPEN").add("tloc"); E("render")(d);
+  const TL=E("TL"); TL.w=10; TL.d=8; TL.rot=0; TL.fl="2"; TL.gar=false; TL.center=null; E("tDraw")(); await tick(200);
+  ok(!!$(w,"okuGo")&&/nije izrađen/.test(txt(w,"okuSum"))&&!E("OKU.res"),"Okućnica u aplikaciji: gumb „Predloži okućnicu”, bez prijedloga dok ga korisnik ne zatraži");
+  $(w,"okuGo").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(250);
+  const R=E("OKU.res"), ot=txt(w,"okuOut");
+  ok(R&&R.ll.parking&&/Automatski prijedlog okućnice – ilustrativno/.test(txt(w,"sheet"))&&/Nije projekt/.test(txt(w,"sheet"))&&/Parking25 m²/.test(ot)&&/Vrt/.test(ot)&&E("PZREG").items.get("oku").raz==="C","Okućnica u aplikaciji: prijedlog s površinama, jasno označen kao ilustrativan (C)");
+  ok(E("OKU.layer")&&E("selLayer").hasLayer(E("OKU.layer"))&&/parking \d+ m²/.test(txt(w,"okuSum")),"Okućnica: iscrtana na karti; sažetak u naslovu odjeljka");
+  E("skicaRender")(); {const sk=$(w,"skicaOut"); ok(sk&&sk.querySelectorAll('path[fill="#8b8f96"]').length===1&&sk.querySelectorAll('path[fill="#5f9a3a"]').length===1,"Okućnica na skici: parking i vrt u svojim bojama");}
+  ok(/Parking \(prijedlog okućnice, ilustrativno\)/.test(E("legendaHtml")({skica:true}))&&/Vrt \(prijedlog/.test(E("legendaHtml")()),"Okućnica: u legendi karte i skice");
+  {const D=E("v3dData")(); ok(D.oku.features.length>=4&&D.ulaz===R.ulaz.strana&&D.prilaz.features.length===0,"Okućnica u 3D: površine na terenu; ulaz u kuću isti kao u prijedlogu");}
+  const ws=E("window.__oku"); ok(ws&&ws.povrsine.parking===25&&ws.povrsine.prilaz>0&&ws.povrsine.vrt>0&&ws.povrsine.travnjak>0&&ws.ilustrativno,"Okućnica: površine parkinga, prilaza, vrta i travnjaka dostupne drugim modulima");
+  // ručne postavke: 1 mjesto, bez vrta
+  setv(w,"okuMj","1","change"); setv(w,"okuVrt","0","change"); await tick(250);
+  ok(E("OKU.res").povrsine.parking===12.5&&!E("OKU.res").items.vrt&&E("okuPost")(E("window.__cur.key")).mjesta===1,"Okućnica: ručno 1 parkirno mjesto i bez vrta; postavke se spremaju");
+  {const x0=w.turf.bbox({type:"Feature",geometry:E("OKU.res").ll.parking,properties:{}})[0]; $(w,"okuR").dispatchEvent(new w.Event("click",{bubbles:true})); $(w,"okuR").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(250);
+   const x1=w.turf.bbox({type:"Feature",geometry:E("OKU.res").ll.parking,properties:{}})[0]; ok(x1!==x0&&/\+2 m/.test(txt(w,"okuPomV")),"Okućnica: parking se može pomaknuti uz granicu (▶ ◀)");}
+  // pomak kuće: prijedlog se preračuna
+  {const r0=E("OKU.res"), x0=E("OKU.res").ulazLL[0]; TL.center=[TL.center[0]+3/(111320*Math.cos(45.84*Math.PI/180)),TL.center[1]]; E("tDraw")(); await tick(250); ok(E("OKU.res")!==r0&&E("OKU.res").ulazLL[0]>x0,"Okućnica: nakon pomicanja kuće prijedlog se preračuna"); }
+  {const ex=E("projExport")(E("window.__cur.key")), im=E("projParseImport")(JSON.stringify(ex)), pg=E("projGet")(E("window.__cur.key"));
+   ok(im.ok&&im.data.proj.oku&&im.data.proj.oku.on&&im.data.proj.oku.mjesta===1&&pg.okucnica&&pg.okucnica.povrsine&&pg.okucnica.povrsine.parking===12.5,"Okućnica: postavke u izvozu projekta, površine u projektu");}
+  {const Rp=E("buildReport")(); ok(/Automatski prijedlog okućnice – ilustrativno/.test(Rp.textContent),"Okućnica u izvještaju"); Rp.remove();}
+  $(w,"okuOff").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(250);
+  ok(!E("OKU.res")&&!E("OKU.layer")&&!!$(w,"okuGo"),"Okućnica: „Ukloni prijedlog” briše prikaz; kuća i simulator ostaju");
+  ok(errs.length===0,"Okućnica: bez JS grešaka "+errs.join(" | "));
 }
 async function gpTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -1551,7 +1614,7 @@ async function gpTests(){
   ok(errs.length===0,"bez JS grešaka (područje za gradnju): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(okuTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

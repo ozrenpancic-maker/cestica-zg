@@ -369,3 +369,33 @@ Ceste iz OpenStreetMapa (iste kao za pristup i pojas uz cestu) ucrtavaju se u sv
 - Priprema: solarni paneli (prekidač „Paneli”, iz površine i orijentacije u odjeljku Solarna elektrana, na kosini najbližoj odabranoj orijentaciji ili u redovima na ravnom krovu);
   prilaz (iz procjene gradnje: vrsta i širina, od ulaza do najbliže ceste, boja po vrsti); sloj terase postoji, ali je prazan dok aplikacija nema unos za terasu.
 - Prikaz je ilustracija za planiranje, ne arhitektonski projekt.
+
+## Prijedlog okućnice (Faza 1, ilustrativno)
+
+- Odjeljak „Prijedlog okućnice” ispod simulatora kuće; gumb „Predloži okućnicu” (prijedlog postoji samo kad ga korisnik zatraži). Oznaka „Automatski prijedlog okućnice – ilustrativno”, pouzdanost C.
+- Izračun je pravilima u aplikaciji (`okuIzracun`, čista funkcija, ravnina u metrima oko čestice), bez vanjskog AI-ja i bez slanja podataka.
+- Pristup: točka granice uz cestu (OSM) najbliža kući; bez cesta pretpostavljen, uz napomenu. Parking 1–2 mjesta 2,5 × 5 m okomito na granicu, 1 m od nje, pomak ◀ ▶.
+  Kolni prilaz od granice do parkinga (širina 2,5–5 m). Staza 1,2 m od parkinga do ulaza (strana kuće prema pristupu), oko kuće preko ugla ako treba.
+  Vrt: kompaktan skup čelija 1 m² na najsunčanijem dijelu (izvan sjene kuće za podne u proljeće i jesen), dalje od ceste. Travnjak: ostatak slobodnog prostora.
+- Napomene: uska čestica (zbroj slobodnog prostora sa strana kuće < 5 m) → kompaktan prijedlog; nema mjesta za parking/vrt; nagib ≥ 15 %; cesta daleko.
+- Prikaz: karta (sloj u odabiru), skica tlocrta, legenda, 3D (površine na terenu; isti ulaz u kuću), izvještaj. Pomicanje kuće preračunava prijedlog.
+- Izlaz za druge module: `window.__oku.povrsine` {parking, prilaz, staza, vrt, travnjak} m² i `projGet().okucnica`. Ne ulazi automatski u troškove (Faza 3).
+- Faza 2 (terasa, pomoćni objekt, tipovi okućnice): nove stavke u `OKU_VRSTE` i koraci u `okuIzracun`.
+
+## Glavni izbornik: 6 numeriranih kategorija
+
+Prikaz se slaže kao prije; `izbWrap()` zatim premješta postojeće odjeljke (isti elementi, id-evi i `data-k`) u kategorije. Ništa se ne kopira.
+
+| Kategorija | Postojeći odjeljci i moduli |
+|---|---|
+| 01 Prostorni planovi i namjena | udjeli namjene (zone), Karte prostornog plana (GUP/UPU, rkBox), Krk: Prostorni planovi na lokaciji |
+| 02 Gradnja i simulator kuće | Uvjeti gradnje (prekidači, pravilo, parametri, iznimke), Usporedba tipova, Područje za gradnju, Izračun, Simulator, Prijedlog okućnice, Skica, sva detaljna pravila / opća pravila / članak, Postojeće zgrade (Krk), Sunce i sjena, Sunčana elektrana; prečac 3D pogled |
+| 03 Rizici i pravne provjere | ZK (uložak, tereti), Rizici i upozorenja, Svi nalazi, Provjere, Natura/zaštićena/poplave, Potresna opasnost; prečac Kontrolna lista |
+| 04 Pristup i infrastruktura | Komunalna infrastruktura, Pristup i okolina |
+| 05 Troškovi i investicija | Procjena cijene gradnje, Priprema terena, Komunalni doprinos, Priključci i dozvole, Scenariji, Procjena vrijednosti zemljišta, Kupnja, Ukupna investicija, Krk troškovi; prečac Sunčana elektrana: isplativost (isti modul iz 02) |
+| 06 Projekt i dokumentacija | Projekt čestice, Pouzdanost podataka, Dokumentacija i gdje se obratiti, Kontrolna lista, Projekt i dozvola, Gradnja i useljenje, poveznice i izvori; prečaci PDF, Spremi, Podijeli |
+
+- Otvorena je jedna glavna kategorija; pri otvaranju druge pojavi se „← Natrag na …”. Otvorena kategorija se pamti (OPEN) i pri ponovnom prikazu.
+- Sažetak: na mobitelu sklopljen u jedan redak sa stanjima; potvrđena namjena ima neutralnu oznaku „i” (ne zelenu kvačicu) i tekst da uvjeti gradnje nisu potvrđeni.
+- Mobitel: kartica „Troškovi” prikazuje i otvara 05; „Karta” spušta panel; dok se kuća povlači, panel se spusti. „↑ Sažetak” vraća na vrh.
+- Moduli su neutralni (tanki sivi rub); zelena, narančasta i crvena ostaju samo za rezultate provjera.

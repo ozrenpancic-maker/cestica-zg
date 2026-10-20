@@ -46,7 +46,7 @@ with sync_playwright() as p:
             pg.mouse.move(gx,gy); pg.mouse.down(); pg.mouse.move(gx,gy+200,steps=8); pg.mouse.up(); pg.wait_for_timeout(300); print("RUČKA dolje→",pg.evaluate("UI.state"))
             pg.click('#panelFab'); pg.wait_for_timeout(300)
             pg.click('#tabs button[data-tab=analiza]'); pg.wait_for_timeout(300)
-            pg.click('.saz-b[data-saz*=prek]'); pg.wait_for_timeout(500); pg.screenshot(path=OUT+"/m_390_full.png")
+            pg.evaluate("()=>{const d=document.querySelector('details.saz-d'); if(d) d.open=true;}"); pg.wait_for_timeout(100); pg.click('.saz-b[data-saz*=prek]'); pg.wait_for_timeout(500); pg.screenshot(path=OUT+"/m_390_full.png")
             pg.click('#tabs button[data-tab=spremljeno]'); pg.wait_for_timeout(300); pg.screenshot(path=OUT+"/m_390_fav.png")
         pg.close()
     b.close()
