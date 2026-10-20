@@ -295,3 +295,12 @@ U ispisu svaki dio skice (tlocrt, presjek, 3D) ostaje na jednoj stranici.
 - **Stranica:** A4, naslovnica bez margina; ostale stranice imaju podnožje „Čestica HR · Izvještaj o čestici” i „Stranica X / Y”.
 - **Pisma:** naslovi Georgia (serif), tekst sistemski sans; nema vanjskih fontova, pa radi i bez mreže.
 - Ako se ispis pokrene iz izbornika preglednika (ne gumbom), ispisuje se sučelje kao prije.
+
+## Cesta na skici
+
+Ceste iz OpenStreetMapa (iste kao za pristup i pojas uz cestu) ucrtavaju se u sva tri crteža skice:
+
+- **Tlocrt:** kolnik sivo, os bijelo isprekidano, naziv ulice uz cestu. Okvir se proširi do 12 m izvan čestice prema cesti. Gdje cesta u naravi ulazi u česticu, vidi se preklapanje.
+- **Presjek:** ako pravac presjeka siječe cestu do 25 m izvan međa, presjek se produži do ceste i kolnik se nacrta na razini terena, s nazivom. Stvarna visina kolnika nije poznata.
+- **3D:** blok terena se proširi do 14 m izvan čestice prema cesti, a cesta je položena na teren.
+- **Širina:** iz oznake `width` u OpenStreetMapu kad postoji, inače procjena prema vrsti ceste (ulica 5 m, lokalna 6 m, sporedna 7 m, glavna 8 m, servisni put 3,5 m, poljski put 3 m); to piše uz skicu.

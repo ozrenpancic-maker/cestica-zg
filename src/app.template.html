@@ -200,7 +200,7 @@ details p{font-size:13.5px;margin:6px 0}
 #report{display:none}
 .sk-svg{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:8px;font-family:system-ui,sans-serif}
 .sk-svg text{font-size:13px;fill:#222;text-anchor:middle;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
-.sk-svg .sk-me{font-size:12px;fill:#4a2f14;font-weight:600}.sk-svg .sk-d{font-size:12px;fill:#b3261e;font-weight:600}.sk-svg .sk-hl{font-size:13px;fill:#0d3c7a;font-weight:700}
+.sk-svg .sk-me{font-size:12px;fill:#4a2f14;font-weight:600}.sk-svg .sk-cesta{font-size:11.5px;fill:#333;font-style:italic}.sk-svg .sk-d{font-size:12px;fill:#b3261e;font-weight:600}.sk-svg .sk-hl{font-size:13px;fill:#0d3c7a;font-weight:700}
 .sk-svg .sk-iso text,.sk-svg .sk-iso{font-size:11px;fill:#7a4b16}.sk-svg .sk-k{font-size:12px;fill:#0d3c7a;font-weight:600}
 @media print{.sk-blok{break-inside:avoid}.skica{break-inside:auto}.sk-svg{max-height:12cm;width:auto;max-width:100%}}
 .cmp-wrap{overflow-x:auto;margin-top:6px}
@@ -2316,11 +2316,25 @@ function skicaRender(){
   h+=`<p class="meta">${pzTag(pz1)} ${T?`Teren je nacrtan kao ravnina s nagibom oko ${skN(T.slope,0)} % prema ${COMP(T.az)} (model visina rezolucije oko 90 m, Copernicus DEM preko Open-Meteo). Stvarni teren čestice može biti drukčiji; za projekt treba geodetski snimak.`:"Nagib terena: Podaci nisu dostupni; teren je nacrtan kao ravan."} ±0,00 je teren u sredini kuće (pretpostavka). Granice su iz katastra (grafički prikaz), kuća iz simulatora. Skica nije projekt ni dokaz da je gradnja dopuštena.</p>`;
   o.innerHTML=h; const sm=document.getElementById("skSum"); if(sm) sm.textContent=hasH?"tlocrt, presjek i 3D":"tlocrt";
 }
+// ceste uz česticu na skici: iz OpenStreetMapa (os ceste), širina iz oznake „width” ili procjena prema vrsti ceste
+const SK_SIR={motorway:12,trunk:10,primary:8,secondary:7,tertiary:6,unclassified:5,residential:5,minor:5,living_street:4.5,service:3.5,track:3,primary_link:6,secondary_link:6,tertiary_link:5};
+function skCeste(d,c0,rect){
+  const R=d&&d.env&&d.env.v&&d.env.v.roadLines; if(!R||!R.length) return [];
+  const k=111320*Math.cos(c0[1]*Math.PI/180), inv=(x,y)=>[c0[0]+x/k,c0[1]+y/110540], P=skLocal(c0), bb=[...inv(rect[0],rect[1]),...inv(rect[2],rect[3])], out=[];
+  for(const r of R){ if(!r.geom||r.geom.length<2||!(r.ok||r.hw==="track")) continue; let cl; try{cl=turf.bboxClip(turf.lineString(r.geom),bb);}catch(e){continue}
+    const lines=cl.geometry.type==="MultiLineString"?cl.geometry.coordinates:[cl.geometry.coordinates];
+    const w=r.width>1&&r.width<30?r.width:(SK_SIR[r.hw]||5);
+    for(const ln of lines){ if(!ln||ln.length<2) continue; let poly=null; try{poly=turf.intersect(turf.buffer(turf.lineString(ln),w/2000,{units:"kilometers"}),turf.bboxPolygon(bb));}catch(e){}
+      out.push({name:r.name,hw:r.hw,w,svc:!!r.svc,line:ln.map(P),polys:poly?skRings(poly.geometry).map(q=>q.map(P)):[],procjena:!(r.width>1)}); } }
+  return out;
+}
 function skicaPlan(d,T){
   const pg=d.parcel.geometry, c0=turf.centroid(d.parcel).geometry.coordinates, P=skLocal(c0);
   const rings=skRings(pg).map(r=>r.map(P)), house=TL.center?tRect():null, gar=TL.center?tGarage():null;
   const hR=house?house.geometry.coordinates[0].map(P):null, gR=gar?gar.geometry.coordinates[0].map(P):null;
   const all=rings.flat().concat(hR||[],gR||[]); let x0=Math.min(...all.map(p=>p[0])), x1=Math.max(...all.map(p=>p[0])), y0=Math.min(...all.map(p=>p[1])), y1=Math.max(...all.map(p=>p[1]));
+  // okvir se proširi do 12 m na strane gdje je cesta, da se vidi i cesta
+  const CE=skCeste(d,c0,[x0-12,y0-12,x1+12,y1+12]); if(CE.length){const cp=CE.flatMap(c=>c.polys.flat()); if(cp.length){x0=Math.max(x0-12,Math.min(x0,...cp.map(p=>p[0]))); x1=Math.min(x1+12,Math.max(x1,...cp.map(p=>p[0]))); y0=Math.max(y0-12,Math.min(y0,...cp.map(p=>p[1]))); y1=Math.min(y1+12,Math.max(y1,...cp.map(p=>p[1])));}}
   const W=640, M=46, bw=Math.max(x1-x0,5), bh=Math.max(y1-y0,5), sc=Math.min((W-2*M)/bw,(560-2*M)/bh), H=Math.round(bh*sc+2*M+18);
   const X=x=>M+(x-x0)*sc+((W-2*M)-bw*sc)/2, Y=y=>M+(y1-y)*sc, pt=p=>X(p[0]).toFixed(1)+","+Y(p[1]).toFixed(1), path=r=>"M"+r.map(pt).join("L")+"Z";
   let g="";
@@ -2334,6 +2348,15 @@ function skicaPlan(d,T){
       // oznaka na mjestu gdje izohipsa siječe sredinu
       if(k!==0||!hR){const lx=X(cx), ly=Y(cy); if(lx>M&&lx<W-M&&ly>M&&ly<H-M) labs+=`<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}">${skZ(-k*step)}</text>`;}}
     g+=`<g clip-path="url(#skClip)" stroke="#a07b4f" stroke-width="0.8" stroke-dasharray="5 4">${lines}</g><g clip-path="url(#skClip)" class="sk-iso">${labs}</g>`;}
+  // ceste (kolnik sivo, os isprekidano, naziv), ispod granice čestice; gdje cesta ulazi u česticu vidi se preklapanje
+  if(CE.length){ g+=`<defs><clipPath id="skBox"><rect x="${X(x0)}" y="${Y(y1)}" width="${(x1-x0)*sc}" height="${(y1-y0)*sc}"/></clipPath></defs><g clip-path="url(#skBox)">`;
+    for(const c of CE){ for(const r of c.polys) g+=`<path d="${path(r)}" fill="${c.hw==="track"?"#cdbb98":"#a9a9a9"}" fill-opacity=".75" stroke="#7d7d7d" stroke-width="0.8"/>`;
+      g+=`<polyline points="${c.line.map(pt).join(" ")}" fill="none" stroke="#fff" stroke-width="1.2" stroke-dasharray="6 5"/>`; }
+    const nm=new Set(); for(const c of CE){ if(!c.name||nm.has(c.name)) continue; nm.add(c.name); const L=c.line; let best=null;
+      for(let i=0;i<L.length-1;i++){const a=L[i],b=L[i+1],len=Math.hypot(b[0]-a[0],b[1]-a[1]); if(!best||len>best.len) best={a,b,len};}
+      if(best&&best.len>4){let ang=-Math.atan2(best.b[1]-best.a[1],best.b[0]-best.a[0])*180/Math.PI; if(ang>90) ang-=180; if(ang<-90) ang+=180; const mx=X((best.a[0]+best.b[0])/2), my=Y((best.a[1]+best.b[1])/2);
+        g+=`<text class="sk-cesta" x="${mx.toFixed(1)}" y="${(my+4).toFixed(1)}" transform="rotate(${ang.toFixed(1)} ${mx.toFixed(1)} ${(my+4).toFixed(1)})">${esc(c.name)}</text>`;}}
+    g+=`</g>`; }
   // područje za gradnju i pojas uz cestu (iz analize, ako je za ovu česticu)
   const G=window.__gp; if(G&&Math.abs(G.parcelArea-turf.area(d.parcel))<1){
     if(G.band) g+=`<path d="${skRings(G.band.geometry||G.band).map(r=>path(r.map(P))).join("")}" fill="#f0a020" fill-opacity=".25" stroke="#c77700" stroke-width="1" stroke-dasharray="3 3" fill-rule="evenodd"/>`;
@@ -2366,7 +2389,7 @@ function skicaPlan(d,T){
   g+=`</g>`;
   const defs=`<defs><marker id="skA" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,2L10,5L0,8z" fill="#b3261e"/></marker><marker id="skA2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,1L10,5L0,9z" fill="#7a4b16"/></marker></defs>`;
   return `<div class="sk-blok"><p class="eyebrow" style="margin:4px 0">Tlocrt</p><svg class="sk-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Skica tlocrta: čestica, kuća i udaljenosti od međa">${defs}<rect width="${W}" height="${H}" fill="#fff"/>${g}</svg>`+
-    `<p class="meta">Smeđe: međe s duljinama stranica u metrima (iz grafičkog prikaza katastra). Plavo: kuća iz simulatora${TL.krov!=="ravni"&&TL.center?" s linijama krova":""}; crveno: udaljenosti od međa. Zeleno isprekidano: područje za gradnju; narančasto: pojas uz cestu. Smeđe isprekidano: izohipse (visine prema sredini kuće).</p></div>`;
+    `<p class="meta">Smeđe: međe s duljinama stranica u metrima (iz grafičkog prikaza katastra). Plavo: kuća iz simulatora${TL.krov!=="ravni"&&TL.center?" s linijama krova":""}; crveno: udaljenosti od međa. Zeleno isprekidano: područje za gradnju; narančasto: pojas uz cestu. Smeđe isprekidano: izohipse (visine prema sredini kuće).${CE.length?` Sivo: cesta iz OpenStreetMapa (os ceste bijelo isprekidano; širina ${CE.some(c=>c.procjena)?"procijenjena prema vrsti ceste":"iz OpenStreetMapa"}).`:""}</p></div>`;
 }
 // 3D prikaz (aksonometrija): teren kao ravnina nagiba, međe položene na teren, kuća s krovom i garažom.
 // Pogled odozgo pod 30°, sa strane prema kojoj teren pada, zakrenut za 35° da se vide dva pročelja. Bez uvećanja visina.
@@ -2378,6 +2401,9 @@ function skica3D(d,T){
   const F=tFloors(), fh=TL.fh, V=F.full*fh+(F.pk?1.2:0);
   // teren: pravokutnik oko čestice (+6 m), s mrežom svakih 5 m
   const all=rings.flat(); let x0=Math.min(...all.map(p=>p[0]))-6, x1=Math.max(...all.map(p=>p[0]))+6, y0=Math.min(...all.map(p=>p[1]))-6, y1=Math.max(...all.map(p=>p[1]))+6;
+  // ako je cesta blizu, blok terena se proširi da je obuhvati (najviše 14 m izvan čestice)
+  {const CE0=skCeste(d,c0,[x0-8,y0-8,x1+8,y1+8]), cp=CE0.flatMap(c=>c.polys.flat()); if(cp.length){x0=Math.max(x0-8,Math.min(x0,...cp.map(p=>p[0]))); x1=Math.min(x1+8,Math.max(x1,...cp.map(p=>p[0]))); y0=Math.max(y0-8,Math.min(y0,...cp.map(p=>p[1]))); y1=Math.min(y1+8,Math.max(y1,...cp.map(p=>p[1])));}}
+  const CE3=skCeste(d,c0,[x0,y0,x1,y1]);
   const faces=[]; // {pts:[[sx,sy]], d:dubina, fill, stroke}
   const Q=(pts3,fill,stroke,sw,dd)=>faces.push({pts:pts3.map(q=>pr(q[0],q[1])),d:dd!=null?dd:pts3.reduce((a,q)=>a+dep(q[0]),0)/pts3.length,fill,stroke,sw});
   // kuća: zidovi od min(teren, 0) do vijenca; krov
@@ -2409,6 +2435,8 @@ function skica3D(d,T){
   let grid=""; for(let x=Math.ceil(x0/5)*5;x<=x1;x+=5){const a=[x,y0],b=[x,y1]; grid+=`<line x1="${X(pr(a,zt(a)))}" y1="${Y(pr(a,zt(a)))}" x2="${X(pr(b,zt(b)))}" y2="${Y(pr(b,zt(b)))}"/>`;}
   for(let y=Math.ceil(y0/5)*5;y<=y1;y+=5){const a=[x0,y],b=[x1,y]; grid+=`<line x1="${X(pr(a,zt(a)))}" y1="${Y(pr(a,zt(a)))}" x2="${X(pr(b,zt(b)))}" y2="${Y(pr(b,zt(b)))}"/>`;}
   g+=`<g stroke="#c9d5b5" stroke-width="0.7">${grid}</g>`;
+  // ceste položene na teren
+  for(const c of CE3) for(const rr of c.polys) g+=`<polygon points="${poly(rr.map(p=>pr(p,zt(p))))}" fill="${c.hw==="track"?"#cdbb98":"#9b9b9b"}" stroke="#6f6f6f" stroke-width="0.8"/>`;
   // čestica i područje za gradnju položeni na teren
   const Gp=window.__gp; if(Gp&&Gp.geom&&Math.abs(Gp.parcelArea-turf.area(d.parcel))<1) for(const rr of skRings(Gp.geom)) g+=`<polygon points="${poly(rr.map(P).map(p=>pr(p,zt(p))))}" fill="#22a35a" fill-opacity=".16" stroke="#14532d" stroke-width="1" stroke-dasharray="5 3"/>`;
   for(const rr of rings) g+=`<polygon points="${poly(rr.map(p=>pr(p,zt(p))))}" fill="#f4efe4" fill-opacity=".55" stroke="#4a2f14" stroke-width="2.2"/>`;
@@ -2416,10 +2444,12 @@ function skica3D(d,T){
   g+=`<polygon points="${poly(hR.map(p=>pr(p,zt(p))))}" fill="#000" fill-opacity=".12"/>`;
   faces.sort((a,b)=>b.d-a.d); for(const q of faces) g+=`<polygon points="${poly(q.pts)}" fill="${q.fill}" stroke="${q.stroke}" stroke-width="${q.sw}" stroke-linejoin="round"/>`;
   // sjever na terenu
-  const nb=[x1-3,y0+3], nt=[x1-3,y0+9]; g+=`<line x1="${X(pr(nb,zt(nb)))}" y1="${Y(pr(nb,zt(nb)))}" x2="${X(pr(nt,zt(nt)))}" y2="${Y(pr(nt,zt(nt)))}" stroke="#222" stroke-width="2" marker-end="url(#sk3A)"/><text x="${X(pr(nt,zt(nt)))}" y="${(+Y(pr(nt,zt(nt)))-6).toFixed(1)}">S</text>`;
+  // sjever u kutu bloka najdaljem od ceste
+  const kut=[[x1-3,y0+3],[x0+3,y0+3],[x1-3,y1-9],[x0+3,y1-9]].map(q=>({q,d:CE3.length?Math.min(...CE3.flatMap(c=>c.line.map(p=>Math.hypot(p[0]-q[0],p[1]-q[1])))):0})).sort((a,b)=>b.d-a.d)[0].q;
+  const nb=kut, nt=[kut[0],kut[1]+6]; g+=`<line x1="${X(pr(nb,zt(nb)))}" y1="${Y(pr(nb,zt(nb)))}" x2="${X(pr(nt,zt(nt)))}" y2="${Y(pr(nt,zt(nt)))}" stroke="#222" stroke-width="2" marker-end="url(#sk3A)"/><text x="${X(pr(nt,zt(nt)))}" y="${(+Y(pr(nt,zt(nt)))-6).toFixed(1)}">S</text>`;
   const defs=`<defs><marker id="sk3A" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,1L10,5L0,9z" fill="#222"/></marker></defs>`;
   return `<div class="sk-blok"><p class="eyebrow" style="margin:10px 0 4px">3D prikaz (skica)</p><svg class="sk-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="3D skica kuće na terenu">${defs}${g}</svg>`+
-    `<p class="meta">Pogled odozgo pod 30° sa strane ${T?`prema kojoj teren pada (${COMP(taz)})`:"juga"}, bez uvećanja visina; mreža na terenu je svakih 5 m, a na bokovima bloka terena vidi se nagib. Kuća je smještena tako da je pod u razini terena u njezinoj sredini; na nižoj strani vidi se dio zida ispod te razine (podrum ili podnožje). Teren je ravnina iz nagiba okoline (C).</p></div>`;
+    `<p class="meta">Pogled odozgo pod 30° sa strane ${T?`prema kojoj teren pada (${COMP(taz)})`:"juga"}, bez uvećanja visina; mreža na terenu je svakih 5 m, a na bokovima bloka terena vidi se nagib. Kuća je smještena tako da je pod u razini terena u njezinoj sredini; na nižoj strani vidi se dio zida ispod te razine (podrum ili podnožje).${CE3.length?" Sivo: cesta iz OpenStreetMapa položena na teren.":""} Teren je ravnina iz nagiba okoline (C).</p></div>`;
 }
 function skicaPresjek(d,T){
   const c0=TL.center, P=skLocal(c0), rings=skRings(d.parcel.geometry).map(r=>r.map(P)), hR=tRect().geometry.coordinates[0].map(P);
@@ -2428,6 +2458,12 @@ function skicaPresjek(d,T){
   let s1=null, s2=null; for(const r of rings) for(let i=0;i<r.length-1;i++){const a=r[i], b=r[i+1], ex=b[0]-a[0], ey=b[1]-a[1], den=ux*ey-uy*ex; if(Math.abs(den)<1e-9) continue;
     const t=(a[0]*ey-a[1]*ex)/den, u=(a[0]*uy-a[1]*ux)/den; if(u<0||u>1) continue; if(t<0&&(s1==null||t>s1)) s1=t; if(t>0&&(s2==null||t<s2)) s2=t;}
   const pr=hR.slice(0,4).map(p=>p[0]*ux+p[1]*uy), ha=Math.min(...pr), hb=Math.max(...pr); if(s1==null) s1=ha-3; if(s2==null) s2=hb+3;
+  // cesta koju presjek siječe do 25 m izvan međa
+  const m1=s1, m2=s2, CR=[];
+  for(const c of skCeste(d,c0,[-200,-200,200,200])){ const L=c.line; for(let i=0;i<L.length-1;i++){const a=L[i], b=L[i+1], ex=b[0]-a[0], ey=b[1]-a[1], den=ux*ey-uy*ex; if(Math.abs(den)<1e-9) continue;
+      const t=(a[0]*ey-a[1]*ex)/den, u=(a[0]*uy-a[1]*ux)/den; if(u<0||u>1||t<m1-25||t>m2+25) continue; const sinA=Math.abs(den)/Math.hypot(ex,ey), hw=Math.min(c.w/2/Math.max(sinA,0.3),15);
+      CR.push({t,hw,name:c.name}); }}
+  for(const r of CR){ s1=Math.min(s1,r.t-r.hw-2); s2=Math.max(s2,r.t+r.hw+2); }
   const F=tFloors(), fh=TL.fh, V=F.full*fh+(F.pk?1.2:0);
   // krov u presjeku: je li presjek okomit na sljeme
   let roof=[[ha,V],[hb,V]], R=V;
@@ -2449,15 +2485,17 @@ function skicaPresjek(d,T){
   for(let i=1;i<F.full;i++) g+=`<line x1="${X(ha)}" y1="${Y(i*fh)}" x2="${X(hb)}" y2="${Y(i*fh)}" stroke="#0d3c7a" stroke-width="1" stroke-dasharray="4 3"/>`;
   if(F.pk) g+=`<line x1="${X(ha)}" y1="${Y(F.full*fh)}" x2="${X(hb)}" y2="${Y(F.full*fh)}" stroke="#0d3c7a" stroke-width="1" stroke-dasharray="4 3"/>`;
   g+=`<path d="M${roof.map(p=>X(p[0]).toFixed(1)+","+Y(p[1]).toFixed(1)).join("L")}" fill="#b85c38" fill-opacity=".35" stroke="#7a2e14" stroke-width="2"/>`;
+  // cesta u presjeku (kolnik na razini terena)
+  for(const r of CR){ const a=r.t-r.hw, b=r.t+r.hw; g+=`<line x1="${X(a)}" y1="${Y(zt(a))}" x2="${X(b)}" y2="${Y(zt(b))}" stroke="#6f6f6f" stroke-width="6"/><text class="sk-ui" x="${X(r.t)}" y="${Y(zt(r.t))+20}">${esc(r.name?"cesta ("+r.name+")":"cesta")}</text>`; }
   // međe
-  for(const s of [s1,s2]) g+=`<line x1="${X(s)}" y1="${Y(zt(s))-28}" x2="${X(s)}" y2="${Y(zt(s))+6}" stroke="#4a2f14" stroke-width="2"/><text class="sk-ui" x="${X(s)}" y="${Y(zt(s))-32}">međa ${skZ(zt(s))}</text>`;
+  for(const s of [m1,m2]) g+=`<line x1="${X(s)}" y1="${Y(zt(s))-28}" x2="${X(s)}" y2="${Y(zt(s))+6}" stroke="#4a2f14" stroke-width="2"/><text class="sk-ui" x="${X(s)}" y="${Y(zt(s))-32}">međa ${skZ(zt(s))}</text>`;
   // kote
   const lab=(z,t)=>`<text class="sk-k" x="${(X(hb)+6).toFixed(1)}" y="${(Y(z)+4).toFixed(1)}" text-anchor="start">${t}</text>`;
   g+=lab(0,"±0,00")+lab(V,(F.pk?"vijenac ":"")+skZ(V))+(R>V+0.01?lab(R,"sljeme "+skZ(R)):"")+(TL.podrum?lab(-fh,skZ(-fh)):"");
   const dzH=Math.abs(zt(ha)-zt(hb));
   g+=`<text class="sk-ui" x="${X((s1+s2)/2)}" y="${H-10}">${T?`uzbrdo ← → nizbrdo (${COMP(az)}); teren ispod kuće: razlika oko ${skN(dzH)} m`:"teren ravan (nagib nije dostupan)"}</text>`;
   return `<div class="sk-blok"><p class="eyebrow" style="margin:10px 0 4px">Presjek kroz sredinu kuće${T?" u smjeru pada terena":""}</p><svg class="sk-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Skica presjeka: teren, kuća i krov">${g}</svg>`+
-    `<p class="meta">Isto mjerilo vodoravno i okomito. Visina etaže ${skN(fh)} m, ${esc(F.label)}${F.pk?", nadozid potkrovlja 1,2 m (pretpostavka)":""}${TL.krov!=="ravni"?`, krov ${esc((KROVOVI.find(k=>k[0]===TL.krov)||[])[1]||"")} ${skN(TL.nagib,0)}°`:", ravni krov"}. Svijetlosmeđe uz kuću: usjek ili nasip do razine ±0,00. Duljina presjeka od međe do međe: ${skN(s2-s1)} m.</p></div>`;
+    `<p class="meta">Isto mjerilo vodoravno i okomito. Visina etaže ${skN(fh)} m, ${esc(F.label)}${F.pk?", nadozid potkrovlja 1,2 m (pretpostavka)":""}${TL.krov!=="ravni"?`, krov ${esc((KROVOVI.find(k=>k[0]===TL.krov)||[])[1]||"")} ${skN(TL.nagib,0)}°`:", ravni krov"}. Svijetlosmeđe uz kuću: usjek ili nasip do razine ±0,00. Duljina presjeka od međe do međe: ${skN(m2-m1)} m.${CR.length?" Sivo: cesta iz OpenStreetMapa, nacrtana na razini terena (stvarna visina kolnika nije poznata).":""}</p></div>`;
 }
 
 // --- postojeće zgrade na čestici (Topografska osnova Grada Zagreba 2018., tlocrti)
@@ -3029,7 +3067,7 @@ async function loadEnv(ll,parcel){
   const nearest=(key,e)=>{const d=dist(e); if(d==null) return; if(!out[key]||d<out[key].d) out[key]={n:e.tags.name||"bez naziva",d}};
   for(const e of j.elements||[]){
     const t=e.tags||{};
-    if(e.type==="way"&&t.highway&&e.geometry) out.roadLines.push({ok:ROAD_OK.test(t.highway),svc:t.highway==="service",geom:e.geometry.map(g=>[g.lon,g.lat])});
+    if(e.type==="way"&&t.highway&&e.geometry) out.roadLines.push({ok:ROAD_OK.test(t.highway),svc:t.highway==="service",hw:t.highway,name:t.name||null,width:parseFloat(t.width)||null,geom:e.geometry.map(g=>[g.lon,g.lat])});
     if(e.type==="way"&&t.highway){const k=(t.name||t.highway)+"|"+t.highway; if(!seen.has(k)){seen.add(k);roads.push({name:t.name,hw:t.highway,ok:ROAD_OK.test(t.highway),surface:t.surface,width:t.width})}}
     else if(t.highway==="bus_stop"||t.railway==="tram_stop"||t.railway==="station"){const d=dist(e); if(d!=null) out.stops.push({n:t.name||"stanica",d,type:t.railway==="tram_stop"?"tramvaj":t.railway==="station"?"vlak":"autobus"})}
     else if(t.amenity==="kindergarten") nearest("kinder",e);
@@ -4395,11 +4433,12 @@ const LGD=[
   {k:"kuca",n:"Kuća iz simulatora (crveno kad izađe iz dopuštenog prostora)",sw:'<i class="sw" style="background:rgba(21,101,192,.35);border:2px solid #1565c0"></i>'},
   {k:"zgr",n:"Postojeće zgrade",sw:'<i class="sw" style="background:rgba(102,102,102,.35);border:1.5px solid #444"></i>'},
   {k:"kor",n:"Koridori i ograničenja iz provjera (dalekovodi, plinovodi i sl.)",sw:'<i class="sw ln" style="border-color:#b3261e;border-style:dashed;border-width:3px"></i>'},
+  {k:"cesta",n:"Cesta iz OpenStreetMapa (kolnik; širina procijenjena prema vrsti ceste)",sw:'<i class="sw" style="background:#a9a9a9;border:1px solid #7d7d7d"></i>',skica:true},
   {k:"iso",n:"Izohipse na skici (visina prema sredini kuće)",sw:'<i class="sw ln" style="border-color:#a07b4f;border-style:dashed"></i>',skica:true},
   {k:"odm",n:"Udaljenost kuće od međe na skici",sw:'<i class="sw ln" style="border-color:#b3261e"></i>',skica:true}];
 function legendaHtml(opt={}){
   const G=window.__gp, pd=G&&G.pravacD?G.pravacD:null;
-  const items=LGD.filter(x=>opt.skica?["sel","gp","band","kuca","iso","odm"].includes(x.k):!x.skica);
+  const items=LGD.filter(x=>opt.skica?["sel","gp","band","kuca","cesta","iso","odm"].includes(x.k):!x.skica);
   let h=`<ul class="lgd">${items.map(x=>`<li>${x.sw}<span>${esc(typeof x.n==="function"?x.n(pd):x.n)}</span></li>`).join("")}</ul>`;
   if(!opt.skica) h+=`<details class="lgd-nam"><summary>Boje namjene (GUP)</summary><ul class="lgd">${Object.entries(COLORS).map(([n,c])=>`<li><i class="sw" style="background:${c};opacity:.55;border:1px solid ${c}"></i><span>${esc(n)}</span></li>`).join("")}</ul></details>`;
   return h;
