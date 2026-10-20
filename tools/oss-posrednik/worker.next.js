@@ -168,6 +168,8 @@ export default {
       const ck2 = new Request("https://cache.local/oss-lr/" + id), hit2 = await cache.match(ck2);
       if (hit2) o.ulosci = await hit2.json();
       else {
+        // čestica iz predmemorije stare verzije posrednika nema glavnu knjigu (_mb): tada se parcel-info dohvati ponovno
+        if ((o.zk || []).some(z => z.ulozak && !z._mb)) { try { const fr = await parcelInfo(id); if (fr.status === 200) { o = { ...fr.o, ...(tocka ? { graficka: o.graficka, stanjeKarte: o.stanjeKarte } : {}) }; ctx.waitUntil(cache.put(ck, new Response(JSON.stringify(fr.o), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_S } }))); } } catch (e) {} }
         const zk = (o.zk || []).filter(z => z.ulozak && z._mb).slice(0, 3);
         try { o.ulosci = (await Promise.all(zk.map(z => ulozak(z.ulozak, z._mb)))).filter(Boolean); ctx.waitUntil(cache.put(ck2, new Response(JSON.stringify(o.ulosci), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_S } }))); }
         catch (e) { o.ulosciGreska = e.message || "OSS uložak ne odgovara"; }

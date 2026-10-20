@@ -57,4 +57,9 @@ console.log("worker.next: uložak OK");
   assert.equal(U2.B.upisa, 1); assert.equal(U2.B.vlasnika, 1);
   assert.ok(!/PERO|11111111111|22222222222|TESTNA 3|taxNumber|lrOwners|lrEntry"/.test(s2), "B imena, OIB-i i adrese ne izlaze: " + s2);
   console.log("worker.next: upisi A II i C OK");
+  // predmemorija stare verzije (bez _mb): parcel-info se dohvati ponovno, pa uložak radi
+  store = new Map(); store.set("https://cache.local/oss/19311109", JSON.stringify({ ok: true, id: "19311109", broj: "735/58", zk: [{ broj: "735/58", povrsina: 642, ulozak: "5126" }], dijelovi: [] })); calls.length = 0;
+  const r3 = await W.fetch(new Request("https://w.dev/?id=19311109&ulozak=1"), {}, ctx), o3 = await r3.json();
+  assert.equal(o3.ulosci.length, 1); assert.ok(calls.some(u => /parcel-info/.test(u)) && calls.some(u => /lr-unit/.test(u) && /mainBookId=31117/.test(u)));
+  console.log("worker.next: stara predmemorija OK");
 }
