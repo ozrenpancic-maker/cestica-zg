@@ -1460,11 +1460,11 @@ async function katTests(){
 }
 async function zg3dTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x), root=path.join(__dirname,"..");
-  let nf=0; w.fetch=(u)=>{u=String(u); nf++; const m=u.match(/data\/zg3d\/(index\.json|t\/[\d_-]+\.json)$/);
-    if(m){ const f=path.join(root,"data","zg3d",m[1]); if(fs.existsSync(f)) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(f,"utf8")))}); }
+  let nf=0; w.fetch=(u)=>{u=String(u); nf++; const m=u.match(/data\/(zg3d(?:_krk)?)\/(index\.json|t\/[\d_-]+\.json)$/);
+    if(m){ const f=path.join(root,"data",m[1],m[2]); if(fs.existsSync(f)) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(f,"utf8")))}); }
     return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null)}); };
   const rect=(lon,lat,wm,dm)=>({type:"Feature",geometry:{type:"Polygon",coordinates:[[[lon,lat],[lon+wm/(111320*Math.cos(lat*Math.PI/180)),lat],[lon+wm/(111320*Math.cos(lat*Math.PI/180)),lat+dm/110540],[lon,lat+dm/110540],[lon,lat]]]},properties:{KATASTARSKA_CESTICA:"1/1",KATASTARSKA_OPCINA:"SESVETE",GRADSKA_CETVRT:"Sesvete"}});
-  const A=rect(16.1110,45.8310,25,30), K=rect(14.5935,45.0274,25,30); // Sesvete (ima podataka) i Kornić na Krku (nema)
+  const A=rect(16.1110,45.8310,25,30), K=rect(14.4400,45.3300,25,30), KR=rect(14.6310,45.0220,25,30); // Sesvete (ZG3D), Rijeka (nema podataka) i Krk (katastar)
   const R=await E("zg3dLoad")(A);
   ok(R.st==="ok"&&R.list.length>20&&R.list.every(b=>b.dist<=80&&b.faces.length>0&&b.foot[0].length>=3&&b.wall>=0),"ZG3D: za česticu u Sesvetama učitane okolne zgrade (krug do 80 m) s tlocrtom, visinom i krovnim plohama");
   ok(R.list.every(b=>!w.turf.booleanPointInPolygon(w.turf.point(b.c),A)),"ZG3D: postojeća zgrada na samoj čestici se ne prikazuje (kuća iz simulatora se crta zasebno)");
@@ -1473,6 +1473,9 @@ async function zg3dTests(){
   ok(E("zg3dGet")(A)===R||E("zg3dGet")(A).list.length===R.list.length,"ZG3D: rezultat je dostupan sinkrono za skicu");
   const n0=nf; const R2=await E("zg3dLoad")(A); ok(nf===n0&&R2.list.length===R.list.length,"ZG3D: ponovni upit za istu česticu ne dohvaća ništa ponovno");
   const R3=await E("zg3dLoad")(K); ok(R3.st==="nema"&&R3.list.length===0&&!E("zg3dNapomena")(R3),"ZG3D: izvan područja s podacima nema zgrada i nema napomene (bez izmišljanja)");
+  {const Z=await E("zg3dLoad")(KR); ok(Z.st==="ok"&&Z.tip==="dkp"&&Z.list.length>5&&Z.list.every(b=>b.dist<=80&&b.foot[0].length>=3&&b.faces.length===0&&b.wall>=2&&b.wall<=10),"ZG3D, Krk: okolne zgrade iz katastra DGU (tlocrt + pretpostavljena visina, bez krovnih ploha)");
+   const n=E("zg3dNapomena")(Z); ok(/PRETPOSTAVLJENE/.test(n)&&/kvadri bez krova/.test(n)&&!/ZG3D, Otvorena/.test(n),"ZG3D, Krk: napomena jasno kaže da su visine pretpostavljene i da nema krovova");
+   const F=E("zg3dFeatures")(Z.list); ok(F.length===Z.list.length&&F.every(f=>f.properties.b===0&&f.properties.h>=2),"ZG3D, Krk: tijela za 3D pogled su kvadri do pretpostavljene visine");}
   // skica: s okolnim zgradama ima puno više ploha i napomenu; bez njih ostaje kao prije
   const d=data(w,A,"2.2.",{slope:{v:{h:200,slope:5,down:"jug",az:180}}}); w.__env=d.envelope; E("OPEN").add("tloc"); E("OPEN").add("skica"); E("render")(d);
   const TL=E("TL"); TL.w=10; TL.d=8; TL.rot=0; TL.fl="2"; TL.fh=3; TL.podrum=false; TL.krov="dvo"; TL.nagib=30; TL.sljeme="duz"; TL.gar=false;
