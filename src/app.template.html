@@ -1147,9 +1147,9 @@ function krkPrekHtml(d){
   else if(K&&K.upu.length) L.push({id:"ot-upu",naziv:"Detaljni plan (UPU)",stanje:"ok",tekst:"Na lokaciji vrijedi "+K.upu.map(p=>p.VRSTA_PP+(p.NAZIV?" ("+String(p.NAZIV).slice(0,90)+")":"")).join(", ")+"; uvjeti su iz njega.",pz:pz("A",{izvor:"PGŽ, evidencija prostornih planova",obuhvat:"na točki"})});
   else if(K) L.push({id:"ot-upu",naziv:"Obvezni urbanistički plan (UPU)",stanje:"ok",tekst:"Evidencija planova na točki ne navodi UPU; čestica nije u neizgrađenom dijelu za koji je UPU obvezan.",pz:pz("B",{izvor:"PGŽ, namjena i evidencija planova",razlog:"obveza UPU-a izvedena iz izgrađenosti i evidencije"})});
   // pristup
-  const pr=R.pristup, G=window.__gp, uzCestu=G?G.st==="primijenjen":null, RS=C&&R.upu?Object.values(R.upu).find(u=>u.kod===C.plan):null;
-  L.push({id:"ot-pristup",naziv:"Pristup s prometne površine",stanje:uzCestu===false||(G&&G.kroz)?"warn":"?",
-    tekst:(G&&G.kroz?krozTekst(G.kroz)+" ":"")+(uzCestu?"Uz rub čestice prepoznata je cesta iz OpenStreetMapa (procjena). ":uzCestu===false?"Uz česticu nije prepoznata cesta iz OpenStreetMapa. ":"")+(pr&&pr.min?`PPUG: pristupni put najmanje ${String(pr.min).replace(".",",")} m (iznimno ${String(pr.minIznimno).replace(".",",")} m, ${pr.clanak}). `:"")+"Status i širina pristupa nisu provjereni.",
+  const pr=R.pristup, G=window.__gp, PO=pristupOpis(window.__cur&&window.__cur.key), RS=C&&R.upu?Object.values(R.upu).find(u=>u.kod===C.plan):null;
+  L.push({id:"ot-pristup",naziv:"Pristup s prometne površine",stanje:(G&&G.kroz)||(PO&&PO.stanje==="warn")?"warn":"?",
+    tekst:(G&&G.kroz?krozTekst(G.kroz)+" ":"")+(PO?PO.tekst+" ":"")+(pr&&pr.min?`PPUG: pristupni put najmanje ${String(pr.min).replace(".",",")} m (iznimno ${String(pr.minIznimno).replace(".",",")} m, ${pr.clanak}). `:"")+"Status i širina pristupa nisu provjereni.",
     pz:pz("C",{razlog:"pravni status i širina pristupa nisu u javnim podacima",provjera:"katastar (čestica puta), lokacijska informacija"})});
   // parkiranje
   const src=(RS&&RS.pristup&&RS.pristup.napomena)||(pr&&pr.napomena)||"", m=src.match(/(\d+)\s*mjest\w*\s*po stanu/i), per=m?+m[1]:null;
@@ -2091,6 +2091,7 @@ function renderKrk(d){
   window.__lastLL=ll; const prevKeyK=window.__cur&&window.__cur.key;
   window.__cur={key:"krk:"+(P.ref||P.broj||(ll.lat.toFixed(6)+","+ll.lng.toFixed(6))),region:"krk",ll:{lat:ptc.lat,lng:ptc.lng},ces:P.broj||null,ko:P.ko||null,area,buildArea:null,code:null,
     namjena:rows[0]?krkZoneLabel(rows[0].p):null,analitika:null,risks:null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:null};
+  window.__prist=parcel&&env&&env.v?pristupOcjena(parcel,env.v.roadLines):null; if(window.__prist) pristupMedju(window.__cur.key,window.__prist,P.broj||null);
   const keepScroll=prevKeyK===window.__cur.key?scrollAnchor():null; // ista čestica: zadrži mjesto čitanja
   GRP=null; window.__areaCmp=null;
   pzReset(window.__cur.key); krkPzBase(d);
@@ -2277,8 +2278,8 @@ function zgPrekHtml(d){
     if(u&&u.e) L.push({id:"ot-upu",naziv:"Obvezni urbanistički plan (UPU)",stanje:"?",tekst:"Sloj obveze UPU-a nije odgovorio.",pz:pz("C",{razlog:"servis nije odgovorio",provjera:"lokacijska informacija"})});
     else if(u&&u.v&&u.v.length) L.push({id:"ot-upu",naziv:"Obvezni urbanistički plan (UPU)",stanje:"no",tekst:u.c.hit(u.v[0].properties||{},u.v.map(f=>f.properties||{})),pz:pz("A",{izvor:"Grad Zagreb, GUP 4b Procedure urbano-prostornog uređenja (sloj javne rasprave)",obuhvat:"presjek s česticom"})});
     else if(u) L.push({id:"ot-upu",naziv:"Obvezni urbanistički plan (UPU)",stanje:"ok",tekst:"Čestica nije u obuhvatu obveznog UPU-a.",pz:pz("A",{izvor:"Grad Zagreb, GUP 4b Procedure urbano-prostornog uređenja (sloj javne rasprave)",obuhvat:"presjek s česticom"})});}
-  const G=window.__gp, uz=G?G.st==="primijenjen":null;
-  L.push({id:"ot-pristup",naziv:"Pristup s prometne površine",stanje:uz===false||(G&&G.kroz)?"warn":"?",tekst:(G&&G.kroz?krozTekst(G.kroz)+" ":"")+(uz?"Uz rub čestice prepoznata je ulica iz OpenStreetMapa (procjena). ":uz===false?"Uz česticu nije prepoznata ulica iz OpenStreetMapa. ":"")+"Pravni status i širina pristupa nisu provjereni.",pz:pz("C",{razlog:"pravni status i širina pristupa nisu u javnim podacima",provjera:"katastar (čestica puta), lokacijska informacija"})});
+  const G=window.__gp, PO=pristupOpis(window.__cur&&window.__cur.key);
+  L.push({id:"ot-pristup",naziv:"Pristup s prometne površine",stanje:(G&&G.kroz)||(PO&&PO.stanje==="warn")?"warn":"?",tekst:(G&&G.kroz?krozTekst(G.kroz)+" ":"")+(PO?PO.tekst+" ":"")+"Pravni status i širina pristupa nisu provjereni.",pz:pz("C",{razlog:"pravni status i širina pristupa nisu u javnim podacima",provjera:"katastar (čestica puta), lokacijska informacija"})});
   const RP=window.__ruleP||[], pg=RP.find(x=>x.id==="pgm"), per=pg&&pg.num, jed=RP.find(x=>x.id==="jed"), n=pkStanovi(), pp={teren:(RP.find(x=>x.id==="teren")||{}).num};
   const A=window.__cur&&window.__cur.area, tl=window.__tl!=null?Math.min(window.__tl,G?G.area:window.__tl):null, ter=RP.find(x=>x.id==="teren"), terP=ter&&ter.value?parseFloat(String(ter.value).replace(",","."))/100:null;
   L.push(pkRow(n,per,tl!=null&&per?pkFit(n*per,A,tl,terP?terP*A:0):null,per?"pravilo "+(window.__rule&&window.__rule.code||"")+(jed&&jed.num?", najviše "+jed.num+" jedinica":""):"pravilo GUP-a ne navodi PGM po stanu",false));
@@ -2341,16 +2342,64 @@ function withinEnv(rect,env){
   const parts=rect.geometry.type==="MultiPolygon"?rect.geometry.coordinates.map(c=>turf.polygon(c)):[rect];
   return parts.every(pt=>polys.some(pg=>turf.booleanWithin(pt,pg)));
 }
-// rubovi čestice uz cestu (manje od 12 m od osi ceste iz OSM-a) i pojas do udaljenosti građevnog pravca
+// ================= PRISTUP S CESTE =================
+// Os ceste u OpenStreetMapu je sredina kolnika, a granica čestice ceste (javno dobro) često je i nekoliko metara dalje od
+// kolnika (nogostup, bankina, jarak) ili je između uska zasebna čestica (put, pojas ceste). Zato se ne mjeri udaljenost do osi,
+// nego razmak od ruba čestice do ruba kolnika (os − pola širine iz oznake „width” ili procjene prema vrsti ceste).
+// Kad je razmak 1,5–10 m, katastarski sloj DGU se pita koja je čestica između (na sredini razmaka i na osi ceste).
+const PRIST={uz:3,blizu:10,map:new Map()}; // do 3 m: nogostup ili bankina uz kolnik; 3–10 m: pojas ceste ili uska čestica između
+const pristPola=r=>(r.width>1&&r.width<30?r.width:(SK_SIR[r.hw]||5))/2;
+function pristupOcjena(parcel,roads){
+  if(!parcel||!Array.isArray(roads)||!roads.length) return null; // bez linija cesta (ili starih podataka) nema ocjene
+  const R=roads.filter(r=>r.ok&&!r.svc&&r.geom&&r.geom.length>1).map(r=>({r,l:turf.lineString(r.geom),h:pristPola(r)}));
+  if(!R.length) return {st:"nema"};
+  let ln; try{ln=turf.polygonToLine(parcel); if(ln.type==="FeatureCollection") ln=ln.features[0]; if(ln.geometry.type==="MultiLineString") ln=turf.lineString(ln.geometry.coordinates[0]);}catch(e){return null}
+  const L=turf.length(ln,{units:"kilometers"})*1000, n=Math.min(400,Math.max(8,Math.ceil(L)));
+  let best=null, uzM=0;
+  for(let i=0;i<n;i++){ const p=turf.along(ln,(i+.5)*L/n/1000,{units:"kilometers"});
+    for(const x of R){ const d=turf.pointToLineDistance(p,x.l,{units:"kilometers"})*1000, gap=d-x.h;
+      if(!best||gap<best.gap) best={gap,p:p.geometry.coordinates,x}; }
+    if(R.some(x=>turf.pointToLineDistance(p,x.l,{units:"kilometers"})*1000-x.h<=PRIST.uz)) uzM+=L/n; }
+  const gap=Math.max(0,best.gap), q=turf.nearestPointOnLine(best.x.l,turf.point(best.p)).geometry.coordinates;
+  return {st:gap<=PRIST.uz?"uz":gap<=PRIST.blizu?"blizu":"daleko",gap,cesta:best.x.r.name||null,hw:best.x.r.hw,pola:best.x.h,tocka:best.p,os:q,duljinaUz:Math.round(uzM)};
+}
+// čestica između ruba čestice i ceste (DGU katastarski sloj, izravno iz preglednika)
+function pristupMedju(key,O,broj){
+  if(!O||O.st!=="blizu"||PRIST.map.has(key)) return; PRIST.map.set(key,{st:"load"});
+  const t=Math.min(0.5,(O.gap/2+0.5)/Math.max(1,O.gap+O.pola)), a=O.tocka, b=O.os, mid=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+  Promise.all([katwAt(mid[1],mid[0]).catch(()=>null),katwAt(b[1],b[0]).catch(()=>null)]).then(([m,c])=>{
+    const sir=g=>{ try{ const r=g&&(g.type==="Polygon"?g.coordinates[0]:g.type==="MultiPolygon"?g.coordinates[0][0]:null); if(!r) return null; let P=0; for(let i=0;i<r.length-1;i++) P+=Math.hypot(r[i+1][0]-r[i][0],r[i+1][1]-r[i][1]); return P>0&&r[0][0]>1000?P:null; }catch(e){return null} };
+    let v={st:"none"};
+    if(m&&m.broj&&m.broj!==broj){ const P=sir(m.geom), A=m.graficka; v={st:"ok",broj:m.broj,isti:!!(c&&c.id&&c.id===m.id),sirina:P&&A?Math.round(2*A/P*10)/10:null}; }
+    else if(m&&m.broj===broj) v={st:"vlastita"};
+    PRIST.map.set(key,v); pristupRefresh(key); }).catch(()=>{PRIST.map.set(key,{st:"err"});});
+}
+function pristupRefresh(key){ if(!window.__cur||window.__cur.key!==key) return; try{ if(window.__lastData) render(window.__lastData); else if(KRK_CUR) renderKrk(KRK_CUR); }catch(e){console.error(e)} }
+// stanje i tekst za prekidač „Pristup s prometne površine”, odjeljak „Pristup i okolina” i rizike
+function pristupOpis(key){
+  const O=window.__prist; if(!O) return null; const M=PRIST.map.get(key)||null, m=v=>fmt(Math.round(v*10)/10).replace(/^0$/,"0");
+  const ces=O.cesta?O.cesta:(HW_NAMES[O.hw]||"cesta");
+  if(O.st==="nema") return {stanje:"warn",kratko:"bez ceste uz česticu",tekst:"U OpenStreetMapu nema kolne ceste do 20 m od čestice. Provjeri ima li čestica izlaz na javni put ili upisanu služnost prolaza."};
+  if(O.st==="uz") return {stanje:"?",kratko:"uz cestu",tekst:`Čestica graniči s cestom ${ces} (rub kolnika do 3 m od međe, uz oko ${fmt(O.duljinaUz)} m granice; procjena iz OpenStreetMapa).`};
+  if(O.st==="blizu"){ const r=Math.round(O.gap*10)/10;
+    let t=`Cesta ${ces} je oko ${String(r).replace(".",",")} m od međe (od ruba kolnika). Takav razmak obično je pojas ceste (nogostup, bankina, jarak) ili uska čestica puta.`;
+    if(!M||M.st==="load") t+=" Provjeravam koja je čestica između…";
+    else if(M.st==="ok") t+=M.isti?` Između je čestica ${M.broj}, ista na kojoj je i cesta: vjerojatno čestica ceste, pa čestica ima izlaz na cestu.`:` Između je čestica ${M.broj}${M.sirina?` (prosječna širina oko ${String(M.sirina).replace(".",",")} m)`:""}. Provjeri u OSS-u je li javno dobro (put, cesta) ili privatna; ako je privatna, za pristup treba služnost.`;
+    else if(M.st==="vlastita") t+=" Katastarski sloj na tom mjestu pokazuje ovu česticu, pa je razmak vjerojatno odstupanje OpenStreetMapa.";
+    return {stanje:M&&M.st==="ok"&&!M.isti?"warn":"?",kratko:"cesta "+String(r).replace(".",",")+" m od međe",tekst:t,medju:M}; }
+  return {stanje:"warn",kratko:"cesta "+Math.round(O.gap)+" m od čestice",tekst:`Najbliža cesta (${ces}) je oko ${fmt(O.gap)} m od međe (od ruba kolnika). Između je vjerojatno druga čestica; za pristup treba javni put ili upisana služnost prolaza.`};
+}
+// rubovi čestice uz cestu (rub kolnika do 10 m od međe, iz OSM-a) i pojas do udaljenosti građevnog pravca
 function streetBand(parcel,roads,dist){
   if(!parcel||!roads||!roads.length||!(dist>0)) return null;
-  const lines=roads.filter(r=>r.ok&&r.geom&&r.geom.length>1).map(r=>turf.lineString(r.geom));
+  const lines=roads.filter(r=>r.ok&&r.geom&&r.geom.length>1).map(r=>({l:turf.lineString(r.geom),h:pristPola(r)}));
   if(!lines.length) return null;
   const segs=[]; const ring=parcel.geometry.type==="Polygon"?parcel.geometry.coordinates[0]:parcel.geometry.coordinates[0][0];
   for(let i=0;i<ring.length-1;i++){const a=ring[i],b=ring[i+1], len=turf.distance(a,b,{units:"kilometers"})*1000; if(len<1) continue;
     // rub je uz cestu ako je barem pola njegove duljine (5 točaka) do 12 m od osi ceste: hvata i česticu 1–2 m od ceste
     // i zakrivljenu cestu, a bočne rubove okomite na cestu ne
-    const near=[0,.25,.5,.75,1].filter(f=>{const p=[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f]; return Math.min(...lines.map(l=>turf.pointToLineDistance(turf.point(p),l,{units:"kilometers"})*1000))<12;}).length;
+    // (12 m od osi za ulicu od 5 m = 9,5 m od ruba kolnika; sad se mjeri od ruba kolnika, do 10 m, pa vrijedi i za šire ceste i pojas ceste između)
+    const near=[0,.25,.5,.75,1].filter(f=>{const p=[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f]; return Math.min(...lines.map(x=>turf.pointToLineDistance(turf.point(p),x.l,{units:"kilometers"})*1000-x.h))<PRIST.blizu;}).length;
     if(near>=3) segs.push([a,b]);}
   if(!segs.length) return null;
   let band=null;
@@ -3566,8 +3615,9 @@ function envHtml(env,gbp){
   let h=`<h2>Pristup i okolina</h2>`;
   if(!env){return h+`<p class="hint"><span class="spin"></span>Tražim ceste i sadržaje u blizini…</p>`}
   if(env.e){return h+`<p class="err">OpenStreetMap: ${esc(env.e)} <button type="button" class="ib retry">Pokušaj ponovno</button></p>`}
-  const o=env.v, car=o.roads.filter(r=>r.ok), other=o.roads.filter(r=>!r.ok);
-  if(car.length) h+=`<ul class="checks"><li class="chk chk-ok"><b>Kolni pristup</b><span>${car.map(r=>esc((r.name||"ulica bez naziva")+" ("+(HW_NAMES[r.hw]||r.hw)+(r.surface&&/unpaved|gravel|dirt|ground/.test(r.surface)?", neasfaltirano":"")+")")).join(", ")}</span></li></ul>`;
+  const o=env.v, car=o.roads.filter(r=>r.ok), other=o.roads.filter(r=>!r.ok), PO=pristupOpis(window.__cur&&window.__cur.key);
+  if(car.length&&PO&&PO.stanje==="warn") h+=`<ul class="checks"><li class="chk chk-warn"><b>Pristup</b><span>${esc(PO.tekst)} U blizini: ${car.map(r=>esc((r.name||"ulica bez naziva")+" ("+(HW_NAMES[r.hw]||r.hw)+")")).join(", ")}.</span></li></ul>`;
+  else if(car.length) h+=`<ul class="checks"><li class="chk chk-ok"><b>Kolni pristup</b><span>${car.map(r=>esc((r.name||"ulica bez naziva")+" ("+(HW_NAMES[r.hw]||r.hw)+(r.surface&&/unpaved|gravel|dirt|ground/.test(r.surface)?", neasfaltirano":"")+")")).join(", ")}${PO&&PO.st!=="uz"&&PO.tekst?`<small class="fx">${esc(PO.tekst)}</small>`:PO&&PO.kratko?`<small class="fx">${esc(PO.kratko)}</small>`:""}</span></li></ul>`;
   else if(other.length) h+=`<ul class="checks"><li class="chk chk-warn"><b>Pristup</b><span>Uz česticu je samo ${other.map(r=>esc(HW_NAMES[r.hw]||r.hw)).join(", ")}. Za gradnju treba pristup s prometne površine propisane širine; provjeri status puta.</span></li></ul>`;
   else h+=`<ul class="checks"><li class="chk chk-warn"><b>Pristup</b><span>U OpenStreetMapu nema ceste uz česticu. Provjeri ima li čestica izlaz na javni put ili služnost prolaza.</span></li></ul>`;
   const rows=[];
@@ -3815,7 +3865,9 @@ function riskFindings(d){
   else if(env&&env.v){const car=env.v.roads.filter(r=>r.ok);
     if(!env.v.roads.length) add("potencijalno","visoka","Pristup javnoj prometnici","U OpenStreetMapu nema ceste uz česticu.","OpenStreetMap (podaci zajednice, nisu službeni)",null,"Ima li čestica izlaz na javni put ili upisanu služnost prolaza.");
     else if(!car.length) add("potencijalno","srednja","Pristup javnoj prometnici","Uz česticu je samo staza ili poljski put.","OpenStreetMap (podaci zajednice, nisu službeni)",null,"Status puta (javno dobro ili privatna čestica) i propisanu širinu pristupa.");
-    else add("neprovjereno","niska","Pravni status pristupa",`Uz česticu je cesta (${car[0].name||"bez naziva"}), ali iz podataka se ne vidi je li javno dobro.`,"OpenStreetMap (podaci zajednice, nisu službeni)",null,"Zemljišnoknjižni izvadak čestice ceste.");}
+    else { const PO=pristupOpis(window.__cur&&window.__cur.key);
+      if(PO&&PO.stanje==="warn") add("potencijalno","srednja","Pristup javnoj prometnici",PO.tekst,"OpenStreetMap; katastarski sloj DGU",null,"Status čestice između (javno dobro ili privatna) i služnost prolaza.");
+      else add("neprovjereno","niska","Pravni status pristupa",`Uz česticu je cesta (${car[0].name||"bez naziva"})${window.__prist&&window.__prist.st==="blizu"?`, oko ${String(Math.round(window.__prist.gap*10)/10).replace(".",",")} m od međe`:""}, ali iz podataka se ne vidi je li javno dobro.`,"OpenStreetMap (podaci zajednice, nisu službeni)",null,"Zemljišnoknjižni izvadak čestice ceste."); } }
   else if(checks) add("neprovjereno","niska","Pristup javnoj prometnici","Podaci o cestama još se učitavaju.","OpenStreetMap",null,"");
   // nagib
   if(slope&&slope.e) add("neprovjereno","niska","Nagib terena","Podaci o visinama nisu se učitali.","Copernicus DEM (Open-Meteo)",null,"Geodetski snimak terena.");
@@ -3874,6 +3926,7 @@ function render(d){
   window.__cur={key:favKey(parcel,ll),ll:{lat:ll.lat,lng:ll.lng},ces:parcel?parcel.properties.KATASTARSKA_CESTICA:null,ko:parcel?parcel.properties.KATASTARSKA_OPCINA:null,area,buildArea,
     code:(()=>{const r=ruleLookup(up,rows);return r.code?(r.se?"SE ":"")+r.code:null})(),namjena:rows[0]?(rows[0].p.Namjena||rows[0].p.Analitika):null,analitika:rows[0]?rows[0].p.Analitika:null,
     risks:checks?checks.filter(r=>r.v&&r.v.length).map(r=>r.c.label):null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:envelope?Math.round(envelope.area):null};
+  window.__prist=parcel&&d.env&&d.env.v?pristupOcjena(parcel,d.env.v.roadLines):null; if(window.__prist) pristupMedju(window.__cur.key,window.__prist,parcel.properties.KATASTARSKA_CESTICA||null);
   if(!snap&&parcel) projApplySim(window.__cur.key);
   GRP=null; let zkH=""; window.__areaCmp=null;
   pzReset(window.__cur.key); gpLayer.clearLayers(); window.__gp=null;

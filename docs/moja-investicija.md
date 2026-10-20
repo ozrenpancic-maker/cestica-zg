@@ -420,3 +420,10 @@ Prikaz se slaže kao prije; `izbWrap()` zatim premješta postojeće odjeljke (is
 - Stavke idu u financijski model kao skupina `okucnica` (jednom): procjena gradnje, ukupna investicija, rezerva 15 %, scenariji (zajedničko za česticu, kao priprema terena).
 - Bez dvostrukog obračuna: kad je okućnica uključena i ima parking/prilaz, prilaz iz procjene gradnje se ne računa; ručno upisano „uređenje okoliša” se ne zbraja (upozorenje).
 - Prekidač „U procjeni troškova” (zadano uključen); tip okućnice postavlja zadane materijale (obiteljska: opločnici i sjetva; mediteranska: ariš; minimalistička: WPC i busen).
+
+## Pristup s ceste (popravak 20. 10. 2026.)
+- Mjeri se razmak od međe do ruba kolnika (os ceste iz OSM-a − pola širine: oznaka `width` ili procjena prema vrsti), a ne do osi.
+- Do 3 m: čestica graniči s cestom (nogostup, bankina). 3–10 m: pojas ceste ili uska čestica između; katastarski sloj DGU (GetFeatureInfo, izravno iz preglednika)
+  pita se koja je čestica na sredini razmaka i na osi ceste. Ista čestica → čestica ceste, nema upozorenja. Druga čestica → upozorenje s brojem čestice (provjeriti javno dobro ili služnost).
+  Više od 10 m ili bez kolne ceste do 20 m → upozorenje i rizik „Pristup javnoj prometnici”.
+- Pojas uz cestu (odmak od regulacijskog pravca) koristi isto mjerilo (rub kolnika do 10 m od međe) umjesto 12 m od osi.
