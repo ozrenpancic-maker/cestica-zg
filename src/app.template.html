@@ -2835,36 +2835,136 @@ sheet.addEventListener("input",e=>{
   const out=document.getElementById(id+"v"); if(out) out.textContent=v>0?` (${(v*9.81).toFixed(2).replace(".",",")} m/s²)`:"";
 });
 
-// --- pristup i okolina iz OpenStreetMapa (Overpass)
-const ROAD_OK=/^(primary|secondary|tertiary|unclassified|residential|living_street|service|trunk|primary_link|secondary_link|tertiary_link)$/;
+// --- pristup i okolina iz OpenStreetMapa
+// Ceste: prvo vektorske pločice OpenFreeMap (podaci OpenStreetMapa, shema OpenMapTiles; CDN bez ključa i bez ograničenja
+// broja upita), jer javni Overpass poslužitelji često odbijaju ili kasne. Ako pločice ne uspiju, ceste se traže u Overpassu.
+// Sadržaji u blizini: Overpass, a ako ne uspije, POI sloj istih pločica.
+// Overpass se pita jedan po jedan poslužitelj (sljedeći kreće ako prethodni ne odgovori za 4 s), a kad jedan odgovori,
+// ostali se prekidaju; upit za ceste je pravokutnik oko čestice (lakši za poslužitelj od „around” oko poligona).
+const ROAD_OK=/^(primary|secondary|tertiary|unclassified|residential|living_street|service|trunk|primary_link|secondary_link|tertiary_link|minor)$/;
+const OVP=["https://overpass-api.de/api/interpreter","https://overpass.private.coffee/api/interpreter","https://overpass.kumi.systems/api/interpreter","https://maps.mail.ru/osm/tools/overpass/api/interpreter"];
+const OVP_STAT={}; // zadnji ishod po poslužitelju (za „Stanje servisa”)
+async function ovpQuery(q,budget=20000,stagger=4000){
+  const key="OVP "+q; const c=NET.cache.get(key); if(c&&Date.now()-c.t<NET.ttl) return c.v; const pc=pcGet(key); if(pc) return pc;
+  if(navigator.onLine===false) throw new Error("Nema internetske veze.");
+  const ctrls=[];
+  const run=async u=>{ const ac=new AbortController(); ctrls.push(ac); const t0=Date.now(), tm=setTimeout(()=>ac.abort(),budget);
+    try{ const r=await fetch(u+"?data="+encodeURIComponent(q),{signal:ac.signal}); if(!r.ok) throw new Error("HTTP "+r.status);
+      const j=await r.json(); if(j&&j.remark&&/runtime error|timed out|timeout|out of memory|rate_limited|too many/i.test(j.remark)) throw new Error("poslužitelj preopterećen");
+      OVP_STAT[u]={ok:true,ms:Date.now()-t0,t:Date.now()}; netNote(u,true,Date.now()-t0); return j; }
+    catch(e){ const m=e.name==="AbortError"?"nema odgovora":e.message||"mreža"; OVP_STAT[u]={ok:false,e:m,t:Date.now()}; netNote(u,false,Date.now()-t0,m); throw e; }
+    finally{clearTimeout(tm)} };
+  // sljedeći poslužitelj kreće odmah kad prethodni odbije, ili nakon „stagger” ms ako još nije odgovorio
+  return new Promise((resolve,reject)=>{ let idx=0, active=0, fin=false, timer=null;
+    const launch=()=>{ if(fin||idx>=OVP.length) return; const u=OVP[idx++]; active++; clearTimeout(timer); if(idx<OVP.length) timer=setTimeout(launch,stagger);
+      run(u).then(j=>{ if(fin) return; fin=true; clearTimeout(timer); ctrls.forEach(a=>{try{a.abort()}catch(e){}}); NET.cache.set(key,{t:Date.now(),v:j}); pcSet(key,j); resolve(j); })
+        .catch(()=>{ active--; if(fin) return; if(idx<OVP.length) launch(); else if(active===0){fin=true; clearTimeout(timer); reject(new Error("serveri OpenStreetMapa (Overpass) trenutno ne odgovaraju"));} }); };
+    launch(); });
+}
+// --- vektorske pločice (Mapbox Vector Tile): mali čitač protobufa, bez vanjske biblioteke
+function mvtDecode(buf){
+  const b=new Uint8Array(buf); let p=0;
+  const varint=()=>{let r=0,s=0,x; do{x=b[p++]; r+=(x&0x7f)*Math.pow(2,s); s+=7;}while(x>=0x80); return r;};
+  const skip=w=>{if(w===0) varint(); else if(w===1) p+=8; else if(w===2){const l=varint(); p+=l;} else if(w===5) p+=4; else throw new Error("MVT: nepoznat tip polja");};
+  const str=(a,e)=>new TextDecoder().decode(b.subarray(a,e));
+  const packed=()=>{const l=varint(), e=p+l, out=[]; while(p<e) out.push(varint()); return out;};
+  const value=e=>{let v=null; while(p<e){const k=varint(), f=k>>3, w=k&7;
+    if(f===1&&w===2){const l=varint(); v=str(p,p+l); p+=l;} else if(f===2&&w===5){v=new DataView(b.buffer,b.byteOffset+p,4).getFloat32(0,true); p+=4;}
+    else if(f===3&&w===1){v=new DataView(b.buffer,b.byteOffset+p,8).getFloat64(0,true); p+=8;} else if((f===4||f===5)&&w===0) v=varint();
+    else if(f===6&&w===0){const z=varint(); v=z%2?-(z+1)/2:z/2;} else if(f===7&&w===0) v=!!varint(); else skip(w);} return v;};
+  const layers=[];
+  while(p<b.length){const k=varint(); if((k>>3)===3&&(k&7)===2){const l=varint(), e=p+l, L={name:"",keys:[],values:[],extent:4096,features:[]}, raw=[];
+      while(p<e){const kk=varint(), f=kk>>3, w=kk&7;
+        if(f===1&&w===2){const n=varint(); L.name=str(p,p+n); p+=n;}
+        else if(f===2&&w===2){const n=varint(), fe=p+n, F={tags:[],type:0,geom:[]}; while(p<fe){const k2=varint(), f2=k2>>3, w2=k2&7; if(f2===2&&w2===2) F.tags=packed(); else if(f2===3&&w2===0) F.type=varint(); else if(f2===4&&w2===2) F.geom=packed(); else skip(w2);} raw.push(F);}
+        else if(f===3&&w===2){const n=varint(); L.keys.push(str(p,p+n)); p+=n;}
+        else if(f===4&&w===2){const n=varint(); L.values.push(value(p+n));}
+        else if(f===5&&w===0) L.extent=varint(); else skip(w);}
+      for(const F of raw){const pr={}; for(let i=0;i+1<F.tags.length;i+=2) pr[L.keys[F.tags[i]]]=L.values[F.tags[i+1]];
+        // geometrija: niz dijelova (linija ili prsten) u koordinatama pločice
+        const parts=[]; let x=0,y=0,cur=null; for(let i=0;i<F.geom.length;){const c=F.geom[i++], id=c&7, n=c>>3;
+          if(id===1||id===2){for(let j=0;j<n;j++){const dx=F.geom[i++], dy=F.geom[i++]; x+=dx%2?-(dx+1)/2:dx/2; y+=dy%2?-(dy+1)/2:dy/2; if(id===1){cur=[]; parts.push(cur);} cur.push([x,y]);}}
+          else if(id===7&&cur&&cur.length) cur.push(cur[0].slice());}
+        L.features.push({type:F.type,props:pr,parts});}
+      layers.push(L);} else skip(k&7);}
+  return layers;
+}
+function mvtLonLat(z,tx,ty,ext){const n=Math.pow(2,z); return q=>[(tx+q[0]/ext)/n*360-180, Math.atan(Math.sinh(Math.PI*(1-2*(ty+q[1]/ext)/n)))*180/Math.PI];}
+const OFM={tj:null};
+async function ofmTemplate(fresh){
+  if(OFM.tj&&!fresh) return OFM.tj;
+  let t=null; try{const j=await getJSON("https://tiles.openfreemap.org/planet",{},8000,{retries:1,cache:!fresh}); if(j&&j.tiles&&j.tiles[0]) t={u:j.tiles[0],max:Math.min(14,j.maxzoom||14)};}catch(e){}
+  if(!t){const st=await getJSON("https://tiles.openfreemap.org/styles/liberty",{},8000,{retries:1}); const src=st&&st.sources&&st.sources.openmaptiles;
+    if(src&&src.tiles&&src.tiles[0]) t={u:src.tiles[0],max:Math.min(14,src.maxzoom||14)}; else if(src&&src.url){const j=await getJSON(src.url,{},8000,{retries:1}); if(j&&j.tiles&&j.tiles[0]) t={u:j.tiles[0],max:Math.min(14,j.maxzoom||14)};}}
+  if(!t) throw new Error("OpenFreeMap: popis pločica nije dostupan"); OFM.tj=t; return t;
+}
+const MVT_CACHE=new Map();
+async function ofmTile(z,x,y,again){
+  const T=await ofmTemplate(again), u=T.u.replace("{z}",z).replace("{x}",x).replace("{y}",y), k=u; if(MVT_CACHE.has(k)) return MVT_CACHE.get(k);
+  const ac=new AbortController(), tm=setTimeout(()=>ac.abort(),12000), t0=Date.now();
+  try{const r=await fetch(u,{signal:ac.signal});
+    // tjedno se objavljuje nova inačica pločica: stara adresa iz predmemorije može vratiti 404, pa se popis dohvati ponovno
+    if(r.status===404&&!again){clearTimeout(tm); OFM.tj=null; return ofmTile(z,x,y,true);}
+    if(!r.ok) throw new Error("HTTP "+r.status); const L=mvtDecode(await r.arrayBuffer()); netNote(u,true,Date.now()-t0);
+    const v={z,x,y,L}; MVT_CACHE.set(k,v); if(MVT_CACHE.size>40) MVT_CACHE.delete(MVT_CACHE.keys().next().value); return v;}
+  catch(e){netNote(u,false,Date.now()-t0,e.message); throw new Error("OpenFreeMap: "+(e.name==="AbortError"?"nema odgovora":e.message));}
+  finally{clearTimeout(tm)}
+}
+// pločice z14 koje pokrivaju okvir [w,s,e,n]
+function ofmTilesFor(bb,z=14){const n=Math.pow(2,z), tx=lon=>Math.floor((lon+180)/360*n), ty=lat=>Math.floor((1-Math.log(Math.tan(lat*Math.PI/180)+1/Math.cos(lat*Math.PI/180))/Math.PI)/2*n), out=[];
+  for(let x=tx(bb[0]);x<=tx(bb[2]);x++) for(let y=ty(bb[3]);y<=ty(bb[1]);y++) out.push([z,x,y]); return out;}
+const OMT_HW={motorway:"motorway",trunk:"trunk",primary:"primary",secondary:"secondary",tertiary:"tertiary",minor:"minor",service:"service",track:"track",path:"path"};
+// ceste iz pločica: isti oblik kao iz Overpassa (roadLines + popis), samo dijelovi do 20 m od čestice
+async function ofmRoads(area){
+  const bb=turf.bbox(turf.buffer(area,0.03,{units:"kilometers"})), tiles=await Promise.all(ofmTilesFor(bb).map(t=>ofmTile(...t)));
+  const zone=turf.buffer(area,0.02,{units:"kilometers"}), lines=[], names=[];
+  for(const T of tiles){ const tr=(T.L.find(l=>l.name==="transportation")), tn=T.L.find(l=>l.name==="transportation_name"), ll=f=>mvtLonLat(T.z,T.x,T.y,(f||tr).extent);
+    if(tr) for(const f of tr.features){ if(f.type!==2) continue; const hw=OMT_HW[f.props.class]; if(!hw) continue; const sub=f.props.subclass;
+      for(const part of f.parts){ if(part.length<2) continue; const g=part.map(ll(tr)); try{ if(!turf.booleanIntersects(turf.lineString(g),zone)) continue; }catch(e){continue}
+        lines.push({hw:hw==="path"&&sub?sub:hw,surface:f.props.surface==="unpaved"?"unpaved":undefined,geom:g}); } }
+    if(tn) for(const f of tn.features){ if(f.type!==2||!f.props.name) continue; for(const part of f.parts) if(part.length>1) names.push({n:f.props["name:latin"]||f.props.name,cls:f.props.class,l:turf.lineString(part.map(ll(tn)))}); } }
+  // naziv ulice: najbliža linija naziva iste klase (do 15 m)
+  for(const r of lines){ const mid=turf.along(turf.lineString(r.geom),turf.length(turf.lineString(r.geom))/2); let best=null;
+    for(const nm of names){ const d=turf.pointToLineDistance(mid,nm.l,{units:"kilometers"})*1000; if(d<15&&(!best||d<best.d)) best={d,n:nm.n}; } if(best) r.name=best.n; }
+  return lines;
+}
+// sadržaji u blizini iz POI sloja pločica (rezerva kad Overpass ne odgovori)
+async function ofmPoi(c){
+  const pt=turf.point(c), bb=turf.bbox(turf.buffer(pt,1.5,{units:"kilometers"})), st=await Promise.allSettled(ofmTilesFor(bb).map(t=>ofmTile(...t))), el=[];
+  // sadržaji: dovoljna je bar pločica sa sredinom čestice; ostale (do 1,5 km) se koriste ako stignu
+  const ctr=ofmTilesFor([c[0],c[1],c[0],c[1]])[0], tiles=st.filter(x=>x.status==="fulfilled").map(x=>x.value);
+  if(!tiles.some(T=>T.x===ctr[1]&&T.y===ctr[2])) throw new Error("OpenFreeMap: pločica nije dostupna");
+  for(const T of tiles){ const P=T.L.find(l=>l.name==="poi"); if(!P) continue; const ll=mvtLonLat(T.z,T.x,T.y,P.extent);
+    for(const f of P.features){ if(f.type!==1||!f.parts[0]) continue; const [lon,lat]=ll(f.parts[0][0]), sc=f.props.subclass, cl=f.props.class, tags={name:f.props.name};
+      if(sc==="bus_stop"||cl==="bus") tags.highway="bus_stop"; else if(sc==="tram_stop") tags.railway="tram_stop"; else if(sc==="station"&&cl==="railway") tags.railway="station";
+      else if(sc==="kindergarten") tags.amenity="kindergarten"; else if(sc==="school"||(cl==="school"&&!sc)) tags.amenity="school"; else if(sc==="pharmacy"||cl==="pharmacy") tags.amenity="pharmacy"; else if(sc==="supermarket") tags.shop="supermarket"; else continue;
+      el.push({type:"node",lat,lon,tags}); } }
+  return {elements:el};
+}
 async function loadEnv(ll,parcel){
-  let ring;
-  if(parcel){
-    const g=parcel.geometry, r=(g.type==="Polygon"?g.coordinates[0]:g.coordinates[0][0]);
-    const step=Math.max(1,Math.ceil(r.length/20));
-    ring=r.filter((_,i)=>i%step===0).concat([r[0]]).map(c=>c[1].toFixed(6)+","+c[0].toFixed(6)).join(",");
-  }else ring=ll.lat.toFixed(6)+","+ll.lng.toFixed(6);
   const c=parcel?turf.centroid(parcel.geometry).geometry.coordinates:[ll.lng,ll.lat];
-  const P=c[1].toFixed(6)+","+c[0].toFixed(6);
-  // dva odvojena upita: ceste (mali i brz, potreban za pristup i pojas uz cestu) i sadržaji u blizini (veći, smije pasti)
-  const qR=`[out:json][timeout:10];way(around:20,${ring})[highway];out tags geom;`;
-  const qE=`[out:json][timeout:20];
+  const P=c[1].toFixed(6)+","+c[0].toFixed(6), area=parcel?parcel:turf.point(c);
+  const bb=turf.bbox(turf.buffer(area,0.025,{units:"kilometers"})), B=[bb[1],bb[0],bb[3],bb[2]].map(v=>v.toFixed(6)).join(",");
+  const qR=`[out:json][timeout:15];way[highway](${B});out tags geom;`;
+  const qE=`[out:json][timeout:25];
 (node(around:600,${P})[highway=bus_stop];node(around:600,${P})[railway=tram_stop];node(around:900,${P})[railway=station];
  node(around:1200,${P})[amenity=kindergarten];way(around:1200,${P})[amenity=kindergarten];
  node(around:1500,${P})[amenity=school];way(around:1500,${P})[amenity=school];
  node(around:1000,${P})[shop=supermarket];way(around:1000,${P})[shop=supermarket];
  node(around:1500,${P})[amenity=pharmacy];);out tags center;`;
-  // više Overpass servera: prvi koji odgovori pobjeđuje; ceste se pokušaju još jednom ako svi odbiju
-  const OVP=["https://overpass-api.de/api/interpreter","https://overpass.private.coffee/api/interpreter","https://overpass.kumi.systems/api/interpreter","https://maps.mail.ru/osm/tools/overpass/api/interpreter"];
-  const any=(q,ms)=>Promise.any(OVP.map(u=>getJSON(u+"?data="+encodeURIComponent(q),{},ms,{retries:0})));
-  const [rR,rE]=await Promise.allSettled([any(qR,12000).catch(()=>new Promise(r=>setTimeout(r,1500)).then(()=>any(qR,15000))),any(qE,25000)]);
-  if(rR.status!=="fulfilled") throw new Error("serveri OpenStreetMapa trenutno ne odgovaraju, pokušaj ponovno za minutu");
-  const j={elements:[...((rR.value&&rR.value.elements)||[]),...(rE.status==="fulfilled"&&rE.value&&rE.value.elements||[])]};
-  const poiErr=rE.status!=="fulfilled";
+  // ceste: pločice, pa Overpass; sadržaji: Overpass (nakon cesta, da se ne troše dva mjesta na istom poslužitelju), pa pločice
+  let roadsOfm=null, roadsOvp=null, izvor="OpenFreeMap (vektorske pločice, podaci OpenStreetMapa)";
+  try{ roadsOfm=await ofmRoads(area); }
+  catch(e){ try{ roadsOvp=await ovpQuery(qR); izvor="Overpass (OpenStreetMap)"; }catch(e2){ throw new Error("ni OpenFreeMap ni Overpass trenutno ne odgovaraju, pokušaj ponovno za minutu"); } }
+  let rE; try{ rE={status:"fulfilled",value:await ovpQuery(qE,25000)}; }catch(e){ try{ rE={status:"fulfilled",value:await ofmPoi(c),ofm:true}; }catch(e2){ rE={status:"rejected"}; } }
+  const zone=parcel?turf.buffer(parcel,0.02,{units:"kilometers"}):turf.buffer(area,0.02,{units:"kilometers"});
+  const ovpWays=roadsOvp?(roadsOvp.elements||[]).filter(e=>{try{return e.type==="way"&&e.geometry&&turf.booleanIntersects(turf.lineString(e.geometry.map(g=>[g.lon,g.lat])),zone)}catch(err){return false}}):[];
+  const wayEls=roadsOfm?roadsOfm.map(r=>({type:"way",tags:{highway:r.hw,name:r.name,surface:r.surface},geometry:r.geom.map(q=>({lon:q[0],lat:q[1]}))})):ovpWays;
+  const j={elements:[...wayEls,...(rE.status==="fulfilled"&&rE.value&&rE.value.elements||[])]};
   const here=turf.point(c);
   const dist=e=>{const lat=e.lat??e.center?.lat, lon=e.lon??e.center?.lon; return lat==null?null:Math.round(turf.distance(here,turf.point([lon,lat]),{units:"kilometers"})*1000)};
   const roads=[], seen=new Set();
-  const out={roads, roadLines:[], stops:[], kinder:null, school:null, shop:null, pharmacy:null, poiErr};
+  const out={roads, roadLines:[], stops:[], kinder:null, school:null, shop:null, pharmacy:null, poiErr:rE.status!=="fulfilled", izvor, poiIzvor:rE.ofm?"OpenFreeMap (POI sloj)":"Overpass"};
   const nearest=(key,e)=>{const d=dist(e); if(d==null) return; if(!out[key]||d<out[key].d) out[key]={n:e.tags.name||"bez naziva",d}};
   for(const e of j.elements||[]){
     const t=e.tags||{};
@@ -2881,7 +2981,7 @@ async function loadEnv(ll,parcel){
   out.stops=Object.values(byType).sort((a,b)=>a.d-b.d);
   return out;
 }
-const HW_NAMES={primary:"glavna cesta",secondary:"sporedna cesta",tertiary:"lokalna cesta",unclassified:"nerazvrstana cesta",residential:"stambena ulica",living_street:"pješačko-kolna zona",service:"servisni put",track:"poljski put",path:"staza",footway:"pješačka staza",steps:"stube",trunk:"brza cesta",cycleway:"biciklistička staza"};
+const HW_NAMES={minor:"ulica",primary:"glavna cesta",secondary:"sporedna cesta",tertiary:"lokalna cesta",unclassified:"nerazvrstana cesta",residential:"stambena ulica",living_street:"pješačko-kolna zona",service:"servisni put",track:"poljski put",path:"staza",footway:"pješačka staza",steps:"stube",trunk:"brza cesta",cycleway:"biciklistička staza"};
 function envHtml(env,gbp){
   let h=`<h2>Pristup i okolina</h2>`;
   if(!env){return h+`<p class="hint"><span class="spin"></span>Tražim ceste i sadržaje u blizini…</p>`}
@@ -2899,6 +2999,7 @@ function envHtml(env,gbp){
   if(o.shop) rows.push(["Trgovina",`${o.shop.n} · ${o.shop.d} m`]);
   if(o.pharmacy) rows.push(["Ljekarna",`${o.pharmacy.n} · ${o.pharmacy.d} m`]);
   h+=`<dl class="kv">${rows.map(([a,b])=>`<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join("")}</dl><p class="meta">Udaljenosti zračnom linijom od sredine čestice. Udaljenosti do vodova su u odjeljku Komunalna infrastruktura.</p>`;
+  if(o.izvor) h+=`<p class="meta">Izvor: ceste ${esc(o.izvor)}${o.poiErr?"":"; sadržaji "+esc(o.poiIzvor||"Overpass")}. ${/OpenFreeMap/.test(o.izvor+(o.poiIzvor||""))?'<a href="https://openfreemap.org" target="_blank" rel="noopener">OpenFreeMap</a> © <a href="https://www.openmaptiles.org/" target="_blank" rel="noopener">OpenMapTiles</a>, podaci ':"Podaci "}© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>.</p>`;
   return h;
 }
 
@@ -4291,7 +4392,8 @@ function serviceList(){
   for(const c of CHECKS) L.push(["Provjera: "+c.label,c.url]);
   const seen=new Set(), out=[];
   for(const [n,u] of L){const base=u.replace(/\/query$/,""); if(seen.has(base)) continue; seen.add(base); out.push({n,u:base+"?f=json"});}
-  out.push({n:"OpenStreetMap Overpass (okolina)",u:"https://overpass-api.de/api/status",raw:true});
+  out.push({n:"OpenFreeMap (ceste iz OpenStreetMapa, vektorske pločice)",u:"https://tiles.openfreemap.org/planet"});
+  out.push({n:"OpenStreetMap Overpass (sadržaji u blizini, rezerva za ceste)",u:"https://overpass-api.de/api/status",raw:true});
   out.push({n:"Open-Meteo (visine terena)",u:"https://api.open-meteo.com/v1/elevation?latitude=45.81&longitude=15.98"});
   out.push({n:"Nominatim (pretraga adresa)",u:"https://nominatim.openstreetmap.org/status?format=json"});
   out.push({n:"Krk: katastarske čestice (uz aplikaciju)",u:KAT.base+"index.json",raw:true});

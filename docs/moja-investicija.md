@@ -138,9 +138,18 @@ Okvir „Prije svega provjeri” sadrži uvjete koji mogu zaustaviti gradnju bez
 
 ## OpenStreetMap (ceste i okolina)
 
-- Ceste se dohvaćaju posebnim malim upitom: ceste do 20 m od ruba čestice, 10 s na poslužitelju. Ako svi poslužitelji odbiju, upit se ponavlja jednom.
-- Sadržaji u blizini (stanice, vrtić, škola, trgovina, ljekarna) idu posebnim upitom. Ako on padne, ceste i pristup i dalje rade, a u „Okolini” piše da sadržaji nisu dostupni.
-- Rub čestice smatra se rubom uz cestu ako je barem pola njegove duljine (3 od 5 točaka) do 12 m od osi ceste. Tako se prepoznaje i čestica 1–2 m od ceste, a bočni rubovi okomiti na cestu ne.
+Promjena 20. 10. 2026.: Overpass je kod korisnika odgovarao otprilike jednom od deset pokušaja, pa ceste više ne ovise o njemu.
+
+- **Ceste:** prvo iz vektorskih pločica [OpenFreeMap](https://openfreemap.org). To su isti podaci OpenStreetMapa (shema OpenMapTiles, tjedno osvježavanje), s CDN-a, bez ključa i bez ograničenja broja upita.
+  - Pločice z14 koje pokrivaju česticu (+30 m) dekodira mali čitač protobufa u aplikaciji (`mvtDecode`), bez vanjske biblioteke.
+  - Uzimaju se dijelovi cesta do 20 m od čestice. Klase su `minor` (ulica), `tertiary`… `service` i `track`; naziv ulice dolazi iz sloja `transportation_name` (najbliža linija do 15 m).
+  - Adresa pločica čita se iz TileJSON-a `https://tiles.openfreemap.org/planet` (rezerva: stil `liberty`). Kad pločica vrati 404 (nova tjedna inačica), popis se dohvati ponovno.
+- **Rezerva za ceste:** Overpass s upitom pravokutnika oko čestice (+25 m), lakšim za poslužitelj od „around” oko poligona.
+- **Sadržaji u blizini:** Overpass, nakon cesta. Ako ne uspije, koristi se POI sloj istih pločica: škola, vrtić, ljekarna, supermarket, stanice. Potrebna je bar pločica sa sredinom čestice.
+- **Overpass, redom:** pita se jedan po jedan poslužitelj. Sljedeći kreće čim prethodni odbije ili nakon 4 s bez odgovora. Kad jedan odgovori, ostali se prekidaju. Odgovor s porukom o preopterećenju (`remark`) računa se kao neuspjeh.
+- **Izvor i atribucija:** ispod „Pristupa i okoline” piše izvor cesta i sadržaja i atribucija (OpenFreeMap © OpenMapTiles, podaci © OpenStreetMap). „Stanje servisa” ima i OpenFreeMap.
+- **Rub čestice uz cestu:** smatra se rubom uz cestu ako je barem pola njegove duljine (3 od 5 točaka) do 12 m od osi ceste.
+- **Nije provjereno uživo:** ni OpenFreeMap ni Overpass nisu dostupni iz okruženja u kojem je pisano; testovi koriste pravu pločicu napravljenu s `vt-pbf`.
 
 ## Granice čestica na karti
 
