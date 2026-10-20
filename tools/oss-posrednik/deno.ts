@@ -4,7 +4,9 @@
 // Ništa se ne zapisuje u logove (nema ispisa u konzolu).
 // Postavljanje: Deno Deploy → nova aplikacija iz GitHub repozitorija, ulazna datoteka tools/oss-posrednik/deno.ts.
 
-const kv = await Deno.openKv();
+// KV je neobavezan: ako baza nije povezana s aplikacijom, posrednik radi bez pamćenja odgovora (greške hvata shim).
+let kv: any = null;
+try { kv = await Deno.openKv(); } catch { kv = null; }
 const ttl = (res: Response) => { const m = (res.headers.get("Cache-Control") || "").match(/max-age=(\d+)/); return (m ? +m[1] : 3600) * 1000; };
 // isto sučelje kao caches.default u Workeru: match(Request) i put(Request, Response)
 const shim = { default: {
