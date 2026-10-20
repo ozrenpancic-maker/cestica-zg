@@ -78,6 +78,7 @@ body.net-busy #netbar{opacity:1}
   .tab-analiza .grp[data-g=troskovi],.tab-karta .grp[data-g=troskovi]{display:none}
   .tab-troskovi .grp[data-g=analiza]{display:none}
   .tab-troskovi details.izb:not(.izb-tr){display:none}
+  .tab-analiza details.izb.izb-tr,.tab-karta details.izb.izb-tr{display:none}
   .tab-troskovi .izb-eb{display:none}
   .izb-body{padding:6px 8px 10px}
   .izb-body .acc-body{padding:10px 10px 12px}
@@ -282,6 +283,7 @@ details.izb[open]{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--acce
 details.izb[open]>summary{background:var(--soft)}
 details.izb[open]>summary>em{transform:rotate(180deg)}
 details.izb[open]>summary .izb-n{background:var(--accent);color:#fff;border-color:var(--accent)}
+.izb-n.izb-eur{min-width:14px;text-align:center}
 .izb-body{padding:6px 12px 12px;border-top:1px solid var(--line)}
 .izb-body>h2{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:14px 0 4px;font-weight:600}
 .izb-body>h2.m-only{display:none!important}
@@ -5242,12 +5244,13 @@ function pogWrap(){
 const IZB=[[1,"Prostorni planovi i namjena","Što se nalazi na zemljištu i kakva je njegova namjena?"],[2,"Gradnja i simulator kuće","Što i koliko mogu graditi na čestici?"],
   [3,"Rizici i pravne provjere","Postoje li tereti, plombe ili druga ograničenja?"],[4,"Pristup i infrastruktura","Može li se pristupiti čestici i koliko su udaljeni priključci?"],
   [5,"Troškovi i investicija","Koliko će koštati zemljište, kuća i cijela investicija?"],[6,"Projekt i dokumentacija","Kako realizirati gradnju i što pripremiti?"]];
-const IZB_TR=new Set([5]); // kartica „Troškovi” na mobitelu otvara kategoriju 05
+const IZB_TR=new Set([5]); // „Troškovi i investicija”: na mobitelu samo u kartici „Troškovi”, bez broja (oznaka €); analiza ima 01–05
+const IZB_OZN={1:"01",2:"02",3:"03",4:"04",5:"€",6:"05"};
 const IZB_K={zk:3,risks:3,rparams:2,rex:2,tipcmp:2,gp:2,calc:2,tloc:2,oku:2,skica:2,sun:2,pv:2,vrij:5,buy:5,build:5,prep:5,kd:5,costs:5,krkKd:5,total:5,scen:5,proj:6,ph3:6,ph4:6,cklist:6};
 const IZB_ID={okolisBox:3,rkBox:1,pzBox:6,"sec-rizici":3,"sec-provjere":3,"sec-upu":1,"sec-uvjeti":2,"sec-sunce":2,"sec-novac":5,"sec-pouzdanost":6,"sec-troskovi":5};
 const IZB_H=[[/^(Rizici|Provjere|Potresna)/,3],[/^(Komunalna|Pristup)/,4],[/^(Karte prostornog|Prostorni plan)/,1],[/^(Uvjeti gradnje|Postojeće zgrade|Sunce)/,2],[/^Novac/,5],[/^(Pouzdanost|Dokumentacija|Kontrolna lista)/,6],[/^Gradnja i naknade/,5]];
 // prečaci na postojeće module (bez kopiranja): sunčana elektrana je u 02, a njezin financijski rezultat se otvara i iz 05
-const IZB_X={2:[["3D pogled","btn:#v3dBtn"]],3:[["Kontrolna lista kupnje","details[data-k=\"cklist\"]"]],5:[["Sunčana elektrana: isplativost","details[data-k=\"pv\"]"]],6:[["Ispiši / spremi PDF","btn:#printBtn"],["Spremi česticu","btn:#saveBtn"],["Podijeli","btn:#shareBtn"]]};
+const IZB_X={2:[["3D pogled","btn:#v3dBtn"]],3:[["Kontrolna lista kupnje","details[data-k=\"cklist\"]"]],5:[["Sunčana elektrana (proizvodnja)","details[data-k=\"pv\"]"]],6:[["Ispiši / spremi PDF","btn:#printBtn"],["Spremi česticu","btn:#saveBtn"],["Podijeli","btn:#shareBtn"]]};
 function izbRoute(el){
   if(el.dataset&&el.dataset.k&&IZB_K[el.dataset.k]) return IZB_K[el.dataset.k];
   if(el.id&&IZB_ID[el.id]) return IZB_ID[el.id];
@@ -5275,7 +5278,7 @@ function izbWrap(){
     wrap=document.createElement("div"); wrap.className="grp"; wrap.dataset.g="izb";
     let h=`<p class="eyebrow izb-eb">Analiza čestice</p>`;
     for(const [n,t,o] of IZB){ const k="izb:"+String(n).padStart(2,"0");
-      h+=`<details class="izb${IZB_TR.has(n)?" izb-tr":""}" data-k="${k}" data-n="${n}"${OPEN.has(k)?" open":""}><summary><i class="izb-n">${String(n).padStart(2,"0")}</i><span>${esc(t)}<small>${esc(o)}</small></span><b></b><em aria-hidden="true">▾</em></summary><div class="izb-body"><button type="button" class="izb-back" hidden></button><nav class="izb-chips"></nav></div></details>`; }
+      h+=`<details class="izb${IZB_TR.has(n)?" izb-tr":""}" data-k="${k}" data-n="${n}"${OPEN.has(k)?" open":""}><summary><i class="izb-n${IZB_TR.has(n)?" izb-eur":""}">${IZB_OZN[n]}</i><span>${esc(t)}<small>${esc(o)}</small></span><b></b><em aria-hidden="true">▾</em></summary><div class="izb-body"><button type="button" class="izb-back" hidden></button><nav class="izb-chips"></nav></div></details>`; }
     h+=`<div class="izb-topw"><button type="button" class="ib" id="izbTop" aria-label="Natrag na sažetak čestice">↑ Sažetak</button></div>`;
     wrap.innerHTML=h; sum.after(wrap); }
   if(els.length){ let cur=1; const body=n=>wrap.querySelector(`details.izb[data-n="${n}"]>.izb-body`);
@@ -5301,7 +5304,8 @@ const IZBS={prev:null,lock:false};
 sheet.addEventListener("toggle",e=>{ const d=e.target; if(!d.matches||!d.matches("details.izb")||IZBS.lock) return;
   if(d.open){ const ot=[...sheet.querySelectorAll("details.izb[open]")].filter(x=>x!==d); IZBS.lock=true; ot.forEach(x=>{x.open=false; OPEN.delete(x.dataset.k);}); IZBS.lock=false;
     if(ot.length) IZBS.prev=+ot[0].dataset.n; const bk=d.querySelector(":scope>.izb-body>.izb-back"), P=IZB.find(x=>x[0]===IZBS.prev);
-    if(bk){ if(P&&P[0]!==+d.dataset.n){bk.hidden=false; bk.dataset.n=P[0]; bk.textContent="← Natrag na "+String(P[0]).padStart(2,"0")+" "+P[1];} else bk.hidden=true; } } },true);
+    // povratak samo unutar iste kartice (na mobitelu su troškovi u zasebnoj kartici)
+    if(bk){ if(P&&P[0]!==+d.dataset.n&&IZB_TR.has(P[0])===IZB_TR.has(+d.dataset.n)){bk.hidden=false; bk.dataset.n=P[0]; bk.textContent="← Natrag na "+IZB_OZN[P[0]]+" "+P[1];} else bk.hidden=true; } } },true);
 sheet.addEventListener("click",e=>{ const bk=e.target.closest(".izb-back"); if(!bk) return; const d=sheet.querySelector(`details.izb[data-n="${bk.dataset.n}"]`); if(d){d.open=true; OPEN.add(d.dataset.k); setTimeout(()=>{const r=d.getBoundingClientRect(), sr=sheet.getBoundingClientRect(); sheet.scrollTop+=r.top-sr.top-8;},20);} });
 sheet.addEventListener("scroll",()=>{const b=document.getElementById("izbTop"); if(b){const on=sheet.scrollTop>420; if(b.classList.contains("on")!==on) b.classList.toggle("on",on);}},{passive:true});
 
@@ -5324,7 +5328,7 @@ function scrollRestore(A){
 }
 // otvori odjeljak (i sve iznad njega) i pomakni se do njega
 function pogIdi(el){ if(!el) return; for(let p=el;p;p=p.parentElement) if(p.tagName==="DETAILS") p.open=true;
-  const kz=el.closest("details.izb"), n=kz?+kz.dataset.n:0, tab=UI.tab==="troskovi"&&(!kz||IZB_TR.has(n))?"troskovi":"analiza"; if(isMobile()&&UI.tab!==tab) setTab(tab,{scrollTo:"__none"});
+  const kz=el.closest("details.izb"), n=kz?+kz.dataset.n:0, tab=kz?(IZB_TR.has(n)?"troskovi":"analiza"):(UI.tab==="troskovi"?"troskovi":"analiza"); if(isMobile()&&UI.tab!==tab) setTab(tab,{scrollTo:"__none"});
   if(isMobile()&&UI.state!=="full") setState("full");
   setTimeout(()=>{const r=el.getBoundingClientRect(), sr=sheet.getBoundingClientRect(); sheet.scrollTop+=r.top-sr.top-8;},isMobile()?260:30); }
 

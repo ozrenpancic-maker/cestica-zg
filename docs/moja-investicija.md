@@ -390,7 +390,12 @@ Ceste iz OpenStreetMapa (iste kao za pristup i pojas uz cestu) ucrtavaju se u sv
   Napomena: udaljenost od međe i ulazi li u izgrađenost provjeriti u pravilima plana (aplikacija to ne računa).
 - Prikaz: karta, skica, legenda, izvještaj; u 3D-u terasa kao ploča 15 cm, pomoćni objekt 2,5 m s krovom. Površine `terasa` i `pomocni` u `window.__oku.povrsine`.
 
-## Glavni izbornik: 6 numeriranih kategorija
+## Glavni izbornik: analiza 01–05 i troškovi (€)
+
+Promjena 20. 10. 2026.: „Troškovi i investicija” nije više dio numerirane analize. Na mobitelu je samo u kartici „Troškovi” (sve troškove obračunava tu),
+a analiza ima 01 Prostorni planovi, 02 Gradnja i simulator, 03 Rizici, 04 Pristup i infrastruktura, 05 Projekt i dokumentacija. Na računalu se troškovi prikazuju
+kao kategorija s oznakom € između 04 i 05. Tablica ispod koristi unutarnje brojeve (5 = troškovi, 6 = projekt).
+
 
 Prikaz se slaže kao prije; `izbWrap()` zatim premješta postojeće odjeljke (isti elementi, id-evi i `data-k`) u kategorije. Ništa se ne kopira.
 
