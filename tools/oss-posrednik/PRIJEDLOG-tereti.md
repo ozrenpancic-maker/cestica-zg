@@ -77,3 +77,9 @@ Ozren je tražio prikaz posjedovnice I i II, vlastovnice i teretovnice i odabrao
 - Uz prikaz uvijek piše: „Javni uvid OSS-a; nije službeni izvadak i ne potvrđuje pravno stanje. Mjerodavan je ZK izvadak.”
 - Nazivi polja i dalje se ne izmišljaju: za izradu treba uzorak odgovora `lr-unit`. Uzorak bez osobnih podataka pravi stranica `oss-uzorak.html` na probnoj adresi (sve u pregledniku, svaki tekst zamijenjen duljinom).
 - Redoslijed ostaje: uzorak → `worker.next.js` s testovima → Ozren pregleda i odobri → Ozren objavi Worker.
+
+## Stanje 20. 10. 2026.
+
+- Prvi uzorak `lr-unit` (uložak 2305, k.o. Granešina Nova) potvrdio je strukturu: `possessionSheetA1.cadParcels`, `ownershipSheetB.lrUnitShares[].lrOwners`, `possessionSheetA2.lrEntries`, `encumbranceSheetC.lrEntryGroups`, `activePlumbs`.
+- Napisan je `worker.next.js` (nije objavljen) s testom `test.next.mjs`: A I u cijelosti; B samo broj udjela i vlasnika te opis udjela (OIB maskiran); plomba i broj plombi; za A II, B i C upise zasad samo broj.
+- U uzorku su A II, B upisi i C bili prazni, pa polja pojedinog upisa još nisu poznata. Za tekst upisa treba drugi uzorak, s česticom koja ima upis u posjedovnici II i u teretovnici.
