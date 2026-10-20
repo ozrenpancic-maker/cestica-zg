@@ -380,7 +380,15 @@ Ceste iz OpenStreetMapa (iste kao za pristup i pojas uz cestu) ucrtavaju se u sv
 - Napomene: uska čestica (zbroj slobodnog prostora sa strana kuće < 5 m) → kompaktan prijedlog; nema mjesta za parking/vrt; nagib ≥ 15 %; cesta daleko.
 - Prikaz: karta (sloj u odabiru), skica tlocrta, legenda, 3D (površine na terenu; isti ulaz u kuću), izvještaj. Pomicanje kuće preračunava prijedlog.
 - Izlaz za druge module: `window.__oku.povrsine` {parking, prilaz, staza, vrt, travnjak} m² i `projGet().okucnica`. Ne ulazi automatski u troškove (Faza 3).
-- Faza 2 (terasa, pomoćni objekt, tipovi okućnice): nove stavke u `OKU_VRSTE` i koraci u `okuIzracun`.
+- Faza 2 (gotovo): terasa, pomoćni objekt i tipovi okućnice (vidi ispod).
+
+### Faza 2: terasa, pomoćni objekt, tipovi
+- Tipovi (`OKU_TIP`): obiteljska (terasa 20 m² prema jugu, dubina 3,5 m, vrt 30 m²), mediteranska (terasa 30 m² prema jugozapadu, dubina 4 m, vrt 15 m², umjesto travnjaka „mediteranski vrt” sa šljunkom i nasadima),
+  minimalistička (terasa 15 m², dubina 3 m, bez vrta, staza 1,5 m). Tip postavlja zadane vrijednosti i boje; sve se može ručno promijeniti.
+- Terasa: uz zid kuće koji nije ulazni, okrenut najbliže smjeru tipa; ako ne stane, kraća ili plića (najmanje 2,5 m), uz napomenu.
+- Pomoćni objekt (spremište, 4–30 m², zadano 12 m²): pravokutnik 3 m širok, 1 m od svih međa, u dijelu čestice dalje od ceste i kuće (prednost sjevernom dijelu).
+  Napomena: udaljenost od međe i ulazi li u izgrađenost provjeriti u pravilima plana (aplikacija to ne računa).
+- Prikaz: karta, skica, legenda, izvještaj; u 3D-u terasa kao ploča 15 cm, pomoćni objekt 2,5 m s krovom. Površine `terasa` i `pomocni` u `window.__oku.povrsine`.
 
 ## Glavni izbornik: 6 numeriranih kategorija
 

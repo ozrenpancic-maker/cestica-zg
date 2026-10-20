@@ -2522,11 +2522,24 @@ const OKU_VRSTE={
   prilaz:{n:"Kolni prilaz",c:"#a3a3a3",o:.6,sk:"#b9b9b9"},
   staza:{n:"Pješačka staza",c:"#c9a46b",o:.85,sk:"#d8b680"},
   vrt:{n:"Vrt",c:"#3f7d20",o:.6,sk:"#5f9a3a"},
-  travnjak:{n:"Travnjak / zelena površina",c:"#8fcf6a",o:.45,sk:"#b5df98"}};
+  travnjak:{n:"Travnjak / zelena površina",c:"#8fcf6a",o:.45,sk:"#b5df98"},
+  terasa:{n:"Terasa",c:"#a9825e",o:.75,sk:"#c9a27e"},
+  pomocni:{n:"Pomoćni objekt (spremište)",c:"#5b4a3f",o:.75,sk:"#7a685b"}};
+// Faza 2: tipovi okućnice mijenjaju zadane veličine, smjer terase, širinu staze i izgled zelenila (ne pravila gradnje)
+const OKU_TIP={
+  obiteljska:{n:"Obiteljska",terasa:20,vrt:30,dub:3.5,staza:1.2,smjer:180,opis:"terasa prema jugu, vrt i travnjak za igru"},
+  mediteranska:{n:"Mediteranska",terasa:30,vrt:15,dub:4,staza:1.2,smjer:225,opis:"veća terasa prema jugozapadu (za pergolu), manji vrt, umjesto travnjaka šljunak i otporni nasadi",
+    v:{travnjak:{n:"Mediteranski vrt (šljunak, nasadi)",c:"#c9bf8f",sk:"#ddd3a6"},staza:{c:"#d2b98a",sk:"#e2cfa6"},terasa:{c:"#b5764f",sk:"#d09772"}}},
+  minimalisticka:{n:"Minimalistička",terasa:15,vrt:0,dub:3,staza:1.5,smjer:180,opis:"jednostavna terasa, šira staza, bez vrta, ravni travnjak",
+    v:{staza:{c:"#9e9e9e",sk:"#bdbdbd"},terasa:{c:"#8c8c8c",sk:"#b0b0b0"}}}};
+const OKU_RED=["travnjak","vrt","terasa","prilaz","parking","staza","pomocni"];
+function okuV(k,tip){ const T=OKU_TIP[tip||(OKU.res&&OKU.res.tip)||"obiteljska"]||OKU_TIP.obiteljska; return {...OKU_VRSTE[k],...((T.v||{})[k]||{})}; }
 const OKU_MJ={w:2.5,d:5.0}, OKU={res:null,key:null,layer:null,t:0};
-function okuPost(k){const v=projRaw(k).oku; return projCleanOku(v)||{on:false,mjesta:2,vrt:30,prW:3,pomak:0}}
+function okuPost(k){const v=projRaw(k).oku; return projCleanOku(v)||{on:false,mjesta:2,vrt:30,prW:3,pomak:0,tip:"obiteljska",terasa:20,pomocni:false,pomM2:12}}
 function projCleanOku(x){ if(!x||typeof x!=="object") return null; const n=(v,a,b,d)=>{const q=pNum(v,a,b); return q==null?d:q};
-  return {on:x.on===true,mjesta:Math.round(n(x.mjesta,0,2,2)),vrt:Math.round(n(x.vrt,0,400,30)),prW:n(x.prW,2.5,5,3),pomak:Math.round(n(x.pomak,-30,30,0))}; }
+  const tip=pEnum(x.tip,Object.keys(OKU_TIP))||"obiteljska";
+  return {on:x.on===true,mjesta:Math.round(n(x.mjesta,0,2,2)),vrt:Math.round(n(x.vrt,0,400,OKU_TIP[tip].vrt)),prW:n(x.prW,2.5,5,3),pomak:Math.round(n(x.pomak,-30,30,0)),
+    tip,terasa:Math.round(n(x.terasa,0,120,OKU_TIP[tip].terasa)),pomocni:x.pomocni===true,pomM2:Math.round(n(x.pomM2,4,30,12))}; }
 // --- ravninska geometrija u metrima
 const oA=g=>{ if(!g) return 0; const rs=g.type==="Polygon"?[g.coordinates]:g.type==="MultiPolygon"?g.coordinates:[]; let s=0;
   for(const p of rs) p.forEach((r,i)=>{let a=0; for(let j=0;j<r.length-1;j++) a+=r[j][0]*r[j+1][1]-r[j+1][0]*r[j][1]; s+=(i?-1:1)*Math.abs(a)/2;}); return Math.max(0,s); };
@@ -2578,11 +2591,34 @@ function okuIzracun(I){
     // kolni prilaz: od granice do parkinga, širine prW, unutar čestice
     const pw=Math.min(post.prW,park.m*OKU_MJ.w); pri=oX(oRect(park.o,e,n,-pw/2,pw/2,-0.05,park.g+0.02),P); if(pri&&oA(pri)>0.3) out.items.prilaz={g:pri};
     // staza od parkinga do ulaza
-    const pc=[park.o[0]+n[0]*(park.g+OKU_MJ.d/2),park.o[1]+n[1]*(park.g+OKU_MJ.d/2)]; sta=okuStaza(pc,D,I,F); }
+    const pc=[park.o[0]+n[0]*(park.g+OKU_MJ.d/2),park.o[1]+n[1]*(park.g+OKU_MJ.d/2)]; sta=okuStaza(pc,D,I,F,(OKU_TIP[post.tip]||OKU_TIP.obiteljska).staza); }
   else { const g0=[A.p[0]+n[0]*0.05,A.p[1]+n[1]*0.05]; sta=okuStaza(g0,D,I,F,post.prW); if(sta) out.napomene.push("Bez parkinga: od ulaza na česticu do kuće predložen je zajednički put."); }
-  if(sta){ const s2=oD(sta,park?park.r:null); if(s2&&oA(s2)>0.3) out.items.staza={g:s2,duljina:Math.round(Math.hypot(D[0]-(park?park.o[0]:A.p[0]),D[1]-(park?park.o[1]:A.p[1])))}; }
+  if(sta){ const s2=oD(sta,park?park.r:null); if(s2&&oA(s2)>0.3) out.items.staza={g:s2,sirina:park?(OKU_TIP[post.tip]||OKU_TIP.obiteljska).staza:post.prW,duljina:Math.round(Math.hypot(D[0]-(park?park.o[0]:A.p[0]),D[1]-(park?park.o[1]:A.p[1])))}; }
+  const T=OKU_TIP[post.tip]||OKU_TIP.obiteljska; out.tip=post.tip;
+  // terasa (Faza 2): uz zid kuće koji nije ulazni, okrenut što bliže smjeru tipa (jug ili jugozapad), dubine prema tipu
+  if(post.terasa>0){ const th=I.rot*Math.PI/180, ex=[Math.cos(th),-Math.sin(th)], ny=[Math.sin(th),Math.cos(th)], c=I.kucaC;
+    const zid=I.kuce.reduce((g,k)=>oU(g,oPg(k.zid)),null); let slob=oD(P,zid); for(const k of ["parking","prilaz","staza"]) if(out.items[k]) slob=oD(slob,out.items[k].g);
+    const sm=[Math.sin(T.smjer*Math.PI/180),Math.cos(T.smjer*Math.PI/180)];
+    const zidovi=[["S",[-ny[0],-ny[1]],ex,I.d/2,I.w],["N",ny,ex,I.d/2,I.w],["E",ex,ny,I.w/2,I.d],["W",[-ex[0],-ex[1]],ny,I.w/2,I.d]].filter(z=>z[0]!==(out.ulaz&&out.ulaz.strana))
+      .sort((a,b)=>(b[1][0]*sm[0]+b[1][1]*sm[1])-(a[1][0]*sm[0]+a[1][1]*sm[1]));
+    let ter=null;
+    for(const [k,v,u,h,len] of zidovi){ for(const dub of [T.dub,Math.max(2.5,T.dub-1)]){ for(const f of [1,0.8,0.6,0.45]){
+        const L=Math.min(len-0.4,post.terasa/dub)*f; if(L<2.5) continue; const o=[c[0]+v[0]*h,c[1]+v[1]*h], r=oRect(o,u,v,-L/2,L/2,0,dub), g=oX(r,slob);
+        if(g&&oA(g)>=oA(r)*0.95){ ter={g,strana:k,dub,duljina:L}; break; } } if(ter) break; } if(ter) break; }
+    if(ter){ out.items.terasa=ter; F=oD(F,ter.g); if(oA(ter.g)<post.terasa*0.8) out.napomene.push(`Terasa od ${post.terasa} m² ne stane uz kuću; predložena je manja (${Math.round(oA(ter.g))} m²).`); }
+    else out.napomene.push("Uz kuću nema mjesta za terasu (potrebno je barem 2,5 m dubine uz zid koji nije ulazni)."); }
+  // pomoćni objekt (Faza 2): spremište u kutu čestice dalje od ceste i kuće, 1 m od međe; nije provjereno prema pravilima plana
+  if(post.pomocni){ const pw=3, pd=Math.max(1.5,(post.pomM2||12)/pw); let Rp=F; for(const k of ["parking","prilaz","staza","terasa"]) if(out.items[k]) Rp=oD(Rp,out.items[k].g);
+    let best=null;
+    for(const q of B){ let nn=[-q.e[1],q.e[0]]; if(!oIn([q.p[0]+nn[0]*0.6,q.p[1]+nn[1]*0.6],P)) nn=[-nn[0],-nn[1]];
+      for(const [a,b2] of [[pd,pw],[pw,pd]]){ const r=oRect(q.p,q.e,nn,-a/2,a/2,1,1+b2); if(oA(oX(r,Rp))<oA(r)*0.995) continue;
+        if(r.coordinates[0].some(cc=>{for(const rg of rings) for(let j=0;j<rg.length-1;j++) if(oSegDist(cc,rg[j],rg[j+1])<0.98) return true; return false;})) continue; // 1 m od svih međa
+        const cx=q.p[0]+nn[0]*(1+b2/2), cy=q.p[1]+nn[1]*(1+b2/2), sc=Math.min(25,Math.hypot(cx-I.kucaC[0],cy-I.kucaC[1]))+Math.min(25,Math.hypot(cx-A.p[0],cy-A.p[1]))+(cy>I.kucaC[1]?4:0);
+        if(!best||sc>best.sc) best={sc,g:r}; } }
+    if(best){ out.items.pomocni={g:best.g,visina:2.5}; F=oD(F,best.g); out.napomene.push("Pomoćni objekt je nacrtan 1 m od međe samo kao prijedlog položaja; dopuštenu udaljenost od međe i ulazi li u izgrađenost čestice provjeri u pravilima plana."); }
+    else out.napomene.push(`Za pomoćni objekt od ${post.pomM2||12} m² nema mjesta na čestici.`); }
   // ostatak za zelenilo
-  let R=F; for(const k of ["parking","prilaz","staza"]) if(out.items[k]) R=oD(R,out.items[k].g);
+  let R=F; for(const k of ["parking","prilaz","staza","terasa","pomocni"]) if(out.items[k]) R=oD(R,out.items[k].g);
   const Ra=oA(R);
   if(Ra<8){ out.napomene.push("Za vrt i travnjak ne ostaje dovoljno prostora."); return okuZbroj(out); }
   // vrt: najsunčaniji dio, izvan sjene kuće (sunce s juga), dalje od ceste, kompaktan
@@ -2647,7 +2683,7 @@ function okuRacunaj(){
 function okuNacrtaj(){
   if(OKU.layer){selLayer.removeLayer(OKU.layer); OKU.layer=null;}
   const r=OKU.res; if(!r||!r.ll) return; const gL=L.layerGroup();
-  for(const k of ["travnjak","vrt","prilaz","parking","staza"]){ const g=r.ll[k]; if(!g) continue; const V=OKU_VRSTE[k];
+  for(const k of OKU_RED){ const g=r.ll[k]; if(!g) continue; const V=okuV(k);
     L.geoJSON({type:"Feature",geometry:g,properties:{}},{style:{color:V.c,weight:1,fillColor:V.c,fillOpacity:V.o,dashArray:k==="vrt"?"4 3":null},interactive:false,pane:"overlayPane"}).addTo(gL); }
   if(r.items.parking){ try{const c=turf.centroid({type:"Feature",geometry:r.ll.parking,properties:{}}).geometry.coordinates; L.marker([c[1],c[0]],{interactive:false,keyboard:false,icon:L.divIcon({className:"oku-p",html:"P",iconSize:[18,18]})}).addTo(gL);}catch(e){} }
   OKU.layer=gL.addTo(selLayer); if(TL.layer&&TL.layer.bringToFront) TL.layer.bringToFront();
@@ -2657,17 +2693,20 @@ function okuHtml(){
   let h=`<details class="acc" data-k="oku"${OPEN.has("oku")?" open":""}><summary><span>Prijedlog okućnice</span><b id="okuSum">${p.on?"":"nije izrađen"}</b></summary><div class="acc-body">`;
   h+=`<p class="oku-badge">Automatski prijedlog okućnice – ilustrativno</p><p class="meta">Početni koncept rasporeda oko kuće iz simulatora (parking, kolni prilaz, staza do ulaza, vrt, travnjak). Nije projekt ni službeno urbanističko ili arhitektonsko rješenje; raspored ne zaključava ništa i mijenja se kad pomakneš kuću ili promijeniš postavke.</p>`;
   h+=`<div class="kd"><button type="button" class="ib" id="okuGo">${p.on?"Predloži ponovno":"Predloži okućnicu"}</button>${p.on?`<button type="button" class="ib" id="okuOff">Ukloni prijedlog</button>`:""}</div>`;
-  if(p.on){ h+=`<div class="bgrid"><label for="okuMj">Parkirna mjesta</label><select id="okuMj" class="bsel">${[0,1,2].map(v=>`<option value="${v}"${v===p.mjesta?" selected":""}>${v?v+(v===1?" mjesto":" mjesta"):"bez parkinga"}</option>`).join("")}</select>`;
+  if(p.on){ h+=`<div class="bgrid"><label for="okuTip">Tip okućnice</label><select id="okuTip" class="bsel">${Object.entries(OKU_TIP).map(([k,v])=>`<option value="${k}"${k===p.tip?" selected":""}>${v.n}</option>`).join("")}</select>`;
+    h+=`</div><p class="meta" id="okuTipOpis" style="margin:4px 0 8px">${esc(OKU_TIP[p.tip].opis)}. Tip mijenja zadane veličine i izgled; sve vrijednosti možeš promijeniti.</p><div class="bgrid"><label for="okuMj">Parkirna mjesta</label><select id="okuMj" class="bsel">${[0,1,2].map(v=>`<option value="${v}"${v===p.mjesta?" selected":""}>${v?v+(v===1?" mjesto":" mjesta"):"bez parkinga"}</option>`).join("")}</select>`;
     h+=`<label for="okuPom">Položaj parkinga</label><span><button type="button" class="ib step" id="okuL" aria-label="pomakni lijevo">◀</button><output id="okuPomV">${p.pomak?(p.pomak>0?"+":"")+p.pomak+" m":"uz pristup"}</output><button type="button" class="ib step" id="okuR" aria-label="pomakni desno">▶</button></span>`;
     h+=`<label for="okuPrW">Širina prilaza</label><span><input id="okuPrW" type="number" inputmode="decimal" min="2.5" max="5" step="0.5" value="${p.prW}"> m</span>`;
-    h+=`<label for="okuVrt">Vrt</label><span><input id="okuVrt" type="number" inputmode="decimal" min="0" max="400" step="5" value="${p.vrt}"> m² <small class="meta">0 = bez vrta</small></span></div><div id="okuOut"></div>`; }
+    h+=`<label for="okuVrt">Vrt</label><span><input id="okuVrt" type="number" inputmode="decimal" min="0" max="400" step="5" value="${p.vrt}"> m² <small class="meta">0 = bez vrta</small></span>`;
+    h+=`<label for="okuTer">Terasa</label><span><input id="okuTer" type="number" inputmode="decimal" min="0" max="120" step="5" value="${p.terasa}"> m² <small class="meta">0 = bez terase</small></span>`;
+    h+=`<label for="okuPom">Pomoćni objekt</label><span><input type="checkbox" id="okuPom"${p.pomocni?" checked":""}> spremište <input id="okuPomM2" type="number" inputmode="decimal" min="4" max="30" step="1" value="${p.pomM2}" style="width:4.5em"${p.pomocni?"":" disabled"}> m²</span></div><div id="okuOut"></div>`; }
   return h+`</div></details>`;
 }
 function okuOutHtml(){
   const r=OKU.res; if(!r) return ""; const P=r.povrsine||{}, f=v=>(Math.round(v*10)/10).toLocaleString("hr-HR",{maximumFractionDigits:1});
   const pz1=pzSet("oku","Prijedlog okućnice","ilustrativno",pz("C",{izvor:"pravila aplikacije (raspored oko kuće iz simulatora)",razlog:"ilustrativni prijedlog, nije projekt",provjera:"projektant ili krajobrazni arhitekt"}));
   let h=`<table class="rp"><tbody>`;
-  for(const [k,V] of Object.entries(OKU_VRSTE)) h+=`<tr><th><i class="sw" style="background:${V.c};opacity:${Math.min(1,V.o+.2)};display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px"></i>${esc(V.n)}</th><td>${P[k]?`<b>${f(P[k])} m²</b>${k==="parking"&&r.items.parking?` <small class="fx">${r.items.parking.mjesta} ${r.items.parking.mjesta===1?"mjesto":"mjesta"} 2,5 × 5 m</small>`:""}${k==="staza"&&r.items.staza?` <small class="fx">širina 1,2 m</small>`:""}`:"—"}</td></tr>`;
+  for(const k of Object.keys(OKU_VRSTE)){ const V=okuV(k); h+=`<tr><th><i class="sw" style="background:${V.c};opacity:${Math.min(1,V.o+.2)};display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px"></i>${esc(V.n)}</th><td>${P[k]?`<b>${f(P[k])} m²</b>${k==="parking"&&r.items.parking?` <small class="fx">${r.items.parking.mjesta} ${r.items.parking.mjesta===1?"mjesto":"mjesta"} 2,5 × 5 m</small>`:""}${k==="staza"&&r.items.staza?` <small class="fx">širina ${String(r.items.staza.sirina||1.2).replace(".",",")} m</small>`:""}${k==="terasa"&&r.items.terasa?` <small class="fx">uz ${({S:"južni",N:"sjeverni",E:"istočni",W:"zapadni"}[r.items.terasa.strana])} zid tlocrta, dubina ${String(r.items.terasa.dub).replace(".",",")} m</small>`:""}${k==="pomocni"&&r.items.pomocni?` <small class="fx">visina oko 2,5 m</small>`:""}`:"—"}</td></tr>`; }
   h+=`</tbody></table>`;
   h+=`<p class="meta">${pzTag(pz1)} Slobodno oko kuće: ${f(r.slobodno||0)} m². Ulaz u kuću: strana prema pristupu${r.ulaz?" ("+({S:"južna",N:"sjeverna",E:"istočna",W:"zapadna"}[r.ulaz.strana])+" strana tlocrta)":""}. Vrt je na najsunčanijem slobodnom dijelu (izvan sjene kuće kad je sunce na jugu).</p>`;
   if(r.napomene.length) h+=`<ul class="checks">${r.napomene.map(t=>`<li class="chk chk-warn"><b>!</b><span>${esc(t)}</span></li>`).join("")}</ul>`;
@@ -2675,7 +2714,7 @@ function okuOutHtml(){
   return h;
 }
 function okuUpdate(){ const r=okuRacunaj(); okuNacrtaj(); const o=document.getElementById("okuOut"); if(o){const nh=okuOutHtml(); if(o.innerHTML!==nh) keepPos(()=>{o.innerHTML=nh;});}
-  const s=document.getElementById("okuSum"); if(s) s.textContent=r?["parking","vrt","travnjak"].filter(k=>r.povrsine[k]).map(k=>OKU_VRSTE[k].n.split(" ")[0].toLowerCase()+" "+Math.round(r.povrsine[k])+" m²").join(" · ")||"bez prostora":"nije izrađen";
+  const s=document.getElementById("okuSum"); if(s) s.textContent=r?["parking","terasa","vrt"].filter(k=>r.povrsine[k]).map(k=>OKU_VRSTE[k].n.split(" ")[0].toLowerCase()+" "+Math.round(r.povrsine[k])+" m²").join(" · ")||"bez prostora":"nije izrađen";
   if(typeof skicaUpdate==="function") skicaUpdate(); }
 function okuSoon(){ clearTimeout(OKU.t); OKU.t=setTimeout(()=>{okuUpdate(); if(typeof legendaMapUpdate==="function") legendaMapUpdate();},150); }
 function okuForma(){ const d=document.querySelector('details[data-k="oku"]'); if(!d) return; const op=d.open; const t=document.createElement("div"); t.innerHTML=okuHtml(); const n=t.firstElementChild; n.open=op||true; keepPos(()=>d.replaceWith(n)); okuUpdate(); }
@@ -2685,7 +2724,12 @@ sheet.addEventListener("click",e=>{ const id=e.target.id, k=window.__cur&&window
   if(id==="okuOff"){ okuSet({on:false}); okuForma(); }
   if(id==="okuL"||id==="okuR"){ const p=okuPost(k); okuSet({pomak:p.pomak+(id==="okuL"?-1:1)}); const o=document.getElementById("okuPomV"), q=okuPost(k).pomak; if(o) o.textContent=q?(q>0?"+":"")+q+" m":"uz pristup"; okuSoon(); }
 });
-sheet.addEventListener("change",e=>{ const id=e.target.id; if(id==="okuMj") okuSet({mjesta:+e.target.value}); else if(id==="okuPrW") okuSet({prW:numv("okuPrW")}); else if(id==="okuVrt") okuSet({vrt:numv("okuVrt")??0}); else return; okuSoon(); });
+sheet.addEventListener("change",e=>{ const id=e.target.id;
+  if(id==="okuTip"){ const T=OKU_TIP[e.target.value]; if(!T) return; okuSet({tip:e.target.value,terasa:T.terasa,vrt:T.vrt}); okuForma(); return; }
+  if(id==="okuPom"){ okuSet({pomocni:e.target.checked}); const m=document.getElementById("okuPomM2"); if(m) m.disabled=!e.target.checked; okuSoon(); return; }
+  if(id==="okuTer"){ okuSet({terasa:numv("okuTer")??0}); okuSoon(); return; }
+  if(id==="okuPomM2"){ okuSet({pomM2:numv("okuPomM2")}); okuSoon(); return; }
+  if(id==="okuMj") okuSet({mjesta:+e.target.value}); else if(id==="okuPrW") okuSet({prW:numv("okuPrW")}); else if(id==="okuVrt") okuSet({vrt:numv("okuVrt")??0}); else return; okuSoon(); });
 
 // ================= SKICA KUĆE NA TERENU (tlocrt i presjek; ulazi u ispis / PDF) =================
 // Tlocrt: međe s duljinama stranica, područje za gradnju, kuća iz simulatora s krovom i udaljenostima od međa,
@@ -2753,7 +2797,7 @@ function skicaPlan(d,T){
     if(G.band) g+=`<path d="${skRings(G.band.geometry||G.band).map(r=>path(r.map(P))).join("")}" fill="#f0a020" fill-opacity=".25" stroke="#c77700" stroke-width="1" stroke-dasharray="3 3" fill-rule="evenodd"/>`;
     if(G.geom) g+=`<path d="${skRings(G.geom).map(r=>path(r.map(P))).join("")}" fill="#22a35a" fill-opacity=".14" stroke="#14532d" stroke-width="1.2" stroke-dasharray="6 3" fill-rule="evenodd"/>`;}
   // prijedlog okućnice (ilustrativno)
-  if(OKU.res&&OKU.res.ll&&window.__cur&&OKU.key===window.__cur.key) for(const k of ["travnjak","vrt","prilaz","parking","staza"]){ const gg=OKU.res.ll[k]; if(!gg) continue; const V=OKU_VRSTE[k];
+  if(OKU.res&&OKU.res.ll&&window.__cur&&OKU.key===window.__cur.key) for(const k of OKU_RED){ const gg=OKU.res.ll[k]; if(!gg) continue; const V=okuV(k);
     g+=`<path d="${skRings(gg).map(r=>path(r.map(P))).join("")}" fill="${V.sk}" fill-opacity="${k==="travnjak"?.55:.8}" stroke="${V.c}" stroke-width="0.8"${k==="vrt"?' stroke-dasharray="3 2"':""} fill-rule="evenodd"/>`;
     if(k==="parking"){const c=turf.centroid({type:"Feature",geometry:gg,properties:{}}).geometry.coordinates, q=P(c); g+=`<text x="${X(q[0]).toFixed(1)}" y="${(Y(q[1])+5).toFixed(1)}" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">P</text>`;} }
   g+=`<path d="${rings.map(path).join("")}" fill="none" stroke="#4a2f14" stroke-width="2.2" fill-rule="evenodd"/>`;
@@ -5010,7 +5054,10 @@ function v3dData(){
   // oznaka čestice: na vrhu granice najdaljem od kuće, da ne prekriva model
   let lbl=turf.centroid(d.parcel).geometry.coordinates;
   try{ if(TL.center){ const pts=turf.explode(d.parcel).features.map(f=>f.geometry.coordinates); lbl=pts.sort((a,b)=>turf.distance(b,TL.center)-turf.distance(a,TL.center))[0]||lbl; } }catch(e){}
-  const oku={type:"FeatureCollection",features:OKU.res&&OKU.res.ll&&OKU.key===key?["travnjak","vrt","prilaz","parking","staza"].filter(k=>OKU.res.ll[k]).map(k=>({type:"Feature",geometry:OKU.res.ll[k],properties:{c:OKU_VRSTE[k].c,k}})):[]};
+  const oku={type:"FeatureCollection",features:OKU.res&&OKU.res.ll&&OKU.key===key?["travnjak","vrt","prilaz","parking","staza"].filter(k=>OKU.res.ll[k]).map(k=>({type:"Feature",geometry:OKU.res.ll[k],properties:{c:okuV(k).c,k}})):[]};
+  if(OKU.res&&OKU.res.ll&&OKU.key===key&&M){ // terasa (ploča 15 cm) i pomoćni objekt (2,5 m) kao tijela uz kuću
+    if(OKU.res.ll.terasa) M.kuca.features.push({type:"Feature",geometry:OKU.res.ll.terasa,properties:{b:0,h:0.15,c:okuV("terasa").c,lod:0,k:"terasa"}});
+    if(OKU.res.ll.pomocni) M.kuca.features.push({type:"Feature",geometry:OKU.res.ll.pomocni,properties:{b:0,h:2.5,c:"#d8d0c4",lod:0,k:"pomocni"}},{type:"Feature",geometry:OKU.res.ll.pomocni,properties:{b:2.5,h:2.7,c:okuV("pomocni").c,lod:0,k:"pomocni-krov"}}); }
   if(oku.features.some(f=>f.properties.k==="prilaz")) prilaz=prazno; // prilaz iz prijedloga okućnice zamjenjuje onaj iz procjene gradnje
   return {parcel:d.parcel,c:turf.centroid(d.parcel).geometry.coordinates,kuca:M?M.kuca:prazno,oku,sjena:M?M.sjena:prazno,prilaz,terasa:prazno,lbl,ulaz,
     sljeme:M&&M.ridge?{type:"Feature",geometry:{type:"LineString",coordinates:M.ridge},properties:{}}:null,
@@ -5088,7 +5135,7 @@ function legendaHtml(opt={}){
   const G=window.__gp, pd=G&&G.pravacD?G.pravacD:null;
   const items=LGD.filter(x=>opt.skica?["sel","gp","band","kuca","cesta","iso","odm"].includes(x.k):!x.skica);
   let h=`<ul class="lgd">${items.map(x=>`<li>${x.sw}<span>${esc(typeof x.n==="function"?x.n(pd):x.n)}</span></li>`).join("")}`;
-  if(typeof OKU!=="undefined"&&OKU.res&&window.__cur&&OKU.key===window.__cur.key) h+=Object.entries(OKU_VRSTE).filter(([k])=>OKU.res.ll&&OKU.res.ll[k]).map(([k,V])=>`<li><i class="sw" style="background:${V.c};opacity:${Math.min(1,V.o+.15)};border:1px solid ${V.c}${k==="vrt"?";border-style:dashed":""}"></i><span>${esc(V.n)} (prijedlog okućnice, ilustrativno)</span></li>`).join("");
+  if(typeof OKU!=="undefined"&&OKU.res&&window.__cur&&OKU.key===window.__cur.key) h+=Object.keys(OKU_VRSTE).filter(k=>OKU.res.ll&&OKU.res.ll[k]).map(k=>[k,okuV(k)]).map(([k,V])=>`<li><i class="sw" style="background:${V.c};opacity:${Math.min(1,V.o+.15)};border:1px solid ${V.c}${k==="vrt"?";border-style:dashed":""}"></i><span>${esc(V.n)} (prijedlog okućnice, ilustrativno)</span></li>`).join("");
   h+=`</ul>`;
   if(!opt.skica) h+=`<details class="lgd-nam"><summary>Boje namjene (GUP)</summary><ul class="lgd">${Object.entries(COLORS).map(([n,c])=>`<li><i class="sw" style="background:${c};opacity:.55;border:1px solid ${c}"></i><span>${esc(n)}</span></li>`).join("")}</ul></details>`;
   return h;
