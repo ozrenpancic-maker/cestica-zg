@@ -512,8 +512,9 @@ async function sunTests(){
   w.eval("setTab")("troskovi"); w.eval("setTab")("analiza");
   ok(w.document.getElementById("bArea").value==="177","unos ostaje nakon promjene kartice");
   const groups=[...w.document.querySelectorAll("#sheet .grp")].map(g=>g.dataset.g);
-  ok(groups.includes("sum")&&groups.includes("analiza")&&groups.includes("troskovi"),"sadržaj je podijeljen u skupine sažetak, analiza i troškovi");
-  ok(!!w.document.querySelector('.grp[data-g=troskovi] details[data-k="buy"]')&&!!w.document.querySelector('.grp[data-g=troskovi] details[data-k="build"]')&&!!w.document.querySelector('.grp[data-g=analiza] details[data-k="zk"]'),"moduli su u ispravnim skupinama");
+  ok(groups.includes("sum")&&groups.includes("izb"),"sadržaj je podijeljen na sažetak i izbornik kategorija");
+  ok(!!w.document.querySelector('details.izb[data-n="5"] details[data-k="buy"]')&&!!w.document.querySelector('details.izb[data-n="5"] details[data-k="build"]')&&!!w.document.querySelector('details.izb[data-n="3"] details[data-k="zk"]'),"moduli su u ispravnim kategorijama (kupnja i gradnja u 05, ZK u 03)");
+  w.eval("setTab")("troskovi"); ok(w.document.querySelector('details.izb[data-n="5"]').open,"kartica „Troškovi” otvara kategoriju 05"); w.eval("setTab")("analiza");
   w.eval("setTab")("spremljeno");
   ok(!w.document.getElementById("aux").hidden&&w.document.getElementById("sheet").hidden,"Spremljeno se otvara bez brisanja analize");
   w.document.getElementById("auxBack").dispatchEvent(new w.Event("click",{bubbles:true}));
@@ -1475,12 +1476,24 @@ async function sazTests(){
    [...w.document.querySelectorAll("#vUsp .vkDel")][0].dispatchEvent(new w.Event("click",{bubbles:true}));
    ok(w.document.querySelectorAll("#vUsp .vk").length===3&&/Podaci nisu dostupni/.test(V())&&/upisano 2/.test(V()),"Vrijednost zemljišta: uklanjanje usporedbe; s dvije kupoprodaje nema raspona");
    const ex=E("projExport")(E("window.__cur.key")), im=E("projParseImport")(JSON.stringify(ex)); ok(im.ok&&im.data.proj.vrij&&im.data.proj.vrij.usp.length===3&&im.data.proj.vrij.nas==="ZAGREB","Vrijednost zemljišta: usporedbe se izvoze i uvoze s projektom");}
-  const P=[...w.document.querySelectorAll("details.pog")].map(x=>x.querySelector("summary span").textContent);
-  ok(P.includes("Uvjeti gradnje")&&P.some(t=>/^Rizici/.test(t))&&P.includes("Pouzdanost podataka")&&[...w.document.querySelectorAll("details.pog")].every(x=>!x.open),"Poglavlja analize su sklopljene kartice (uvjeti gradnje, rizici, pouzdanost…)");
+  // glavni izbornik: 6 numeriranih kategorija s postojećim modulima
+  {const K=[...w.document.querySelectorAll("details.izb")], nm=K.map(x=>x.querySelector("summary .izb-n").textContent+" "+x.querySelector("summary>span").firstChild.textContent), cat=sel=>{const e=w.document.querySelector(sel); const d=e&&e.closest("details.izb"); return d?+d.dataset.n:0;};
+   ok(JSON.stringify(nm)===JSON.stringify(["01 Prostorni planovi i namjena","02 Gradnja i simulator kuće","03 Rizici i pravne provjere","04 Pristup i infrastruktura","05 Troškovi i investicija","06 Projekt i dokumentacija"])&&K.every(x=>!x.open),"Izbornik: šest numeriranih kategorija (01–06) ovim redoslijedom, sve sklopljene");
+   ok(cat("ul.zones")===1&&(!w.document.querySelector("#sec-upu")||cat("#sec-upu")===1)&&cat("#sec-uvjeti")===2&&cat('details[data-k="tipcmp"]')===2&&cat('details[data-k="calc"]')===2&&cat('details[data-k="tloc"]')===2&&cat('details[data-k="oku"]')===2&&cat('details[data-k="skica"]')===2&&cat('details[data-k="sun"]')===2&&cat('details[data-k="pv"]')===2,"Izbornik 01–02: namjena i karte plana; uvjeti gradnje, usporedba tipova, izračun, simulator, okućnica, skica, sunce i elektrana");
+   const h4=[...w.document.querySelectorAll("h2")].filter(h=>/^(Komunalna|Pristup)/.test(h.textContent));
+   ok(cat('details[data-k="zk"]')===3&&cat("#sec-rizici")===3&&cat("#okolisBox")===3&&cat("#sec-provjere")===3&&h4.length>=2&&h4.every(h=>+h.closest("details.izb").dataset.n===4),"Izbornik 03–04: ZK i tereti, rizici, priroda; pristup i komunalna infrastruktura");
+   ok(["vrij","buy","build","prep","kd","costs","total","scen"].every(k=>cat(`details[data-k="${k}"]`)===5)&&["proj","ph3","ph4","cklist"].every(k=>cat(`details[data-k="${k}"]`)===6)&&cat("#pzBox")===6,"Izbornik 05–06: troškovi, kupnja, scenariji; projekt, dozvole, kontrolna lista, pouzdanost");
+   ok(!w.document.querySelector('.grp[data-g=analiza]')&&!w.document.querySelector('.grp[data-g=troskovi]')&&K.every(d=>!d.querySelector(".izb-prazno")),"Izbornik: svi odjeljci su raspoređeni, nijedna kategorija nije prazna");
+   const c5=[...w.document.querySelectorAll('details.izb[data-n="5"] .izb-c')].map(x=>x.textContent); ok(c5.includes("Sunčana elektrana: isplativost")&&c5.includes("Procjena cijene gradnje")&&w.document.querySelectorAll('[data-k="pv"]').length===1,"Izbornik: prečaci na module; isplativost elektrane iz 05 otvara isti kalkulator (bez kopije)");}
   rows[1].dispatchEvent(new w.Event("click",{bubbles:true})); await tick(60);
-  const calc=w.document.querySelector('details[data-k="calc"]'); ok(calc.open&&calc.closest("details.pog").open,"Dodir na odgovor u sažetku otvara odjeljak i poglavlje u kojem je");
-  E("render")(d); await tick(80); ok(w.document.querySelector('details[data-k="calc"]').closest("details.pog").open,"Otvoreno poglavlje ostaje otvoreno nakon ponovnog prikaza");
-  {const R=E("buildReport")(), secs=[...R.querySelectorAll(".rpt-h h2")].map(h=>h.textContent); ok(secs.includes("Uvjeti gradnje")&&secs.includes("Rizici i provjere")&&R.querySelector(".rpt-sec .rule-title"),"Izvještaj i dalje sadrži poglavlja iz sklopljenih kartica"); R.remove();}
+  const calc=w.document.querySelector('details[data-k="calc"]'); ok(calc.open&&calc.closest("details.izb").open&&calc.closest("details.izb").dataset.n==="2","Dodir na odgovor u sažetku otvara kategoriju i modul u njoj");
+  {const k3=w.document.querySelector('details.izb[data-n="3"]'); k3.open=true; await tick(30); const k2=w.document.querySelector('details.izb[data-n="2"]'), bk=k3.querySelector(".izb-back");
+   ok(!k2.open&&k3.open&&bk&&!bk.hidden&&/Natrag na 02/.test(bk.textContent),"Izbornik: otvorena je jedna glavna kategorija; gumb za povratak na prethodnu");
+   bk.dispatchEvent(new w.Event("click",{bubbles:true})); await tick(40); ok(k2.open&&!k3.open,"Izbornik: povratak na prethodnu kategoriju");}
+  E("render")(d); await tick(80); ok(w.document.querySelector('details[data-k="calc"]').closest("details.izb").open,"Otvorena kategorija ostaje otvorena nakon ponovnog prikaza");
+  {const S=$(w,"sazetak"), mi=S.querySelector(".saz-mini"), g0=S.querySelector("li"); ok(S.querySelector("details.saz-d")&&mi&&/Gradnja/.test(mi.textContent)&&/Tereti/.test(mi.textContent),"Sažetak: sklopivo zaglavlje s kratkim stanjima");
+   ok(g0.classList.contains("saz-info")&&/Namjena je potvrđena; uvjeti za konkretnu gradnju nisu potvrđeni/.test(g0.textContent),"Sažetak: potvrđena namjena bez zelene kvačice (uvjeti gradnje nisu potvrđeni)");}
+  {const R=E("buildReport")(), secs=[...R.querySelectorAll(".rpt-h h2")].map(h=>h.textContent); ok(secs.includes("Uvjeti gradnje")&&secs.includes("Rizici i provjere")&&R.querySelector(".rpt-sec .rule-title"),"Izvještaj i dalje sadrži poglavlja (neovisno o izborniku)"); R.remove();}
   // 3D pogled: lažni MapLibre bilježi stil i kameru
   {const made=[]; w.maplibregl={__test:true,Map:class{constructor(o){this.o=o; this.h={}; made.push(this);} addControl(){} on(e,f){this.h[e]=f} once(e,f){this.h["1"+e]=f} getBearing(){return 0} setBearing(){} getCanvas(){return {toDataURL:()=>"data:image/jpeg;base64,AAAA"}} remove(){} setLayoutProperty(l,k,v){this.lp=[l,k,v]}},
      NavigationControl:class{},Marker:class{constructor(o){this.o=o} setLngLat(){return this} addTo(){return this}}};

@@ -381,3 +381,21 @@ Ceste iz OpenStreetMapa (iste kao za pristup i pojas uz cestu) ucrtavaju se u sv
 - Prikaz: karta (sloj u odabiru), skica tlocrta, legenda, 3D (površine na terenu; isti ulaz u kuću), izvještaj. Pomicanje kuće preračunava prijedlog.
 - Izlaz za druge module: `window.__oku.povrsine` {parking, prilaz, staza, vrt, travnjak} m² i `projGet().okucnica`. Ne ulazi automatski u troškove (Faza 3).
 - Faza 2 (terasa, pomoćni objekt, tipovi okućnice): nove stavke u `OKU_VRSTE` i koraci u `okuIzracun`.
+
+## Glavni izbornik: 6 numeriranih kategorija
+
+Prikaz se slaže kao prije; `izbWrap()` zatim premješta postojeće odjeljke (isti elementi, id-evi i `data-k`) u kategorije. Ništa se ne kopira.
+
+| Kategorija | Postojeći odjeljci i moduli |
+|---|---|
+| 01 Prostorni planovi i namjena | udjeli namjene (zone), Karte prostornog plana (GUP/UPU, rkBox), Krk: Prostorni planovi na lokaciji |
+| 02 Gradnja i simulator kuće | Uvjeti gradnje (prekidači, pravilo, parametri, iznimke), Usporedba tipova, Područje za gradnju, Izračun, Simulator, Prijedlog okućnice, Skica, sva detaljna pravila / opća pravila / članak, Postojeće zgrade (Krk), Sunce i sjena, Sunčana elektrana; prečac 3D pogled |
+| 03 Rizici i pravne provjere | ZK (uložak, tereti), Rizici i upozorenja, Svi nalazi, Provjere, Natura/zaštićena/poplave, Potresna opasnost; prečac Kontrolna lista |
+| 04 Pristup i infrastruktura | Komunalna infrastruktura, Pristup i okolina |
+| 05 Troškovi i investicija | Procjena cijene gradnje, Priprema terena, Komunalni doprinos, Priključci i dozvole, Scenariji, Procjena vrijednosti zemljišta, Kupnja, Ukupna investicija, Krk troškovi; prečac Sunčana elektrana: isplativost (isti modul iz 02) |
+| 06 Projekt i dokumentacija | Projekt čestice, Pouzdanost podataka, Dokumentacija i gdje se obratiti, Kontrolna lista, Projekt i dozvola, Gradnja i useljenje, poveznice i izvori; prečaci PDF, Spremi, Podijeli |
+
+- Otvorena je jedna glavna kategorija; pri otvaranju druge pojavi se „← Natrag na …”. Otvorena kategorija se pamti (OPEN) i pri ponovnom prikazu.
+- Sažetak: na mobitelu sklopljen u jedan redak sa stanjima; potvrđena namjena ima neutralnu oznaku „i” (ne zelenu kvačicu) i tekst da uvjeti gradnje nisu potvrđeni.
+- Mobitel: kartica „Troškovi” prikazuje i otvara 05; „Karta” spušta panel; dok se kuća povlači, panel se spusti. „↑ Sažetak” vraća na vrh.
+- Moduli su neutralni (tanki sivi rub); zelena, narančasta i crvena ostaju samo za rezultate provjera.

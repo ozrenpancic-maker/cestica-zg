@@ -77,6 +77,11 @@ body.net-busy #netbar{opacity:1}
   .cards.m-only{display:grid}
   .tab-analiza .grp[data-g=troskovi],.tab-karta .grp[data-g=troskovi]{display:none}
   .tab-troskovi .grp[data-g=analiza]{display:none}
+  .tab-troskovi details.izb:not(.izb-tr){display:none}
+  .tab-troskovi .izb-eb{display:none}
+  .izb-body{padding:6px 8px 10px}
+  .izb-body .acc-body{padding:10px 10px 12px}
+  #sheet .calc .row span:last-child{white-space:normal;overflow-wrap:anywhere}
   .layers{top:10px}
   #lyrBtn{display:block;min-height:44px;background:var(--panel);box-shadow:0 1px 6px rgba(0,0,0,.15)}
   #lyrList{display:none;margin-top:6px}
@@ -253,13 +258,55 @@ details.vise[open]>summary span::after{content:" ▴"}details.vise:not([open])>s
 .actions{gap:8px}
 @media print{.noprint{display:none}}
 .retry{margin-left:6px;min-height:36px}
-.acc{margin-top:10px;border:2px solid var(--accent);border-radius:12px;background:var(--panel);overflow:hidden;padding:0}
-.acc>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:var(--ok-bg);cursor:pointer}
+.acc{margin-top:8px;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden;padding:0}
+.acc>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 13px;background:var(--panel);cursor:pointer}
+.acc[open]{border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
+.acc[open]>summary{background:var(--soft);border-bottom:1px solid var(--line)}
 .acc>summary::-webkit-details-marker{display:none}
 .acc>summary>span{font-weight:700;font-size:15px;color:var(--fg)}
-.acc>summary>span::before{content:"▸";display:inline-block;margin-right:8px;color:var(--accent);transition:transform .15s}
+.acc>summary>span::before{content:"▸";display:inline-block;margin-right:8px;color:var(--muted);transition:transform .15s}
 .acc[open]>summary>span::before{transform:rotate(90deg)}
-.acc>summary>b{font-family:var(--f-mono);font-weight:500;font-size:13px;text-align:right;color:var(--accent);font-variant-numeric:tabular-nums}
+.acc>summary>b{font-family:var(--f-mono);font-weight:500;font-size:13px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+/* glavni izbornik: 6 numeriranih kategorija, isti stil; otvorena kategorija s naglašenim rubom i brojem */
+.izb-eb{margin:14px 0 6px}
+details.izb{margin-top:6px;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
+details.izb>summary{list-style:none;display:flex;align-items:center;gap:10px;min-height:56px;padding:8px 12px;cursor:pointer;box-sizing:border-box}
+details.izb>summary::-webkit-details-marker{display:none}
+.izb-n{font-style:normal;font:600 12px/1 var(--f-mono);color:var(--muted);background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:5px 6px;flex:0 0 auto;font-variant-numeric:tabular-nums}
+details.izb>summary>span{flex:1 1 auto;min-width:0;font-weight:600;font-size:15px;color:var(--fg);line-height:1.25}
+details.izb>summary>span>small{display:block;font-weight:400;font-size:12px;color:var(--muted);margin-top:2px}
+details.izb>summary>b{flex:0 1 auto;min-width:0;max-width:40%;font:500 12px/1.3 var(--f-mono);color:var(--muted);text-align:right;overflow:hidden;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+details.izb>summary>b.bad{color:var(--no)}
+details.izb>summary>em{font-style:normal;color:var(--muted);font-size:14px;transition:transform .15s;flex:0 0 auto}
+details.izb[open]{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+details.izb[open]>summary{background:var(--soft)}
+details.izb[open]>summary>em{transform:rotate(180deg)}
+details.izb[open]>summary .izb-n{background:var(--accent);color:#fff;border-color:var(--accent)}
+.izb-body{padding:6px 12px 12px;border-top:1px solid var(--line)}
+.izb-body>h2{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:14px 0 4px;font-weight:600}
+.izb-body>h2.m-only{display:none!important}
+.izb-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+@media (max-width:899px){.izb-chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:6px -8px;padding:0 8px 2px}.izb-chips::-webkit-scrollbar{display:none}.izb-c{flex:0 0 auto;white-space:nowrap}}
+.izb-c{font:inherit;font-size:13px;min-height:36px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--fg);cursor:pointer;max-width:100%;text-align:left}
+.izb-c:hover{border-color:var(--accent)}
+.izb-back{font:inherit;font-size:13px;min-height:36px;margin:6px 0 0;padding:4px 10px;border:0;background:none;color:var(--accent);cursor:pointer}
+.izb-topw{position:sticky;bottom:10px;height:0;z-index:6;display:flex;justify-content:flex-end;align-items:flex-end;pointer-events:none}
+#izbTop{pointer-events:auto;min-height:36px;padding:4px 12px;border-radius:999px;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.18);opacity:0;visibility:hidden;transition:opacity .15s}
+#izbTop.on{opacity:1;visibility:visible}
+.saz-info i{background:var(--soft);color:var(--muted);font-style:normal}
+details.saz-d>summary{list-style:none;display:grid;grid-template-columns:1fr auto;align-items:center;gap:4px 8px;cursor:pointer;padding:4px 0;min-height:40px}
+details.saz-d>summary .saz-mini{grid-column:1/-1;grid-row:2}
+details.saz-d>summary::-webkit-details-marker{display:none}
+details.saz-d>summary .eyebrow{margin:0}
+.saz-mini{display:flex;flex-wrap:wrap;gap:4px 10px;flex:1 1 auto;min-width:0;font-size:12px;color:var(--muted)}
+.saz-m{display:inline-flex;align-items:center;gap:4px}.saz-m i{font-style:normal;font-weight:700;width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px}
+.saz-m.saz-ok i{background:var(--ok-bg);color:var(--ok)}.saz-m.saz-warn i,.saz-m.saz-q i{background:var(--warn-bg);color:var(--warn)}.saz-m.saz-no i{background:var(--no-bg);color:var(--no)}.saz-m.saz-info i{background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+details.saz-d[open] .saz-mini{display:none}
+details.saz-d>summary>em{font-style:normal;color:var(--muted);transition:transform .15s;grid-column:2;grid-row:1;padding:0 4px}
+details.saz-d[open]>summary>em{transform:rotate(180deg)}
+@media (prefers-reduced-motion:reduce){details.izb>summary>em,details.saz-d>summary>em{transition:none}}
+@media (max-width:420px){details.izb>summary{flex-wrap:wrap;row-gap:2px}details.izb>summary>span{flex:1 1 calc(100% - 80px)}details.izb>summary>b{order:5;flex:1 1 100%;max-width:none;text-align:left;padding-left:38px;-webkit-line-clamp:1}details.izb>summary>b:empty{display:none}}
+@media print{details.izb{border:0;box-shadow:none}details.izb>summary,.izb-chips,.izb-topw,.izb-back{display:none}}
 .acc>summary>b.bad{color:var(--no)}
 .acc .calc{border:0;border-radius:0;margin:0}
 .acc-body{padding:10px 14px 12px}
@@ -2383,7 +2430,7 @@ function tDraw(){
   if(!TL.marker){
     TL.marker=L.marker([TL.center[1],TL.center[0]],{draggable:true,keyboard:false,title:"Povuci za pomicanje kuće",icon:L.divIcon({className:"t-handle",html:"<span>✥</span>",iconSize:[44,44]})}).addTo(selLayer);
     TL.marker.on("drag",e=>{const p=e.target.getLatLng(); TL.center=[p.lng,p.lat]; tDraw();});
-    TL.marker.on("dragstart",()=>map.dragging.disable()); TL.marker.on("dragend",()=>map.dragging.enable());
+    TL.marker.on("dragstart",()=>{map.dragging.disable(); if(isMobile()&&(UI.state==="full"||UI.state==="half")) setState("peek");}); TL.marker.on("dragend",()=>map.dragging.enable());
   }
   const rp=tRotHandlePos();
   if(!TL.rotM){
@@ -5066,7 +5113,7 @@ function viseInfo(root){
     p.parentNode.insertBefore(d,p); grp.forEach(x=>d.appendChild(x));
   }
 }
-new MutationObserver(()=>{clearTimeout(VISE.t); VISE.t=setTimeout(()=>{try{viseInfo()}catch(e){} try{pogWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){console.error(e)}},30);}).observe(sheet,{childList:true,subtree:true});
+new MutationObserver(()=>{clearTimeout(VISE.t); VISE.t=setTimeout(()=>{try{viseInfo()}catch(e){} try{izbWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){console.error(e)}},30);}).observe(sheet,{childList:true,subtree:true});
 
 // ================= POGLAVLJA KAO KARTICE =================
 // Poglavlja analize (naslov h2 i sadržaj do sljedećeg naslova) sklapaju se u kartice. Naslov ostaje unutra (zbog poveznica
@@ -5093,10 +5140,80 @@ function pogWrap(){
   }
   for(const d of sheet.querySelectorAll("details.pog")){const b=d.querySelector(":scope>summary>b"), body=d.querySelector(":scope>.acc-body"), t=d.querySelector(":scope>summary>span").textContent; const st=pogStanje(body,t); if(b&&b.textContent!==st) b.textContent=st;}
 }
-// odmah nakon slaganja prikaza: sklapanje pojašnjenja, kartice poglavlja i sažetak (prije vraćanja položaja čitanja)
+// ================= GLAVNI IZBORNIK: 12 NUMERIRANIH KATEGORIJA =================
+// Prikaz se i dalje slaže kao do sada (render, renderKrk); izbWrap() nakon toga samo PREMJEŠTA postojeće odjeljke u 12 kategorija
+// (odabir zemljišta → provjera mogućnosti → simulacija → troškovi → realizacija). Elementi zadržavaju id-eve i data-k, pa svi
+// izračuni, unosi i veze rade kao prije. Ništa se ne kopira: prečaci unutar kategorije samo otvaraju postojeći modul.
+const IZB=[[1,"Prostorni planovi i namjena","Što se nalazi na zemljištu i kakva je njegova namjena?"],[2,"Gradnja i simulator kuće","Što i koliko mogu graditi na čestici?"],
+  [3,"Rizici i pravne provjere","Postoje li tereti, plombe ili druga ograničenja?"],[4,"Pristup i infrastruktura","Može li se pristupiti čestici i koliko su udaljeni priključci?"],
+  [5,"Troškovi i investicija","Koliko će koštati zemljište, kuća i cijela investicija?"],[6,"Projekt i dokumentacija","Kako realizirati gradnju i što pripremiti?"]];
+const IZB_TR=new Set([5]); // kartica „Troškovi” na mobitelu otvara kategoriju 05
+const IZB_K={zk:3,risks:3,rparams:2,rex:2,tipcmp:2,gp:2,calc:2,tloc:2,oku:2,skica:2,sun:2,pv:2,vrij:5,buy:5,build:5,prep:5,kd:5,costs:5,krkKd:5,total:5,scen:5,proj:6,ph3:6,ph4:6,cklist:6};
+const IZB_ID={okolisBox:3,rkBox:1,pzBox:6,"sec-rizici":3,"sec-provjere":3,"sec-upu":1,"sec-uvjeti":2,"sec-sunce":2,"sec-novac":5,"sec-pouzdanost":6,"sec-troskovi":5};
+const IZB_H=[[/^(Rizici|Provjere|Potresna)/,3],[/^(Komunalna|Pristup)/,4],[/^(Karte prostornog|Prostorni plan)/,1],[/^(Uvjeti gradnje|Postojeće zgrade|Sunce)/,2],[/^Novac/,5],[/^(Pouzdanost|Dokumentacija|Kontrolna lista)/,6],[/^Gradnja i naknade/,5]];
+// prečaci na postojeće module (bez kopiranja): sunčana elektrana je u 02, a njezin financijski rezultat se otvara i iz 05
+const IZB_X={2:[["3D pogled","btn:#v3dBtn"]],3:[["Kontrolna lista kupnje","details[data-k=\"cklist\"]"]],5:[["Sunčana elektrana: isplativost","details[data-k=\"pv\"]"]],6:[["Ispiši / spremi PDF","btn:#printBtn"],["Spremi česticu","btn:#saveBtn"],["Podijeli","btn:#shareBtn"]]};
+function izbRoute(el){
+  if(el.dataset&&el.dataset.k&&IZB_K[el.dataset.k]) return IZB_K[el.dataset.k];
+  if(el.id&&IZB_ID[el.id]) return IZB_ID[el.id];
+  if(el.tagName==="H2"){const t=el.textContent.trim(); for(const [re,n] of IZB_H) if(re.test(t)) return n;}
+  if(el.tagName==="DETAILS"&&!el.dataset.k&&!el.classList.contains("vise")){const s=el.querySelector("summary"); if(s&&/pravil|zone u pravilu|članak/i.test(s.textContent)) return 2;}
+  if(el.classList&&(el.classList.contains("links")||el.classList.contains("note"))) return 6;
+  return null;
+}
+function izbStanje(n,body){
+  const q=s=>body.querySelector(s), tx=e=>e?e.textContent.replace(/\s+/g," ").trim():"", sb=k=>tx(q(`details[data-k="${k}"]>summary>b`)), kr=s=>s.length>34?s.slice(0,32)+"…":s;
+  switch(n){
+    case 1: {const it=PZREG.items.get("namjena"); return kr(it&&it.vrijednost?String(it.vrijednost):"");}
+    case 2: {const k=[...body.querySelectorAll(".prek .chk-no")].length, r=(tx(q(".rule-title")).match(/^[\d.]+[a-z]?/)||[""])[0], t=tx(document.getElementById("tSum")); return kr(k?k+(k===1?" zapreka":" zapreke"):t&&!/stane li/.test(t)?t:(r?"pravilo "+r:""));}
+    case 3: {const z=sb("zk"), r=q(".rsum"), c=r?[...r.children].map(x=>parseInt(tx(x))||0):null; return kr(z&&!/provjeri izvadak/.test(z)?z:c?(c[0]?c[0]+" potvrđeno · ":"")+(c[1]?c[1]+" potencijalno":"bez potencijalnih rizika"):z);}
+    case 4: {const c=[...body.querySelectorAll("h2")].find(h=>/^Pristup/.test(h.textContent)), ch=c&&c.nextElementSibling&&c.nextElementSibling.querySelector(".chk"); return ch?(ch.classList.contains("chk-ok")?"kolni pristup":"provjeri pristup"):"";}
+    case 5: return kr(tx(q("#totSum"))||sb("build")||sb("krkKd"));
+    case 6: {const m=tx(q("#pzBox p.meta")).match(/A[^:]*:\s*(\d+).*?B[^:]*:\s*(\d+).*?C[^:]*:\s*(\d+)/); return m?`A ${m[1]} · B ${m[2]} · C ${m[3]}`:"";}
+  } return "";
+}
+function izbWrap(){
+  const sum=sheet.querySelector('.grp[data-g=sum]'); if(!sum) return;
+  let wrap=sheet.querySelector('.grp[data-g=izb]');
+  const src=[...sheet.querySelectorAll('.grp[data-g=analiza],.grp[data-g=troskovi]')], els=src.flatMap(g=>[...g.children]);
+  if(!wrap){ if(!els.length) return;
+    wrap=document.createElement("div"); wrap.className="grp"; wrap.dataset.g="izb";
+    let h=`<p class="eyebrow izb-eb">Analiza čestice</p>`;
+    for(const [n,t,o] of IZB){ const k="izb:"+String(n).padStart(2,"0");
+      h+=`<details class="izb${IZB_TR.has(n)?" izb-tr":""}" data-k="${k}" data-n="${n}"${OPEN.has(k)?" open":""}><summary><i class="izb-n">${String(n).padStart(2,"0")}</i><span>${esc(t)}<small>${esc(o)}</small></span><b></b><em aria-hidden="true">▾</em></summary><div class="izb-body"><button type="button" class="izb-back" hidden></button><nav class="izb-chips"></nav></div></details>`; }
+    h+=`<div class="izb-topw"><button type="button" class="ib" id="izbTop" aria-label="Natrag na sažetak čestice">↑ Sažetak</button></div>`;
+    wrap.innerHTML=h; sum.after(wrap); }
+  if(els.length){ let cur=1; const body=n=>wrap.querySelector(`details.izb[data-n="${n}"]>.izb-body`);
+    // udjeli namjene na čestici (popis zona) idu u 01; na vrhu ostaje kratka ocjena građevinskog područja
+    const zo=sum.querySelector(":scope>ul.zones"); if(zo){ const t=document.createElement("h2"); t.textContent="Namjena na čestici"; t.className="izb-h"; body(1).appendChild(t); body(1).appendChild(zo); }
+    for(const el of els){ const r=izbRoute(el); if(el.tagName==="H2"&&r) cur=r; const bd=body(r||cur); if(bd) bd.appendChild(el); }
+    for(const g of src) if(!g.children.length) g.remove(); }
+  for(const d of wrap.querySelectorAll("details.izb")){ const n=+d.dataset.n, b=d.querySelector(":scope>.izb-body"), nav=b.querySelector(":scope>.izb-chips"), back=b.querySelector(":scope>.izb-back");
+    const mods=[...b.children].filter(e=>e!==nav&&e!==back&&(e.matches("details.acc[data-k],details.phase-d[data-k]")||e.id==="okolisBox"));
+    const ch=mods.map(e=>{const nm=e.tagName==="H2"?e.textContent:e.id==="okolisBox"?"Priroda i poplave":(e.querySelector(":scope>summary>span")||e.querySelector(":scope>summary")).textContent; return [nm.replace(/\s+/g," ").trim(),e.dataset.k?`details[data-k="${e.dataset.k}"]`:"#"+e.id];}).concat(IZB_X[n]||[]);
+    const nh=ch.length>=2?ch.map(([t,s])=>`<button type="button" class="izb-c" data-izb-go="${esc(s)}">${esc(t.length>38?t.slice(0,36)+"…":t)}</button>`).join(""):"";
+    if(nav.dataset.h!==nh){nav.innerHTML=nh; nav.dataset.h=nh; nav.hidden=!nh;}
+    const prazno=![...b.children].some(e=>e!==nav&&e!==back&&!e.classList.contains("izb-prazno"));
+    let pr=b.querySelector(":scope>.izb-prazno"); if(prazno&&!pr){pr=document.createElement("p"); pr.className="meta izb-prazno"; pr.textContent="Za ovu česticu u ovoj kategoriji nema podataka."; b.appendChild(pr);} else if(!prazno&&pr) pr.remove();
+    const st=izbStanje(n,b), sb=d.querySelector(":scope>summary>b"); if(sb.textContent!==st){sb.textContent=st; sb.className=/zaprek|ne zadovoljava|plomba/i.test(st)?"bad":"";} }
+}
+sheet.addEventListener("click",e=>{
+  const c=e.target.closest(".izb-c"); if(c){ const s=c.dataset.izbGo; if(s.startsWith("btn:")){const b=document.querySelector(s.slice(4)); if(b) b.click();} else pogIdi(sheet.querySelector(s.split(",").map(x=>x.trim()).find(x=>sheet.querySelector(x))||"#__none")); return; }
+  if(e.target.id==="izbTop"){ sheet.scrollTo({top:0,behavior:"smooth"}); }
+});
+// jedna glavna kategorija otvorena; pri otvaranju druge pamti se prethodna (gumb „natrag”)
+const IZBS={prev:null,lock:false};
+sheet.addEventListener("toggle",e=>{ const d=e.target; if(!d.matches||!d.matches("details.izb")||IZBS.lock) return;
+  if(d.open){ const ot=[...sheet.querySelectorAll("details.izb[open]")].filter(x=>x!==d); IZBS.lock=true; ot.forEach(x=>{x.open=false; OPEN.delete(x.dataset.k);}); IZBS.lock=false;
+    if(ot.length) IZBS.prev=+ot[0].dataset.n; const bk=d.querySelector(":scope>.izb-body>.izb-back"), P=IZB.find(x=>x[0]===IZBS.prev);
+    if(bk){ if(P&&P[0]!==+d.dataset.n){bk.hidden=false; bk.dataset.n=P[0]; bk.textContent="← Natrag na "+String(P[0]).padStart(2,"0")+" "+P[1];} else bk.hidden=true; } } },true);
+sheet.addEventListener("click",e=>{ const bk=e.target.closest(".izb-back"); if(!bk) return; const d=sheet.querySelector(`details.izb[data-n="${bk.dataset.n}"]`); if(d){d.open=true; OPEN.add(d.dataset.k); setTimeout(()=>{const r=d.getBoundingClientRect(), sr=sheet.getBoundingClientRect(); sheet.scrollTop+=r.top-sr.top-8;},20);} });
+sheet.addEventListener("scroll",()=>{const b=document.getElementById("izbTop"); if(b){const on=sheet.scrollTop>420; if(b.classList.contains("on")!==on) b.classList.toggle("on",on);}},{passive:true});
+
+// odmah nakon slaganja prikaza: sklapanje pojašnjenja, kategorije izbornika i sažetak (prije vraćanja položaja čitanja)
 // promjena sadržaja iznad mjesta čitanja ne smije pomaknuti tekst koji se čita (Safari nema „scroll anchoring”)
 function keepPos(fn){ const A=sheet.scrollTop>0?scrollAnchor():null; fn(); if(A) scrollRestore(A); }
-function sheetPost(){ try{viseInfo()}catch(e){} try{pogWrap()}catch(e){} try{sazetakUpdate()}catch(e){} }
+function sheetPost(){ try{viseInfo()}catch(e){} try{izbWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){} }
 // položaj čitanja: zadnji odjeljak čiji je vrh iznad vrha panela i koliko je pomaknut; poslije ponovnog prikaza isti odjeljak
 // vraća se na isto mjesto, i kad se visina sadržaja iznad promijeni (npr. stigne uložak ili se sklope pojašnjenja)
 function scrollAnchor(){
@@ -5112,7 +5229,7 @@ function scrollRestore(A){
 }
 // otvori odjeljak (i sve iznad njega) i pomakni se do njega
 function pogIdi(el){ if(!el) return; for(let p=el;p;p=p.parentElement) if(p.tagName==="DETAILS") p.open=true;
-  const tab=el.closest('.grp[data-g=troskovi]')?"troskovi":"analiza"; if(isMobile()&&UI.tab!==tab) setTab(tab);
+  const kz=el.closest("details.izb"), n=kz?+kz.dataset.n:0, tab=UI.tab==="troskovi"&&(!kz||IZB_TR.has(n))?"troskovi":"analiza"; if(isMobile()&&UI.tab!==tab) setTab(tab,{scrollTo:"__none"});
   if(isMobile()&&UI.state!=="full") setState("full");
   setTimeout(()=>{const r=el.getBoundingClientRect(), sr=sheet.getBoundingClientRect(); sheet.scrollTop+=r.top-sr.top-8;},isMobile()?260:30); }
 
@@ -5126,7 +5243,8 @@ function sazetakUpdate(){
   const P=window.__prek||[], pr=id=>P.find(x=>x.id===id), rows=[];
   // 1. smije li se graditi
   {const v=g.querySelector(".verdict"), cls=v?(v.classList.contains("v-no")?"no":v.classList.contains("v-warn")?"warn":"ok"):"?", zap=P.filter(x=>x.stanje==="no");
-   const st=zap.length?"no":cls; rows.push({src:["namjena","ot-upu"],st,q:"Smije li se graditi?",a:(tx(v).replace(/ Čestica je u više zona, vidi udjele\./,"").slice(0,90)||"Podaci nisu dostupni")+(zap.length?" Zapreka: "+zap.map(x=>x.naziv).join(", ")+".":""),go:'.prek, #sec-uvjeti'});}
+   // potvrđena namjena (građevinsko područje) nije potvrda da je konkretna gradnja dopuštena: neutralna oznaka, ne zelena kvačica
+   const st=zap.length?"no":cls==="ok"?"info":cls; rows.push({src:["namjena","ot-upu"],st,q:"Smije li se graditi?",a:(tx(v).replace(/ Čestica je u više zona, vidi udjele\./,"").slice(0,90)||"Podaci nisu dostupni")+(zap.length?" Zapreka: "+zap.map(x=>x.naziv).join(", ")+".":st==="info"?" Namjena je potvrđena; uvjeti za konkretnu gradnju nisu potvrđeni.":""),go:'.prek, #sec-uvjeti'});}
   // 2. koliko velika kuća
   {const c=sumB("calc"), G=window.__gp; rows.push({src:["pravilo","gp-podrucje"],st:c?(/premala|nije dovoljna|ne zadovoljava/i.test(c)?"no":"ok"):"?",q:"Koliko velika kuća?",a:(c||"Izračun još nije dostupan")+(G&&G.area?` · područje za gradnju ${fmt(G.area)} m²`:""),go:'details[data-k="calc"]'});}
   // 3. tereti (ZK)
@@ -5151,14 +5269,18 @@ function sazetakUpdate(){
   // 7. vrijednost zemljišta
   {const V=window.__vrij, N=PZREG.items.get("vrij-nas"); if(sheet.querySelector('details[data-k="vrij"]'))
    rows.push({src:["vrij-proc","vrij-nas"],st:V?"ok":"?",q:"Koliko vrijedi zemljište?",a:V?`${V.t} prema tvojim usporedbama (orijentacijski)`:(N?`Prosjek naselja ${N.vrijednost}; `:"")+"za procjenu upiši barem tri kupoprodaje sličnih čestica",go:'details[data-k="vrij"]'});}
-  const C=[...PZREG.items.values()].filter(x=>x.raz==="C").length, ic={ok:"✓",warn:"!",no:"✕","?":"?"};
+  const C=[...PZREG.items.values()].filter(x=>x.raz==="C").length, ic={ok:"✓",warn:"!",no:"✕","?":"?",info:"i"};
   const srcOf=r=>{ if(r.srcTxt) return r.srcTxt; const its=(r.src||[]).map(id=>PZREG.items.get(id)).filter(Boolean); if(!its.length) return "";
     const seen=new Set(); return its.map(it=>{const t=(it.izvor||it.razlog||"").replace(/\s+/g," ").slice(0,90); const k=t+it.raz; if(seen.has(k)) return null; seen.add(k); return `${t}${it.datum?", "+it.datum.split("-").reverse().join(". ")+".":""} (${it.raz})`;}).filter(Boolean).join(" · "); };
-  const h=`<p class="eyebrow" style="margin:0 0 4px">Sažetak</p><ul class="saz-l">${rows.map(r=>`<li class="saz-${r.st==="?"?"q":r.st}"><button type="button" class="saz-b" data-saz="${esc(r.go)}"><i aria-hidden="true">${ic[r.st]}</i><span><b>${esc(r.q)}</b><small>${esc(r.a)}</small>${srcOf(r)?`<small class="saz-src">${esc(srcOf(r))}</small>`:""}</span><em aria-hidden="true">›</em></button></li>`).join("")}</ul>`+
-    (C?`<button type="button" class="saz-c" data-saz="#sec-pouzdanost">Prije kupnje provjeri ${C} ${C===1?"stavku označenu":"stavki označenih"} s C ›</button>`:"");
+  // na mobitelu je sažetak sklopljen u jedan redak sa stanjima; dodir ga proširuje (stanje se pamti)
+  const kratko={"Smije li se graditi?":"Gradnja","Koliko velika kuća?":"Kuća","Ima li tereta?":"Tereti","Pristup i komunalije":"Pristup","Koliko bi koštalo?":"Trošak","Priroda i poplave":"Priroda","Koliko vrijedi zemljište?":"Vrijednost"};
+  const sOpen=OPEN.has("saz")||(!isMobile()&&!OPEN.has("saz-zatv")), mini=rows.map(r=>`<span class="saz-m saz-${r.st==="?"?"q":r.st}"><i aria-hidden="true">${ic[r.st]}</i>${esc(kratko[r.q]||r.q)}</span>`).join("");
+  const h=`<details class="saz-d" data-k="saz"${sOpen?" open":""}><summary><span class="eyebrow">Sažetak</span><span class="saz-mini">${mini}</span><em aria-hidden="true">▾</em></summary><ul class="saz-l">${rows.map(r=>`<li class="saz-${r.st==="?"?"q":r.st}"><button type="button" class="saz-b" data-saz="${esc(r.go)}"><i aria-hidden="true">${ic[r.st]}</i><span><b>${esc(r.q)}</b><small>${esc(r.a)}</small>${srcOf(r)?`<small class="saz-src">${esc(srcOf(r))}</small>`:""}</span><em aria-hidden="true">›</em></button></li>`).join("")}</ul>`+
+    (C?`<button type="button" class="saz-c" data-saz="#sec-pouzdanost">Prije kupnje provjeri ${C} ${C===1?"stavku označenu":"stavki označenih"} s C ›</button>`:"")+`</details>`;
   if(box.dataset.h!==h){keepPos(()=>{box.innerHTML=h; box.dataset.h=h;});}
   const cards=g.querySelector(".cards"); if(cards) cards.style.display="none"; // stare kartice sažetka zamijenio je ovaj sažetak
 }
+sheet.addEventListener("toggle",e=>{const d=e.target; if(d.matches&&d.matches("details.saz-d")&&!isMobile()){ if(d.open) OPEN.delete("saz-zatv"); else OPEN.add("saz-zatv"); }},true);
 sheet.addEventListener("click",e=>{const b=e.target.closest("[data-saz]"); if(!b) return; const el=sheet.querySelector(b.dataset.saz.split(",").map(x=>x.trim()).find(x=>sheet.querySelector(x))||"#__none"); pogIdi(el);});
 
 // ================= IZVJEŠTAJ (PDF) =================
@@ -5369,7 +5491,8 @@ function setTab(t,{scrollTo}={}){
   auxClose(); try{aiCloseP()}catch(e){}
   if(t==="karta"){setState("min"); return;}
   if(UI.state==="peek") setState("half");
-  if(!scrollTo&&t==="troskovi"){const g=sheet.querySelector('.grp[data-g=troskovi]'); if(g) setTimeout(()=>{sheet.scrollTop=Math.max(0,g.offsetTop-8)},isMobile()?240:0);}
+  // „Troškovi” na mobitelu: otvara kategoriju 05 Troškovi i investicija
+  if(!scrollTo&&t==="troskovi"){const d=sheet.querySelector('details.izb[data-n="5"]'); if(d){d.open=true; OPEN.add(d.dataset.k);} const g=d||sheet.querySelector('.grp[data-g=troskovi]'); if(g) setTimeout(()=>{const r=g.getBoundingClientRect(), sr=sheet.getBoundingClientRect(); sheet.scrollTop+=r.top-sr.top-8;},isMobile()?240:0);}
   if(!scrollTo&&t==="analiza") sheet.scrollTop=0;
   if(scrollTo){const el=document.getElementById(scrollTo); if(el) pogIdi(el);}
 }
