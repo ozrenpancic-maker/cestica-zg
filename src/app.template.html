@@ -2535,11 +2535,13 @@ const OKU_TIP={
 const OKU_RED=["travnjak","vrt","terasa","prilaz","parking","staza","pomocni"];
 function okuV(k,tip){ const T=OKU_TIP[tip||(OKU.res&&OKU.res.tip)||"obiteljska"]||OKU_TIP.obiteljska; return {...OKU_VRSTE[k],...((T.v||{})[k]||{})}; }
 const OKU_MJ={w:2.5,d:5.0}, OKU={res:null,key:null,layer:null,t:0};
-function okuPost(k){const v=projRaw(k).oku; return projCleanOku(v)||{on:false,mjesta:2,vrt:30,prW:3,pomak:0,tip:"obiteljska",terasa:20,pomocni:false,pomM2:12}}
+function okuPost(k){const v=projRaw(k).oku; return projCleanOku(v)||projCleanOku({on:false})}
 function projCleanOku(x){ if(!x||typeof x!=="object") return null; const n=(v,a,b,d)=>{const q=pNum(v,a,b); return q==null?d:q};
   const tip=pEnum(x.tip,Object.keys(OKU_TIP))||"obiteljska";
   return {on:x.on===true,mjesta:Math.round(n(x.mjesta,0,2,2)),vrt:Math.round(n(x.vrt,0,400,OKU_TIP[tip].vrt)),prW:n(x.prW,2.5,5,3),pomak:Math.round(n(x.pomak,-30,30,0)),
-    tip,terasa:Math.round(n(x.terasa,0,120,OKU_TIP[tip].terasa)),pomocni:x.pomocni===true,pomM2:Math.round(n(x.pomM2,4,30,12))}; }
+    tip,terasa:Math.round(n(x.terasa,0,120,OKU_TIP[tip].terasa)),pomocni:x.pomocni===true,pomM2:Math.round(n(x.pomM2,4,30,12)),
+    trosak:x.trosak!==false,mat:pEnum(x.mat,Object.keys(PRILAZ))||"asfalt",terMat:pEnum(x.terMat,Object.keys(OKU_TER))||OKU_TIP_MAT[tip].ter,trava:pEnum(x.trava,Object.keys(OKU_TRAVA))||OKU_TIP_MAT[tip].trava,
+    pomCij:n(x.pomCij,0,200000,0),nasadi:n(x.nasadi,0,200000,0)}; }
 // --- ravninska geometrija u metrima
 const oA=g=>{ if(!g) return 0; const rs=g.type==="Polygon"?[g.coordinates]:g.type==="MultiPolygon"?g.coordinates:[]; let s=0;
   for(const p of rs) p.forEach((r,i)=>{let a=0; for(let j=0;j<r.length-1;j++) a+=r[j][0]*r[j+1][1]-r[j+1][0]*r[j][1]; s+=(i?-1:1)*Math.abs(a)/2;}); return Math.max(0,s); };
@@ -2648,6 +2650,29 @@ function okuIzracun(I){
   if(I.nagib!=null&&I.nagib>=15) out.napomene.push(`Teren ima nagib oko ${Math.round(I.nagib)} %: prilaz, parking i vrt na nagibu traže potporne zidove ili terase (vidi pripremu terena).`);
   return okuZbroj(out);
 }
+// --- Faza 3: trošak okućnice. Jedinične cijene iz cjenika emajstor.hr (2026.), bez izmišljenih stavki; kad cijene nema, piše
+// „Podaci nisu dostupni” i može se upisati ponuda. Stavke ulaze u financijski model jednom, kao skupina „okucnica”.
+const OKU_CIJ_SRC="emajstor.hr, cjenici „Popločavanje / tlakovanje” (28. 4. 2026.), „Hortikultura, vrt” (15. 7. 2026.), „Drvene terase” i „Vrtne kućice, šupe” (2026.), „Asfaltiranje” (2026.)";
+const OKU_TER={oplocnici:{l:"betonski opločnici / ploče",r:[70,140],f:"iskop 15–30 € + postavljanje opločnika s materijalom 55–110 €/m²"},
+  aris:{l:"drvo (sibirski ariš)",r:[40,85],f:"drvena terasa od sibirskog ariša na podkonstrukciji do 20 cm"},
+  wpc:{l:"WPC (kompozit)",r:[65,110],f:"WPC terasa (70 % drvenih vlakana, 30 % polimera)"}};
+const OKU_TRAVA={sjetva:{l:"sjetva trave",r:[2,6],f:"sjetva trave"},busen:{l:"travni busen",r:[5,12],f:"postavljanje travnog busena (bez dovoza zemlje)"}};
+const OKU_TIP_MAT={obiteljska:{ter:"oplocnici",trava:"sjetva"},mediteranska:{ter:"aris",trava:"sjetva"},minimalisticka:{ter:"wpc",trava:"busen"}};
+function okuTrosak(k){
+  if(!k||!OKU.res||OKU.key!==k) return null; const post=okuPost(k); if(!post.on||post.trosak===false) return null;
+  const P=OKU.res.povrsine||{}, it=[], nap=[], add=(kk,label,A,r,f)=>{ if(!(A>0)) return; it.push({k:"oku_"+kk,label,base:A*(r[0]+r[1])/2,lo:A*r[0],hi:A*r[1],kind:"procjena",formula:`${fmt(A)} m² × ${String(r[0]).replace(".",",")}–${String(r[1]).replace(".",",")} €/m² (${f})`}); };
+  const m=PRILAZ[post.mat]?post.mat:"asfalt", pp=(P.parking||0)+(P.prilaz||0);
+  add("parking","Okućnica: parking i kolni prilaz",pp,PRILAZ[m].r,PRILAZ[m].l+": "+PRILAZ[m].f);
+  add("staza","Okućnica: pješačka staza",P.staza||0,PRILAZ.oplocnici.r,"betonski opločnici: "+PRILAZ.oplocnici.f);
+  const T=OKU_TER[post.terMat]||OKU_TER.oplocnici; add("terasa","Okućnica: terasa",P.terasa||0,T.r,T.l+": "+T.f);
+  if(P.travnjak>0){ if(post.tip==="mediteranska"){ if(post.nasadi>0) it.push({k:"oku_nasadi",label:"Okućnica: mediteranski vrt (šljunak, nasadi)",base:post.nasadi,lo:post.nasadi,hi:post.nasadi,kind:"unos",formula:"tvoja ponuda"}); else nap.push("Mediteranski vrt (šljunak, nasadi): podaci nisu dostupni u cjeniku; upiši ponudu."); }
+    else { const R=OKU_TRAVA[post.trava]||OKU_TRAVA.sjetva; add("travnjak","Okućnica: travnjak",P.travnjak,R.r,R.f); } }
+  add("vrt","Okućnica: vrt (priprema tla)",P.vrt||0,[0.5,3],"frezanje vrta; sadnice nisu uključene");
+  if(P.pomocni>0){ if(post.pomCij>0) it.push({k:"oku_pomocni",label:"Okućnica: pomoćni objekt",base:post.pomCij,lo:post.pomCij,hi:post.pomCij,kind:"unos",formula:"tvoja ponuda"});
+    else if(P.pomocni<=5) it.push({k:"oku_pomocni",label:"Okućnica: pomoćni objekt",base:1850,lo:1000,hi:2700,kind:"procjena",formula:"drvena vrtna šupa 2 × 2 m, dobava i montaža 1.000–2.700 €/kom"});
+    else nap.push(`Pomoćni objekt (${fmt(P.pomocni)} m²): cjenik daje cijenu samo za šupu 2 × 2 m; cijena ovisi o vrsti (lim, drvo, zidano), pa upiši ponudu.`); }
+  return {items:it,napomene:nap,prilaz:pp>0,izvor:OKU_CIJ_SRC};
+}
 function okuStaza(a,b,I,F,w=1.2){
   // ravna staza; ako prolazi kroz kuću, ide preko najbližeg ugla proširene kuće
   const seg=(p,q)=>{const L=Math.hypot(q[0]-p[0],q[1]-p[1]); if(L<0.3) return null; const e=[(q[0]-p[0])/L,(q[1]-p[1])/L], n=[-e[1],e[0]]; return oRect(p,e,n,0,L,-w/2,w/2);};
@@ -2699,7 +2724,12 @@ function okuHtml(){
     h+=`<label for="okuPrW">Širina prilaza</label><span><input id="okuPrW" type="number" inputmode="decimal" min="2.5" max="5" step="0.5" value="${p.prW}"> m</span>`;
     h+=`<label for="okuVrt">Vrt</label><span><input id="okuVrt" type="number" inputmode="decimal" min="0" max="400" step="5" value="${p.vrt}"> m² <small class="meta">0 = bez vrta</small></span>`;
     h+=`<label for="okuTer">Terasa</label><span><input id="okuTer" type="number" inputmode="decimal" min="0" max="120" step="5" value="${p.terasa}"> m² <small class="meta">0 = bez terase</small></span>`;
-    h+=`<label for="okuPom">Pomoćni objekt</label><span><input type="checkbox" id="okuPom"${p.pomocni?" checked":""}> spremište <input id="okuPomM2" type="number" inputmode="decimal" min="4" max="30" step="1" value="${p.pomM2}" style="width:4.5em"${p.pomocni?"":" disabled"}> m²</span></div><div id="okuOut"></div>`; }
+    h+=`<label for="okuPom">Pomoćni objekt</label><span><input type="checkbox" id="okuPom"${p.pomocni?" checked":""}> spremište <input id="okuPomM2" type="number" inputmode="decimal" min="4" max="30" step="1" value="${p.pomM2}" style="width:4.5em"${p.pomocni?"":" disabled"}> m²</span></div><div id="okuOut"></div>`;
+    const sel=(id,obj,v)=>`<select id="${id}" class="bsel">${Object.entries(obj).map(([k,o])=>`<option value="${k}"${k===v?" selected":""}>${esc(o.l)}</option>`).join("")}</select>`;
+    h+=`<p class="eyebrow" style="margin:12px 0 4px">Trošak okućnice</p><div class="bgrid"><label for="okuTr">U procjeni troškova</label><span><input type="checkbox" id="okuTr"${p.trosak?" checked":""}> uključi u gradnju, ukupnu investiciju i scenarije</span>`;
+    h+=`<label for="okuMat">Parking i prilaz</label>${sel("okuMat",PRILAZ,p.mat)}<label for="okuTerMat">Terasa</label>${sel("okuTerMat",OKU_TER,p.terMat)}`;
+    h+=p.tip==="mediteranska"?`<label for="okuNas">Šljunak i nasadi</label><span><input id="okuNas" type="number" inputmode="decimal" min="0" step="100" placeholder="ponuda" value="${p.nasadi>0?p.nasadi:""}"> €</span>`:`<label for="okuTrava">Travnjak</label>${sel("okuTrava",OKU_TRAVA,p.trava)}`;
+    h+=`<label for="okuPomCij">Pomoćni objekt</label><span><input id="okuPomCij" type="number" inputmode="decimal" min="0" step="100" placeholder="ponuda" value="${p.pomCij>0?p.pomCij:""}"> € <small class="meta">ako imaš ponudu</small></span></div><div id="okuCost"></div>`; }
   return h+`</div></details>`;
 }
 function okuOutHtml(){
@@ -2713,7 +2743,14 @@ function okuOutHtml(){
   h+=`<p class="meta">Površine su orijentacijske i mogu se kasnije koristiti u pripremi terena, procjeni gradnje i scenariju investicije. Ne ulaze automatski u troškove.</p>`;
   return h;
 }
-function okuUpdate(){ const r=okuRacunaj(); okuNacrtaj(); const o=document.getElementById("okuOut"); if(o){const nh=okuOutHtml(); if(o.innerHTML!==nh) keepPos(()=>{o.innerHTML=nh;});}
+function okuCostHtml(k){ const T=okuTrosak(k), p=k?okuPost(k):null; if(!OKU.res||!p||!p.on) return "";
+  if(!p.trosak) return `<p class="meta">Trošak okućnice nije uključen u procjenu troškova.</p>`;
+  const lo=T.items.reduce((s,i)=>s+i.lo,0), hi=T.items.reduce((s,i)=>s+i.hi,0);
+  let h=`<div class="calc" style="background:var(--panel);margin-top:8px">`+T.items.map(i=>frow(esc(i.label.replace(/^Okućnica: (.)/,(m,c)=>c.toUpperCase()))+" "+kindTag(i.kind),money(i),{f:i.formula})).join("")+frow("Ukupno okućnica",lo!==hi?`${fmt(lo)}–${fmt(hi)} €`:`${fmt(lo)} €`,{bold:true})+`</div>`;
+  if(T.napomene.length) h+=`<p class="meta">${T.napomene.map(esc).join(" ")}</p>`;
+  h+=`<p class="meta">Iznosi ulaze jednom u „Procjenu cijene gradnje”, „Ukupnu investiciju” i scenarije (skupina okućnica).${T.prilaz?" Prilaz iz procjene gradnje tada se ne računa, a ručno upisano uređenje okoliša zamjenjuje se okućnicom.":""} Ne uključuje ogradu, rasvjetu, navodnjavanje ni biljke. Izvor: ${esc(T.izvor)}.</p>`;
+  return h; }
+function okuUpdate(){ const r=okuRacunaj(); okuNacrtaj(); { const c=document.getElementById("okuCost"), k=window.__cur&&window.__cur.key; if(c){const nh=okuCostHtml(k); if(c.innerHTML!==nh) keepPos(()=>{c.innerHTML=nh;});} } try{ if(typeof finUpdate==="function"&&document.getElementById("bOut")) finUpdate(); }catch(e){} const o=document.getElementById("okuOut"); if(o){const nh=okuOutHtml(); if(o.innerHTML!==nh) keepPos(()=>{o.innerHTML=nh;});}
   const s=document.getElementById("okuSum"); if(s) s.textContent=r?["parking","terasa","vrt"].filter(k=>r.povrsine[k]).map(k=>OKU_VRSTE[k].n.split(" ")[0].toLowerCase()+" "+Math.round(r.povrsine[k])+" m²").join(" · ")||"bez prostora":"nije izrađen";
   if(typeof skicaUpdate==="function") skicaUpdate(); }
 function okuSoon(){ clearTimeout(OKU.t); OKU.t=setTimeout(()=>{okuUpdate(); if(typeof legendaMapUpdate==="function") legendaMapUpdate();},150); }
@@ -2725,7 +2762,10 @@ sheet.addEventListener("click",e=>{ const id=e.target.id, k=window.__cur&&window
   if(id==="okuL"||id==="okuR"){ const p=okuPost(k); okuSet({pomak:p.pomak+(id==="okuL"?-1:1)}); const o=document.getElementById("okuPomV"), q=okuPost(k).pomak; if(o) o.textContent=q?(q>0?"+":"")+q+" m":"uz pristup"; okuSoon(); }
 });
 sheet.addEventListener("change",e=>{ const id=e.target.id;
-  if(id==="okuTip"){ const T=OKU_TIP[e.target.value]; if(!T) return; okuSet({tip:e.target.value,terasa:T.terasa,vrt:T.vrt}); okuForma(); return; }
+  if(id==="okuTip"){ const T=OKU_TIP[e.target.value]; if(!T) return; okuSet({tip:e.target.value,terasa:T.terasa,vrt:T.vrt,terMat:OKU_TIP_MAT[e.target.value].ter,trava:OKU_TIP_MAT[e.target.value].trava}); okuForma(); return; }
+  if(id==="okuTr"){ okuSet({trosak:e.target.checked}); okuSoon(); return; }
+  if(id==="okuMat"||id==="okuTerMat"||id==="okuTrava"){ okuSet({[{okuMat:"mat",okuTerMat:"terMat",okuTrava:"trava"}[id]]:e.target.value}); okuSoon(); return; }
+  if(id==="okuPomCij"||id==="okuNas"){ okuSet({[id==="okuPomCij"?"pomCij":"nasadi"]:numv(id)??0}); okuSoon(); return; }
   if(id==="okuPom"){ okuSet({pomocni:e.target.checked}); const m=document.getElementById("okuPomM2"); if(m) m.disabled=!e.target.checked; okuSoon(); return; }
   if(id==="okuTer"){ okuSet({terasa:numv("okuTer")??0}); okuSoon(); return; }
   if(id==="okuPomM2"){ okuSet({pomM2:numv("okuPomM2")}); okuSoon(); return; }
@@ -4199,7 +4239,7 @@ function finInputs(){
   const volEl=g("kdVol");
   return {hA:numv("bArea")||0,t:pick("bType",BUILD,"klas"),std:pick("bStd",STD,"sred"),ph:pick("bPhase",BUILD.klas,"kljuc"),fl:pick("bFloors",FLOORS,"P"),
     base:!!(g("bBase")&&g("bBase").checked),yard:numv("bYard"),volManual:!!(volEl&&volEl.dataset.manual==="1"),vol:numv("kdVol"),
-    kW:parseFloat(g("kdKw")?.value||"11.04"),gas:!!g("kdGas")?.checked,works:numv("kdWorks"),septic:numv("kdSeptic"),well:numv("kdWell"),prep:prepGet(window.__cur&&window.__cur.key),
+    kW:parseFloat(g("kdKw")?.value||"11.04"),gas:!!g("kdGas")?.checked,works:numv("kdWorks"),septic:numv("kdSeptic"),well:numv("kdWell"),prep:prepGet(window.__cur&&window.__cur.key),oku:okuTrosak(window.__cur&&window.__cur.key),
     tem:pick("bTem",{ploca:1,trake:1},"ploca"),temL:numv("bTemL"),prV:pick("bPrV",PRILAZ,""),prL:numv("bPrL"),prW:numv("bPrW"),
     model:g("bArea").dataset.rucno!=="1"&&window.__zgrada?window.__zgrada:null,prAuto:prilazAuto(),
     unitM:numv("bUnit"),faze:(()=>{const o={}; for(const [k] of FAZE){const v=numv("bF_"+k); if(v!=null&&v>=0) o[k]=v} return Object.keys(o).length?o:null})(),rucno:g("bArea").dataset.rucno==="1"};
@@ -4233,8 +4273,12 @@ function finHouse(I,rate){
   P("nadzor","Stručni nadzor",gradnja*0.015,gradnja*0.9*0.015,gradnja*1.1*0.015,"procjena","1,5 % gradnje","gradnja");
   const prV=PRILAZ[I.prV]?I.prV:"", prW=I.prW>0&&I.prW<=12?I.prW:3, prL=I.prL>0&&I.prL<=500?I.prL:(I.prAuto>0?I.prAuto:null);
   const prilaz=prV&&prL?{v:prV,L:prL,W:prW,auto:!(I.prL>0),A:prL*prW}:null;
-  if(prilaz){const r=PRILAZ[prV].r; P("prilaz","Prilaz",prilaz.A*(r[0]+r[1])/2,prilaz.A*r[0],prilaz.A*r[1],"procjena",`${String(prL).replace(".",",")} m${prilaz.auto?" (iz simulatora i OpenStreetMapa)":""} × ${String(prW).replace(".",",")} m × ${r[0]}–${r[1]} €/m² (${PRILAZ[prV].l}: ${PRILAZ[prV].f})`,"gradnja");}
-  if(yard!=null&&yard>0) P("okolis","Uređenje okoliša (bez prilaza)",yard,yard,yard,"unos","tvoj upis","gradnja");
+  const OK=I.oku&&I.oku.items&&I.oku.items.length?I.oku:null;
+  if(prilaz&&OK&&OK.prilaz) warn.push("Prilaz iz procjene gradnje nije uključen: parking i kolni prilaz su u okućnici.");
+  if(prilaz&&!(OK&&OK.prilaz)){const r=PRILAZ[prV].r; P("prilaz","Prilaz",prilaz.A*(r[0]+r[1])/2,prilaz.A*r[0],prilaz.A*r[1],"procjena",`${String(prL).replace(".",",")} m${prilaz.auto?" (iz simulatora i OpenStreetMapa)":""} × ${String(prW).replace(".",",")} m × ${r[0]}–${r[1]} €/m² (${PRILAZ[prV].l}: ${PRILAZ[prV].f})`,"gradnja");}
+  if(yard!=null&&yard>0&&!OK) P("okolis","Uređenje okoliša (bez prilaza)",yard,yard,yard,"unos","tvoj upis","gradnja");
+  if(yard!=null&&yard>0&&OK) warn.push("Ručno upisano uređenje okoliša nije uključeno jer je uključena okućnica.");
+  if(OK) for(const x of OK.items) items.push({...x,group:"okucnica"});
   if(kd!=null) P("kd","Komunalni doprinos",kd,kd,kd,"propis",`${fmt(vol)} m³ × ${String(rate).replace(".",",")} €/m³`,"naknade");
   P("vodni","Vodni doprinos",0,0,0,"propis","ukinut od 1. 7. 2024.","naknade");
   P("hep","Priključak struje (HEP)",hep,hep,hep,"propis",`${String(kW).replace(".",",")} kW × ${HEP_EUR_KW} €/kW + 25 % PDV`,"naknade");
@@ -4245,10 +4289,11 @@ function finHouse(I,rate){
   if(I.prep) for(const it of prepItems(I.prep)) items.push({...it,group:"priprema"});
   if(kd==null) warn.push("Komunalni doprinos nije uključen: izaberi zonu.");
   if(prV&&!prL) warn.push("Prilaz nije uključen: upiši duljinu (ili postavi kuću u simulatoru, pa se procijeni iz udaljenosti do ceste).");
-  if(yard==null) warn.push("Uređenje okoliša nije uključeno: upiši iznos ako ga znaš.");
+  if(yard==null&&!OK) warn.push("Uređenje okoliša nije uključeno: upiši iznos ako ga znaš ili uključi trošak prijedloga okućnice.");
   const house={hA,foot,unit,unitAuto,unitM,faze,gradnja,autoVol,vol,rate,kd,kW,gas,hep,prist,base,t,fl,flK,std,ph,yard,manualVol:!!I.volManual,tm:TM,ob:OB,prilaz,prAuto:I.prAuto,skala};
   const sum=(f,grp)=>items.filter(i=>!grp||i.group===grp).reduce((s,i)=>s+f(i),0);
-  const build={base:sum(i=>i.base),lo:sum(i=>i.lo),hi:sum(i=>i.hi),naknade:sum(i=>i.base,"naknade"),naknadeLo:sum(i=>i.lo,"naknade"),naknadeHi:sum(i=>i.hi,"naknade"),priprema:sum(i=>i.base,"priprema"),pripremaLo:sum(i=>i.lo,"priprema"),pripremaHi:sum(i=>i.hi,"priprema"),rez:(sum(i=>i.base,"gradnja")+sum(i=>i.base,"priprema"))*0.15};
+  const build={base:sum(i=>i.base),lo:sum(i=>i.lo),hi:sum(i=>i.hi),naknade:sum(i=>i.base,"naknade"),naknadeLo:sum(i=>i.lo,"naknade"),naknadeHi:sum(i=>i.hi,"naknade"),priprema:sum(i=>i.base,"priprema"),pripremaLo:sum(i=>i.lo,"priprema"),pripremaHi:sum(i=>i.hi,"priprema"),
+    okucnica:sum(i=>i.base,"okucnica"),okucnicaLo:sum(i=>i.lo,"okucnica"),okucnicaHi:sum(i=>i.hi,"okucnica"),rez:(sum(i=>i.base,"gradnja")+sum(i=>i.base,"priprema")+sum(i=>i.base,"okucnica"))*0.15};
   return {house,items,warn,build};
 }
 function finCompute(){
@@ -4338,6 +4383,7 @@ function finUpdate(){
     for(const i of F.items.filter(i=>i.group==="gradnja")) h+=frow(esc(i.label)+" "+kindTag(i.kind),money(i),{f:i.formula});
     h+=frow("Naknade, priključci i pristojbe "+kindTag("propis"),F.build.naknadeLo!==F.build.naknadeHi?`${fmt(F.build.naknadeLo)}–${fmt(F.build.naknadeHi)} €`:`${fmt(F.build.naknade)} €`,{f:"iz odjeljaka Komunalni doprinos i Priključci i dozvole"});
     if(F.build.pripremaHi>0) h+=frow("Priprema terena",F.build.pripremaLo!==F.build.pripremaHi?`${fmt(F.build.pripremaLo)}–${fmt(F.build.pripremaHi)} €`:`${fmt(F.build.priprema)} €`,{f:"iz odjeljka Priprema terena"});
+    if(F.build.okucnicaHi>0) h+=frow("Okućnica (prijedlog, ilustrativno) "+kindTag("procjena"),F.build.okucnicaLo!==F.build.okucnicaHi?`${fmt(F.build.okucnicaLo)}–${fmt(F.build.okucnicaHi)} €`:`${fmt(F.build.okucnica)} €`,{f:"iz odjeljka Prijedlog okućnice"});
     h+=frow("Ukupno gradnja s naknadama",`${fmt(F.build.lo)} – ${fmt(F.build.hi)} €`,{bold:true,f:"osnovni iznos "+fmt(F.build.base)+" €"});
     h+=frow("Preporučena rezerva",`+ ${fmt(F.build.rez)} €`,{f:"15 % gradnje, projekata, nadzora, okoliša i pripreme terena; nije uključena u ukupno"});
     h+=`</div>`;
@@ -4371,11 +4417,12 @@ function finUpdate(){
     else h+=frow("Zemljište","nije upisano");
     if(F.build){h+=frow("Gradnja, projekti, nadzor"+(F.items.some(i=>i.k==="okolis")?", okoliš":""),`${fmt(F.items.filter(i=>i.group==="gradnja").reduce((s,i)=>s+i.lo,0))}–${fmt(F.items.filter(i=>i.group==="gradnja").reduce((s,i)=>s+i.hi,0))} €`);
       h+=frow("Naknade, priključci i pristojbe",F.build.naknadeLo!==F.build.naknadeHi?`${fmt(F.build.naknadeLo)}–${fmt(F.build.naknadeHi)} €`:`${fmt(F.build.naknade)} €`);}
+    if(F.build&&F.build.okucnicaHi>0) h+=frow("Okućnica (prijedlog)",F.build.okucnicaLo!==F.build.okucnicaHi?`${fmt(F.build.okucnicaLo)}–${fmt(F.build.okucnicaHi)} €`:`${fmt(F.build.okucnica)} €`);
     if(F.build) h+=frow("Priprema terena",F.build.pripremaHi>0?(F.build.pripremaLo!==F.build.pripremaHi?`${fmt(F.build.pripremaLo)}–${fmt(F.build.pripremaHi)} €`:`${fmt(F.build.priprema)} €`):"nije unesena");
     else h+=frow("Gradnja","nema podataka o dopuštenoj kući za ovu česticu");
     h+=frow("Ukupna investicija",T.lo!==T.hi?`${fmt(T.lo)} – ${fmt(T.hi)} €`:`${fmt(T.base)} €`,{bold:true,f:"osnovni iznos "+fmt(T.base)+" €"});
     if(T.rez) h+=frow("S preporučenom rezervom",`do ${fmt(T.hi+T.rez)} €`,{f:"gornja granica + rezerva 15 % ("+fmt(T.rez)+" €)"});
-    h+=`</div><p class="meta">Svaka stavka se računa jednom: naknade iz "Priključci i dozvole", gradnja iz "Procjene cijene gradnje", priprema iz "Pripreme terena", zemljište iz "Kupnje zemljišta". Raspon dolazi samo od procjena (gradnja ±10 %, plin); iznosi prema propisu i tvoji unosi su točni brojevi.</p>`;
+    h+=`</div><p class="meta">Svaka stavka se računa jednom: naknade iz "Priključci i dozvole", gradnja iz "Procjene cijene gradnje", priprema iz "Pripreme terena", okućnica iz "Prijedloga okućnice", zemljište iz "Kupnje zemljišta". Raspon dolazi samo od procjena (gradnja ±10 %, plin); iznosi prema propisu i tvoji unosi su točni brojevi.</p>`;
     g("totOut").innerHTML=h; if(g("totSum")) g("totSum").textContent=T.lo!==T.hi?`${fmt(T.lo)} – ${fmt(T.hi)} €`:(T.base?fmt(T.base)+" €":"upiši cijenu");
   }
   try{cardsUpdate()}catch(e){}
@@ -4600,12 +4647,12 @@ function scAllowed(I){
   return {checks:out,st};
 }
 function scRow(sc,rate,acq,prep){
-  const H=finHouse({...sc.inp,prep:prep||{}},rate), A=scAllowed(sc.inp);
+  const H=finHouse({...sc.inp,prep:prep||{},oku:okuTrosak(window.__cur&&window.__cur.key)},rate), A=scAllowed(sc.inp);
   const g=H.items.filter(i=>i.group==="gradnja"), gr=H.items.find(i=>i.k==="gradnja"), pn=H.items.filter(i=>i.k==="projekti"||i.k==="nadzor");
   const fees=H.items.filter(i=>["kd","vodni","prist"].includes(i.k)), conn=H.items.filter(i=>["hep","vio","plin","kdWorks","kdSeptic","kdWell"].includes(i.k));
   const S=(L,f)=>L.reduce((s,i)=>s+i[f],0);
   return {sc,H,A,gradnja:[gr.lo,gr.hi],projekti:[S(pn,"lo"),S(pn,"hi")],doprinosi:[S(fees,"lo"),S(fees,"hi")],prikljucci:[S(conn,"lo"),S(conn,"hi")],
-    okolis:H.items.find(i=>i.k==="okolis"),build:H.build,total:[H.build.lo+acq,H.build.hi+acq],rez:H.build.rez,kdMissing:H.house.kd==null,prep:H.items.filter(i=>i.group==="priprema")};
+    okolis:H.items.find(i=>i.k==="okolis"),oku:H.items.filter(i=>i.group==="okucnica"),build:H.build,total:[H.build.lo+acq,H.build.hi+acq],rez:H.build.rez,kdMissing:H.house.kd==null,prep:H.items.filter(i=>i.group==="priprema")};
 }
 const rng=(a)=>a[0]===a[1]?fmt(a[0])+" €":`${fmt(a[0])}–${fmt(a[1])} €`;
 function scHtml(){
@@ -4627,11 +4674,12 @@ function scUpdate(){
     if(r.A.checks.length) h+=`<dt>Pravila</dt><dd>${r.A.checks.map(c=>`<span class="${c.ok?"good":"bad"}">${c.l} ${c.t}</span>`).join(" · ")}</dd>`;
     h+=`<dt>Gradnja</dt><dd>${rng(r.gradnja)}</dd><dt>Priprema terena</dt><dd>${r.prep.length?rng([r.prep.reduce((s,i)=>s+i.lo,0),r.prep.reduce((s,i)=>s+i.hi,0)]):"nije unesena"}</dd><dt>Projekti i nadzor</dt><dd>${rng(r.projekti)}</dd><dt>Doprinosi i pristojbe</dt><dd>${rng(r.doprinosi)}${r.kdMissing?" (bez komunalnog)":""}</dd><dt>Priključci</dt><dd>${rng(r.prikljucci)}</dd>`;
     if(r.okolis) h+=`<dt>Okoliš</dt><dd>${fmt(r.okolis.base)} €</dd>`;
+    if(r.oku.length) h+=`<dt>Okućnica</dt><dd>${rng([r.oku.reduce((s,i)=>s+i.lo,0),r.oku.reduce((s,i)=>s+i.hi,0)])}</dd>`;
     h+=`<dt><b>Ukupna investicija</b></dt><dd><b>${rng(r.total)}</b>${acq?"":" (bez zemljišta)"}</dd><dt>Rezerva 15 %</dt><dd>+ ${fmt(r.rez)} €</dd></dl>`;
     h+=`<div class="kd"><button type="button" class="ib" data-scload="${i}">Učitaj u kalkulator</button><button type="button" class="ib" data-scren="${i}">Preimenuj</button><button type="button" class="ib" data-scdel="${i}">Obriši</button></div></div>`;
   });
   h+=`</div>`;
-  if(R.length>1){const best=R.reduce((a,b)=>b.total[0]<a.total[0]?b:a); h+=`<p class="meta">Najniža procjena: ${esc(best.sc.name)} (${rng(best.total)}). Zona komunalnog doprinosa, priprema terena${acq?" i kupnja zemljišta":""} zajednički su za sve scenarije.</p>`;}
+  if(R.length>1){const best=R.reduce((a,b)=>b.total[0]<a.total[0]?b:a); h+=`<p class="meta">Najniža procjena: ${esc(best.sc.name)} (${rng(best.total)}). Zona komunalnog doprinosa, priprema terena, okućnica${acq?" i kupnja zemljišta":""} zajednički su za sve scenarije.</p>`;}
   h+=`<p class="meta">Iznosi se računaju istim modelom kao "Procjena cijene gradnje". Dopuštenost se odnosi samo na pravila koja se mogu provjeriti (GBP, tlocrt, broj etaža); ostali uvjeti traže lokacijsku informaciju.</p>`;
   o.innerHTML=h; const s=document.getElementById("scSum"); if(s) s.textContent=`${L.length} ${L.length===1?"scenarij":L.length<5?"scenarija":"scenarija"}`;
 }
@@ -6202,7 +6250,7 @@ sheet.addEventListener("click",e=>{ if(e.target.id==="offFavs") setTab("spremlje
 function pwaScenSummary(k){
   const L=scList(k); if(!L.length) return "–";
   const rate=projKd(k).rate, pr=prepGet(k);
-  return L.map(sc=>{let r=""; try{const H=finHouse({...sc.inp,prep:pr},rate); r=` ${fmt(H.build.lo)}–${fmt(H.build.hi)} €`}catch(e){} return `${esc(sc.name)}:${r}`}).join("<br>")+`<br><small>gradnja s naknadama, bez zemljišta</small>`;
+  return L.map(sc=>{let r=""; try{const H=finHouse({...sc.inp,prep:pr,oku:okuTrosak(window.__cur&&window.__cur.key)},rate); r=` ${fmt(H.build.lo)}–${fmt(H.build.hi)} €`}catch(e){} return `${esc(sc.name)}:${r}`}).join("<br>")+`<br><small>gradnja s naknadama, bez zemljišta</small>`;
 }
 
 // trajna pohrana: traži od Androida da podatke aplikacije (čestice, scenarije, unose) ne briše kad ponestane prostora
