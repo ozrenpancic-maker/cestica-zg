@@ -276,3 +276,31 @@ U ispisu svaki dio skice (tlocrt, presjek, 3D) ostaje na jednoj stranici.
 - vijenac +6,00 m;
 - sljeme +8,31 m (6 + tg 30° × 4);
 - razlika terena ispod kuće 0,8 m.
+
+## Legenda boja i izvještaj (PDF)
+
+**Pojas uz cestu** sada se crta cijeli, od ruba čestice prema ulici do udaljenosti od regulacijskog pravca (npr. 0–5 m). Prije je bio nacrtan samo dio iza udaljenosti od međa (3–5 m), pa je izgledalo kao da se zbraja s međama. Izračun područja za gradnju nije promijenjen.
+
+**Legenda boja** postoji na tri mjesta, iz iste funkcije (`legendaHtml`):
+
+- u „Slojevima” na karti („Legenda boja”, s bojama namjene); na mobitelu se pri otvaranju panel spusti;
+- u „Području za gradnju”;
+- u izvještaju, uz skicu.
+
+**Izvještaj:** gumb „Ispiši / spremi PDF” slaže poseban dokument za ispis (`buildReport`), a ne ispisuje sučelje.
+
+- **Naslovnica:** tamnozelena traka sa zlatnim rubom, broj čestice i k.o., datum i koordinate, karta s česticom i kućom, šest ključnih podataka (površina, namjena, područje za gradnju, izračun, investicija, pouzdanost) i napomena o naravi izvještaja.
+- **Numerirana poglavlja** (01–10): sažetak (prije svega provjeri), čestica i namjena, uvjeti gradnje, kuća na čestici (simulator, područje za gradnju, legenda, skica), rizici i provjere, infrastruktura i okolina, troškovi i investicija, sunce i energija, pouzdanost podataka, izvori.
+- **Sadržaj** je kopija odjeljaka sa zaslona, pa je uvijek usklađen. Polja za unos postaju vrijednosti (automatske vrijednosti sivo), sklopivi odjeljci postaju podnaslovi, a gumbi i upute za rad u aplikaciji se izostavljaju. Prazni odjeljci (kupnja bez cijene, priprema bez unosa, scenariji) ne ulaze.
+- **Stranica:** A4, naslovnica bez margina; ostale stranice imaju podnožje „Čestica HR · Izvještaj o čestici” i „Stranica X / Y”.
+- **Pisma:** naslovi Georgia (serif), tekst sistemski sans; nema vanjskih fontova, pa radi i bez mreže.
+- Ako se ispis pokrene iz izbornika preglednika (ne gumbom), ispisuje se sučelje kao prije.
+
+## Cesta na skici
+
+Ceste iz OpenStreetMapa (iste kao za pristup i pojas uz cestu) ucrtavaju se u sva tri crteža skice:
+
+- **Tlocrt:** kolnik sivo, os bijelo isprekidano, naziv ulice uz cestu. Okvir se proširi do 12 m izvan čestice prema cesti. Gdje cesta u naravi ulazi u česticu, vidi se preklapanje.
+- **Presjek:** ako pravac presjeka siječe cestu do 25 m izvan međa, presjek se produži do ceste i kolnik se nacrta na razini terena, s nazivom. Stvarna visina kolnika nije poznata.
+- **3D:** blok terena se proširi do 14 m izvan čestice prema cesti, a cesta je položena na teren.
+- **Širina:** iz oznake `width` u OpenStreetMapu kad postoji, inače procjena prema vrsti ceste (ulica 5 m, lokalna 6 m, sporedna 7 m, glavna 8 m, servisni put 3,5 m, poljski put 3 m); to piše uz skicu.
