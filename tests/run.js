@@ -1450,6 +1450,15 @@ async function sazTests(){
   const calc=w.document.querySelector('details[data-k="calc"]'); ok(calc.open&&calc.closest("details.pog").open,"Dodir na odgovor u sažetku otvara odjeljak i poglavlje u kojem je");
   E("render")(d); await tick(80); ok(w.document.querySelector('details[data-k="calc"]').closest("details.pog").open,"Otvoreno poglavlje ostaje otvoreno nakon ponovnog prikaza");
   {const R=E("buildReport")(), secs=[...R.querySelectorAll(".rpt-h h2")].map(h=>h.textContent); ok(secs.includes("Uvjeti gradnje")&&secs.includes("Rizici i provjere")&&R.querySelector(".rpt-sec .rule-title"),"Izvještaj i dalje sadrži poglavlja iz sklopljenih kartica"); R.remove();}
+  // 3D pogled: lažni MapLibre bilježi stil i kameru
+  {const made=[]; w.maplibregl={__test:true,Map:class{constructor(o){this.o=o; this.h={}; made.push(this);} addControl(){} on(e,f){this.h[e]=f} once(e,f){this.h["1"+e]=f} getBearing(){return 0} setBearing(){} getCanvas(){return {toDataURL:()=>"data:image/jpeg;base64,AAAA"}} remove(){} setLayoutProperty(l,k,v){this.lp=[l,k,v]}},
+     NavigationControl:class{},Marker:class{constructor(o){this.o=o} setLngLat(){return this} addTo(){return this}}};
+   const TL=E("TL"); TL.center=null; E("tDraw")(); await E("v3dOpen")(); const M=made[0], st=M&&M.o.style;
+   ok(M&&!$(w,"v3d").hidden&&st.terrain&&st.terrain.source==="dem"&&st.sources.dem.encoding==="terrarium"&&st.sources.kat.tiles[0].includes("oss:BZP_CESTICE")&&st.sources.kat.tiles[0].includes("{bbox-epsg-3857}")&&st.layers.some(l=>l.type==="fill-extrusion")&&M.o.pitch>=55,"3D pogled: satelit, model terena, granice DGU i kuća kao 3D tijelo, nagnuta kamera");
+   ok(st.sources.kuca.data.features.length>=2&&st.sources.kuca.data.features[0].properties.h>=3,"3D pogled: kuća iz simulatora s visinom do vijenca (i slojevima krova)");
+   M.fitBounds=()=>{}; M.setZoom=()=>{}; M.getZoom=()=>18; M.setPitch=()=>{}; M.h["1idle"](); ok(E("V3D").snap.size===1,"3D pogled: nakon iscrtavanja sprema se slika za izvještaj");
+   const R=E("buildReport")(); ok(R.querySelector(".rpt-3d img")&&/3D pogled/.test(R.textContent),"Izvještaj: slika 3D pogleda u poglavlju „Kuća na čestici”"); R.remove();
+   $(w,"v3dClose").dispatchEvent(new w.Event("click",{bubbles:true})); ok($(w,"v3d").hidden,"3D pogled se zatvara");}
   ok(errs.length===0,"bez JS grešaka (sažetak i kartice): "+errs.join(" | "));
 }
 async function gpTests(){

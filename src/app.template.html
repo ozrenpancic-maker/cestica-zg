@@ -160,6 +160,15 @@ details p{font-size:13.5px;margin:6px 0}
 .bgrid input[type=number],.bsel{font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg);max-width:100%}
 .bgrid input[type=number]{width:6em}
 .actions{display:flex;justify-content:flex-end;flex-wrap:wrap;margin:-4px 0 6px}
+/* 3D pogled */
+#v3d{position:absolute;inset:0;z-index:1200;background:var(--bg);display:flex;flex-direction:column}
+#v3d[hidden]{display:none}
+.v3d-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.v3d-act{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.v3d-act label{font-size:13px;display:flex;gap:4px;align-items:center}
+#v3dMap{flex:1;min-height:260px;position:relative}
+.v3d-note{margin:0;padding:6px 10px;font-size:11.5px;color:var(--muted)}
+.v3d-lbl{background:#123b2e;color:#fff;font:600 13px/1 system-ui,sans-serif;padding:5px 9px;border-radius:7px;border:1.5px solid #8fe0b8;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.rpt-3d{margin:4mm 0;break-inside:avoid}.rpt-3d img{width:100%;border:1px solid var(--line)}.rpt-3d figcaption{font-size:8.5pt;color:var(--muted);margin-top:1mm}
 /* sažetak na vrhu analize */
 .saz{margin:12px 0 6px;order:3}
 .saz-l{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
@@ -407,9 +416,11 @@ ul.risk small{color:var(--muted)}
   <div id="menu" hidden><p class="meta" id="ver" style="margin:0 0 6px"></p><a href="#" id="statBtn2" class="ib">Stanje servisa</a><a href="#" id="goKrk" class="ib">Otok Krk (pilot)</a><label id="aiOnRow" class="aion" hidden><input type="checkbox" id="aiOn"> AI asistent (testno)</label></div>
   <main>
     <div id="map"></div>
+    <div id="v3d" hidden role="dialog" aria-label="3D pogled na česticu"><div class="v3d-bar"><b id="v3dTtl">3D pogled</b><span class="v3d-act"><button type="button" class="ib" id="v3dRot">Zaustavi</button><button type="button" class="ib" id="v3dPod">Karta</button><label><input type="checkbox" id="v3dKat" checked> Čestice</label><button type="button" class="ib" id="v3dClose" aria-label="Zatvori">✕</button></span></div><div id="v3dMap"></div><p class="v3d-note" id="v3dNote"></p></div>
     <div class="layers" id="layers">
       <button type="button" class="ib fab" id="lyrBtn" aria-expanded="false" aria-controls="lyrList">Slojevi</button>
       <button type="button" class="ib fab" id="aiBtn" hidden aria-label="AI asistent">AI</button>
+      <button type="button" class="ib fab" id="v3dBtn" aria-label="3D pogled na česticu" title="3D pogled na česticu">3D</button>
       <div id="lyrList">
         <label><input type="checkbox" id="lyrSat"> Satelit</label>
         <label><input type="checkbox" id="lyrDof"> Ortofoto DGU <small id="lyrDofH" class="meta"></small></label>
@@ -4523,6 +4534,74 @@ function restoreMap(){
 }
 window.addEventListener("afterprint",()=>setTimeout(restoreMap,100));
 
+// ================= 3D POGLED (MapLibre GL, učitava se tek kad se otvori) =================
+// Kosi pogled na satelitsku snimku s modelom terena (Terrain Tiles, oko 30 m), granicom čestice, područjem za gradnju,
+// granicama čestica DGU i kućom iz simulatora (visina do vijenca). Pogled se polako okreće; dodir ga zaustavlja.
+// Kad se karta prvi put iscrta, sprema se slika za PDF izvještaj (ako preglednik dopusti čitanje slike).
+const V3D={map:null,rot:true,raf:0,snap:new Map(),pod:"sat",key:null};
+function v3dLib(){
+  if(window.maplibregl) return Promise.resolve();
+  return new Promise((res,rej)=>{ const l=document.createElement("link"); l.rel="stylesheet"; l.href="vendor/maplibre-gl-4.7.1/maplibre-gl.css"; document.head.appendChild(l);
+    const sc=document.createElement("script"); sc.src="vendor/maplibre-gl-4.7.1/maplibre-gl.js"; sc.onload=()=>res(); sc.onerror=()=>rej(new Error("biblioteka za 3D se nije učitala")); document.head.appendChild(sc); });
+}
+function v3dData(){
+  const d=curData(); if(!d||!d.parcel) return null;
+  const F=tFloors(), V=F.full*TL.fh+(F.pk?1.2:0), kuca={type:"FeatureCollection",features:[]};
+  if(TL.center){ const r=tRect(), g=tGarage(); if(r) kuca.features.push({type:"Feature",geometry:r.geometry,properties:{h:V,b:0}}); if(g) kuca.features.push({type:"Feature",geometry:g.geometry,properties:{h:2.8,b:0}});
+    // krov: šest tankih slojeva koji se sužavaju prema sljemenu (gruba slika krova, ne projekt)
+    if(TL.krov!=="ravni"&&r){ const tg=Math.tan(TL.nagib*Math.PI/180), sp=Math.min(TL.w,TL.d), R=tg*sp/2; for(let i=1;i<=6;i++){ const k=1-i/7;
+      const wd=TL.krov==="cet"||!(TL.sljeme==="duz"?TL.w>=TL.d:TL.w<TL.d)?TL.w*k:TL.w, dp=TL.krov==="cet"||(TL.sljeme==="duz"?TL.w>=TL.d:TL.w<TL.d)?TL.d*k:TL.d;
+      const sl=tRectAt(TL.center,Math.max(wd,0.5),Math.max(dp,0.5),TL.rot); kuca.features.push({type:"Feature",geometry:sl.geometry,properties:{h:V+R*i/6,b:V+R*(i-1)/6,krov:1}}); } } }
+  const G=window.__gp&&Math.abs(window.__gp.parcelArea-turf.area(d.parcel))<1?window.__gp:null;
+  return {parcel:d.parcel,c:turf.centroid(d.parcel).geometry.coordinates,kuca,gp:G&&G.geom?{type:"Feature",geometry:G.geom,properties:{}}:{type:"FeatureCollection",features:[]},
+    broj:(d.parcel.properties.KATASTARSKA_CESTICA||d.parcel.properties.broj||""),key:window.__cur&&window.__cur.key};
+}
+function v3dStyle(D){
+  return {version:8,sources:{
+      sat:{type:"raster",tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],tileSize:256,maxzoom:19,attribution:"Snimka: Esri, Maxar, Earthstar Geographics"},
+      osm:{type:"raster",tiles:["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],tileSize:256,maxzoom:19,attribution:"© OpenStreetMap"},
+      dem:{type:"raster-dem",tiles:["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],tileSize:256,maxzoom:15,encoding:"terrarium",attribution:"Teren: Terrain Tiles (Mapzen, AWS)"},
+      kat:{type:"raster",tiles:["https://wms1-gs-oss.uredjenazemlja.hr/ows2-m/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=oss:BZP_CESTICE&STYLES=&SRS=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=512&HEIGHT=512&FORMAT=image/png&TRANSPARENT=true"],tileSize:512,minzoom:15,attribution:"Katastar © DGU"},
+      parcel:{type:"geojson",data:D.parcel},gp:{type:"geojson",data:D.gp},kuca:{type:"geojson",data:D.kuca}},
+    layers:[{id:"sat",type:"raster",source:"sat",layout:{visibility:V3D.pod==="sat"?"visible":"none"}},{id:"osm",type:"raster",source:"osm",layout:{visibility:V3D.pod==="osm"?"visible":"none"}},
+      {id:"kat",type:"raster",source:"kat",paint:{"raster-opacity":0.8}},
+      {id:"gp",type:"fill",source:"gp",paint:{"fill-color":"#22a35a","fill-opacity":0.28}},
+      {id:"parcel-line",type:"line",source:"parcel",paint:{"line-color":"#ffd84d","line-width":3.5}},
+      {id:"kuca",type:"fill-extrusion",source:"kuca",paint:{"fill-extrusion-color":["case",["has","krov"],"#b5532f","#efe9dc"],"fill-extrusion-height":["get","h"],"fill-extrusion-base":["get","b"],"fill-extrusion-opacity":0.96}}],
+    terrain:{source:"dem",exaggeration:1}};
+}
+function v3dSpin(){ cancelAnimationFrame(V3D.raf); const f=()=>{ if(V3D.map&&V3D.rot&&!document.hidden) V3D.map.setBearing((V3D.map.getBearing()+0.12)%360); V3D.raf=requestAnimationFrame(f); }; V3D.raf=requestAnimationFrame(f); }
+async function v3dOpen(){
+  const D=v3dData(), box=document.getElementById("v3d"), note=document.getElementById("v3dNote");
+  if(!D){alert("Najprije odaberi česticu na karti."); return;}
+  box.hidden=false; if(isMobile()) setState("min");
+  document.getElementById("v3dTtl").textContent="3D pogled · čestica "+D.broj;
+  note.textContent="Učitavam 3D pogled…";
+  try{await v3dLib();}catch(e){note.textContent="3D pogled nije dostupan: "+e.message+"."; return;}
+  const gl=(()=>{try{const c=document.createElement("canvas"); return !!(c.getContext("webgl2")||c.getContext("webgl"));}catch(e){return false}})();
+  if(!gl&&!(window.maplibregl&&maplibregl.__test)){note.textContent="Ovaj preglednik ne podržava 3D prikaz (WebGL)."; return;}
+  if(V3D.map){try{V3D.map.remove()}catch(e){} V3D.map=null;}
+  V3D.key=D.key;
+  const m=new maplibregl.Map({container:"v3dMap",style:v3dStyle(D),center:D.c,zoom:18.2,pitch:62,bearing:-20,maxPitch:78,canvasContextAttributes:{preserveDrawingBuffer:true},preserveDrawingBuffer:true,attributionControl:{compact:true}});
+  V3D.map=m; m.addControl(new maplibregl.NavigationControl({visualizePitch:true}),"top-right");
+  try{const el=document.createElement("div"); el.className="v3d-lbl"; el.textContent=D.broj; new maplibregl.Marker({element:el}).setLngLat(D.c).addTo(m);}catch(e){}
+  const stop=()=>{V3D.rot=false; document.getElementById("v3dRot").textContent="Okreći";};
+  m.on("dragstart",stop); m.on("zoomstart",e=>{if(e.originalEvent) stop();}); m.on("pitchstart",e=>{if(e.originalEvent) stop();});
+  m.on("error",e=>{const msg=e&&e.error&&e.error.message||""; if(/dem|terrarium|elevation/i.test(msg)) note.textContent="Model terena se nije učitao; prikaz je bez reljefa.";});
+  // kamera: cijela čestica u kadru, pa nagib (s nagibom se kadar smanji, zato malo bliže)
+  try{const bb=turf.bbox(turf.buffer(D.parcel,0.004,{units:"kilometers"})); m.fitBounds([[bb[0],bb[1]],[bb[2],bb[3]]],{padding:30,duration:0,maxZoom:20}); m.setZoom(Math.min(20,m.getZoom()+0.4)); m.setPitch(62); m.setBearing(-20);}catch(e){}
+  let gotov=false; const fin=()=>{ if(gotov) return; gotov=true; note.textContent="Teren: model visina oko 30 m (grub, C). Kuća: iz simulatora, visina do vijenca s grubim krovom. Granice: katastar DGU. Satelitska snimka: Esri. Prikaz je ilustracija, ne projekt.";
+    try{V3D.snap.set(D.key,m.getCanvas().toDataURL("image/jpeg",0.86));}catch(e){} };
+  m.once("idle",fin); setTimeout(fin,8000); // ako neki sloj ne odgovori, slika se ipak spremi nakon 8 s
+  V3D.rot=true; document.getElementById("v3dRot").textContent="Zaustavi"; v3dSpin();
+}
+function v3dClose(){ document.getElementById("v3d").hidden=true; if(isMobile()) setState("peek"); cancelAnimationFrame(V3D.raf); if(V3D.map){try{V3D.map.remove()}catch(e){} V3D.map=null;} }
+document.getElementById("v3dBtn").addEventListener("click",v3dOpen);
+document.getElementById("v3dClose").addEventListener("click",v3dClose);
+document.getElementById("v3dRot").addEventListener("click",e=>{V3D.rot=!V3D.rot; e.currentTarget.textContent=V3D.rot?"Zaustavi":"Okreći";});
+document.getElementById("v3dPod").addEventListener("click",e=>{V3D.pod=V3D.pod==="sat"?"osm":"sat"; e.currentTarget.textContent=V3D.pod==="sat"?"Karta":"Satelit"; const m=V3D.map; if(m){m.setLayoutProperty("sat","visibility",V3D.pod==="sat"?"visible":"none"); m.setLayoutProperty("osm","visibility",V3D.pod==="osm"?"visible":"none");}});
+document.getElementById("v3dKat").addEventListener("change",e=>{const m=V3D.map; if(m) m.setLayoutProperty("kat","visibility",e.target.checked?"visible":"none");});
+
 // ================= LEGENDA BOJA (karta, analiza, skica, izvještaj) =================
 const LGD=[
   {k:"sel",n:"Odabrana čestica",sw:'<i class="sw ln" style="border-color:#111;border-width:3px"></i>'},
@@ -4694,7 +4773,7 @@ function buildReport(){
     ["Sažetak: prije svega provjeri",[rptQ(".prek"),rptQ("#pzBox .verdict")],true],
     ["Čestica i namjena",(()=>{const g=sheet.querySelector(".grp"); return g?[...g.children].filter(e=>!e.matches(".actions,#printHead,#printMap,.cards,.parcel")&&!(e.classList.contains("eyebrow")&&/čestica/i.test(e.textContent))):[];})()],
     ["Uvjeti gradnje",rptAfter(rptH2("Uvjeti gradnje")).filter(e=>!e.matches(".prek,[data-k=gp],[data-k=tloc],[data-k=skica]")),true],
-    ["Kuća na čestici",[rptQ('[data-k="tloc"] #tOut'),rptQ('[data-k="gp"]'),"LEGENDA",rptQ('[data-k="skica"]')],true],
+    ["Kuća na čestici",[rptQ('[data-k="tloc"] #tOut'),rptQ('[data-k="gp"]'),"LEGENDA",rptQ('[data-k="skica"]'),"3D"],true],
     ["Rizici i provjere",[...rptAfter(rptH2("Rizici")),...rptAfter(rptH2("Provjere"))]],
     ["Infrastruktura, pristup i okolina",[...rptAfter(rptH2("Komunalna infrastruktura")),...rptAfter(rptH2("Pristup i okolina")),...rptAfter(rptH2("Karte prostornog plana"))]],
     ["Troškovi i investicija",["build","prep","kd","costs","buy","total"].map(k=>rptQ(`details[data-k="${k}"]`)),true],
@@ -4704,9 +4783,10 @@ function buildReport(){
   R.innerHTML=h; let no=0;
   // prazni odjeljci (bez unosa) i upute za rad u aplikaciji ne idu u izvještaj
   const prazno=e=>e&&e.matches&&(e.matches('details[data-k="scen"],details[data-k="proj"]')||(e.matches('details[data-k="zk"]')&&!e.querySelector(".zkoss,#zkOut *"))||(e.matches("details")&&/upiši cijenu|nije uneseno|nema spremljenih/.test(((e.querySelector(":scope>summary>b")||{}).textContent||""))));
-  for(const [t,els,brk] of parts){ const list=els.filter(e=>e&&!prazno(e)); if(!list.length) continue; no++;
+  for(const [t,els,brk] of parts){ const list=els.filter(e=>e==="3D"?V3D.snap.has(cur.key):e&&!prazno(e)); if(!list.length) continue; no++;
     const sec=document.createElement("section"); sec.className="rpt-sec"+(brk?" rpt-brk":""); sec.innerHTML=`<div class="rpt-h"><span>${String(no).padStart(2,"0")}</span><h2>${esc(t)}</h2></div>`;
-    for(const e of list){ if(e==="LEGENDA"){const l=document.createElement("div"); l.className="rpt-lgd"; l.innerHTML=`<h4><span>Legenda boja</span></h4>`+legendaHtml({skica:true}); sec.appendChild(l); continue;} sec.appendChild(rptClean(e)); }
+    for(const e of list){ if(e==="3D"){const im=V3D.snap.get(cur.key); if(im){const f=document.createElement("figure"); f.className="rpt-3d"; f.innerHTML=`<h4><span>3D pogled</span></h4><img alt="3D pogled na česticu" src="${im}"><figcaption>Satelitska snimka (Esri) s modelom terena oko 30 m, granice čestica DGU, kuća iz simulatora. Ilustracija, ne projekt.</figcaption>`; sec.appendChild(f);} continue;}
+      if(e==="LEGENDA"){const l=document.createElement("div"); l.className="rpt-lgd"; l.innerHTML=`<h4><span>Legenda boja</span></h4>`+legendaHtml({skica:true}); sec.appendChild(l); continue;} sec.appendChild(rptClean(e)); }
     R.appendChild(sec); }
   document.body.appendChild(R); return R;
 }
