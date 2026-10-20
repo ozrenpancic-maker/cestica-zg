@@ -296,7 +296,14 @@ details.izb[open]>summary .izb-n{background:var(--accent);color:#fff;border-colo
 #izbTop{pointer-events:auto;min-height:36px;padding:4px 12px;border-radius:999px;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.18);opacity:0;visibility:hidden;transition:opacity .15s}
 #izbTop.on{opacity:1;visibility:visible}
 .saz-info i{background:var(--soft);color:var(--muted);font-style:normal}
-details.saz-d>summary{list-style:none;display:grid;grid-template-columns:1fr auto;align-items:center;gap:4px 8px;cursor:pointer;padding:4px 0;min-height:40px}
+details.saz-d{border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:0 1px 3px rgba(0,0,0,.08);overflow:hidden}
+details.saz-d>summary{list-style:none;display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 8px;cursor:pointer;padding:10px 12px;min-height:44px;background:var(--soft)}
+details.saz-d>summary:hover{background:color-mix(in srgb,var(--accent) 8%,var(--soft))}
+details.saz-d>summary .eyebrow{font-weight:700;color:var(--fg)}
+details.saz-d>summary .saz-hint{font-size:12px;color:var(--accent);font-weight:600;grid-column:2;grid-row:1;white-space:nowrap}
+details.saz-d[open]>summary{border-bottom:1px solid var(--line)}
+details.saz-d>.saz-l{border:0;border-radius:0}
+details.saz-d>.saz-c{margin:8px 12px 10px}
 details.saz-d>summary .saz-mini{grid-column:1/-1;grid-row:2}
 details.saz-d>summary::-webkit-details-marker{display:none}
 details.saz-d>summary .eyebrow{margin:0}
@@ -304,7 +311,7 @@ details.saz-d>summary .eyebrow{margin:0}
 .saz-m{display:inline-flex;align-items:center;gap:4px}.saz-m i{font-style:normal;font-weight:700;width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px}
 .saz-m.saz-ok i{background:var(--ok-bg);color:var(--ok)}.saz-m.saz-warn i,.saz-m.saz-q i{background:var(--warn-bg);color:var(--warn)}.saz-m.saz-no i{background:var(--no-bg);color:var(--no)}.saz-m.saz-info i{background:var(--soft);color:var(--muted);border:1px solid var(--line)}
 details.saz-d[open] .saz-mini{display:none}
-details.saz-d>summary>em{font-style:normal;color:var(--muted);transition:transform .15s;grid-column:2;grid-row:1;padding:0 4px}
+details.saz-d>summary>em{display:none}
 details.saz-d[open]>summary>em{transform:rotate(180deg)}
 @media (prefers-reduced-motion:reduce){details.izb>summary>em,details.saz-d>summary>em{transition:none}}
 @media (max-width:420px){details.izb>summary{flex-wrap:wrap;row-gap:2px}details.izb>summary>span{flex:1 1 calc(100% - 80px)}details.izb>summary>b{order:5;flex:1 1 100%;max-width:none;text-align:left;padding-left:38px;-webkit-line-clamp:1}details.izb>summary>b:empty{display:none}}
@@ -5168,12 +5175,12 @@ function v3dData(){
   return {parcel:d.parcel,c:turf.centroid(d.parcel).geometry.coordinates,kuca:M?M.kuca:prazno,oku,sjena:M?M.sjena:prazno,prilaz,terasa:prazno,lbl,ulaz,
     sljeme:M&&M.ridge?{type:"Feature",geometry:{type:"LineString",coordinates:M.ridge},properties:{}}:null,
     gp:G&&G.geom?{type:"Feature",geometry:G.geom,properties:{}}:{type:"FeatureCollection",features:[]},
-    broj:(d.parcel.properties.KATASTARSKA_CESTICA||d.parcel.properties.broj||""),key};
+    broj:(d.parcel.properties.KATASTARSKA_CESTICA||d.parcel.properties.broj||""),key,krk:!!(d.krk||window.__cur&&window.__cur.region==="krk")};
 }
 function v3dStyle(D){
   const ex=(id,flt,z)=>({id,type:"fill-extrusion",source:"kuca",filter:flt,...z,paint:{"fill-extrusion-color":["get","c"],"fill-extrusion-height":["get","h"],"fill-extrusion-base":["get","b"],"fill-extrusion-opacity":1,"fill-extrusion-vertical-gradient":true}});
   return {version:8,sources:{
-      sat:{type:"raster",tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],tileSize:256,maxzoom:19,attribution:"Snimka: Esri, Maxar, Earthstar Geographics"},
+      sat:{type:"raster",tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],tileSize:256,maxzoom:D.krk?18:19,attribution:"Snimka: Esri, Maxar, Earthstar Geographics"},
       osm:{type:"raster",tiles:["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],tileSize:256,maxzoom:19,attribution:"© OpenStreetMap"},
       dem:{type:"raster-dem",tiles:["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],tileSize:256,maxzoom:15,encoding:"terrarium",attribution:"Teren: Terrain Tiles (Mapzen, AWS)"},
       kat:{type:"raster",tiles:["https://wms1-gs-oss.uredjenazemlja.hr/ows2-m/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=oss:BZP_CESTICE&STYLES=&SRS=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=512&HEIGHT=512&FORMAT=image/png&TRANSPARENT=true"],tileSize:512,minzoom:15,attribution:"Katastar © DGU"},
@@ -5430,12 +5437,13 @@ function sazetakUpdate(){
   // na mobitelu je sažetak sklopljen u jedan redak sa stanjima; dodir ga proširuje (stanje se pamti)
   const kratko={"Smije li se graditi?":"Gradnja","Koliko velika kuća?":"Kuća","Ima li tereta?":"Tereti","Pristup i komunalije":"Pristup","Koliko bi koštalo?":"Trošak","Priroda i poplave":"Priroda","Koliko vrijedi zemljište?":"Vrijednost"};
   const sOpen=OPEN.has("saz")||(!isMobile()&&!OPEN.has("saz-zatv")), mini=rows.map(r=>`<span class="saz-m saz-${r.st==="?"?"q":r.st}"><i aria-hidden="true">${ic[r.st]}</i>${esc(kratko[r.q]||r.q)}</span>`).join("");
-  const h=`<details class="saz-d" data-k="saz"${sOpen?" open":""}><summary><span class="eyebrow">Sažetak</span><span class="saz-mini">${mini}</span><em aria-hidden="true">▾</em></summary><ul class="saz-l">${rows.map(r=>`<li class="saz-${r.st==="?"?"q":r.st}"><button type="button" class="saz-b" data-saz="${esc(r.go)}"><i aria-hidden="true">${ic[r.st]}</i><span><b>${esc(r.q)}</b><small>${esc(r.a)}</small>${srcOf(r)?`<small class="saz-src">${esc(srcOf(r))}</small>`:""}</span><em aria-hidden="true">›</em></button></li>`).join("")}</ul>`+
+  const h=`<details class="saz-d" data-k="saz"${sOpen?" open":""}><summary><span class="eyebrow">Sažetak čestice</span><span class="saz-hint">${sOpen?"Sakrij ▴":"Prikaži odgovore ▾"}</span><span class="saz-mini">${mini}</span><em aria-hidden="true">▾</em></summary><ul class="saz-l">${rows.map(r=>`<li class="saz-${r.st==="?"?"q":r.st}"><button type="button" class="saz-b" data-saz="${esc(r.go)}"><i aria-hidden="true">${ic[r.st]}</i><span><b>${esc(r.q)}</b><small>${esc(r.a)}</small>${srcOf(r)?`<small class="saz-src">${esc(srcOf(r))}</small>`:""}</span><em aria-hidden="true">›</em></button></li>`).join("")}</ul>`+
     (C?`<button type="button" class="saz-c" data-saz="#sec-pouzdanost">Prije kupnje provjeri ${C} ${C===1?"stavku označenu":"stavki označenih"} s C ›</button>`:"")+`</details>`;
   if(box.dataset.h!==h){keepPos(()=>{box.innerHTML=h; box.dataset.h=h;});}
   const cards=g.querySelector(".cards"); if(cards) cards.style.display="none"; // stare kartice sažetka zamijenio je ovaj sažetak
 }
-sheet.addEventListener("toggle",e=>{const d=e.target; if(d.matches&&d.matches("details.saz-d")&&!isMobile()){ if(d.open) OPEN.delete("saz-zatv"); else OPEN.add("saz-zatv"); }},true);
+sheet.addEventListener("toggle",e=>{const d=e.target; if(!(d.matches&&d.matches("details.saz-d"))) return; const hn=d.querySelector(".saz-hint"); if(hn) hn.textContent=d.open?"Sakrij ▴":"Prikaži odgovore ▾";
+  if(!isMobile()){ if(d.open) OPEN.delete("saz-zatv"); else OPEN.add("saz-zatv"); }},true);
 sheet.addEventListener("click",e=>{const b=e.target.closest("[data-saz]"); if(!b) return; const el=sheet.querySelector(b.dataset.saz.split(",").map(x=>x.trim()).find(x=>sheet.querySelector(x))||"#__none"); pogIdi(el);});
 
 // ================= IZVJEŠTAJ (PDF) =================
