@@ -100,7 +100,11 @@ async function parcelInfo(id) {
 // Tekst upisa u A II i C prenosi se u cijelosti (odluka korisnika), uz zamjenu OIB-a (11 znamenki) s „[OIB]”.
 // Tekst upisa u B (stjecanje vlasništva) se ne prenosi jer redovito sadrži imena vlasnika; vraća se samo broj upisa.
 const OIB = /\b\d{11}\b/g;
-const tekst = v => (v == null ? null : String(v).replace(OIB, "[OIB]"));
+// OSS u tekst upisa umeće HTML (<span>, <br>): pretvara se u običan tekst s novim redovima
+const ENT = { "&nbsp;": " ", "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&#39;": "'", "&apos;": "'" };
+const cist = v => String(v).replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]*>/g, "").replace(/&(nbsp|amp|lt|gt|quot|apos|#39);/g, m => ENT[m]).replace(/&#(\d+);/g, (_, d) => String.fromCharCode(+d))
+  .split("\n").map(l => l.replace(/[ \t]+/g, " ").trim()).join("\n").replace(/\n{3,}/g, "\n\n").trim();
+const tekst = v => (v == null ? null : cist(v).replace(OIB, "[OIB]"));
 const rbr = v => (v == null ? null : String(v));
 const upis = e => ({ rb: rbr(e.orderNumber), tekst: tekst(e.description) });
 function sazmiUlozak(u) {
@@ -168,6 +172,8 @@ export default {
       const ck2 = new Request("https://cache.local/oss-lr/" + id), hit2 = await cache.match(ck2);
       if (hit2) o.ulosci = await hit2.json();
       else {
+        // čestica iz predmemorije stare verzije posrednika nema glavnu knjigu (_mb): tada se parcel-info dohvati ponovno
+        if ((o.zk || []).some(z => z.ulozak && !z._mb)) { try { const fr = await parcelInfo(id); if (fr.status === 200) { o = { ...fr.o, ...(tocka ? { graficka: o.graficka, stanjeKarte: o.stanjeKarte } : {}) }; ctx.waitUntil(cache.put(ck, new Response(JSON.stringify(fr.o), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_S } }))); } } catch (e) {} }
         const zk = (o.zk || []).filter(z => z.ulozak && z._mb).slice(0, 3);
         try { o.ulosci = (await Promise.all(zk.map(z => ulozak(z.ulozak, z._mb)))).filter(Boolean); ctx.waitUntil(cache.put(ck2, new Response(JSON.stringify(o.ulosci), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_S } }))); }
         catch (e) { o.ulosciGreska = e.message || "OSS uložak ne odgovara"; }

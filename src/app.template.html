@@ -1250,6 +1250,9 @@ async function ossFetchInto(k,P,q,onUpd){
   for(let n=0;v.st==="err"&&v.retry&&n<OSS_RETRY.length;n++){OSSZK.set(k,{st:"load",n:n+1}); onUpd(); await new Promise(r=>setTimeout(r,OSS_RETRY[n])); v=await krkOssOnce(P,k,q);}
   OSSZK.set(k,v); if(v.st==="err") setTimeout(()=>{if(OSSZK.get(k)===v) OSSZK.delete(k)},30000);
   onUpd();
+  // OSS povremeno odbije upit za uložak (čestica je tada već stigla): jedan ponovni pokušaj nakon 3 s, samo za uložak
+  if(v.st==="ok"&&v.d&&v.d.ulosciGreska&&!(v.d.ulosci&&v.d.ulosci.length)){ await new Promise(r=>setTimeout(r,OSS_RETRY[0]||3000));
+    const v2=await krkOssOnce(P,k,q); if(v2.st==="ok"&&v2.d&&v2.d.ulosci&&v2.d.ulosci.length&&OSSZK.get(k)===v){OSSZK.set(k,v2); onUpd();} }
 }
 async function krkOssFetch(P,area){
   if(!P||P.cid==null) return; const k=String(P.cid);
@@ -1258,6 +1261,8 @@ async function krkOssFetch(P,area){
   return ossFetchInto(k,P,null,upd);
 }
 // --- ZK uložak iz javnog uvida OSS-a (sažetak posrednika): posjedovnica I i II, vlastovnica bez osoba, teretovnica, plomba
+// tekst upisa: posrednik šalje običan tekst s novim redovima; HTML koji bi ipak stigao (stara verzija) uklanja se
+const zkTxt=t=>esc(String(t||"").replace(/<br\s*\/?>/gi,"\n").replace(/<[^>]*>/g,"").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/[ \t]+/g," ").trim()).replace(/\n\s*\n+/g,"<br>").replace(/\n/g,"<br>");
 function zkOssHtml(U){
   if(!Array.isArray(U)||!U.length) return "";
   let h=`<div class="zkoss">`;
@@ -1269,11 +1274,11 @@ function zkOssHtml(U){
     // A I
     if(u.A1&&u.A1.length) h+=`<p class="eyebrow" style="margin:8px 0 2px">Posjedovnica I · čestice u ulošku</p><table class="rp"><tbody>${u.A1.map(p=>`<tr><th>${esc(p.broj||"?")}${p.ko?`<small class="fx">k.o. ${esc(p.ko)}</small>`:""}</th><td>${p.povrsina!=null?fmt(p.povrsina)+" m²":"—"}${p.opis?`<small class="fx">${esc(p.opis)}</small>`:""}${p.dijelovi&&p.dijelovi.length?`<small class="fx">${esc(p.dijelovi.map(x=>(x.naziv||"")+(x.povrsina!=null?" "+fmt(x.povrsina)+" m²":"")).join(" · "))}</small>`:""}</td></tr>`).join("")}</tbody></table>`;
     // A II
-    h+=`<p class="eyebrow" style="margin:8px 0 2px">Posjedovnica II · prava i zabilježbe vezane uz česticu</p>`+(u.A2&&u.A2.upisi&&u.A2.upisi.length?`<ol class="zkup">${u.A2.upisi.map(e=>`<li><b>${esc(e.rb||"")}</b> ${esc(e.tekst||"")}</li>`).join("")}</ol>`:`<p class="meta" style="margin:0">Nema upisa.</p>`);
+    h+=`<p class="eyebrow" style="margin:8px 0 2px">Posjedovnica II · prava i zabilježbe vezane uz česticu</p>`+(u.A2&&u.A2.upisi&&u.A2.upisi.length?`<ol class="zkup">${u.A2.upisi.map(e=>`<li><b>${esc(e.rb||"")}</b> ${zkTxt(e.tekst)}</li>`).join("")}</ol>`:`<p class="meta" style="margin:0">Nema upisa.</p>`);
     // B
     const B=u.B||{}; h+=`<p class="eyebrow" style="margin:8px 0 2px">Vlastovnica</p><p class="meta" style="margin:0">${B.vlasnika?`${B.vlasnika} ${B.vlasnika===1?"vlasnik":"vlasnika"}${B.udjela>1?" u "+B.udjela+" udjela":""}: ${esc((B.udjeli||[]).map(x=>x.opis+(x.vlasnika>1?" ("+x.vlasnika+" osobe)":"")).join(" · "))}`:"Podaci nisu dostupni"}.${B.upisa?` U vlastovnici ${B.upisa===1?"je još 1 upis":"su još "+B.upisa+" upisa"} (zabilježbe uz vlasništvo).`:""} Imena vlasnika aplikacija ne prikazuje; vidiš ih u izvatku.</p>`;
     // C
-    h+=`<p class="eyebrow" style="margin:8px 0 2px">Teretovnica</p>`+(c?u.C.grupe.map(g=>`<ol class="zkup">${g.upisi.map(e=>`<li><b>${esc(e.rb||g.oznaka||"")}</b> ${esc(e.tekst||"")}</li>`).join("")}</ol>`).join(""):`<p class="meta" style="margin:0">Nema upisa.</p>`);
+    h+=`<p class="eyebrow" style="margin:8px 0 2px">Teretovnica</p>`+(c?u.C.grupe.map(g=>`<ol class="zkup">${g.upisi.map(e=>`<li><b>${esc(e.rb||g.oznaka||"")}</b> ${zkTxt(e.tekst)}</li>`).join("")}</ol>`).join(""):`<p class="meta" style="margin:0">Nema upisa.</p>`);
     h+=`<p class="meta">${esc(u.napomena||"Javni uvid OSS-a; nije službeni izvadak i ne potvrđuje pravno stanje. Mjerodavan je ZK izvadak.")} OIB-i u tekstu upisa su skriveni.</p>`;
   }
   return h+`</div>`;
