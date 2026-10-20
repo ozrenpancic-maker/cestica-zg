@@ -94,27 +94,34 @@ async function parcelInfo(id) {
   return { status: 200, o: sazmi(d) };
 }
 
-// ---- sažetak ZK uloška (lr-unit): samo dopušteni dijelovi; imena, adrese i OIB vlasnika i posjednika nikad ne izlaze.
-// Struktura provjerena na uzorku od 20. 10. 2026. (uložak bez upisa u A II, B i C). Polja pojedinih upisa još nisu poznata,
-// pa se za upise vraća samo broj dok ne stigne uzorak s upisima.
+// ---- sažetak ZK uloška (lr-unit): samo dopušteni dijelovi; imena, adrese i OIB vlasnika, posjednika i ovlaštenika iz C lista
+// nikad ne izlaze kao zasebna polja. Struktura provjerena na dva uzorka od 20. 10. 2026.: upis je {description, lrEntryId, orderNumber};
+// A I je u „cadParcels” ili „lrParcels”; C upisi su u grupama (lrEntryGroups[].lrEntries[]) i mogu imati lrOwners (ovlaštenike).
+// Tekst upisa u A II i C prenosi se u cijelosti (odluka korisnika), uz zamjenu OIB-a (11 znamenki) s „[OIB]”.
+// Tekst upisa u B (stjecanje vlasništva) se ne prenosi jer redovito sadrži imena vlasnika; vraća se samo broj upisa.
 const OIB = /\b\d{11}\b/g;
 const tekst = v => (v == null ? null : String(v).replace(OIB, "[OIB]"));
+const rbr = v => (v == null ? null : String(v));
+const upis = e => ({ rb: rbr(e.orderNumber), tekst: tekst(e.description) });
 function sazmiUlozak(u) {
   if (Array.isArray(u)) u = u[0];
   if (!u || typeof u !== "object") return null;
   const B = u.ownershipSheetB || {}, A1 = u.possessionSheetA1 || {}, A2 = u.possessionSheetA2 || {}, C = u.encumbranceSheetC || {};
-  const udjeli = list(B.lrUnitShares).map(sh => ({ rb: sh.orderNumber != null ? String(sh.orderNumber) : null, opis: tekst(sh.description), vlasnika: list(sh.lrOwners).length, podudjela: list(sh.subSharesAndEntries).length }));
+  const udjeli = list(B.lrUnitShares).map(sh => ({ rb: rbr(sh.orderNumber), opis: tekst(sh.description), vlasnika: list(sh.lrOwners).length, podudjela: list(sh.subSharesAndEntries).length }));
+  const cest = list(A1.cadParcels).concat(list(A1.lrParcels));
+  const grupe = list(C.lrEntryGroups).map(g => ({ oznaka: tekst(g.description), upisi: list(g.lrEntries).map(e => ({ ...upis(e), ovlastenika: list(e.lrOwners).length })) }));
   return {
     ulozak: u.lrUnitNumber != null ? String(u.lrUnitNumber) : null, glavnaKnjiga: u.mainBookName || null, odjel: u.institutionName || null,
     status: u.statusName || null, vrsta: u.lrUnitTypeName || null, provjeren: u.verificated === true || String(u.verificated) === "true", etaze: u.condominiums === true || String(u.condominiums) === "true",
+    zadnjiDnevnik: u.lastDiaryNumber != null ? String(u.lastDiaryNumber) : null,
     plomba: list(u.activePlumbs).length > 0, plombi: list(u.activePlumbs).length,
-    A1: list(A1.cadParcels).map(p => ({ broj: p.parcelNumber != null ? String(p.parcelNumber) : null, ko: p.cadMunicipalityName || null, koMb: p.cadMunicipalityRegNum != null ? String(p.cadMunicipalityRegNum) : null,
+    A1: cest.map(p => ({ broj: p.parcelNumber != null ? String(p.parcelNumber) : null, ko: p.cadMunicipalityName || null, koMb: p.cadMunicipalityRegNum != null ? String(p.cadMunicipalityRegNum) : null,
       opis: p.address || null, povrsina: num(p.area), pravoGradjenja: p.hasBuildingRight === true || String(p.hasBuildingRight) === "true",
       dijelovi: list(p.parcelParts).map(q => ({ naziv: q.name || null, povrsina: num(q.area), zgrada: q.building === true || String(q.building) === "true" })),
       posjedovniListovi: list(p.possessionSheets).map(q => q.possessionSheetNumber != null ? String(q.possessionSheetNumber) : null).filter(Boolean) })),
-    A2: { upisa: list(A2.lrEntries).length },
+    A2: { upisa: list(A2.lrEntries).length, upisi: list(A2.lrEntries).map(upis) },
     B: { udjela: udjeli.length, vlasnika: udjeli.reduce((a, x) => a + x.vlasnika, 0), udjeli, upisa: list(B.lrEntries).length },
-    C: { grupa: list(C.lrEntryGroups).length },
+    C: { upisa: grupe.reduce((a, g) => a + g.upisi.length, 0), grupe },
     napomena: "Javni uvid OSS-a; nije službeni izvadak i ne potvrđuje pravno stanje. Mjerodavan je ZK izvadak."
   };
 }
