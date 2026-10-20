@@ -1284,9 +1284,11 @@ function zkOssHtml(U){
   }
   return h+`</div>`;
 }
+// zadnji uspješno dohvaćeni uložak po čestici: ponovni dohvat ili ponovni prikaz ne smiju izbrisati ono što je već prikazano
+const ZKU=new Map();
 function zkOssRefresh(k){
   const el=document.getElementById("zkOss"), v=OSSZK.get(String(k)); if(!el) return;
-  const U=v&&v.st==="ok"&&v.d&&v.d.ulosci; el.innerHTML=U&&U.length?zkOssHtml(U):"";
+  let U=v&&v.st==="ok"&&v.d&&v.d.ulosci; if(U&&U.length) ZKU.set(String(k),U); else U=ZKU.get(String(k))||null; const nh=U&&U.length?zkOssHtml(U):""; if(el.dataset.h!==String(nh.length)+":"+String(k)||el.innerHTML===""&&nh){el.innerHTML=nh; el.dataset.h=String(nh.length)+":"+String(k);}
   if(U&&U.length&&!ZK.res){const s=document.getElementById("zkSum"), c=U.reduce((a,u)=>a+(u.C&&u.C.upisa||0),0), pl=U.some(u=>u.plomba); if(s) s.textContent=(pl?"plomba · ":"")+(c?"tereti: "+c:"bez tereta")+" (OSS)";}
 }
 // katastarski sloj karte (isti koji koriste OSS i Geoportal DGU): izravno iz preglednika, bez posrednika
