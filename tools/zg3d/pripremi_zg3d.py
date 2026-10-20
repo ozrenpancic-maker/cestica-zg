@@ -66,13 +66,13 @@ def main(gdb, out="data/zg3d"):
             try: y = int(y) % 100
             except Exception: y = 0
             rec = [y, wall, [enc(r) for r in rings], [enc(f) for f in fl]]
-            tiles.setdefault((ti, tj), []).append(rec)
+            tiles.setdefault((ti, tj), []).append(json.dumps(rec, separators=(",", ":")))  # kao tekst: manje memorije za cijeli grad
             stat["zgrada"] += 1; stat["plohe"] += len(fl); stat["godine"][str(y)] = stat["godine"].get(str(y), 0) + 1
         print(s + CH, "/", n, flush=True)
     keys = []; tot = 0
     for (ti, tj), recs in sorted(tiles.items()):
         k = f"{ti}_{tj}"; keys.append(k)
-        js = json.dumps({"v": 1, "lat0": ti * DLAT, "lon0": tj * DLON, "b": recs}, separators=(",", ":"))
+        js = '{"v":1,"lat0":%s,"lon0":%s,"b":[%s]}' % (json.dumps(ti * DLAT), json.dumps(tj * DLON), ",".join(recs))
         open(f"{out}/t/{k}.json", "w").write(js); tot += len(js)
     idx = {"v": 1, "izvor": "ZG3D 2022, 3D modeli postojećih zgrada (Grad Zagreb), Otvorena dozvola", "dlat": DLAT, "dlon": DLON, "jedinica": "dm",
            "podrucje": os.path.basename(gdb), "kvadrati": keys, "zgrada": stat["zgrada"], "godine": stat["godine"]}
