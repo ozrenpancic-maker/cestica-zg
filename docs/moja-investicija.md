@@ -222,3 +222,38 @@ Model: (podrum + pune etaže) × tlocrt × visina etaže + garaža (jedna etaža
 ### Priprema terena
 
 Odjeljak „Priprema terena” već postoji (ručne količine, rasponi cijena, prijedlog iskopa i nasipa iz nagiba i tlocrta simulatora). U fazi II nije mijenjan; faza 1 i dalje obuhvaća samo iskop i nasip za temelje.
+
+## Skica kuće na terenu (za izvještaj)
+
+Odjeljak „Skica kuće na terenu” ispod simulatora (Zagreb i Krk). Pri ispisu (gumb „Ispiši / spremi PDF”) otvara se kao i ostali odjeljci i ulazi u PDF.
+
+**Tlocrt**
+
+- međe s duljinama stranica (iz grafičkog prikaza katastra; stranice kraće od 2 m, odnosno 5 m kad ih je više od 24, nisu označene);
+- područje za gradnju (zeleno) i pojas uz cestu (narančasto), ako su izračunati za tu česticu;
+- kuća i garaža iz simulatora, linije krova (sljeme; kod četverostrešnog i grebeni);
+- udaljenosti od međa: od sredine svake stranice kuće okomito do granice (isto kao u simulatoru);
+- izohipse iz nagiba terena, s visinama prema sredini kuće; sjever, mjerilo i strelica pada.
+
+**Presjek** kroz sredinu kuće u smjeru pada terena, isto mjerilo vodoravno i okomito:
+
+- teren od međe do međe s visinama na međama;
+- ±0,00 je teren u sredini kuće (pretpostavka); usjek i nasip do te razine su osjenčani;
+- etaže, podrum, potkrovlje (nadozid 1,2 m, pretpostavka) i krov: trokut kad je presjek okomit na sljeme, inače sljeme kao vodoravna linija (kod četverostrešnog trapez);
+- kote ±0,00, vijenac, sljeme, dno podruma i razlika terena ispod kuće.
+
+**Teren i pouzdanost**
+
+- Teren je ravnina iz nagiba u okolini čestice (Copernicus DEM preko Open-Meteo, rezolucija oko 90 m). Smjer pada računa se iz istih pet točaka kao nagib.
+- Oznaka pouzdanosti je C. Stvarni teren čestice daje geodetski snimak.
+- Službeni digitalni model reljefa DGU-a (DMR) dostupan je samo registriranim korisnicima, uz ključ, pa se u aplikaciji ne koristi.
+
+**Ručno provjerljiv primjer (iz testova)**
+
+Čestica 30 × 25 m, kuća 10 × 8 m u sredini, P + 1 s etažama od 3 m, dvostrešni krov 30° sa sljemenom istok–zapad, pad terena 10 % prema jugu:
+
+- udaljenosti od međa 10 i 8,5 m;
+- međe na ±1,25 m;
+- vijenac +6,00 m;
+- sljeme +8,31 m (6 + tg 30° × 4);
+- razlika terena ispod kuće 0,8 m.
