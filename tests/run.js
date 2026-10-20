@@ -139,7 +139,7 @@ async function zgOssTests(){
     const d=data(w,parcelRect(40,25),"2.2."); w.eval("render")(d); await tick(30);
     const t=txt(w,"sheet"), q=calls.filter(u=>u.startsWith("https://oss-test.example/"));
     if(expectOk){
-      ok(q.length===1&&(wms?/\?id=5$/.test(q[0]):/\?lat=45\.84\d*&lon=15\.97\d*/.test(q[0])),"Zagreb OSS: "+(wms?"s ID-om iz katastarskog sloja posrednik se pita po ID-u":"bez sloja karte posrednik se pita po točki unutar čestice")+" ("+(q[0]||"nema upita")+")");
+      ok(q.length===1&&(wms?/\?id=5&ulozak=1$/.test(q[0]):/\?lat=45\.84\d*&lon=15\.97\d*&ulozak=1$/.test(q[0])),"Zagreb OSS: "+(wms?"s ID-om iz katastarskog sloja posrednik se pita po ID-u":"bez sloja karte posrednik se pita po točki unutar čestice")+" ("+(q[0]||"nema upita")+")");
       ok(/Grafička površina ?998 m²/.test(t)&&/iz katastarskog plana \(DGU\)/.test(t)&&/u gradskom sloju čestica 1\.0\d\d m²/.test(t),"Zagreb OSS: grafička površina iz DGU-a, uz površinu iz gradskog sloja");
       ok(/Upisana u zemljišnoj knjizi ?1\.012 m²/.test(t)&&/ZK uložak 777/.test(t)&&/Upisana u katastru ?1\.010 m²/.test(t),"Zagreb OSS: upisana površina u ZK i u katastru");
       ok(/računaju se s površinom: grafička \(1\.0\d\d m²\)/.test(t)&&Math.abs(w.__cur.area-d.area)<0.01,"Zagreb OSS: izračun prema zadanom ostaje na grafičkoj površini");
@@ -937,8 +937,12 @@ async function krkTests(){
     if(u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/")) return mode==="wms"?okj({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{CESTICA_ID:1,BROJ_CESTICE:"2345/6",MATICNI_BROJ_KO:315907,KATASTARSKA_OPCINA_ID:1239,POVRSINA_GRAFICKA:600,POVRSINA_ATRIBUTNA:615}}]}):Promise.reject(new TypeError("Failed to fetch"));
     if(u.startsWith("https://oss-test.example/")){ if(mode==="ossFail") return Promise.reject(new TypeError("Failed to fetch"));
       if(mode==="oss403once"){mode="ok"; return Promise.resolve({ok:false,status:502,json:()=>Promise.resolve({ok:false,greska:"OSS HTTP 403"})});}
-      if(!/\?id=1$/.test(u)) return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve({ok:false,greska:"OSS nema česticu s tim ID-om"})});
-      return okj({ok:true,id:"1",broj:"2345/6",koMb:"315907",ko:"KORNIĆ",katastar:640,zk:[{broj:"2345/6",povrsina:642,ulozak:"5126",odjel:"Zemljišnoknjižni odjel Krk"}],dijelovi:[{naziv:"KUĆA",povrsina:85,zgrada:true},{naziv:"DVORIŠTE",povrsina:557,zgrada:false}],dohvaceno:"2026-10-19T08:00:00Z"}); }
+      if(!/\?id=1&ulozak=1$/.test(u)) return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve({ok:false,greska:"OSS nema česticu s tim ID-om"})});
+      return okj({ok:true,id:"1",broj:"2345/6",koMb:"315907",ko:"KORNIĆ",katastar:640,zk:[{broj:"2345/6",povrsina:642,ulozak:"5126",odjel:"Zemljišnoknjižni odjel Krk"}],
+        ulosci:[{ulozak:"5126",glavnaKnjiga:"KORNIĆ",odjel:"Zemljišnoknjižni odjel Krk",status:"Aktivan",vrsta:"VLASNIČKI",zadnjiDnevnik:"Z-100/2024",plomba:false,plombi:0,
+          A1:[{broj:"2345/6",ko:"KORNIĆ",opis:"KUĆA I DVORIŠTE",povrsina:642,dijelovi:[]}],A2:{upisa:1,upisi:[{rb:"3.1",tekst:"ZABILJEŽBA rješenja o izvedenom stanju"}]},
+          B:{udjela:2,vlasnika:2,udjeli:[{rb:"1",opis:"Suvlasnički dio: 1/2",vlasnika:1},{rb:"2",opis:"Suvlasnički dio: 1/2",vlasnika:1}],upisa:0},
+          C:{upisa:1,grupe:[{oznaka:"1.",upisi:[{rb:"1.1",tekst:"Uknjižuje se založno pravo radi osiguranja tražbine od 50.000,00 EUR, OIB [OIB]",ovlastenika:1}]}]},napomena:"Javni uvid OSS-a; nije službeni izvadak i ne potvrđuje pravno stanje. Mjerodavan je ZK izvadak."}],dijelovi:[{naziv:"KUĆA",povrsina:85,zgrada:true},{naziv:"DVORIŠTE",povrsina:557,zgrada:false}],dohvaceno:"2026-10-19T08:00:00Z"}); }
     if(u.includes("data/kat_krk/")){ if(mode==="dguFail") return Promise.reject(new TypeError("Failed to fetch"));
       // čestica iz trenutnog prstena (HTRS96/TM → WGS84), kodirana kao u tools/katastar/pripremi_krk.py
       const W=ring.map(([e,n])=>E("tmInv")(e,n)).map(([a,b])=>[Math.round(a*1e6),Math.round(b*1e6)]), enc=[W[0][0],W[0][1]];
@@ -1019,7 +1023,8 @@ async function krkTests(){
   E("SRC_KRK").oss="https://oss-test.example/"; E("OSSZK").clear(); E("renderKrk")(E("KRK_CUR"));
   ok(/dohvaćam iz OSS-a/.test(txt(w,"sheet")),"Krk OSS: dok traje dohvat prikazuje se da se površina dohvaća");
   await tick(20); let to=txt(w,"sheet");
-  ok(calls.includes("https://oss-test.example/?id=1")&&/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&/ZK uložak 5126/.test(to)&&/neslužbeni javni podatak/.test(to)&&/\+7,0 % \(42 m²\)/.test(to),"Krk OSS: upisana površina 642 m² dohvaćena automatski, s uloškom i razlikom");
+  {const zo=txt(w,"zkOss"); ok(/ZK uložak 5126/.test(zo)&&/Bez plombe/.test(zo)&&/Teretovnica: 1 upis/.test(zo)&&/50\.000,00 EUR/.test(zo)&&/izvedenom stanju/.test(zo)&&/2 vlasnika u 2 udjela: Suvlasnički dio: 1\/2/.test(zo)&&/Imena vlasnika aplikacija ne prikazuje/.test(zo)&&/tereti: 1 \(OSS\)/.test(txt(w,"zkSum"))&&E("PZREG").items.get("zk-ulozak5126").raz==="A","Krk OSS: ZK uložak iz javnog uvida (posjedovnica I i II, udjeli bez imena, teretovnica s tekstom, plomba), oznaka A");}
+  ok(calls.includes("https://oss-test.example/?id=1&ulozak=1")&&/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&/ZK uložak 5126/.test(to)&&/neslužbeni javni podatak/.test(to)&&/\+7,0 % \(42 m²\)/.test(to),"Krk OSS: upisana površina 642 m² dohvaćena automatski, s uloškom i razlikom");
   ok(/Upisana u katastru ?640 m²/.test(to)&&/kuća: 85 m² · dvorište: 557 m²/.test(to)&&Math.abs(E("KRK_CUR").area-600)<1.5,"Krk OSS: površina iz posjedovnog lista i dijelovi čestice; izračun ostaje na grafičkoj");
   $(w,"krkZkMan").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!!$(w,"krkZkIn"),"Krk OSS: može se upisati druga površina");
   $(w,"krkZkIn").value="650"; $(w,"krkZkOk").dispatchEvent(new w.Event("click",{bubbles:true}));
