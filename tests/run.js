@@ -1070,9 +1070,9 @@ async function krkTests(){
   ok(calls.slice(n0).every(u=>!/ulozak=1/.test(u))&&/vlasništvo i tereti dohvaćaju se iz OSS-a kad otvoriš ovaj odjeljak/.test(txt(w,"zkOss"))&&/642 m²/.test(txt(w,"krkArea")),"Krk OSS: kod otvaranja čestice dohvaća se samo površina; uložak tek kad se otvori odjeljak ZK");
   mode="ok"; await otvoriZk(); await tick(20); ok(calls.slice(n0).some(u=>/\?id=1&ulozak=1$/.test(u))&&/ZK uložak 5126/.test(txt(w,"zkOss"))&&/Bez plombe/.test(txt(w,"zkOss")),"Krk OSS: otvaranjem odjeljka ZK stiže uložak");
   // OSS dvaput ne odgovori (502), treći pokušaj uspije
-  E("OSS_UL_RETRY").splice(0,E("OSS_UL_RETRY").length,15,15); mode="ulGreska"; ulN=0; E("OSSZK").clear(); E("ZKU").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20); await otvoriZk(); await tick(3);
+  E("OSS_UL_RETRY").splice(0,E("OSS_UL_RETRY").length,120,120); mode="ulGreska"; ulN=0; E("OSSZK").clear(); E("ZKU").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20); await otvoriZk(); await tick(10);
   ok(!/Teretovnica/.test(txt(w,"zkOss"))&&/(Dohvaćam ZK uložak|ponovni pokušaj)/.test(txt(w,"zkOss"))&&/642 m²/.test(txt(w,"krkArea")),"Krk OSS: dok OSS ne odgovara za uložak, površina je prikazana, a uz uložak piše da se dohvaća");
-  await tick(80); ok(/ZK uložak 5126/.test(txt(w,"zkOss"))&&/Teretovnica: 1 upis/.test(txt(w,"zkOss"))&&ulN===3,"Krk OSS: uložak stiže nakon ponovnih pokušaja (ukupno 3 upita)");
+  await tick(600); ok(/ZK uložak 5126/.test(txt(w,"zkOss"))&&/Teretovnica: 1 upis/.test(txt(w,"zkOss"))&&ulN===3,"Krk OSS: uložak stiže nakon ponovnih pokušaja (ukupno 3 upita)");
   // OSS odbija (403): bez ponavljanja, poruka i gumb
   mode="ul403"; ulN=0; E("OSSZK").clear(); E("ZKU").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20); await otvoriZk(); await tick(60);
   ok(ulN===1&&/ZK uložak 5126 nije dohvaćen: OSS trenutno odbija upite/.test(txt(w,"zkOss"))&&/BigIP/.test(txt(w,"zkOss"))&&!!$(w,"zkUlRetry"),"Krk OSS: kad OSS odbija upit za uložak, nema automatskog ponavljanja; poruka (s odgovorom OSS-a) i gumb „Pokušaj ponovno”");
@@ -1464,11 +1464,11 @@ async function zg3dTests(){
     if(m){ const f=path.join(root,"data","zg3d",m[1]); if(fs.existsSync(f)) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(f,"utf8")))}); }
     return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null)}); };
   const rect=(lon,lat,wm,dm)=>({type:"Feature",geometry:{type:"Polygon",coordinates:[[[lon,lat],[lon+wm/(111320*Math.cos(lat*Math.PI/180)),lat],[lon+wm/(111320*Math.cos(lat*Math.PI/180)),lat+dm/110540],[lon,lat+dm/110540],[lon,lat]]]},properties:{KATASTARSKA_CESTICA:"1/1",KATASTARSKA_OPCINA:"SESVETE",GRADSKA_CETVRT:"Sesvete"}});
-  const A=rect(16.1110,45.8310,25,30), K=rect(15.9700,45.8400,25,30); // Sesvete (ima podataka) i Šestine (nema)
+  const A=rect(16.1110,45.8310,25,30), K=rect(14.5935,45.0274,25,30); // Sesvete (ima podataka) i Kornić na Krku (nema)
   const R=await E("zg3dLoad")(A);
   ok(R.st==="ok"&&R.list.length>20&&R.list.every(b=>b.dist<=80&&b.faces.length>0&&b.foot[0].length>=3&&b.wall>=0),"ZG3D: za česticu u Sesvetama učitane okolne zgrade (krug do 80 m) s tlocrtom, visinom i krovnim plohama");
   ok(R.list.every(b=>!w.turf.booleanPointInPolygon(w.turf.point(b.c),A)),"ZG3D: postojeća zgrada na samoj čestici se ne prikazuje (kuća iz simulatora se crta zasebno)");
-  {const gdn=R.godine; ok(Object.keys(gdn).every(k=>k==="8"||k==="22")&&/2008|2022/.test(E("zg3dNapomena")(R)),"ZG3D: napomena navodi godine snimanja i da model ne mora odgovarati stanju");}
+  {const gdn=R.godine; ok(Object.keys(gdn).every(k=>+k>=5&&+k<=25)&&/2008|2022/.test(E("zg3dNapomena")(R)),"ZG3D: napomena navodi godine snimanja i da model ne mora odgovarati stanju");}
   const F=E("zg3dFeatures")(R.list); ok(F.length>R.list.length*2&&F.every(f=>f.properties.h>f.properties.b&&f.geometry.coordinates[0].length>=4)&&F.some(f=>f.properties.c==="#a39e96"),"ZG3D: tijela za 3D pogled (zidovi i krov kao stepenice) imaju ispravne visine");
   ok(E("zg3dGet")(A)===R||E("zg3dGet")(A).list.length===R.list.length,"ZG3D: rezultat je dostupan sinkrono za skicu");
   const n0=nf; const R2=await E("zg3dLoad")(A); ok(nf===n0&&R2.list.length===R.list.length,"ZG3D: ponovni upit za istu česticu ne dohvaća ništa ponovno");

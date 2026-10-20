@@ -3156,7 +3156,7 @@ function zg3dFeatures(list){
 }
 function zg3dNapomena(Z){
   if(!Z||!Z.list||!Z.list.length) return "";
-  const g=Z.godine||{}, god=Object.keys(g).map(k=>(k==="8"?"2008.":k==="22"?"2022.":k)+" ("+g[k]+")").join(", ");
+  const g=Z.godine||{}, god=Object.keys(g).sort().map(k=>(2000+ +k)+". ("+g[k]+")").join(", ");
   return `Okolne zgrade: neslužbeni 3D model Grada Zagreba (ZG3D, Otvorena dozvola), ${Z.list.length} zgrada u krugu do ${ZG3D.R} m; godina snimanja ${god}. Visine i krovovi su prema modelu i ne moraju odgovarati današnjem stanju; zgrade na samoj čestici nisu prikazane.`;
 }
 // --- koridori: dohvat linija u krugu i provjera stvarne udaljenosti
