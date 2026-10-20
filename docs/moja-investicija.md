@@ -438,10 +438,10 @@ Prikaz se slaže kao prije; `izbWrap()` zatim premješta postojeće odjeljke (is
 - Test: uzorak od 300 adresa, točna kuća za oko 98 %.
 
 
-## Okolne zgrade u 3D prikazu i 3D skici (ZG3D, samo Zagreb – za sada Sesvete)
+## Okolne zgrade u 3D prikazu i 3D skici (ZG3D, Grad Zagreb)
 
 - Izvor: ZG3D 2022, 3D modeli postojećih zgrada, Grad Zagreb (data.gov.hr, Otvorena dozvola). Neslužbeni model; zgrade su snimljene 2008. ili 2022. i ne moraju odgovarati današnjem stanju.
-- Priprema: `tools/zg3d/pripremi_zg3d.py <put do .gdb>` (pyogrio, shapely, numpy) čita geobazu gradske četvrti i reže je u kvadrate ~450 × 470 m u `data/zg3d/` (index.json + t/<red>_<stup>.json). Čuva se samo geometrija: tlocrt, visina do najnižeg dijela krova i krovne plohe (decimetri, delta-kodirano); nema atributa o osobama, adresa ni vlasnika. Sesvete: 50.438 zgrada, 24 MB (oko 8 MB komprimirano).
+- Priprema: `tools/zg3d/pripremi_zg3d.py <put do .gdb>` (pyogrio, shapely, numpy) čita geobazu gradske četvrti i reže je u kvadrate ~450 × 470 m u `data/zg3d/` (index.json + t/<red>_<stup>.json). Čuva se samo geometrija: tlocrt, visina do najnižeg dijela krova i krovne plohe (decimetri, delta-kodirano); nema atributa o osobama, adresa ni vlasnika. Cijeli Zagreb: 354.709 zgrada, 146 MB u 2212 kvadrata (oko 50 MB komprimirano).
 - Aplikacija: `zg3dLoad(parcel)` dohvaća samo kvadrate oko čestice (krug 80 m), bez zgrada na samoj čestici. Izvan područja s podacima (i na Krku) ništa se ne prikazuje i ništa se ne izmišlja.
 - Prikazi: interaktivni 3D (kvačica „Okolne zgrade”; krovovi kao stepenice 0,35 m), 3D skica u odjeljku Skica i u ispisu izvještaja (zidovi i krovne plohe, neutralno sivo), uz napomenu o izvoru i godini snimanja.
 - Druge gradske četvrti: preuzeti ZIP s portala, pokrenuti skriptu s drugim izlaznim direktorijem pa spojiti `t/` i `kvadrati` u `index.json`.
