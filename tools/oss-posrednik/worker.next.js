@@ -52,13 +52,14 @@ function sazmi(d) {
     katastar: num(d.area), zk, dijelovi, izvor: "OSS (oss.uredjenazemlja.hr), neslužbeni javni podaci", dohvaceno: new Date().toISOString() };
 }
 
-function cors(origin) {
-  const h = { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=3600", "Vary": "Origin" };
+function cors(origin, pamti = false) {
+  const h = { "Content-Type": "application/json; charset=utf-8", "Cache-Control": pamti ? "public, max-age=3600" : "no-store", "Vary": "Origin" };
   if (ALLOWED.includes(origin)) h["Access-Control-Allow-Origin"] = origin;
   return h;
 }
 let COLO = null; // Cloudflareov podatkovni centar koji je obradio upit (za dijagnostiku odbijanja s OSS-a)
-const out = (o, status, origin) => new Response(JSON.stringify(COLO ? { ...o, cf: COLO } : o), { status, headers: cors(origin) });
+// preglednik smije zapamtiti samo potpun, uspješan odgovor; greške i odgovor bez uloška (ulosciGreska) ne pamti, da ponovni pokušaj stvarno ide na OSS
+const out = (o, status, origin) => new Response(JSON.stringify(COLO ? { ...o, cf: COLO } : o), { status, headers: cors(origin, status === 200 && !o.ulosciGreska) });
 
 // WGS84 -> HTRS96/TM (EPSG:3765), Snyder (USGS 1395); ista formula kao u aplikaciji (greška ispod 2 cm)
 function tmFwd(lon, lat) {
@@ -175,7 +176,8 @@ export default {
         // čestica iz predmemorije stare verzije posrednika nema glavnu knjigu (_mb): tada se parcel-info dohvati ponovno
         if ((o.zk || []).some(z => z.ulozak && !z._mb)) { try { const fr = await parcelInfo(id); if (fr.status === 200) { o = { ...fr.o, ...(tocka ? { graficka: o.graficka, stanjeKarte: o.stanjeKarte } : {}) }; ctx.waitUntil(cache.put(ck, new Response(JSON.stringify(fr.o), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_S } }))); } } catch (e) {} }
         const zk = (o.zk || []).filter(z => z.ulozak && z._mb).slice(0, 3);
-        try { o.ulosci = (await Promise.all(zk.map(z => ulozak(z.ulozak, z._mb)))).filter(Boolean); ctx.waitUntil(cache.put(ck2, new Response(JSON.stringify(o.ulosci), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_S } }))); }
+        // prazan rezultat (čestica bez povezanog uloška ili nepotpun odgovor OSS-a) se ne pamti, da se sljedeći put pokuša ponovno
+        try { o.ulosci = (await Promise.all(zk.map(z => ulozak(z.ulozak, z._mb)))).filter(Boolean); if (o.ulosci.length) ctx.waitUntil(cache.put(ck2, new Response(JSON.stringify(o.ulosci), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_S } }))); }
         catch (e) { o.ulosciGreska = e.message || "OSS uložak ne odgovara"; }
       }
     }

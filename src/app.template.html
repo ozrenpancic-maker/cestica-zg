@@ -171,7 +171,7 @@ details p{font-size:13.5px;margin:6px 0}
 .v3d-act{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.v3d-act label{font-size:13px;display:flex;gap:4px;align-items:center}
 #v3dMap{flex:1;min-height:260px;position:relative}
 .v3d-note{margin:0;padding:6px 10px;font-size:11.5px;color:var(--muted)}
-.v3d-lbl{background:#123b2e;color:#fff;font:600 13px/1 system-ui,sans-serif;padding:5px 9px;border-radius:7px;border:1.5px solid #8fe0b8;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.v3d-lbl{background:rgba(18,59,46,.88);color:#fff;font:600 12px/1 system-ui,sans-serif;padding:4px 8px;border-radius:6px;border:1px solid #8fe0b8;box-shadow:0 1px 3px rgba(0,0,0,.35);pointer-events:none;white-space:nowrap}
 .rpt-3d{margin:4mm 0;break-inside:avoid}.rpt-3d img{width:100%;border:1px solid var(--line)}.rpt-3d figcaption{font-size:8.5pt;color:var(--muted);margin-top:1mm}
 /* sažetak na vrhu analize */
 .saz{margin:12px 0 6px;order:3}
@@ -420,7 +420,7 @@ ul.risk small{color:var(--muted)}
   <div id="menu" hidden><p class="meta" id="ver" style="margin:0 0 6px"></p><a href="#" id="statBtn2" class="ib">Stanje servisa</a><a href="#" id="goKrk" class="ib">Otok Krk (pilot)</a><label id="aiOnRow" class="aion" hidden><input type="checkbox" id="aiOn"> AI asistent (testno)</label></div>
   <main>
     <div id="map"></div>
-    <div id="v3d" hidden role="dialog" aria-label="3D pogled na česticu"><div class="v3d-bar"><b id="v3dTtl">3D pogled</b><span class="v3d-act"><button type="button" class="ib" id="v3dRot">Zaustavi</button><button type="button" class="ib" id="v3dPod">Karta</button><label><input type="checkbox" id="v3dKat" checked> Čestice</label><button type="button" class="ib" id="v3dClose" aria-label="Zatvori">✕</button></span></div><div id="v3dMap"></div><p class="v3d-note" id="v3dNote"></p></div>
+    <div id="v3d" hidden role="dialog" aria-label="3D pogled na česticu"><div class="v3d-bar"><b id="v3dTtl">3D pogled</b><span class="v3d-act"><button type="button" class="ib" id="v3dRot">Zaustavi</button><button type="button" class="ib" id="v3dPod">Karta</button><label><input type="checkbox" id="v3dKat" checked> Čestice</label><label title="Solarni paneli prema odjeljku Solarna elektrana"><input type="checkbox" id="v3dPv"> Paneli</label><button type="button" class="ib" id="v3dClose" aria-label="Zatvori">✕</button></span></div><div id="v3dMap"></div><p class="v3d-note" id="v3dNote"></p></div>
     <div class="layers" id="layers">
       <button type="button" class="ib fab" id="lyrBtn" aria-expanded="false" aria-controls="lyrList">Slojevi</button>
       <button type="button" class="ib fab" id="aiBtn" hidden aria-label="AI asistent">AI</button>
@@ -4684,36 +4684,124 @@ window.addEventListener("afterprint",()=>setTimeout(restoreMap,100));
 // Kosi pogled na satelitsku snimku s modelom terena (Terrain Tiles, oko 30 m), granicom čestice, područjem za gradnju,
 // granicama čestica DGU i kućom iz simulatora (visina do vijenca). Pogled se polako okreće; dodir ga zaustavlja.
 // Kad se karta prvi put iscrta, sprema se slika za PDF izvještaj (ako preglednik dopusti čitanje slike).
-const V3D={map:null,rot:true,raf:0,snap:new Map(),pod:"sat",key:null};
+const V3D={map:null,rot:true,raf:0,snap:new Map(),pod:"sat",key:null,pv:false};
 function v3dLib(){
   if(window.maplibregl) return Promise.resolve();
   return new Promise((res,rej)=>{ const l=document.createElement("link"); l.rel="stylesheet"; l.href="vendor/maplibre-gl-4.7.1/maplibre-gl.css"; document.head.appendChild(l);
     const sc=document.createElement("script"); sc.src="vendor/maplibre-gl-4.7.1/maplibre-gl.js"; sc.onload=()=>res(); sc.onerror=()=>rej(new Error("biblioteka za 3D se nije učitala")); document.head.appendChild(sc); });
 }
+// --- model kuće za 3D pogled: jednostavan, neutralan „low-poly” prikaz za planiranje (ne arhitektonski render)
+// Sve se gradi u lokalnim metrima kuće (x uzduž širine w, y uzduž dubine d, ishodište u središtu), pa se zakreće za TL.rot.
+// Svako tijelo je fill-extrusion s visinom h, bazom b, bojom c i razinom detalja lod: 0 uvijek, 1 samo izdaleka, 2 samo izbliza,
+// 3 detalji (prozori, vrata, paneli) samo izbliza. Svjetlo i sjena: sunce s jugozapada, oko 40° iznad obzora.
+const V3M={sunAz:215,sunPolar:50,podest:0.45,streha:0.5,zabat:0.3,lodZ:18.6,detZ:17.6,
+  boje:{zid:"#ece6da",podest:"#a3a098",krov1:"#a9472a",krov2:"#b65631",sljeme:"#6f2e19",streha:"#8a3a22",ravni:"#cfcabe",atika:"#e3ded3",staklo:"#3c4a55",okvir:"#f7f5f0",vrata:"#5a4636",garaza:"#d9d3c6",gvrata:"#8d8a84",pv:"#1d3552"}};
+function v3dModel(o){
+  // o: {c,w,d,rot,V,krov,nagib,alongW,gar:{w,d,offX,offY}|null,etaza:{n,fh,pk},ulaz:"S"|"N"|"E"|"W",pv:{m2,az}|null}
+  const lat=o.c[1]*Math.PI/180, mx=1/(111320*Math.cos(lat)), my=1/110540, th=(o.rot||0)*Math.PI/180, cs=Math.cos(th), sn=Math.sin(th);
+  const L=(x,y)=>[o.c[0]+(x*cs+y*sn)*mx,o.c[1]+(-x*sn+y*cs)*my];
+  const ring=(x0,y0,x1,y1)=>[[L(x0,y0),L(x1,y0),L(x1,y1),L(x0,y1),L(x0,y0)]];
+  const F=[], add=(g,b,h,c,lod=0,k="")=>{ if(h-b>0.005) F.push({type:"Feature",geometry:{type:"Polygon",coordinates:g},properties:{b:+b.toFixed(3),h:+h.toFixed(3),c,lod,k}}); };
+  const box=(x0,y0,x1,y1,b,h,c,lod,k)=>add(ring(Math.min(x0,x1),Math.min(y0,y1),Math.max(x0,x1),Math.max(y0,y1)),b,h,c,lod,k);
+  const B=V3M.boje, w=o.w, d=o.d, V=o.V, P=V3M.podest, s=V3M.streha;
+  // temeljna ploča / podest: malo šira od zidova, jasan dodir s terenom
+  box(-w/2-0.2,-d/2-0.2,w/2+0.2,d/2+0.2,0,P,B.podest,0,"podest");
+  box(-w/2,-d/2,w/2,d/2,0,V,B.zid,0,"zid");
+  // krov
+  let R=0, ridge=null;
+  if(o.krov==="ravni"){ box(-w/2,-d/2,w/2,d/2,V,V+0.12,B.ravni,0,"krov");
+    const t=0.25, a=0.45; box(-w/2,-d/2,w/2,-d/2+t,V,V+a,B.atika,0,"atika"); box(-w/2,d/2-t,w/2,d/2,V,V+a,B.atika,0,"atika"); box(-w/2,-d/2,-w/2+t,d/2,V,V+a,B.atika,0,"atika"); box(w/2-t,-d/2,w/2,d/2,V,V+a,B.atika,0,"atika"); }
+  else { const tg=Math.tan((o.nagib||30)*Math.PI/180);
+    const Wr=o.krov==="cet"?w+2*s:(o.alongW?w+2*V3M.zabat:w+2*s), Dr=o.krov==="cet"?d+2*s:(o.alongW?d+2*s:d+2*V3M.zabat);
+    const span=o.alongW?Dr:Wr, half=span/2; R=tg*Math.min(w,d)/2; // visina sljemena iznad vijenca (kao do sada)
+    // streha: tamniji rub ispod krova, širi od zidova
+    box(-Wr/2,-Dr/2,Wr/2,Dr/2,V-0.18,V,B.streha,0,"streha");
+    for(const [n,lod] of [[6,1],[14,2]]){ const dt=half/n;
+      for(let i=0;i<n;i++){ const t=i*dt; let x0,y0,x1,y1;
+        if(o.krov==="cet"){ const m=Math.min(t,Wr/2-0.05), q=Math.min(t,Dr/2-0.05); x0=-Wr/2+m; x1=Wr/2-m; y0=-Dr/2+q; y1=Dr/2-q; }
+        else if(o.alongW){ x0=-Wr/2; x1=Wr/2; y0=-Dr/2+t; y1=Dr/2-t; } else { x0=-Wr/2+t; x1=Wr/2-t; y0=-Dr/2; y1=Dr/2; }
+        if(x1-x0<0.05||y1-y0<0.05) break;
+        box(x0,y0,x1,y1,V+R*i/n,V+R*(i+1)/n,i%2?B.krov2:B.krov1,lod,"krov"); } }
+    // sljeme: tamna letva koja pokazuje orijentaciju krova
+    const rl=o.krov==="cet"?Math.max(0,(o.alongW?Wr-Dr:Dr-Wr)):(o.alongW?Wr:Dr);
+    if(rl>0.3){ ridge=o.alongW?[[-rl/2,0],[rl/2,0]]:[[0,-rl/2],[0,rl/2]]; if(o.alongW) box(-rl/2,-0.18,rl/2,0.18,V+R,V+R+0.12,B.sljeme,0,"sljeme"); else box(-0.18,-rl/2,0.18,rl/2,V+R,V+R+0.12,B.sljeme,0,"sljeme"); } }
+  // prozori i ulazna vrata (samo izbliza): okvir i staklo malo izvan ravnine zida
+  const E=o.etaza||{n:1,fh:3,pk:false}, strane={S:{len:w,pos:-d/2,os:"x",n:-1},N:{len:w,pos:d/2,os:"x",n:1},W:{len:d,pos:-w/2,os:"y",n:-1},E:{len:d,pos:w/2,os:"y",n:1}};
+  const otvor=(st,u,z0,z1,sw,c)=>{ const S=strane[st], a=S.pos, n=S.n;
+    const r=(o1,o2,ww)=>S.os==="x"?[u-ww/2,a+n*o1,u+ww/2,a+n*o2]:[a+n*o1,u-ww/2,a+n*o2,u+ww/2];
+    const f=r(-0.02,0.04,sw+0.16); box(f[0],f[1],f[2],f[3],z0-0.08,z1+0.08,B.okvir,3,"okvir");
+    const g=r(0.04,0.07,sw); box(g[0],g[1],g[2],g[3],z0,z1,c,3,c===B.staklo?"prozor":"vrata"); };
+  for(const [st,S] of Object.entries(strane)){ const n=Math.max(1,Math.floor((S.len-1.2)/3.2)), step=S.len/n;
+    for(let k=0;k<E.n;k++){ const z=P+k*E.fh;
+      for(let j=0;j<n;j++){ const u=-S.len/2+step*(j+0.5);
+        if(k===0&&st===o.ulaz&&j===Math.floor((n-1)/2)){ otvor(st,u,P,Math.min(P+2.15,V-0.2),1.05,B.vrata); continue; }
+        if(z+0.85+1.35<V-0.15) otvor(st,u,z+0.85,z+0.85+1.35,1.2,B.staklo); } } }
+  // nadstrešnica iznad ulaza
+  { const S=strane[o.ulaz]; if(S){ const zt=Math.min(P+2.35,V-0.05), a=S.pos, n=S.n; if(S.os==="x") box(-0.9,a,0.9,a+n*1.1,zt,zt+0.12,B.atika,3,"nadstresnica"); else box(a,-0.9,a+n*1.1,0.9,zt,zt+0.12,B.atika,3,"nadstresnica"); } }
+  // garaža
+  if(o.gar){ const G=o.gar; box(G.offX-G.w/2-0.15,G.offY-G.d/2-0.15,G.offX+G.w/2+0.15,G.offY+G.d/2+0.15,0,0.15,B.podest,0,"podest"); box(G.offX-G.w/2,G.offY-G.d/2,G.offX+G.w/2,G.offY+G.d/2,0,2.8,B.garaza,0,"garaza");
+    box(G.offX-G.w/2+0.4,G.offY-G.d/2-0.05,G.offX+G.w/2-0.4,G.offY-G.d/2+0.02,0.05,2.35,B.gvrata,3,"garazna-vrata"); }
+  // solarni paneli (priprema; samo kad je u odjeljku Solarna elektrana upisana površina): na kosini okrenutoj prema odabranoj orijentaciji
+  const pvF=[];
+  if(o.pv&&o.pv.m2>0){ const want=(180+(+o.pv.az||0))%360, rot=o.rot||0, ang=(a,b)=>Math.abs(((a-b)%360+540)%360-180);
+    if(o.krov==="ravni"){ const rows=Math.max(1,Math.min(Math.floor((d-1.2)/1.7),Math.ceil(o.pv.m2/Math.max(1,w-1.2)))); for(let i=0;i<rows;i++){ const y0=-d/2+0.6+i*1.7; box(-w/2+0.6,y0,w/2-0.6,y0+1.0,V+0.2,V+0.55,B.pv,3,"pv"); } }
+    else if(R>0){ const sides=o.alongW?[["N",rot],["S",rot+180]]:[["E",rot+90],["W",rot+270]], sd=sides.sort((p,q)=>ang(p[1],want)-ang(q[1],want))[0][0];
+      const half=(o.alongW?d:w)/2+s, len=Math.max(0,(o.alongW?w:d)-1.0-(o.krov==="cet"?Math.min(w,d):0)), dep=Math.min(half-0.8,len>0?o.pv.m2*Math.cos((o.nagib||30)*Math.PI/180)/len:0);
+      for(let e=0.5;e<0.5+dep-0.01;e+=0.5){ const z=V+R*Math.min(1,(e+0.5)/half)+R/14+0.03, sg=sd==="N"||sd==="E"?1:-1, p0=sg*(half-e), p1=sg*(half-e-0.5);
+        if(o.alongW) box(-len/2,p0,len/2,p1,z,z+0.07,B.pv,2,"pv"); else box(p0,-len/2,p1,len/2,z,z+0.07,B.pv,2,"pv"); } } }
+  // meka sjena: obuhvat tlocrta i tlocrta pomaknutog od sunca (duljina = visina × tan kuta od okomice), u tri sloja prozirnosti
+  const Ht=V+R*0.6, sl=Math.min(30,Ht*Math.tan(V3M.sunPolar*Math.PI/180)), az=(V3M.sunAz+180)*Math.PI/180, dx=Math.sin(az)*sl*mx, dy=Math.cos(az)*sl*my;
+  const tl=[]; for(const f of F) if(f.properties.k==="zid"||f.properties.k==="garaza") for(const p of f.geometry.coordinates[0]) { tl.push(p); tl.push([p[0]+dx,p[1]+dy]); }
+  const sjena={type:"FeatureCollection",features:[]};
+  try{ const hull=turf.convex(turf.featureCollection(tl.map(p=>turf.point(p)))); if(hull) for(const [buf,op] of [[0.8,0.10],[0.3,0.12],[-0.3,0.14]]){ const g=buf?turf.buffer(hull,buf/1000,{units:"kilometers",steps:4}):hull; if(g) sjena.features.push({type:"Feature",geometry:g.geometry,properties:{op}}); } }catch(e){}
+  return {kuca:{type:"FeatureCollection",features:F.concat(pvF)},sjena,R,ridge:ridge?ridge.map(([x,y])=>L(x,y)):null,L};
+}
+const V3_STR={S:180,N:0,E:90,W:270};
 function v3dData(){
   const d=curData(); if(!d||!d.parcel) return null;
-  const F=tFloors(), V=F.full*TL.fh+(F.pk?1.2:0), kuca={type:"FeatureCollection",features:[]};
-  if(TL.center){ const r=tRect(), g=tGarage(); if(r) kuca.features.push({type:"Feature",geometry:r.geometry,properties:{h:V,b:0}}); if(g) kuca.features.push({type:"Feature",geometry:g.geometry,properties:{h:2.8,b:0}});
-    // krov: šest tankih slojeva koji se sužavaju prema sljemenu (gruba slika krova, ne projekt)
-    if(TL.krov!=="ravni"&&r){ const tg=Math.tan(TL.nagib*Math.PI/180), sp=Math.min(TL.w,TL.d), R=tg*sp/2; for(let i=1;i<=6;i++){ const k=1-i/7;
-      const wd=TL.krov==="cet"||!(TL.sljeme==="duz"?TL.w>=TL.d:TL.w<TL.d)?TL.w*k:TL.w, dp=TL.krov==="cet"||(TL.sljeme==="duz"?TL.w>=TL.d:TL.w<TL.d)?TL.d*k:TL.d;
-      const sl=tRectAt(TL.center,Math.max(wd,0.5),Math.max(dp,0.5),TL.rot); kuca.features.push({type:"Feature",geometry:sl.geometry,properties:{h:V+R*i/6,b:V+R*(i-1)/6,krov:1}}); } } }
+  const F=tFloors(), V=F.full*TL.fh+(F.pk?1.2:0), key=window.__cur&&window.__cur.key, prazno={type:"FeatureCollection",features:[]};
+  let M=null, prilaz=prazno, ulaz="S";
+  if(TL.center){
+    const ang=(a,b)=>Math.abs(((a-b)%360+540)%360-180), lines=((d.env&&d.env.v&&d.env.v.roadLines)||[]).filter(r=>r.ok&&!r.svc&&r.geom&&r.geom.length>1).map(r=>turf.lineString(r.geom));
+    // ulaz na strani prema najbližoj cesti; bez učitanih cesta prema jugu
+    let np=null; try{ for(const l of lines){const q=turf.nearestPointOnLine(l,turf.point(TL.center)); if(!np||q.properties.dist<np.properties.dist) np=q;} }catch(e){}
+    const want=np?turf.bearing(turf.point(TL.center),np):180; ulaz=Object.keys(V3_STR).sort((a,b)=>ang(V3_STR[a]+TL.rot,want)-ang(V3_STR[b]+TL.rot,want))[0];
+    const pvM=numv("pvRoof"), pvAz=document.getElementById("pvAz");
+    M=v3dModel({c:TL.center,w:TL.w,d:TL.d,rot:TL.rot,V,krov:TL.krov,nagib:TL.nagib,alongW:TL.sljeme==="duz"?TL.w>=TL.d:TL.w<TL.d,
+      gar:TL.gar?{w:TL.gw,d:TL.gd,offX:TL.w/2+TL.gw/2,offY:(TL.gd-TL.d)/2}:null,etaza:{n:F.full,fh:TL.fh,pk:F.pk},ulaz,pv:pvM>0?{m2:pvM,az:pvAz?pvAz.value:"0"}:null});
+    // prilaz (priprema): iz procjene gradnje, kad je odabrana vrsta prilaza i ima cesta; od ulaza do najbliže ceste
+    try{ const H=key?projCleanHouse(projRaw(key).house):null;
+      if(H&&H.prV&&PRILAZ[H.prV]&&np){ const S={S:[0,-TL.d/2-0.25],N:[0,TL.d/2+0.25],E:[TL.w/2+0.25,0],W:[-TL.w/2-0.25,0]}[ulaz], dp=M.L(S[0],S[1]);
+        let rp=null; for(const l of lines){const q=turf.nearestPointOnLine(l,turf.point(dp)); if(!rp||q.properties.dist<rp.properties.dist) rp=q;}
+        if(rp&&rp.properties.dist*1000<120){ const b=turf.buffer(turf.lineString([dp,rp.geometry.coordinates]),(H.prW>0?H.prW:3)/2000,{units:"kilometers",steps:2});
+          if(b) prilaz={type:"FeatureCollection",features:[{type:"Feature",geometry:b.geometry,properties:{c:{sljunak:"#bdb5a4",asfalt:"#5b5d60",oplocnici:"#aaa49a"}[H.prV]||"#9e9a92",vrsta:H.prV}}]}; } } }catch(e){}
+  }
   const G=window.__gp&&Math.abs(window.__gp.parcelArea-turf.area(d.parcel))<1?window.__gp:null;
-  return {parcel:d.parcel,c:turf.centroid(d.parcel).geometry.coordinates,kuca,gp:G&&G.geom?{type:"Feature",geometry:G.geom,properties:{}}:{type:"FeatureCollection",features:[]},
-    broj:(d.parcel.properties.KATASTARSKA_CESTICA||d.parcel.properties.broj||""),key:window.__cur&&window.__cur.key};
+  // oznaka čestice: na vrhu granice najdaljem od kuće, da ne prekriva model
+  let lbl=turf.centroid(d.parcel).geometry.coordinates;
+  try{ if(TL.center){ const pts=turf.explode(d.parcel).features.map(f=>f.geometry.coordinates); lbl=pts.sort((a,b)=>turf.distance(b,TL.center)-turf.distance(a,TL.center))[0]||lbl; } }catch(e){}
+  return {parcel:d.parcel,c:turf.centroid(d.parcel).geometry.coordinates,kuca:M?M.kuca:prazno,sjena:M?M.sjena:prazno,prilaz,terasa:prazno,lbl,ulaz,
+    sljeme:M&&M.ridge?{type:"Feature",geometry:{type:"LineString",coordinates:M.ridge},properties:{}}:null,
+    gp:G&&G.geom?{type:"Feature",geometry:G.geom,properties:{}}:{type:"FeatureCollection",features:[]},
+    broj:(d.parcel.properties.KATASTARSKA_CESTICA||d.parcel.properties.broj||""),key};
 }
 function v3dStyle(D){
+  const ex=(id,flt,z)=>({id,type:"fill-extrusion",source:"kuca",filter:flt,...z,paint:{"fill-extrusion-color":["get","c"],"fill-extrusion-height":["get","h"],"fill-extrusion-base":["get","b"],"fill-extrusion-opacity":1,"fill-extrusion-vertical-gradient":true}});
   return {version:8,sources:{
       sat:{type:"raster",tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],tileSize:256,maxzoom:19,attribution:"Snimka: Esri, Maxar, Earthstar Geographics"},
       osm:{type:"raster",tiles:["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],tileSize:256,maxzoom:19,attribution:"© OpenStreetMap"},
       dem:{type:"raster-dem",tiles:["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],tileSize:256,maxzoom:15,encoding:"terrarium",attribution:"Teren: Terrain Tiles (Mapzen, AWS)"},
       kat:{type:"raster",tiles:["https://wms1-gs-oss.uredjenazemlja.hr/ows2-m/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=oss:BZP_CESTICE&STYLES=&SRS=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=512&HEIGHT=512&FORMAT=image/png&TRANSPARENT=true"],tileSize:512,minzoom:15,attribution:"Katastar © DGU"},
-      parcel:{type:"geojson",data:D.parcel},gp:{type:"geojson",data:D.gp},kuca:{type:"geojson",data:D.kuca}},
+      parcel:{type:"geojson",data:D.parcel},gp:{type:"geojson",data:D.gp},kuca:{type:"geojson",data:D.kuca},sjena:{type:"geojson",data:D.sjena},prilaz:{type:"geojson",data:D.prilaz},terasa:{type:"geojson",data:D.terasa}},
     layers:[{id:"sat",type:"raster",source:"sat",layout:{visibility:V3D.pod==="sat"?"visible":"none"}},{id:"osm",type:"raster",source:"osm",layout:{visibility:V3D.pod==="osm"?"visible":"none"}},
-      {id:"kat",type:"raster",source:"kat",paint:{"raster-opacity":0.8}},
-      {id:"gp",type:"fill",source:"gp",paint:{"fill-color":"#22a35a","fill-opacity":0.28}},
-      {id:"parcel-line",type:"line",source:"parcel",paint:{"line-color":"#ffd84d","line-width":3.5}},
-      {id:"kuca",type:"fill-extrusion",source:"kuca",paint:{"fill-extrusion-color":["case",["has","krov"],"#b5532f","#efe9dc"],"fill-extrusion-height":["get","h"],"fill-extrusion-base":["get","b"],"fill-extrusion-opacity":0.96}}],
+      {id:"kat",type:"raster",source:"kat",paint:{"raster-opacity":0.75}},
+      {id:"gp",type:"fill",source:"gp",paint:{"fill-color":"#22a35a","fill-opacity":0.2}},
+      {id:"parcel-line",type:"line",source:"parcel",paint:{"line-color":"#ffd84d","line-width":["interpolate",["linear"],["zoom"],16,2,20,4]}},
+      {id:"prilaz",type:"fill",source:"prilaz",paint:{"fill-color":["get","c"],"fill-opacity":0.92}},
+      {id:"terasa",type:"fill",source:"terasa",paint:{"fill-color":"#c9c2b4","fill-opacity":0.95}},
+      {id:"sjena",type:"fill",source:"sjena",paint:{"fill-color":"#141414","fill-opacity":["get","op"],"fill-antialias":false}},
+      ex("kuca",["==",["get","lod"],0],{}),ex("kuca-lo",["==",["get","lod"],1],{maxzoom:V3M.lodZ}),ex("kuca-hi",["all",["==",["get","lod"],2],["!=",["get","k"],"pv"]],{minzoom:V3M.lodZ}),ex("pv",["==",["get","k"],"pv"],{minzoom:V3M.lodZ,layout:{visibility:V3D.pv?"visible":"none"}}),ex("kuca-det",["==",["get","lod"],3],{minzoom:V3M.detZ})],
+    light:{anchor:"map",position:[1.15,V3M.sunAz,V3M.sunPolar],color:"#ffffff",intensity:0.42},
     terrain:{source:"dem",exaggeration:1}};
 }
 function v3dSpin(){ cancelAnimationFrame(V3D.raf); const f=()=>{ if(V3D.map&&V3D.rot&&!document.hidden) V3D.map.setBearing((V3D.map.getBearing()+0.12)%360); V3D.raf=requestAnimationFrame(f); }; V3D.raf=requestAnimationFrame(f); }
@@ -4728,16 +4816,18 @@ async function v3dOpen(){
   if(!gl&&!(window.maplibregl&&maplibregl.__test)){note.textContent="Ovaj preglednik ne podržava 3D prikaz (WebGL)."; return;}
   if(V3D.map){try{V3D.map.remove()}catch(e){} V3D.map=null;}
   V3D.key=D.key;
+  {const pc=document.getElementById("v3dPv"), ima=D.kuca.features.some(f=>f.properties.k==="pv"); pc.disabled=!ima; pc.parentElement.title=ima?"Solarni paneli prema odjeljku Solarna elektrana (površina i orijentacija)":"Za panele upiši površinu u odjeljku Solarna elektrana";}
   const m=new maplibregl.Map({container:"v3dMap",style:v3dStyle(D),center:D.c,zoom:18.2,pitch:62,bearing:-20,maxPitch:78,canvasContextAttributes:{preserveDrawingBuffer:true},preserveDrawingBuffer:true,attributionControl:{compact:true}});
   V3D.map=m; m.addControl(new maplibregl.NavigationControl({visualizePitch:true}),"top-right");
-  try{const el=document.createElement("div"); el.className="v3d-lbl"; el.textContent=D.broj; new maplibregl.Marker({element:el}).setLngLat(D.c).addTo(m);}catch(e){}
+  try{const el=document.createElement("div"); el.className="v3d-lbl"; el.textContent=D.broj; new maplibregl.Marker({element:el,anchor:"bottom",offset:[0,-4]}).setLngLat(D.lbl||D.c).addTo(m);}catch(e){}
   const stop=()=>{V3D.rot=false; document.getElementById("v3dRot").textContent="Okreći";};
   m.on("dragstart",stop); m.on("zoomstart",e=>{if(e.originalEvent) stop();}); m.on("pitchstart",e=>{if(e.originalEvent) stop();});
   m.on("error",e=>{const msg=e&&e.error&&e.error.message||""; if(/dem|terrarium|elevation/i.test(msg)) note.textContent="Model terena se nije učitao; prikaz je bez reljefa.";});
   // kamera: cijela čestica u kadru, pa nagib (s nagibom se kadar smanji, zato malo bliže)
   try{const bb=turf.bbox(turf.buffer(D.parcel,0.004,{units:"kilometers"})); m.fitBounds([[bb[0],bb[1]],[bb[2],bb[3]]],{padding:30,duration:0,maxZoom:20}); m.setZoom(Math.min(20,m.getZoom()+0.4)); m.setPitch(62); m.setBearing(-20);}catch(e){}
-  let gotov=false; const fin=()=>{ if(gotov) return; gotov=true; note.textContent="Teren: model visina oko 30 m (grub, C). Kuća: iz simulatora, visina do vijenca s grubim krovom. Granice: katastar DGU. Satelitska snimka: Esri. Prikaz je ilustracija, ne projekt.";
+  let gotov=false; const fin=()=>{ if(gotov) return; gotov=true; note.textContent="Teren: model visina oko 30 m (grub, C). Kuća: pojednostavljeni model iz simulatora (visina do vijenca, krov sa strehom, prozori i ulaz prema cesti, sjena za sunce s jugozapada). Granice: katastar DGU. Satelitska snimka: Esri. Prikaz je ilustracija, ne projekt.";
     try{V3D.snap.set(D.key,m.getCanvas().toDataURL("image/jpeg",0.86));}catch(e){} };
+  m.once("load",()=>{try{const at=m.getContainer().querySelector(".maplibregl-ctrl-attrib"); if(at&&isMobile()) at.classList.remove("maplibregl-compact-show");}catch(e){}}); // na mobitelu izvori sklopljeni (ikona ⓘ), da ne prekrivaju model
   m.once("idle",fin); setTimeout(fin,8000); // ako neki sloj ne odgovori, slika se ipak spremi nakon 8 s
   V3D.rot=true; document.getElementById("v3dRot").textContent="Zaustavi"; v3dSpin();
 }
@@ -4746,6 +4836,7 @@ document.getElementById("v3dBtn").addEventListener("click",v3dOpen);
 document.getElementById("v3dClose").addEventListener("click",v3dClose);
 document.getElementById("v3dRot").addEventListener("click",e=>{V3D.rot=!V3D.rot; e.currentTarget.textContent=V3D.rot?"Zaustavi":"Okreći";});
 document.getElementById("v3dPod").addEventListener("click",e=>{V3D.pod=V3D.pod==="sat"?"osm":"sat"; e.currentTarget.textContent=V3D.pod==="sat"?"Karta":"Satelit"; const m=V3D.map; if(m){m.setLayoutProperty("sat","visibility",V3D.pod==="sat"?"visible":"none"); m.setLayoutProperty("osm","visibility",V3D.pod==="osm"?"visible":"none");}});
+document.getElementById("v3dPv").addEventListener("change",e=>{V3D.pv=e.target.checked; const m=V3D.map; if(m) m.setLayoutProperty("pv","visibility",V3D.pv?"visible":"none");});
 document.getElementById("v3dKat").addEventListener("change",e=>{const m=V3D.map; if(m) m.setLayoutProperty("kat","visibility",e.target.checked?"visible":"none");});
 
 // ================= LEGENDA BOJA (karta, analiza, skica, izvještaj) =================

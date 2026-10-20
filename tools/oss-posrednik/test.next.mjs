@@ -63,3 +63,20 @@ console.log("worker.next: uložak OK");
   assert.equal(o3.ulosci.length, 1); assert.ok(calls.some(u => /parcel-info/.test(u)) && calls.some(u => /lr-unit/.test(u) && /mainBookId=31117/.test(u)));
   console.log("worker.next: stara predmemorija OK");
 }
+
+// predmemorija preglednika: uspješan odgovor smije se pamtiti, greška i odgovor bez uloška ne smiju; prazan uložak se ne pamti u Workeru
+{
+  store = new Map(); calls.length = 0;
+  globalThis.fetch = async u => { u = String(u); calls.push(u); return /lr-unit/.test(u) ? new Response("odbijeno", { status: 403 }) : new Response(xml, { status: 200, headers: { "Content-Type": "application/xml" } }); };
+  const r1 = await W.fetch(new Request("https://w.dev/?id=19311109&ulozak=1"), {}, ctx), o1 = await r1.json();
+  assert.ok(o1.ulosciGreska && r1.headers.get("Cache-Control") === "no-store", "odgovor s greškom uloška: no-store");
+  assert.ok(![...store.keys()].some(k => /oss-lr/.test(k)), "neuspjeli uložak se ne pamti");
+  const r2 = await W.fetch(new Request("https://w.dev/?id=abc"), {}, ctx); assert.equal(r2.status, 400); assert.equal(r2.headers.get("Cache-Control"), "no-store");
+  globalThis.fetch = async u => { u = String(u); calls.push(u); return /lr-unit/.test(u) ? new Response("[]", { status: 200, headers: { "Content-Type": "application/json" } }) : new Response(xml, { status: 200, headers: { "Content-Type": "application/xml" } }); };
+  const r3 = await W.fetch(new Request("https://w.dev/?id=19311109&ulozak=1"), {}, ctx), o3b = await r3.json();
+  assert.deepEqual(o3b.ulosci, []); assert.ok(![...store.keys()].some(k => /oss-lr/.test(k)), "prazan uložak se ne pamti 24 sata");
+  globalThis.fetch = async u => { u = String(u); calls.push(u); return /lr-unit/.test(u) ? new Response(JSON.stringify(lr), { status: 200, headers: { "Content-Type": "application/json" } }) : new Response(xml, { status: 200, headers: { "Content-Type": "application/xml" } }); };
+  const r4 = await W.fetch(new Request("https://w.dev/?id=19311109&ulozak=1"), {}, ctx), o4 = await r4.json();
+  assert.equal(o4.ulosci.length, 1); assert.equal(r4.headers.get("Cache-Control"), "public, max-age=3600"); assert.ok([...store.keys()].some(k => /oss-lr/.test(k)));
+  console.log("worker.next: predmemorija grešaka i praznog uloška OK");
+}
