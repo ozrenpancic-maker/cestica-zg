@@ -19,7 +19,7 @@ function boot(src){
   const vc=new VirtualConsole(); const errs=[];
   vc.on("jsdomError",e=>{errs.push(String(e.message||e)); if(process.env.DBG) console.log("JSERR",e.detail&&e.detail.stack||e.stack)}); vc.on("error",e=>errs.push(String(e)));
   const dom=new JSDOM(src||html,{runScripts:"dangerously",pretendToBeVisual:true,url:"https://example.org/cestica-zg/",virtualConsole:vc,
-    beforeParse(w){ w.fetch=()=>Promise.reject(new Error("bez mreže u testu")); w.print=()=>{}; w.scrollTo=()=>{};
+    beforeParse(w){ w.fetch=()=>Promise.reject(new Error("bez mreže u testu")); w.print=()=>{}; w.scrollTo=()=>{}; if(!w.TextDecoder) w.TextDecoder=require("util").TextDecoder;
       w.HTMLElement.prototype.scrollIntoView=function(){};
       // jsdom nema canvas: Leaflet crta na lažni kontekst koji prihvaća sve pozive
       const ctx=new Proxy({},{get:(t,k)=>k in t?t[k]:(()=>{}),set:(t,k,v)=>(t[k]=v,true)});
@@ -1438,13 +1438,24 @@ async function gpTests(){
   // cesta 2 m od ruba čestice (os ceste 5 m od ruba): južni rub je uz cestu, bočni rubovi nisu
   {const dy5=5/110540, road5=[{ok:true,geom:[[c[0][0]-0.001,c[0][1]-dy5],[c[1][0]+0.001,c[1][1]-dy5]]}], B=E("streetBand")(A,road5,4);
    const ba=B?T.area(T.intersect(A,B)):0; ok(B&&Math.abs(ba-30*4)<15,"Cesta 2 m od ruba čestice (os 5 m): prepoznat samo južni rub, pojas 4 m × 30 m ≈ 120 m² (bočni rubovi nisu uz cestu)");}
-  // OpenStreetMap: sadržaji ne odgovaraju, ceste da → pristup i pojas uz cestu i dalje rade
+  // OpenStreetMap: ceste iz vektorskih pločica OpenFreeMap (pločica z14 napravljena s vt-pbf: ulica 5 m južno od čestice,
+  // servisni put daleko, naziv ulice, škola i stanica); Overpass ne odgovara → sadržaji iz POI sloja pločice
+  {const FX={"z": 14, "tx": 8918, "ty": 5839, "b64": "Gml4AgoOdHJhbnNwb3J0YXRpb24ogCASExIEAAABARgCIgkJijGuEQr6BgASEBICAAIYAiIICdI/OgquAQAaBWNsYXNzGgdzdXJmYWNlIgcKBW1pbm9yIgcKBXBhdmVkIgkKB3NlcnZpY2UaY3gCChN0cmFuc3BvcnRhdGlvbl9uYW1lKIAgEhUSBgAAAQECARgCIgkJijGuEQr6BgAaBWNsYXNzGgRuYW1lGgpuYW1lOmxhdGluIgcKBW1pbm9yIg4KDFVsaWNhIFRlc3RuYRqAAXgCCgNwb2kogCASERIGAAABAAIBGAEiBQnePOgIEhESBgACAQMCBBgBIgUJ9DauFRoFY2xhc3MaCHN1YmNsYXNzGgRuYW1lIggKBnNjaG9vbCIKCghPxaAgVGVzdCIFCgNidXMiCgoIYnVzX3N0b3AiDgoMU3RhbmljYSBUZXN0"}, bin=Buffer.from(FX.b64,"base64"), ab=bin.buffer.slice(bin.byteOffset,bin.byteOffset+bin.length), calls=[];
+   const L0=E("mvtDecode")(ab); ok(L0.map(l=>l.name).join(",")==="transportation,transportation_name,poi"&&L0[0].features.length===2&&L0[0].features[0].props.class==="minor","MVT: čitač pločice prepoznaje slojeve, objekte i atribute (bez vanjske biblioteke)");
+   w.fetch=(u)=>{u=String(u); calls.push(decodeURIComponent(u)); if(/tiles\.openfreemap\.org\/planet$/.test(u)) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({tiles:["https://tiles.test/p/{z}/{x}/{y}.pbf"],maxzoom:14})});
+     if(/tiles\.test\/p\/14\//.test(u)) return Promise.resolve(/\/14\/(\d+)\/(\d+)\.pbf/.exec(u)[1]==String(FX.tx)&&/\/14\/(\d+)\/(\d+)\.pbf/.exec(u)[2]==String(FX.ty)?{ok:true,status:200,arrayBuffer:()=>Promise.resolve(ab)}:{ok:false,status:404});
+     return Promise.reject(new TypeError("Failed to fetch"));};
+   E("NET").cache.clear(); E("OFM").tj=null; E("MVT_CACHE").clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k);
+   const env=await E("loadEnv")({lat:45.8401,lng:15.9702},A), sch=env.school, B=E("streetBand")(A,env.roadLines,4);
+   ok(env.roadLines.length===1&&env.roadLines[0].ok&&env.roads[0].name==="Ulica Testna"&&/OpenFreeMap/.test(env.izvor)&&B&&Math.abs(T.area(T.intersect(A,B))-120)<15,"OpenFreeMap: ulica 5 m od čestice iz pločice (s nazivom), daleki servisni put izostavljen; pojas uz cestu radi");
+   ok(sch&&sch.n==="OŠ Test"&&env.stops.length===1&&!env.poiErr&&/OpenFreeMap/.test(env.poiIzvor)&&calls.filter(u=>/interpreter/.test(u)).length===4,"Overpass ne odgovara (sva 4 poslužitelja, jedan za drugim) → sadržaji iz POI sloja pločice (škola, stanica)");}
+  // pločice ne odgovaraju → ceste iz Overpassa (pravokutnik oko čestice); sadržaji ni iz jednog izvora → ceste i dalje rade
   {const calls=[]; w.fetch=(u)=>{u=decodeURIComponent(String(u)); calls.push(u); if(/amenity|bus_stop/.test(u)) return Promise.reject(new TypeError("Failed to fetch"));
-     if(/interpreter/.test(u)) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({elements:[{type:"way",tags:{highway:"residential",name:"Test ulica"},geometry:[{lat:45.84,lon:15.969},{lat:45.84,lon:15.971}]}]})});
+     if(/interpreter/.test(u)) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({elements:[{type:"way",tags:{highway:"residential",name:"Test ulica"},geometry:[{lat:45.84,lon:15.969},{lat:45.84,lon:15.971}]},{type:"way",tags:{highway:"residential",name:"Daleka"},geometry:[{lat:45.8406,lon:15.969},{lat:45.8406,lon:15.971}]}]})});
      return Promise.reject(new Error("x"));};
-   E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k);
+   E("NET").cache.clear(); E("OFM").tj=null; E("MVT_CACHE").clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k);
    const env=await E("loadEnv")({lat:45.8401,lng:15.9702},A);
-   ok(env&&env.roadLines.length===1&&env.roads[0].name==="Test ulica"&&env.poiErr===true&&calls.some(u=>/around:20,/.test(u)),"OpenStreetMap: ceste se dohvaćaju zasebnim brzim upitom (20 m oko čestice); pad upita za sadržaje ne ruši pristup");
+   ok(env&&env.roadLines.length===1&&env.roads[0].name==="Test ulica"&&env.poiErr===true&&calls.some(u=>/way\[highway\]\(45\./.test(u))&&calls.filter(u=>/way\[highway\]/.test(u)).length===1&&/Overpass/.test(env.izvor),"Pločice ne odgovaraju → ceste iz Overpassa (pravokutnik oko čestice, prvi poslužitelj, ostali se ne pitaju); ulica dalje od 20 m izostavljena; pad sadržaja ne ruši pristup");
    ok(/ceste su učitane/.test(E("envHtml")({v:env})),"Okolina: kad sadržaji nisu dostupni, to piše, a ceste se prikazuju");}
   ok(errs.length===0,"bez JS grešaka (područje za gradnju): "+errs.join(" | "));
 }
