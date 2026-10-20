@@ -369,3 +369,15 @@ Ceste iz OpenStreetMapa (iste kao za pristup i pojas uz cestu) ucrtavaju se u sv
 - Priprema: solarni paneli (prekidač „Paneli”, iz površine i orijentacije u odjeljku Solarna elektrana, na kosini najbližoj odabranoj orijentaciji ili u redovima na ravnom krovu);
   prilaz (iz procjene gradnje: vrsta i širina, od ulaza do najbliže ceste, boja po vrsti); sloj terase postoji, ali je prazan dok aplikacija nema unos za terasu.
 - Prikaz je ilustracija za planiranje, ne arhitektonski projekt.
+
+## Prijedlog okućnice (Faza 1, ilustrativno)
+
+- Odjeljak „Prijedlog okućnice” ispod simulatora kuće; gumb „Predloži okućnicu” (prijedlog postoji samo kad ga korisnik zatraži). Oznaka „Automatski prijedlog okućnice – ilustrativno”, pouzdanost C.
+- Izračun je pravilima u aplikaciji (`okuIzracun`, čista funkcija, ravnina u metrima oko čestice), bez vanjskog AI-ja i bez slanja podataka.
+- Pristup: točka granice uz cestu (OSM) najbliža kući; bez cesta pretpostavljen, uz napomenu. Parking 1–2 mjesta 2,5 × 5 m okomito na granicu, 1 m od nje, pomak ◀ ▶.
+  Kolni prilaz od granice do parkinga (širina 2,5–5 m). Staza 1,2 m od parkinga do ulaza (strana kuće prema pristupu), oko kuće preko ugla ako treba.
+  Vrt: kompaktan skup čelija 1 m² na najsunčanijem dijelu (izvan sjene kuće za podne u proljeće i jesen), dalje od ceste. Travnjak: ostatak slobodnog prostora.
+- Napomene: uska čestica (zbroj slobodnog prostora sa strana kuće < 5 m) → kompaktan prijedlog; nema mjesta za parking/vrt; nagib ≥ 15 %; cesta daleko.
+- Prikaz: karta (sloj u odabiru), skica tlocrta, legenda, 3D (površine na terenu; isti ulaz u kuću), izvještaj. Pomicanje kuće preračunava prijedlog.
+- Izlaz za druge module: `window.__oku.povrsine` {parking, prilaz, staza, vrt, travnjak} m² i `projGet().okucnica`. Ne ulazi automatski u troškove (Faza 3).
+- Faza 2 (terasa, pomoćni objekt, tipovi okućnice): nove stavke u `OKU_VRSTE` i koraci u `okuIzracun`.
