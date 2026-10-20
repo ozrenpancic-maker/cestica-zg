@@ -976,7 +976,11 @@ async function krkTests(){
   };
   const tick=ms=>new Promise(r=>setTimeout(r,ms));
   const OSS_URL=w.__OSS_URL; ok(/^https:\/\/cestica-oss\.ozren-pancic\.workers\.dev\/$/.test(OSS_URL),"Krk: adresa posrednika prema OSS-u je postavljena"); E("SRC_KRK").oss="";
+  // prethodna čestica u Zagrebu (npr. Vranićeva) ne smije ostati kao okvir karte ni pravila za Krk
+  w.eval('window.__lastBounds=L.latLngBounds([45.80,15.97],[45.801,15.971]); window.__tl=999; window.__gbp=999; window.__ruleP=[{id:"etaze",num:1}]');
   await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50);
+  {const B=E("window.__lastBounds"); ok(B&&B.contains(w.L.latLng(ll.lat,ll.lng))&&E("window.__tl")!==999&&E("window.__gbp")!==999&&E("window.__ruleP")===null,"Krk: okvir karte (za „Uredi na karti” i simulator) je okvir Krk čestice, a ne prethodne čestice u Zagrebu; pravila iz Zagreba se brišu");
+   $(w,"tEdit")&&$(w,"tEdit").dispatchEvent(new w.Event("click",{bubbles:true})); const c=E("map").getCenter(); ok(!$(w,"tEdit")||Math.abs(c.lat-ll.lat)<0.01&&Math.abs(c.lng-ll.lng)<0.01,"Krk: „Uredi na karti” ostaje na Krku (ne skače u Zagreb)");}
   const t=txt(w,"sheet");
   ok(calls.some(u=>u.endsWith("data/kat_krk/index.json"))&&calls.filter(u=>/data\/kat_krk\/-?\d+_-?\d+\.json$/.test(u)).length===1&&!calls.some(u=>u.includes("uredjenazemlja")&&!u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/")),"Krk: čestica iz katastra uz aplikaciju (jedan kvadrat), bez DGU WFS-a");
   ok(!calls.some(u=>u.includes("services8.arcgis.com")),"Krk: zagrebački servisi se ne pozivaju");
