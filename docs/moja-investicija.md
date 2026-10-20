@@ -242,6 +242,16 @@ Odjeljak „Skica kuće na terenu” ispod simulatora (Zagreb i Krk). Pri ispisu
 - etaže, podrum, potkrovlje (nadozid 1,2 m, pretpostavka) i krov: trokut kad je presjek okomit na sljeme, inače sljeme kao vodoravna linija (kod četverostrešnog trapez);
 - kote ±0,00, vijenac, sljeme, dno podruma i razlika terena ispod kuće.
 
+**3D prikaz (skica)** — aksonometrija bez uvećanja visina:
+
+- teren kao blok (maketa): gornja ploha je ravnina nagiba s mrežom svakih 5 m, a na dva vidljiva boka vidi se nagib;
+- međe i područje za gradnju položeni su na teren;
+- kuća sa zidovima do terena (na nižoj strani vidi se podnožje ili podrum), krovom (dvostrešni: plohe i zabati; četverostrešni: četiri plohe; ravni) i garažom;
+- pogled odozgo pod 30°, sa strane prema kojoj teren pada, zakrenut za 35° da se vide dva pročelja; plohe su osjenčane prema svjetlu s jugozapada;
+- crta se slaganjem ploha od najdalje prema najbližoj (bez 3D biblioteke), pa se ispisuje kao vektorska slika.
+
+U ispisu svaki dio skice (tlocrt, presjek, 3D) ostaje na jednoj stranici.
+
 **Teren i pouzdanost**
 
 - Teren je ravnina iz nagiba u okolini čestice (Copernicus DEM preko Open-Meteo, rezolucija oko 90 m). Smjer pada računa se iz istih pet točaka kao nagib.
