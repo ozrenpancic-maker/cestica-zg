@@ -407,3 +407,11 @@ Prikaz se slaže kao prije; `izbWrap()` zatim premješta postojeće odjeljke (is
 - Sažetak: na mobitelu sklopljen u jedan redak sa stanjima; potvrđena namjena ima neutralnu oznaku „i” (ne zelenu kvačicu) i tekst da uvjeti gradnje nisu potvrđeni.
 - Mobitel: kartica „Troškovi” prikazuje i otvara 05; „Karta” spušta panel; dok se kuća povlači, panel se spusti. „↑ Sažetak” vraća na vrh.
 - Moduli su neutralni (tanki sivi rub); zelena, narančasta i crvena ostaju samo za rezultate provjera.
+
+### Faza 3: trošak okućnice u troškovima i scenarijima
+- `okuTrosak(k)`: površine prijedloga × jedinične cijene (emajstor.hr 2026.): parking i kolni prilaz prema podlozi (šljunak 14–26, asfalt 27–43, opločnici 70–140 €/m²), staza opločnici 70–140,
+  terasa (opločnici 70–140, sibirski ariš 40–85, WPC 65–110), travnjak (sjetva 2–6, busen 5–12), vrt samo priprema tla (frezanje 0,5–3), pomoćni objekt samo šupa do 5 m² (1.000–2.700 €/kom).
+  Bez cijene u cjeniku: mediteranski šljunak i nasadi, pomoćni objekt veći od 5 m² → „Podaci nisu dostupni”, upis ponude (unos).
+- Stavke idu u financijski model kao skupina `okucnica` (jednom): procjena gradnje, ukupna investicija, rezerva 15 %, scenariji (zajedničko za česticu, kao priprema terena).
+- Bez dvostrukog obračuna: kad je okućnica uključena i ima parking/prilaz, prilaz iz procjene gradnje se ne računa; ručno upisano „uređenje okoliša” se ne zbraja (upozorenje).
+- Prekidač „U procjeni troškova” (zadano uključen); tip okućnice postavlja zadane materijale (obiteljska: opločnici i sjetva; mediteranska: ariš; minimalistička: WPC i busen).
