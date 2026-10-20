@@ -340,3 +340,19 @@ Ceste iz OpenStreetMapa (iste kao za pristup i pojas uz cestu) ucrtavaju se u sv
 - Kamera obuhvati česticu, nagnuta je 62° i polako se okreće. „Zaustavi” ili povlačenje zaustavlja okretanje.
 - Kad se pogled iscrta (ili nakon 8 s), sprema se slika i ulazi u PDF izvještaj u poglavlje „Kuća na čestici”. Ako preglednik ne dopusti čitanje slike, izvještaj je bez nje.
 - Bez WebGL-a piše da preglednik ne podržava 3D prikaz.
+
+## Procjena vrijednosti zemljišta (Troškovi → Novac i kupnja)
+
+- **Referentni podaci (B, uz broj kupoprodaja):** Grad Zagreb, *Izvješće o tržištu nekretnina za 2025.*, građevinsko zemljište:
+  prosjek po naselju (53 naselja), po veličini čestice (7 razreda) i rasponi po namjeni (S/M1/M2 niska 50–900, M visoka 300–1.200,
+  K 200–500, G 120–330, I 30–200 €/m²). Izvješće navodi da je evaluirano približno 30 % ugovora i da su prosjeci ponderirani
+  površinom, pa su orijentir, ne procjena. Naselje se predlaže samo kad se ime k.o. poklapa s imenom naselja; odabir korisnika je C.
+- **Plan približnih vrijednosti (ISPU):** izravno čitanje iz preglednika blokira CORS (test 20. 10. 2026., `ppv-test.html`).
+  Zasad korisnik prepisuje vrijednost bloka s karte (C). Automatski dohvat moguć je samo preko posrednika (Worker), uz odobrenje.
+- **Usporedbe korisnika:** do 12 redaka (prodano / oglas, €/m², opis). Raspon i medijan računaju se **samo iz ostvarenih kupoprodaja**,
+  najmanje 3 (5+ → srednja polovina P25–P75, inače min–max). Oglasi se prikazuju odvojeno kao tražene cijene. Bez 3 kupoprodaje:
+  „Podaci nisu dostupni”. Rezultat je uvijek C.
+- **Čimbenici:** samo kvalitativno (↑/↓), bez izmišljenih postotaka: veličinski razred, udio namjene za gradnju, nagib ≥ 15 %,
+  ograničenja iz provjera, Natura 2000 / zaštićeno područje.
+- Gumb „Upiši medijan u kupnju zemljišta” prenosi medijan × površina u „Kupnja zemljišta” samo na dodir. Usporedbe se spremaju
+  i izvoze s projektom (`proj.vrij`). Krk: referentni podaci nisu dostupni, usporedbe rade.
