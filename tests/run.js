@@ -26,7 +26,7 @@ function boot(src){
       w.HTMLCanvasElement.prototype.getContext=function(){return ctx};
       w.SVGElement.prototype.createSVGRect=function(){return {}}; }});
   // posrednik prema OSS-u u testovima je isključen (testovi ga uključuju gdje treba); adresa iz aplikacije ostaje u __OSS_URL
-  try{dom.window.eval('window.__OSS_URL=SRC_KRK.oss; SRC_KRK.oss=""')}catch(e){}
+  try{dom.window.eval('window.__OSS_URL=SRC_KRK.oss; window.__OSS2_URL=SRC_KRK.oss2; SRC_KRK.oss=""; SRC_KRK.oss2=""')}catch(e){}
   // katalog ISPU (Zagreb) u testovima je isključen; testovi karata planova ga uključuju (__ISPU_OBUHVAT)
   try{dom.window.eval('(()=>{const k=RASTER_KATALOZI.find(k=>k.tip==="wms"); window.__ISPU_OBUHVAT=k.obuhvat; k.obuhvat=[0,0,0,0];})()')}catch(e){}
   return {w:dom.window, errs};
@@ -978,7 +978,7 @@ async function krkTests(){
     return Promise.reject(new Error("neočekivan zahtjev "+u));
   };
   const tick=ms=>new Promise(r=>setTimeout(r,ms));
-  const OSS_URL=w.__OSS_URL; ok(/^https:\/\/cestica-oss\.ozren-pancic\.workers\.dev\/$/.test(OSS_URL),"Krk: adresa posrednika prema OSS-u je postavljena"); E("SRC_KRK").oss="";
+  const OSS_URL=w.__OSS_URL; ok(/^https:\/\/cestica-oss\.ozren-pancic\.workers\.dev\/$/.test(OSS_URL)&&/^https:\/\/cestica-oss\.ozrenpancic-maker\.deno\.net\/$/.test(w.__OSS2_URL),"Krk: adrese posrednika prema OSS-u (Cloudflare i rezervni Deno) su postavljene"); E("SRC_KRK").oss="";
   // prethodna čestica u Zagrebu (npr. Vranićeva) ne smije ostati kao okvir karte ni pravila za Krk
   w.eval('window.__lastBounds=L.latLngBounds([45.80,15.97],[45.801,15.971]); window.__tl=999; window.__gbp=999; window.__ruleP=[{id:"etaze",num:1}]');
   await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50);
@@ -1080,6 +1080,18 @@ async function krkTests(){
   mode="noZk"; E("OSSZK").clear(); E("ZKU").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20);
   ok(/ne povezuje ni s jednim ZK uloškom/.test(txt(w,"zkOss"))&&!$(w,"zkUlRetry"),"Krk OSS: kad OSS česticu ne povezuje s uloškom, to piše (bez gumba za ponovni pokušaj)");
   mode="ok"; E("OSSZK").clear(); E("ZKU").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20);
+  // rezervni posrednik (Deno): jednom, kad glavni javi blok/403 ili je nedostupan; ne i za pravi 404
+  {const f0=w.fetch; let cA=0,cB=0,kodA=403; E("SRC_KRK").oss2="https://oss2-test.example/";
+   w.fetch=(u)=>{u=String(u); if(u.startsWith("https://oss-test.example/")){cA++; return kodA==="mreza"?Promise.reject(new TypeError("Failed to fetch")):Promise.resolve({ok:false,status:kodA,json:()=>Promise.resolve({ok:false,greska:kodA===404?"OSS nema česticu s tim ID-om":"OSS je odbio upit (HTTP 403)",blok:kodA===403})});}
+     if(u.startsWith("https://oss2-test.example/")){cB++; return okj({ok:true,id:"1",broj:"2345/6",ko:"KORNIĆ",katastar:640,zk:[],dijelovi:[],posrednik:"deno"});} return f0(u);};
+   let r=await E("krkOssOnce")({broj:"2345/6"},"1",null,false);
+   ok(r.st==="ok"&&r.d.posrednik==="deno"&&cA===1&&cB===1,"Krk OSS: kad glavni posrednik javi blok (403), isti upit jednom ide na rezervni (Deno)");
+   cA=cB=0; kodA="mreza"; r=await E("krkOssOnce")({broj:"2345/6"},"1",null,false);
+   ok(r.st==="ok"&&cA===1&&cB===1,"Krk OSS: kad glavni posrednik nije dostupan (mreža), pita se rezervni");
+   cA=cB=0; kodA=404; r=await E("krkOssOnce")({broj:"2345/6"},"1",null,false);
+   ok(r.st==="err"&&cA===1&&cB===0,"Krk OSS: pravi odgovor 404 ne ide na rezervni posrednik");
+   E("SRC_KRK").oss2=""; cA=cB=0; kodA=403; r=await E("krkOssOnce")({broj:"2345/6"},"1",null,false);
+   ok(r.st==="err"&&cA===1&&cB===0,"Krk OSS: bez adrese rezervnog posrednika ponašanje je kao prije"); w.fetch=f0;}
   mode="ok"; E("SRC_KRK").oss=""; E("OSSZK").clear(); E("renderKrk")(E("KRK_CUR"));
   // izravno iz katastarskog sloja karte (bez posrednika): površina upisana u katastar
   mode="wms"; E("KATW").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20); {const tw=txt(w,"sheet");
