@@ -159,7 +159,15 @@ details p{font-size:13.5px;margin:6px 0}
 .bgrid{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;align-items:center;font-size:14px;margin-top:6px}
 .bgrid input[type=number],.bsel{font:inherit;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg);max-width:100%}
 .bgrid input[type=number]{width:6em}
-.actions{display:flex;justify-content:flex-end;margin:-4px 0 6px}
+.actions{display:flex;justify-content:flex-end;flex-wrap:wrap;margin:-4px 0 6px}
+/* „Više informacija”: dulja pojašnjenja su sklopljena */
+details.vise{margin:2px 0 6px}
+details.vise>summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--accent);padding:3px 0;min-height:28px}
+details.vise>summary::-webkit-details-marker{display:none}
+details.vise>summary::before{content:"ⓘ";font-size:13px}
+details.vise[open]>summary{margin-bottom:2px}
+details.vise[open]>summary span::after{content:" ▴"}details.vise:not([open])>summary span::after{content:" ▾"}
+@media print{details.vise>summary{display:none}}
 .phase-d summary{font-weight:700;font-size:15px;padding:4px 0}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 2px}
 .chips span{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;font-variant-numeric:tabular-nums}
@@ -4485,6 +4493,23 @@ legendaMapUpdate();
 // na mobitelu panel s podacima prekriva donji dio karte: dok je legenda otvorena, panel se spusti
 document.getElementById("lgdMap").addEventListener("toggle",e=>{ if(e.target.open&&isMobile()) setState("min"); });
 
+// ================= „VIŠE INFORMACIJA” =================
+// Dulja pojašnjenja (p.meta) sklapaju se pod „Više informacija”, da analiza bude pregledna. Uzastopna pojašnjenja idu u
+// jedan blok. Kratke napomene (izvor, jedinica) ostaju vidljive. Radi nakon svakog prikaza (MutationObserver).
+const VISE={min:110,t:0};
+function viseInfo(root){
+  root=root||sheet; const seen=new Set();
+  for(const p of root.querySelectorAll("p.meta")){
+    if(seen.has(p)||p.closest("details.vise,summary,.rpt,.lgd-box,.calc,#tOut .verdict")||p.querySelector("input,select,button,textarea")) continue;
+    // skupi uzastopne p.meta
+    const grp=[]; let n=p; while(n&&n.tagName==="P"&&n.classList.contains("meta")&&!n.querySelector("input,select,button,textarea")){grp.push(n); seen.add(n); n=n.nextElementSibling;}
+    const len=grp.reduce((a,x)=>a+x.textContent.trim().length,0); if(len<VISE.min) continue;
+    const d=document.createElement("details"); d.className="vise"; d.innerHTML=`<summary><span>Više informacija</span></summary>`;
+    p.parentNode.insertBefore(d,p); grp.forEach(x=>d.appendChild(x));
+  }
+}
+new MutationObserver(()=>{clearTimeout(VISE.t); VISE.t=setTimeout(()=>{try{viseInfo()}catch(e){}},30);}).observe(sheet,{childList:true,subtree:true});
+
 // ================= IZVJEŠTAJ (PDF) =================
 // Gumb „Ispiši / spremi PDF” slaže poseban dokument za ispis: naslovnica s kartom i ključnim brojevima, sažetak, pa
 // numerirana poglavlja. Sadržaj se preuzima iz istih odjeljaka koji su na zaslonu (kopija), pa je uvijek usklađen;
@@ -4497,6 +4522,7 @@ function rptClean(src){
     else if(el.type==="checkbox"||el.type==="radio") v=el.checked?"da":"ne";
     else{v=el.value; if(!v&&el.placeholder&&/\d/.test(el.placeholder)){v=el.placeholder; muted=true;}}
     const sp=document.createElement("b"); sp.className="rv"+(muted?" rv-auto":""); sp.textContent=v||"—"; el.replaceWith(sp);});
+  n.querySelectorAll("details.vise").forEach(d=>{const sm=d.querySelector(":scope>summary"); if(sm) sm.remove(); d.replaceWith(...d.childNodes);});
   n.querySelectorAll("details").forEach(d=>{const sm=d.querySelector(":scope>summary"), box=document.createElement("div"); box.className="rpt-sub";
     if(sm){const t=sm.querySelector("span"), b=sm.querySelector("b"), h=document.createElement("h4"); h.innerHTML=`<span>${esc((t||sm).textContent.trim())}</span>${b&&b.textContent.trim()?`<em>${b.innerHTML}</em>`:""}`; box.appendChild(h); sm.remove();}
     const body=d.querySelector(":scope>.acc-body"); (body?[...body.childNodes]:[...d.childNodes]).forEach(c=>box.appendChild(c)); d.replaceWith(box);});
