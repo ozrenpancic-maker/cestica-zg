@@ -44,7 +44,7 @@ console.log("worker.next: uložak OK");
     ownershipSheetB: { lrUnitShares: [{ description: "Vlasnički dio: 1/1", lrOwners: [{ lrOwnerId: 9, name: "PERO TESTNI, OIB 11111111111", taxNumber: "11111111111", lrEntry: { description: "Na temelju ugovora uknjižuje se pravo vlasništva za PERO TESTNI", orderNumber: "1.1" } }], subSharesAndEntries: [], orderNumber: "1" }],
       lrEntries: [{ description: "Zabilježba za PERO TESTNI", lrEntryId: 5, orderNumber: "1.2" }] },
     possessionSheetA1: { lrParcels: [{ parcelId: 21504489, parcelNumber: "1161", address: "KUĆA I DVORIŠTE, ŠĆULAC 11A", area: "1234", areaInAcres: "0", areaInHvat: "343", statusInLrUnit: 0, parcelParts: [] }] },
-    possessionSheetA2: { lrEntries: [{ description: "ZABILJEŽBA, rješenje o izvedenom stanju za kuću Šćulac 11A sa 79 m2", lrEntryId: 6, orderNumber: "3.1" }] },
+    possessionSheetA2: { lrEntries: [{ description: "<span class='lr-entry-black' >Zaprimljeno 21.03.2016.<br><br>ZABILJEŽBA,  rješenje o izvedenom stanju za kuću Šćulac 11A sa 79 m2 &amp; garažu</span>", lrEntryId: 6, orderNumber: "3.1" }] },
     encumbranceSheetC: { lrEntryGroups: [
       { description: "1.", lrEntries: [{ description: "Uknjižuje se založno pravo radi osiguranja tražbine od 50.000,00 EUR u korist BANKA TEST d.d., OIB 22222222222", lrOwners: [{ lrOwnerId: 7, name: "BANKA TEST d.d.", address: "TESTNA 3", taxNumber: "22222222222" }], lrEntryId: 7, orderNumber: "1.1" }] },
       { description: "2.", lrEntries: [{ description: "Zabilježba ovrhe", lrEntryId: 8, orderNumber: "2.1" }] }] } }];
@@ -52,7 +52,7 @@ console.log("worker.next: uložak OK");
   globalThis.fetch = async u => { u = String(u); calls.push(u); return /lr-unit/.test(u) ? new Response(JSON.stringify(lr2), { status: 200, headers: { "Content-Type": "application/json" } }) : new Response(xml, { status: 200, headers: { "Content-Type": "application/xml" } }); };
   const r2 = await W.fetch(new Request("https://w.dev/?id=19311109&ulozak=1"), {}, ctx), s2 = await r2.text(), U2 = JSON.parse(s2).ulosci[0];
   assert.equal(U2.A1[0].broj, "1161"); assert.equal(U2.A1[0].povrsina, 1234); assert.equal(U2.zadnjiDnevnik, "Z-7530/2022"); assert.equal(U2.plomba, true);
-  assert.deepEqual(U2.A2.upisi, [{ rb: "3.1", tekst: "ZABILJEŽBA, rješenje o izvedenom stanju za kuću Šćulac 11A sa 79 m2" }]);
+  assert.deepEqual(U2.A2.upisi, [{ rb: "3.1", tekst: "Zaprimljeno 21.03.2016.\n\nZABILJEŽBA, rješenje o izvedenom stanju za kuću Šćulac 11A sa 79 m2 & garažu" }]);
   assert.equal(U2.C.upisa, 2); assert.equal(U2.C.grupe[0].upisi[0].ovlastenika, 1); assert.ok(/50\.000,00 EUR u korist BANKA TEST d\.d\., OIB \[OIB\]/.test(U2.C.grupe[0].upisi[0].tekst));
   assert.equal(U2.B.upisa, 1); assert.equal(U2.B.vlasnika, 1);
   assert.ok(!/PERO|11111111111|22222222222|TESTNA 3|taxNumber|lrOwners|lrEntry"/.test(s2), "B imena, OIB-i i adrese ne izlaze: " + s2);
