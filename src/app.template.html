@@ -1262,7 +1262,7 @@ async function krkOssFetch(P,area){
 }
 // --- ZK uložak iz javnog uvida OSS-a (sažetak posrednika): posjedovnica I i II, vlastovnica bez osoba, teretovnica, plomba
 // tekst upisa: posrednik šalje običan tekst s novim redovima; HTML koji bi ipak stigao (stara verzija) uklanja se
-const zkTxt=t=>esc(String(t||"").replace(/<br\s*\/?>/gi,"\n").replace(/<[^>]*>/g,"").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/[ \t]+/g," ").trim()).replace(/\n\s*\n+/g,"<br>").replace(/\n/g,"<br>");
+const zkTxt=t=>esc(String(t||"").replace(/<br\s*\/?>/gi,"\n").replace(/<[^>]*>/g,"").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/[ \t]+/g," ").trim()).replace(/\n\s*\n+/g,"<br>").replace(/\n/g," "); // dvostruki prijelom = novi odlomak; jednostruki (OSS ga stavlja usred rečenice) = razmak
 function zkOssHtml(U){
   if(!Array.isArray(U)||!U.length) return "";
   let h=`<div class="zkoss">`;
