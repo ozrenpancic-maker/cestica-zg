@@ -445,3 +445,8 @@ Prikaz se slaže kao prije; `izbWrap()` zatim premješta postojeće odjeljke (is
 - Aplikacija: `zg3dLoad(parcel)` dohvaća samo kvadrate oko čestice (krug 80 m), bez zgrada na samoj čestici. Izvan područja s podacima (i na Krku) ništa se ne prikazuje i ništa se ne izmišlja.
 - Prikazi: interaktivni 3D (kvačica „Okolne zgrade”; krovovi kao stepenice 0,35 m), 3D skica u odjeljku Skica i u ispisu izvještaja (zidovi i krovne plohe, neutralno sivo), uz napomenu o izvoru i godini snimanja.
 - Druge gradske četvrti: preuzeti ZIP s portala, pokrenuti skriptu s drugim izlaznim direktorijem pa spojiti `t/` i `kvadrati` u `index.json`.
+
+### Okolne zgrade na otoku Krku (katastar DGU)
+- Izvor: digitalni katastarski plan DGU-a (ATOM, sloj zgrada po k.o., isti paketi kao `data/kat_krk`). Pripremu radi `tools/zg3d/pripremi_krk_zgrade.py <mapa s ko-*> data/zg3d_krk <datum>`; 29.065 zgrada, 825 kvadrata, 1,9 MB (oko 0,6 MB komprimirano).
+- Katastar ima samo tlocrt i način uporabe zgrade. Visina se PRETPOSTAVLJA prema vrsti zgrade (kuća 6,5 m, pomoćne oko 3 m, tablica `VISINE` u skripti), a zgrade se crtaju kao kvadri bez krova. Aplikacija to piše uz prikaz; ne tvrdi da su visine stvarne.
+- Podzemne zgrade i tlocrti manji od ~4 m² preskaču se; gdje se stara i nova izmjera preklapaju, vrijedi novija.
