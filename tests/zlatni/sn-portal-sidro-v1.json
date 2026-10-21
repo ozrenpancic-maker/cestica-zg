@@ -1,0 +1,18 @@
+{
+ "naziv": "Sidro: činjenice o portalu sn.pgz.hr opažene izravnim dohvatom (za provjeru v0.18.5)",
+ "datum_opazanja": "2026-10-21",
+ "izvor": "WebFetch https://www.sn.pgz.hr/default.asp?Link=odluke&id=28241 (i id=14783, izdanje=851...) - u oba slučaja portal je vratio isti popis izdanja (Punat/Vrbnik), ne stranicu pojedinog akta",
+ "status": "OPAZENO_PREKO_SAZETKA_ALATA_NIJE_SIROVI_HTML_NE_ZAMJENJUJE_NEOVISNO_PREUZIMANJE",
+ "napomena": "Svi zapisi ispod su opaženi u popisu izdanja. Polje izdanje_id_korpus je iz footera akta u korpusu (172 od 177 dokumenata ima footer), gdje je akt u korpusu; to je neovisna potvrda da je 'odluka' u footeru = redni broj akta u broju.",
+ "zaglavlje_primjer": "Službene novine broj 33. Godina XXVIII. Petak, 2. listopada 2020.",
+ "zapisi": [
+  {"publication_id": "41977", "sn_broj": 33, "sn_godina": 2020, "godina_toma": "XXVIII", "datum": "2020-10-02", "mjesto_naziv": "Općina PUNAT", "redni_broj": 60, "naslov": "Odluka o izradi III. Izmjena i dopuna UPU 3 – građevinsko područje naselja N1 – Centralno naselje Punat", "izdanje_id_korpus": 2159, "mjesto_id_korpus": "51521", "redni_footer_korpus": 60},
+  {"publication_id": "41087", "sn_broj": 3, "sn_godina": 2020, "datum": "2020-02-14", "mjesto_naziv": "Općina PUNAT", "redni_broj": 5, "naslov": "Odluka o donošenju II. Izmjena i dopuna UPU 3", "izdanje_id_korpus": 2129, "mjesto_id_korpus": "51521", "redni_footer_korpus": 5, "pdf_id": "31026"},
+  {"publication_id": "38031", "sn_broj": 37, "sn_godina": 2018, "datum": "2018-11-27", "mjesto_naziv": "Općina PUNAT", "redni_broj": 55, "naslov": "Odluka o izradi II. Izmjena i dopuna UPU3", "izdanje_id_korpus": null},
+  {"publication_id": "37834", "sn_broj": 30, "sn_godina": 2018, "datum": "2018-09-21", "mjesto_naziv": "Općina PUNAT", "redni_broj": 50, "naslov": "Odluka o donošenju III. Izmjena i dopuna Prostornog plana", "izdanje_id_korpus": 1075, "mjesto_id_korpus": "51521", "redni_footer_korpus": 50, "pdf_id": "29213"},
+  {"publication_id": "20518", "sn_broj": 34, "sn_godina": 2010, "datum": "2010-08-23", "mjesto_naziv": "Općina PUNAT", "redni_broj": 44, "naslov": "Odluka o donošenju UPU 3", "izdanje_id_korpus": 687, "mjesto_id_korpus": "51521", "redni_footer_korpus": 44},
+  {"publication_id": "20500", "sn_broj": 33, "sn_godina": 2010, "datum": "2010-08-16", "mjesto_naziv": "Općina PUNAT", "redni_broj": 39, "naslov": "Prostorni plan uređenja, pročišćeni tekst", "izdanje_id_korpus": null},
+  {"publication_id": "14262", "sn_broj": 9, "sn_godina": 2008, "datum": "2008-03-21", "mjesto_naziv": "Općina PUNAT", "redni_broj": 9, "naslov": "Odluka o donošenju Prostornog plana", "izdanje_id_korpus": null},
+  {"publication_id": "2002", "sn_broj": 16, "sn_godina": 2004, "datum": "2004-05-07", "mjesto_naziv": "Općina VRBNIK", "redni_broj": 7, "naslov": "Odluka o donošenju Prostornog plana", "izdanje_id_korpus": null}
+ ]
+}
