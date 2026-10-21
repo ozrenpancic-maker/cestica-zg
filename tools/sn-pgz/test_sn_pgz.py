@@ -85,3 +85,20 @@ class T(unittest.TestCase):
         z = json.load(open(os.path.join(ROOT, "tests", "zlatni", "punat-upu3-2020.json"), encoding="utf-8"))
         self.assertEqual(z["sha256_izmjena"], hashlib.sha256(json.dumps(z["izmjene"], ensure_ascii=False, sort_keys=True).encode()).hexdigest())
 if __name__ == "__main__": unittest.main()
+
+
+def test_identitet_zlatni_zamrznut():
+    import json, hashlib, os, sys
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import mjeri_identitet as M
+    z = json.load(open(M.Z, encoding="utf-8"))
+    assert z["sha256"] == hashlib.sha256(json.dumps([z["veze"], z["parovi"]], ensure_ascii=False, sort_keys=True).encode()).hexdigest()
+    assert sum(l["ocekivanje"] == "MUST_LINK" for l in z["veze"]) >= 30
+    assert sum(l["ocekivanje"] == "MUST_NOT_LINK" for l in z["veze"]) >= 10
+    assert all(l["dokaz"].get("clanak_izvoza") for l in z["veze"])
+    # savršena predikcija: nula zabranjenih; zabranjena veza (34173→PPU Punat) mora biti uhvaćena
+    pred = {"veze": [{"odluka_id": l["odluka_id"], "opcina": l["plan"]["opcina"], "vrsta": l["plan"]["vrsta"], "broj": l["plan"]["broj"], "veza": l["veza"]}
+                     for l in z["veze"] if l["ocekivanje"] == "MUST_LINK"]}
+    r = M.mjeri(pred, z); assert r["zabranjeni_spojevi"] == 0 and r["identitet_recall"] == 1.0
+    pred["veze"].append({"odluka_id": "34173", "opcina": "Punat", "vrsta": "PPU", "broj": None, "veza": "ADOPTS"})
+    assert M.mjeri(pred, z)["zabranjeni_spojevi"] == 1
