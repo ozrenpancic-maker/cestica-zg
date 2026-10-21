@@ -55,9 +55,17 @@ class T(unittest.TestCase):
         self.assertTrue(all(r["status_primjene"] == "ne_primjenjivati_automatski" and r["zona"]["potvrda"] == "nepotvrdeno" for r in baza["pravila"]))
         self.assertTrue(all(r["izvor"]["citat"] and r["izvor"]["url"] and r["izvor"]["clanak_plana"] for r in baza["pravila"]))
     def test_citati_prema_stvarnom_tekstu_ako_postoji(self):
-        p = os.environ.get("SN_TEKST_41087")
+        p = os.environ.get("SN_TEKST_41087"); p16 = os.environ.get("SN_TEKST_33933")
         if not p or not os.path.exists(p): self.skipTest("SN_TEKST_41087 nije zadan")
+        if not p16 or not os.path.exists(p16): self.skipTest("SN_TEKST_33933 nije zadan")
         import provjeri_citate as P
         baza = json.load(open(os.path.join(ROOT, "data", "pravila-sn", "punat-upu3.json"), encoding="utf-8"))
-        n, lose = P.provjeri(baza, {41087: S.u_tekst(open(p, encoding="utf-8").read())}); self.assertEqual(lose, [])
+        n, lose = P.provjeri(baza, {41087: S.u_tekst(open(p, encoding="utf-8").read()), 33933: S.u_tekst(open(p16, encoding="utf-8").read())}); self.assertEqual(lose, [])
+    def test_46abc_osnovne_vrijednosti_i_vrsta_gradnje(self):
+        baza = json.load(open(os.path.join(ROOT, "data", "pravila-sn", "punat-upu3.json"), encoding="utf-8"))
+        R = {r["id"]: r for r in baza["pravila"]}
+        self.assertEqual((R["p3-46a-cestica-min"]["vrijednost"], R["p3-46b-cestica-min"]["vrijednost"], R["p3-46c-cestica-min"]["vrijednost"]), (450, 225, 150))
+        self.assertEqual(R["p3-46a-zelenilo"]["vrsta_gradnje"], "slobodnostojeca")
+        self.assertTrue(all(r["status_primjene"] == "ne_primjenjivati_automatski" and r["zona"]["potvrda"] == "nepotvrdeno" for r in baza["pravila"]))
+        self.assertTrue(all(r["izvor"]["odluka_id"] in (33933, 41087) for r in baza["pravila"]))
 if __name__ == "__main__": unittest.main()

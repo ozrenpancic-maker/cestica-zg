@@ -64,3 +64,12 @@ Problematično:
 2. Pokrenuti dijagnostiku zona na 3–4 točke u Puntu i zaključiti postoje li oznake UPU zona u županijskom sloju.
 3. Pitati Službene novine o uvjetima ponovne uporabe i izvozu.
 4. Tek nakon toga odlučiti o prebacivanju kalkulatora na ovu bazu.
+
+## 11. Dopuna (21. 10. 2026.): osnovni tekst 2016. i 2010. iz izvoza
+Korisnik je priložio izvoz drugog programa (ChatGPT) s tekstovima odluka 20518 (2010.), 33933 (2016.), 41087 (2020.) i 41977. **ID 33933 je ispravan** (raniji zaključak da ne radi bio je ograničenje alata za čitanje stranica). Tumačenje 2012. (26150) u izvozu ima 0 članaka.
+- Izvoz je upotrebljiv kao izvor teksta, ne kao baza pravila: članci odluke i članci plana su pomiješani, brojevi se ponavljaju, a „kandidati pravila” su samo pogoci po ključnim riječima. Tekst 2020. u izvozu je jednak našem izvorniku (razlike: zapis „m 2”, „k ig” i izostavljeni naslovi nekih članaka odluke). Tekstovi 2010. i 2016. nisu uspoređeni sa sn.pgz.hr.
+- `tools/sn-pgz/verzije.py` razdvaja blokove članaka plana (zamjena cijelog članka / novi članak / naredba); `gradi_punat.py` dodaje pravila i provjerava da je svaki citat u bloku točno tog članka iz 2016.
+- Baza sada ima **58 pravila** (bilo 20): čl. 46a–46c (najmanja čestica 450/225/150 m², kig 0,25/0,3/0,4, kis po izgrađenom/neizgrađenom dijelu, visina 9,0/7,0 m, etaže, broj stanova, odmaci 3 m od međe i 6 m od susjednih građevina, zadnja građevina u nizu) i čl. 50a (čestica 650 m², odmak 4 m). Točke 4, 6 i 8 čl. 46a–46c vrijede iz 2020., točke 1–3 iz 2016. (2020. ih ne mijenja).
+- Svih 58 citata pronađeno je u tekstu (20 u 2020., 38 u 2016. unutar bloka točnog članka); 8 testova prolazi.
+- Još nije izdvojeno: parkiranje i definicija podruma (upućuje na čl. 3./5., nedosljedno), 50b–50e, 54c–54e (M2), 85a–85d, ostale zone. Granica izgrađenog/neizgrađenog dijela nije u tekstu.
+- Nijedno pravilo i dalje nije za automatsku primjenu: zona na čestici je nepotvrđena.
