@@ -1,0 +1,715 @@
+{
+ "plan": {
+  "id": "punat-upu3",
+  "naziv": "UPU 3 – građevinsko područje naselja N1 – centralno naselje Punat",
+  "jls": "PUNAT",
+  "vrsta": "UPU",
+  "stanje_plana": "na snazi; izmjene UPU 3 u izradi (registar ZZPU: 2025-37)"
+ },
+ "napomena_prototipa": "Prototip. Pravila su kandidati za bazu: svako ima doslovni citat iz odluke (provjerljiv skriptom provjeri_citate.py), ali nijedno se ne primjenjuje automatski dok zona nije potvrđena i dok osnovni tekst (SN 34/10, 13/16) nije uključen.",
+ "odluke": [
+  {
+   "id": 20518,
+   "vrsta": "donosenje",
+   "naslov": "Odluka o donošenju UPU 3 - građevinsko područje naselje N1 - Centralno naselje Punat",
+   "glasilo": {
+    "broj": 34,
+    "godina_izdanja": 18,
+    "datum": "2010-08-23",
+    "stavka": 44
+   },
+   "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=20518",
+   "pdf": null,
+   "status": "osnovni tekst; izmijenjen 2016. i 2020.",
+   "dohvaceno": "neprovjereno_sazetak",
+   "napomena": "Tekst pročitan samo preko sažetka alata (ne doslovno); članci 44–48 postoje, 46a–46c i 50a se u tom tekstu ne pojavljuju (uvedeni kasnijim izmjenama)."
+  },
+  {
+   "id": null,
+   "vrsta": "izmjene",
+   "naslov": "Izmjene UPU 3 iz SN PGŽ 13/16 (ciljane izmjene)",
+   "glasilo": {
+    "broj": 13,
+    "godina_izdanja": 24,
+    "datum": null,
+    "stavka": null
+   },
+   "url": null,
+   "pdf": null,
+   "status": "referencirana u odluci iz 2020. („br. 34/10 i 13/16”); odluka NIJE pronađena",
+   "dohvaceno": "nije_pronadeno",
+   "napomena": "Korisnik navodi ID 33933; stranica za taj ID ne vraća odluku, nego popis rezultata pretrage. Vjerojatno uvodi članke 46a–46c."
+  },
+  {
+   "id": 26150,
+   "vrsta": "tumacenje",
+   "naslov": "Vjerodostojno tumačenje (2012.) — prema navodu korisnika",
+   "glasilo": {
+    "broj": null,
+    "godina_izdanja": null,
+    "datum": null,
+    "stavka": null
+   },
+   "url": null,
+   "pdf": null,
+   "status": "nije potvrđeno",
+   "dohvaceno": "nije_pronadeno",
+   "napomena": "ID 26150 ne vraća odluku."
+  },
+  {
+   "id": 38031,
+   "vrsta": "izrada",
+   "naslov": "Odluka o izradi II. Izmjena i dopuna UPU3 - građevinsko područje naselja N1 - Centralno naselje Punat",
+   "glasilo": {
+    "broj": 37,
+    "godina_izdanja": 26,
+    "datum": "2018-11-27",
+    "stavka": 55
+   },
+   "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=38031",
+   "pdf": null,
+   "status": "postupovni akt, bez uvjeta gradnje",
+   "dohvaceno": "sazetak",
+   "napomena": "Čl. 4.: korigirat će se Odredbe za provođenje."
+  },
+  {
+   "id": 41087,
+   "vrsta": "izmjene",
+   "naslov": "Odluka o donošenju II. Izmjena i dopuna Urbanističkog plana uređenja (UPU 3) građevinskog područja naselja N1 - centralno naselje Punat",
+   "glasilo": {
+    "broj": 3,
+    "godina_izdanja": 28,
+    "datum": "2020-02-14",
+    "stavka": 5
+   },
+   "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087",
+   "pdf": "https://www.sn.pgz.hr/download.asp?id=31026",
+   "status": "na snazi (vrijedi od 8. dana od objave; čl. 40.)",
+   "dohvaceno": "cijeli_tekst",
+   "napomena": "40 članaka: 7 zamjenjuje cijele članke (28a, 44, 46, 48, 85, 99, 99e), 1 briše članak (100), ostalo su djelomične izmjene čiji osnovni članak nije poznat.",
+   "sha256": "11ebd9bcc6f56ae9ad98a3dbf9d78934ac16e17e22cf279811dcf192f8e775bd"
+  },
+  {
+   "id": 41977,
+   "vrsta": "izrada",
+   "naslov": "Odluka o izradi III. Izmjena i dopuna UPU 3 – građevinsko područje naselja N1 – Centralno naselje Punat",
+   "glasilo": {
+    "broj": 33,
+    "godina_izdanja": 28,
+    "datum": "2020-10-02",
+    "stavka": 60
+   },
+   "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41977",
+   "pdf": null,
+   "status": "postupovni akt; nije donesena izmjena",
+   "dohvaceno": "sazetak",
+   "napomena": "Čl. 13.: do donošenja izmjena primjenjuju se odredbe važećeg UPU 3."
+  }
+ ],
+ "clanci_stanje": "vidi izvjestaj; izračunato iz II. izmjena skriptom sn_pgz.py (loza)",
+ "pravila": [
+  {
+   "id": "p3-46-tl-slob",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "tlocrt_max",
+   "vrijednost": 150,
+   "jedinica": "m2",
+   "vrsta_gradnje": "slobodnostojeca",
+   "uvjet": null,
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "14",
+    "clanak_plana": "46",
+    "stavak": "2",
+    "tocka": null,
+    "citat": "Najveća tlocrtna površina građevine iznosi 150 m2 za građevine slobodnostojećeg načina gradnje",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": ""
+   }
+  },
+  {
+   "id": "p3-46-tl-dvoj",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "tlocrt_max",
+   "vrijednost": 75,
+   "jedinica": "m2",
+   "vrsta_gradnje": "dvojna",
+   "uvjet": null,
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "14",
+    "clanak_plana": "46",
+    "stavak": "2",
+    "tocka": null,
+    "citat": "odnosno 75 m2 za građevine dvojnog načina gradnje",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": ""
+   }
+  },
+  {
+   "id": "p3-46-tl-slob-velika",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "tlocrt_max",
+   "vrijednost": 200,
+   "jedinica": "m2",
+   "vrsta_gradnje": "slobodnostojeca",
+   "uvjet": {
+    "parametar": "povrsina_cestice",
+    "operator": ">",
+    "vrijednost": 1000,
+    "jedinica": "m2"
+   },
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "14",
+    "clanak_plana": "46",
+    "stavak": "2",
+    "tocka": null,
+    "citat": "Iznimno, na građevnim česticama većim od 1000 m2, najveća tlocrtna površina slobodnostojeće građevine iznosi 200 m2",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": ""
+   }
+  },
+  {
+   "id": "p3-46-tl-min",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "tlocrt_min",
+   "vrijednost": 60,
+   "jedinica": "m2",
+   "vrsta_gradnje": "slobodnostojeca",
+   "uvjet": null,
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "14",
+    "clanak_plana": "46",
+    "stavak": "3",
+    "tocka": null,
+    "citat": "Minimalna tlocrtna površina obiteljske (slobodnostojeće) građevine iznosi 60 m2",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": ""
+   }
+  },
+  {
+   "id": "p3-46a-zelenilo",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "zelenilo_min",
+   "vrijednost": 40,
+   "jedinica": "%",
+   "vrsta_gradnje": null,
+   "uvjet": null,
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "15",
+    "clanak_plana": "46a",
+    "stavak": "1",
+    "tocka": "4",
+    "citat": "obavezna je površina zelenila 40%",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": "Vrsta gradnje za čl. 46a izričito se ne navodi u izmjenama; osnovni tekst (SN 13/16) nije pronađen."
+   }
+  },
+  {
+   "id": "p3-46b-zelenilo",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "zelenilo_min",
+   "vrijednost": 30,
+   "jedinica": "%",
+   "vrsta_gradnje": "dvojna",
+   "uvjet": null,
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "16",
+    "clanak_plana": "46b",
+    "stavak": "1",
+    "tocka": "4",
+    "citat": "obavezna je površina zelenila 30%",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": "Dvojna gradnja izvodi se iz čl. 46b toč. 8 („druge jedinice dvojne građevine”) u istoj odluci."
+   }
+  },
+  {
+   "id": "p3-46c-zelenilo",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "zelenilo_min",
+   "vrijednost": 20,
+   "jedinica": "%",
+   "vrsta_gradnje": "niz",
+   "uvjet": null,
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "17",
+    "clanak_plana": "46c",
+    "stavak": "1",
+    "tocka": "4",
+    "citat": "obavezna je površina zelenila 20%., iznimno 30% za završnu jedinicu niza",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": "Iznimka: 30 % za završnu jedinicu niza."
+   }
+  },
+  {
+   "id": "p3-46a-bazen",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "bazen_max",
+   "vrijednost": 100,
+   "jedinica": "m2",
+   "vrsta_gradnje": null,
+   "uvjet": null,
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "15",
+    "clanak_plana": "46a",
+    "stavak": "1",
+    "tocka": "4",
+    "citat": "bazen ukupne površine do 100 m2 potpuno ukopan u tlo",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": "Isključen iz kig-a; smješta se unutar gradivog dijela."
+   }
+  },
+  {
+   "id": "p3-46a-interpolacija",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "manja_cestica_interpolacija",
+   "vrijednost": 10,
+   "jedinica": "%",
+   "vrsta_gradnje": null,
+   "uvjet": null,
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "15",
+    "clanak_plana": "46a",
+    "stavak": "1",
+    "tocka": "8",
+    "citat": "Interpolaciju građevina u izgrađenim i već formiranim dijelovima naselja moguće je planirati na parcelama 10% manjim od propisanih",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": ""
+   }
+  },
+  {
+   "id": "p3-46a-izn-3307-tl",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "tlocrt_max",
+   "vrijednost": 308.41,
+   "jedinica": "m2",
+   "vrsta_gradnje": null,
+   "uvjet": {
+    "parametar": "k.c.",
+    "operator": "=",
+    "vrijednost": "3307 k.o. Punat (oznaka 17*)"
+   },
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "15",
+    "clanak_plana": "46a",
+    "stavak": "1",
+    "tocka": "8",
+    "citat": "najveća tlocrtna površina građevine iznosi 308,41 m2",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": "Iznimka za konkretnu česticu; ne vrijedi općenito."
+   }
+  },
+  {
+   "id": "p3-50a-kig",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "kig_max",
+   "vrijednost": 0.25,
+   "jedinica": "",
+   "vrsta_gradnje": "visestambena",
+   "uvjet": null,
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "19",
+    "clanak_plana": "50a",
+    "stavak": "1",
+    "tocka": "2",
+    "citat": "Maksimalni koeficijent izgrađenosti građevinske čestice (kig) je 0,25",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": ""
+   }
+  },
+  {
+   "id": "p3-50a-kis",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "kis_max",
+   "vrijednost": 1.25,
+   "jedinica": "",
+   "vrsta_gradnje": "visestambena",
+   "uvjet": null,
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "19",
+    "clanak_plana": "50a",
+    "stavak": "1",
+    "tocka": "2",
+    "citat": "maksimalni koeficijent iskoristivosti građevinske čestice (kis) je 1,25",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": ""
+   }
+  },
+  {
+   "id": "p3-50a-etaze",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "etaze_nadzemne_max",
+   "vrijednost": "P+2",
+   "jedinica": "",
+   "vrsta_gradnje": "visestambena",
+   "uvjet": null,
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "19",
+    "clanak_plana": "50a",
+    "stavak": "1",
+    "tocka": "2",
+    "citat": "Višestambena građevina ima najviše tri nadzemne etaže, prizemlje i dva kata (P+2)",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": ""
+   }
+  },
+  {
+   "id": "p3-50a-visina-izgradjeno",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "visina_max",
+   "vrijednost": 9.0,
+   "jedinica": "m",
+   "vrsta_gradnje": "visestambena",
+   "uvjet": {
+    "parametar": "dio_gp",
+    "operator": "=",
+    "vrijednost": "izgrađeni"
+   },
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "19",
+    "clanak_plana": "50a",
+    "stavak": "1",
+    "tocka": "2",
+    "citat": "Visina građevine u izgrađenom dijelu građevinskog područja naselja iznosi maksimalno 9,0 m",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": ""
+   }
+  },
+  {
+   "id": "p3-50a-visina-neizgradjeno",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "visina_max",
+   "vrijednost": 7.0,
+   "jedinica": "m",
+   "vrsta_gradnje": "visestambena",
+   "uvjet": {
+    "parametar": "dio_gp",
+    "operator": "=",
+    "vrijednost": "neizgrađeni"
+   },
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "19",
+    "clanak_plana": "50a",
+    "stavak": "1",
+    "tocka": "2",
+    "citat": "a u neizgrađenom dijelu građevinskog područja naselja iznosi najviše 7,00 m",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": ""
+   }
+  },
+  {
+   "id": "p3-50a-tl-min",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "tlocrt_min",
+   "vrijednost": 80,
+   "jedinica": "m2",
+   "vrsta_gradnje": "visestambena",
+   "uvjet": null,
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "19",
+    "clanak_plana": "50a",
+    "stavak": "1",
+    "tocka": "2",
+    "citat": "Minimalna tlocrtna izgrađenost višestambene građevine iznosi 80 m2",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": ""
+   }
+  },
+  {
+   "id": "p3-50a-tl-max",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "tlocrt_max",
+   "vrijednost": 250,
+   "jedinica": "m2",
+   "vrsta_gradnje": "visestambena",
+   "uvjet": null,
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "19",
+    "clanak_plana": "50a",
+    "stavak": "1",
+    "tocka": "2",
+    "citat": "maksimalna tlocrtna izgrađenost je 250 m2",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": ""
+   }
+  },
+  {
+   "id": "p3-50a-stanovi",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "stanovi_max",
+   "vrijednost": 4,
+   "jedinica": "kom",
+   "vrsta_gradnje": "visestambena",
+   "uvjet": null,
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "19",
+    "clanak_plana": "50a",
+    "stavak": "1",
+    "tocka": "2",
+    "citat": "Višestambena građevina može imati četiri (4) stana ili uporabne cjeline ako sadrži i poslovne dijelove",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": ""
+   }
+  },
+  {
+   "id": "p3-50a-zelenilo",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "zelenilo_min",
+   "vrijednost": 30,
+   "jedinica": "%",
+   "vrsta_gradnje": "visestambena",
+   "uvjet": null,
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "19",
+    "clanak_plana": "50a",
+    "stavak": "1",
+    "tocka": "4",
+    "citat": "obvezna je površina zelenila 30%",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": ""
+   }
+  },
+  {
+   "id": "p3-45-rampa",
+   "zona": {
+    "oznaka": null,
+    "potvrda": "nepotvrdeno"
+   },
+   "parametar": "rampa_podrum_sirina_max",
+   "vrijednost": 4,
+   "jedinica": "m",
+   "vrsta_gradnje": null,
+   "uvjet": null,
+   "izvor": {
+    "odluka_id": 41087,
+    "clanak_odluke": "13",
+    "clanak_plana": "45",
+    "stavak": "5a",
+    "tocka": null,
+    "citat": "pristupna rampa ne smije biti šira od 4 m",
+    "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087"
+   },
+   "vazi_od": "2020-02-22",
+   "verzija": "II. izmjene i dopune UPU 3 (SN PGŽ 3/2020)",
+   "status_primjene": "ne_primjenjivati_automatski",
+   "provjera": {
+    "razina": "strojno_i_citat_pronaden_u_tekstu",
+    "datum": "2026-10-21",
+    "napomena": "Odnosi se na podrumsku etažu izvedenu kao garažu (st. 5a)."
+   }
+  }
+ ],
+ "otvorena_pitanja": [
+  "Osnovne vrijednosti za čl. 46a–46c (najmanja čestica, kig, kis, visina, etaže, odmaci) nisu poznate: nedostaje SN PGŽ 13/16.",
+  "Zone UPU-a (S1, S2, M1, M2…) povezuju se s česticom samo preko grafičkog prikaza br. 4; nije potvrđeno nosi li županijski sloj NAMJENA_POVRSINA_NOVO te oznake na području UPU 3.",
+  "Parkiranje i udaljenosti od međa/regulacijske linije nisu u tekstu II. izmjena (osim ograda 1,1 m i potpornih zidova 1,5 m); potrebni osnovni članci 45–46c.",
+  "Registar ZZPU bilježi novu izmjenu UPU 3 u izradi (SN 2025-37): vrijednosti mogu uskoro zastarjeti."
+ ]
+}
