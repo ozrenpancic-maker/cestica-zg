@@ -1387,6 +1387,131 @@
         "U izgrađenim dijelovima naselja (povijesne graditeljske cjeline) uz gradnju na regulacijskom pravcu kig može biti do 1,0 (čl. 23.a).",
         "Višeobiteljske građevine (3–4 stana) nisu obrađene."
       ]
+    },
+    "PUNAT": {
+      "kod": "PPUO Punat",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Punat, odredbe za provođenje (pročišćeni tekst 2010.) s kasnijim izmjenama",
+        "sn": "Službene novine PGŽ 33/2010 (pročišćeni tekst), izmjene 14/15, 30/18 i 10/21",
+        "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=20500",
+        "status": "na snazi (zadnje IV. izmjene i dopune, SN 10/2021)",
+        "provjera": "Vrijednosti su s mrežne stranice Službenih novina (pročišćeni tekst 2010., čl. 24.–29.; stranica je prekinuta u čl. 62.). III. izmjene (SN 30/18) i IV. izmjene (SN 10/21) ne mijenjaju te članke, ali izmjene iz 2015. (SN 14/15) nisu provjerene. Poglavlje 5.1.1 (udaljenost od ceste) i čl. 92.–95. (parkiranje) nisu pregledani. Prije objave usporediti s cijelim tekstom."
+      },
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna (i završna jedinica niza)"
+        ],
+        [
+          "ugr",
+          "jedna jedinica niza"
+        ]
+      ],
+      "kisUkupni": false,
+      "neizgradeni": {
+        "mod": "blok",
+        "clanak": "22. i 24.",
+        "txt": "Izgradnja u izgrađenim dijelovima građevinskog područja naselja mora biti sukladna postojećoj gradnji i regulaciji",
+        "msg": "Neizgrađeni dio građevinskog područja naselja: prije donošenja urbanističkog plana uređenja plan dopušta gradnju samo u izgrađenom dijelu (čl. 22.). Za neizgrađeni dio propisane su niže vrijednosti (npr. kis nadzemni 0,6 umjesto 0,75, visina 7 m umjesto 9 m), pa izračun za izgrađeni dio ne vrijedi."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "naselja N1 Punat i N2 Stara Baška (čl. 20.)"
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća",
+          "opis": "najviše tri stana, tri nadzemne etaže",
+          "clanak": "27. i 28.",
+          "gbpMax": null,
+          "etaze": "najviše tri nadzemne etaže (i podrum)",
+          "visina": 9.0,
+          "visinaOpis": "9,0 m u izgrađenom dijelu naselja",
+          "slob": {
+            "minC": 450,
+            "izg": 0.25,
+            "kis": 0.75,
+            "kisPodrum": 1.0,
+            "tlMin": 0
+          },
+          "dvoj": {
+            "minC": 225,
+            "izg": 0.3,
+            "kis": 1.0,
+            "kisPodrum": 1.3,
+            "tlMin": 0,
+            "napomena": "Vrijedi i za završnu jedinicu niza (225 m², kig 0,3)."
+          },
+          "ugr": {
+            "minC": 150,
+            "izg": 0.4,
+            "kis": 1.4,
+            "kisPodrum": 1.8,
+            "tlMin": 0,
+            "napomena": "Jedna (srednja) jedinica niza. U izgrađenom dijelu broj jedinica niza određen je ranijom gradnjom, u neizgrađenom najviše pet."
+          },
+          "txt": {
+            "minC": "za slobodnostojeću obiteljsku kuću 450 m2",
+            "visina": "Visina građevine u izgrađenom dijelu građevinskog područja naselja iznosi maksimalno 9,0 m",
+            "etaze": "najviše tri stana i tri nadzemne etaže"
+          }
+        },
+        "stamb": {
+          "naziv": "Višestambena građevina",
+          "opis": "do četiri stana (čl. 29.)",
+          "clanak": "29.",
+          "gbpMax": null,
+          "etaze": "u izgrađenom dijelu do četiri nadzemne etaže (P+3), u neizgrađenom tri (čl. 26.)",
+          "visina": 9.0,
+          "visinaOpis": "9,0 m u izgrađenom dijelu naselja",
+          "oblici": [
+            [
+              "slob",
+              "slobodnostojeća"
+            ]
+          ],
+          "slob": {
+            "minC": 650,
+            "izg": 0.25,
+            "kis": 0.75,
+            "kisPodrum": 1.25,
+            "tlMin": 0,
+            "napomena": "Kis 1,25 je ukupni (nadzemni 0,75 i podzemni 0,5)."
+          },
+            "txt": {}
+        }
+      },
+      "meda": {
+        "clanak": "26.",
+        "min": 3,
+        "opis": "h/2, najmanje 3 m; najmanje 6 m od susjednih građevina",
+        "opisIznimka": "",
+        "txt": "građevina mora biti udaljena pola vlastite visine, ali ne manje od 3m, od granice građevne čestice"
+      },
+      "regulacija": {
+        "clanak": "25.",
+        "opis": "udaljenost od javne ceste i regulacijskog pravca određuje poglavlje 5.1.1. plana (nije pregledano)",
+        "txt": ""
+      },
+      "zelenilo": {
+        "clanak": "28.",
+        "min": 0.4,
+        "txt": "Neizgrađeni dio građevne čestice mora biti uređen, mora biti površina zelenila"
+      },
+      "pristup": {
+        "napomena": "Parkiranje i pristup prema čl. 92.–95. plana (nisu pregledani)."
+      },
+      "napomene": [
+        "Za središte Punta (naselje N1) vrijedi UPU 3, koji aplikacija još nije obradila; ovi uvjeti vrijede gdje UPU nije na snazi.",
+        "Zelenilo: 40 % (slobodnostojeća), 30 % (dvojna i završna jedinica niza), 20 % (jedna jedinica niza), čl. 28.",
+        "Najveći tlocrt, udaljenost od ceste i parkiranje nisu uključeni u izračun."
+      ]
     }
   },
   "oblici": [

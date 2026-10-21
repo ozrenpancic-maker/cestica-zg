@@ -1232,9 +1232,9 @@ async function krkTests(){
   await E("inspect")(w.L.latLng(45.17,14.69)); await tick(50);
   ok(/Primorsko-goranska županija · Crikvenica/.test(txt(w,"sheet"))&&/Uvjeti gradnje za Crikvenica još nisu obrađeni/.test(txt(w,"sheet")),"točka na kopnu (Crikvenica): županijska analiza uz jasno da uvjeti gradnje nisu obrađeni");
   // druga jedinica na otoku: prikaz uz napomenu da pilot nije provjeren
-  mode="ok"; gp.OPCINA_GRAD="PUNAT"; ag.OPCINA_GRAD="PUNAT"; gp.IZGRADJENOST="izgrađeno"; E("NET").cache.clear(); w.localStorage.clear();
+  mode="ok"; gp.OPCINA_GRAD="OMIŠALJ"; ag.OPCINA_GRAD="OMIŠALJ"; gp.IZGRADJENOST="izgrađeno"; E("NET").cache.clear(); w.localStorage.clear();
   await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50);
-  ok(/Pravila gradnje provjerena su samo za Grad Krk/.test(txt(w,"sheet"))&&/Općina Punat/.test(txt(w,"sheet"))&&/samo za Grad Krk/.test(txt(w,"sheet"))&&w.__krkCalc===null,"druga jedinica na otoku: prikaz uz napomenu izvan pilota, bez uvjeta gradnje iz PPUG-a Krka");
+  ok(/Pravila gradnje provjerena su samo za Grad Krk/.test(txt(w,"sheet"))&&/Općina Omišalj/.test(txt(w,"sheet"))&&/samo za Grad Krk/.test(txt(w,"sheet"))&&w.__krkCalc===null,"druga jedinica na otoku: prikaz uz napomenu izvan pilota, bez uvjeta gradnje iz PPUG-a Krka");
   // Malinska-Dubašnica: PPUO (SN 15/2023), skupine naselja po oznaci GPN iz županijskog sloja
   mode="full"; Object.assign(gp,{OPCINA_GRAD:"MALINSKA-DUBAŠNICA",OZNAKA_NAMJENE:"GPN-1",NASELJE:"Malinska, Radići",IZGRADJENOST:"izgrađeno"});
   let tm=await reinspect(), M=w.__krkCalc;
@@ -1260,6 +1260,13 @@ async function krkTests(){
   ok(M&&M.plan==="PPUO Vrbnik"&&M.st==="provjera"&&Math.abs(M.tl-180)<0.6&&Math.abs(M.gbpN-540)<1.5&&/izmijenjen 2024/.test(tm)&&/6,5 m do vijenca/.test(tm)&&/20 %/.test(tm),"Vrbnik, 600 m²: kig 0,3 → tlocrt 180 m², kis 0,9 → GBP 540 m², visina 6,5 m, zelenilo 20 %, upozorenje o izmjenama 2024.");
   setv(w,"krkOblik","dvoj","change"); M=w.__krkCalc; ok(M&&Math.abs(M.tl-240)<0.6&&/ne propisuje najveći tlocrt/.test(txt(w,"sheet")),"Vrbnik, dvojna: kig 0,4 → tlocrt 240 m² (plan ne propisuje najveći tlocrt)");
   E("KRK_TIP").oblik="slob";
+  // Punat: PPUO (pročišćeni tekst 2010.), čl. 24.-29.
+  Object.assign(gp,{OPCINA_GRAD:"PUNAT",OZNAKA_NAMJENE:"NA1",NASELJE:"Punat",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
+  tm=await reinspect(); M=w.__krkCalc;
+  ok(M&&M.plan==="PPUO Punat"&&Math.abs(M.tl-150)<0.5&&Math.abs(M.gbpN-450)<0.5&&Math.abs(M.gbpP-600)<1&&M.minOk&&/9,0 m/.test(tm),"Punat slobodnostojeća 600 m²: kig 0,25 → tlocrt 150 m², kis 0,75 → GBP 450 m², s podrumom 600 m², visina 9,0 m");
+  setv(w,"krkOblik","dvoj","change"); M=w.__krkCalc; ok(M&&M.oblik==="dvoj"&&Math.abs(M.tl-180)<0.5&&M.minOk,"Punat, dvojna: kig 0,3 → tlocrt 180 m²");
+  E("KRK_TIP").oblik="slob"; gp.IZGRADJENOST="neizgrađeno"; tm=await reinspect(); ok(w.__krkCalc===null&&/niže vrijednosti/.test(tm),"Punat, neizgrađeni dio: bez izračuna za izgrađeni dio (čl. 22.)");
+  gp.IZGRADJENOST="izgrađeno";
   Object.assign(gp,{OPCINA_GRAD:"KRK",OZNAKA_NAMJENE:"GPN-1",NASELJE:"Kornić",IZGRADJENOST:"izgrađeno"}); ag.OPCINA_GRAD="KRK"; mode="ok";
   // pretraga adrese: naselje na Krku traži se u obuhvatu otoka
   let nomi=null; w.fetch=(u)=>{u=String(u); if(u.includes("nominatim")){nomi=new URL(u); return okj([])} return Promise.reject(new Error("x"))};
