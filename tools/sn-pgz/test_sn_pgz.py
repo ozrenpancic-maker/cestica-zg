@@ -102,3 +102,28 @@ def test_identitet_zlatni_zamrznut():
     r = M.mjeri(pred, z); assert r["zabranjeni_spojevi"] == 0 and r["identitet_recall"] == 1.0
     pred["veze"].append({"odluka_id": "34173", "opcina": "Punat", "vrsta": "PPU", "broj": None, "veza": "ADOPTS"})
     assert M.mjeri(pred, z)["zabranjeni_spojevi"] == 1
+
+
+def test_identitet_v2_metrike_i_generacije():
+    import json, sys, os
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import mjeri_identitet as M
+    z = json.load(open(M.Z, encoding="utf-8")); ref = json.load(open(M.REF, encoding="utf-8"))
+    assert sum(e.get("clanak_izvoza") is not None for g in ref["generacije"] for e in g["dokazi"]) == sum(len(g["dokazi"]) for g in ref["generacije"])
+    assert len(ref["radnje"]) == 9
+    reg = [{"odluka_id": l["odluka_id"], "opcina": l["plan"]["opcina"], "vrsta": l["plan"]["vrsta"], "broj": l["plan"]["broj"], "veza": l["veza"], "auto_merge_allowed": False, "generation_id": "UNDETERMINED"}
+           for l in z["veze"] if l["ocekivanje"] == "MUST_LINK"]
+    # UNKNOWN je u izvozu, ali se ne računa kao točna vrsta veze
+    r = M.mjeri2({"veze": reg}, z, ref)
+    assert r["identity_exported_recall"] == 1.0 and r["unknown_count"] == 4 and r["generation_coverage"] == 0.0
+    assert r["relation_type_accuracy"] == 1.0   # gold-UNKNOWN zapisi nisu u nazivniku
+    reg.append({"odluka_id": "14783", "opcina": "Krk", "vrsta": "UPU", "broj": "1", "veza": "UNKNOWN", "auto_merge_allowed": False, "generation_id": "UNDETERMINED"})
+    # pogrešno spajanje gen A i B i generacija nedokazanom slučaju moraju biti uhvaćeni
+    for p in reg:
+        if p["odluka_id"] in ("14783", "28241"): p["generation_id"] = "gen-B"
+        if p["odluka_id"] == "35506": p["generation_id"] = "gen-B"
+    r = M.mjeri2({"veze": reg}, z, ref)
+    assert r["gen_A_B_spojene"] == 1 and r["generacija_bez_dokaza"] == 1
+    for p in reg:
+        if p["veza"] == "UNKNOWN": p["auto_merge_allowed"] = True
+    assert M.mjeri2({"veze": reg}, z, ref)["auto_merge_bez_dokaza"] >= 4
