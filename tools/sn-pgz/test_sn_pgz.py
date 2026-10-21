@@ -68,13 +68,20 @@ class T(unittest.TestCase):
         self.assertEqual(R["p3-46a-zelenilo"]["vrsta_gradnje"], "slobodnostojeca")
         self.assertTrue(all(r["status_primjene"] == "ne_primjenjivati_automatski" and r["zona"]["potvrda"] == "nepotvrdeno" for r in baza["pravila"]))
         self.assertTrue(all(r["izvor"]["odluka_id"] in (33933, 41087) for r in baza["pravila"]))
-    def test_zlatni_skup_i_mjerenje(self):
+    def test_zlatni_skupovi_i_mjerenje(self):
         import mjeri
+        for ime in ("punat-upu3-2020.json", "punat-upu3-2016.json"):
+            z = json.load(open(os.path.join(ROOT, "tests", "zlatni", ime), encoding="utf-8"))
+            self.assertEqual(z["broj_izmjena"], len(z["izmjene"]))
+            g = [x for x in z["izmjene"] if x["ucinak"] != "NEJASNO"]
+            r = mjeri.mjeri(g, g)  # savršen izlaz mora dati 1.0 na svim mjerama
+            for k, v in r.items(): self.assertEqual((v["precision"], v["recall"]), (1.0, 1.0), (ime, k))
+            lose = [dict(x, ucinak="ADD" if x["ucinak"] != "ADD" else "DELETE") for x in g]
+            r2 = mjeri.mjeri(lose, g)
+            self.assertEqual(r2["clanak"]["recall"], 1.0); self.assertLess(r2["ucinak"]["recall"], 1.0)
+            self.assertLess(mjeri.mjeri(g[:-5], g)["clanak"]["recall"], 1.0)
+    def test_2020_zamrznut_hash(self):
+        import hashlib
         z = json.load(open(os.path.join(ROOT, "tests", "zlatni", "punat-upu3-2020.json"), encoding="utf-8"))
-        self.assertEqual(z["broj_izmjena"], len(z["izmjene"]))
-        g = [x for x in z["izmjene"] if x["vrsta"] != "nejasno"]
-        r = mjeri.mjeri(g, g)  # savršen izlaz mora dati 1.0
-        self.assertEqual((r["clanak+stavak+tocka"]["precision"], r["clanak+stavak+tocka"]["recall"]), (1.0, 1.0))
-        r2 = mjeri.mjeri(g[:-5], g)
-        self.assertLess(r2["clanak"]["recall"], 1.0)
+        self.assertEqual(z["sha256_izmjena"], hashlib.sha256(json.dumps(z["izmjene"], ensure_ascii=False, sort_keys=True).encode()).hexdigest())
 if __name__ == "__main__": unittest.main()
