@@ -25,6 +25,7 @@ REF = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "test
 def mjeri2(pred, zlatni, ref=None):
     """v0.16.1 metrike. Stare ključeve zadržava (iz mjeri). pred['registar'] = sve veze u registru (uklj. UNKNOWN); pred['veze'] = evaluacijski izvoz."""
     r = mjeri(pred, zlatni)
+    r["LEGACY_tocnost_vrste_veze"] = r.pop("tocnost_vrste_veze"); r["LEGACY_napomena"] = "stara metrika: referentni UNKNOWN računa kao točan čim identitet postoji; samo za usporedbu s v0.16, koristiti M_relation_type_*"
     k = lambda l: kljuc(l["odluka_id"], l["plan"]["opcina"], l["plan"]["vrsta"], l["plan"]["broj"])
     kp = lambda p: kljuc(p["odluka_id"], p["opcina"], p["vrsta"], p.get("broj"))
     ml = [l for l in zlatni["veze"] if l["ocekivanje"] == "MUST_LINK"]
@@ -35,7 +36,7 @@ def mjeri2(pred, zlatni, ref=None):
     r["identity_exported_recall"] = div(sum(k(l) in E for l in ml), len(ml))
     # vrsta veze: samo MUST_LINK s poznatom (ne-UNKNOWN) referentnom vrstom; predviđeni UNKNOWN nikad nije točan
     rv = [l for l in ml if l["veza"] != "UNKNOWN" and k(l) in E]
-    r["relation_type_accuracy"] = div(sum(E[k(l)].get("veza") == l["veza"] for l in rv), len(rv))
+    r["LEGACY_relation_type_accuracy"] = div(sum(E[k(l)].get("veza") == l["veza"] for l in rv), len(rv))
     r["unknown_count"] = sum(1 for p in pred.get("registar", pred["veze"]) if p.get("veza") == "UNKNOWN")
     r["forbidden_merges"] = r["zabranjeni_spojevi"]
     # auto-spajanje bez dokaza: UNKNOWN ili nepotvrđena generacija s auto_merge_allowed=true
@@ -56,7 +57,7 @@ def mjeri2(pred, zlatni, ref=None):
         a, b = gp("14783"), gp("28241")
         r["gen_A_B_spojene"] = int(bool(a) and a == b and a != "UNDETERMINED")
     return r
-KANDIDATSKI = {"SHARED_FOOTPRINT_HEURISTIC", "AREA_LIST", "SUBJECT_PHRASE", "GAZETTE_CHAIN"}   # signali za pronalaženje kandidata, ne dokaz
+DOKAZANI = {"EXPLICIT_PLAN_NUMBER"}   # popis dopuštenih (allowlist): svaki drugi/nepoznati evidence_type NIJE dokaz identiteta
 MIN_REF = 5   # ispod ovoga generacijska točnost se prikazuje kao N/A
 def nd(num, den, **kw):
     d = {"vrijednost": round(num / den, 3) if den else "N/A", "brojnik": num, "nazivnik": den}; d.update(kw); return d
@@ -70,9 +71,13 @@ def mjeri3(pred, zlatni, ref=None):
     N = len(ml)
     r["M_identity_detected_recall"] = nd(sum(k(l) in R for l in ml), N, nazivnik_opis="MUST_LINK veze; pronađeno = ispravan par (odluka, općina, vrsta, broj) u registru, uklj. UNKNOWN")
     r["M_identity_exported_recall"] = nd(sum(k(l) in E for l in ml), N, nazivnik_opis="isto, ali u evaluacijskom izvozu")
-    ev = lambda l: E[k(l)].get("evidence_type") or R.get(k(l), {}).get("evidence_type")   # izvoz ili, ako ga nema u izvozu, registar
-    res = [l for l in ml if k(l) in E and ev(l) and ev(l) not in KANDIDATSKI]
-    r["M_identity_resolved_recall"] = nd(len(res), N, nazivnik_opis="u izvozu s dokazom koji nije samo kandidatski signal (heuristika obuhvata/popis područja/naslov/glasilo)")
+    # resolved: mjereno iz REGISTRA (dokazan identitet postoji u registru); izvoz dokazanih posebno
+    dok = [l for l in ml if k(l) in R and R[k(l)].get("evidence_type") in DOKAZANI]
+    r["M_identity_resolved_recall"] = nd(len(dok), N, izvor="REGISTAR", nazivnik_opis="MUST_LINK veze čiji je identitet u registru dokazan (evidence_type iz allowliste, ne kandidatski signal)")
+    dokE = [l for l in dok if k(l) in E]
+    r["M_identity_resolved_exported_recall"] = nd(len(dokE), len(dok), izvor="IZVOZ", nazivnik_opis="dokazani identiteti iz registra koji su stigli u izvoz")
+    r["M_identity_resolved_exported_vs_all"] = nd(len(dokE), N, izvor="IZVOZ", nazivnik_opis="dokazani i izvezeni naspram svih MUST_LINK")
+    r["M_unresolved_ids"] = sorted({l["odluka_id"] for l in ml} - {l["odluka_id"] for l in dok})
     konkr = [l for l in ml if l["veza"] != "UNKNOWN"]
     odl = [l for l in konkr if k(l) in E and E[k(l)].get("veza") not in (None, "UNKNOWN")]
     tocno = [l for l in odl if E[k(l)]["veza"] == l["veza"]]
@@ -83,16 +88,14 @@ def mjeri3(pred, zlatni, ref=None):
     r["M_unknown_count"] = {"izvoz_registar": r["unknown_count"], "referentno_UNKNOWN_u_zlatnom": len(gu),
                             "napomena": "Referentne UNKNOWN veze nisu u nazivnicima vrste veze: sam zlatni skup kaže da vrsta nije dokaziva iz čl. 1."}
     if ref:
-        G1 = [g for g in ref["generacije"] if g["dokazano"] and g["razina"] == "L1"]
-        G12 = [g for g in ref["generacije"] if g["dokazano"]]
+        G = [g for g in ref["generacije"] if g["dokazano"]]       # potvrđene referentne generacije (L1/L2)
         P = pred.get("registar", pred["veze"])
         def gp(oid): return next((p.get("generation_id") for p in P if p["odluka_id"] == oid and p["vrsta"] == "UPU" and str(p.get("broj")) == "1" and p["opcina"] == "Krk"), None)
-        for ime, G in (("L1", G1), ("L1_L2", G12)):
-            pok = [g for g in G if gp(g["odluka_id"]) not in (None, "UNDETERMINED")]
-            ok = [g for g in pok if gp(g["odluka_id"]) == g["generation_id"]]
-            acc = nd(len(ok), len(pok)) if len(G) >= MIN_REF else {"vrijednost": "N/A", "brojnik": len(ok), "nazivnik": len(pok), "razlog": "referentnih slučajeva %d < %d" % (len(G), MIN_REF)}
-            r["M_generation_accuracy_" + ime] = acc
-            r["M_generation_coverage_" + ime] = nd(len(pok), len(G))
+        pok = [g for g in G if gp(g["odluka_id"]) not in (None, "UNDETERMINED")]
+        ok = [g for g in pok if gp(g["odluka_id"]) == g["generation_id"]]
+        r["M_generation_accuracy"] = nd(len(ok), len(pok)) if len(G) >= MIN_REF else {"vrijednost": "N/A", "brojnik": len(ok), "nazivnik": len(pok), "razlog": "referentnih potvrđenih slučajeva %d < %d" % (len(G), MIN_REF)}
+        r["M_generation_coverage"] = nd(len(pok), len(G))
+        r["M_generation_undetermined_ids"] = [g["odluka_id"] for g in ref["generacije"] if not g["dokazano"]]
         r["M_generation_unproven_assigned"] = nd(r["generacija_bez_dokaza"], sum(1 for g in ref["generacije"] if not g["dokazano"]))
     return r
 if __name__ == "__main__":

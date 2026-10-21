@@ -18,11 +18,13 @@ GEN = [
   "obrazlozenje": "Odluka (13. 8. 2013.) ukida raniji UPU naselja Krk; time počinje nova generacija. Da je to baš „Odluka o donošenju” nije dokazano iz njezina teksta (nedostaje uvodni dio), nego iz 32508.",
   "dokazi": [Q("28241", "Stupanjem na snagu ove Odluke stavljaju se izvan snage tekstualni dijelovi i kartografski prikazi Urbanističkog plana uređenja naselja Krk", "ukidanje"),
              Q("28241", "Krk, 13. kolovoza 2013.", "datum")]},
- {"odluka_id": "32508", "generation_id": "gen-B", "razina": "L2", "dokazano": True,
-  "obrazlozenje": "Odluka o izradi II. izmjena navodi elaborat UPU 1-Krk objavljen u SN 30/13, 40/14, 2/15 (pročišćeni tekst); isti popis područja (NA1, R1-1, R3-8, R3-10, R3-11) kao u 28241/42442. 28241 je iz 2013.; broj SN 30/13 nije u tekstu 28241, veza je preko imena i popisa područja.",
+ {"odluka_id": "32508", "generation_id": "UNDETERMINED", "kandidat": "gen-B", "razina": "L3", "dokazano": False,
+  "nedostaje": "Tekst navodi elaborat UPU 1-Krk objavljen u SN 30/13, 40/14, 2/15, ali broj SN 30/13 nije u tekstu 28241 (nema ga u izvozu), pa izričita veza 32508 → 28241 nije dokazana. Postat će L2 kad se iz izdanja SN potvrdi da je 28241 objavljen kao SN 30/13.",
+  "obrazlozenje": "Kandidat gen-B: isti naziv i popis područja kao 28241; kronološki nakon 28241 (16. 7. 2015.). Naziv i popis područja su kandidatski signali, ne dokaz.",
   "dokazi": [Q("32508", "UPU 1-Krk (NA1, R1 1 , R3 8 , R3 10 , R3 11 ) (»Službene novine« broj 30/13, 40/14, 2/15- pročišćeni tekst Odredbi za provođenje", "navod elaborata")]},
- {"odluka_id": "42442", "generation_id": "gen-B", "razina": "L2", "dokazano": True,
-  "obrazlozenje": "Sam tekst navodi da je pročišćeni tekst UPU 1 – Krk (NA1, R1 1 , R3 8 , R3 10 , R3 11 ) i poziva se na izmjene SN 11/17 i 18/19 istoga plana pod istim imenom kao u gen-B.",
+ {"odluka_id": "42442", "generation_id": "UNDETERMINED", "kandidat": "gen-B", "razina": "L3", "dokazano": False,
+  "nedostaje": "Tekst sam navodi da je pročišćeni tekst i poziva se na izmjene SN 11/17 i 18/19 istoga imena, ali ne navodi osnovnu odluku (SN 30/13) ni ukidanje gen-A. Zaključak „izmjene iz 2017./2019. ne mogu pripadati planu ukinutom 2013.” je kronološka dedukcija, ne izričita poveznica. Postat će L2 uz zaglavlje pročišćenog teksta (nije u izvozu) ili tekst izmjena SN 11/17.",
+  "obrazlozenje": "Kandidat gen-B.",
   "dokazi": [Q("42442", "Nepotrebne prijelazne i završne odredbe su u pročišćenom tekstu izostavljene", "oblik teksta"),
              Q("42442", "Izmjena i dopuna Urbanističkog plana uređenja UPU 1 - Krk (NA1, R11, R38, R310, R311) (»Službene novine Primorsko-goranske županije« broj 18/19)", "izmjene")]},
  {"odluka_id": "35506", "generation_id": "UNDETERMINED", "kandidat": "gen-B", "razina": "L3", "dokazano": False,
@@ -100,7 +102,7 @@ def main(izvoz):
     h = hashlib.sha256(json.dumps([GEN, ACT], ensure_ascii=False, sort_keys=True).encode()).hexdigest()
     json.dump({"opis": "Referentna analiza generacija UPU 1 Krk i devet ACTION_NOT_SUPPORTED slučajeva. NIJE dio zamrznutog skupa krk-plan-identity-v1. Jedan pregledatelj, nije neovisno provjereno.",
                "verzija": 1, "status": "SOURCE_READ_BY_ONE_REVIEWER_NOT_INDEPENDENTLY_VERIFIED", "sha256": h, "plan_family_id": "HR-PGZ-krk-UPU-1",
-               "razine_dokaza": {"L1": "izričito u tekstu odluke", "L2": "navod u tekstu druge odluke / ime i popis područja", "L3": "samo sličnost teksta – ne dokazuje"},
+               "razine_dokaza": {"L1": "izričita pravna veza u tekstu odluke (ukidanje/izmjena plana navedenog brojevima SN), citat + kronologija", "L2": "izričit navod u tekstu druge odluke čiji je broj SN povezan s odlukom iz izvora (trenutno nijedan slučaj)", "L3": "kandidat: naziv, popis područja, glasilo, kronologija – ne dokazuje generaciju"}, "evidence_type_identitet": {"dokazani": ["EXPLICIT_PLAN_NUMBER"], "kandidatski": ["SHARED_FOOTPRINT_HEURISTIC", "AREA_LIST", "SUBJECT_PHRASE", "GAZETTE_CHAIN"], "napomena": "evidence_type opisuje IDENTITET plana; razina L1/L2/L3 opisuje dokaz GENERACIJE. Neoznačenost kao heuristike ne znači dokaz: dokazani je samo tip s popisa."},
                "generacije": GEN, "radnje": ACT, "pravni_status": PRAVNI, "kronologija": kron, "slicnost_teksta_L3": sl, "otvoreno": ostalo}, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print("problema:", lose); print(json.dumps(sl)); return lose
 if __name__ == "__main__": sys.exit(1 if main(sys.argv[1]) else 0)

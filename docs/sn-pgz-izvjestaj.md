@@ -98,3 +98,9 @@ Referentna analiza (ne dio zamrznutog skupa identiteta): `tests/zlatni/krk-gener
 - Izmjene SN 40/14, 11/17, 18/19 nisu u izvozu.
 - Radnje: 46708 i 43829 nova vrsta AMENDS_REPEAL_PROCEDURE_DECISION (mijenjaju odluku o pokretanju postupka; ne dokazuju da je plan stavljen izvan snage); 14783 ADOPTS_AMENDMENTS; 28241 REPEALS_PREVIOUS_PLAN_VERSION (ADOPTS nije dokazan iz vlastitog teksta); 42442 PUBLISHES_CONSOLIDATED_TEXT; 39830 ADOPTS_AMENDMENTS, ali dokument je smjesa odluke, pročišćenog teksta (čl. 5–159) i dijelova ranijih odluka – treba razdvojiti; 32729 postojeća vrsta AMENDS_PLAN_ARTICLES je dovoljna, ne radi parser razine podstavka; 35506 i 39364 ostaju ACTION_NOT_SUPPORTED (tekst sam ne kaže što je).
 - Ocjenjivač `mjeri_identitet.py` dobio je metrike: identity_detected_recall, identity_exported_recall, relation_type_accuracy (UNKNOWN nije točan), generation_accuracy (samo L1/L2), generation_coverage, unknown_count, forbidden_merges, auto_merge_bez_dokaza, gen_A_B_spojene. Stari ključevi su zadržani.
+
+### 15a. Korekcija ocjenjivača (v0.16.1, završna)
+- `M_identity_resolved_recall` mjeri REGISTAR (dokazani identitet = `evidence_type` iz allowliste {EXPLICIT_PLAN_NUMBER}); izvoz dokazanih posebno (`M_identity_resolved_exported_*`). Kandidatski signali (SHARED_FOOTPRINT_HEURISTIC, AREA_LIST, SUBJECT_PHRASE, GAZETTE_CHAIN) i nepoznati tipovi nisu dokaz.
+- `tocnost_vrste_veze` preimenovana u `LEGACY_tocnost_vrste_veze`; za usporedbe `M_relation_type_*`.
+- `evidence_type` opisuje identitet; razine L1/L2/L3 opisuju dokaz generacije. L1 = izričita pravna veza u tekstu; L2 = izričit navod u drugoj odluci s provjerenim brojem SN (trenutno nijedan slučaj); L3 = kandidat.
+- 32508 i 42442 spušteni na L3 / UNDETERMINED (kandidat gen-B): broj SN 30/13 nije u tekstu 28241, a veza 42442 je kronološka dedukcija. Potvrđene su samo 14783 (gen-A) i 28241 (gen-B). `generation_accuracy` = N/A (2 < 5 slučajeva).

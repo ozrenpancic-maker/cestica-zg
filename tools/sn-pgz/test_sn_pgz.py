@@ -116,7 +116,7 @@ def test_identitet_v2_metrike_i_generacije():
     # UNKNOWN je u izvozu, ali se ne računa kao točna vrsta veze
     r = M.mjeri2({"veze": reg}, z, ref)
     assert r["identity_exported_recall"] == 1.0 and r["unknown_count"] == 4 and r["generation_coverage"] == 0.0
-    assert r["relation_type_accuracy"] == 1.0   # gold-UNKNOWN zapisi nisu u nazivniku
+    assert r["LEGACY_relation_type_accuracy"] == 1.0   # gold-UNKNOWN zapisi nisu u nazivniku
     reg.append({"odluka_id": "14783", "opcina": "Krk", "vrsta": "UPU", "broj": "1", "veza": "UNKNOWN", "auto_merge_allowed": False, "generation_id": "UNDETERMINED"})
     # pogrešno spajanje gen A i B i generacija nedokazanom slučaju moraju biti uhvaćeni
     for p in reg:
@@ -139,9 +139,10 @@ def test_identitet_v0161_metrike_brojnik_nazivnik():
            for l in z["veze"] if l["ocekivanje"] == "MUST_LINK"]
     r = M.mjeri3({"veze": reg}, z, ref)
     assert r["M_identity_exported_recall"]["brojnik"] == r["M_identity_exported_recall"]["nazivnik"] == 38
-    assert r["M_identity_resolved_recall"]["brojnik"] == 34           # četiri heuristička nisu "resolved"
+    assert r["M_identity_resolved_recall"]["brojnik"] == 34 and r["M_identity_resolved_recall"]["izvor"] == "REGISTAR"   # četiri heuristička nisu "resolved"
+    assert r["M_identity_resolved_exported_recall"]["nazivnik"] == 34 and r["M_generation_undetermined_ids"] == ["32508", "42442", "35506", "39364"]
     assert r["M_relation_type_coverage"]["nazivnik"] == 34 and r["M_relation_type_accuracy_all"]["vrijednost"] == 1.0
-    assert r["M_generation_accuracy_L1"]["vrijednost"] == "N/A"       # premalo referentnih oznaka
+    assert r["M_generation_accuracy"]["vrijednost"] == "N/A"       # premalo referentnih oznaka
     for p in reg:                                                      # UNKNOWN koji je u izvozu ne smije povećati točnost
         if p["veza"] == "UNKNOWN": p["veza"] = "UNKNOWN"
     ref_pov = json.load(open(M.REF, encoding="utf-8"))
