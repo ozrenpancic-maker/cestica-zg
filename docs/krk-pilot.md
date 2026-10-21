@@ -160,3 +160,10 @@ Svi testovi rade s lažnim odgovorima servisa. Stvarni servisi nisu dohvaćeni i
 Okvir `PGZ_BBOX` (14,15–15,55 E; 44,45–45,65 N) usmjerava u istu analizu kao Krk. Na otoku čestica dolazi iz pripremljenog katastra, a izvan njega (kopno, Cres, Lošinj, Rab…) uživo iz DGU-a (`loadParcelHR`). Namjena i popis planova dolaze iz županijskih slojeva, koji pokrivaju cijelu županiju. Za jedinice bez obrađenih pravila piše „Uvjeti gradnje za X još nisu obrađeni”. Katastar infrastrukture (SKI) i komunalni doprinos postoje samo za Krk. Točka bez namjene u županijskom sloju (Istra, Lika, Slovenija) prelazi u osnovni pregled za državu.
 
 Pravila gradnje za druge jedinice: tekst plana je u PDF-u koji alat ne može pročitati; PDF treba priložiti, pa se vrijednosti prepisuju u `src/rules_krk.json` (`ostaleJls`) uz doslovne navode.
+
+### Punat: što su priložena dva PDF-a (21. 10. 2026.)
+
+Oba su samo izmjene, bez temeljnog teksta, pa pravila za Punat još nisu uvedena u `rules_krk.json`.
+- IV. izmjene i dopune PPUO Punat (SN PGŽ 10/2021): mijenjaju čl. 5, 32, 48, 77a, 77d, 97c i 107 (vile, Buka, reciklažna dvorišta, UPOV). Odredbi za stambene građevine nema.
+- II. izmjene i dopune UPU 3 naselja Punat (SN PGŽ 3/2020): mijenjaju samo dio uvjeta. Iz njih je sigurno: tlocrt obiteljske kuće najviše 150 m² (dvojna 75 m², na čestici većoj od 1000 m² slobodnostojeća 200 m²), najmanje 60 m² (čl. 46); zelenilo 40 % (46a), 30 % (46b), 20 % (46c; 30 % za završnu jedinicu niza); višestambena građevina kig 0,25, kis 1,25, P+2, visina 9,0 m (7,0 m u neizgrađenom dijelu), tlocrt 80–250 m², do 4 stana (čl. 50a). Nedostaju najmanja čestica, kig, kis, visina i udaljenosti za 46a–46c.
+Potrebno: UPU 3 Punat, SN PGŽ 34/10 i 13/16 (ili pročišćeni tekst) i osnovni PPUO Punat (SN 9/08, 30/10, 33/10, 14/15, 30/18 pročišćeni tekst).
