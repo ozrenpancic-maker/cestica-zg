@@ -154,3 +154,9 @@ Svi testovi rade s lažnim odgovorima servisa. Stvarni servisi nisu dohvaćeni i
 1. Ako DGU ne radi iz preglednika: opcije su posrednik (Cloudflare Worker, besplatna razina, zahtijeva tvoje odobrenje) ili prikaz bez čestice.
 2. UPU 1 Krk i UPU 5 Vrh iz PDF-a.
 3. Ostalih šest općina na otoku.
+
+## Cijela Primorsko-goranska županija (21. 10. 2026.)
+
+Okvir `PGZ_BBOX` (14,15–15,55 E; 44,45–45,65 N) usmjerava u istu analizu kao Krk. Na otoku čestica dolazi iz pripremljenog katastra, a izvan njega (kopno, Cres, Lošinj, Rab…) uživo iz DGU-a (`loadParcelHR`). Namjena i popis planova dolaze iz županijskih slojeva, koji pokrivaju cijelu županiju. Za jedinice bez obrađenih pravila piše „Uvjeti gradnje za X još nisu obrađeni”. Katastar infrastrukture (SKI) i komunalni doprinos postoje samo za Krk. Točka bez namjene u županijskom sloju (Istra, Lika, Slovenija) prelazi u osnovni pregled za državu.
+
+Pravila gradnje za druge jedinice: tekst plana je u PDF-u koji alat ne može pročitati; PDF treba priložiti, pa se vrijednosti prepisuju u `src/rules_krk.json` (`ostaleJls`) uz doslovne navode.
