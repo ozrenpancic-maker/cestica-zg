@@ -86,7 +86,7 @@ def main(t16, t20):
             "izvor": {"odluka_id": 33933, "clanak_odluke": None, "clanak_plana": cl, "stavak": "1", "tocka": toc, "citat": cit, "url": URL % 33933},
             "vazi_od": None, "verzija": VER16, "status_primjene": "ne_primjenjivati_automatski",
             "provjera": {"razina": "strojno_i_citat_pronaden_u_tekstu", "datum": "2026-10-21",
-                "napomena": "Točka %s čl. %s nije mijenjana u II. izmjenama 2020. (mijenjaju se samo točke 4, 6 i 8). Dio naselja (izgrađeni/neizgrađeni) određuje plan, ne ova baza. Ime zone: članak se odnosi na namjene S1, S2 i M1 (naslov čl. 46)." % (toc, cl) if cl.startswith("46") else "Točka %s čl. %s nije mijenjana u II. izmjenama 2020. za ovaj parametar. %s" % (toc, cl, NAP16)}}
+                "napomena": "Točka %s čl. %s nije mijenjana u II. izmjenama 2020. (čl. 46a: mijenjaju se točke 4, 6, 8; čl. 46b: točke 4, 6 i alineja 3 točke 8; čl. 46c: točke 4 i 6). Dio naselja (izgrađeni/neizgrađeni) određuje plan, ne ova baza. Ime zone: članak se odnosi na namjene S1, S2 i M1 (naslov čl. 46)." % (toc, cl) if cl.startswith("46") else "Točka %s čl. %s nije mijenjana u II. izmjenama 2020. za ovaj parametar. %s" % (toc, cl, NAP16)}}
     # vrsta gradnje za zelenilo 46a/b/c iz 2020. sada je poznata
     for rid, vg in (("p3-46a-zelenilo", "slobodnostojeca"), ("p3-46b-zelenilo", "dvojna"), ("p3-46c-zelenilo", "niz"), ("p3-46a-bazen", "slobodnostojeca"), ("p3-46a-interpolacija", "slobodnostojeca"), ("p3-46a-izn-3307-tl", "slobodnostojeca")):
         if rid in novi:

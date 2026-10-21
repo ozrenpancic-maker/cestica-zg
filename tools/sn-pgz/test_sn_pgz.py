@@ -68,4 +68,13 @@ class T(unittest.TestCase):
         self.assertEqual(R["p3-46a-zelenilo"]["vrsta_gradnje"], "slobodnostojeca")
         self.assertTrue(all(r["status_primjene"] == "ne_primjenjivati_automatski" and r["zona"]["potvrda"] == "nepotvrdeno" for r in baza["pravila"]))
         self.assertTrue(all(r["izvor"]["odluka_id"] in (33933, 41087) for r in baza["pravila"]))
+    def test_zlatni_skup_i_mjerenje(self):
+        import mjeri
+        z = json.load(open(os.path.join(ROOT, "tests", "zlatni", "punat-upu3-2020.json"), encoding="utf-8"))
+        self.assertEqual(z["broj_izmjena"], len(z["izmjene"]))
+        g = [x for x in z["izmjene"] if x["vrsta"] != "nejasno"]
+        r = mjeri.mjeri(g, g)  # savršen izlaz mora dati 1.0
+        self.assertEqual((r["clanak+stavak+tocka"]["precision"], r["clanak+stavak+tocka"]["recall"]), (1.0, 1.0))
+        r2 = mjeri.mjeri(g[:-5], g)
+        self.assertLess(r2["clanak"]["recall"], 1.0)
 if __name__ == "__main__": unittest.main()
