@@ -1486,6 +1486,31 @@ async function zg3dTests(){
   {const d2=data(w,K,"2.2.",{slope:{v:{h:200,slope:5,down:"jug",az:180}}}); w.__env=d2.envelope; E("render")(d2); TL.center=w.turf.centroid(K).geometry.coordinates; E("tDraw")(); E("skicaRender")();
    const o=$(w,"skicaOut"), s3=o.querySelectorAll("svg.sk-svg")[2]; ok(s3&&s3.querySelectorAll("polygon").length<30&&!/Okolne zgrade/.test(o.textContent),"Skica, 3D: bez podataka o okolnim zgradama skica je kao prije");}
 }
+async function hrTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  E("SRC_KRK.oss=window.__OSS_URL"); const lon=18.6950, lat=45.5500; // Osijek: izvan Zagreba i Krka
+  ok(E("regionOf")({lat,lng:lon})==="hr"&&E("regionOf")({lat:45.81,lng:15.98})==="zg"&&E("regionOf")({lat:45.08,lng:14.6})==="krk"&&E("regionOf")({lat:43.51,lng:16.44})==="hr","Hrvatska: Osijek i Split su osnovni pregled, Zagreb i Krk ostaju svoji");
+  const [E0,N0]=E("tmFwd")(lon,lat), ring=[[E0-15,N0-12],[E0+15,N0-12],[E0+15,N0+12],[E0-15,N0+12],[E0-15,N0-12]];
+  const calls=[]; w.fetch=(u,o)=>{u=String(u); calls.push(u);
+    if(/wms1-gs-oss\.uredjenazemlja\.hr/.test(u)) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{CESTICA_ID:777001,BROJ_CESTICE:"1234/5",MATICNI_BROJ_KO:335991,KATASTARSKA_OPCINA_ID:5,POVRSINA_GRAFICKA:720,POVRSINA_ATRIBUTNA:731}}]})});
+    if(/oss\.ozren-pancic\.workers\.dev/.test(u)) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({ok:true,id:"777001",broj:"1234/5",koMb:"335991",ko:"OSIJEK",katastar:731,zk:[],dijelovi:[]})});
+    if(/overpass|interpreter/.test(u)) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({elements:[
+      {type:"way",id:1,tags:{building:"house","building:levels":"2"},geometry:[[18.69540,45.55040],[18.69550,45.55040],[18.69550,45.55048],[18.69540,45.55048],[18.69540,45.55040]].map(q=>({lon:q[0],lat:q[1]}))},
+      {type:"way",id:2,tags:{building:"garage"},geometry:[[18.69560,45.55040],[18.69566,45.55040],[18.69566,45.55045],[18.69560,45.55045],[18.69560,45.55040]].map(q=>({lon:q[0],lat:q[1]}))}]})});
+    return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null)}); };
+  await E("inspect")({lat,lng:lon}); await tick(150);
+  const t=w.document.getElementById("sheet").textContent;
+  ok(/Hrvatska · osnovni pregled/.test(t)&&/1234\/5/.test(t)&&/720 m²/.test(t),"Hrvatska: čestica iz DGU-a uživo (broj i grafička površina)");
+  ok(/OSIJEK/.test(t)&&/Podaci nisu dostupni: namjena površina, uvjeti gradnje/.test(t)&&/ISPU/.test(t),"Hrvatska: k.o. iz OSS-a, jasno stoji da pravila gradnje nisu obrađena, uz poveznicu na ISPU");
+  ok(!/Građevinsko područje|dopuštena izgrađenost|Smije se graditi/i.test(t),"Hrvatska: ne izmišlja namjenu ni uvjete gradnje");
+  const Z=await E("zg3dLoad")(E("KRK_CUR").parcel);
+  ok(Z.st==="ok"&&Z.tip==="osm"&&Z.list.length===2&&Z.list.some(b=>Math.abs(b.wall-7)<0.01)&&Z.list.some(b=>Math.abs(b.wall-2.8)<0.01)&&/OpenStreetMap/.test(E("zg3dNapomena")(Z)),"Hrvatska: okolne zgrade iz OSM-a (visina iz broja etaža, inače pretpostavka po vrsti) uz napomenu o izvoru");
+  ok(E("window.__cur").region==="hr"&&!!E("window.__areaCtx"),"Hrvatska: kontekst čestice postavljen (spremi, podijeli, ZK izvadak)");
+  // katastar ne odgovara: poruka, bez rušenja
+  w.fetch=()=>Promise.resolve({ok:false,status:500,json:()=>Promise.resolve(null)}); await E("inspect")({lat:lat+0.2,lng:lon}); await tick(100);
+  ok(/Podaci nisu dostupni/.test(w.document.getElementById("sheet").textContent),"Hrvatska: kad DGU ne odgovara, piše „Podaci nisu dostupni”");
+  ok(errs.length===0,"bez JS grešaka (Hrvatska): "+errs.join(" | "));
+}
 async function skicaTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
   const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"95/1",KATASTARSKA_OPCINA:"REMETE"}), d=data(w,A,"2.2.",{slope:{v:{h:200,slope:10,down:"jug",az:180}}});
@@ -1753,7 +1778,7 @@ async function gpTests(){
   ok(errs.length===0,"bez JS grešaka (područje za gradnju): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
