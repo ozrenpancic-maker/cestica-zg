@@ -108,6 +108,26 @@ def footer_trojka(html_ili_tekst: str):
     return int(i), m, int(o)
 
 
+# ---------------------------------------------------------------- zaglavlje stranice akta (stvarni oblik)
+AKT_ZAG_RE = re.compile(r"Godina\s+([IVXLC]+)\.\s*-\s*broj\s+(\d{1,3})\.", re.I)
+AKT_DAT_RE = re.compile(r"(?:Ponedjeljak|Utorak|Srijeda|Četvrtak|Petak|Subota|Nedjelja),\s*(\d{1,2})\.\s*(\w+)\s+(\d{4})\.", re.I)
+
+
+def zaglavlje_akta(html_tekst: str):
+    """Iz stranice akta (stvarni oblik 'Godina XXI. - broj 30.' + 'Petak, 6. rujna 2013.'):
+    {sn_broj, sn_godina, godina_toma_rimski, datum_izdanja}; None ako nije jednoznačno."""
+    zz, dd = set(AKT_ZAG_RE.findall(html_tekst)), set(AKT_DAT_RE.findall(html_tekst))
+    if len(zz) != 1 or len(dd) != 1:
+        return None
+    rim, br = next(iter(zz))
+    dan, mje, god = next(iter(dd))
+    m = MJESECI.get(mje.lower())
+    if m is None:
+        return None
+    return {"sn_broj": int(br), "sn_godina": int(god), "godina_toma_rimski": rim.upper(),
+            "datum_izdanja": f"{int(god):04d}-{m:02d}-{int(dan):02d}"}
+
+
 # ---------------------------------------------------------------- popis izdanja
 def izvuci_popis(html_tekst: str):
     """Iz HTML-a popisa izdanja vraća zapise:
@@ -205,7 +225,8 @@ def citati(tekst: str):
 
 # ---------------------------------------------------------------- razrješavanje cilja
 def razrijesi_cilj(citat: dict, registar: list[dict], mjesto_id: str | None = None,
-                   naslov_dio: str | None = None, redni_broj: int | None = None) -> dict:
+                   naslov_dio: str | None = None, redni_broj: int | None = None,
+                   registar_potpun: bool = False) -> dict:
     """Pravila (jedini dopušteni put do ciljnog akta):
     1. gazeta mora biti SN_PGZ  (NN, SN_STARO, SN_NEJASNO -> ne razrješava se)
     2. (broj, godina) -> izdanje iz registra; nema ga -> NOT_IN_REGISTRY (ne nagađa se)
@@ -228,7 +249,11 @@ def razrijesi_cilj(citat: dict, registar: list[dict], mjesto_id: str | None = No
         k = [r for r in k if naslov_dio.lower() in (r.get("naziv_akta") or "").lower()]
     ids = [r["publication_id"] for r in k]
     if len(ids) == 1:
-        return {"status": "RESOLVED", "kandidati": ids}
+        # Jedinstvenost U KORPUSU nije jedinstvenost U IZDANJU: korpus ima samo prostorne planove, a broj
+        # SN sadrži i druge akte iste općine. RESOLVED tek kad je popis izdanja potpun (registar_potpun)
+        # ili je akt sužen rednim brojem/naslovom iz citata.
+        sužen = redni_broj is not None or bool(naslov_dio)
+        return {"status": "RESOLVED" if (registar_potpun or sužen) else "UNIQUE_IN_CORPUS_ONLY", "kandidati": ids}
     return {"status": "NOT_IN_REGISTRY" if not ids else "AMBIGUOUS", "kandidati": ids}
 
 

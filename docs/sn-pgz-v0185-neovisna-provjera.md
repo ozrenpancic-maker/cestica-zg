@@ -84,3 +84,12 @@ poljima iz §1), `run_report.json`; pokretanje: `CESTICA_HTML_DIR=… python3 -m
 - Struktura popisa poznata je iz jednog sažetka; parser nije potvrđen na sirovom HTML-u (zato `opisi_strukturu` i 3 preskočena testa).
 - Heuristika citata (glasilo, ispravak, lanci) ima pogrešaka; brojke u §3 su indikativne, ne zlatne.
 - Ne znam kako doći do popisa izdanja za proizvoljan `id`; to mora riješiti Data Manager (arhiva/tražilica).
+
+## 7. Dopuna: ocjena v0.18.7 (21. 10. 2026.)
+- Stvarne stranice akata **nose** zaglavlje („Godina XXI. - broj 30." + „Petak, 6. rujna 2013.") i footer; moja prva pretpostavka
+  (zaglavlje samo u popisu izdanja) bila je pogrešna. Dodano: `zaglavlje_akta()`, testovi `TestZaglavljeAkta`, `TestAktiStranice`.
+- Neovisni parser vs. 172 zapisa `act_page_records`: footer, broj SN, godina, datum, rimska godina i sha256 HTML-a podudaraju se u 172/172; 0 povreda
+  `provjeri_registar`; sidro 4/4 (popis izdanja ↔ stranica akta slažu se za 41977, 41087, 37834, 20518).
+- Brojevi usporedbe iz v0.18.7 reproducirani: 22 kandidatska para, 12 cilj objavljen prije izvora, 10 poslije, 1 podudaranje SN (34278 → 27383, SN 15/13, Vrbnik).
+- Ispravak vlastitog resolvera: jedinstvenost akta u korpusu nije jedinstvenost u izdanju (korpus ima samo prostorne planove).
+  `RESOLVED` zahtijeva potpun popis izdanja ili sužavanje rednim brojem/naslovom; inače `UNIQUE_IN_CORPUS_ONLY`.

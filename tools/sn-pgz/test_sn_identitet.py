@@ -157,12 +157,15 @@ class TestRazrjesavanje(unittest.TestCase):
         return {"gazeta": gaz, "broj": int(b), "godina": P.godina4(g), "oznaka": oznaka, "ispravak": ispravak}
 
     def test_jednoznacno_izdanje_mjesto_ordinal_naslov(self):
-        r = P.razrijesi_cilj(self.cit("6/12"), SYN_REG, mjesto_id="51521")
+        r = P.razrijesi_cilj(self.cit("6/12"), SYN_REG, mjesto_id="51521", registar_potpun=True)
         self.assertEqual((r["status"], r["kandidati"]), ("RESOLVED", ["4"]))
+        # bez potpunog popisa izdanja to je samo jedinstven u korpusu
+        r = P.razrijesi_cilj(self.cit("6/12"), SYN_REG, mjesto_id="51521")
+        self.assertEqual((r["status"], r["kandidati"]), ("UNIQUE_IN_CORPUS_ONLY", ["4"]))
 
     def test_isti_broj_vise_mjesta_trazi_mjesto(self):
         self.assertEqual(P.razrijesi_cilj(self.cit("5/12"), SYN_REG)["status"], "AMBIGUOUS_NO_MUNICIPALITY")
-        r = P.razrijesi_cilj(self.cit("5/12"), SYN_REG, mjesto_id="51500")
+        r = P.razrijesi_cilj(self.cit("5/12"), SYN_REG, mjesto_id="51500", registar_potpun=True)
         self.assertEqual((r["status"], r["kandidati"]), ("RESOLVED", ["3"]))
 
     def test_vise_akata_isto_izdanje_isto_mjesto_je_dvosmisleno(self):
@@ -190,12 +193,27 @@ class TestRazrjesavanje(unittest.TestCase):
 
     def test_dvoznacnost_stoljeca(self):
         # 5/00 i 5/12 su različiti; 5/00 -> 2000, a ne 1900
-        self.assertEqual(P.razrijesi_cilj(self.cit("5/00"), SYN_REG, "51521")["kandidati"], ["5"])
+        self.assertEqual(P.razrijesi_cilj(self.cit("5/00"), SYN_REG, "51521", registar_potpun=True)["kandidati"], ["5"])
 
     def test_vise_dokumenata_citira_isti_sn_daje_isti_cilj(self):
         # 31 dokumenata citira 6/12 -> razrješenje ne ovisi o citatoru, samo o (oznaka, mjesto)
-        rez = {tuple(P.razrijesi_cilj(self.cit("6/12"), SYN_REG, "51521")["kandidati"]) for _ in range(31)}
+        rez = {tuple(P.razrijesi_cilj(self.cit("6/12"), SYN_REG, "51521", registar_potpun=True)["kandidati"]) for _ in range(31)}
         self.assertEqual(rez, {("4",)})
+
+
+AKT_ZAGLAVLJE = """<td class="naslov">Godina XXI. - broj 30.</td>
+\t\t<td class="naslov">Petak, 6. rujna 2013.</td>"""
+
+
+class TestZaglavljeAkta(unittest.TestCase):
+    def test_stvarni_oblik(self):
+        z = P.zaglavlje_akta(AKT_ZAGLAVLJE)
+        self.assertEqual(z, {"sn_broj": 30, "sn_godina": 2013, "godina_toma_rimski": "XXI", "datum_izdanja": "2013-09-06"})
+        self.assertEqual(P.PRVA_GODINA_TOMA + P.rimski("XXI") - 1, 2013)
+
+    def test_dvosmisleno_ili_nema(self):
+        self.assertIsNone(P.zaglavlje_akta("nema"))
+        self.assertIsNone(P.zaglavlje_akta(AKT_ZAGLAVLJE + "Godina XXII. - broj 5. Petak, 7. rujna 2014."))
 
 
 class TestRegistar(unittest.TestCase):
@@ -354,6 +372,38 @@ class TestKorpus(unittest.TestCase):
             for c in P.citati(t):
                 (nn if c["gazeta"] == "NN" else sn if c["gazeta"] == "SN_PGZ" else set()).add(c["oznaka"])
         self.assertGreater(len(nn & sn), 0)
+
+
+AKTI_DIR = os.environ.get("CESTICA_AKTI_DIR")      # npr. .../official_snapshots/akti
+AKTI_REG = os.environ.get("CESTICA_AKTI_REG")      # npr. .../output/sn_registar_v0185.json (act_page_records)
+
+
+@unittest.skipUnless(AKTI_DIR and AKTI_REG and os.path.isdir(AKTI_DIR or ""), "CESTICA_AKTI_DIR/REG nisu zadani")
+class TestAktiStranice(unittest.TestCase):
+    """Neovisna provjera zapisa Data Managera protiv spremljenih stranica akata (stvarni HTML, windows-1250)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.reg = json.load(open(AKTI_REG, encoding="utf-8"))["act_page_records"]
+
+    def test_svi_zapisi_protiv_html(self):
+        import hashlib
+        greske = []
+        for z in self.reg:
+            raw = (Path(AKTI_DIR) / f"{z['publication_id']}.html").read_bytes()
+            h = raw.decode("cp1250", errors="replace")
+            if hashlib.sha256(raw).hexdigest() != z["akt_html_sha256"]:
+                greske.append((z["publication_id"], "hash"))
+            if P.footer_trojka(h) != (z["izdanje_id"], z["mjesto_id"], z["redni_broj_u_izdanju"]):
+                greske.append((z["publication_id"], "footer"))
+            zg = P.zaglavlje_akta(h)
+            if zg != {k: z[k] for k in ("sn_broj", "sn_godina", "godina_toma_rimski", "datum_izdanja")}:
+                greske.append((z["publication_id"], "zaglavlje"))
+        self.assertEqual(greske, [])
+
+    def test_registar_validan(self):
+        r = [dict(z, izvor_zaglavlja="PORTAL_ACT_PAGE_HEADER", naziv_akta="x", izvor_html_sha256=z["akt_html_sha256"]) for z in self.reg]
+        self.assertEqual([x for x in P.provjeri_registar(r) if x["ozbiljnost"] == "FAIL"], [])
 
 
 HTML_DIR = os.environ.get("CESTICA_HTML_DIR")
