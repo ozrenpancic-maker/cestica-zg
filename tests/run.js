@@ -1104,7 +1104,7 @@ async function krkTests(){
   {const tu=txt(w,"sheet"), hs=[...w.document.querySelectorAll("#sheet h2")].map(x=>x.textContent);
    ok(["Provjere","Uvjeti gradnje","Gradnja i naknade","Novac i kupnja","Sunce i energija","Dokumentacija i gdje se obratiti"].every(x=>hs.includes(x)),"Krk: isti odjeljci kao Zagreb ("+hs.join(", ")+")");
    ok(!!$(w,"saveBtn")&&!!$(w,"shareBtn")&&!!$(w,"printBtn"),"Krk: spremanje, dijeljenje i ispis kao za Zagreb");
-   ok(/Procjena cijene gradnje\s*nije dostupno/.test(tu)&&/Priključci i dozvole\s*nije dostupno/.test(tu)&&/Postojeće zgrade i dogradnja\s*nije dostupno/.test(tu)&&/Podaci nisu dostupni za ovo područje/.test(tu)&&/okolicu Zagreba i ne vrijede za otok Krk/.test(tu),"Krk: odjeljci bez podataka označeni „nije dostupno” s razlogom");
+   ok(/Procjena cijene gradnje\s*nije dostupno/.test(tu)&&/Priključci i dozvole\s*nije dostupno/.test(tu)&&/Postojeće zgrade i dogradnja\s*nije dostupno/.test(tu)&&/Podaci nisu dostupni za ovo područje/.test(tu)&&/okolicu Zagreba i ne vrijede za ovo područje/.test(tu),"Krk: odjeljci bez podataka označeni „nije dostupno” s razlogom");
    ok(!!$(w,"sunDate")&&!!$(w,"pvGo"),"Krk: sunce i sunčana elektrana dostupni");
    setv(w,"yPrice","60000"); const B=w.__fin&&w.__fin.buy;
    ok(B&&near(B.rows.find(r=>r.k==="porez").v,1800)&&Math.abs(B.area-600)<1.5,"Krk: kupnja zemljišta – porez na promet 3 % od 60.000 € = 1.800 €, površina 600 m²");
@@ -1230,11 +1230,11 @@ async function krkTests(){
   // točka unutar obuhvata, ali u drugoj jedinici (kopno)
   mode="crikvenica"; E("NET").cache.clear(); w.localStorage.clear();
   await E("inspect")(w.L.latLng(45.17,14.69)); await tick(50);
-  ok(/izvan područja aplikacije/.test(txt(w,"sheet")),"točka na kopnu (Crikvenica): jasno da je izvan područja aplikacije");
+  ok(/Primorsko-goranska županija · Crikvenica/.test(txt(w,"sheet"))&&/Uvjeti gradnje za Crikvenica još nisu obrađeni/.test(txt(w,"sheet")),"točka na kopnu (Crikvenica): županijska analiza uz jasno da uvjeti gradnje nisu obrađeni");
   // druga jedinica na otoku: prikaz uz napomenu da pilot nije provjeren
   mode="ok"; gp.OPCINA_GRAD="PUNAT"; ag.OPCINA_GRAD="PUNAT"; gp.IZGRADJENOST="izgrađeno"; E("NET").cache.clear(); w.localStorage.clear();
   await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50);
-  ok(/Pilot je provjeren samo za Grad Krk/.test(txt(w,"sheet"))&&/Općina Punat/.test(txt(w,"sheet"))&&/samo za Grad Krk/.test(txt(w,"sheet"))&&w.__krkCalc===null,"druga jedinica na otoku: prikaz uz napomenu izvan pilota, bez uvjeta gradnje iz PPUG-a Krka");
+  ok(/Pravila gradnje provjerena su samo za Grad Krk/.test(txt(w,"sheet"))&&/Općina Punat/.test(txt(w,"sheet"))&&/samo za Grad Krk/.test(txt(w,"sheet"))&&w.__krkCalc===null,"druga jedinica na otoku: prikaz uz napomenu izvan pilota, bez uvjeta gradnje iz PPUG-a Krka");
   // Malinska-Dubašnica: PPUO (SN 15/2023), skupine naselja po oznaci GPN iz županijskog sloja
   mode="full"; Object.assign(gp,{OPCINA_GRAD:"MALINSKA-DUBAŠNICA",OZNAKA_NAMJENE:"GPN-1",NASELJE:"Malinska, Radići",IZGRADJENOST:"izgrađeno"});
   let tm=await reinspect(), M=w.__krkCalc;
@@ -1511,6 +1511,27 @@ async function hrTests(){
   ok(/Podaci nisu dostupni/.test(w.document.getElementById("sheet").textContent),"Hrvatska: kad DGU ne odgovara, piše „Podaci nisu dostupni”");
   ok(errs.length===0,"bez JS grešaka (Hrvatska): "+errs.join(" | "));
 }
+async function pgzTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  E("SRC_KRK.oss=window.__OSS_URL"); const lon=14.4420, lat=45.3270; // Rijeka, kopno županije
+  ok(E("regionOf")({lat,lng:lon})==="krk"&&E("regionOf")({lat:45.00,lng:14.30})==="krk"&&E("regionOf")({lat:46.0,lng:16.0})==="zg","PGŽ: kopno županije ide u analizu županije, Zagreb ostaje svoj");
+  const [E0,N0]=E("tmFwd")(lon,lat), ring=[[E0-12,N0-10],[E0+12,N0-10],[E0+12,N0+10],[E0-12,N0+10],[E0-12,N0-10]];
+  const geo=(props)=>({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[[[lon-0.01,lat-0.01],[lon+0.01,lat-0.01],[lon+0.01,lat+0.01],[lon-0.01,lat+0.01],[lon-0.01,lat-0.01]]]},properties:props}]});
+  let withNam=true; w.fetch=(u,o)=>{u=String(u); const r=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b)});
+    if(/wms1-gs-oss\.uredjenazemlja\.hr/.test(u)) return r({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{CESTICA_ID:888002,BROJ_CESTICE:"55/2",MATICNI_BROJ_KO:333001,POVRSINA_GRAFICKA:480,POVRSINA_ATRIBUTNA:480}}]});
+    if(/NAMJENA_POVRSINA_NOVO/.test(u)) return r(withNam?geo({OPCINA_GRAD:"RIJEKA",POLAZNA_NAMJENA:"građevna područja",PRIMARNA_NAMJENA:"naselje",OZNAKA_NAMJENE:"M1",IZGRADJENOST:"izgrađeno",NASELJE:"Rijeka"}):{type:"FeatureCollection",features:[]});
+    if(/IZRADA_PP/.test(u)) return r({type:"FeatureCollection",features:[]});
+    if(/workers\.dev/.test(u)) return r({ok:true,id:"888002",broj:"55/2",koMb:"333001",ko:"KOZALA",katastar:480,zk:[],dijelovi:[]});
+    return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null)}); };
+  await E("inspect")({lat,lng:lon}); await tick(200);
+  let t=w.document.getElementById("sheet").textContent;
+  ok(/Primorsko-goranska županija · Rijeka/.test(t)&&/55\/2/.test(t)&&/480 m²/.test(t)&&/Građevinsko područje naselja/.test(t),"PGŽ: čestica uživo iz DGU-a i namjena iz županijskog sloja za Rijeku");
+  ok(/Uvjeti gradnje za Rijeka još nisu obrađeni/.test(t)&&!/Otok Krk · pilot/.test(t),"PGŽ: za jedinicu bez obrađenih pravila piše da uvjeti nisu obrađeni");
+  ok(/katastar infrastrukture nije pripremljen za ovo područje/.test(t)&&!/nema evidentiranog voda/.test(t),"PGŽ: infrastruktura izvan otoka ne tvrdi da vodova nema, nego da podaci nisu pripremljeni");
+  withNam=false; E("NET").cache.clear(); w.localStorage.clear(); await E("inspect")({lat,lng:lon}); await tick(200); t=w.document.getElementById("sheet").textContent;
+  ok(/Hrvatska · osnovni pregled/.test(t),"PGŽ: točka bez namjene u županijskom sloju (izvan županije) ide u osnovni pregled za državu");
+  ok(errs.length===0,"bez JS grešaka (PGŽ): "+errs.join(" | "));
+}
 async function skicaTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
   const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"95/1",KATASTARSKA_OPCINA:"REMETE"}), d=data(w,A,"2.2.",{slope:{v:{h:200,slope:10,down:"jug",az:180}}});
@@ -1778,7 +1799,7 @@ async function gpTests(){
   ok(errs.length===0,"bez JS grešaka (područje za gradnju): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

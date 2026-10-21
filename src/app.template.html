@@ -767,9 +767,10 @@ const REGIJE={
        pilot:"KRK"}
 };
 // Zagreb je istočno od 15,5° E, Krk zapadno; preklapanja nema. Unutar obuhvata Krka o jedinici odlučuje županijski sloj.
+const PGZ_BBOX=[14.15,44.45,15.55,45.65]; // Primorsko-goranska županija (okvir; točna pripadnost iz županijskog sloja namjene)
 const HR_ZG_BBOX=[15.60,45.55,16.50,46.05]; // šire područje Grada Zagreba (do njegovih rubova); ostatak države ide u osnovni pregled
 const inBox=(ll,b)=>ll.lng>=b[0]&&ll.lng<=b[2]&&ll.lat>=b[1]&&ll.lat<=b[3];
-function regionOf(ll){ return inBox(ll,REGIJE.krk.bbox)?"krk":inBox(ll,HR_ZG_BBOX)?"zg":"hr"; }
+function regionOf(ll){ return inBox(ll,REGIJE.krk.bbox)||inBox(ll,PGZ_BBOX)?"krk":inBox(ll,HR_ZG_BBOX)?"zg":"hr"; }
 const PGZ="https://gisportal.pgz.hr/server/rest/services/STANJE/";
 const SRC_KRK={
   namjena:PGZ+"NAMJENA_POVRSINA_NOVO/FeatureServer/0/query",
@@ -826,8 +827,9 @@ function katTile(key){
 function katRing(r){const out=[]; let x=0,y=0; for(let i=0;i<r.length;i+=2){x+=r[i]; y+=r[i+1]; out.push([x/1e6,y/1e6]);} return out;}
 function katGeom(P){const polys=P.map(pr=>pr.map(katRing)); return polys.length===1?{type:"Polygon",coordinates:polys[0]}:{type:"MultiPolygon",coordinates:polys};}
 async function loadParcelKrk(ll){
+  if(!inBox(ll,REGIJE.krk.bbox)) return loadParcelHR(ll); // kopno županije: čestica uživo iz DGU-a
   const I=await katIndex(), key=Math.floor(ll.lat/I.dlat)+"_"+Math.floor(ll.lng/I.dlon);
-  if(!I.set.has(key)) return null; // izvan obuhvata pripremljenog katastra (more)
+  if(!I.set.has(key)) return loadParcelHR(ll); // izvan pripremljenog katastra otoka (kopno županije, drugi otoci): čestica uživo iz DGU-a; more = nema čestice
   const arr=await katTile(key), pt=turf.point([ll.lng,ll.lat]), hits=[];
   for(const [id,broj,ko,pov,P] of arr){
     const g=katGeom(P); let inside=false; try{inside=turf.booleanPointInPolygon(pt,g)}catch(e){}
@@ -1086,7 +1088,7 @@ function krkRuleSetJls(jls,row){
   return {...B,tipovi,grupa:g};
 }
 function krkRuleStateJls(d,jls){
-  const name=REGIJE.krk.jls[jls]||jls;
+  const name=REGIJE.krk.jls[jls]||krkJlsNaziv(jls);
   if(!RULES_KRK.ostaleJls||!RULES_KRK.ostaleJls[jls]) return {st:"ne",msg:`Uvjeti gradnje za ${name} još nisu obrađeni.`};
   if(!d.rows.length) return {st:"ne",msg:"Namjena nije poznata, pa se uvjeti ne mogu odrediti."};
   const gpn=d.rows.filter(r=>krkKind(r.p)==="gpn");
@@ -1255,9 +1257,9 @@ function krkKdZona(d){
 }
 function krkCostHtml(d,inPilot,jlsName){
   let h=`<h2 id="sec-troskovi" class="m-only">Gradnja i naknade</h2>`;
-  h+=naHtml("Procjena cijene gradnje","Cijene gradnje u aplikaciji su tržišne cijene za okolicu Zagreba i ne vrijede za otok Krk.");
+  h+=naHtml("Procjena cijene gradnje","Cijene gradnje u aplikaciji su tržišne cijene za okolicu Zagreba i ne vrijede za ovo područje.");
   const K=RULES_KRK&&RULES_KRK.komunalniDoprinos;
-  const pr=naHtml("Priključci i dozvole","Naknade za priključenje na Krku (Ponikve voda, HEP ODS) još nisu obrađene.");
+  const pr=naHtml("Priključci i dozvole","Naknade za priključenje (vodovod, kanalizacija, struja) još nisu obrađene.");
   if(!inPilot||!K) return h+naHtml("Komunalni doprinos",`Komunalni doprinos prema odluci jedinice lokalne samouprave${jlsName?" ("+jlsName+")":""} još nije obrađen.`)+pr;
   const c=window.__krkCalc, vol0=c?Math.round(c.gbpN*3):"", Z=krkKdZona(d), eur=Z?Math.round(Z.z[2]/K.tecaj*100)/100:null;
   let st={}; try{st=JSON.parse(localStorage.getItem("krkKd")||"{}")||{}}catch(e){}
@@ -1306,6 +1308,8 @@ async function inspectKrk(ll){
     settle(pointQuery(SRC_KRK.planovi,ll,"GRAD_OPCINA,VRSTA_PP,STATUS_PP,NAZIV,SN_BROJ,SN_LINK,PDF_LINK_PUBLIC,DatumStNaSnPlana,DatumDonOdlIzr",false))
   ]);
   if(id!==clickId) return;
+  // izvan Primorsko-goranske županije (npr. Istra, Lika): županijski sloj nema namjene, pa osnovni pregled za državu
+  if(!(nam.v&&nam.v.length)&&!nam.e&&((ces.v&&ces.v.properties.hr)||(!ces.v&&!ces.e&&!inBox(ll,REGIJE.krk.bbox)))) return inspectHR(ll);
   const parcel=ces.v||null, area=parcel?turf.area(parcel.geometry):null;
   let rows=(nam.v||[]).map(f=>({p:f.properties||{},share:null,geom:null}));
   if(parcel){
@@ -1321,7 +1325,7 @@ async function inspectKrk(ll){
   const d={region:"krk",ll,parcel,area,rows,ces,nam,pl,slope:null,env:null};
   renderKrk(d);
   if(parcel) zg3dLoad(parcel).then(()=>{try{skicaUpdate()}catch(e){}});
-  const [slope,env,ski]=await Promise.all([settle(loadSlope(parcel,ll)),settle(loadEnv(ll,parcel)),FEATURES.infra?settle(loadSki(parcel,ll,SKI_KRK)):Promise.resolve(null)]);
+  const [slope,env,ski]=await Promise.all([settle(loadSlope(parcel,ll)),settle(loadEnv(ll,parcel)),FEATURES.infra?(parcel&&parcel.properties.hr?Promise.resolve({e:SKI_NP}):settle(loadSki(parcel,ll,SKI_KRK))):Promise.resolve(null)]);
   if(id!==clickId) return;
   window.__ski=ski||null; skiDraw(ski);
   renderKrk({...d,slope,env,ski});
@@ -1354,6 +1358,7 @@ async function inspectHR(ll){
   if(id!==clickId) return;
   renderHR({...d,slope,env});
 }
+function krkJlsNaziv(j){return String(j).toLowerCase().replace(/(^|[\s-])(\S)/g,(m,a,b)=>a+b.toUpperCase());}
 function krkJls(rows,pl){
   const r=rows.find(x=>x.p.OPCINA_GRAD); if(r) return String(r.p.OPCINA_GRAD).toUpperCase();
   const p=pl&&pl.v&&pl.v.map(f=>f.properties||{}).find(x=>x.VRSTA_PP==="PPUO/G"&&x.GRAD_OPCINA); return p?String(p.GRAD_OPCINA).toUpperCase():null;
@@ -1413,7 +1418,7 @@ async function zkUlFetch(k,force){
 sheet.addEventListener("toggle",e=>{const d=e.target; if(!(d.matches&&d.matches('details[data-k="zk"]'))) return; const k=window.__zkK; window.__zkOpen=d.open?k:null; if(d.open&&k) zkUlFetch(k);},true);
 async function krkOssFetch(P,area){
   if(!P||P.cid==null) return; const k=String(P.cid);
-  const upd=()=>{ if(KRK_CUR&&KRK_CUR.region==="hr"&&KRK_CUR.parcel&&String(KRK_CUR.parcel.properties.cid)===k&&!P.ko){const o=OSSZK.get(k); if(o&&o.st==="ok"&&o.d.ko){P.ko=o.d.ko; renderHR(KRK_CUR); return;}} const el=document.getElementById("krkArea"); if(el&&KRK_CUR&&KRK_CUR.parcel&&String(KRK_CUR.parcel.properties.cid)===k){keepPos(()=>{el.innerHTML=krkAreaHtml(P,area); areaCmpRefresh();}); zkOssRefresh(k);}};
+  const upd=()=>{ if(KRK_CUR&&(KRK_CUR.region==="hr"||(KRK_CUR.parcel&&KRK_CUR.parcel.properties.hr))&&KRK_CUR.parcel&&String(KRK_CUR.parcel.properties.cid)===k&&!P.ko){const o=OSSZK.get(k); if(o&&o.st==="ok"&&o.d.ko){P.ko=o.d.ko; renderKrk(KRK_CUR); return;}} const el=document.getElementById("krkArea"); if(el&&KRK_CUR&&KRK_CUR.parcel&&String(KRK_CUR.parcel.properties.cid)===k){keepPos(()=>{el.innerHTML=krkAreaHtml(P,area); areaCmpRefresh();}); zkOssRefresh(k);}};
   try{const c=turf.pointOnFeature(KRK_CUR.parcel).geometry.coordinates; katwFetchInto(k,c[1],c[0],upd);}catch(e){}
   return ossFetchInto(k,P,null,upd);
 }
@@ -2148,7 +2153,7 @@ function renderKrk(d){
   if(d.region==="hr") return renderHR(d);
   KRK_CUR=d;
   const {ll,parcel,area,rows,ces,nam,pl,slope,env}=d, R=REGIJE.krk;
-  const jls=krkJls(rows,pl), jlsName=jls?(R.jls[jls]||null):null, inPilot=jls===R.pilot;
+  const jls=krkJls(rows,pl), jlsName=jls?(R.jls[jls]||krkJlsNaziv(jls)):null, inPilot=jls===R.pilot, izvanOtoka=!!(parcel&&parcel.properties.hr);
   const P=parcel?parcel.properties:{};
   const ptc=parcel?(()=>{try{const c=turf.pointOnFeature(parcel).geometry.coordinates; return {lat:c[1],lng:c[0]}}catch(e){return ll}})():ll;
   window.__lastLL=ll; const prevKeyK=window.__cur&&window.__cur.key;
@@ -2158,11 +2163,8 @@ function renderKrk(d){
   const keepScroll=prevKeyK===window.__cur.key?scrollAnchor():null; // ista čestica: zadrži mjesto čitanja
   GRP=null; window.__areaCmp=null;
   pzReset(window.__cur.key); krkPzBase(d);
-  let h=G("sum")+`<p id="printHead" class="print-only"></p><div id="printMap"></div><p class="eyebrow">Otok Krk · pilot${jlsName?" · "+esc(jlsName):""}</p>`;
-  if(jls&&!R.jls[jls]){
-    h+=`<div class="verdict v-warn">Lokacija je u jedinici ${esc(jls)}, izvan područja aplikacije (Grad Zagreb i pilot otok Krk).</div><div id="sumEnd"></div>`;
-  }
-  if(!inPilot&&jlsName) h+=`<p class="flag">Pilot je provjeren samo za Grad Krk. Za ${esc(jlsName)} prikazujem isti županijski sloj namjene i popis planova${RULES_KRK&&RULES_KRK.ostaleJls&&RULES_KRK.ostaleJls[jls]?" te uvjete iz prostornog plana općine":""}, ali to nisam provjerio na primjerima.</p>`;
+  let h=G("sum")+`<p id="printHead" class="print-only"></p><div id="printMap"></div><p class="eyebrow">${izvanOtoka||(jls&&!R.jls[jls])?"Primorsko-goranska županija":"Otok Krk · pilot"}${jlsName?" · "+esc(jlsName):""}</p>`;
+  if(!inPilot&&jlsName) h+=`<p class="flag">Pravila gradnje provjerena su samo za Grad Krk. Za ${esc(jlsName)} prikazujem isti županijski sloj namjene i popis planova${RULES_KRK&&RULES_KRK.ostaleJls&&RULES_KRK.ostaleJls[jls]?" te uvjete iz prostornog plana općine":""}, ali to nisam provjerio na primjerima.</p>`;
   // čestica
   if(parcel){
     h+=`<p class="eyebrow">Katastarska čestica${P.ko?" · k.o. "+esc(P.ko):P.koRef?" · k.o. br. "+esc(P.koRef):""}</p><p class="parcel">${esc(P.broj||"?")}</p>`;
@@ -2193,7 +2195,7 @@ function renderKrk(d){
   else if(slope&&slope.e) h+=`<p class="meta">Nagib terena: Podaci nisu dostupni (${esc(slope.e)}).</p>`;
   else if(!env) h+=`<p class="hint"><span class="spin"></span>Učitavam teren, pristup i infrastrukturu…</p>`;
   if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`;
-  h+=naHtml("Klizišta, kulturna baština, vodozaštita i druga ograničenja iz plana","Za Zagreb aplikacija provjerava gradske slojeve ograničenja; za Krk takvi slojevi još nisu uključeni (zaštićena područja prirode i Natura 2000 provjeravaju se iznad). Ograničenja provjeri u prostornom planu (popis ispod) i lokacijskom informacijom.");
+  h+=naHtml("Klizišta, kulturna baština, vodozaštita i druga ograničenja iz plana","Za Zagreb aplikacija provjerava gradske slojeve ograničenja; za Primorsko-goransku županiju takvi slojevi još nisu uključeni (zaštićena područja prirode i Natura 2000 provjeravaju se iznad). Ograničenja provjeri u prostornom planu (popis ispod) i lokacijskom informacijom.");
   h+=krkInfraHtml(env?d.ski||{e:"nije učitano"}:null);
   h+=env?envHtml(env):envHtml(null);
   // planovi
@@ -2217,7 +2219,7 @@ function renderKrk(d){
   if(RULES_DB){const m=rows[0]?rows[0].p:{}, T=RULES_KRK&&RULES_KRK.tipovi&&RULES_KRK.tipovi[KRK_TIP.tip];
     h+=dbHtml({jls:jlsName,zone:rows.filter(r=>r.share==null||r.share>0.05).map(r=>r.p.OZNAKA_NAMJENE).filter(Boolean),izgradenost:m.IZGRADJENOST||null,vrsta:T?T.naziv:null,nacin:{slob:"slobodnostojeća",dvoj:"dvojna",ugr:"ugrađena"}[KRK_TIP.oblik]||null},
       parcel?{P,area,share:window.__areaCmp?window.__areaCmp.share:1}:null);}
-  if(parcel) h+=naHtml("Postojeće zgrade i dogradnja","Tlocrte postojećih zgrada aplikacija ima samo za Zagreb (Topografska osnova Grada Zagreba).");
+  if(parcel) h+=naHtml("Postojeće zgrade i dogradnja","Postojeće zgrade na čestici aplikacija ne prikazuje (tlocrti okolnih zgrada u 3D pogledu su ilustracija). Stanje zgrada provjeri u katastru i na terenu.");
   // gradnja i naknade, novac
   h+=G("troskovi")+krkCostHtml(d,inPilot,jlsName);
   if(parcel) h+=moneyHtml(key,area);
@@ -2226,7 +2228,7 @@ function renderKrk(d){
   h+=pzSecHtml();
   h+=`<h2>Dokumentacija i gdje se obratiti</h2>`+naHtml("Popis dokumenata i nadležnih ureda","Popis ureda i dokumenata u aplikaciji izrađen je za Grad Zagreb. Za Krk se za lokacijsku informaciju i dozvole obrati upravnom odjelu nadležnom za prostorno uređenje i gradnju.");
   h+=`<div class="links"><a href="https://geoportal.dgu.hr/#/?lng=${ll.lng.toFixed(6)}&lat=${ll.lat.toFixed(6)}&zoom=9&layerconfig=17013&mode=2d" target="_blank" rel="noopener">Geoportal DGU</a><a href="https://oss.uredjenazemlja.hr/public-services/search-cad-parcel" target="_blank" rel="noopener">Katastar (OSS)</a><a href="https://vidiplan.pgz.hr/" target="_blank" rel="noopener">VidiPlan (PGŽ)</a><a href="https://www.google.com/maps?q=${ll.lat},${ll.lng}" target="_blank" rel="noopener">Google Maps</a></div>`;
-  h+=`<p class="note">Pilot za otok Krk. Izvori: Državna geodetska uprava, digitalni katastarski plan (ATOM, preuzet uz aplikaciju); Primorsko-goranska županija, namjena površina i evidencija prostornih planova (gisportal.pgz.hr); OpenStreetMap; Open-Meteo. Pravno mjerodavna je lokacijska informacija nadležnog upravnog odjela.</p>`;
+  h+=`<p class="note">${izvanOtoka?"Primorsko-goranska županija izvan otoka Krka.":"Pilot za otok Krk."} Izvori: Državna geodetska uprava, ${izvanOtoka?"katastarski sloj karte (uživo)":"digitalni katastarski plan (ATOM, preuzet uz aplikaciju)"}; Primorsko-goranska županija, namjena površina i evidencija prostornih planova (gisportal.pgz.hr); OpenStreetMap; Open-Meteo. Pravno mjerodavna je lokacijska informacija nadležnog upravnog odjela.</p>`;
   h+=G(null);
   restoreMap();
   sheet.innerHTML=h;
@@ -3407,7 +3409,7 @@ async function skiFetch(path,ms=12000){
   finally{clearTimeout(t)}
 }
 // više područja: Zagreb (data/ski/) i otok Krk (data/ski_krk/), isti format i isti izračun
-const SKI_ZG="data/ski/", SKI_KRK="data/ski_krk/";
+const SKI_ZG="data/ski/", SKI_KRK="data/ski_krk/", SKI_NP="katastar infrastrukture nije pripremljen za ovo područje";
 SKI.idxs={};
 async function skiIndex(base=SKI_ZG){
   if(base===SKI_ZG&&SKI.idx) return SKI.idx;
@@ -3474,9 +3476,9 @@ function krkInfraHtml(ski){
   let h=`<h2>Komunalna infrastruktura</h2>`;
   if(!ski) return h+`<p class="hint"><span class="spin"></span>Učitavam katastar infrastrukture…</p>`;
   const M=ski.v&&ski.v.mreze, err=ski.e||null, rows=[];
-  for(const [net,lbl,opis] of SKI.NETS){const t=M?skiText(M[net],opis):{t:"Podaci nisu dostupni",s:err?"podaci katastra infrastrukture se nisu učitali":""}; rows.push([lbl,t.t,t.s,t.cross]);}
+  for(const [net,lbl,opis] of SKI.NETS){const t=M?skiText(M[net],opis):{t:"Podaci nisu dostupni",s:err===SKI_NP?SKI_NP:err?"podaci katastra infrastrukture se nisu učitali":""}; rows.push([lbl,t.t,t.s,t.cross]);}
   rows.push(["Telekomunikacije","Podaci nisu dostupni","nisu u javnim podacima DGU-a"]);
-  rows.push(["Plin","Podaci nisu dostupni","nisu obrađeni za Krk"]);
+  rows.push(["Plin","Podaci nisu dostupni","nisu u javnim podacima"]);
   h+=`<dl class="kv">${rows.map(([a,b,c,x])=>`<dt>${esc(a)}</dt><dd>${esc(b)}${c?`<small class="fx"${x?' style="color:#b26a00"':""}>${esc(c)}</small>`:""}</dd>`).join("")}</dl>`;
   if(M&&Object.values(M).some(r=>r&&r.d!=null&&r.d<0.5)) h+=`<p class="flag">Vod prolazi česticom ili njezinom granicom. Iznad i uz vod gradnja može biti ograničena; provjeri s upraviteljem mreže.</p>`;
   const st=ski.v&&ski.v.stanje;
