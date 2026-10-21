@@ -127,3 +127,22 @@ def test_identitet_v2_metrike_i_generacije():
     for p in reg:
         if p["veza"] == "UNKNOWN": p["auto_merge_allowed"] = True
     assert M.mjeri2({"veze": reg}, z, ref)["auto_merge_bez_dokaza"] >= 4
+
+
+def test_identitet_v0161_metrike_brojnik_nazivnik():
+    import json, sys, os
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import mjeri_identitet as M
+    z = json.load(open(M.Z, encoding="utf-8")); ref = json.load(open(M.REF, encoding="utf-8"))
+    reg = [{"odluka_id": l["odluka_id"], "opcina": l["plan"]["opcina"], "vrsta": l["plan"]["vrsta"], "broj": l["plan"]["broj"], "veza": l["veza"],
+            "evidence_type": "SHARED_FOOTPRINT_HEURISTIC" if l["veza"] == "UNKNOWN" else "EXPLICIT_PLAN_NUMBER", "auto_merge_allowed": False, "generation_id": "UNDETERMINED"}
+           for l in z["veze"] if l["ocekivanje"] == "MUST_LINK"]
+    r = M.mjeri3({"veze": reg}, z, ref)
+    assert r["M_identity_exported_recall"]["brojnik"] == r["M_identity_exported_recall"]["nazivnik"] == 38
+    assert r["M_identity_resolved_recall"]["brojnik"] == 34           # četiri heuristička nisu "resolved"
+    assert r["M_relation_type_coverage"]["nazivnik"] == 34 and r["M_relation_type_accuracy_all"]["vrijednost"] == 1.0
+    assert r["M_generation_accuracy_L1"]["vrijednost"] == "N/A"       # premalo referentnih oznaka
+    for p in reg:                                                      # UNKNOWN koji je u izvozu ne smije povećati točnost
+        if p["veza"] == "UNKNOWN": p["veza"] = "UNKNOWN"
+    ref_pov = json.load(open(M.REF, encoding="utf-8"))
+    assert [p["legal_status"] for p in ref_pov["pravni_status"]] == ["SUPERSEDED", "UNKNOWN"]

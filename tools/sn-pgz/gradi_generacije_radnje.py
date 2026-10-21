@@ -62,6 +62,13 @@ ACT = [
   "opis": "Izmjene UPU 1 Malinska, Radići (GP-1) (SN 14/13, 3/14) po člancima. Postojeća vrsta radnje je dovoljna; ne radi parser operacija na razini podstavka (alineje) i stavka ('iza teksta … dodaje se', 'zamjenjuje se novom oznakom').",
   "dokazi": [Q("32729", "U članku 34. Odluke o donošenju Urbanističkog plana uređenja UPU 1 Malinska, Radići (GP-1)", "radnja"), Q("32729", "stavku 1., točki 3., podstavku 3., iza teksta »postojeća visina« dodaje se tekst »(13 metara do vijenca)«", "operacija")]},
 ]
+PRAVNI = [
+ {"plan_family_id": "HR-PGZ-krk-UPU-1", "generation_id": "gen-A", "legal_status": "SUPERSEDED", "legal_status_as_of": None,
+  "napomena_as_of": "Datum stupanja na snagu 28241 nije u izvozu (osmi dan od objave); ne izmišljam ga.",
+  "legal_status_evidence": [Q("28241", "Stupanjem na snagu ove Odluke stavljaju se izvan snage tekstualni dijelovi i kartografski prikazi Urbanističkog plana uređenja naselja Krk", "ukidanje")]},
+ {"plan_family_id": "HR-PGZ-krk-UPU-1", "generation_id": "gen-B", "legal_status": "UNKNOWN", "legal_status_as_of": None,
+  "napomena": "Nije provjereno je li stavljena izvan snage ni je li zamijenjena; u izvozu nedostaju izmjene SN 40/14, 11/17, 18/19. ACTIVE se ne zaključuje iz nepostojanja dokaza o ukidanju.",
+  "legal_status_evidence": []}]
 def main(izvoz):
     d = json.load(open(izvoz, encoding="utf-8"))
     by = collections.defaultdict(list)
@@ -78,6 +85,8 @@ def main(izvoz):
         for e in g["dokazi"]: prov(e)
     for a in ACT:
         for e in a["dokazi"]: prov(e)
+    for p in PRAVNI:
+        for e in p["legal_status_evidence"]: prov(e)
     # sličnost teksta (L3), neosjetljiva na interpunkciju
     flat = lambda s: re.sub(r"[\W_]+", "", S.norm(s))
     ts = {k: collections.Counter(flat(a["body"]) for a in by[U[k]["id"]]) for k in ("28241", "35506", "39364", "42442")}
@@ -92,6 +101,6 @@ def main(izvoz):
     json.dump({"opis": "Referentna analiza generacija UPU 1 Krk i devet ACTION_NOT_SUPPORTED slučajeva. NIJE dio zamrznutog skupa krk-plan-identity-v1. Jedan pregledatelj, nije neovisno provjereno.",
                "verzija": 1, "status": "SOURCE_READ_BY_ONE_REVIEWER_NOT_INDEPENDENTLY_VERIFIED", "sha256": h, "plan_family_id": "HR-PGZ-krk-UPU-1",
                "razine_dokaza": {"L1": "izričito u tekstu odluke", "L2": "navod u tekstu druge odluke / ime i popis područja", "L3": "samo sličnost teksta – ne dokazuje"},
-               "generacije": GEN, "radnje": ACT, "kronologija": kron, "slicnost_teksta_L3": sl, "otvoreno": ostalo}, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+               "generacije": GEN, "radnje": ACT, "pravni_status": PRAVNI, "kronologija": kron, "slicnost_teksta_L3": sl, "otvoreno": ostalo}, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print("problema:", lose); print(json.dumps(sl)); return lose
 if __name__ == "__main__": sys.exit(1 if main(sys.argv[1]) else 0)

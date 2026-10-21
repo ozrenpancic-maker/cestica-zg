@@ -342,6 +342,33 @@
    ]
   }
  ],
+ "pravni_status": [
+  {
+   "plan_family_id": "HR-PGZ-krk-UPU-1",
+   "generation_id": "gen-A",
+   "legal_status": "SUPERSEDED",
+   "legal_status_as_of": null,
+   "napomena_as_of": "Datum stupanja na snagu 28241 nije u izvozu (osmi dan od objave); ne izmišljam ga.",
+   "legal_status_evidence": [
+    {
+     "odluka_id": "28241",
+     "citat": "Stupanjem na snagu ove Odluke stavljaju se izvan snage tekstualni dijelovi i kartografski prikazi Urbanističkog plana uređenja naselja Krk",
+     "uloga": "ukidanje",
+     "clanak_izvoza": "150",
+     "sha256_citata": "8c5b71f592131391f582837d9f69c7f3fc6015c4f3ae3993f6b51366bb17d4bc",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=28241"
+    }
+   ]
+  },
+  {
+   "plan_family_id": "HR-PGZ-krk-UPU-1",
+   "generation_id": "gen-B",
+   "legal_status": "UNKNOWN",
+   "legal_status_as_of": null,
+   "napomena": "Nije provjereno je li stavljena izvan snage ni je li zamijenjena; u izvozu nedostaju izmjene SN 40/14, 11/17, 18/19. ACTIVE se ne zaključuje iz nepostojanja dokaza o ukidanju.",
+   "legal_status_evidence": []
+  }
+ ],
  "kronologija": [
   {
    "odluka_id": "14783",

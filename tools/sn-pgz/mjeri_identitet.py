@@ -56,9 +56,48 @@ def mjeri2(pred, zlatni, ref=None):
         a, b = gp("14783"), gp("28241")
         r["gen_A_B_spojene"] = int(bool(a) and a == b and a != "UNDETERMINED")
     return r
+KANDIDATSKI = {"SHARED_FOOTPRINT_HEURISTIC", "AREA_LIST", "SUBJECT_PHRASE", "GAZETTE_CHAIN"}   # signali za pronalaženje kandidata, ne dokaz
+MIN_REF = 5   # ispod ovoga generacijska točnost se prikazuje kao N/A
+def nd(num, den, **kw):
+    d = {"vrijednost": round(num / den, 3) if den else "N/A", "brojnik": num, "nazivnik": den}; d.update(kw); return d
+def mjeri3(pred, zlatni, ref=None):
+    """Spec v0.16.1: sve nove metrike kao {vrijednost, brojnik, nazivnik}; stari ključevi ostaju (mjeri/mjeri2)."""
+    r = mjeri2(pred, zlatni, ref)
+    k = lambda l: kljuc(l["odluka_id"], l["plan"]["opcina"], l["plan"]["vrsta"], l["plan"]["broj"])
+    kp = lambda p: kljuc(p["odluka_id"], p["opcina"], p["vrsta"], p.get("broj"))
+    ml = [l for l in zlatni["veze"] if l["ocekivanje"] == "MUST_LINK"]
+    E = {kp(p): p for p in pred["veze"]}; R = {kp(p): p for p in pred.get("registar", pred["veze"])}
+    N = len(ml)
+    r["M_identity_detected_recall"] = nd(sum(k(l) in R for l in ml), N, nazivnik_opis="MUST_LINK veze; pronađeno = ispravan par (odluka, općina, vrsta, broj) u registru, uklj. UNKNOWN")
+    r["M_identity_exported_recall"] = nd(sum(k(l) in E for l in ml), N, nazivnik_opis="isto, ali u evaluacijskom izvozu")
+    ev = lambda l: E[k(l)].get("evidence_type") or R.get(k(l), {}).get("evidence_type")   # izvoz ili, ako ga nema u izvozu, registar
+    res = [l for l in ml if k(l) in E and ev(l) and ev(l) not in KANDIDATSKI]
+    r["M_identity_resolved_recall"] = nd(len(res), N, nazivnik_opis="u izvozu s dokazom koji nije samo kandidatski signal (heuristika obuhvata/popis područja/naslov/glasilo)")
+    konkr = [l for l in ml if l["veza"] != "UNKNOWN"]
+    odl = [l for l in konkr if k(l) in E and E[k(l)].get("veza") not in (None, "UNKNOWN")]
+    tocno = [l for l in odl if E[k(l)]["veza"] == l["veza"]]
+    r["M_relation_type_accuracy_decided"] = nd(len(tocno), len(odl), nazivnik_opis="konkretna referentna vrsta, sustav dao konkretnu vrstu (UNKNOWN isključen)")
+    r["M_relation_type_coverage"] = nd(len(odl), len(konkr), nazivnik_opis="udio referentnih konkretnih veza za koje je sustav dao konkretnu vrstu")
+    r["M_relation_type_accuracy_all"] = nd(len(tocno), len(konkr), nazivnik_opis="UNKNOWN i nedostajuće = neriješeno/netočno")
+    gu = [l for l in ml if l["veza"] == "UNKNOWN"]
+    r["M_unknown_count"] = {"izvoz_registar": r["unknown_count"], "referentno_UNKNOWN_u_zlatnom": len(gu),
+                            "napomena": "Referentne UNKNOWN veze nisu u nazivnicima vrste veze: sam zlatni skup kaže da vrsta nije dokaziva iz čl. 1."}
+    if ref:
+        G1 = [g for g in ref["generacije"] if g["dokazano"] and g["razina"] == "L1"]
+        G12 = [g for g in ref["generacije"] if g["dokazano"]]
+        P = pred.get("registar", pred["veze"])
+        def gp(oid): return next((p.get("generation_id") for p in P if p["odluka_id"] == oid and p["vrsta"] == "UPU" and str(p.get("broj")) == "1" and p["opcina"] == "Krk"), None)
+        for ime, G in (("L1", G1), ("L1_L2", G12)):
+            pok = [g for g in G if gp(g["odluka_id"]) not in (None, "UNDETERMINED")]
+            ok = [g for g in pok if gp(g["odluka_id"]) == g["generation_id"]]
+            acc = nd(len(ok), len(pok)) if len(G) >= MIN_REF else {"vrijednost": "N/A", "brojnik": len(ok), "nazivnik": len(pok), "razlog": "referentnih slučajeva %d < %d" % (len(G), MIN_REF)}
+            r["M_generation_accuracy_" + ime] = acc
+            r["M_generation_coverage_" + ime] = nd(len(pok), len(G))
+        r["M_generation_unproven_assigned"] = nd(r["generacija_bez_dokaza"], sum(1 for g in ref["generacije"] if not g["dokazano"]))
+    return r
 if __name__ == "__main__":
     pr = json.load(open(sys.argv[1]))
     if len(sys.argv) > 3: pr["registar"] = json.load(open(sys.argv[3]))["links"]      # opcionalno: puni registar (plan_identity_review.json)
     ref = json.load(open(REF)) if os.path.exists(REF) else None
-    r = mjeri2(pr, json.load(open(sys.argv[2] if len(sys.argv) > 2 and sys.argv[2] != "-" else Z)), ref)
+    r = mjeri3(pr, json.load(open(sys.argv[2] if len(sys.argv) > 2 and sys.argv[2] != "-" else Z)), ref)
     print(json.dumps(r, ensure_ascii=False, indent=1)); sys.exit(1 if r["zabranjeni_spojevi"] or r.get("gen_A_B_spojene") or r["auto_merge_bez_dokaza"] else 0)
