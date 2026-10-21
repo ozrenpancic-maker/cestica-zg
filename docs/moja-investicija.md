@@ -450,3 +450,7 @@ Prikaz se slaže kao prije; `izbWrap()` zatim premješta postojeće odjeljke (is
 - Izvor: digitalni katastarski plan DGU-a (ATOM, sloj zgrada po k.o., isti paketi kao `data/kat_krk`). Pripremu radi `tools/zg3d/pripremi_krk_zgrade.py <mapa s ko-*> data/zg3d_krk <datum>`; 29.065 zgrada, 825 kvadrata, 1,9 MB (oko 0,6 MB komprimirano).
 - Katastar ima samo tlocrt i način uporabe zgrade. Visina se PRETPOSTAVLJA prema vrsti zgrade (kuća 6,5 m, pomoćne oko 3 m, tablica `VISINE` u skripti), a zgrade se crtaju kao kvadri bez krova. Aplikacija to piše uz prikaz; ne tvrdi da su visine stvarne.
 - Podzemne zgrade i tlocrti manji od ~4 m² preskaču se; gdje se stara i nova izmjera preklapaju, vrijedi novija.
+
+## Osnovni pregled za cijelu Hrvatsku
+
+Izvan Grada Zagreba i otoka Krka (`regionOf` vraća „hr”) aplikacija prikazuje osnovni pregled: čestica uživo iz DGU-a (WMS `oss:BZP_CESTICE`), zemljišna knjiga i k.o. preko OSS posrednika, zaštićena područja i Natura 2000, nagib, ceste i pristup, sunce, 3D pogled i ortofoto. Okolne zgrade u 3D pogledu i skici dolaze iz OpenStreetMapa (Overpass); visina iz oznaka `height` ili `building:levels`, inače pretpostavka po vrsti zgrade, što napomena izričito navodi. Namjena i uvjeti gradnje se ne računaju: piše „Podaci nisu dostupni” uz poveznicu na ISPU. Kod: `loadParcelHR`, `inspectHR`, `renderHR`, `zg3dOsm` u `src/app.template.html`.
