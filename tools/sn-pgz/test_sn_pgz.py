@@ -147,3 +147,18 @@ def test_identitet_v0161_metrike_brojnik_nazivnik():
         if p["veza"] == "UNKNOWN": p["veza"] = "UNKNOWN"
     ref_pov = json.load(open(M.REF, encoding="utf-8"))
     assert [p["legal_status"] for p in ref_pov["pravni_status"]] == ["SUPERSEDED", "UNKNOWN"]
+
+
+def test_referenca_generacija_konzistentna():
+    import sys, os
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import validiraj_referencu as V, json, copy
+    o = V.validiraj(); assert o["greske"] == [], o["greske"]
+    assert o["lanci_iste_generacije_L1"] == ["MAL-PPU#G1", "VRB-PPU#G1", "VRB-UPU1#G1"]
+    r = json.load(open(os.path.join(V.B, "generacije-baska-malinska-vrbnik-v1.json"), encoding="utf-8"))
+    # negativni test validatora: nedokazan dokument s generacijom mora biti uhvaćen
+    r2 = copy.deepcopy(r); r2["slucajevi"][0]["dokumenti"][3]["generation_ref"] = "MAL-PPU#G1"
+    assert any("nedokazan dokument ima generaciju" in g for g in V.validiraj(r2)["greske"])
+    # SAME_GENERATION par s različitim lancem mora biti uhvaćen
+    r3 = copy.deepcopy(r); r3["slucajevi"][0]["dokumenti"][2]["dokazi"][0]["sn_navodi_u_citatu"] = ["99/99"]
+    assert any("zajedničkog broja SN" in g for g in V.validiraj(r3)["greske"])

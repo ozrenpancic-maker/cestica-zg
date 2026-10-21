@@ -1,0 +1,994 @@
+{
+ "opis": "Neovisni referentni skup generacija (Baška, Malinska-Dubašnica, Vrbnik). Namijenjen ISKLJUČIVO validaciji; ne koristiti za podešavanje algoritma. Ne mijenja zamrznuti skup krk-plan-identity-v1. Jedan pregledatelj, nije neovisno pravno provjereno.",
+ "verzija": 1,
+ "status": "SOURCE_READ_BY_ONE_REVIEWER_NOT_INDEPENDENTLY_VERIFIED",
+ "sha256": "382d9d6d226c8ee90731e542ad079717afeec27950f9986e98b18783f69cf6c7",
+ "promjene": [
+  "v1: prvi popis"
+ ],
+ "razine": {
+  "L1": "izričita pravna veza u tekstu odluke (citat s lancem SN)",
+  "L2": "posredno (npr. identičan naslov kao u citatu druge odluke)",
+  "L3": "kandidat (naziv/područje/datum)"
+ },
+ "ocekivanja_parova": [
+  "SAME_GENERATION",
+  "DIFFERENT_PLAN",
+  "NOT_SUPERSEDED",
+  "REVIEW_REQUIRED"
+ ],
+ "ograničenje": "Nijedan slučaj nije 'nova generacija zamjenjuje staru': u ove tri općine izvor nema izričit slučaj zamjene cijelog plana. Pozitivni parovi su isključivo ISTA generacija; ovaj skup ne može otkriti algoritam koji sve stavlja u jednu generaciju – to pokrivaju krk-plan-identity-v1 (14783 vs 28241) i negativni slučajevi C1(NOT_SUPERSEDED), C4, C5, C7.",
+ "slucajevi": [
+  {
+   "id": "C1",
+   "opcina": "Malinska-Dubašnica",
+   "plan": "PPUO Malinska-Dubašnica",
+   "tip": "ISTA_GENERACIJA_LANAC_IZMJENA + ZAMKA_UKIDANJE_KARTOGRAFSKIH_PRIKAZA",
+   "pitanje": "Pripadaju li pročišćeni tekst (38/09), izmjene (13/04, 14/06) i ciljane izmjene 2013. istoj generaciji, i je li ukidanje kartografskih prikaza ukidanje plana?",
+   "dokumenti": [
+    {
+     "odluka_id": "17702",
+     "generation_ref": "MAL-PPU#G1",
+     "kandidat": null,
+     "razina": "L1",
+     "dokazano": true,
+     "dokazi": [
+      {
+       "odluka_id": "17702",
+       "citat": "Ovim elaboratom utvrđen je pročišćeni tekst Odluke o donošenju Prostornog plana uređenja Općine Malinska - Dubašnica (»Službene novine Primorsko-goranske županije« broj 13/04)",
+       "uloga": "pročišćeni tekst lanca",
+       "clanak_izvoza": "1",
+       "sha256_citata": "6838b90072c925d48ad558623175b415fd3fd3cc8a4dab264df38530fc04a8a6",
+       "sha256_clanka": "d7550b9d7abef3acc462e4607092b3b2dc10d72984bcdd07e8487543af8f68ca",
+       "sn_navodi_u_citatu": [
+        "13/04"
+       ],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=17702"
+      },
+      {
+       "odluka_id": "17702",
+       "citat": "Odluke o donošenju Izmjena i dopuna Prostornog plana uređenja Općine Malinska - Dubašnica (»Službene novine Primorsko-goranske županije« broj 38/09)",
+       "uloga": "lanac",
+       "clanak_izvoza": "1",
+       "sha256_citata": "385700d5d51a187deb0e6da0562b1ca7909bc1178b90e8c7f6bb172bb44b2bdf",
+       "sha256_clanka": "d7550b9d7abef3acc462e4607092b3b2dc10d72984bcdd07e8487543af8f68ca",
+       "sn_navodi_u_citatu": [
+        "38/09"
+       ],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=17702"
+      }
+     ],
+     "napomena": "",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=17702",
+     "sn_vlastiti_broj": null
+    },
+    {
+     "odluka_id": "17701",
+     "generation_ref": "MAL-PPU#G1",
+     "kandidat": null,
+     "razina": "L1",
+     "dokazano": true,
+     "dokazi": [
+      {
+       "odluka_id": "17701",
+       "citat": "Ovim elaboratom mijenja se i dopunjuje Prostorni plan uređenja Općine Malinska - Dubašnica (»Službene novine Primorsko-goranske županije« broj 13/04 i 14/06)",
+       "uloga": "izmjena plana",
+       "clanak_izvoza": "1",
+       "sha256_citata": "78991b54fda3cc65298ce8cdf84ea3195d5f832f420877361556af05ce7d0a53",
+       "sha256_clanka": "64999da791822f31820f431f7d6464a7f0939f1f5cffccc9f41374b0359cb8e1",
+       "sn_navodi_u_citatu": [
+        "13/04",
+        "14/06"
+       ],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=17701"
+      },
+      {
+       "odluka_id": "17701",
+       "citat": "stavljaju se izvan snage kartografski prikazi Prostornog plana uređenja Općine Malinska - Dubašnica",
+       "uloga": "ukidanje samo kartografskih prikaza",
+       "clanak_izvoza": "157",
+       "sha256_citata": "f2380693e08f10926a596abf0e9bfa80c907c6e409b45e8f4cf46631a32f69e6",
+       "sha256_clanka": "e74e6688928328f23493156188cbd17cedee1d365965a637a56b2f23cf816b86",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=17701"
+      }
+     ],
+     "napomena": "",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=17701",
+     "sn_vlastiti_broj": null
+    },
+    {
+     "odluka_id": "27012",
+     "generation_ref": "MAL-PPU#G1",
+     "kandidat": null,
+     "razina": "L1",
+     "dokazano": true,
+     "dokazi": [
+      {
+       "odluka_id": "27012",
+       "citat": "Donose se ciljane Izmjene i dopune Prostornog plana uređenja Općine Malinska-Dubašnica (»Službene novine Primorsko-goranske županije« broj 13/04, 14/06 38/09 i 38/09 - pročišćeni tekst)",
+       "uloga": "izmjena plana",
+       "clanak_izvoza": "1",
+       "sha256_citata": "7c85f4d514a88df1475ed62150ff191ccef888433455fbf835a36618aca8f1ca",
+       "sha256_clanka": "7891ce84e43ffbafc0afc9c77271464270adfb7fb5776e9004a50547dbe43360",
+       "sn_navodi_u_citatu": [
+        "13/04",
+        "14/06",
+        "38/09",
+        "38/09"
+       ],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=27012"
+      },
+      {
+       "odluka_id": "27012",
+       "citat": "Stupanjem na snagu ovog Plana stavljaju se izvan snage kartografski prikazi Prostornog plana uređenja Općine Malinska-Dubašnica",
+       "uloga": "ukidanje samo kartografskih prikaza",
+       "clanak_izvoza": "12",
+       "sha256_citata": "529fdbbbbc4671b56d81ac029c5a54ba173a02ab829e8a6403201ed28b46536d",
+       "sha256_clanka": "c2bc6b224f61fc82542a48b3c87284585e9e7158f2e7a3333bf50025c237dbaf",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=27012"
+      }
+     ],
+     "napomena": "",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=27012",
+     "sn_vlastiti_broj": null
+    },
+    {
+     "odluka_id": "1876",
+     "generation_ref": "UNDETERMINED",
+     "kandidat": "MAL-PPU#G1",
+     "razina": "L3",
+     "dokazano": false,
+     "dokazi": [
+      {
+       "odluka_id": "1876",
+       "citat": "Donosi se Prostorni plan uređenja Općine Malinska - Dubašnica, u daljnjem tekstu: Plan.",
+       "uloga": "osnovni plan, bez broja SN u tekstu",
+       "clanak_izvoza": "1",
+       "sha256_citata": "a56a62b5dada7ff3edfe7244630cf56864aebf46f24699c1ec2a0e1f78e333cd",
+       "sha256_clanka": "e2a481ba696449b758d7c38eaa91b8ac80a39abb56d30bd9b6bd0f6bbdda7161",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=1876"
+      }
+     ],
+     "napomena": "Vjerojatno osnovna odluka (SN 13/04), ali broj SN nije u tekstu odluke; ostaje kandidat.",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=1876",
+     "sn_vlastiti_broj": null
+    }
+   ],
+   "parovi": [
+    {
+     "a": "17701",
+     "b": "27012",
+     "ocekivanje": "SAME_GENERATION",
+     "razina": "L1",
+     "temelj": "oba izričito mijenjaju plan s lancem SN 13/04, 14/06; nijedan ga ne zamjenjuje"
+    },
+    {
+     "a": "17702",
+     "b": "27012",
+     "ocekivanje": "SAME_GENERATION",
+     "razina": "L1",
+     "temelj": "isti lanac 13/04, 14/06, 38/09"
+    },
+    {
+     "a": "17701",
+     "b": "17702",
+     "ocekivanje": "SAME_GENERATION",
+     "razina": "L1",
+     "temelj": "isti lanac 13/04, 14/06"
+    },
+    {
+     "a": "27012",
+     "b": "17702",
+     "ocekivanje": "NOT_SUPERSEDED",
+     "razina": "L1",
+     "temelj": "stavljanje izvan snage samo KARTOGRAFSKIH prikaza nije stavljanje plana izvan snage; ne smije dati legal_status SUPERSEDED/REPEALED ni novu generaciju"
+    },
+    {
+     "a": "1876",
+     "b": "17701",
+     "ocekivanje": "REVIEW_REQUIRED",
+     "razina": "L3",
+     "temelj": "osnovna odluka nije dokaziva iz teksta"
+    }
+   ]
+  },
+  {
+   "id": "C2",
+   "opcina": "Vrbnik",
+   "plan": "UPU 1 Vrbnik (NA 1)",
+   "tip": "ISTA_GENERACIJA_PROMJENA_NAZIVA",
+   "pitanje": "Je li promjena naziva plana (Odluka 2017.) nova generacija? Nije.",
+   "dokumenti": [
+    {
+     "odluka_id": "36462",
+     "generation_ref": "VRB-UPU1#G1",
+     "kandidat": null,
+     "razina": "L1",
+     "dokazano": true,
+     "dokazi": [
+      {
+       "odluka_id": "36462",
+       "citat": "Donosi se Odluka o izmjeni i dopuni Odluke o donošenju Urbanističkog plana uređenja naselja Vrbnik (NA 1) s površinama izdvojenih namjena (T i R) - UPU 1 (Službene novine Primorsko-goranske županije broj 33/09)",
+       "uloga": "izmjena osnovne odluke SN 33/09",
+       "clanak_izvoza": "1",
+       "sha256_citata": "b3486291d55a16e0754e23675357e4948ee0d28721cb3ece5fa7bedd8ea50d13",
+       "sha256_clanka": "35bcea2272f0d7d2e174ee7971b078a8412046610cceb42a43e5ae2ed327ac47",
+       "sn_navodi_u_citatu": [
+        "33/09"
+       ],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=36462"
+      },
+      {
+       "odluka_id": "36462",
+       "citat": "Naziv plana iz stavka 1. ovog članka mijenja se i glasi",
+       "uloga": "izričita promjena naziva",
+       "clanak_izvoza": "1",
+       "sha256_citata": "78bfa4a3c794e9dfc4f5204b6e404fa6132babd38fa5a5dee6ccceceb7373e46",
+       "sha256_clanka": "35bcea2272f0d7d2e174ee7971b078a8412046610cceb42a43e5ae2ed327ac47",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=36462"
+      }
+     ],
+     "napomena": "",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=36462",
+     "sn_vlastiti_broj": null
+    },
+    {
+     "odluka_id": "39662",
+     "generation_ref": "VRB-UPU1#G1",
+     "kandidat": null,
+     "razina": "L1",
+     "dokazano": true,
+     "dokazi": [
+      {
+       "odluka_id": "39662",
+       "citat": "Donosi se Odluka o izmjeni i dopuni Odluke o donošenju Urbanističkog plana uređenja UPU 1 Vrbnik - NA 1",
+       "uloga": "izmjena",
+       "clanak_izvoza": "1",
+       "sha256_citata": "616f75717529a83d1a9321ec3042259e0b90613d48697d05d3d49ff38a269c6b",
+       "sha256_clanka": "e2771c33d4f684d7048b837b08e6fc42918a44d98e070207b3e80fe638130b11",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=39662"
+      },
+      {
+       "odluka_id": "39662",
+       "citat": "broj 33/09, 35/17 i 2/18-pročišćene odredbe",
+       "uloga": "lanac",
+       "clanak_izvoza": "1",
+       "sha256_citata": "0c5be4e9501fd210d1ec18e1fd6f71769ff507010d9a9fb023ccd984cca5eff8",
+       "sha256_clanka": "e2771c33d4f684d7048b837b08e6fc42918a44d98e070207b3e80fe638130b11",
+       "sn_navodi_u_citatu": [
+        "33/09",
+        "35/17",
+        "2/18"
+       ],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=39662"
+      }
+     ],
+     "napomena": "",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=39662",
+     "sn_vlastiti_broj": null
+    },
+    {
+     "odluka_id": "39830",
+     "generation_ref": "VRB-UPU1#G1",
+     "kandidat": null,
+     "razina": "L1",
+     "dokazano": true,
+     "dokazi": [
+      {
+       "odluka_id": "39830",
+       "citat": "(»Službene novine« Primorsko-goranske županije, broj 33/09, 35/17 i 7/19)",
+       "uloga": "lanac",
+       "clanak_izvoza": "22",
+       "sha256_citata": "0c943789155cb45ab5d8bd9f613eecd3fc4aeab5dc79c95f679c80c0d0781cc7",
+       "sha256_clanka": "2d06b226883688a3bfb3311ead9cb71423a6556cb580d696f08f2de6b4ac32bb",
+       "sn_navodi_u_citatu": [
+        "33/09",
+        "35/17",
+        "7/19"
+       ],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=39830"
+      },
+      {
+       "odluka_id": "39830",
+       "citat": "Elaborat »II. izmjene i dopune Urbanističkog plana uređenja UPU 1 Vrbnik - NA 1« izrađen je u 6",
+       "uloga": "II. izmjene",
+       "clanak_izvoza": "20",
+       "sha256_citata": "70dd47f1f2fe1fb14a055979b5c80cd18a248334225ab74efd6883a949f0718f",
+       "sha256_clanka": "3172d9e295d05c6e9a4ebd98a3dd060331e643e741c80681863d9e6c077a943a",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=39830"
+      }
+     ],
+     "napomena": "Dokument je smjesa odluke i pročišćenog teksta; generacija se odnosi na plan, ne na pojedini dio dokumenta.",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=39830",
+     "sn_vlastiti_broj": null
+    },
+    {
+     "odluka_id": "17522",
+     "generation_ref": "UNDETERMINED",
+     "kandidat": "VRB-UPU1#G1",
+     "razina": "L2",
+     "dokazano": false,
+     "dokazi": [
+      {
+       "odluka_id": "17522",
+       "citat": "Donosi se Urbanistički plan uređenja naselja Vrbnik (NA 1) s površinama izdvojenih namjena (T i R) - UPU 1",
+       "uloga": "osnovni plan; naslov identičan naslovu u citatu 36462",
+       "clanak_izvoza": "1",
+       "sha256_citata": "d073f256c73b7fc29cfac39658c6d1d192a4285a06a0128271ba7c7ee41b34b4",
+       "sha256_clanka": "5b1bdc5ac41e0951a7440d7f9d3c7dc19058cede48d5f00a370c7862693abe36",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=17522"
+      }
+     ],
+     "napomena": "Naslov identičan naslovu osnovne odluke iz 36462 (SN 33/09), ali vlastiti broj SN nije u tekstu: L2, ne potvrđeno.",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=17522",
+     "sn_vlastiti_broj": null
+    }
+   ],
+   "parovi": [
+    {
+     "a": "36462",
+     "b": "39662",
+     "ocekivanje": "SAME_GENERATION",
+     "razina": "L1",
+     "temelj": "isti lanac SN 33/09; naziv se razlikuje (stari naziv u 36462 st.1, novi u st.2)"
+    },
+    {
+     "a": "39662",
+     "b": "39830",
+     "ocekivanje": "SAME_GENERATION",
+     "razina": "L1",
+     "temelj": "isti lanac 33/09, 35/17"
+    },
+    {
+     "a": "36462",
+     "b": "39830",
+     "ocekivanje": "SAME_GENERATION",
+     "razina": "L1",
+     "temelj": "isti lanac 33/09"
+    },
+    {
+     "a": "17522",
+     "b": "36462",
+     "ocekivanje": "REVIEW_REQUIRED",
+     "razina": "L2",
+     "temelj": "identičan naslov, ali broj SN osnovne odluke nije u tekstu 17522"
+    }
+   ]
+  },
+  {
+   "id": "C3",
+   "opcina": "Vrbnik",
+   "plan": "PPUO Vrbnik",
+   "tip": "ISTA_GENERACIJA_LANAC_IZMJENA",
+   "pitanje": "Pripadaju li izmjene PPUO Vrbnik 2007.–2024. istoj generaciji?",
+   "dokumenti": [
+    {
+     "odluka_id": "13407",
+     "generation_ref": "VRB-PPU#G1",
+     "kandidat": null,
+     "razina": "L1",
+     "dokazano": true,
+     "dokazi": [
+      {
+       "odluka_id": "13407",
+       "citat": "Donose se Izmjene i dopune Prostornog plana uređenja Općine Vrbnik (»Službene novine« broj 16/04)",
+       "uloga": "izmjena plana SN 16/04",
+       "clanak_izvoza": "1",
+       "sha256_citata": "6e6e0e663f27bf80fc2ba43bf33a80fe151e5b80ceaabdc0839044eff1895605",
+       "sha256_clanka": "33dde156adee518b198096567571377e52ebfe381d1b1e837395ec3cf7c6012b",
+       "sn_navodi_u_citatu": [
+        "16/04"
+       ],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=13407"
+      }
+     ],
+     "napomena": "„u integralnom tekstu” ne znači novu generaciju: kasniji lanci zadržavaju 16/04 kao osnovu.",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=13407",
+     "sn_vlastiti_broj": null
+    },
+    {
+     "odluka_id": "35465",
+     "generation_ref": "VRB-PPU#G1",
+     "kandidat": null,
+     "razina": "L1",
+     "dokazano": true,
+     "dokazi": [
+      {
+       "odluka_id": "35465",
+       "citat": "Donosi se III. Dopuna Prostornog plana uređenja Općine Vrbnik (»Službene novine Primorsko-goranske županije« broj 16/04, 43/07, 53/07-ispravak, 22/16 i 26/16- pročišćeni tekst",
+       "uloga": "lanac",
+       "clanak_izvoza": "1",
+       "sha256_citata": "17b9c63750b38cf70d413b30ebb3971fbcb6e4d681f6286f121530fa7fa75822",
+       "sha256_clanka": "555c1612679c1c241ba0b2eb5433e7c48ec2e92d0dbdf9ada87a0eb119a4b5a3",
+       "sn_navodi_u_citatu": [
+        "16/04",
+        "43/07",
+        "53/07",
+        "22/16",
+        "26/16"
+       ],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=35465"
+      }
+     ],
+     "napomena": "",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=35465",
+     "sn_vlastiti_broj": null
+    },
+    {
+     "odluka_id": "48254",
+     "generation_ref": "VRB-PPU#G1",
+     "kandidat": null,
+     "razina": "L1",
+     "dokazano": true,
+     "dokazi": [
+      {
+       "odluka_id": "48254",
+       "citat": "Donosi se Odluka o izmjeni i dopuni Odluke o donošenju Prostornog plana uređenja Općine Vrbnik",
+       "uloga": "izmjena",
+       "clanak_izvoza": "1",
+       "sha256_citata": "aa83ccb1eb9d25603563cf1d027675629671a60668ef54835138f017f8dcb96b",
+       "sha256_clanka": "335011aa9f6fa1506696b58c5b461b88153a8da02afc1fe7c9f296d2a2f8bf09",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=48254"
+      },
+      {
+       "odluka_id": "48254",
+       "citat": "broj 16/04, 43/07, 53/07-ispravak, 22/16, 26/16- pročišćeni tekst, 11/17 i 28/17-pročišćeni tekst, 7/19 i 11/19-pročišćeni tekst",
+       "uloga": "lanac",
+       "clanak_izvoza": "1",
+       "sha256_citata": "efc67d405b9a6553db53d28c9c54de796765fc234ae74c991fa810a52743aa1b",
+       "sha256_clanka": "335011aa9f6fa1506696b58c5b461b88153a8da02afc1fe7c9f296d2a2f8bf09",
+       "sn_navodi_u_citatu": [
+        "16/04",
+        "43/07",
+        "53/07",
+        "22/16",
+        "26/16",
+        "11/17",
+        "28/17",
+        "7/19",
+        "11/19"
+       ],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=48254"
+      }
+     ],
+     "napomena": "",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=48254",
+     "sn_vlastiti_broj": null
+    },
+    {
+     "odluka_id": "34277",
+     "generation_ref": "UNDETERMINED",
+     "kandidat": "VRB-PPU#G1",
+     "razina": "L3",
+     "dokazano": false,
+     "dokazi": [
+      {
+       "odluka_id": "34277",
+       "citat": "Donose se II. Izmjene i dopune Prostornog plana uređenja Općine Vrbnik",
+       "uloga": "izmjena bez lanca SN u tekstu",
+       "clanak_izvoza": "1",
+       "sha256_citata": "b2fe68f0aaf06987e687ee5530f5dd80de0b03211e59392d2ae0dae5753e0245",
+       "sha256_clanka": "4578eb930bafabf9fad520268fe0e89fbc3fc052251fbeb3d903ff0c6a9700cb",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=34277"
+      }
+     ],
+     "napomena": "Tekst ne navodi lanac SN; kandidat.",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=34277",
+     "sn_vlastiti_broj": null
+    }
+   ],
+   "parovi": [
+    {
+     "a": "35465",
+     "b": "48254",
+     "ocekivanje": "SAME_GENERATION",
+     "razina": "L1",
+     "temelj": "lanac 16/04, 43/07, 53/07, 22/16, 26/16 zajednički"
+    },
+    {
+     "a": "13407",
+     "b": "35465",
+     "ocekivanje": "SAME_GENERATION",
+     "razina": "L1",
+     "temelj": "osnova SN 16/04 zajednička"
+    },
+    {
+     "a": "13407",
+     "b": "48254",
+     "ocekivanje": "SAME_GENERATION",
+     "razina": "L1",
+     "temelj": "osnova SN 16/04 zajednička"
+    },
+    {
+     "a": "34277",
+     "b": "35465",
+     "ocekivanje": "REVIEW_REQUIRED",
+     "razina": "L3",
+     "temelj": "34277 ne navodi lanac SN"
+    }
+   ]
+  },
+  {
+   "id": "C4",
+   "opcina": "Baška",
+   "plan": "UPU-1 Baška (N1-1) i UPU-2 Baška-Zarok (N1-2)",
+   "tip": "RAZLICITI_PLANOVI_ISTI_BROJ_SN",
+   "pitanje": "Isti broj SN 24/12 u citatima: isti plan? Ne.",
+   "dokumenti": [
+    {
+     "odluka_id": "36814",
+     "generation_ref": "BAS-UPU1#G1",
+     "kandidat": null,
+     "razina": "L1",
+     "dokazano": true,
+     "dokazi": [
+      {
+       "odluka_id": "36814",
+       "citat": "usklađuje se Urbanistički plan uređenja UPU-1 Baška (N1-1)",
+       "uloga": "predmet",
+       "clanak_izvoza": "1",
+       "sha256_citata": "549b919d9c14bb4ae6edc20e9b32d82b741eabf664cb79ce48df2ebb52bb069d",
+       "sha256_clanka": "ef414ea698119cc31386a6b40ed46d99254d02bf0354fbc5fc729adc0a6bb03e",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=36814"
+      },
+      {
+       "odluka_id": "36814",
+       "citat": "broj 24/12), u nastavku teksta: Plan",
+       "uloga": "lanac",
+       "clanak_izvoza": "1",
+       "sha256_citata": "70ec6493d6876db66b4e85cfad1b3ad7e7b9364c1a3bb0ab01f41918c8a55736",
+       "sha256_clanka": "ef414ea698119cc31386a6b40ed46d99254d02bf0354fbc5fc729adc0a6bb03e",
+       "sn_navodi_u_citatu": [
+        "24/12"
+       ],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=36814"
+      }
+     ],
+     "napomena": "",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=36814",
+     "sn_vlastiti_broj": null
+    },
+    {
+     "odluka_id": "36815",
+     "generation_ref": "BAS-UPU2#G1",
+     "kandidat": null,
+     "razina": "L1",
+     "dokazano": true,
+     "dokazi": [
+      {
+       "odluka_id": "36815",
+       "citat": "usklađuje se Urbanistički plan uređenja UPU-2 Baška-Zarok (N1-2)",
+       "uloga": "predmet",
+       "clanak_izvoza": "1",
+       "sha256_citata": "dc33e74ca223b8926f66ea43fd64c1dffc2d92be6032d790999e5ed63d1defa1",
+       "sha256_clanka": "6179f5f29acb5500ce6b70540b19d8bb9bd994358a6aeb9feed4eb7c5325b872",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=36815"
+      },
+      {
+       "odluka_id": "36815",
+       "citat": "broj 24/12 i 10/16)",
+       "uloga": "lanac",
+       "clanak_izvoza": "1",
+       "sha256_citata": "26b6ef36389ce221375f2f21a9be92e49c65622fcfb47b3c1112314c11b65377",
+       "sha256_clanka": "6179f5f29acb5500ce6b70540b19d8bb9bd994358a6aeb9feed4eb7c5325b872",
+       "sn_navodi_u_citatu": [
+        "24/12",
+        "10/16"
+       ],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=36815"
+      }
+     ],
+     "napomena": "",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=36815",
+     "sn_vlastiti_broj": null
+    },
+    {
+     "odluka_id": "24962",
+     "generation_ref": "UNDETERMINED",
+     "kandidat": "BAS-UPU2#G1",
+     "razina": "L3",
+     "dokazano": false,
+     "dokazi": [
+      {
+       "odluka_id": "24962",
+       "citat": "Ovom Odlukom donosi se Urbanistički plan uređenja - 2 - Baška - Zarok (N1-2)",
+       "uloga": "osnovni plan, bez broja SN u tekstu",
+       "clanak_izvoza": "1",
+       "sha256_citata": "8e1675d282edef096be129af6fca1d75ca1de374c5fddfb3dfff7f653a574278",
+       "sha256_clanka": "ef4d2172031dd4ab9e43093bcf47e91f019ccad59fd5de28ca75d93d63aa75a6",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=24962"
+      }
+     ],
+     "napomena": "Kandidat osnovne odluke UPU-2; SN 24/12 nije u tekstu.",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=24962",
+     "sn_vlastiti_broj": null
+    }
+   ],
+   "parovi": [
+    {
+     "a": "36814",
+     "b": "36815",
+     "ocekivanje": "DIFFERENT_PLAN",
+     "razina": "L1",
+     "temelj": "isti SN 24/12 u lancu, ali izričito UPU-1 (N1-1) i UPU-2 (N1-2): isti broj glasila nije isti plan"
+    },
+    {
+     "a": "24962",
+     "b": "36815",
+     "ocekivanje": "REVIEW_REQUIRED",
+     "razina": "L3",
+     "temelj": "ime i broj plana podudarni, SN osnovne odluke nije u tekstu"
+    }
+   ]
+  },
+  {
+   "id": "C5",
+   "opcina": "Baška",
+   "plan": "PPUO Općine Baška",
+   "tip": "ZAMKA_DVA_DONOSI_SE_I_DJELOMICNO_UKIDANJE_STAROG_PLANA",
+   "pitanje": "Dva teksta 'Donosi se PPUO Baška': dvije generacije? Ukida li novi plan stari u cijelosti?",
+   "dokumenti": [
+    {
+     "odluka_id": "14008",
+     "generation_ref": "UNDETERMINED",
+     "kandidat": "BAS-PPU#G1",
+     "razina": "L3",
+     "dokazano": false,
+     "dokazi": [
+      {
+       "odluka_id": "14008",
+       "citat": "Donosi se Prostorni plan uređenja Općine Baška, u daljnjem tekstu: Plan.",
+       "uloga": "donošenje",
+       "clanak_izvoza": "1",
+       "sha256_citata": "7a2584871a24204f5c46e8bff1919d0e1ac290542b01abc786cfb396a66dfd0e",
+       "sha256_clanka": "02f233aeed1c213c029261870687a8a6104927e0d47d0264ccb74728d44bbc60",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=14008"
+      },
+      {
+       "odluka_id": "14008",
+       "citat": "u dijelu koji se odnosi na područje Općine Baška",
+       "uloga": "djelomično ukidanje starog plana",
+       "clanak_izvoza": "156",
+       "sha256_citata": "7faa0be2cb0c06d7bf326a4e40243602ed229167de3889f99a159f99270f53ae",
+       "sha256_clanka": "0d356acfa26203644d8e9390261a790ea6f24f795ad85c802e32af1fb47a5ca7",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=14008"
+      }
+     ],
+     "napomena": "Datum odluke 3. 12. 2007.",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=14008",
+     "sn_vlastiti_broj": null
+    },
+    {
+     "odluka_id": "25645",
+     "generation_ref": "UNDETERMINED",
+     "kandidat": "BAS-PPU#G1",
+     "razina": "L3",
+     "dokazano": false,
+     "dokazi": [
+      {
+       "odluka_id": "25645",
+       "citat": "Donosi se Prostorni plan uređenja Općine Baška, u daljnjem tekstu: Plan.",
+       "uloga": "donošenje",
+       "clanak_izvoza": "1",
+       "sha256_citata": "7a2584871a24204f5c46e8bff1919d0e1ac290542b01abc786cfb396a66dfd0e",
+       "sha256_clanka": "12ba871b0f56de25b95f4129c6ed77100797c016f3a9df4152a960073f14a24d",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=25645"
+      },
+      {
+       "odluka_id": "25645",
+       "citat": "Stupanjem na snagu Odluke o donošenju Prostornog plana uređenja Općine Baška (»Službene novine Primorsko-goranske županije« br. 1/08) prestaje važiti",
+       "uloga": "upućuje na SN 1/08 u 3. licu",
+       "clanak_izvoza": "160",
+       "sha256_citata": "5f589fccd7f49a29b4b4e2c4b12e32bf9d4c1d27c2c88d8f40e1b8b676a0ed3d",
+       "sha256_clanka": "be4b9fffdb6830ebda1d0508906209a3e98b1bd37ca5e9f8e446b3efd5e0d9de",
+       "sn_navodi_u_citatu": [
+        "1/08"
+       ],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=25645"
+      }
+     ],
+     "napomena": "Tekst upućuje na odluku iz SN 1/08 u trećem licu: ne može se dokazati je li ovo ista odluka u drugom obliku ili nova.",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=25645",
+     "sn_vlastiti_broj": null
+    }
+   ],
+   "parovi": [
+    {
+     "a": "14008",
+     "b": "25645",
+     "ocekivanje": "REVIEW_REQUIRED",
+     "razina": "L3",
+     "temelj": "ne smije se automatski označiti ni kao ista ni kao nova generacija"
+    }
+   ],
+   "pravni_status": [
+    {
+     "subjekt": "Prostorni plan bivše Općine Krk (SN 31/78 ... 4/93)",
+     "ocekivanje": "NOT_FULLY_SUPERSEDED_PARTIAL_BY_AREA",
+     "razina": "L1",
+     "dokazi": [
+      {
+       "odluka_id": "14008",
+       "citat": "u dijelu koji se odnosi na područje Općine Baška",
+       "uloga": "djelomično",
+       "clanak_izvoza": "156",
+       "sha256_citata": "7faa0be2cb0c06d7bf326a4e40243602ed229167de3889f99a159f99270f53ae",
+       "sha256_clanka": "0d356acfa26203644d8e9390261a790ea6f24f795ad85c802e32af1fb47a5ca7",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=14008"
+      },
+      {
+       "odluka_id": "1876",
+       "citat": "Donošenjem ovog Plana na području Općine Malinska - Dubašnica prestaje važiti Prostorni plan bivše Općine Krk",
+       "uloga": "po općini",
+       "clanak_izvoza": "140",
+       "sha256_citata": "b1a7d05df31600f60ffbb93ec1b453010c3863822c4ef9001bc271b4fd968998",
+       "sha256_clanka": "52ec89e28e4eabc4ed9a71fa2eb43960a7307c80427d7672b46728dacfa94744",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=1876"
+      }
+     ],
+     "temelj": "ukidanje po općini, ne u cijelosti; legal_status ne smije biti globalni SUPERSEDED"
+    }
+   ]
+  },
+  {
+   "id": "C6",
+   "opcina": "Malinska-Dubašnica",
+   "plan": "UPU 1 Malinska, Radići (GP-1)",
+   "tip": "L1_IZMJENA_I_KANDIDAT_OSNOVE",
+   "pitanje": "Pripada li tekst 27287 (2. 4. 2013.) UPU 1 Radići?",
+   "dokumenti": [
+    {
+     "odluka_id": "32729",
+     "generation_ref": "MAL-UPU1R#G1",
+     "kandidat": null,
+     "razina": "L1",
+     "dokazano": true,
+     "dokazi": [
+      {
+       "odluka_id": "32729",
+       "citat": "Odluke o donošenju Urbanističkog plana uređenja UPU 1 Malinska, Radići (GP-1)",
+       "uloga": "predmet izmjene",
+       "clanak_izvoza": "1",
+       "sha256_citata": "0e4ec0d0d787c89d4b28fa27ee4a31a8611dddb32156ab9e36876996e12fcf04",
+       "sha256_clanka": "b28378290f84e271bf382a00908b04582c62214a5bd57cabbeb1e065b58668b2",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=32729"
+      },
+      {
+       "odluka_id": "32729",
+       "citat": "broj 14/13 i 03/14",
+       "uloga": "lanac",
+       "clanak_izvoza": "1",
+       "sha256_citata": "e8f5e17973f25da2856bc19351598b58a465ab3946a3236573ec4d2a763bab37",
+       "sha256_clanka": "b28378290f84e271bf382a00908b04582c62214a5bd57cabbeb1e065b58668b2",
+       "sn_navodi_u_citatu": [
+        "14/13",
+        "03/14"
+       ],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=32729"
+      }
+     ],
+     "napomena": "",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=32729",
+     "sn_vlastiti_broj": null
+    },
+    {
+     "odluka_id": "27287",
+     "generation_ref": "UNDETERMINED",
+     "kandidat": "MAL-UPU1R#G1",
+     "razina": "L3",
+     "dokazano": false,
+     "dokazi": [
+      {
+       "odluka_id": "27287",
+       "citat": "1.Građevinsko područje naselja GP-1: Malinska, Radići",
+       "uloga": "područje u čl. 1; naslov plana nije u izvozu",
+       "clanak_izvoza": "1",
+       "sha256_citata": "1c33ccf6691512b9710bfd418faa0d72fd75b652fbbcf1e2eea5a03451e18119",
+       "sha256_clanka": "a562591b68ea8f0154113dbc14ef5a456559e90f51ceefe26712e9efcd6bfae4",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=27287"
+      }
+     ],
+     "napomena": "Datum 2. 4. 2013. odgovara SN 14/13 samo kronološki; naslov i broj SN nisu u tekstu.",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=27287",
+     "sn_vlastiti_broj": null
+    }
+   ],
+   "parovi": [
+    {
+     "a": "27287",
+     "b": "32729",
+     "ocekivanje": "REVIEW_REQUIRED",
+     "razina": "L3",
+     "temelj": "kandidat po području i datumu; nema izričite poveznice"
+    }
+   ]
+  },
+  {
+   "id": "C7",
+   "opcina": "Vrbnik",
+   "plan": "UPU 11 Risika (NA 2_3) / UPU 2 Risika (NA 2_11)",
+   "tip": "RAZLICITI_PLANOVI_SLICAN_NAZIV",
+   "pitanje": "Dva 'UPU naselja Risika': isti plan? Ne.",
+   "dokumenti": [
+    {
+     "odluka_id": "16714",
+     "generation_ref": "VRB-UPU11#G1",
+     "kandidat": null,
+     "razina": "L1",
+     "dokazano": true,
+     "dokazi": [
+      {
+       "odluka_id": "16714",
+       "citat": "Donosi se Urbanistički plan uređenja naselja Risika (NA 2_3) s površinom izdvojene namjene T2 4 (UPU 11)",
+       "uloga": "identitet",
+       "clanak_izvoza": "1",
+       "sha256_citata": "5b422876f41046804219ecd4972a4eeb47aa62179d56910d89c593463519faad",
+       "sha256_clanka": "c0e388bd82e74e8a89fb9eeef7003a9b30ecd482e234a09952d1cff42a4dddda",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=16714"
+      }
+     ],
+     "napomena": "",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=16714",
+     "sn_vlastiti_broj": null
+    },
+    {
+     "odluka_id": "17523",
+     "generation_ref": "VRB-UPU2#G1",
+     "kandidat": null,
+     "razina": "L1",
+     "dokazano": true,
+     "dokazi": [
+      {
+       "odluka_id": "17523",
+       "citat": "Donosi se Urbanistički plan uređenja naselja Risika (NA 2_11) s površinama izdvojenih namjena (T2) - UPU 2",
+       "uloga": "identitet",
+       "clanak_izvoza": "1",
+       "sha256_citata": "705b31ad71f7836cc53e8a77a1c4030d929e5b2c85500fae9d8195978c754b08",
+       "sha256_clanka": "03efc2a74c1adf99ae8a293e655bb44b81698b6610a4041753350c3c4fbe93a9",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=17523"
+      }
+     ],
+     "napomena": "",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=17523",
+     "sn_vlastiti_broj": null
+    }
+   ],
+   "parovi": [
+    {
+     "a": "16714",
+     "b": "17523",
+     "ocekivanje": "DIFFERENT_PLAN",
+     "razina": "L1",
+     "temelj": "isto naselje, različit broj UPU i oznaka NA"
+    }
+   ]
+  },
+  {
+   "id": "C8",
+   "opcina": "Malinska-Dubašnica",
+   "plan": "DPU Haludovo (SN 30/06, 2/07-ispr.)",
+   "tip": "PRAVNI_STATUS_UKIDANJE_VS_POKRETANJE",
+   "pitanje": "Je li DPU Haludovo stavljen izvan snage, a koja odluka je samo pokretanje postupka?",
+   "dokumenti": [
+    {
+     "odluka_id": "46503",
+     "generation_ref": "MAL-DPUH#G1",
+     "kandidat": null,
+     "razina": "L1",
+     "dokazano": true,
+     "dokazi": [
+      {
+       "odluka_id": "46503",
+       "citat": "Donosi se Odluka o stavljanju izvan snage Odluke o donošenju Detaljnog plana uređenja Haludovo",
+       "uloga": "ukidanje",
+       "clanak_izvoza": "1",
+       "sha256_citata": "bf19329118e7143f950883fe45a8a18739a8eea150e5fa4c28c1e49d56f24674",
+       "sha256_clanka": "0c53fc357c027a7b1bcd42732e6a4c8d3cf7484afbe7505ff468122f1c1c5f93",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=46503"
+      },
+      {
+       "odluka_id": "46503",
+       "citat": "Ova Odluka stupa na snagu osmog dana od dana objave",
+       "uloga": "stupanje na snagu",
+       "clanak_izvoza": "2",
+       "sha256_citata": "7306db8b9f6d49670b1e658793bfe0ebaf6d1eb013bec769a6597b715641e4f7",
+       "sha256_clanka": "c5114993e97bc8f544790436009a78386a2de66d05ca59d62f809b78d1e63893",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=46503"
+      },
+      {
+       "odluka_id": "46503",
+       "citat": "Malinska, 11. svibnja 2023.",
+       "uloga": "datum",
+       "clanak_izvoza": "2",
+       "sha256_citata": "d040e6cc42755bdfaf734efb7ba2c8debbf736aa40b07fb9db07d15d140b434f",
+       "sha256_clanka": "c5114993e97bc8f544790436009a78386a2de66d05ca59d62f809b78d1e63893",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=46503"
+      }
+     ],
+     "napomena": "",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=46503",
+     "sn_vlastiti_broj": null
+    },
+    {
+     "odluka_id": "45310",
+     "generation_ref": "MAL-DPUH#G1",
+     "kandidat": null,
+     "razina": "L1",
+     "dokazano": true,
+     "dokazi": [
+      {
+       "odluka_id": "45310",
+       "citat": "Donosi se Odluka o pokretanju postupka stavljanja izvan snage Detaljnog plana uređenja Haludovo",
+       "uloga": "samo pokretanje",
+       "clanak_izvoza": "1",
+       "sha256_citata": "75079a98dd79c5534ea3b62c578b5e2385bb35db4dab12ebe65eaa47ff439ff7",
+       "sha256_clanka": "9a200415e363fa2526c9ef5df79649cbf088bfc55a28018900f4995785241184",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=45310"
+      },
+      {
+       "odluka_id": "45310",
+       "citat": "Malinska, 15. rujna 2022.",
+       "uloga": "datum",
+       "clanak_izvoza": "13",
+       "sha256_citata": "3db76f8601d5c57764d94edd1f31320c2de8c5958b317f0e587420691655ae1c",
+       "sha256_clanka": "be7a0d31b8a2ede26fc74a46d9d611c8190512521a5c9b0d7b7480e2026ab555",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=45310"
+      }
+     ],
+     "napomena": "",
+     "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=45310",
+     "sn_vlastiti_broj": null
+    }
+   ],
+   "parovi": [],
+   "pravni_status": [
+    {
+     "subjekt": "DPU Haludovo (SN 30/06, 2/07-ispr.)",
+     "ocekivanje": "REPEALED",
+     "razina": "L1",
+     "legal_status_as_of": null,
+     "napomena_as_of": "Datum objave u SN nije u tekstu; stupanje na snagu osmi dan od objave; datum akta 11. 5. 2023. nije datum stupanja na snagu.",
+     "dokazi": [
+      {
+       "odluka_id": "46503",
+       "citat": "Donosi se Odluka o stavljanju izvan snage Odluke o donošenju Detaljnog plana uređenja Haludovo",
+       "uloga": "ukidanje",
+       "clanak_izvoza": "1",
+       "sha256_citata": "bf19329118e7143f950883fe45a8a18739a8eea150e5fa4c28c1e49d56f24674",
+       "sha256_clanka": "0c53fc357c027a7b1bcd42732e6a4c8d3cf7484afbe7505ff468122f1c1c5f93",
+       "sn_navodi_u_citatu": [],
+       "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=46503"
+      }
+     ],
+     "temelj": "Odluka 45310 (pokretanje postupka) ne ukida plan; to čini tek 46503"
+    }
+   ]
+  }
+ ]
+}
