@@ -339,6 +339,16 @@
             "etaze": "podrum i 3 nadzemne etaže, od kojih je jedna suteren",
             "kis": 1.0
           },
+          "oblici": [
+            [
+              "slob",
+              "slobodnostojeća"
+            ],
+            [
+              "dvoj",
+              "dvojna"
+            ]
+          ],
           "slob": {
             "minC": 500,
             "izg": 0.25,
@@ -348,14 +358,6 @@
             "tlMax": 200
           },
           "dvoj": {
-            "minC": 400,
-            "izg": 0.25,
-            "kis": 0.75,
-            "kisPodrum": 0.75,
-            "tlMin": 60,
-            "tlMax": 150
-          },
-          "ugr": {
             "minC": 400,
             "izg": 0.25,
             "kis": 0.75,
@@ -1484,7 +1486,7 @@
             "tlMin": 0,
             "napomena": "Kis 1,25 je ukupni (nadzemni 0,75 i podzemni 0,5)."
           },
-            "txt": {}
+          "txt": {}
         }
       },
       "meda": {

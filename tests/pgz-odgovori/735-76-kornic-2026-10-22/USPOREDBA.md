@@ -50,3 +50,23 @@ Oba oblika upita za planove vraćaju istih 29 zapisa (provjereno po vrsti, SN br
 - Za PPUG 41/09 `STATUS_GIS` je `INFO_TEXT_ONLY` (nema grafike u sloju).
 
 Ništa od ovoga nije pravna potvrda; pravni dokaz ostaje objava u Službenim novinama.
+
+## Provjera prema objavi SN PGŽ 19/2016 (id 34138)
+
+Izvor: http://www.sn.pgz.hr/default.asp?Link=odluke&id=34138, dohvat 22. 10. 2026. 20:01 UTC. Izvorni HTML i tekst su u `sn-19-16/` (SHA-256 u `sn-19-16/_meta.json`).
+
+| Podatak | Županijski sloj | Objava u SN | Ocjena |
+|---|---|---|---|
+| Glasilo | SN 2016-19 | godina XXIV., broj 19., petak 29. srpnja 2016. | ✔ |
+| Donošenje | 27.07.2016. | Gradsko vijeće Grada Krka, sjednica 27. srpnja 2016. | ✔ |
+| Objava | 29.07.2016. | 29. srpnja 2016. | ✔ |
+| Stupanje na snagu | 05.08.2016. | čl. 108.: osmoga dana od dana objave | ⚠ uz uobičajeno računanje (dan objave se ne računa) to je 06.08.2016.; razliku od jednog dana treba potvrditi pravno |
+| Obuhvat | UPU 2 sadrži točku čestice | čl. 1.: građevinsko područje naselja Kornić, NA 2 | ✔ odgovara zoni NA2 iz `NAMJENA_POVRSINA_NOVO` |
+
+**Nalazi**
+- HTML objave sadrži samo čl. 1.–53. i čl. 108.; čl. 54.–107. nisu u HTML-u (tekst skače nakon tablice parkiranja u čl. 53.). Puni tekst je u priloženom PDF-u (`download.asp?id=28072`, nije preuzet). Čl. 83. (kulturno-povijesna cjelina), na koji se pozivaju čl. 38. i napomena u aplikaciji, zato ovdje **nije provjeren**.
+- U uvodu se Odluka o izradi navodi kao SN 14/08, a u čl. 1. kao SN 32/08. Neusklađenost je u samom izvoru.
+- Čl. 37.–40.: svih 17 navoda iz `src/rules_krk.json` (UPU 2) doslovno se nalazi u objavi; brojke (500/400/300 m², kig 0,25, kis 0,75 i 1,0, tlocrt 60–200/150/100 m², 7,5 i 10,5 m, međe 4/3 m, regulacija 6/9 i 4/7 m, zelenilo 40 %) odgovaraju.
+- **Pogreška u aplikaciji, ispravljena na `razvoj`:** aplikacija je za višeobiteljsku kuću nudila i „ugrađenu" gradnju (min. čestica 400 m², tlocrt 150 m²). Čl. 37. st. 1. dopušta višeobiteljsku kuću samo kao slobodnostojeću ili dvojnu, a čl. 39. obuhvaća ugrađenu samo za obiteljsku. Uklonjeno i dodan test.
+
+**Za česticu 735/76 (405 m² prema grafičkom katastru, zona M11 ili M2 ako je korisnik takvu odabere):** slobodnostojeća obiteljska kuća moguća je samo po iznimci od 400 m² (okruženje uređenih i izgrađenih čestica, čl. 38.); slobodnostojeća višeobiteljska (500 m²) i stambena građevina (500 m²) nisu; dvojna obiteljska (300 m²) i dvojna višeobiteljska (400 m²) jesu prema površini. Upisana površina u zemljišnoj knjizi može se razlikovati.
