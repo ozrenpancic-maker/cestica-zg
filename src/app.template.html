@@ -41,8 +41,9 @@ main{flex:1;position:relative;min-height:0}
 .layers label{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:13px;display:flex;gap:6px;align-items:center}
 #panel{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;background:var(--panel);border-top:1px solid var(--line);border-radius:14px 14px 0 0;z-index:1001;box-shadow:0 -6px 24px rgba(0,0,0,.12)}
 #sheet,#aux,#ai{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:6px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
-#grab{flex:none;height:22px;display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none}
-#grab span{width:44px;height:5px;border-radius:3px;background:var(--line)}
+#grab{flex:none;height:44px;display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none}
+#grab span{width:72px;height:6px;border-radius:3px;background:var(--muted);opacity:.45}
+#wideBar{display:none}
 #tabs{display:none}
 .m-only{display:none}
 #menu{position:absolute;right:10px;top:calc(env(safe-area-inset-top,0px) + 58px);z-index:1100;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;box-shadow:0 6px 24px rgba(0,0,0,.15);max-width:280px}
@@ -52,7 +53,10 @@ main{flex:1;position:relative;min-height:0}
 body.net-busy #netbar{opacity:1}
 @keyframes nb{from{background-position:-40% 0}to{background-position:140% 0}}
 @media (prefers-reduced-motion:reduce){#netbar{animation:none;background:var(--accent)}}
-@media (min-width:900px){#panel{left:auto;top:10px;right:10px;bottom:10px;width:420px;border-radius:12px;border:1px solid var(--line)} #grab{display:none} #sheet,#aux,#ai{padding-top:14px} .layers{right:440px}}
+@media (min-width:900px){#panel{left:auto;top:10px;right:10px;bottom:10px;width:420px;border-radius:12px;border:1px solid var(--line)} #grab{display:none} #sheet,#aux,#ai{padding-top:6px} .layers{right:440px}
+  #wideBar{display:flex;flex:none;justify-content:flex-end;padding:8px 10px 0}
+  #wideBtn{padding:4px 10px;font-size:13px}
+  .panel-wide #panel{width:max(420px,calc(50vw - 20px))} .panel-wide .layers{right:calc(max(420px,50vw - 20px) + 20px)}}
 /* mobitel: karta glavna, panel s tri stanja, donja navigacija */
 @media (max-width:899px){
   header h1{display:none}
@@ -500,6 +504,7 @@ ul.risk small{color:var(--muted)}
     <button type="button" id="panelFab" aria-label="Prikaži podatke o čestici"><b aria-hidden="true">▴</b><span id="panelFabT">Podaci</span></button>
     <div id="panel" class="st-peek">
       <div id="grab" role="button" tabindex="0" aria-label="Povećaj panel"><span></span></div>
+      <div id="wideBar"><button type="button" class="ib" id="wideBtn" aria-pressed="false" title="Proširi panel na pola ekrana">⇔ Proširi</button></div>
       <section id="sheet" aria-live="polite">
         <p class="eyebrow">Kako radi</p>
         <p class="hint">Dodirni zemljište na karti (zumiraj do razine ulice). Dobit ćeš katastarsku česticu, namjenu iz prostornog plana i urbano pravilo GUP-a s uvjetima gradnje.</p><div id="sumEnd"></div>
@@ -5912,6 +5917,15 @@ function auxOpen(html){try{aiCloseP()}catch(e){} aux.innerHTML=`<div class="acti
 function auxClose(){aux.hidden=true; sheet.hidden=false;}
 aux.addEventListener("click",e=>{ if(e.target.id==="auxBack"){auxClose(); if(UI.tab==="spremljeno") setTab(UI.hadParcel?"analiza":"karta");} });
 document.getElementById("tabs").addEventListener("click",e=>{const b=e.target.closest("button[data-tab]"); if(b) setTab(b.dataset.tab);});
+// web: panel uz kartu može se proširiti na pola ekrana (izbor se pamti); na mobitelu gumb nije prikazan
+function panelWide(on,{save=true}={}){
+  appEl.classList.toggle("panel-wide",on); const b=document.getElementById("wideBtn");
+  if(b){b.setAttribute("aria-pressed",String(on)); b.textContent=on?"⇔ Suzi":"⇔ Proširi"; b.title=on?"Vrati uobičajenu širinu panela":"Proširi panel na pola ekrana";}
+  if(save) try{localStorage.setItem("panelWide",on?"1":"0")}catch(e){}
+  setTimeout(()=>map.invalidateSize(),60);
+}
+document.getElementById("wideBtn").addEventListener("click",()=>panelWide(!appEl.classList.contains("panel-wide")));
+try{if(localStorage.getItem("panelWide")==="1") panelWide(true,{save:false})}catch(e){}
 // povlačenje ručke panela
 (function(){
   let y0=null,h0=0,t0=0,moved=false;
