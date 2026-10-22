@@ -1652,6 +1652,11 @@ async function okuTests(){
    const sum=ks.reduce((a,k)=>a+oA(it[k].g),0), kuca=oA(rect(-5.6,-0.6,5.6,8.6));
    ok(prek<0.5&&Math.abs(sum+kuca-1200)<2&&ks.every(k=>oA(oX(it[k].g,I.parcel))>=oA(it[k].g)-0.05)&&ks.every(k=>oA(oX(it[k].g,rect(-5,0,5,8)))<0.01),"Okućnica: dijelovi se ne preklapaju, svi su unutar čestice i izvan kuće; zajedno s kućom pokrivaju cijelu česticu");}
   ok(Math.abs(P.vrt-30)<4&&w.turf.bbox({type:"Feature",geometry:it.vrt.g,properties:{}})[3]<16,"Okućnica: vrt oko 30 m² na sunčanom dijelu (ne u sjeni sjeverno od kuće)");
+  // više parkirnih mjesta (ručni unos, do 12): 6 mjesta u nizu uz pristup; 12 na istoj čestici ne stane pa se predloži manje uz napomenu
+  {const r6=Iz({...I,post:{...post,mjesta:6}}), p6=r6.items.parking;
+   ok(p6&&p6.mjesta===6&&Math.abs(r6.povrsine.parking-75)<0.5&&!/nema mjesta uz pristup/.test(r6.napomene.join(" ")),"Okućnica: 6 parkirnih mjesta (6 × 2,5 × 5 m = 75 m²) u nizu uz pristup");
+   const I20={...I,parcel:rect(-10,-20,10,20),kuce:[kv(0,6,10,8)],kucaC:[0,6]}, r12=Iz({...I20,post:{...post,mjesta:12}}), p12=r12.items.parking;
+   ok(p12&&p12.mjesta<12&&p12.mjesta>=6&&new RegExp("Za 12 parkirnih mjesta nema mjesta uz pristup; predloženo je "+p12.mjesta).test(r12.napomene.join(" ")),"Okućnica: 12 mjesta ne stane uz pristup čestice široke 20 m: predloži se najveći broj koji stane, uz napomenu");}
   // uska čestica: 11 × 30 m, kuća 8 m široka → nema mjesta uz kuću za parking pa je kompaktan prijedlog
   {const r2=Iz({parcel:rect(-5.5,-15,5.5,15),kuce:[kv(0,0,8,9)],kucaC:[0,0],rot:0,w:8,d:9,H:6,ceste:[[[-30,-17],[30,-17]]],nagib:null,post});
    ok(/uska/.test(r2.napomene.join(" "))&&r2.items.parking&&r2.items.parking.mjesta>=1,"Okućnica: na uskoj čestici kompaktan prijedlog, uz napomenu");}
@@ -1687,6 +1692,9 @@ async function okuTests(){
   {const D=E("v3dData")(); ok(D.oku.features.length>=4&&D.ulaz===R.ulaz.strana&&D.prilaz.features.length===0,"Okućnica u 3D: površine na terenu; ulaz u kuću isti kao u prijedlogu");}
   const ws=E("window.__oku"); ok(ws&&ws.povrsine.parking===25&&ws.povrsine.prilaz>0&&ws.povrsine.vrt>0&&ws.povrsine.travnjak>0&&ws.ilustrativno,"Okućnica: površine parkinga, prilaza, vrta i travnjaka dostupne drugim modulima");
   // ručne postavke: 1 mjesto, bez vrta
+  ok($(w,"okuMj").type==="number"&&$(w,"okuMj").max==="12","Okućnica: broj parkirnih mjesta upisuje se ručno (0–12)");
+  setv(w,"okuMj","5","change"); await tick(250); ok(E("okuPost")(E("window.__cur.key")).mjesta===5,"Okućnica: ručno upisano 5 parkirnih mjesta se sprema");
+  setv(w,"okuMj","40","change"); await tick(250); ok(E("okuPost")(E("window.__cur.key")).mjesta===12,"Okućnica: upis iznad 12 svodi se na 12");
   setv(w,"okuMj","1","change"); setv(w,"okuVrt","0","change"); await tick(250);
   ok(E("OKU.res").povrsine.parking===12.5&&!E("OKU.res").items.vrt&&E("okuPost")(E("window.__cur.key")).mjesta===1,"Okućnica: ručno 1 parkirno mjesto i bez vrta; postavke se spremaju");
   {const x0=w.turf.bbox({type:"Feature",geometry:E("OKU.res").ll.parking,properties:{}})[0]; $(w,"okuR").dispatchEvent(new w.Event("click",{bubbles:true})); $(w,"okuR").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(250);

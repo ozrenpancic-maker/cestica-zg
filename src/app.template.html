@@ -2728,11 +2728,11 @@ const OKU_TIP={
     v:{staza:{c:"#9e9e9e",sk:"#bdbdbd"},terasa:{c:"#8c8c8c",sk:"#b0b0b0"}}}};
 const OKU_RED=["travnjak","vrt","terasa","prilaz","parking","staza","pomocni"];
 function okuV(k,tip){ const T=OKU_TIP[tip||(OKU.res&&OKU.res.tip)||"obiteljska"]||OKU_TIP.obiteljska; return {...OKU_VRSTE[k],...((T.v||{})[k]||{})}; }
-const OKU_MJ={w:2.5,d:5.0}, OKU={res:null,key:null,layer:null,t:0};
+const OKU_MJ={w:2.5,d:5.0,max:12}, OKU={res:null,key:null,layer:null,t:0};
 function okuPost(k){const v=projRaw(k).oku; return projCleanOku(v)||projCleanOku({on:false})}
 function projCleanOku(x){ if(!x||typeof x!=="object") return null; const n=(v,a,b,d)=>{const q=pNum(v,a,b); return q==null?d:q};
   const tip=pEnum(x.tip,Object.keys(OKU_TIP))||"obiteljska";
-  return {on:x.on===true,mjesta:Math.round(n(x.mjesta,0,2,2)),vrt:Math.round(n(x.vrt,0,400,OKU_TIP[tip].vrt)),prW:n(x.prW,2.5,5,3),pomak:Math.round(n(x.pomak,-30,30,0)),
+  return {on:x.on===true,mjesta:Math.round(n(x.mjesta,0,OKU_MJ.max,2)),vrt:Math.round(n(x.vrt,0,400,OKU_TIP[tip].vrt)),prW:n(x.prW,2.5,5,3),pomak:Math.round(n(x.pomak,-30,30,0)),
     tip,terasa:Math.round(n(x.terasa,0,120,OKU_TIP[tip].terasa)),pomocni:x.pomocni===true,pomM2:Math.round(n(x.pomM2,4,30,12)),
     trosak:x.trosak!==false,mat:pEnum(x.mat,Object.keys(PRILAZ))||"asfalt",terMat:pEnum(x.terMat,Object.keys(OKU_TER))||OKU_TIP_MAT[tip].ter,trava:pEnum(x.trava,Object.keys(OKU_TRAVA))||OKU_TIP_MAT[tip].trava,
     pomCij:n(x.pomCij,0,200000,0),nasadi:n(x.nasadi,0,200000,0)}; }
@@ -2774,13 +2774,13 @@ function okuIzracun(I){
     const S=[["S",[-ny[0],-ny[1]],I.d/2],["N",ny,I.d/2],["E",ex,I.w/2],["W",[-ex[0],-ex[1]],I.w/2]].map(([k,v,h])=>({k,v,h,dot:(v[0]*dir[0]+v[1]*dir[1])}));
     const s=S.sort((a,b)=>b.dot-a.dot)[0]; out.ulaz={strana:s.k,tocka:[hc[0]+s.v[0]*(s.h+0.15),hc[1]+s.v[1]*(s.h+0.15)]}; }
   const D=out.ulaz.tocka, fits=g=>oA(oX(g,F))>=oA(g)*0.995;
-  // parking: 1–2 mjesta okomito na granicu uz pristup, 1 m od granice (ulazna vrata / rampa), pomak po želji korisnika
+  // parking: niz od 1 do OKU_MJ.max mjesta okomito na granicu uz pristup (ako ih ne stane toliko, predloži se najveći broj koji stane), 1 m od granice (ulazna vrata / rampa), pomak po želji korisnika
   let park=null, mj=post.mjesta;
   for(let m=mj;m>=1&&!park;m--){ const W=m*OKU_MJ.w; let best=null;
     for(const g of [1,2,3,4.5,6]) for(let t=-14;t<=14;t+=0.5){ const o=[A.p[0]+e[0]*t,A.p[1]+e[1]*t], r=oRect(o,e,n,-W/2,W/2,g,g+OKU_MJ.d); if(!fits(r)) continue;
       const cx=o[0]+n[0]*(g+OKU_MJ.d/2), cy=o[1]+n[1]*(g+OKU_MJ.d/2), sc=Math.abs(t-post.pomak)+g*0.8+Math.hypot(cx-D[0],cy-D[1])*0.05;
       if(!best||sc<best.sc) best={sc,r,t,g,m,o}; }
-    if(best){ park=best; if(m<mj) out.napomene.push(`Za ${mj} parkirna mjesta nema mjesta uz pristup; predloženo je ${m}.`); } }
+    if(best){ park=best; if(m<mj) out.napomene.push(`Za ${mj} ${mj%10>=2&&mj%10<=4&&(mj%100<12||mj%100>14)?"parkirna mjesta":"parkirnih mjesta"} nema mjesta uz pristup; predloženo je ${m}.`); } }
   if(mj>0&&!park) out.napomene.push("Parking uz pristup ne stane (potrebno je barem 2,5 × 5 m); prilaz i staza vode ravno do ulaza.");
   let pri=null, sta=null;
   if(park){ out.items.parking={g:park.r,mjesta:park.m};
@@ -2913,7 +2913,7 @@ function okuHtml(){
   h+=`<p class="oku-badge">Automatski prijedlog okućnice – ilustrativno</p><p class="meta">Početni koncept rasporeda oko kuće iz simulatora (parking, kolni prilaz, staza do ulaza, vrt, travnjak). Nije projekt ni službeno urbanističko ili arhitektonsko rješenje; raspored ne zaključava ništa i mijenja se kad pomakneš kuću ili promijeniš postavke.</p>`;
   h+=`<div class="kd"><button type="button" class="ib" id="okuGo">${p.on?"Predloži ponovno":"Predloži okućnicu"}</button>${p.on?`<button type="button" class="ib" id="okuOff">Ukloni prijedlog</button>`:""}</div>`;
   if(p.on){ h+=`<div class="bgrid"><label for="okuTip">Tip okućnice</label><select id="okuTip" class="bsel">${Object.entries(OKU_TIP).map(([k,v])=>`<option value="${k}"${k===p.tip?" selected":""}>${v.n}</option>`).join("")}</select>`;
-    h+=`</div><p class="meta" id="okuTipOpis" style="margin:4px 0 8px">${esc(OKU_TIP[p.tip].opis)}. Tip mijenja zadane veličine i izgled; sve vrijednosti možeš promijeniti.</p><div class="bgrid"><label for="okuMj">Parkirna mjesta</label><select id="okuMj" class="bsel">${[0,1,2].map(v=>`<option value="${v}"${v===p.mjesta?" selected":""}>${v?v+(v===1?" mjesto":" mjesta"):"bez parkinga"}</option>`).join("")}</select>`;
+    h+=`</div><p class="meta" id="okuTipOpis" style="margin:4px 0 8px">${esc(OKU_TIP[p.tip].opis)}. Tip mijenja zadane veličine i izgled; sve vrijednosti možeš promijeniti.</p><div class="bgrid"><label for="okuMj">Parkirna mjesta</label><span><input id="okuMj" type="number" inputmode="numeric" min="0" max="${OKU_MJ.max}" step="1" value="${p.mjesta}"> <small class="meta">0 = bez parkinga, najviše ${OKU_MJ.max}; mjesta 2,5 × 5 m u nizu uz pristup</small></span>`;
     h+=`<label for="okuPom">Položaj parkinga</label><span><button type="button" class="ib step" id="okuL" aria-label="pomakni lijevo">◀</button><output id="okuPomV">${p.pomak?(p.pomak>0?"+":"")+p.pomak+" m":"uz pristup"}</output><button type="button" class="ib step" id="okuR" aria-label="pomakni desno">▶</button></span>`;
     h+=`<label for="okuPrW">Širina prilaza</label><span><input id="okuPrW" type="number" inputmode="decimal" min="2.5" max="5" step="0.5" value="${p.prW}"> m</span>`;
     h+=`<label for="okuVrt">Vrt</label><span><input id="okuVrt" type="number" inputmode="decimal" min="0" max="400" step="5" value="${p.vrt}"> m² <small class="meta">0 = bez vrta</small></span>`;
@@ -2963,7 +2963,7 @@ sheet.addEventListener("change",e=>{ const id=e.target.id;
   if(id==="okuPom"){ okuSet({pomocni:e.target.checked}); const m=document.getElementById("okuPomM2"); if(m) m.disabled=!e.target.checked; okuSoon(); return; }
   if(id==="okuTer"){ okuSet({terasa:numv("okuTer")??0}); okuSoon(); return; }
   if(id==="okuPomM2"){ okuSet({pomM2:numv("okuPomM2")}); okuSoon(); return; }
-  if(id==="okuMj") okuSet({mjesta:+e.target.value}); else if(id==="okuPrW") okuSet({prW:numv("okuPrW")}); else if(id==="okuVrt") okuSet({vrt:numv("okuVrt")??0}); else return; okuSoon(); });
+  if(id==="okuMj") okuSet({mjesta:Math.max(0,Math.min(OKU_MJ.max,Math.round(numv("okuMj")??0)))}); else if(id==="okuPrW") okuSet({prW:numv("okuPrW")}); else if(id==="okuVrt") okuSet({vrt:numv("okuVrt")??0}); else return; okuSoon(); });
 
 // ================= SKICA KUĆE NA TERENU (tlocrt i presjek; ulazi u ispis / PDF) =================
 // Tlocrt: međe s duljinama stranica, područje za gradnju, kuća iz simulatora s krovom i udaljenostima od međa,
