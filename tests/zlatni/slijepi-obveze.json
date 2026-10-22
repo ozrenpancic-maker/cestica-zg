@@ -1,0 +1,16 @@
+{
+ "opis": "Obveze (commitment) za slijepe testove. Sadržaj oznaka nije na ovoj grani.",
+ "testovi": [
+  {
+   "naziv": "slijepi test v0.23.9",
+   "izvor_publication_id": "35169",
+   "izvor_sn": "5/17",
+   "izvor_sha256": "0fe98f0aee8f111d370b2f32954a8f9f519905312a0eb77bdf1f5486e413dc0e",
+   "oznake_zakljucano_sha256": "e0c381af86b81daefa02905a9cf81efd8d56483dbb36e8d08fa70f6d83d6da42",
+   "metoda_hasha": "sha256(json.dumps(operacije, ensure_ascii=False, sort_keys=True))",
+   "grana_s_oznakama": "slijepi-testovi",
+   "commit_s_oznakama": "d1576ff",
+   "datum_zakljucavanja": "2026-10-22"
+  }
+ ]
+}
