@@ -1,0 +1,92 @@
+{
+ "retrieved_utc": "2026-10-22T19:58:14.240Z",
+ "nacin": "Claude, ugrađeni preglednik na Ozrenovu računalu (fetch s ishodišta gisportal.pgz.hr); tijelo odgovora spremljeno bajt-za-bajt kako ga je vratio servis",
+ "izvor": "GEOPORTAL PGŽ, gisportal.pgz.hr (javni ArcGIS REST, bez jamstva; prijenos uz navođenje izvora)",
+ "cestica": "735/76 k.o. Kornić (315907), DGU id 19311099",
+ "tocka_wgs84": "lat 45.044049, lon 14.615896 (iz docs/pgz-servisi.md)",
+ "granica": "docs/primjeri/kornic_cestica_735_76.geojson",
+ "odgovori": {
+  "namjena_tocka_doc.json": {
+   "url": "https://gisportal.pgz.hr/server/rest/services/STANJE/NAMJENA_POVRSINA_NOVO/FeatureServer/0/query?geometry=14.615896,45.044049&geometryType=esriGeometryPoint&inSR=4326&outFields=*&returnGeometry=false&f=json",
+   "method": "GET",
+   "params": null,
+   "status": 200,
+   "date": "Thu, 22 Oct 2026 19:58:14 GMT",
+   "content_type": "application/json;charset=UTF-8",
+   "sha256": "0d02a8379ea3a13c91ae4ee153bd3b49fcfcae232bca7de86f16fea803944fed",
+   "bajtova": 1816,
+   "hash_u_pregledniku_odgovara": true
+  },
+  "planovi_tocka_doc.json": {
+   "url": "https://gisportal.pgz.hr/server/rest/services/STANJE/IZRADA_PP/FeatureServer/0/query?geometry=14.615896,45.044049&geometryType=esriGeometryPoint&inSR=4326&outFields=*&returnGeometry=false&f=json",
+   "method": "GET",
+   "params": null,
+   "status": 200,
+   "date": "Thu, 22 Oct 2026 19:58:14 GMT",
+   "content_type": "application/json;charset=UTF-8",
+   "sha256": "cbd2799a651de8ff9a34e6f07abcc3b406efcb0792649b53801fbf26dccb6d5f",
+   "bajtova": 32777,
+   "hash_u_pregledniku_odgovara": true
+  },
+  "namjena_tocka_app.geojson": {
+   "url": "https://gisportal.pgz.hr/server/rest/services/STANJE/NAMJENA_POVRSINA_NOVO/FeatureServer/0/query",
+   "method": "POST",
+   "params": {
+    "geometry": "14.615896,45.044049",
+    "geometryType": "esriGeometryPoint",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "outFields": "*",
+    "returnGeometry": "false",
+    "outSR": "4326",
+    "f": "geojson"
+   },
+   "status": 200,
+   "date": "Thu, 22 Oct 2026 19:58:14 GMT",
+   "content_type": "application/geo+json;charset=UTF-8",
+   "sha256": "375bd6d1df187ce35aeec7a098a064659db4b3fa81018e8d4c3537a464790f23",
+   "bajtova": 440,
+   "hash_u_pregledniku_odgovara": true
+  },
+  "planovi_tocka_app.geojson": {
+   "url": "https://gisportal.pgz.hr/server/rest/services/STANJE/IZRADA_PP/FeatureServer/0/query",
+   "method": "POST",
+   "params": {
+    "geometry": "14.615896,45.044049",
+    "geometryType": "esriGeometryPoint",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "outFields": "GRAD_OPCINA,VRSTA_PP,STATUS_PP,NAZIV,SN_BROJ,SN_LINK,PDF_LINK_PUBLIC,DatumStNaSnPlana,DatumDonOdlIzr",
+    "returnGeometry": "false",
+    "outSR": "4326",
+    "f": "geojson"
+   },
+   "status": 200,
+   "date": "Thu, 22 Oct 2026 19:58:14 GMT",
+   "content_type": "application/geo+json;charset=UTF-8",
+   "sha256": "474634e8fb3497f58248a36c6872eba337eeefd13dbec8a0cfb14ca33764acc9",
+   "bajtova": 12181,
+   "hash_u_pregledniku_odgovara": true
+  },
+  "namjena_cestica_app.geojson": {
+   "url": "https://gisportal.pgz.hr/server/rest/services/STANJE/NAMJENA_POVRSINA_NOVO/FeatureServer/0/query",
+   "method": "POST",
+   "params": {
+    "geometry": "{\"rings\":[[[14.61572897,45.04408013],[14.61593872,45.04390091],[14.61597191,45.04388751],[14.61608669,45.0440144],[14.61593808,45.0441059],[14.61588894,45.04415665],[14.61584619,45.04414434],[14.61576678,45.04410388],[14.61572897,45.04408013]]],\"spatialReference\":{\"wkid\":4326}}",
+    "geometryType": "esriGeometryPolygon",
+    "inSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "outFields": "*",
+    "returnGeometry": "true",
+    "outSR": "4326",
+    "f": "geojson"
+   },
+   "status": 200,
+   "date": "Thu, 22 Oct 2026 19:58:14 GMT",
+   "content_type": "application/geo+json;charset=UTF-8",
+   "sha256": "6da37e423a262d54a4492ecbe71ac19e5c7f81af3e87a4e2c24d54b1aab54b64",
+   "bajtova": 481714,
+   "hash_u_pregledniku_odgovara": true
+  }
+ }
+}

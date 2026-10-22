@@ -1,0 +1,337 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "title": "Baza pravila prostornog plana iz službenih glasila (prototip)",
+ "type": "object",
+ "required": [
+  "plan",
+  "odluke",
+  "pravila"
+ ],
+ "properties": {
+  "plan": {
+   "type": "object",
+   "required": [
+    "id",
+    "naziv",
+    "jls",
+    "vrsta"
+   ],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "naziv": {
+     "type": "string"
+    },
+    "jls": {
+     "type": "string"
+    },
+    "vrsta": {
+     "enum": [
+      "PPUO",
+      "PPUG",
+      "GUP",
+      "UPU",
+      "DPU",
+      "PPPPO"
+     ]
+    },
+    "stanje_plana": {
+     "type": "string"
+    }
+   }
+  },
+  "odluke": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "vrsta",
+     "naslov",
+     "dohvaceno"
+    ],
+    "properties": {
+     "id": {
+      "type": [
+       "integer",
+       "null"
+      ],
+      "description": "ID na sn.pgz.hr; null ako odluka nije pronađena"
+     },
+     "vrsta": {
+      "enum": [
+       "izrada",
+       "donosenje",
+       "izmjene",
+       "procisceni",
+       "izvan_snage",
+       "tumacenje",
+       "nepoznato"
+      ]
+     },
+     "naslov": {
+      "type": "string"
+     },
+     "glasilo": {
+      "type": "object",
+      "properties": {
+       "broj": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "godina_izdanja": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "datum": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "stavka": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       }
+      }
+     },
+     "url": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "pdf": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "status": {
+      "type": "string"
+     },
+     "dohvaceno": {
+      "enum": [
+       "cijeli_tekst",
+       "sazetak",
+       "neprovjereno_sazetak",
+       "nije_pronadeno",
+       "izvoz_treceg"
+      ]
+     },
+     "sha256": {
+      "type": "string"
+     },
+     "napomena": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "pravila": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "zona",
+     "parametar",
+     "vrijednost",
+     "izvor",
+     "verzija",
+     "status_primjene",
+     "provjera"
+    ],
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "zona": {
+      "type": "object",
+      "required": [
+       "potvrda"
+      ],
+      "properties": {
+       "oznaka": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "potvrda": {
+        "enum": [
+         "nepotvrdeno",
+         "korisnik",
+         "sloj_gis",
+         "geometrija_plana"
+        ]
+       }
+      }
+     },
+     "parametar": {
+      "enum": [
+       "kig_max",
+       "kis_max",
+       "kis_nadzemni_max",
+       "kis_ukupni_max",
+       "tlocrt_min",
+       "tlocrt_max",
+       "gbp_max",
+       "etaze_nadzemne_max",
+       "etaze_podzemne_max",
+       "visina_max",
+       "visina_sljeme_max",
+       "cestica_min",
+       "cestica_max",
+       "odmak_meda_min",
+       "odmak_regulacija_min",
+       "odmak_gradevine_min",
+       "zelenilo_min",
+       "parkiranje_po_stanu",
+       "stanovi_max",
+       "nagib_krova_max",
+       "bazen_max",
+       "rampa_podrum_sirina_max",
+       "manja_cestica_interpolacija",
+       "niz_jedinica_max",
+       "poslovni_udio_max"
+      ]
+     },
+     "vrijednost": {
+      "type": [
+       "number",
+       "string"
+      ]
+     },
+     "jedinica": {
+      "type": "string"
+     },
+     "vrsta_gradnje": {
+      "enum": [
+       null,
+       "slobodnostojeca",
+       "dvojna",
+       "niz",
+       "visestambena",
+       "obiteljska",
+       "ostalo"
+      ]
+     },
+     "uvjet": {
+      "type": [
+       "object",
+       "null"
+      ],
+      "description": "kad pravilo vrijedi samo uz uvjet (npr. čestica > 1000 m², izgrađeni dio, konkretna k.č.)"
+     },
+     "izvor": {
+      "type": "object",
+      "required": [
+       "odluka_id",
+       "clanak_odluke",
+       "clanak_plana",
+       "citat",
+       "url"
+      ],
+      "properties": {
+       "odluka_id": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       },
+       "clanak_odluke": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "clanak_plana": {
+        "type": "string"
+       },
+       "stavak": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "tocka": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "citat": {
+        "type": "string",
+        "minLength": 8
+       },
+       "url": {
+        "type": "string"
+       }
+      }
+     },
+     "vazi_od": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "vazi_do": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "verzija": {
+      "type": "string"
+     },
+     "status_primjene": {
+      "enum": [
+       "ne_primjenjivati_automatski",
+       "primjenjivo_uz_potvrdenu_zonu",
+       "primjenjivo"
+      ]
+     },
+     "provjera": {
+      "type": "object",
+      "required": [
+       "razina",
+       "datum"
+      ],
+      "properties": {
+       "razina": {
+        "enum": [
+         "strojno",
+         "strojno_i_citat_pronaden_u_tekstu",
+         "rucno",
+         "dvostruko_rucno"
+        ]
+       },
+       "datum": {
+        "type": "string"
+       },
+       "tko": {
+        "type": "string"
+       },
+       "napomena": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   }
+  },
+  "otvorena_pitanja": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  }
+ }
+}

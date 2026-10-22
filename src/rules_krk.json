@@ -263,7 +263,7 @@
         "sn": "Službene novine PGŽ 19/2016",
         "url": "http://www.sn.pgz.hr/default.asp?Link=odluke&id=34138",
         "status": "na snazi",
-        "provjera": "Vrijednosti i navodi provjereni su s cijelim tekstom odluke (SN PGŽ 19/2016)."
+        "provjera": "Vrijednosti i navodi provjereni su s cijelim tekstom odluke (SN PGŽ 19/2016): HTML objave (čl. 1.–53., 108.) i PDF izdanja (čl. 1.–108.), 22. 10. 2026."
       },
       "zone": [
         [
@@ -279,7 +279,62 @@
           "druga zona (K, D, R, Z, M12…)"
         ]
       ],
-      "zonaNapomena": "Obiteljske i višeobiteljske kuće grade se u zonama M11 i M2 (čl. 37. st. 2.). Zona se ne može odrediti automatski jer kartografski prikaz br. 4 UPU-a nije dostupan kao karta; provjeri je na prikazu plana ili u lokacijskoj informaciji.",
+      "zonaNapomena": "Obiteljske i višeobiteljske kuće grade se u zonama M11 i M2 (čl. 37. st. 2.). Zona se ne može odrediti automatski jer je prikazana samo na rasterskoj karti 4 „Način i uvjeti gradnje” (čl. 37. st. 2.), bez vektorskog sloja; provjeri je na prikazu plana ili u lokacijskoj informaciji.",
+      "upozorenja": [
+        "Zaštita kulturne baštine (čl. 83.–85.): zona »B« je kulturno-povijesna cjelina Kornić (Z-5332), a zona »C« (ambijentalna zaštita) obuhvaća šire područje naselja. Granice su na kartografskom prikazu 3A UPU-a. U zoni »C« nova gradnja smije imati najviše dvije nadzemne etaže, bez povišenja nadozida, kosi krov nagiba oko 30° s kupom kanalicom ili kamenim pločama, a za svaku novu gradnju trebaju posebni konzervatorski uvjeti odnosno prethodno odobrenje (čl. 85.). Ti uvjeti su stroži od izračuna ispod (npr. 3 nadzemne etaže na kosom terenu, krov 17°–23°)."
+      ],
+      "karte": {
+        "izvor": "čl. 3. st. 2. t. b) odluke (SN PGŽ 19/2016); šifra lista iz kataloga rastera PGŽ (npr. 618_karta4)",
+        "listovi": {
+          "1": {
+            "naziv": "1. Korištenje i namjena površina",
+            "vrsta": "namjena"
+          },
+          "2": {
+            "naziv": "2. Prometna, ulična i komunalna infrastrukturna mreža",
+            "vrsta": "infra"
+          },
+          "2a": {
+            "naziv": "2A. Promet",
+            "vrsta": "infra"
+          },
+          "2b": {
+            "naziv": "2B. Pošta i elektronička komunikacijska infrastruktura",
+            "vrsta": "infra"
+          },
+          "2c": {
+            "naziv": "2C. Energetski sustav - Elektroenergetika",
+            "vrsta": "infra"
+          },
+          "2d": {
+            "naziv": "2D. Vodnogospodarski sustav - Vodoopskrba",
+            "vrsta": "infra"
+          },
+          "2e": {
+            "naziv": "2E. Vodnogospodarski sustav - Odvodnja otpadnih voda",
+            "vrsta": "infra"
+          },
+          "3": {
+            "naziv": "3. Uvjeti korištenja, uređenja i zaštite površina",
+            "vrsta": "uvjeti"
+          },
+          "3a": {
+            "naziv": "3A. Područja posebnih uvjeta korištenja i posebnih ograničenja u korištenju",
+            "vrsta": "uvjeti",
+            "napomena": "granice zona zaštite »B« i »C« (čl. 83. st. 4.)"
+          },
+          "3b": {
+            "naziv": "3B. Područje primjene posebnih mjera zaštite",
+            "vrsta": "uvjeti"
+          },
+          "4": {
+            "naziv": "4. Način i uvjeti gradnje",
+            "vrsta": "pravila",
+            "zona": true,
+            "napomena": "zone M11, M12 i M2 (čl. 37. st. 2.–3.)"
+          }
+        }
+      },
       "tipovi": {
         "obit": {
           "naziv": "Obiteljska kuća",
@@ -339,6 +394,16 @@
             "etaze": "podrum i 3 nadzemne etaže, od kojih je jedna suteren",
             "kis": 1.0
           },
+          "oblici": [
+            [
+              "slob",
+              "slobodnostojeća"
+            ],
+            [
+              "dvoj",
+              "dvojna"
+            ]
+          ],
           "slob": {
             "minC": 500,
             "izg": 0.25,
@@ -348,14 +413,6 @@
             "tlMax": 200
           },
           "dvoj": {
-            "minC": 400,
-            "izg": 0.25,
-            "kis": 0.75,
-            "kisPodrum": 0.75,
-            "tlMin": 60,
-            "tlMax": 150
-          },
-          "ugr": {
             "minC": 400,
             "izg": 0.25,
             "kis": 0.75,
@@ -429,7 +486,7 @@
       },
       "napomene": [
         "Na kosom terenu (nagib veći od 12 %) za višeobiteljsku kuću i stambenu građevinu: podrum i 3 nadzemne etaže (jedna suteren), visina do 10,5 m, kis do 1,0 (čl. 38.–40.).",
-        "Kulturno-povijesna cjelina (čl. 83.): udaljenost od međa h/2, najmanje 3 m (2 m bez otvora).",
+        "Kulturno-povijesna cjelina, zona »B« (čl. 83. st. 1.–2., međe određene popisom rubnih čestica): udaljenost od međa h/2, najmanje 3 m (2 m bez otvora) (čl. 38.).",
         "Najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad prirodnog terena (čl. 38.)."
       ],
       "drugaZona": "UPU 2 dopušta obiteljske i višeobiteljske kuće samo u zonama M11 i M2 (čl. 37.)."
@@ -1386,6 +1443,131 @@
       "napomene": [
         "U izgrađenim dijelovima naselja (povijesne graditeljske cjeline) uz gradnju na regulacijskom pravcu kig može biti do 1,0 (čl. 23.a).",
         "Višeobiteljske građevine (3–4 stana) nisu obrađene."
+      ]
+    },
+    "PUNAT": {
+      "kod": "PPUO Punat",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Punat, odredbe za provođenje (pročišćeni tekst 2010.) s kasnijim izmjenama",
+        "sn": "Službene novine PGŽ 33/2010 (pročišćeni tekst), izmjene 14/15, 30/18 i 10/21",
+        "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=20500",
+        "status": "na snazi (zadnje IV. izmjene i dopune, SN 10/2021)",
+        "provjera": "Vrijednosti su s mrežne stranice Službenih novina (pročišćeni tekst 2010., čl. 24.–29.; stranica je prekinuta u čl. 62.). III. izmjene (SN 30/18) i IV. izmjene (SN 10/21) ne mijenjaju te članke, ali izmjene iz 2015. (SN 14/15) nisu provjerene. Poglavlje 5.1.1 (udaljenost od ceste) i čl. 92.–95. (parkiranje) nisu pregledani. Prije objave usporediti s cijelim tekstom."
+      },
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna (i završna jedinica niza)"
+        ],
+        [
+          "ugr",
+          "jedna jedinica niza"
+        ]
+      ],
+      "kisUkupni": false,
+      "neizgradeni": {
+        "mod": "blok",
+        "clanak": "22. i 24.",
+        "txt": "Izgradnja u izgrađenim dijelovima građevinskog područja naselja mora biti sukladna postojećoj gradnji i regulaciji",
+        "msg": "Neizgrađeni dio građevinskog područja naselja: prije donošenja urbanističkog plana uređenja plan dopušta gradnju samo u izgrađenom dijelu (čl. 22.). Za neizgrađeni dio propisane su niže vrijednosti (npr. kis nadzemni 0,6 umjesto 0,75, visina 7 m umjesto 9 m), pa izračun za izgrađeni dio ne vrijedi."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "naselja N1 Punat i N2 Stara Baška (čl. 20.)"
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća",
+          "opis": "najviše tri stana, tri nadzemne etaže",
+          "clanak": "27. i 28.",
+          "gbpMax": null,
+          "etaze": "najviše tri nadzemne etaže (i podrum)",
+          "visina": 9.0,
+          "visinaOpis": "9,0 m u izgrađenom dijelu naselja",
+          "slob": {
+            "minC": 450,
+            "izg": 0.25,
+            "kis": 0.75,
+            "kisPodrum": 1.0,
+            "tlMin": 0
+          },
+          "dvoj": {
+            "minC": 225,
+            "izg": 0.3,
+            "kis": 1.0,
+            "kisPodrum": 1.3,
+            "tlMin": 0,
+            "napomena": "Vrijedi i za završnu jedinicu niza (225 m², kig 0,3)."
+          },
+          "ugr": {
+            "minC": 150,
+            "izg": 0.4,
+            "kis": 1.4,
+            "kisPodrum": 1.8,
+            "tlMin": 0,
+            "napomena": "Jedna (srednja) jedinica niza. U izgrađenom dijelu broj jedinica niza određen je ranijom gradnjom, u neizgrađenom najviše pet."
+          },
+          "txt": {
+            "minC": "za slobodnostojeću obiteljsku kuću 450 m2",
+            "visina": "Visina građevine u izgrađenom dijelu građevinskog područja naselja iznosi maksimalno 9,0 m",
+            "etaze": "najviše tri stana i tri nadzemne etaže"
+          }
+        },
+        "stamb": {
+          "naziv": "Višestambena građevina",
+          "opis": "do četiri stana (čl. 29.)",
+          "clanak": "29.",
+          "gbpMax": null,
+          "etaze": "u izgrađenom dijelu do četiri nadzemne etaže (P+3), u neizgrađenom tri (čl. 26.)",
+          "visina": 9.0,
+          "visinaOpis": "9,0 m u izgrađenom dijelu naselja",
+          "oblici": [
+            [
+              "slob",
+              "slobodnostojeća"
+            ]
+          ],
+          "slob": {
+            "minC": 650,
+            "izg": 0.25,
+            "kis": 0.75,
+            "kisPodrum": 1.25,
+            "tlMin": 0,
+            "napomena": "Kis 1,25 je ukupni (nadzemni 0,75 i podzemni 0,5)."
+          },
+          "txt": {}
+        }
+      },
+      "meda": {
+        "clanak": "26.",
+        "min": 3,
+        "opis": "h/2, najmanje 3 m; najmanje 6 m od susjednih građevina",
+        "opisIznimka": "",
+        "txt": "građevina mora biti udaljena pola vlastite visine, ali ne manje od 3m, od granice građevne čestice"
+      },
+      "regulacija": {
+        "clanak": "25.",
+        "opis": "udaljenost od javne ceste i regulacijskog pravca određuje poglavlje 5.1.1. plana (nije pregledano)",
+        "txt": ""
+      },
+      "zelenilo": {
+        "clanak": "28.",
+        "min": 0.4,
+        "txt": "Neizgrađeni dio građevne čestice mora biti uređen, mora biti površina zelenila"
+      },
+      "pristup": {
+        "napomena": "Parkiranje i pristup prema čl. 92.–95. plana (nisu pregledani)."
+      },
+      "napomene": [
+        "Za središte Punta (naselje N1) vrijedi UPU 3, koji aplikacija još nije obradila; ovi uvjeti vrijede gdje UPU nije na snazi.",
+        "Zelenilo: 40 % (slobodnostojeća), 30 % (dvojna i završna jedinica niza), 20 % (jedna jedinica niza), čl. 28.",
+        "Najveći tlocrt, udaljenost od ceste i parkiranje nisu uključeni u izračun."
       ]
     }
   },

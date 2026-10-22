@@ -1,0 +1,751 @@
+{
+ "naziv": "Punat 30/18 (id 37834), članci 1–15: neovisni ručno označeni referentni skup naredbi izmjene",
+ "verzija": "v1",
+ "datum": "2026-10-22",
+ "autor": "Claude (neovisni ocjenjivač)",
+ "izvor": {
+  "publication_id": "37834",
+  "sn": "30/18",
+  "naziv": "Odluka o donošenju III. izmjena i dopuna Prostornog plana uređenja Općine Punat",
+  "sha256": "f4c7b7516dce42989b4bea774cedb66073facffc30b7e39b4b3236eb30c5e572",
+  "kodiranje": "windows-1250",
+  "napomena": "Hash je jednak izvoru koji je obradio v0.23.7. Priložena kopija (sha256 c459a664…) je neispravna: 2969 dijakritika i navodnika »« zamijenjeno je s U+FFFD; nije korištena."
+ },
+ "pravila_oznacavanja": {
+  "segmentacija": "Članak odluke = centrirani HTML blok čiji je cijeli tekst „Članak N.\"; tijelo = blokovi do sljedećeg takvog bloka.",
+  "naredba_doslovno": "Tekst HTML bloka nakon uklanjanja oznaka, <br> -> razmak, sažete bjeline.",
+  "novi_tekst_sha256": "sha256 nad blokovima spojenima s \\n, isti postupak normalizacije; navodnici ostaju kakvi jesu u izvoru.",
+  "status": "CONFIRMED = naredba, cilj, vrsta i literali jednoznačni iz teksta odluke. REVIEW_REQUIRED = barem jedan element nije jednoznačan iz teksta odluke. Primjenjivost na polazni tekst plana NIJE provjerena (polazni tekst nije u korpusu)."
+ },
+ "clanci": [
+  {
+   "clanak_odluke": 1,
+   "sadrzi_naredbu": true,
+   "broj_operacija": 1,
+   "ciljni_clanci": [
+    "4"
+   ],
+   "tekst_clanka_sha256": "936401971090bb7b02125d01905fd287b0e48fafa47d0b419b40fbeecab7e6eb",
+   "v0237_status": "EMPTY_ARTICLE_SECTION",
+   "uzrok_greske": "SEGMENTACIJA: tijelo počinje „Članak 4. …\"; regex članka uzima to kao sljedeći naslov",
+   "status": "CONFIRMED"
+  },
+  {
+   "clanak_odluke": 2,
+   "sadrzi_naredbu": true,
+   "broj_operacija": 1,
+   "ciljni_clanci": [
+    "5"
+   ],
+   "tekst_clanka_sha256": "228bbec5575fb57f5a9311caa8827264d05c0ee5457e9feb9a2bd9f6482f862b",
+   "v0237_status": "EMPTY_ARTICLE_SECTION",
+   "uzrok_greske": "SEGMENTACIJA: „Članak 5. mijenja se…\"",
+   "status": "CONFIRMED"
+  },
+  {
+   "clanak_odluke": 3,
+   "sadrzi_naredbu": true,
+   "broj_operacija": 1,
+   "ciljni_clanci": [
+    "6"
+   ],
+   "tekst_clanka_sha256": "bc139c84bc1f65117378b947781a5caa3b46314bcd488448b91b8a06803f26ab",
+   "v0237_status": "EMPTY_ARTICLE_SECTION",
+   "uzrok_greske": "SEGMENTACIJA: „Članak 6. mijenja se…\"",
+   "status": "CONFIRMED"
+  },
+  {
+   "clanak_odluke": 4,
+   "sadrzi_naredbu": true,
+   "broj_operacija": 1,
+   "ciljni_clanci": [
+    "9"
+   ],
+   "tekst_clanka_sha256": "879ab7684732114475b375d6261477ec24fd50029bd44cab1f222e6d9d1eeee2",
+   "v0237_status": "PARSER_REJECTED/AMENDING_ARTICLE_NOT_UNIQUE",
+   "uzrok_greske": "SEGMENTACIJA: „Članak 4.\" postoji i u tijelu čl. 1 odluke",
+   "status": "CONFIRMED"
+  },
+  {
+   "clanak_odluke": 5,
+   "sadrzi_naredbu": true,
+   "broj_operacija": 1,
+   "ciljni_clanci": [
+    "10"
+   ],
+   "tekst_clanka_sha256": "99cdc7e7fa70e8ca77e7a971b7d43020302eac946ff45187d24764a0f1502282",
+   "v0237_status": "PARSER_REJECTED/AMENDING_ARTICLE_NOT_UNIQUE",
+   "uzrok_greske": "SEGMENTACIJA: „Članak 5.\" u tijelu čl. 2; zatim i PREPOZNAVANJE: navodnici '…' i glagol „zamjenjuju se riječi:\"",
+   "status": "CONFIRMED"
+  },
+  {
+   "clanak_odluke": 6,
+   "sadrzi_naredbu": true,
+   "broj_operacija": 1,
+   "ciljni_clanci": [
+    "12"
+   ],
+   "tekst_clanka_sha256": "2e62017df0c749ea341bf00aa595ea99d8901c2d13cf9719ead2de72543612cb",
+   "v0237_status": "PARSER_REJECTED/AMENDING_ARTICLE_NOT_UNIQUE",
+   "uzrok_greske": "SEGMENTACIJA: „Članak 6.\" u tijelu čl. 3; zatim isto kao čl. 5",
+   "status": "CONFIRMED"
+  },
+  {
+   "clanak_odluke": 7,
+   "sadrzi_naredbu": true,
+   "broj_operacija": 1,
+   "ciljni_clanci": [
+    "13"
+   ],
+   "tekst_clanka_sha256": "8a43bf6c1cb3c8e9e2a8447c90f1e42724c8e7a9dc48f7bec5c353d75e3898cc",
+   "v0237_status": "CANDIDATES_EXTRACTED_UNVALIDATED (1)",
+   "uzrok_greske": "—",
+   "status": "CONFIRMED"
+  },
+  {
+   "clanak_odluke": 8,
+   "sadrzi_naredbu": true,
+   "broj_operacija": 1,
+   "ciljni_clanci": [
+    "17"
+   ],
+   "tekst_clanka_sha256": "553a818c1534774d2b01eaf4c1edb140758fd0e32a58733d7b671d8e8284c4a8",
+   "v0237_status": "EMPTY_ARTICLE_SECTION",
+   "uzrok_greske": "SEGMENTACIJA: „Članak 17. mijenja se…\"",
+   "status": "CONFIRMED"
+  },
+  {
+   "clanak_odluke": 9,
+   "sadrzi_naredbu": true,
+   "broj_operacija": 1,
+   "ciljni_clanci": [
+    "18"
+   ],
+   "tekst_clanka_sha256": "100406da4b06478ab49e4bf8be27d768320e82d6dcd4e6a5231ae9e162abfe3c",
+   "v0237_status": "PARSER_REJECTED/AMENDING_ARTICLE_NOT_UNIQUE",
+   "uzrok_greske": "SEGMENTACIJA: „Članak 9.\" u tijelu čl. 4",
+   "status": "CONFIRMED"
+  },
+  {
+   "clanak_odluke": 10,
+   "sadrzi_naredbu": true,
+   "broj_operacija": 1,
+   "ciljni_clanci": [
+    "19"
+   ],
+   "tekst_clanka_sha256": "8ffe6c02b1a49f763b0f6a106c87fe197f8b185df308df3431825090883ac856",
+   "v0237_status": "PARSER_REJECTED/NO_ACTIONS_IN_CLAUSE_None",
+   "uzrok_greske": "PREPOZNAVANJE: glagol „dodaje se riječ:\" nije na popisu; navodnici '…'",
+   "status": "REVIEW_REQUIRED"
+  },
+  {
+   "clanak_odluke": 11,
+   "sadrzi_naredbu": true,
+   "broj_operacija": 1,
+   "ciljni_clanci": [
+    "20"
+   ],
+   "tekst_clanka_sha256": "fc52c1c4131d1689cb1f0537c319dbf80fd73601e0c985d38b6982799d4bfb20",
+   "v0237_status": "PARSER_REJECTED/UNCLAUSED_DIRECTIVE_PREFIX",
+   "uzrok_greske": "KONTEKST/NAVODNICI: „(4) U…\" unutar navedenog teksta prepoznat kao oznaka točke odluke",
+   "status": "CONFIRMED"
+  },
+  {
+   "clanak_odluke": 12,
+   "sadrzi_naredbu": true,
+   "broj_operacija": 1,
+   "ciljni_clanci": [
+    "22"
+   ],
+   "tekst_clanka_sha256": "083aa651ee469edae34b5b95b3b86afce79281f6e014ce8efe43d0c6f914d838",
+   "v0237_status": "EMPTY_ARTICLE_SECTION",
+   "uzrok_greske": "SEGMENTACIJA: „Članak 22. briše se.\"; zatim PREPOZNAVANJE: „briše se\" nije na popisu",
+   "status": "CONFIRMED"
+  },
+  {
+   "clanak_odluke": 13,
+   "sadrzi_naredbu": true,
+   "broj_operacija": 1,
+   "ciljni_clanci": [
+    "23"
+   ],
+   "tekst_clanka_sha256": "a23e30f0e4e840addcff5df09d5f8deb2f874bb00efd45d85f3f1003986ac333",
+   "v0237_status": "CANDIDATES_EXTRACTED_UNVALIDATED (1)",
+   "uzrok_greske": "—",
+   "status": "CONFIRMED"
+  },
+  {
+   "clanak_odluke": 14,
+   "sadrzi_naredbu": true,
+   "broj_operacija": 1,
+   "ciljni_clanci": [
+    "23b"
+   ],
+   "tekst_clanka_sha256": "337c097ee3cd90b3f70aeca8be64232017c42a249a46d159b11f3c4d3ff446a4",
+   "v0237_status": "REVIEW_REQUIRED (1)",
+   "uzrok_greske": "PREPOZNAVANJE: cilj „Članak 23 b.\" (nominativ, slovo, razmak) — traži se samo „u članku N.\"",
+   "status": "CONFIRMED"
+  },
+  {
+   "clanak_odluke": 15,
+   "sadrzi_naredbu": true,
+   "broj_operacija": 3,
+   "ciljni_clanci": [
+    "23c"
+   ],
+   "tekst_clanka_sha256": "231e47940859494084ec182cd9ff039e05c6ea49980d7efcf1e6ec771b9859e3",
+   "v0237_status": "REVIEW_REQUIRED (1)",
+   "uzrok_greske": "PREPOZNAVANJE + KONTEKST: navodnici '…'; „dodaje se nova alineja koja glasi\" i „zamjenjuje se riječi:\" nisu na popisu; „23c\" i „, stavku 1.\" (bez „u\") nisu prepoznati; naslijeđivanje konteksta između rečenica",
+   "status": "REVIEW_REQUIRED"
+  }
+ ],
+ "operacije": [
+  {
+   "id": "37834-c1-op1",
+   "clanak_odluke": 1,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_ARTICLE",
+   "cilj": {
+    "plan": "PPUO Punat",
+    "clanak": "4"
+   },
+   "naredba_doslovno": "Članak 4. Prostornog plana uređenja Općine Punat (»Službene novine Primorsko-goranske županije«, broj 08/ 09, 30/10, 33/10-pročišćeni tekst i 14/15) mijenja se i glasi:",
+   "naredba_sha256": "73ac8f4f7caf0e4d2ebed3778eaed402649e5572346dc6a1dd307979412397aa",
+   "naredba_blok": 0,
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     1,
+     50
+    ],
+    "broj_blokova": 50,
+    "pocetak": "»(1)Plan iz članka 1. ove Odluke sadržan je u elaboratu »III. Izmjene i dopune Prostornog ",
+    "kraj": "000\n4.1. Građevinsko područje naselja Punat\n4.2. Građevinsko područje naselja Stara Baška«",
+    "sha256": "49d9c7757791128ed1b388ff984a44868b025e28c88035161f6cfd525e6f2ac1",
+    "duljina": 2329
+   },
+   "polozaj": null,
+   "zastavice": [
+    "TARGET_ARTICLE_SENTENCE_STARTS_WITH_CLANAK",
+    "NESTED_QUOTES",
+    "PLAN_CITED_EXPLICITLY"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "37834-c2-op1",
+   "clanak_odluke": 2,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_ARTICLE",
+   "cilj": {
+    "plan": "PPUO Punat",
+    "clanak": "5"
+   },
+   "naredba_doslovno": "Članak 5. mijenja se i glasi:",
+   "naredba_sha256": "76116644020d16cbb23b522d668872b5bdf9268165cd38c1b4b30f3d56c9e482",
+   "naredba_blok": 0,
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     1,
+     49
+    ],
+    "broj_blokova": 49,
+    "pocetak": "»Izrazi i pojmovi koji se upotrebljavaju u smislu ovog Plana, imaju slijedeće značenje:\n1.",
+    "kraj": "pojas mora u širini od 300m od obalne crte.\n34. Obalna crta je crta plimnog vala na obali.",
+    "sha256": "2bfba43c2c5a3266fa8f6f956e115e14bdf55928fbce87bbee99eb16c1583d77",
+    "duljina": 8853
+   },
+   "polozaj": null,
+   "zastavice": [
+    "TARGET_ARTICLE_SENTENCE_STARTS_WITH_CLANAK",
+    "QUOTE_MISMATCH_IN_SOURCE",
+    "NEW_TEXT_ENDS_AT_ARTICLE_END",
+    "PLAN_INHERITED_FROM_DECISION"
+   ],
+   "status": "CONFIRMED",
+   "napomena": "Novi tekst otvara », ali zatvarajući « ne postoji. Granica novog teksta = kraj članka odluke."
+  },
+  {
+   "id": "37834-c3-op1",
+   "clanak_odluke": 3,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_ARTICLE",
+   "cilj": {
+    "plan": "PPUO Punat",
+    "clanak": "6"
+   },
+   "naredba_doslovno": "Članak 6. mijenja se i glasi:",
+   "naredba_sha256": "bbaf6f9763f7dadf4bd10ac8d166ceb13ef992b6098c1361b882a41e3f1c20a5",
+   "naredba_blok": 0,
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     1,
+     15
+    ],
+    "broj_blokova": 15,
+    "pocetak": "(1) Cjelokupno područje Općine Punat, obzirom na organizaciju, namjenu i korištenje prosto",
+    "kraj": "ema organizaciji, namjeni i korištenju površina prikazano je na kartografskom prikazu 1a.'",
+    "sha256": "b252dc20038cbeee7665d6c7b248b80a55dc522505e347145a4f3911a5f9ccda",
+    "duljina": 760
+   },
+   "polozaj": null,
+   "zastavice": [
+    "TARGET_ARTICLE_SENTENCE_STARTS_WITH_CLANAK",
+    "QUOTE_MISMATCH_IN_SOURCE",
+    "NEW_TEXT_ENDS_AT_ARTICLE_END",
+    "PLAN_INHERITED_FROM_DECISION"
+   ],
+   "status": "CONFIRMED",
+   "napomena": "Novi tekst nema otvarajući », a završava s .' (apostrof). Granica novog teksta = kraj članka odluke."
+  },
+  {
+   "id": "37834-c4-op1",
+   "clanak_odluke": 4,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_ARTICLE",
+   "cilj": {
+    "plan": "PPUO Punat",
+    "clanak": "9"
+   },
+   "naredba_doslovno": "Članak 9. mijenja se i glasi:",
+   "naredba_sha256": "46b57c5b6c8e8bd5f4d0cc2a13100bdec7c05ea37498dedeca288729f6f89789",
+   "naredba_blok": 0,
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     1,
+     8
+    ],
+    "broj_blokova": 8,
+    "pocetak": "»(1) Građevinska područja izvan naselja za izdvojene namjene su područja specifičnih funkc",
+    "kraj": "čkog turizma - LN\nœsportsko-rekreacijska namjenu: (rekreacija-R6, kupališta-R7)\nœ Groblja«",
+    "sha256": "881e2b54f8ca02f6732b86a51e42a6b53432c1544013cd9d628fe88985cc9393",
+    "duljina": 610
+   },
+   "polozaj": null,
+   "zastavice": [
+    "TARGET_ARTICLE_SENTENCE_STARTS_WITH_CLANAK",
+    "SYMBOL_BULLET_IN_SOURCE",
+    "PLAN_INHERITED_FROM_DECISION"
+   ],
+   "status": "CONFIRMED",
+   "napomena": "Oznaka nabrajanja u izvoru je &#339; (œ), stilska oznaka iz Worda; nije slovo teksta."
+  },
+  {
+   "id": "37834-c5-op1",
+   "clanak_odluke": 5,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_WORDS",
+   "cilj": {
+    "plan": "PPUO Punat",
+    "clanak": "10",
+    "stavak": "4"
+   },
+   "naredba_doslovno": "U članku 10., stavak 4. riječi: 'člankom 66.' zamjenjuju se riječi: 'članku 77j.'",
+   "naredba_sha256": "99cdc7e7fa70e8ca77e7a971b7d43020302eac946ff45187d24764a0f1502282",
+   "naredba_blok": 0,
+   "stara_rijec_doslovno": "člankom 66.",
+   "novi_tekst": {
+    "doslovno": "članku 77j."
+   },
+   "polozaj": null,
+   "zastavice": [
+    "STRAIGHT_QUOTES",
+    "NONSTANDARD_VERB_FORM",
+    "TARGET_DESIGNATOR_WITH_LETTER_IN_NEW_TEXT",
+    "BASE_TEXT_NOT_AVAILABLE"
+   ],
+   "status": "CONFIRMED",
+   "napomena": "Glagol 'zamjenjuju se riječi:' (ne 'riječima'). Točka je unutar navodnika, dio je literala."
+  },
+  {
+   "id": "37834-c6-op1",
+   "clanak_odluke": 6,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_WORDS",
+   "cilj": {
+    "plan": "PPUO Punat",
+    "clanak": "12",
+    "stavak": "1"
+   },
+   "naredba_doslovno": "U članku 12., stavak 1. riječi: 'člankom 66.' zamjenjuju se riječi: 'članku 77j.'",
+   "naredba_sha256": "2e62017df0c749ea341bf00aa595ea99d8901c2d13cf9719ead2de72543612cb",
+   "naredba_blok": 0,
+   "stara_rijec_doslovno": "člankom 66.",
+   "novi_tekst": {
+    "doslovno": "članku 77j."
+   },
+   "polozaj": null,
+   "zastavice": [
+    "STRAIGHT_QUOTES",
+    "NONSTANDARD_VERB_FORM",
+    "BASE_TEXT_NOT_AVAILABLE"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "37834-c7-op1",
+   "clanak_odluke": 7,
+   "redni_broj_operacije": 1,
+   "tip": "ADD_PARAGRAPH",
+   "cilj": {
+    "plan": "PPUO Punat",
+    "clanak": "13",
+    "stavak": "4"
+   },
+   "naredba_doslovno": "U članku 13. iza stavka 3. dodaje se novi stavak 4. koji glasi:",
+   "naredba_sha256": "711bdeda95069ae50f807eac4fee38102266ff23ce0fea205d19ec82d9169e69",
+   "naredba_blok": 0,
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     1,
+     1
+    ],
+    "broj_blokova": 1,
+    "pocetak": "»(4) Vodne površine bujičnih vodotoka na području obuhvata su registrirani vodotoci - buji",
+    "kraj": " i jaruge Punta. Navedeni vodotoci prikazani su na kartografskim prikazima 1, 2.b. i 3.b.«",
+    "sha256": "7d7719b23719d274d2abee7e04a1b046c7f7f456834570d8b6daa58b559d80eb",
+    "duljina": 238
+   },
+   "polozaj": "iza stavka 3. (izričito)",
+   "zastavice": [
+    "BASE_TEXT_NOT_AVAILABLE"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "37834-c8-op1",
+   "clanak_odluke": 8,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_ARTICLE",
+   "cilj": {
+    "plan": "PPUO Punat",
+    "clanak": "17"
+   },
+   "naredba_doslovno": "Članak 17. mijenja se i glasi:",
+   "naredba_sha256": "7acb92c4f53a70ccfa3fabc7393e9fca33e999827a71a3422e4cc4e35289caaf",
+   "naredba_blok": 0,
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     1,
+     2
+    ],
+    "broj_blokova": 2,
+    "pocetak": "»(1) U prostoru ograničenja ZOP-a građevine se mogu graditi unutar i izvan građevinskih po",
+    "kraj": "vodoopskrbu, odvodnju otpadnih voda elektroopskrbu i propisani broj parkirališnih mjesta.«",
+    "sha256": "7cadd815022e5fdd34e2d0f8036de4d6738f46b553fc6c20a472583d187c3ae3",
+    "duljina": 291
+   },
+   "polozaj": null,
+   "zastavice": [
+    "TARGET_ARTICLE_SENTENCE_STARTS_WITH_CLANAK",
+    "PLAN_INHERITED_FROM_DECISION"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "37834-c9-op1",
+   "clanak_odluke": 9,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_ARTICLE",
+   "cilj": {
+    "plan": "PPUO Punat",
+    "clanak": "18"
+   },
+   "naredba_doslovno": "Članak 18. mijenja se i glasi:",
+   "naredba_sha256": "5bc5c2c986ecdfce94043c9431b8b76cf3feacdf598cb4908c4000f86dd2b53d",
+   "naredba_blok": 0,
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     1,
+     26
+    ],
+    "broj_blokova": 26,
+    "pocetak": "»(1) Građevine od važnosti za Republiku Hrvatsku:\n1.Građevine pošte, javne telekomunikacij",
+    "kraj": "kV TS Krk - TS Dunat - TS Rab\n8.regulacijske i zaštitne vodne građevine na vodama 2. reda«",
+    "sha256": "e7a2fa93529cd51fa0d991e4bcc5d36fef83084e7ed16832b2018629f9c55746",
+    "duljina": 1445
+   },
+   "polozaj": null,
+   "zastavice": [
+    "TARGET_ARTICLE_SENTENCE_STARTS_WITH_CLANAK",
+    "PLAN_INHERITED_FROM_DECISION"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "37834-c10-op1",
+   "clanak_odluke": 10,
+   "redni_broj_operacije": 1,
+   "tip": "INSERT_AFTER",
+   "cilj": {
+    "plan": "PPUO Punat",
+    "clanak": "19"
+   },
+   "naredba_doslovno": "U članku 19. iza riječi: '1b' dodaje se riječ: '3b'.",
+   "naredba_sha256": "8ffe6c02b1a49f763b0f6a106c87fe197f8b185df308df3431825090883ac856",
+   "naredba_blok": 0,
+   "stara_rijec_doslovno": "1b",
+   "novi_tekst": {
+    "doslovno": "3b"
+   },
+   "polozaj": null,
+   "zastavice": [
+    "STRAIGHT_QUOTES",
+    "VERB_DODAJE_SE_RIJEC",
+    "NO_PARAGRAPH_ADDRESS",
+    "RESULT_SEPARATOR_UNSPECIFIED",
+    "BASE_TEXT_NOT_AVAILABLE"
+   ],
+   "status": "REVIEW_REQUIRED",
+   "napomena": "Naredba je jasna, ali nije navedeno što stoji između 1b i 3b (zarez, razmak, „i\"). Rezultat se ne smije pretpostaviti."
+  },
+  {
+   "id": "37834-c11-op1",
+   "clanak_odluke": 11,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_PARAGRAPH",
+   "cilj": {
+    "plan": "PPUO Punat",
+    "clanak": "20",
+    "stavak": "4"
+   },
+   "naredba_doslovno": "U članku 20. stavak 4. mijenja se i glasi:",
+   "naredba_sha256": "adb09a80759aaa4bff6545779d99914a2ebeaceafa2b5392ca8554f04a7db6ba",
+   "naredba_blok": 0,
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     1,
+     3
+    ],
+    "broj_blokova": 3,
+    "pocetak": "»(4) U građevinskom području naselja razgraničeni su izgrađeni dijelovi naselja i neizgrađ",
+    "kraj": " infrastrukturom i\nb)neuređenog područja na kojemu nije izgrađena osnovna infrastruktura.«",
+    "sha256": "c329b593367e50f329fa4b4732c45c8f2340aef2b4f9bc177d960c06de8b34de",
+    "duljina": 385
+   },
+   "polozaj": null,
+   "zastavice": [
+    "NUMBERED_TEXT_INSIDE_QUOTE"
+   ],
+   "status": "CONFIRMED",
+   "napomena": "Navedeni novi tekst počinje „(4) U građevinskom…\", što izgleda kao oznaka točke odluke ako se navodnici ignoriraju."
+  },
+  {
+   "id": "37834-c12-op1",
+   "clanak_odluke": 12,
+   "redni_broj_operacije": 1,
+   "tip": "DELETE_ARTICLE",
+   "cilj": {
+    "plan": "PPUO Punat",
+    "clanak": "22"
+   },
+   "naredba_doslovno": "Članak 22. briše se.",
+   "naredba_sha256": "083aa651ee469edae34b5b95b3b86afce79281f6e014ce8efe43d0c6f914d838",
+   "naredba_blok": 0,
+   "stara_rijec_doslovno": null,
+   "novi_tekst": null,
+   "polozaj": null,
+   "zastavice": [
+    "TARGET_ARTICLE_SENTENCE_STARTS_WITH_CLANAK",
+    "VERB_BRISE_SE",
+    "PLAN_INHERITED_FROM_DECISION"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "37834-c13-op1",
+   "clanak_odluke": 13,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_PARAGRAPH",
+   "cilj": {
+    "plan": "PPUO Punat",
+    "clanak": "23",
+    "stavak": "1"
+   },
+   "naredba_doslovno": "U članku 23. stavak 1. mijenja se i glasi:",
+   "naredba_sha256": "078ae618b026ca8e43c659293364891167e536c3a841a9a93f53c820ec807494",
+   "naredba_blok": 0,
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     1,
+     7
+    ],
+    "broj_blokova": 7,
+    "pocetak": "»(1) Unutar građevinskih područja naselja mogu se graditi osnovne vrste građevina:\n-stambe",
+    "kraj": "ne\n-društvene građevine\n-komunalne građevine\n-infrastrukturne građevine\n-ostale građevine«",
+    "sha256": "5ea9475bc3165d099c9421b21cb1cd7ec498908c40c7d983ac7756194f8b1e09",
+    "duljina": 260
+   },
+   "polozaj": null,
+   "zastavice": [],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "37834-c14-op1",
+   "clanak_odluke": 14,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_ARTICLE",
+   "cilj": {
+    "plan": "PPUO Punat",
+    "clanak": "23b"
+   },
+   "naredba_doslovno": "Članak 23 b. mijenja se i glasi:",
+   "naredba_sha256": "2df2ab07c2da5c73e858571dab09f6d1b988be8f2e62af0dc5f19efb5d0808c5",
+   "naredba_blok": 0,
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     1,
+     7
+    ],
+    "broj_blokova": 7,
+    "pocetak": "»Stambene građevine dijele se prema načinu stanovanja na obiteljsku kuću i više-stambenu g",
+    "kraj": "a za:\nœ obiteljsku građevinu\n-slobodnostojeću\n-dvojnu i\n-u nizu.\nœ višestambenu građevinu«",
+    "sha256": "3a7a0fb344a3f5d0ca63b139a76d0e9268416b6ca2564ed5d36c8edf53e4e6d9",
+    "duljina": 390
+   },
+   "polozaj": null,
+   "zastavice": [
+    "TARGET_ARTICLE_SENTENCE_STARTS_WITH_CLANAK",
+    "ARTICLE_DESIGNATOR_WITH_SPACE_AND_LETTER",
+    "SYMBOL_BULLET_IN_SOURCE",
+    "PLAN_INHERITED_FROM_DECISION"
+   ],
+   "status": "CONFIRMED",
+   "napomena": "Izvor piše „Članak 23 b.\" (razmak prije slova)."
+  },
+  {
+   "id": "37834-c15-op1",
+   "clanak_odluke": 15,
+   "redni_broj_operacije": 1,
+   "tip": "ADD_ALINEA",
+   "cilj": {
+    "plan": "PPUO Punat",
+    "clanak": "23c",
+    "stavak": "1",
+    "tocka": "4"
+   },
+   "naredba_doslovno": "U članku 23c., stavku 1. točki 4. dodaje se nova alineja koja glasi:",
+   "naredba_sha256": "cef6087679cbca250c7be8ac7632f30660301607cb5f63a8e26fdfe3aa7217e4",
+   "naredba_blok": 0,
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     1,
+     1
+    ],
+    "broj_blokova": 1,
+    "pocetak": "'U sklopu uređenja građevne čestice moguće je planirati bazen ukupne površine do 100 m2 uk",
+    "kraj": "m užeg područja moguće dopustiti i gradnju bazena izvan gradivog dijela građevne čestice.'",
+    "sha256": "aa9ccf9ca9c5fe84cbed75d63812a46535db00ec0778505b4e2a60a8c718bc9b",
+    "duljina": 336
+   },
+   "polozaj": "NIJE NAVEDEN (vjerojatno na kraj točke 4)",
+   "zastavice": [
+    "STRAIGHT_QUOTES",
+    "ARTICLE_DESIGNATOR_WITH_LETTER",
+    "VERB_DODAJE_SE_NOVA_ALINEJA_KOJA_GLASI",
+    "POSITION_UNSPECIFIED",
+    "BASE_TEXT_NOT_AVAILABLE"
+   ],
+   "status": "REVIEW_REQUIRED",
+   "napomena": "Položaj nove alineje unutar točke 4 nije naveden."
+  },
+  {
+   "id": "37834-c15-op2",
+   "clanak_odluke": 15,
+   "redni_broj_operacije": 2,
+   "tip": "REPLACE_WORDS",
+   "cilj": {
+    "plan": "PPUO Punat",
+    "clanak": "23c",
+    "stavak": "1 (naslijeđeno)",
+    "tocka": "6",
+    "alineja": "1"
+   },
+   "naredba_doslovno": "U točki 6., alineji 1., riječi: 'mora se' zamjenjuju se riječima: 'poželjno je'.",
+   "naredba_sha256": "4b0417a34d5cf30f81559f519a93ad65533b5962bb981ac255948094d87c27b5",
+   "naredba_blok": 2,
+   "stara_rijec_doslovno": "mora se",
+   "novi_tekst": {
+    "doslovno": "poželjno je"
+   },
+   "polozaj": null,
+   "zastavice": [
+    "STRAIGHT_QUOTES",
+    "CONTEXT_INHERITED_ARTICLE",
+    "CONTEXT_INHERITED_PARAGRAPH",
+    "BASE_TEXT_NOT_AVAILABLE"
+   ],
+   "status": "REVIEW_REQUIRED",
+   "napomena": "Članak 23c naslijeđen iz prve rečenice; stavak 1 naslijeđen je pretpostavka dok se ne vidi da točka 6 postoji samo u st. 1."
+  },
+  {
+   "id": "37834-c15-op3",
+   "clanak_odluke": 15,
+   "redni_broj_operacije": 3,
+   "tip": "REPLACE_WORDS",
+   "cilj": {
+    "plan": "PPUO Punat",
+    "clanak": "23c",
+    "stavak": "1 (naslijeđeno)",
+    "tocka": "8",
+    "alineja": "3"
+   },
+   "naredba_doslovno": "U točki 8., alineji 3., riječ: 'potpunom' zamjenjuje se riječi: 'suvislom oblikovnom'.",
+   "naredba_sha256": "4163b45d73597bbc193c387b4fe35af9bf1a633059c15b7b4331eeef801b724e",
+   "naredba_blok": 3,
+   "stara_rijec_doslovno": "potpunom",
+   "novi_tekst": {
+    "doslovno": "suvislom oblikovnom"
+   },
+   "polozaj": null,
+   "zastavice": [
+    "STRAIGHT_QUOTES",
+    "NONSTANDARD_VERB_FORM",
+    "CONTEXT_INHERITED_ARTICLE",
+    "CONTEXT_INHERITED_PARAGRAPH",
+    "BASE_TEXT_NOT_AVAILABLE"
+   ],
+   "status": "REVIEW_REQUIRED",
+   "napomena": "Glagol 'zamjenjuje se riječi:'. Naslijeđeni kontekst kao op2."
+  }
+ ],
+ "sazetak": {
+  "clanaka": 15,
+  "clanaka_s_naredbom": 15,
+  "operacija": 17,
+  "operacija_CONFIRMED": 13,
+  "operacija_REVIEW_REQUIRED": 4,
+  "po_tipu": {
+   "ADD_ALINEA": 1,
+   "ADD_PARAGRAPH": 1,
+   "DELETE_ARTICLE": 1,
+   "INSERT_AFTER": 1,
+   "REPLACE_ARTICLE": 7,
+   "REPLACE_PARAGRAPH": 2,
+   "REPLACE_WORDS": 4
+  }
+ },
+ "ogranicenja": [
+  "Polazni tekst PPUO Punat (08/09, 30/10, 33/10 pročišćeni tekst, 14/15) nije u korpusu: jedinstvenost sidara i položaji nisu provjereni.",
+  "Jedan označivač; nije neovisno dvostruko provjereno.",
+  "Ovaj dokument razvoj aktivno ispravlja, pa je skup REGRESIJSKI. Za slijepi test treba drugi, neviđeni dokument čije oznake ostaju zaključane."
+ ],
+ "zakljucano_sha256": "6635613880382e9a4dee517e19556a62bc52431d749d47fccdffeb9e12de512e"
+}

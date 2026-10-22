@@ -1,0 +1,43 @@
+{
+ "greske": [],
+ "dokumenata": 23,
+ "po_razini": {
+  "L1": 16,
+  "L3": 6,
+  "L2": 1
+ },
+ "obitelji_s_L1": {
+  "MAL-PPU#G1": 3,
+  "VRB-UPU1#G1": 3,
+  "VRB-PPU#G1": 3,
+  "BAS-UPU1#G1": 1,
+  "BAS-UPU2#G1": 1,
+  "MAL-UPU1R#G1": 1,
+  "VRB-UPU11#G1": 1,
+  "VRB-UPU2#G1": 1,
+  "MAL-DPUH#G1": 2
+ },
+ "obitelji_s_najmanje_2_L1": [
+  "MAL-DPUH#G1",
+  "MAL-PPU#G1",
+  "VRB-PPU#G1",
+  "VRB-UPU1#G1"
+ ],
+ "lanci_iste_generacije_L1": [
+  "MAL-PPU#G1",
+  "VRB-PPU#G1",
+  "VRB-UPU1#G1"
+ ],
+ "parovi_po_ocekivanju": {
+  "SAME_GENERATION": 9,
+  "NOT_SUPERSEDED": 1,
+  "REVIEW_REQUIRED": 6,
+  "DIFFERENT_PLAN": 2
+ },
+ "pravni_status_slucajeva": 2,
+ "preklop_s_v1_identitet": [
+  "36814"
+ ],
+ "sha256_skupa": "382d9d6d226c8ee90731e542ad079717afeec27950f9986e98b18783f69cf6c7",
+ "sha256_v1_ocekivan_i_nepromijenjen": true
+}

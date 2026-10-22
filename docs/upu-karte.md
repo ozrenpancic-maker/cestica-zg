@@ -23,7 +23,8 @@ Kad korisnik odabere česticu na Krku, aplikacija u katalogu rasterskih karata p
 ## Tijek
 
 1. Točka na čestici (`turf.pointOnFeature`) pretvori se u HTRS96/TM (`tmFwd`). Zatim se pošalje `query` na svaki sloj: `geometryType=esriGeometryPoint`, `inSR=3765`, `spatialRel=esriSpatialRelIntersects`. Pretraga je prostorna, ne po OBJECTID-u.
-2. Listovi se poredaju tako da je prvi list namjene: naziv karte spominje namjenu ili korištenje, ili je datoteka `karta1`. Korisnik može izabrati drugi list.
+2. Ako obrađeni UPU u `rules_krk.json` (`upu.<plan>.karte`) navodi naslove listova iz odluke, list dobiva službeni naslov i vrstu prema šifri iz kataloga (npr. `618_karta4` → „4. Način i uvjeti gradnje”), a list sa zonama za uvjete gradnje (`zona: true`) nudi se prvi. Za UPU 2 Kornić to je karta 4 (čl. 37. st. 2.). Katalog PGŽ sam daje samo naziv datoteke.
+   Ostali listovi se poredaju tako da je prvi list namjene: naziv karte spominje namjenu ili korištenje, ili je datoteka `karta1`. Korisnik može izabrati drugi list.
 3. Izrez: `export` s `bbox` oko čestice u EPSG:3765, `imageSR=3765`, `layers=show:<sloj>`, `layerDefs={"<sloj>":"OBJECTID=<id>"}` (samo taj list), `f=json`.
 4. Granica čestice iz DGU-a pretvara se u piksele prema okviru (`extent`) koji je servis stvarno vratio, a ne prema traženom.
 5. Na glavnoj karti isti list se prikazuje kao `export` za trenutni prikaz u Web Mercatoru (`bboxSR=imageSR=3857`, `f=image`). Prikazuje se ispod granice čestice.

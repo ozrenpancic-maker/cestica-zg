@@ -71,7 +71,7 @@ Zona unutar UPU-a ne može se odrediti automatski (grafički dio nije dostupan k
 | Malinska-Dubašnica | PPUO, pročišćeni tekst SN 15/2023 | obrađeno: stambena građevina (do 2 jedinice), skupine GPN-1/2 (čl. 31.), GPN-3 (čl. 34.), GPN-4 (čl. 35.), GPN-5 do 12 (čl. 37.); skupina se čita iz oznake županijskog sloja; neizgrađeni dio uz provjeru uređenosti (čl. 27.) |
 | Baška | PPUO, pročišćeni tekst SN 26/2020 | obrađeno: obiteljska kuća samostojeća, dvojna, skupna (čl. 30.–32.), najveća čestica 1350 m², u naselju Baška bez novih dvojnih i skupnih; neizgrađeni dio blokiran (čl. 19., 28.) |
 | Vrbnik | PPUO, pročišćeni tekst SN 46/2024 | nije obrađeno: tekst je samo u PDF-u |
-| Punat | PPUO, pročišćeni tekst 2010. + izmjene 2015., 2018., 2021. | nije obrađeno: nema novijeg pročišćenog teksta, potrebno spajanje izmjena |
+| Punat | PPUO, pročišćeni tekst 2010. + izmjene 2015., 2018., 2021. | obrađeno uz upozorenje (21. 10. 2026.): čl. 24.–29. za naselja N1 i N2 (obiteljska kuća slobodnostojeća, dvojna, niz; višestambena do 4 stana); izmjene 2015. nisu provjerene; neizgrađeni dio blokiran; UPU 3 (središte Punta) nije obrađen, jer su čl. 46a–46c iz 2016. nepoznati |
 | Omišalj | PPUO, pročišćeni tekst 2014. + izmjene 2015., 2017. | nije obrađeno: isto |
 | Dobrinj | PPUO 2008. + usklađenje 2022. (PDF) | nije obrađeno: tekst je samo u PDF-u |
 
@@ -154,3 +154,20 @@ Svi testovi rade s lažnim odgovorima servisa. Stvarni servisi nisu dohvaćeni i
 1. Ako DGU ne radi iz preglednika: opcije su posrednik (Cloudflare Worker, besplatna razina, zahtijeva tvoje odobrenje) ili prikaz bez čestice.
 2. UPU 1 Krk i UPU 5 Vrh iz PDF-a.
 3. Ostalih šest općina na otoku.
+
+## Cijela Primorsko-goranska županija (21. 10. 2026.)
+
+Okvir `PGZ_BBOX` (14,15–15,55 E; 44,45–45,65 N) usmjerava u istu analizu kao Krk. Na otoku čestica dolazi iz pripremljenog katastra, a izvan njega (kopno, Cres, Lošinj, Rab…) uživo iz DGU-a (`loadParcelHR`). Namjena i popis planova dolaze iz županijskih slojeva, koji pokrivaju cijelu županiju. Za jedinice bez obrađenih pravila piše „Uvjeti gradnje za X još nisu obrađeni”. Katastar infrastrukture (SKI) i komunalni doprinos postoje samo za Krk. Točka bez namjene u županijskom sloju (Istra, Lika, Slovenija) prelazi u osnovni pregled za državu.
+
+Pravila gradnje za druge jedinice: tekst plana je u PDF-u koji alat ne može pročitati; PDF treba priložiti, pa se vrijednosti prepisuju u `src/rules_krk.json` (`ostaleJls`) uz doslovne navode.
+
+### Punat: što su priložena dva PDF-a (21. 10. 2026.)
+
+Oba su samo izmjene, bez temeljnog teksta, pa pravila za Punat još nisu uvedena u `rules_krk.json`.
+- IV. izmjene i dopune PPUO Punat (SN PGŽ 10/2021): mijenjaju čl. 5, 32, 48, 77a, 77d, 97c i 107 (vile, Buka, reciklažna dvorišta, UPOV). Odredbi za stambene građevine nema.
+- II. izmjene i dopune UPU 3 naselja Punat (SN PGŽ 3/2020): mijenjaju samo dio uvjeta. Iz njih je sigurno: tlocrt obiteljske kuće najviše 150 m² (dvojna 75 m², na čestici većoj od 1000 m² slobodnostojeća 200 m²), najmanje 60 m² (čl. 46); zelenilo 40 % (46a), 30 % (46b), 20 % (46c; 30 % za završnu jedinicu niza); višestambena građevina kig 0,25, kis 1,25, P+2, visina 9,0 m (7,0 m u neizgrađenom dijelu), tlocrt 80–250 m², do 4 stana (čl. 50a). Nedostaju najmanja čestica, kig, kis, visina i udaljenosti za 46a–46c.
+Potrebno: UPU 3 Punat, SN PGŽ 34/10 i 13/16 (ili pročišćeni tekst) i osnovni PPUO Punat (SN 9/08, 30/10, 33/10, 14/15, 30/18 pročišćeni tekst).
+
+Naknadno priloženi PDF-ovi za Punat (21. 10. 2026.): UPU 2 (marina, brodogradilište; SN 15/11), UPU 4 (R6a; 26/11), UPU 5 (R6c; 22/11), UPU 6 (T2A/T3A, R6b; 22/11), UPU 8 (T2B/T3B, R6d; 22/11), UPU 10 (R6e; 15/11), uz ponovljene IV. izmjene PPUO. Sve su ugostiteljsko-turističke, sportske ili luke, bez uvjeta za obiteljske kuće (UPU 2 samo zadržava tri postojeće stambene građevine). Na njihovom obuhvatu aplikacija ostaje na „uvjete propisuje UPU”. Stambena pravila Punta i dalje čekaju UPU 3 (SN 34/10, 13/16) i osnovni PPUO.
+
+Registar prostornih planova ZZPU PGŽ (zavod.pgz.hr, stanje 6. 10. 2026.): popis planova i njihovih glasila (filteri po razini, vrsti, statusu), bez teksta plana. Punat: IV. izmjene PPUO (2021-10) na snazi; izmjene UPU 1, UPU 2 i UPU 3 (2025-44, 2025-44, 2025-37) u izradi. Omišalj: UPU 2 Njivice pročišćeni tekst (2025-38) na snazi; izmjene PPUO (2025-29) i UPU 1 u izradi. Dobrinj: usklađenje PPUO (2022-05) na snazi; izmjene PPUO (2024-07) u izradi.
