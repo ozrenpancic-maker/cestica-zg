@@ -1,0 +1,1171 @@
+[
+ {
+  "i": 0,
+  "gold": "35169-c1-op2",
+  "cl": 1,
+  "gtip": "REPLACE_UNIT",
+  "ptip": "REPLACE_PARAGRAPH",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "new_strict": false,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": false,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "2",
+   {
+    "stavak": "4",
+    "tocka": "3"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "2",
+   {
+    "stavak": "4",
+    "tocka": "3"
+   }
+  ]
+ },
+ {
+  "i": 1,
+  "gold": "35169-c2-op1",
+  "cl": 2,
+  "gtip": "REPLACE_PARAGRAPH",
+  "ptip": "REPLACE_PARAGRAPH",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "new_strict": false,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": false,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "5",
+   {
+    "stavak": "3"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "5",
+   {
+    "stavak": "3"
+   }
+  ]
+ },
+ {
+  "i": 2,
+  "gold": "35169-c3-op1",
+  "cl": 3,
+  "gtip": "DELETE_WORDS",
+  "ptip": "DELETE_UNIT",
+  "t_ok": false,
+  "a_ok": false,
+  "lit": {
+   "old_strict": false,
+   "old_relaxed": false
+  },
+  "flagged": false,
+  "crit": [
+   "POGREŠNA_JEDINICA",
+   "BRISANJE_CIJELE_JEDINICE_UMJESTO_RIJEČI"
+  ],
+  "full_s": false,
+  "full_r": false,
+  "gaddr": [
+   "HEADING",
+   "14",
+   {}
+  ],
+  "paddr": [
+   "ARTICLE",
+   "14",
+   {}
+  ]
+ },
+ {
+  "i": 3,
+  "gold": "35169-c4-op1",
+  "cl": 4,
+  "gtip": "DELETE_WORDS",
+  "ptip": "DELETE_UNIT",
+  "t_ok": false,
+  "a_ok": true,
+  "lit": {
+   "old_strict": false,
+   "old_relaxed": false
+  },
+  "flagged": false,
+  "crit": [
+   "BRISANJE_CIJELE_JEDINICE_UMJESTO_RIJEČI"
+  ],
+  "full_s": false,
+  "full_r": false,
+  "gaddr": [
+   "ARTICLE",
+   "14",
+   {
+    "stavak": "1"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "14",
+   {
+    "stavak": "1"
+   }
+  ]
+ },
+ {
+  "i": 4,
+  "gold": "35169-c4-op2",
+  "cl": 4,
+  "gtip": "DELETE_WORDS",
+  "ptip": "DELETE_UNIT",
+  "t_ok": false,
+  "a_ok": true,
+  "lit": {
+   "old_strict": false,
+   "old_relaxed": false
+  },
+  "flagged": false,
+  "crit": [
+   "BRISANJE_CIJELE_JEDINICE_UMJESTO_RIJEČI"
+  ],
+  "full_s": false,
+  "full_r": false,
+  "gaddr": [
+   "ARTICLE",
+   "14",
+   {
+    "stavak": "2"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "14",
+   {
+    "stavak": "2"
+   }
+  ]
+ },
+ {
+  "i": 5,
+  "gold": "35169-c4-op3",
+  "cl": 4,
+  "gtip": "DELETE_UNIT",
+  "ptip": "DELETE_UNIT",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {},
+  "flagged": false,
+  "crit": [],
+  "full_s": true,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "14",
+   {
+    "stavak": "4",
+    "alineja": "6"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "14",
+   {
+    "stavak": "4",
+    "alineja": "6"
+   }
+  ]
+ },
+ {
+  "i": 6,
+  "gold": "35169-c5-op1",
+  "cl": 5,
+  "gtip": "REPLACE_HEADING",
+  "ptip": "REPLACE_UNIT",
+  "t_ok": true,
+  "a_ok": false,
+  "lit": {
+   "new_strict": false,
+   "new_relaxed": false
+  },
+  "flagged": false,
+  "crit": [
+   "POGREŠNA_JEDINICA",
+   "ZAMJENA_JEDINICE_BEZ_NOVOG_TEKSTA"
+  ],
+  "full_s": false,
+  "full_r": false,
+  "gaddr": [
+   "HEADING",
+   "19",
+   {}
+  ],
+  "paddr": [
+   "ARTICLE",
+   "19",
+   {}
+  ]
+ },
+ {
+  "i": 7,
+  "gold": "35169-c6-op1",
+  "cl": 6,
+  "gtip": "REPLACE_WORDS",
+  "ptip": "REPLACE_WORDS",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "old_strict": true,
+   "old_relaxed": true,
+   "new_strict": false,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": false,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "19",
+   {
+    "stavak": "1"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "19",
+   {
+    "stavak": "1"
+   }
+  ]
+ },
+ {
+  "i": 8,
+  "gold": "35169-c6-op2",
+  "cl": 6,
+  "gtip": "ADD_PARAGRAPH",
+  "ptip": "ADD_PARAGRAPH",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "new_strict": false,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": false,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "19",
+   {
+    "stavak": "2"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "19",
+   {
+    "stavak": "1"
+   }
+  ]
+ },
+ {
+  "i": 9,
+  "gold": "35169-c7-op1",
+  "cl": 7,
+  "gtip": "REPLACE_WORDS",
+  "ptip": "REPLACE_WORDS",
+  "t_ok": true,
+  "a_ok": false,
+  "lit": {
+   "old_strict": true,
+   "old_relaxed": true,
+   "new_strict": true,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [
+   "POGREŠNA_JEDINICA"
+  ],
+  "full_s": false,
+  "full_r": false,
+  "gaddr": [
+   "HEADING",
+   "24",
+   {}
+  ],
+  "paddr": [
+   "ARTICLE",
+   "24",
+   {}
+  ]
+ },
+ {
+  "i": 10,
+  "gold": "35169-c8-op1",
+  "cl": 8,
+  "gtip": "REPLACE_WORDS",
+  "ptip": "REPLACE_WORDS",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "old_strict": true,
+   "old_relaxed": true,
+   "new_strict": true,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": true,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "24",
+   {
+    "stavak": "1"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "24",
+   {
+    "stavak": "1"
+   }
+  ]
+ },
+ {
+  "i": 11,
+  "gold": "35169-c9-op1",
+  "cl": 9,
+  "gtip": "REPLACE_WORDS",
+  "ptip": "REPLACE_WORDS",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "old_strict": false,
+   "old_relaxed": false,
+   "new_strict": false,
+   "new_relaxed": false
+  },
+  "flagged": false,
+  "crit": [
+   "ZAMJENA_POGREŠNOG_TEKSTA"
+  ],
+  "full_s": false,
+  "full_r": false,
+  "gaddr": [
+   "ARTICLE",
+   "28",
+   {
+    "stavak": "1"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "28",
+   {
+    "stavak": "1"
+   }
+  ]
+ },
+ {
+  "i": 12,
+  "gold": "35169-c9-op3",
+  "cl": 9,
+  "gtip": "DELETE_WORDS",
+  "ptip": "DELETE_UNIT",
+  "t_ok": false,
+  "a_ok": true,
+  "lit": {
+   "old_strict": false,
+   "old_relaxed": false
+  },
+  "flagged": false,
+  "crit": [
+   "BRISANJE_CIJELE_JEDINICE_UMJESTO_RIJEČI"
+  ],
+  "full_s": false,
+  "full_r": false,
+  "gaddr": [
+   "ARTICLE",
+   "28",
+   {
+    "stavak": "2"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "28",
+   {
+    "stavak": "2"
+   }
+  ]
+ },
+ {
+  "i": 13,
+  "gold": "35169-c10-op1",
+  "cl": 10,
+  "gtip": "REPLACE_ARTICLE",
+  "ptip": "REPLACE_ARTICLE",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "new_strict": false,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": false,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "30",
+   {}
+  ],
+  "paddr": [
+   "ARTICLE",
+   "30",
+   {}
+  ]
+ },
+ {
+  "i": 14,
+  "gold": "35169-c11-op1",
+  "cl": 11,
+  "gtip": "REPLACE_WORDS",
+  "ptip": "REPLACE_WORDS",
+  "t_ok": true,
+  "a_ok": false,
+  "lit": {
+   "old_strict": true,
+   "old_relaxed": true,
+   "new_strict": false,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [
+   "POGREŠNA_JEDINICA"
+  ],
+  "full_s": false,
+  "full_r": false,
+  "gaddr": [
+   "HEADING",
+   "31",
+   {}
+  ],
+  "paddr": [
+   "ARTICLE",
+   "31",
+   {}
+  ]
+ },
+ {
+  "i": 15,
+  "gold": "35169-c12-op1",
+  "cl": 12,
+  "gtip": "REPLACE_WORDS",
+  "ptip": "REPLACE_WORDS",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "old_strict": true,
+   "old_relaxed": true,
+   "new_strict": false,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": false,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "31",
+   {
+    "tocka": "1"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "31",
+   {
+    "tocka": "1"
+   }
+  ]
+ },
+ {
+  "i": 16,
+  "gold": "35169-c13-op2",
+  "cl": 13,
+  "gtip": "ADD_ARTICLE",
+  "ptip": "INSERT_AFTER",
+  "t_ok": false,
+  "a_ok": true,
+  "lit": {
+   "new_strict": false,
+   "new_relaxed": false
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": false,
+  "full_r": false,
+  "gaddr": [
+   "ARTICLE",
+   "32",
+   {}
+  ],
+  "paddr": [
+   "ARTICLE",
+   "31",
+   {}
+  ]
+ },
+ {
+  "i": 17,
+  "gold": "35169-c14-op1",
+  "cl": 14,
+  "gtip": "REPLACE_WORDS",
+  "ptip": "REPLACE_WORDS",
+  "t_ok": true,
+  "a_ok": false,
+  "lit": {
+   "old_strict": true,
+   "old_relaxed": true,
+   "new_strict": true,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [
+   "POGREŠNA_JEDINICA",
+   "NEJASAN_SLUČAJ_BEZ_UPOZORENJA"
+  ],
+  "full_s": false,
+  "full_r": false,
+  "gaddr": [
+   "HEADING",
+   "32",
+   {}
+  ],
+  "paddr": [
+   "ARTICLE",
+   "32",
+   {}
+  ]
+ },
+ {
+  "i": 18,
+  "gold": "35169-c15-op1",
+  "cl": 15,
+  "gtip": "RENUMBER_ARTICLE",
+  "ptip": "RENUMBER",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "new_strict": true,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": true,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "32",
+   {}
+  ],
+  "paddr": [
+   "ARTICLE",
+   "32",
+   {}
+  ]
+ },
+ {
+  "i": 19,
+  "gold": "35169-c16-op1",
+  "cl": 16,
+  "gtip": "REPLACE_WORDS",
+  "ptip": "REPLACE_WORDS",
+  "t_ok": true,
+  "a_ok": false,
+  "lit": {
+   "old_strict": true,
+   "old_relaxed": true,
+   "new_strict": true,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [
+   "POGREŠNA_JEDINICA"
+  ],
+  "full_s": false,
+  "full_r": false,
+  "gaddr": [
+   "HEADING",
+   "33",
+   {}
+  ],
+  "paddr": [
+   "ARTICLE",
+   "33",
+   {}
+  ]
+ },
+ {
+  "i": 20,
+  "gold": "35169-c17-op1",
+  "cl": 17,
+  "gtip": "RENUMBER_ARTICLE",
+  "ptip": "RENUMBER",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "new_strict": true,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": true,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "33",
+   {}
+  ],
+  "paddr": [
+   "ARTICLE",
+   "33",
+   {}
+  ]
+ },
+ {
+  "i": 21,
+  "gold": "35169-c18-op2",
+  "cl": 18,
+  "gtip": "DELETE_ARTICLE",
+  "ptip": "DELETE_UNIT",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {},
+  "flagged": false,
+  "crit": [],
+  "full_s": true,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "34",
+   {}
+  ],
+  "paddr": [
+   "ARTICLE",
+   "34",
+   {}
+  ]
+ },
+ {
+  "i": 22,
+  "gold": "35169-c19-op1",
+  "cl": 19,
+  "gtip": "DELETE_WORDS",
+  "ptip": "DELETE_UNIT",
+  "t_ok": false,
+  "a_ok": true,
+  "lit": {
+   "old_strict": false,
+   "old_relaxed": false
+  },
+  "flagged": false,
+  "crit": [
+   "BRISANJE_CIJELE_JEDINICE_UMJESTO_RIJEČI"
+  ],
+  "full_s": false,
+  "full_r": false,
+  "gaddr": [
+   "ARTICLE",
+   "35",
+   {}
+  ],
+  "paddr": [
+   "ARTICLE",
+   "35",
+   {}
+  ]
+ },
+ {
+  "i": 23,
+  "gold": "35169-c20-op2",
+  "cl": 20,
+  "gtip": "DELETE_ARTICLE",
+  "ptip": "DELETE_UNIT",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {},
+  "flagged": false,
+  "crit": [],
+  "full_s": true,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "41",
+   {}
+  ],
+  "paddr": [
+   "ARTICLE",
+   "41",
+   {}
+  ]
+ },
+ {
+  "i": 24,
+  "gold": "35169-c21-op1",
+  "cl": 21,
+  "gtip": "ADD_PARAGRAPH",
+  "ptip": "ADD_PARAGRAPH",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "new_strict": false,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": false,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "63",
+   {
+    "stavak": "4"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "63",
+   {
+    "stavak": "3"
+   }
+  ]
+ },
+ {
+  "i": 25,
+  "gold": "35169-c22-op1",
+  "cl": 22,
+  "gtip": "REPLACE_WORDS",
+  "ptip": "REPLACE_WORDS",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "old_strict": true,
+   "old_relaxed": true,
+   "new_strict": true,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": true,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "94",
+   {
+    "stavak": "1"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "94",
+   {
+    "stavak": "1"
+   }
+  ]
+ },
+ {
+  "i": 26,
+  "gold": "35169-c22-op2",
+  "cl": 22,
+  "gtip": "INSERT_AFTER",
+  "ptip": "INSERT_AFTER",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "old_strict": true,
+   "old_relaxed": true,
+   "new_strict": false,
+   "new_relaxed": false
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": false,
+  "full_r": false,
+  "gaddr": [
+   "ARTICLE",
+   "94",
+   {
+    "stavak": "4"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "94",
+   {
+    "stavak": "4"
+   }
+  ]
+ },
+ {
+  "i": 27,
+  "gold": "35169-c22-op3",
+  "cl": 22,
+  "gtip": "DELETE_UNIT",
+  "ptip": "DELETE_UNIT",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {},
+  "flagged": false,
+  "crit": [],
+  "full_s": true,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "94",
+   {
+    "stavak": "5",
+    "alineja": "5"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "94",
+   {
+    "stavak": "5",
+    "alineja": "5"
+   }
+  ]
+ },
+ {
+  "i": 28,
+  "gold": "35169-c22-op4",
+  "cl": 22,
+  "gtip": "DELETE_PARAGRAPH",
+  "ptip": "DELETE_UNIT",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {},
+  "flagged": false,
+  "crit": [],
+  "full_s": true,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "94",
+   {
+    "stavak": "8"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "94",
+   {
+    "stavak": "8"
+   }
+  ]
+ },
+ {
+  "i": 29,
+  "gold": "35169-c22-op5",
+  "cl": 22,
+  "gtip": "RENUMBER_PARAGRAPHS",
+  "ptip": "RENUMBER",
+  "t_ok": true,
+  "a_ok": false,
+  "lit": {
+   "new_strict": false,
+   "new_relaxed": false
+  },
+  "flagged": true,
+  "crit": [],
+  "full_s": false,
+  "full_r": false,
+  "gaddr": [
+   "ARTICLE",
+   "94",
+   {}
+  ],
+  "paddr": [
+   "ARTICLE",
+   "94",
+   {}
+  ]
+ },
+ {
+  "i": 30,
+  "gold": "35169-c22-op6",
+  "cl": 22,
+  "gtip": "ADD_PARAGRAPH",
+  "ptip": "RENUMBER",
+  "t_ok": false,
+  "a_ok": true,
+  "lit": {
+   "new_strict": false,
+   "new_relaxed": false
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": false,
+  "full_r": false,
+  "gaddr": [
+   "ARTICLE",
+   "94",
+   {
+    "stavak": "10"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "94",
+   {
+    "stavak": "10"
+   }
+  ]
+ },
+ {
+  "i": 31,
+  "gold": "35169-c22-op7",
+  "cl": 22,
+  "gtip": "REPLACE_PARAGRAPH",
+  "ptip": "REPLACE_PARAGRAPH",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "new_strict": true,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": true,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "94",
+   {
+    "stavak": "11"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "94",
+   {
+    "stavak": "11"
+   }
+  ]
+ },
+ {
+  "i": 32,
+  "gold": "35169-c23-op1",
+  "cl": 23,
+  "gtip": "REPLACE_WORDS",
+  "ptip": "REPLACE_WORDS",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "old_strict": true,
+   "old_relaxed": true,
+   "new_strict": true,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": true,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "95",
+   {
+    "stavak": "1"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "95",
+   {
+    "stavak": "1"
+   }
+  ]
+ },
+ {
+  "i": 33,
+  "gold": "35169-c24-op1",
+  "cl": 24,
+  "gtip": "REPLACE_WORDS",
+  "ptip": "REPLACE_WORDS",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "old_strict": false,
+   "old_relaxed": false,
+   "new_strict": false,
+   "new_relaxed": false
+  },
+  "flagged": false,
+  "crit": [
+   "ZAMJENA_POGREŠNOG_TEKSTA"
+  ],
+  "full_s": false,
+  "full_r": false,
+  "gaddr": [
+   "ARTICLE",
+   "104",
+   {
+    "stavak": "2"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "104",
+   {
+    "stavak": "2"
+   }
+  ]
+ },
+ {
+  "i": 34,
+  "gold": "35169-c25-op1",
+  "cl": 25,
+  "gtip": "REPLACE_PARAGRAPH",
+  "ptip": "REPLACE_PARAGRAPH",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "new_strict": false,
+   "new_relaxed": true
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": false,
+  "full_r": true,
+  "gaddr": [
+   "ARTICLE",
+   "108",
+   {
+    "stavak": "5"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "108",
+   {
+    "stavak": "5"
+   }
+  ]
+ },
+ {
+  "i": 35,
+  "gold": "35169-c26-op1",
+  "cl": 26,
+  "gtip": "REPLACE_PARAGRAPH",
+  "ptip": "REPLACE_PARAGRAPH",
+  "t_ok": true,
+  "a_ok": true,
+  "lit": {
+   "new_strict": false,
+   "new_relaxed": false
+  },
+  "flagged": false,
+  "crit": [],
+  "full_s": false,
+  "full_r": false,
+  "gaddr": [
+   "ARTICLE",
+   "112",
+   {
+    "stavak": "3"
+   }
+  ],
+  "paddr": [
+   "ARTICLE",
+   "112",
+   {
+    "stavak": "3"
+   }
+  ]
+ },
+ {
+  "i": null,
+  "gold": "35169-c1-op1",
+  "cl": 1,
+  "gtip": "REPLACE_UNIT",
+  "ptip": null,
+  "crit": [],
+  "fn": true
+ },
+ {
+  "i": null,
+  "gold": "35169-c9-op2",
+  "cl": 9,
+  "gtip": "REPLACE_WORDS",
+  "ptip": null,
+  "crit": [],
+  "fn": true
+ },
+ {
+  "i": null,
+  "gold": "35169-c13-op1",
+  "cl": 13,
+  "gtip": "ADD_HEADING",
+  "ptip": null,
+  "crit": [],
+  "fn": true
+ },
+ {
+  "i": null,
+  "gold": "35169-c18-op1",
+  "cl": 18,
+  "gtip": "DELETE_HEADING",
+  "ptip": null,
+  "crit": [
+   "PROPUŠTENO_BRISANJE"
+  ],
+  "fn": true
+ },
+ {
+  "i": null,
+  "gold": "35169-c20-op1",
+  "cl": 20,
+  "gtip": "DELETE_HEADING",
+  "ptip": null,
+  "crit": [
+   "PROPUŠTENO_BRISANJE"
+  ],
+  "fn": true
+ },
+ {
+  "i": null,
+  "gold": "35169-c24-op2",
+  "cl": 24,
+  "gtip": "INSERT_AFTER",
+  "ptip": null,
+  "crit": [],
+  "fn": true
+ },
+ {
+  "i": null,
+  "gold": "35169-c24-op3",
+  "cl": 24,
+  "gtip": "INSERT_AFTER",
+  "ptip": null,
+  "crit": [],
+  "fn": true
+ }
+]
