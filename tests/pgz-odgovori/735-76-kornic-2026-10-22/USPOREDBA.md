@@ -70,3 +70,27 @@ Izvor: http://www.sn.pgz.hr/default.asp?Link=odluke&id=34138, dohvat 22. 10. 202
 - **Pogreška u aplikaciji, ispravljena na `razvoj`:** aplikacija je za višeobiteljsku kuću nudila i „ugrađenu" gradnju (min. čestica 400 m², tlocrt 150 m²). Čl. 37. st. 1. dopušta višeobiteljsku kuću samo kao slobodnostojeću ili dvojnu, a čl. 39. obuhvaća ugrađenu samo za obiteljsku. Uklonjeno i dodan test.
 
 **Za česticu 735/76 (405 m² prema grafičkom katastru, zona M11 ili M2 ako je korisnik takvu odabere):** slobodnostojeća obiteljska kuća moguća je samo po iznimci od 400 m² (okruženje uređenih i izgrađenih čestica, čl. 38.); slobodnostojeća višeobiteljska (500 m²) i stambena građevina (500 m²) nisu; dvojna obiteljska (300 m²) i dvojna višeobiteljska (400 m²) jesu prema površini. Upisana površina u zemljišnoj knjizi može se razlikovati.
+
+## PDF objave i zone zaštite (dopuna, 22. 10. 2026. 20:36 UTC)
+
+- `sn-19-16/odluka_34138.pdf` (SN download id 28072, 265.180 B, SHA-256 u `_meta.json`) je PDF stranica 2172–2232 izdanja 19/2016 sa svim odlukama Grada Krka; odluka o UPU-u 2 izdvojena je u `odluka_34138_pdf_tekst.txt`. PDF sadrži **čl. 1.–108. bez rupa**.
+- Svih 17 navoda iz `rules_krk.json` (UPU 2) nalazi se i u PDF tekstu.
+- **Čl. 83.:** zona »B« = kulturno-povijesna cjelina Kornić (Registar Z-5332), međe određene popisom 72 rubne čestice. Od njih se 45 pronalazi u današnjem katastru (27 je u međuvremenu prenumerirano). Čestica 735/76 je 80 m izvan konveksne ljuske pronađenih rubnih čestica i 271 m od najbliže: **vrlo vjerojatno izvan zone »B«** (nije dokaz, jer nedostaje 27 rubnih čestica).
+- **Čl. 85.:** zona »C« (ambijentalna zaštita, šire područje naselja): najviše dvije nadzemne etaže bez povišenja nadozida, kosi krov oko 30° s kupom kanalicom ili kamenim pločama, posebni konzervatorski uvjeti odnosno prethodno odobrenje za svaku novu gradnju. Aplikacija to **nije** prikazivala; sada prikazuje vidljivo upozorenje uz izbor zone (test dodan).
+
+## Karte UPU-a 2 iz kataloga rastera (`karte/`)
+
+Katalog PGŽ (`PP_RASTERI`, sloj 5) za točku čestice daje 9 listova UPU-a 2: karte 1, 2a–2e, 3a, 3b i 4. Izrezi ±90 m s ucrtanom granicom čestice su u `karte/`.
+
+| List | OBJECTID | Što se vidi na čestici (vizualno očitanje, bez legende) |
+|---|---|---|
+| 4 „Način i uvjeti gradnje" | 7104 | žuta zona s oznakom **M1₁ (M11)**; na tom listu su zone iz čl. 37. st. 2. |
+| 3A „Uvjeti korištenja … posebna ograničenja" | 7102 | plavi šraf zone zaštite preko cijelog dijela naselja s natpisom **„ZONA C"**; čestica je unutar šrafa |
+
+Georeferencirani listovi nemaju legendu, pa su oba očitanja razine **kandidat** dok ih netko ne potvrdi na izvorniku ili lokacijskoj informaciji.
+
+**Napomena za aplikaciju:** zone M11/M2 iz čl. 37. st. 2. prikazane su na **karti 4**, a aplikacija kao prvi list nudi kartu 1. Za UPU 2 bi kao prvi list trebalo ponuditi kartu 4 (nije još promijenjeno).
+
+## Sažetak za 735/76 (razina: kandidat)
+
+UPU 2 Kornić (SN 19/16), zona **M11** (karta 4), unutar zone zaštite **»C«** (karta 3A, čl. 85.), vrlo vjerojatno izvan zone »B«. Grafička površina 405 m². Moguće: slobodnostojeća obiteljska kuća samo po iznimci od 400 m² (čl. 38.), dvojna obiteljska ili dvojna višeobiteljska; sve uz najviše dvije nadzemne etaže, kosi krov oko 30° i konzervatorske uvjete (čl. 85.).

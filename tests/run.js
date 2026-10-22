@@ -1199,6 +1199,7 @@ async function krkTests(){
   setv(w,"krkTip","obit","change");
   setv(w,"krkOblik","ugr","change"); C=w.__krkCalc; ok(C.oblik==="ugr"&&Math.abs(C.tl-100)<0.01,"UPU 2, ugrađena obiteljska: tlocrt najviše 100 m²");
   setv(w,"krkOblik","dvoj","change"); C=w.__krkCalc; ok(Math.abs(C.tl-150)<0.5,"UPU 2, dvojna: tlocrt 150 m² (kig 0,25 × 600 = 150)");
+  ok([...w.document.querySelectorAll("#sheet p.flag")].some(p=>/zona »C«/.test(p.textContent)&&/čl\. 85\./.test(p.textContent)&&/prikazu 3A/.test(p.textContent)),"UPU 2: vidljivo upozorenje o zonama zaštite »B« i »C« (čl. 83.–85., karta 3A)");
   setv(w,"krkTip","visobit","change"); C=w.__krkCalc; ok([...$(w,"krkOblik").options].map(o=>o.value).join()==="slob,dvoj"&&C.oblik==="dvoj","UPU 2, višeobiteljska: samo slobodnostojeća ili dvojna, nema ugrađene (čl. 37. st. 1., čl. 39.)");
   setv(w,"krkTip","obit","change");
   setv(w,"krkZona","druga","change"); ok(w.__krkCalc===null&&/samo u zonama M11 i M2/.test(txt(w,"sheet")),"UPU 2, druga zona: bez izračuna, uz razlog (čl. 37.)");
