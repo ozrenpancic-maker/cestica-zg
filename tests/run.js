@@ -930,6 +930,7 @@ async function krkTests(){
   w.fetch=(u,o={})=>{u=String(u); calls.push(u);
     if(u.startsWith("https://gisportal.pgz.hr/server/rest/services/PP_RASTERI/PP_RASTERI/MapServer/")){ rkCalls.push(u);
       if(rkMode==="fail") return Promise.reject(new TypeError("Failed to fetch"));
+      if(/\/MapServer\/5\/query\?/.test(u)&&rkMode==="k4") return okj({features:["618_karta1","618_karta3a","618_karta4","618_karta2a"].map((s,i)=>({attributes:{OBJECTID:7090+i,Name:s+"_i.tif",KARTA_NAZIV:s+"_i.tif",PLAN_NAZIV:"UPU 2 - Kornić",OPCINA:"Krk",MJERILO:null,KARTA_SIFRA:s}}))});
       if(/\/MapServer\/5\/query\?/.test(u)) return okj({features:rkMode==="none"?[]:[
         {attributes:{OBJECTID:7097,Name:"618_karta2a_i.tif",KARTA_NAZIV:"2a. Promet",PLAN_NAZIV:"UPU 2 - Kornić",OPCINA:"KRK",MJERILO:2000,KARTA_SIFRA:"2a"}},
         {attributes:{OBJECTID:7096,Name:"618_karta1_i.tif",KARTA_NAZIV:"1. Korištenje i namjena površina",PLAN_NAZIV:"UPU 2 - Kornić",OPCINA:"KRK",MJERILO:2000,KARTA_SIFRA:"1"}}]});
@@ -1004,6 +1005,9 @@ async function krkTests(){
    ok(/Detaljna namjena \(UPU\)/.test(txt(w,"sheet"))&&/Detaljna zona nije potvrđena/.test(tr)&&/UPU 2 - Kornić/.test(tr)&&/OBJECTID 7096/.test(tr)&&/sloj 5 RASTER_5UPU \(GK5\)/.test(tr)&&/618_karta1_i\.tif/.test(tr)&&/Datum provjere ?\d{4}-\d\d-\d\d/.test(tr)&&/preliminarno/.test(tr),"UPU karta: plan, list namjene, sloj, OBJECTID, datum provjere i pouzdanost; zona nije potvrđena");
    ok(rkCalls.some(u=>/\/12\/query\?/.test(u)&&/inSR=3765/.test(u))&&rkCalls.some(u=>/\/5\/query\?/.test(u)),"UPU karta: katalog se pita prostorno, u HTRS96 i GK5 sloju (ne po OBJECTID-u)");
    ok($(w,"rkSel")&&$(w,"rkSel").options[0].textContent.includes("Korištenje i namjena")&&q&&q.get("layerDefs")==='{"5":"OBJECTID=7096"}'&&q.get("bboxSR")==="3765"&&q.get("imageSR")==="3765"&&q.get("layers")==="show:5","UPU karta: list namjene prvi, export samo tog lista u HTRS96/TM");
+   {rkMode="k4"; const K=E("RASTER_KATALOZI").find(k=>k.id==="pgz"), r=await E("RK_ARCGIS").query(K,351573.08,4991067.93); rkMode="ok";
+    const it=r.items;
+    ok(it.length===4&&it[0].a.KARTA_SIFRA==="618_karta4"&&it[0].zona&&it[0].karta==="4. Način i uvjeti gradnje"&&it[1].vrsta==="namjena"&&it[1].karta==="1. Korištenje i namjena površina"&&it.some(x=>x.karta.startsWith("3A. Područja posebnih uvjeta")&&x.vrsta==="uvjeti"),"UPU 2: katalog daje samo nazive datoteka; listovi dobivaju naslove iz čl. 3. odluke, a karta 4 sa zonama (čl. 37.) ide prva");}
    const ex=E("RKAT").get(w.__cur.key).img, pts=poly&&poly.getAttribute("points").split(" ").map(p=>p.split(",").map(Number));
    const [e0,n0]=ring[0], px0=[(e0-ex.extent.xmin)/(ex.extent.xmax-ex.extent.xmin)*800,(ex.extent.ymax-n0)/(ex.extent.ymax-ex.extent.ymin)*800];
    ok(img&&/test_57096\.png$/.test(img.src)&&pts&&pts.length===5&&Math.hypot(pts[0][0]-px0[0],pts[0][1]-px0[1])<1&&pts.every(([x,y])=>x>100&&x<700&&y>100&&y<700),"UPU karta: granica čestice ucrtana prema okviru koji je vratio servis (odstupanje < 1 px)");

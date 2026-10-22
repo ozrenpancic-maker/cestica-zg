@@ -89,7 +89,7 @@ Katalog PGŽ (`PP_RASTERI`, sloj 5) za točku čestice daje 9 listova UPU-a 2: k
 
 Georeferencirani listovi nemaju legendu, pa su oba očitanja razine **kandidat** dok ih netko ne potvrdi na izvorniku ili lokacijskoj informaciji.
 
-**Napomena za aplikaciju:** zone M11/M2 iz čl. 37. st. 2. prikazane su na **karti 4**, a aplikacija kao prvi list nudi kartu 1. Za UPU 2 bi kao prvi list trebalo ponuditi kartu 4 (nije još promijenjeno).
+**Aplikacija (ispravljeno 22. 10.):** zone M11/M2 iz čl. 37. st. 2. prikazane su na **karti 4**, a aplikacija je kao prvi list nudila kartu 1. Sada listovi UPU-a 2 dobivaju naslove iz čl. 3. odluke (`rules_krk.json` → `upu.UPU 2.karte`), a karta 4 se nudi prva (test dodan).
 
 ## Sažetak za 735/76 (razina: kandidat)
 

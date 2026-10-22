@@ -1617,6 +1617,18 @@ function rkSifreUvoz(d){
 rkSifreUvoz(ISPU_SIFRE);
 const rkSifra=I=>{if(!I) return null; const T=RK_SIFRE[I.vrsta+I.br+"_"+I.sifra+"_R"+String(I.rev).padStart(2,"0")]; return T&&T[I.karta]||null;};
 const RK_VORD={namjena:0,pravila:1,uvjeti:2,zastita:2,promet:3,infra:3,ostalo:4,nepoznato:5};
+// Katalog PGŽ daje samo naziv datoteke (npr. „618_karta4_i.tif”). Kad obrađeni UPU (rules_krk.json → upu.*.karte) navodi
+// naslove listova iz odluke, list dobiva službeni naslov i vrstu; list sa zonama za uvjete gradnje (zona:true) ide prvi.
+function rkPoznatiList(it){
+  const U=RULES_KRK&&RULES_KRK.upu; if(!U) return it;
+  const sif=[it.a.KARTA_SIFRA,it.a.Name].filter(Boolean).join(" "), m=sif.match(/karta_?(\d+[a-z]?)(?![a-z0-9])/i); if(!m) return it;
+  for(const R of Object.values(U)){
+    if(!R.karte||!R.prepoznaj||!new RegExp(R.prepoznaj,"i").test(it.plan)) continue;
+    const L=R.karte.listovi[m[1].toLowerCase()]; if(!L) continue;
+    it.karta=L.naziv; it.vrsta=L.vrsta; it.zona=!!L.zona; it.listNapomena=L.napomena||null; it.listIzvor=R.karte.izvor; break;
+  }
+  return it;
+}
 const RK_PORD={DPU:0,UPU:1,GUP:2,PPU:3,PPUG:3,PPUO:3,PPGZ:3,PP:3};
 const rkWords=s=>new Set(norm(s).toLowerCase().split(" ").filter(w=>w.length>3&&!/^(urbanisticki|urbanistickog|plana|plan|uredenja|odluka|donosenju|izmjenama|dopunama|izmjene|dopune|procisceni|tekst|odredbi|provodenje|detaljni|detaljnog|grada|opcine|generalni|generalnog|prostorni|prostornog)$/.test(w)));
 function rkFetchText(url,ms){
@@ -1639,7 +1651,8 @@ const RK_ARCGIS={
     const seen=new Map(); // isti list u oba kataloga: prednost HTRS96
     for(const a of out){const k=(a.PLAN_NAZIV||"")+"|"+(a.KARTA_SIFRA||a.Name||"")+"|"+(a.Name||""); const b=seen.get(k); if(!b||(b._sloj.grupa!=="HTRS96"&&a._sloj.grupa==="HTRS96")) seen.set(k,a);}
     const items=[...seen.values()].map(a=>({id:a._sloj.id+":"+a.OBJECTID,plan:a.PLAN_NAZIV||"plan",planVrsta:a._sloj.vrsta,karta:a.KARTA_NAZIV||a.Name||"list",vrsta:rkVrsta(a.KARTA_NAZIV)!=="nepoznato"?rkVrsta(a.KARTA_NAZIV):/karta_?1(?!\d)/i.test(a.Name||"")?"namjena":"nepoznato",a,_sloj:a._sloj,OBJECTID:a.OBJECTID}));
-    items.sort((x,y)=>RK_VORD[x.vrsta]-RK_VORD[y.vrsta]||String(x.plan).localeCompare(String(y.plan))||String(x.a.KARTA_SIFRA||x.a.Name).localeCompare(String(y.a.KARTA_SIFRA||y.a.Name),"hr",{numeric:true}));
+    items.forEach(rkPoznatiList);
+    items.sort((x,y)=>(y.zona?1:0)-(x.zona?1:0)||RK_VORD[x.vrsta]-RK_VORD[y.vrsta]||String(x.plan).localeCompare(String(y.plan))||String(x.a.KARTA_SIFRA||x.a.Name).localeCompare(String(y.a.KARTA_SIFRA||y.a.Name),"hr",{numeric:true}));
     if(!items.length&&err.length===K.slojevi.length) throw new Error(err[0]);
     return {items,err};
   },
@@ -1863,6 +1876,7 @@ function rkInner(){
   const nam=S.items.some(x=>x.vrsta==="namjena"), nep=S.items.filter(x=>x.vrsta==="nepoznato").length;
   if(!nam) h+=`<div class="verdict v-warn" style="margin:0 0 6px">${nep?`Karta namjene nije prepoznata: servis za ${nep===S.items.length?"sve listove":nep+" listova"} daje samo šifre (npr. ${esc((S.items.find(x=>x.vrsta==="nepoznato").I||{}).karta||"")}), a aplikacija šifre ne tumači.`:"Među listovima koji obuhvaćaju česticu nije karta korištenja i namjene."} Prikazana karta ne određuje namjenu.</div>`;
   if(it.vrsta==="nepoznato") h+=`<p class="flag">Vrsta ovog lista nije potvrđena. Otvori cijeli list i pročitaj naslov karte.</p>`;
+  else if(it.zona) h+=`<p class="meta">Na ovom listu su ${esc(it.listNapomena||"zone za uvjete gradnje")}. Naslov lista: ${esc(it.listIzvor||"odluka o planu")}.</p>`;
   else if(nam&&it.vrsta!=="namjena") h+=`<p class="flag">Odabrana karta je ${esc(RK_VRSTE[it.vrsta])}, a ne karta namjene.</p>`;
   if(RK_CTX&&RK_CTX.region==="zg"&&RK_CTX.rows&&RK_CTX.rows.length){const m=RK_CTX.rows[0].p; h+=`<p class="meta">${pzTag(pz("A",{izvor:"Grad Zagreb, GIS baza planirane namjene"}))} Namjena prema službenom vektorskom sloju GUP-a: <b>${esc(m.Namjena||m.Analitika||"–")}</b> (odjeljak na vrhu). Raster ISPU-a ovdje je kartografski dokaz.</p>`;}
   const lbl=a=>`${a.plan} · ${a.karta}${a.vrsta!=="namjena"?" ("+RK_VRSTE[a.vrsta]+")":""}${a.I?" · R"+String(a.I.rev).padStart(2,"0"):""}${a.starija?" · starija inačica":""}${S.prazni.has(a.id)?" · bez sadržaja na čestici":""}`;
