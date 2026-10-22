@@ -1,0 +1,1131 @@
+{
+ "naziv": "SLIJEPI TEST v0.23.9: neovisno označene naredbe izmjene, odluka 35169 (Malinska-Dubašnica, SN PGŽ 5/17)",
+ "verzija": "v1",
+ "datum": "2026-10-22",
+ "autor": "Claude (neovisni ocjenjivač)",
+ "NE_DIJELITI_PRIJE_OCJENE": true,
+ "izvor": {
+  "publication_id": "35169",
+  "sn": "5/17",
+  "datum_izdanja": "2017-02-24",
+  "izdanje_id": 1005,
+  "mjesto_id": "51511",
+  "redni_broj": 5,
+  "sha256": "0fe98f0aee8f111d370b2f32954a8f9f519905312a0eb77bdf1f5486e413dc0e",
+  "kodiranje": "windows-1250"
+ },
+ "pravila": {
+  "segmentacija": "Članak odluke = samostalni blok „Članak N.“ izvan citata; 26 članaka; blok „Članak 32.“ (indeks 72) je dio citiranog novog teksta čl. 13.",
+  "atomizacija": "Jedna operacija = jedna strukturna jedinica ili jedan raspon riječi (naslov i članak su dvije operacije; svaka radnja u složenoj rečenici je zasebna).",
+  "nisu_operacije": "Glava I.–IV. (uvodne i završne odredbe, stupanje na snagu).",
+  "usporedba": "Literali se uspoređuju nakon sažimanja bjelina i bez razlike » « / \" / „ “; novi tekst preko sha256 nad blokovima spojenima s \\n."
+ },
+ "operacije": [
+  {
+   "id": "35169-c1-op1",
+   "clanak_odluke": 1,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_UNIT",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "2",
+    "stavak": "4",
+    "tocka": "1",
+    "podtocka": "b"
+   },
+   "naredba_blok": 23,
+   "naredba_doslovno": "U članku 2. Odluke o donošenju Izmjene i dopune Urbanističkog plana uređenja UPU 1 (»Službene novine Primorsko-goranske županije« broj 14/13, 3/14 i 28/15) u nastavku teksta: Odluke, stavku 4. točki 1. podtočka b mijenja se glasi:",
+   "naredba_sha256": "518796992a991d1eed264f53fd0e94813b2bbd55c9181f6e617418d990434ff9",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     24,
+     31
+    ],
+    "pocetak": "»b) druge namjene\n- zone mješovite namjene (M1, M2, M3, M4, M5)\n- površine gospodarske nam",
+    "kraj": "tajem (KS1, KS2 i KS3)\n- površine ugostiteljsko - turističke namjene - hoteli (T11 i T12)«",
+    "sha256": "c5e436bb8fe7e5148b78e7803b86c26ad1bd241c0433337134f11b143482e668",
+    "duljina": 399
+   },
+   "polozaj": null,
+   "zastavice": [
+    "VERB_TYPO_MIJENJA_SE_GLASI",
+    "DEEP_ADDRESS",
+    "PLAN_ABBREVIATION_DEFINED_HERE"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c1-op2",
+   "clanak_odluke": 1,
+   "redni_broj_operacije": 2,
+   "tip": "REPLACE_UNIT",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "2",
+    "stavak": "4",
+    "tocka": "3"
+   },
+   "naredba_blok": 32,
+   "naredba_doslovno": "U članku 2. Odluke stavku 4. točka 3. mijenja se i glasi:",
+   "naredba_sha256": "102e2071324c831238be7dc3d550184b8ed03d9735d2d49eb3c78f4ad6c37975",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     33,
+     39
+    ],
+    "pocetak": "»3. Vodne površine - more:\nPovršine mora namijenjenog za prometne djelatnosti\n- zona luke ",
+    "kraj": "pomorskog puta\nPovršine mora namijenjenog za rekreaciju\n- rekreacijske zone na moru (RM).«",
+    "sha256": "8244cb8f530794a1cef3063a57b7e61e45f32df061c0f6a4b94a7df682f9ee2d",
+    "duljina": 314
+   },
+   "polozaj": null,
+   "zastavice": [
+    "CONTEXT_PLAN_ABBREVIATION"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c2-op1",
+   "clanak_odluke": 2,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_PARAGRAPH",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "5",
+    "stavak": "3"
+   },
+   "naredba_blok": 41,
+   "naredba_doslovno": "U članku 5. Odluke stavak 3. mijenja se i glasi:",
+   "naredba_sha256": "662532c9e7ab95a2502453463bb7d198aba7e6f997c858a0767c7c2a902d3550",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     42,
+     42
+    ],
+    "pocetak": "»Unutar površine javnog parka (Z11) mogu se graditi građevine koje su u funkciji korištenj",
+    "kraj": "eni broj etaža je jedna nadzemna etaža (prizemlje), a najveća dopuštena visina 3,5 metra.«",
+    "sha256": "5f4d9e103af1a45297d5c825e3476176a6c31a890e9d742017f210eed3be75bf",
+    "duljina": 442
+   },
+   "polozaj": null,
+   "zastavice": [],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c3-op1",
+   "clanak_odluke": 3,
+   "redni_broj_operacije": 1,
+   "tip": "DELETE_WORDS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "naslov_ispred_clanka": "14"
+   },
+   "naredba_blok": 44,
+   "naredba_doslovno": "U naslovu ispred članka 14. Odluke riječi: »i površina mješovite namjene (M6)« brišu se.",
+   "naredba_sha256": "4c64bc48013b4e9849d54a89e4d42e475f86a377dfa1cca87b1ba868dd895436",
+   "stara_rijec_doslovno": "i površina mješovite namjene (M6)",
+   "novi_tekst": null,
+   "polozaj": null,
+   "zastavice": [
+    "TARGET_IS_HEADING"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c4-op1",
+   "clanak_odluke": 4,
+   "redni_broj_operacije": 1,
+   "tip": "DELETE_WORDS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "14",
+    "stavak": "1"
+   },
+   "naredba_blok": 46,
+   "naredba_doslovno": "U članku 14. Odluke stavku 1. riječi: »i površina mješovite namjene (M6)« brišu se.",
+   "naredba_sha256": "8584fb6b729d48fd53d2110b41d8e7e2abf1671d50e9a92a600f31aff15a3135",
+   "stara_rijec_doslovno": "i površina mješovite namjene (M6)",
+   "novi_tekst": null,
+   "polozaj": null,
+   "zastavice": [],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c4-op2",
+   "clanak_odluke": 4,
+   "redni_broj_operacije": 2,
+   "tip": "DELETE_WORDS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "14",
+    "stavak": "2"
+   },
+   "naredba_blok": 47,
+   "naredba_doslovno": "U članku 14. Odluke stavku 2. riječi: »i površine mješovite namjene (M6)« brišu se.",
+   "naredba_sha256": "04113244318ad185163442467333341704934b3d730beb8ce8cf2db47df51d8e",
+   "stara_rijec_doslovno": "i površine mješovite namjene (M6)",
+   "novi_tekst": null,
+   "polozaj": null,
+   "zastavice": [
+    "NEAR_DUPLICATE_LITERAL_PREVIOUS_OP"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c4-op3",
+   "clanak_odluke": 4,
+   "redni_broj_operacije": 3,
+   "tip": "DELETE_UNIT",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "14",
+    "stavak": "4",
+    "alineja": "6"
+   },
+   "naredba_blok": 48,
+   "naredba_doslovno": "U članku 14. Odluke stavku 4. alineja 6. briše se.",
+   "naredba_sha256": "4f3da058c0aa63b4a5727bbf893d7d3ae41867941d1d7525d2e8988d3cc89a18",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": null,
+   "polozaj": null,
+   "zastavice": [],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c5-op1",
+   "clanak_odluke": 5,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_HEADING",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "naslov_ispred_clanka": "19"
+   },
+   "naredba_blok": 50,
+   "naredba_doslovno": "Naslov ispred članka 19. Odluke mijenja se i glasi: »Površine ugostiteljsko - turističke namjene - hoteli (T11 i T12)«.",
+   "naredba_sha256": "f624467a44c914a86bd0f2972bbdf8fa613e06378d6dcedcc220afb5189fb4b3",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "doslovno": "Površine ugostiteljsko - turističke namjene - hoteli (T11 i T12)"
+   },
+   "polozaj": null,
+   "zastavice": [
+    "TARGET_IS_HEADING",
+    "NEW_TEXT_INLINE"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c6-op1",
+   "clanak_odluke": 6,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_WORDS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "19",
+    "stavak": "1"
+   },
+   "naredba_blok": 52,
+   "naredba_doslovno": "U članku 19. Odluke stavku 1. riječ: »hotel (T1)« zamjenjuje se riječju »hotel (T11)«.",
+   "naredba_sha256": "0b04fd6aa70c0f34533a192d9d88740d8b4d52b624deed1c5c22a6edba528956",
+   "stara_rijec_doslovno": "hotel (T1)",
+   "novi_tekst": {
+    "doslovno": "hotel (T11)"
+   },
+   "polozaj": null,
+   "zastavice": [],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c6-op2",
+   "clanak_odluke": 6,
+   "redni_broj_operacije": 2,
+   "tip": "ADD_PARAGRAPH",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "19",
+    "stavak": "2"
+   },
+   "naredba_blok": 53,
+   "naredba_doslovno": "U članku 19. Odluke iza stavka 1. dodaje se stavak 2. koji glasi:",
+   "naredba_sha256": "1abb99a141ecad64bdd3187bd763ac326d274e8d2b09842927402d0bad3e20da",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     54,
+     54
+    ],
+    "pocetak": "»Površina ugostiteljsko - turističke namjene - hotel (T12) odnosi se na površinu postojeće",
+    "kraj": "»Borovik«, na kojoj je moguća rekonstrukcija postojećeg hotela u skladu s uvjetima Plana.»",
+    "sha256": "d4ff8a5d759660eea55214214fefcc0ded3f26b6e8e607c62c0c03d1a2ff59e1",
+    "duljina": 189
+   },
+   "polozaj": "iza stavka 1. (izričito)",
+   "zastavice": [
+    "QUOTE_MISMATCH_IN_SOURCE",
+    "RENUMBERING_OF_LATER_PARAGRAPHS_UNSTATED"
+   ],
+   "status": "CONFIRMED",
+   "napomena": "Novi tekst završava znakom » umjesto «. Ne kaže se što je s eventualnim dosadašnjim st. 2."
+  },
+  {
+   "id": "35169-c7-op1",
+   "clanak_odluke": 7,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_WORDS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "naslov_ispred_clanka": "24"
+   },
+   "naredba_blok": 56,
+   "naredba_doslovno": "U naslovu ispred članka 24. Odluke riječ: »lokalnog« zamjenjuje se riječju »županijskog«.",
+   "naredba_sha256": "693393a86cc2af7fc95a421427c4a5478fda689c66aadc6f208660fede59863f",
+   "stara_rijec_doslovno": "lokalnog",
+   "novi_tekst": {
+    "doslovno": "županijskog"
+   },
+   "polozaj": null,
+   "zastavice": [
+    "TARGET_IS_HEADING"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c8-op1",
+   "clanak_odluke": 8,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_WORDS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "24",
+    "stavak": "1"
+   },
+   "naredba_blok": 58,
+   "naredba_doslovno": "U članku 24. Odluke stavku 1. riječ: »lokalnog« zamjenjuje se riječju »županijskog«.",
+   "naredba_sha256": "169d0c3d6bed9495d0eca195f1e56335b85674786835bf8fd6fddb0ada629c07",
+   "stara_rijec_doslovno": "lokalnog",
+   "novi_tekst": {
+    "doslovno": "županijskog"
+   },
+   "polozaj": null,
+   "zastavice": [],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c9-op1",
+   "clanak_odluke": 9,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_WORDS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "28",
+    "stavak": "1"
+   },
+   "naredba_blok": 60,
+   "naredba_doslovno": "U članku 28. Odluke stavku 1. iza riječi: »...smještajem (KS1, KS2 i KS3), te unutar« riječ: »površine« zamjenjuje se riječju: »površina«, te se riječ: »hotel (T1) zamjenjuje riječju: »hotela (T11 i T12)«.",
+   "naredba_sha256": "87777e9319d66b19a954b35e629f24effc5a0f4baae1a64b4e3350d08d1d997b",
+   "stara_rijec_doslovno": "površine",
+   "novi_tekst": {
+    "doslovno": "površina"
+   },
+   "polozaj": "iza riječi »...smještajem (KS1, KS2 i KS3), te unutar«",
+   "zastavice": [
+    "ELLIPSIS_IN_ANCHOR",
+    "COMPOUND_SENTENCE",
+    "ANCHOR_PLUS_TARGET_WORD"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c9-op2",
+   "clanak_odluke": 9,
+   "redni_broj_operacije": 2,
+   "tip": "REPLACE_WORDS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "28",
+    "stavak": "1"
+   },
+   "naredba_blok": 60,
+   "naredba_doslovno": "U članku 28. Odluke stavku 1. iza riječi: »...smještajem (KS1, KS2 i KS3), te unutar« riječ: »površine« zamjenjuje se riječju: »površina«, te se riječ: »hotel (T1) zamjenjuje riječju: »hotela (T11 i T12)«.",
+   "naredba_sha256": "87777e9319d66b19a954b35e629f24effc5a0f4baae1a64b4e3350d08d1d997b",
+   "stara_rijec_doslovno": "hotel (T1)",
+   "novi_tekst": {
+    "doslovno": "hotela (T11 i T12)"
+   },
+   "polozaj": null,
+   "zastavice": [
+    "COMPOUND_SENTENCE",
+    "QUOTE_MISMATCH_IN_SOURCE",
+    "CONTEXT_INHERITED_WITHIN_SENTENCE"
+   ],
+   "status": "CONFIRMED",
+   "napomena": "Stari literal nema zatvarajući « („»hotel (T1) zamjenjuje riječju\"); granica je glagol."
+  },
+  {
+   "id": "35169-c9-op3",
+   "clanak_odluke": 9,
+   "redni_broj_operacije": 3,
+   "tip": "DELETE_WORDS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "28",
+    "stavak": "2"
+   },
+   "naredba_blok": 61,
+   "naredba_doslovno": "U članku 28. Odluke stavku 2. riječi: »i površina mješovite namjene (M6)« brišu se.",
+   "naredba_sha256": "4bfe25dfd0d40fcaa78f3cea3047a82c5578835e688a7028153792ea50e98207",
+   "stara_rijec_doslovno": "i površina mješovite namjene (M6)",
+   "novi_tekst": null,
+   "polozaj": null,
+   "zastavice": [],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c10-op1",
+   "clanak_odluke": 10,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_ARTICLE",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "30"
+   },
+   "naredba_blok": 63,
+   "naredba_doslovno": "Članak 30. Odluke mijenja se i glasi:",
+   "naredba_sha256": "a59a24206349a3e9aff338b1546c7574612a8ea4ffa05a176353cf0949bcda89",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     64,
+     64
+    ],
+    "pocetak": "»Građevine ugostiteljsko - turističke namjene - hoteli grade se, odnosno rekonstruiraju, u",
+    "kraj": "namjene (T11 i T12), a mogu se graditi i unutar zona mješovite namjene (M1, M2, M3 i M4).«",
+    "sha256": "ebbebffb6d863d45fe7930696556d4ed294688e8bb3aad72f56227523b03f99a",
+    "duljina": 222
+   },
+   "polozaj": null,
+   "zastavice": [],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c11-op1",
+   "clanak_odluke": 11,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_WORDS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "naslov_ispred_clanka": "31"
+   },
+   "naredba_blok": 66,
+   "naredba_doslovno": "U naslovu ispred članka 31. Odluke riječi: »turističke namjene (T1)« zamjenjuje se riječima: »turističke namjene (T11)«",
+   "naredba_sha256": "b4a79adf4e43242a95d330d1806928b3d80d36819a46871056d9de4828647806",
+   "stara_rijec_doslovno": "turističke namjene (T1)",
+   "novi_tekst": {
+    "doslovno": "turističke namjene (T11)"
+   },
+   "polozaj": null,
+   "zastavice": [
+    "TARGET_IS_HEADING",
+    "VERB_NUMBER_MISMATCH"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c12-op1",
+   "clanak_odluke": 12,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_WORDS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "31",
+    "tocka": "1"
+   },
+   "naredba_blok": 68,
+   "naredba_doslovno": "U članku 31. Odluke točki 1. riječi: »turističke namjene (T1)« zamjenjuje se riječima: »turističke namjene (T11)«.",
+   "naredba_sha256": "2a56b5de33678ee1cfbb33751cddda5f15101c273d17a902cdee5f8f8c0a945d",
+   "stara_rijec_doslovno": "turističke namjene (T1)",
+   "novi_tekst": {
+    "doslovno": "turističke namjene (T11)"
+   },
+   "polozaj": null,
+   "zastavice": [
+    "VERB_NUMBER_MISMATCH"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c13-op1",
+   "clanak_odluke": 13,
+   "redni_broj_operacije": 1,
+   "tip": "ADD_HEADING",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "iza_clanka": "31"
+   },
+   "naredba_blok": 70,
+   "naredba_doslovno": "Iza članka 31. Odluke dodaje se naslov i novi članak 32. koji glase:",
+   "naredba_sha256": "f8793bd801d474a09519f2b50fa1b70b3c5a42db163458aa64b3164201b814ae",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     71,
+     71
+    ],
+    "pocetak": "»2.1.2. Uvjeti smještaja hotela na površini ugostiteljsko - turističke namjene (T12)",
+    "kraj": "»2.1.2. Uvjeti smještaja hotela na površini ugostiteljsko - turističke namjene (T12)",
+    "sha256": "e386a301db88301145d4948adb41e4c8e810732ed7099959548be8a75106babe",
+    "duljina": 84
+   },
+   "polozaj": "iza članka 31.",
+   "zastavice": [
+    "COMPOUND_HEADING_AND_ARTICLE"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c13-op2",
+   "clanak_odluke": 13,
+   "redni_broj_operacije": 2,
+   "tip": "ADD_ARTICLE",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "32 (novi)"
+   },
+   "naredba_blok": 70,
+   "naredba_doslovno": "Iza članka 31. Odluke dodaje se naslov i novi članak 32. koji glase:",
+   "naredba_sha256": "f8793bd801d474a09519f2b50fa1b70b3c5a42db163458aa64b3164201b814ae",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     72,
+     102
+    ],
+    "pocetak": "Članak 32.\n1. oblik i veličina građevne čestice\nPovršina ugostiteljsko - turističke namjen",
+    "kraj": "e osigurati mjere zaštite okoliša (zrak, tlo, voda, buka), u skladu s posebnim propisima.«",
+    "sha256": "98702bba3e69add18f885e8c9a704c9318e0c1d466b25d48645fd6755d3ec527",
+    "duljina": 5004
+   },
+   "polozaj": "iza novog naslova, iza članka 31.",
+   "zastavice": [
+    "COMPOUND_HEADING_AND_ARTICLE",
+    "QUOTED_ARTICLE_HEADING_INSIDE_NEW_TEXT",
+    "ORDER_DEPENDENT_NUMBERING"
+   ],
+   "status": "CONFIRMED",
+   "napomena": "Blok „Članak 32.\" unutar citata nije članak odluke. Do čl. 15 odluke postoje dva članka 32."
+  },
+  {
+   "id": "35169-c14-op1",
+   "clanak_odluke": 14,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_WORDS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "naslov_ispred_clanka": "32 (dosadašnji? vidi napomenu)"
+   },
+   "naredba_blok": 104,
+   "naredba_doslovno": "U naslovu ispred članka 32. Odluke broj: »2.1.2.« zamjenjuje se brojem: »2.1.3.«.",
+   "naredba_sha256": "4aa95fabd157b06815528e676bea28869732c4eaa49053f39dd53e09ab2d7986",
+   "stara_rijec_doslovno": "2.1.2.",
+   "novi_tekst": {
+    "doslovno": "2.1.3."
+   },
+   "polozaj": null,
+   "zastavice": [
+    "TARGET_IS_HEADING",
+    "ORDER_DEPENDENT_NUMBERING",
+    "NUMBERING_TIME_AMBIGUOUS"
+   ],
+   "status": "REVIEW_REQUIRED",
+   "napomena": "Nakon čl. 13 i novi i dosadašnji članak 32 imaju ispred sebe naslov „2.1.2.\"; tekst ne kaže „dosadašnjeg\". Namjera je vjerojatno dosadašnji, ali to nije jednoznačno."
+  },
+  {
+   "id": "35169-c15-op1",
+   "clanak_odluke": 15,
+   "redni_broj_operacije": 1,
+   "tip": "RENUMBER_ARTICLE",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "32 (dosadašnji)"
+   },
+   "naredba_blok": 106,
+   "naredba_doslovno": "Dosadašnji članak 32. Odluke postaje članak 33.",
+   "naredba_sha256": "2321f386c9f60e808dafd9743904ae31b07cb049a68c4641f8e83860bab5d444",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "doslovno": "33"
+   },
+   "polozaj": null,
+   "zastavice": [],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c16-op1",
+   "clanak_odluke": 16,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_WORDS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "naslov_ispred_clanka": "33 (dosadašnji)"
+   },
+   "naredba_blok": 108,
+   "naredba_doslovno": "U naslovu ispred dosadašnjeg članka 33. Odluke broj: »2.1.3.« zamjenjuje se brojem: »2.1.4.«.",
+   "naredba_sha256": "f5fb2067a12a49172eeddc7ad43ecc2e9e712c8188984ed73bdb09e452a482e5",
+   "stara_rijec_doslovno": "2.1.3.",
+   "novi_tekst": {
+    "doslovno": "2.1.4."
+   },
+   "polozaj": null,
+   "zastavice": [
+    "TARGET_IS_HEADING",
+    "ORDER_DEPENDENT_NUMBERING"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c17-op1",
+   "clanak_odluke": 17,
+   "redni_broj_operacije": 1,
+   "tip": "RENUMBER_ARTICLE",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "33 (dosadašnji)"
+   },
+   "naredba_blok": 110,
+   "naredba_doslovno": "Dosadašnji članak 33. Odluke postaje članak 34.",
+   "naredba_sha256": "a083d187397cb2368e83fa18ed05fed5d01f3d756993af9a35d8236276d77bcf",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "doslovno": "34"
+   },
+   "polozaj": null,
+   "zastavice": [],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c18-op1",
+   "clanak_odluke": 18,
+   "redni_broj_operacije": 1,
+   "tip": "DELETE_HEADING",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "naslov_ispred_clanka": "34 (dosadašnji)"
+   },
+   "naredba_blok": 112,
+   "naredba_doslovno": "Naslov ispred dosadašnjeg članka 34. Odluke i dosadašnji članak 34. brišu se",
+   "naredba_sha256": "9c8b7fd93d404dd71cbf0ecb6a57d83323de957fde7d0eee1d862eabec45cd75",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": null,
+   "polozaj": null,
+   "zastavice": [
+    "COMPOUND_HEADING_AND_ARTICLE",
+    "NO_FINAL_PUNCTUATION"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c18-op2",
+   "clanak_odluke": 18,
+   "redni_broj_operacije": 2,
+   "tip": "DELETE_ARTICLE",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "34 (dosadašnji)"
+   },
+   "naredba_blok": 112,
+   "naredba_doslovno": "Naslov ispred dosadašnjeg članka 34. Odluke i dosadašnji članak 34. brišu se",
+   "naredba_sha256": "9c8b7fd93d404dd71cbf0ecb6a57d83323de957fde7d0eee1d862eabec45cd75",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": null,
+   "polozaj": null,
+   "zastavice": [
+    "COMPOUND_HEADING_AND_ARTICLE"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c19-op1",
+   "clanak_odluke": 19,
+   "redni_broj_operacije": 1,
+   "tip": "DELETE_WORDS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "35"
+   },
+   "naredba_blok": 114,
+   "naredba_doslovno": "U članku 35. Odluke riječi: »i površine mješovite namjene (M6)« brišu se.",
+   "naredba_sha256": "21b362d6b96d39cb57c223eb7a817f34783880551dd971f263b7715771afcee6",
+   "stara_rijec_doslovno": "i površine mješovite namjene (M6)",
+   "novi_tekst": null,
+   "polozaj": null,
+   "zastavice": [
+    "NO_PARAGRAPH_ADDRESS"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c20-op1",
+   "clanak_odluke": 20,
+   "redni_broj_operacije": 1,
+   "tip": "DELETE_HEADING",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "naslov_ispred_clanka": "41"
+   },
+   "naredba_blok": 116,
+   "naredba_doslovno": "Naslov ispred članka 41. Odluke i članak 41. brišu se",
+   "naredba_sha256": "5c173e11bd4145caaf3da4a141b961b4f7247db9f525c5345de9cc2fdb23f83d",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": null,
+   "polozaj": null,
+   "zastavice": [
+    "COMPOUND_HEADING_AND_ARTICLE",
+    "NO_FINAL_PUNCTUATION"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c20-op2",
+   "clanak_odluke": 20,
+   "redni_broj_operacije": 2,
+   "tip": "DELETE_ARTICLE",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "41"
+   },
+   "naredba_blok": 116,
+   "naredba_doslovno": "Naslov ispred članka 41. Odluke i članak 41. brišu se",
+   "naredba_sha256": "5c173e11bd4145caaf3da4a141b961b4f7247db9f525c5345de9cc2fdb23f83d",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": null,
+   "polozaj": null,
+   "zastavice": [
+    "COMPOUND_HEADING_AND_ARTICLE",
+    "RENUMBERING_OF_LATER_ARTICLES_UNSTATED"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c21-op1",
+   "clanak_odluke": 21,
+   "redni_broj_operacije": 1,
+   "tip": "ADD_PARAGRAPH",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "63",
+    "stavak": "4"
+   },
+   "naredba_blok": 118,
+   "naredba_doslovno": "U članku 63. Odluke iza stavka 3. dodaje se stavak 4. koji glasi:",
+   "naredba_sha256": "ebbbf64a90208b3803e429218bbab49be84f4a78ed8fe8965200002484bf03d1",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     119,
+     119
+    ],
+    "pocetak": "»Unutar površine R2M-1, na dijelu sjeverno od površine parka Z11 moguće je uređenje obale ",
+    "kraj": "padu«, a koji je moguće koristiti i za sportske i zabavne manifestacije u moru (»bazen«).»",
+    "sha256": "80a862b5f0c4336c3bda5b4e4ec043503cb33250c65aa08ad4da98a401c62f49",
+    "duljina": 303
+   },
+   "polozaj": "iza stavka 3. (izričito)",
+   "zastavice": [
+    "QUOTE_MISMATCH_IN_SOURCE",
+    "NESTED_QUOTES"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c22-op1",
+   "clanak_odluke": 22,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_WORDS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "94",
+    "stavak": "1"
+   },
+   "naredba_blok": 121,
+   "naredba_doslovno": "U članku 94. Odluke stavku 1. riječ: »lokalnog« zamjenjuje se riječju: »županijskog«.",
+   "naredba_sha256": "d62bec9a20b5d452274bc258280a972c93572dc790ccd185dd08108f4de2a6ae",
+   "stara_rijec_doslovno": "lokalnog",
+   "novi_tekst": {
+    "doslovno": "županijskog"
+   },
+   "polozaj": null,
+   "zastavice": [],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c22-op2",
+   "clanak_odluke": 22,
+   "redni_broj_operacije": 2,
+   "tip": "INSERT_AFTER",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "94",
+    "stavak": "4"
+   },
+   "naredba_blok": 122,
+   "naredba_doslovno": "U članku 94. Odluke stavku 4. iza riječi: »... javne rasvjete i slično)« dodaje se zarez i riječ: »kao i gradnja zgrade u funkciji luke sa pratećim sadržajima«.",
+   "naredba_sha256": "5fbc265afb8a30bfb8c89cbee841338f384d85df31d631b5297ec0c001940c82",
+   "stara_rijec_doslovno": "... javne rasvjete i slično)",
+   "novi_tekst": {
+    "doslovno": ", kao i gradnja zgrade u funkciji luke sa pratećim sadržajima"
+   },
+   "polozaj": null,
+   "zastavice": [
+    "ELLIPSIS_IN_ANCHOR",
+    "COMMA_DESCRIBED_NOT_QUOTED"
+   ],
+   "status": "CONFIRMED",
+   "napomena": "„dodaje se zarez i riječ:\" — zarez nije u citatu."
+  },
+  {
+   "id": "35169-c22-op3",
+   "clanak_odluke": 22,
+   "redni_broj_operacije": 3,
+   "tip": "DELETE_UNIT",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "94",
+    "stavak": "5",
+    "alineja": "5"
+   },
+   "naredba_blok": 123,
+   "naredba_doslovno": "U članku 94. Odluke stavku 5. alineja 5. briše se.",
+   "naredba_sha256": "c0e461a9c15d2f02536134d5ecc8036622d4afbfdfbfd8f2463163b9ce74ed71",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": null,
+   "polozaj": null,
+   "zastavice": [],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c22-op4",
+   "clanak_odluke": 22,
+   "redni_broj_operacije": 4,
+   "tip": "DELETE_PARAGRAPH",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "94",
+    "stavak": "8"
+   },
+   "naredba_blok": 124,
+   "naredba_doslovno": "U članku 94. Odluke stavak 8. briše se.",
+   "naredba_sha256": "44528156c7feb1ea3139c4d38b6abc4a50bda316daaa909b968b0063e638a712",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": null,
+   "polozaj": null,
+   "zastavice": [],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c22-op5",
+   "clanak_odluke": 22,
+   "redni_broj_operacije": 5,
+   "tip": "RENUMBER_PARAGRAPHS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "94",
+    "stavci": "9-10"
+   },
+   "naredba_blok": 125,
+   "naredba_doslovno": "U članku 94. Odluke stavci od 9. i 10. postaju stavci od 8. i 9.",
+   "naredba_sha256": "0ccebdbb17b57b84b59453564cce00363f94192fe7713e65520b78ff69f51c84",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "doslovno": "8-9"
+   },
+   "polozaj": null,
+   "zastavice": [
+    "RANGE_RENUMBERING"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c22-op6",
+   "clanak_odluke": 22,
+   "redni_broj_operacije": 6,
+   "tip": "ADD_PARAGRAPH",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "94",
+    "stavak": "10 (novi)"
+   },
+   "naredba_blok": 126,
+   "naredba_doslovno": "U članku 94. Odluke iza dosadašnjeg stavka 10. koji postaje stavak 9. dodaje se novi stavak 10. koji glasi:",
+   "naredba_sha256": "81000dce749b56f28648cab0d5c978c2810973f68b9395f9f5394ccd1824760f",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     127,
+     127
+    ],
+    "pocetak": "»Unutar dijela lučkog područja, razgraničenog kao »putnička luka - operativna obala« (OO),",
+    "kraj": " lukobrana potrebno je voditi računa da se ne naruši vrijedna vizura prema Učki i Rijeci.«",
+    "sha256": "2d939789adb5d186fe9b5e0b7712b75f2dfdff0fe18606a41b8b2ab49438121c",
+    "duljina": 1059
+   },
+   "polozaj": "iza dosadašnjeg st. 10. (koji postaje st. 9.)",
+   "zastavice": [
+    "ORDER_DEPENDENT_NUMBERING",
+    "NESTED_QUOTES"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c22-op7",
+   "clanak_odluke": 22,
+   "redni_broj_operacije": 7,
+   "tip": "REPLACE_PARAGRAPH",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "94",
+    "stavak": "11"
+   },
+   "naredba_blok": 128,
+   "naredba_doslovno": "U članku 94. Odluke stavak 11. mijenja se i glasi: »Na dijelu lukobrana iz prethodnog stavka koji nije u funkciji operativne obale (zone za ukrcaj i iskrcaj putnika, manipuliranje brodicama i sl.) potrebno je urediti parkiralište (okvirnog broja 45 PM) koje će biti u javnom korištenju«.",
+   "naredba_sha256": "ae333575b7c20ced4e905517531116ebad3c0e63dd2f19df18272b04b7e6cf5f",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "doslovno": "Na dijelu lukobrana iz prethodnog stavka koji nije u funkciji operativne obale (zone za ukrcaj i iskrcaj putnika, manipuliranje brodicama i sl.) potrebno je urediti parkiralište (okvirnog broja 45 PM) koje će biti u javnom korištenju"
+   },
+   "polozaj": null,
+   "zastavice": [
+    "NEW_TEXT_INLINE",
+    "ORDER_DEPENDENT_NUMBERING"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c23-op1",
+   "clanak_odluke": 23,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_WORDS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "95",
+    "stavak": "1"
+   },
+   "naredba_blok": 130,
+   "naredba_doslovno": "U članku 95. Odluke stavku 1. riječ: »lokalnog« zamjenjuje se riječju: »županijskog«.",
+   "naredba_sha256": "7b13aa13e4229762a376579964c5faa0174ff1743437c56b9de9bb6a1488d199",
+   "stara_rijec_doslovno": "lokalnog",
+   "novi_tekst": {
+    "doslovno": "županijskog"
+   },
+   "polozaj": null,
+   "zastavice": [],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c24-op1",
+   "clanak_odluke": 24,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_WORDS",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "104",
+    "stavak": "2"
+   },
+   "naredba_blok": 132,
+   "naredba_doslovno": "U članku 104. Odluke stavku 2. iza riječi: »TS PLAN-2« veznik »i« zamjenjuje se zarezom, iza riječi: »TS PLAN-3« dodaju riječi: »i TS PLAN-4«, te se iza rečenice: »Trafostanice će se graditi kao samostojeće građevine ili kao ugrađene u građevini.« dodaje nova rečenica: » Planiranu trafostanicu TS PLAN-4 potrebno je predvidjeti kao ugrađenu unutar planirane zgrade na površini javnog parka Z11.«",
+   "naredba_sha256": "963112921b560d4f9bf83134ec267236cc2a2670f43b03dcd8dd0b61d0d64023",
+   "stara_rijec_doslovno": "i",
+   "novi_tekst": {
+    "doslovno": ","
+   },
+   "polozaj": "iza riječi »TS PLAN-2«",
+   "zastavice": [
+    "COMPOUND_SENTENCE",
+    "NEW_TEXT_DESCRIBED_NOT_QUOTED",
+    "SINGLE_CHAR_LITERAL"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c24-op2",
+   "clanak_odluke": 24,
+   "redni_broj_operacije": 2,
+   "tip": "INSERT_AFTER",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "104",
+    "stavak": "2"
+   },
+   "naredba_blok": 132,
+   "naredba_doslovno": "U članku 104. Odluke stavku 2. iza riječi: »TS PLAN-2« veznik »i« zamjenjuje se zarezom, iza riječi: »TS PLAN-3« dodaju riječi: »i TS PLAN-4«, te se iza rečenice: »Trafostanice će se graditi kao samostojeće građevine ili kao ugrađene u građevini.« dodaje nova rečenica: » Planiranu trafostanicu TS PLAN-4 potrebno je predvidjeti kao ugrađenu unutar planirane zgrade na površini javnog parka Z11.«",
+   "naredba_sha256": "963112921b560d4f9bf83134ec267236cc2a2670f43b03dcd8dd0b61d0d64023",
+   "stara_rijec_doslovno": "TS PLAN-3",
+   "novi_tekst": {
+    "doslovno": "i TS PLAN-4"
+   },
+   "polozaj": null,
+   "zastavice": [
+    "COMPOUND_SENTENCE",
+    "VERB_TYPO_DODAJU_RIJECI",
+    "CONTEXT_INHERITED_WITHIN_SENTENCE"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c24-op3",
+   "clanak_odluke": 24,
+   "redni_broj_operacije": 3,
+   "tip": "INSERT_AFTER",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "104",
+    "stavak": "2"
+   },
+   "naredba_blok": 132,
+   "naredba_doslovno": "U članku 104. Odluke stavku 2. iza riječi: »TS PLAN-2« veznik »i« zamjenjuje se zarezom, iza riječi: »TS PLAN-3« dodaju riječi: »i TS PLAN-4«, te se iza rečenice: »Trafostanice će se graditi kao samostojeće građevine ili kao ugrađene u građevini.« dodaje nova rečenica: » Planiranu trafostanicu TS PLAN-4 potrebno je predvidjeti kao ugrađenu unutar planirane zgrade na površini javnog parka Z11.«",
+   "naredba_sha256": "963112921b560d4f9bf83134ec267236cc2a2670f43b03dcd8dd0b61d0d64023",
+   "stara_rijec_doslovno": "Trafostanice će se graditi kao samostojeće građevine ili kao ugrađene u građevini.",
+   "novi_tekst": {
+    "doslovno": "Planiranu trafostanicu TS PLAN-4 potrebno je predvidjeti kao ugrađenu unutar planirane zgrade na površini javnog parka Z11."
+   },
+   "polozaj": "iza rečenice",
+   "zastavice": [
+    "COMPOUND_SENTENCE",
+    "LEADING_SPACE_IN_QUOTE",
+    "SENTENCE_ANCHOR"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c25-op1",
+   "clanak_odluke": 25,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_PARAGRAPH",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "108",
+    "stavak": "5"
+   },
+   "naredba_blok": 134,
+   "naredba_doslovno": "U članku 108. Odluke stavak 5. mijenja se i glasi:",
+   "naredba_sha256": "2e8bace8cabe6a07eab588b1844d303541a9f55cfed58a99890817495360a1c1",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     135,
+     135
+    ],
+    "pocetak": "»Iznimno, unutar površine javnog parka (Z11) mogu se graditi građevine koje su u funkciji ",
+    "kraj": "eni broj etaža je jedna nadzemna etaža (prizemlje), a najveća dopuštena visina 3,5 metara.",
+    "sha256": "30d136e958dd6bda32749b2fb5c3529a95e1d29b9e47d0bbd727cede25226632",
+    "duljina": 451
+   },
+   "polozaj": null,
+   "zastavice": [
+    "QUOTE_MISMATCH_IN_SOURCE",
+    "NEW_TEXT_ENDS_AT_ARTICLE_END"
+   ],
+   "status": "CONFIRMED",
+   "napomena": null
+  },
+  {
+   "id": "35169-c26-op1",
+   "clanak_odluke": 26,
+   "redni_broj_operacije": 1,
+   "tip": "REPLACE_PARAGRAPH",
+   "cilj": {
+    "plan": "UPU 1 Malinska, Radići (Odluka o donošenju, SN PGŽ 14/13, 3/14, 28/15)",
+    "clanak": "112",
+    "stavak": "3"
+   },
+   "naredba_blok": 137,
+   "naredba_doslovno": "U članku 112. Odluke stavak 3. mijenja se i glasi:",
+   "naredba_sha256": "2fd7e3c1c65f7154f7a4ac1823fa8c5a771eeeceffc0688881784f4ec0ef0d94",
+   "stara_rijec_doslovno": null,
+   "novi_tekst": {
+    "blokovi": [
+     138,
+     138
+    ],
+    "pocetak": "»Sukladno Uredbi o ekološkoj mreži (NN 124/13 i 105/ 15) morski dio obuhvata Plana nalazi ",
+    "kraj": "i sa područjem ekološke mreže značajnim za vrste i stanišne tipove HR20011357 - Otok Krk.«",
+    "sha256": "b776e6ec67c9c8df38bdb08f5b6f58c76a0e2056913763b2de06584734e03205",
+    "duljina": 296
+   },
+   "polozaj": null,
+   "zastavice": [],
+   "status": "CONFIRMED",
+   "napomena": null
+  }
+ ],
+ "sazetak": {
+  "clanaka_odluke": 26,
+  "operacija": 43,
+  "CONFIRMED": 42,
+  "REVIEW_REQUIRED": 1,
+  "po_tipu": {
+   "REPLACE_UNIT": 2,
+   "REPLACE_PARAGRAPH": 4,
+   "DELETE_WORDS": 5,
+   "DELETE_UNIT": 2,
+   "REPLACE_HEADING": 1,
+   "REPLACE_WORDS": 12,
+   "ADD_PARAGRAPH": 3,
+   "REPLACE_ARTICLE": 1,
+   "ADD_HEADING": 1,
+   "ADD_ARTICLE": 1,
+   "RENUMBER_ARTICLE": 2,
+   "DELETE_HEADING": 2,
+   "DELETE_ARTICLE": 2,
+   "INSERT_AFTER": 3,
+   "DELETE_PARAGRAPH": 1,
+   "RENUMBER_PARAGRAPHS": 1
+  }
+ },
+ "kriticne_pogreske_definicija": [
+  "operacija primijenjena na pogrešan članak/stavak/naslov",
+  "brisanje ili zamjena pogrešne jedinice",
+  "citirani „Članak 32.“ tretiran kao članak odluke",
+  "naredba izvan citata propuštena (odziv) za DELETE_*",
+  "REVIEW_REQUIRED slučaj označen kao potvrđen bez upozorenja"
+ ],
+ "zakljucano_sha256": "e0c381af86b81daefa02905a9cf81efd8d56483dbb36e8d08fa70f6d83d6da42"
+}
