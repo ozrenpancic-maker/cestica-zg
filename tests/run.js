@@ -1823,7 +1823,34 @@ async function gpTests(){
   ok(errs.length===0,"bez JS grešaka (područje za gradnju): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(()=>{
+// sunčana elektrana uživo: lokalni model na plohu, plohe krova iz kuće, sjena okolnih zgrada, okretanje
+async function pvLiveTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  // sintetička godina: vedro nebo prema položaju Sunca (Zagreb), satno, kao zapis iz pvBase
+  const lat=45.8, lon=15.98, rows=[], r=Math.PI/180;
+  for(let h=0;h<365*24;h++){ const dt=new Date(Date.UTC(2023,0,1)+h*3600e3+1800e3), sp=E("solarPos")(dt,lat,lon); if(sp.alt<=1) continue;
+    const cz=Math.sin(sp.alt*r), b=700*Math.pow(cz,0.3), d=90, g=b*cz+d; rows.push({m:dt.getUTCMonth(),g,b,d,alt:sp.alt,az:sp.az,cz,ca:Math.cos(sp.alt*r)}); }
+  const base={rows,years:["2023"],ny:1}, P=(t,a,h)=>E("pvPlane")(base,t,a,h);
+  const S=P(30,180).annual, Ei=P(30,90).annual, Z=P(30,270).annual, N=P(30,0).annual;
+  ok(S>Ei&&S>Z&&Ei>N&&Math.abs(Ei/Z-1)<0.03,"Elektrana uživo: ploha prema jugu najbolja, istok ≈ zapad, sjever najlošiji ("+[S,Ei,Z,N].map(Math.round).join(", ")+" kWh/m²)");
+  // zgrada visine 20 m, 8 m južno od krova (visina krova 7 m): veliki gubitak izravnog zračenja na južnu plohu, manje neba
+  const c=[lon,lat], dy=8/110540, dx=6/(111320*Math.cos(lat*r)), dd=4/110540, foot=[[c[0]-dx,c[1]-dy-dd],[c[0]+dx,c[1]-dy-dd],[c[0]+dx,c[1]-dy],[c[0]-dx,c[1]-dy]];
+  const H=E("pvHorizon")([{wall:20,foot:[foot],faces:[]}],c,7), Sh=P(30,180,H);
+  const S0=P(30,180), dec=1-Sh.monthly[11]/S0.monthly[11], jun=1-Sh.monthly[5]/S0.monthly[5];
+  ok(H.n===1&&H.hz[90]>45&&H.hz[0]===0&&H.sky<1&&Sh.lost>0&&Sh.annual<S*0.95&&dec>0.5&&dec>jun,"Elektrana uživo: zgrada južno od kuće zaklanja Sunce (obzor na jugu > 45°; gubitak godišnje "+Math.round((1-Sh.annual/S)*100)+" %, u prosincu "+Math.round(dec*100)+" %, u lipnju "+Math.round(jun*100)+" %)");
+  ok(E("pvHorizon")([{wall:5,foot:[foot],faces:[]}],c,7).n===0,"Elektrana uživo: niža zgrada od krova ne baca sjenu na krov");
+  // plohe krova iz simulatora: dvostrešni krov, sljeme uzduž dulje strane (12 × 9 m)
+  const TL=E("TL"); Object.assign(TL,{w:12,d:9,krov:"dvo",sljeme:"duz",nagib:30,center:c});
+  const az0=E("pvPlohe")(0).map(x=>Math.round(x.az)).sort((a,b)=>a-b), az90=E("pvPlohe")(90).map(x=>Math.round(x.az)).sort((a,b)=>a-b);
+  ok(az0.join()==="0,180"&&az90.join()==="90,270","Elektrana uživo: dvostrešni krov okrenut 0° ima plohe prema sjeveru i jugu, okrenut 90° prema istoku i zapadu");
+  const K0=E("pvKucaCalc")(base,0,null), K90=E("pvKucaCalc")(base,90,null), K45=E("pvKucaCalc")(base,45,null);
+  ok(Math.round(K0.best.az)===180&&K0.best.annual>K45.best.annual&&K45.best.annual>K90.best.annual,"Elektrana uživo: okretom kuće mijenja se najbolja ploha (0° jug > 45° > 90° istok/zapad)");
+  Object.assign(TL,{krov:"cet"}); ok(E("pvPlohe")(0).length===4,"Elektrana uživo: četverostrešni krov ima 4 plohe");
+  Object.assign(TL,{krov:"ravni"}); ok(E("pvPlohe")(37).length===1&&Math.round(E("pvPlohe")(37)[0].az)===180,"Elektrana uživo: ravni krov – paneli prema jugu, okret ne utječe");
+  ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
+}
+
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

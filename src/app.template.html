@@ -2639,7 +2639,7 @@ function tDraw(){
     `<table class="rp"><tbody>${R.C.map(c=>`<tr><th>${esc(c.label)}</th><td><b>${esc(c.val)}</b> <em class="kind st-${ST[c.st][0]}">${ST[c.st][1]}</em>${c.note?`<small class="fx">${esc(c.note)}</small>`:""}</td></tr>`).join("")}</tbody></table>`+
     tDistHtml()+(curData()&&curData().krk?"":`<div class="kd"><button type="button" class="ib" id="tToFin">Prenesi kuću u procjenu troškova</button></div>`);
   if(s){s.textContent=`${String(TL.w).replace(".",",")} × ${String(TL.d).replace(".",",")} m, ${R.F.label}: ${ST[R.st][1]}`; s.className=R.st==="no"?"bad":"";}
-  window.__sim=R; projSaveSimSoon(); zgSync(); skicaUpdate(); okuSoon();
+  window.__sim=R; projSaveSimSoon(); zgSync(); skicaUpdate(); okuSoon(); pvLiveSoon();
 }
 function predNote(){const P=predlozakDims(+TL.pred,TL.fl), F=tFloors();
   return `Predložak ${TL.pred} m² nadzemnog GBP-a, ${F.label}: tlocrt oko ${fmt(P.tl)} m² → predloženo ${String(P.w).replace(".",",")} × ${String(P.d).replace(".",",")} m (${fmt(P.w*P.d)} m²). Dimenzije možeš promijeniti; tada predložak prelazi u vlastite dimenzije.`;}
@@ -3671,19 +3671,142 @@ async function pvFetch(lat,lon,tilt,az){
   if(n<ny*8000) throw new Error("nepotpuni podaci o zračenju");
   return PV.res[k]={annual,monthly,years:[...yrs].sort()};
 }
+// --- simulacija uživo: jedan dohvat satnog GHI/DNI/DHI (ERA5), položaj Sunca po satu i izotropni model na plohu u pregledniku.
+// Provjereno 22. 10. 2026. za Kornić (45,044 N, 14,616 E): za 9 nagiba i smjerova godišnji zbroj odstupa od Open-Meteo global_tilted_irradiance najviše 0,2 %.
+const PVL={base:{},alb:0.2,swT:0,frame:0,sweep:null,sweepKey:""};
+async function pvBase(lat,lon){
+  const k=lat.toFixed(3)+"|"+lon.toFixed(3); if(PVL.base[k]) return PVL.base[k];
+  const q=new URLSearchParams({latitude:lat.toFixed(4),longitude:lon.toFixed(4),start_date:"2023-01-01",end_date:"2025-12-31",hourly:"shortwave_radiation,direct_normal_irradiance,diffuse_radiation",timezone:"UTC"});
+  const j=await getJSON("https://archive-api.open-meteo.com/v1/archive?"+q.toString(),{},30000);
+  const H=j&&j.hourly, t=H&&H.time; if(!t||!t.length) throw new Error("servis nije vratio podatke o zračenju");
+  const G=H.shortwave_radiation||[], B=H.direct_normal_irradiance||[], D=H.diffuse_radiation||[], rows=[], yrs=new Set(), r=Math.PI/180; let n=0;
+  for(let i=0;i<t.length;i++){ const g=G[i], b=B[i], dd=D[i]; if(g==null||b==null||dd==null) continue; n++; yrs.add(t[i].slice(0,4)); if(g<=0) continue;
+    // vrijednost je prosjek prethodnog sata: položaj Sunca u sredini tog sata
+    const dt=new Date(Date.parse(t[i]+":00Z")-1800000), sp=solarPos(dt,lat,lon), m=+t[i].slice(5,7)-1;
+    if(sp.alt<=0) rows.push({m,g,b:0,d:Math.min(dd,g),alt:null}); else rows.push({m,g,b,d:dd,alt:sp.alt,az:sp.az,cz:Math.sin(sp.alt*r),ca:Math.cos(sp.alt*r)}); }
+  const ny=yrs.size||1; if(n<ny*8000) throw new Error("nepotpuni podaci o zračenju");
+  return PVL.base[k]={rows,years:[...yrs].sort(),ny};
+}
+// obzor oko krova iz okolnih zgrada: najveći kut nad obzorom (°) po azimutu u koracima od 2°; sky = izotropni udio neba koji ostaje vidljiv
+function pvHorizon(blds,c,h0){
+  const hz=new Float32Array(180), mx=111320*Math.cos(c[1]*Math.PI/180), my=110540; let n=0;
+  for(const B of blds||[]){ let top=B.wall||0; for(const f of B.faces||[]) for(const q of f) if(q[2]>top) top=q[2];
+    const dh=top-h0; if(dh<=0.3) continue; n++;
+    for(const ring of B.foot||[]) for(let i=0;i<ring.length;i++){ const a=ring[i], b=ring[(i+1)%ring.length];
+      const ax=(a[0]-c[0])*mx, ay=(a[1]-c[1])*my, bx=(b[0]-c[0])*mx, by=(b[1]-c[1])*my, L=Math.hypot(bx-ax,by-ay);
+      // uzorci na najviše 1° kuta gledanja (i najviše 2 m), da u obzoru ne ostanu rupe kod bliskih zgrada
+      const span=Math.acos(Math.max(-1,Math.min(1,(ax*bx+ay*by)/(Math.hypot(ax,ay)*Math.hypot(bx,by)||1))))*180/Math.PI, k=Math.min(400,Math.max(1,Math.ceil(span),Math.ceil(L/2)));
+      for(let s=0;s<=k;s++){ const x=ax+(bx-ax)*s/k, y=ay+(by-ay)*s/k, d=Math.hypot(x,y); if(d<1) continue;
+        const el=Math.atan(dh/d)*180/Math.PI, az=(Math.atan2(x,y)*180/Math.PI+360)%360, j=Math.floor(az/2)%180; if(el>hz[j]) hz[j]=el; } } }
+  let sv=0, mxe=0; for(let j=0;j<180;j++){ sv+=Math.cos(hz[j]*Math.PI/180)**2; if(hz[j]>mxe) mxe=hz[j]; }
+  return {hz,sky:sv/180,max:mxe,n};
+}
+// zračenje na plohu (kWh/m², prosjek godina): tilt u °, azC = kompasni smjer kamo ploha gleda (0 = sjever, 180 = jug)
+function pvPlane(base,tilt,azC,hor){
+  const r=Math.PI/180, cb=Math.cos(tilt*r), sb=Math.sin(tilt*r), iso=(1+cb)/2, gr=PVL.alb*(1-cb)/2, sky=hor?hor.sky:1, mon=new Float64Array(12); let lost=0;
+  for(const x of base.rows){ let v=x.g*gr+x.d*iso*sky;
+    if(x.alt!=null&&x.b>0){ const cth=x.cz*cb+x.ca*sb*Math.cos((x.az-azC)*r); if(cth>0){ const bb=x.b*cth; if(hor&&x.alt<hor.hz[Math.floor(x.az/2)%180]) lost+=bb; else v+=bb; } }
+    mon[x.m]+=v; }
+  const k=1/1000/base.ny, monthly=Array.from(mon,v=>v*k), annual=monthly.reduce((a,b)=>a+b,0);
+  return {annual,monthly,lost:lost*k};
+}
+const PV_STR=b=>["sjever","sjeveroistok","istok","jugoistok","jug","jugozapad","zapad","sjeverozapad"][Math.round(((b%360)+360)%360/45)%8];
+const PV_PREMA=b=>"prema "+["sjeveru","sjeveroistoku","istoku","jugoistoku","jugu","jugozapadu","zapadu","sjeverozapadu"][Math.round(((b%360)+360)%360/45)%8];
+// plohe krova kuće iz simulatora za zadani okret: [{az (kompas), tilt, naziv}]; ravni krov: paneli na nosačima prema jugu (okret ne utječe)
+function pvPlohe(rot){
+  if(TL.krov==="ravni") return [{az:180,tilt:Math.max(0,Math.min(60,numv("pvTilt")??15)),naziv:"ravni krov, paneli na nosačima prema jugu",ravni:true}];
+  const s=TL.krov==="dvo"?((TL.sljeme==="duz"?TL.w>=TL.d:TL.w<TL.d)?90:0):(TL.w>=TL.d?90:0), sl=(s+rot)%180, tilt=TL.nagib||0;
+  const az=[(sl+90)%360,(sl+270)%360]; if(TL.krov==="cet") az.push(sl%360,(sl+180)%360);
+  return az.map(a=>({az:a,tilt,naziv:"krovna ploha "+PV_PREMA(a)}));
+}
+// visina sredine krovne plohe (m iznad terena), za obzor okolnih zgrada
+function pvKrovH(){ const F=tFloors(), V=F.full*TL.fh+(F.pk?1.2:0); return TL.krov==="ravni"?V+0.6:V+Math.tan((TL.nagib||0)*Math.PI/180)*Math.min(TL.w,TL.d)/4; }
+function pvKucaCalc(base,rot,hor){
+  const f=pvPlohe(rot).map(x=>({...x,...pvPlane(base,x.tilt,x.az,hor)}));
+  return {plohe:f,best:f.reduce((a,b)=>b.annual>a.annual?b:a)};
+}
+function pvSweepSvg(sw,period){
+  const W=320,H=120,P=30, ys=sw.map(x=>x.e), y0=Math.min(...ys), y1=Math.max(...ys), pad=(y1-y0)*0.15||y1*0.02||1;
+  const X=v=>P+v/period*(W-P-8), Y=v=>H-18-(v-(y0-pad))/((y1+pad)-(y0-pad))*(H-30);
+  const best=sw.reduce((a,b)=>b.e>a.e?b:a), worst=sw.reduce((a,b)=>b.e<a.e?b:a), cr=((TL.rot%period)+period)%period;
+  const pts=sw.concat([{rot:period,e:sw[0].e}]);
+  let g=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px" role="img" aria-label="Godišnja proizvodnja prema okretu kuće">`;
+  g+=`<line x1="${P}" y1="${H-18}" x2="${W-8}" y2="${H-18}" stroke="var(--line)"/>`;
+  for(let t=0;t<=period;t+=period/4) g+=`<text x="${X(t).toFixed(1)}" y="${H-5}" font-size="9" text-anchor="middle" fill="var(--muted)">${t}°</text>`;
+  g+=`<path d="${pts.map((q,i)=>(i?"L":"M")+X(q.rot).toFixed(1)+","+Y(q.e).toFixed(1)).join("")}" fill="none" stroke="var(--warn)" stroke-width="2"/>`;
+  g+=`<line x1="${X(cr).toFixed(1)}" y1="10" x2="${X(cr).toFixed(1)}" y2="${H-18}" stroke="var(--fg)" stroke-dasharray="3 3"/><text x="${Math.min(W-40,X(cr)+3).toFixed(1)}" y="18" font-size="9" fill="var(--fg)">sada ${Math.round(TL.rot)}°</text>`;
+  g+=`<circle cx="${X(best.rot).toFixed(1)}" cy="${Y(best.e).toFixed(1)}" r="4" fill="#2e7d32"/>`;
+  g+=`<text x="2" y="${(Y(y1)+3).toFixed(1)}" font-size="9" fill="var(--muted)">${fmt(y1)}</text><text x="2" y="${(Y(y0)+3).toFixed(1)}" font-size="9" fill="var(--muted)">${fmt(y0)}</text></svg>`;
+  return {svg:g,best,worst};
+}
+function pvRenderKuca(){
+  const o=document.getElementById("pvOut"), d=curData(); if(!o||!d||!PV.live) return;
+  if(PV.live.key!==(window.__cur&&window.__cur.key)){ PV.live=null; return; } // druga čestica: podaci o zračenju vrijede za drugu lokaciju
+  if(!TL.center){ o.innerHTML=`<p class="meta">Za izračun prema kući postavi kuću u simulatoru ("Smjesti kuću na česticu"). Do tada odaberi orijentaciju ručno.</p>`; return; }
+  const base=PV.live.base, kwp=numv("pvKwp")||0, sh=Math.max(0,Math.min(90,numv("pvShade")||0))/100;
+  const Z=zg3dGet(d.parcel), blds=Z&&Z.st==="ok"?Z.list:[], h0=pvKrovH(), hor=PV.shadeOn===false?null:pvHorizon(blds,TL.center,h0);
+  const R=pvKucaCalc(base,TL.rot,hor), b=R.best, E=b.annual*kwp*PV_PR*(1-sh), M=["sij","velj","ožu","tra","svi","lip","srp","kol","ruj","lis","stu","pro"], mx=Math.max(...b.monthly);
+  PV.bestAzS=((b.az-180)%360+540)%360-180; PV.curE=E; const tilt=document.getElementById("pvTilt"); if(tilt){ if(!b.ravni) tilt.value=String(b.tilt); tilt.disabled=!b.ravni; tilt.title=b.ravni?"":"Nagib krova iz simulatora kuće"; }
+  const sjena=b.lost/(b.annual+b.lost||1);
+  let h=`<div class="calc" style="background:var(--panel)">`;
+  h+=frow("Paneli",`${b.ravni?"ravni krov, nosači prema jugu":"ploha "+PV_PREMA(b.az)} · nagib ${String(b.tilt).replace(".",",")}°`,{f:b.ravni?"Na ravnom krovu okret kuće ne mijenja proizvodnju.":`kuća okrenuta ${Math.round(TL.rot)}°, smjer plohe ${Math.round(b.az)}° (0° = sjever)`});
+  h+=`<div class="row"><span>Zračenje na plohu panela <em class="kind kind-propis">model ERA5</em></span><span>${fmt(b.annual)} kWh/m² godišnje</span></div>`;
+  h+=`<div class="row"><span>Sjena okolnih zgrada ${kindTag("procjena")}</span><span>${hor?(blds.length?`−${(sjena*100).toFixed(1).replace(".",",")} %`:"nema zgrada u blizini"):"isključeno"}</span></div>`;
+  h+=frow(`Proizvodnja ${kindTag("procjena")}`,`${fmt(E)} kWh godišnje`,{bold:true,f:`${fmt(b.annual)} kWh/m² × ${String(kwp).replace(".",",")} kWp × ${String(PV_PR).replace(".",",")}${sh?` × (1 − ${Math.round(sh*100)} %)`:""}`});
+  h+=frow("Specifična proizvodnja",`${fmt(b.annual*PV_PR*(1-sh))} kWh/kWp`);
+  h+=`</div>`;
+  if(R.plohe.length>1) h+=`<table class="rp" style="margin-top:6px"><tbody>${R.plohe.map(x=>`<tr><th>Ploha ${PV_PREMA(x.az)} (${Math.round(x.az)}°)${x===b?" ✓":""}</th><td><b>${fmt(x.annual*PV_PR*(1-sh))} kWh/kWp</b>${hor&&blds.length?` <small class="fx">sjena −${(x.lost/(x.annual+x.lost||1)*100).toFixed(1).replace(".",",")} %</small>`:""}</td></tr>`).join("")}</tbody></table><p class="meta" style="margin:2px 0 6px">Paneli se računaju na plohi s najvećom proizvodnjom (✓).</p>`;
+  h+=`<div class="pvbars" role="img" aria-label="Proizvodnja po mjesecima, kWh">${b.monthly.map((x,i)=>`<div><b>${fmt(x*kwp*PV_PR*(1-sh))}</b><span style="height:${Math.round(60*x/(mx||1))}px" title="${fmt(x*kwp*PV_PR*(1-sh))} kWh"></span><small>${M[i]}</small></div>`).join("")}</div>`;
+  h+=`<div id="pvSweep">${PVL.sweep&&PVL.sweepKey===pvSweepKey(hor,kwp,sh)?pvSweepHtml():`<p class="meta"><span class="spin"></span>Računam proizvodnju za sve okrete kuće…</p>`}</div>`;
+  h+=`<p class="meta">Okreni ili pomakni kuću na karti (ili promijeni krov u simulatoru) i proizvodnja se odmah preračunava. Izvor: Open-Meteo, satni podaci ERA5 (Copernicus) ${base.years.join(", ")}; položaj Sunca izračunat (NOAA), izotropni model neba, albedo ${String(PVL.alb).replace(".",",")}, omjer učinkovitosti ${String(PV_PR).replace(".",",")}. ${hor?`Sjena: obzor iz okolnih zgrada (${blds.length?`${blds.length} u krugu ${ZG3D.R} m, ${Z.tip==="osm"?"OpenStreetMap, visine iz oznaka ili pretpostavljene":Z.tip==="zg3d"?"ZG3D 2022":"katastar, visine pretpostavljene"}`:"nisu pronađene"}) za sredinu krova na visini oko ${String(h0.toFixed(1)).replace(".",",")} m; kad je Sunce iza zgrade, izravno zračenje se ne računa, a raspršeno se smanjuje za zaklonjeni dio neba. Teren, drveće i dimnjaci nisu uključeni (za to je polje "Zasjenjenje").`:"Sjena okolnih zgrada je isključena."} Za ponudu traži izračun izvođača.</p>`;
+  o.innerHTML=h; const s=document.getElementById("pvSum"); if(s) s.textContent=`oko ${fmt(E)} kWh/god.`;
+  pvSweepSoon(hor,kwp,sh);
+}
+function pvSweepKey(hor,kwp,sh){ return [TL.krov,TL.nagib,TL.sljeme,TL.w,TL.d,TL.center&&TL.center.map(v=>v.toFixed(5)).join(","),hor?hor.sky.toFixed(4)+"/"+hor.max.toFixed(2):"bez",kwp,sh,TL.krov==="ravni"?numv("pvTilt"):""].join("|"); }
+function pvSweepHtml(){
+  const S=PVL.sweep; if(!S) return ""; if(S.ravni) return `<p class="meta">Na ravnom krovu paneli su na nosačima okrenutima prema jugu, pa okret kuće ne mijenja proizvodnju.</p>`;
+  const V=pvSweepSvg(S.list,S.period), cur=PV.curE||0, raz=(V.best.e-cur)/(cur||1);
+  let h=`<p class="eyebrow" style="margin:10px 0 2px">Proizvodnja prema okretu kuće</p>${V.svg}`;
+  h+=`<p style="margin:2px 0;font-size:14px">Najbolji okret: <b>${V.best.rot}°</b> (${fmt(V.best.e)} kWh godišnje${raz>0.005?`, ${(raz*100).toFixed(1).replace(".",",")} % više nego sada`:", kuća je već tako okrenuta"}); najlošiji ${V.worst.rot}° (${fmt(V.worst.e)} kWh). </p><p class="meta" style="margin:0 0 4px">Zelena točka: najbolji okret; iscrtkano: sadašnji okret.${S.period<360?` Krov je simetričan, pa se okret ponavlja svakih ${S.period}°.`:""}</p>`;
+  if(raz>0.005) h+=`<div class="kd"><button type="button" class="ib" id="pvBestRot" data-rot="${V.best.rot}">Okreni kuću na ${V.best.rot}°</button></div>`;
+  return h;
+}
+function pvSweepSoon(hor,kwp,sh){
+  const key=pvSweepKey(hor,kwp,sh); if(PVL.sweep&&PVL.sweepKey===key){ const el=document.getElementById("pvSweep"); if(el) el.innerHTML=pvSweepHtml(); return; }
+  clearTimeout(PVL.swT); PVL.swT=setTimeout(()=>{ if(!PV.live||!TL.center) return;
+    const base=PV.live.base, per=TL.krov==="cet"?90:180, list=[];
+    if(TL.krov==="ravni") PVL.sweep={ravni:true};
+    else { for(let r=0;r<per;r+=5){ const R=pvKucaCalc(base,r,hor); list.push({rot:r,e:R.best.annual*kwp*PV_PR*(1-sh)}); } PVL.sweep={list,period:per}; }
+    PVL.sweepKey=key; const el=document.getElementById("pvSweep"); if(el) el.innerHTML=pvSweepHtml(); },350);
+}
+// uživo: okret, pomak ili promjena krova preračunavaju proizvodnju (najviše jednom po sličici)
+function pvLiveSoon(){
+  const sel=document.getElementById("pvAz"); if(sel&&TL.center&&!PV.azManual&&sel.value!=="kuca") sel.value="kuca"; // kuća je postavljena: zadano računaj prema njoj
+  if(!PV.live||!document.getElementById("pvOut")) return; if(PVL.frame) return; PVL.frame=requestAnimationFrame(()=>{PVL.frame=0; try{pvRenderKuca()}catch(e){}}); }
+async function pvRunKuca(){
+  const o=document.getElementById("pvOut"), d=curData(); if(!o||!d) return;
+  const c=d.parcel?turf.centroid(d.parcel.geometry).geometry.coordinates:[d.ll.lng,d.ll.lat];
+  o.innerHTML=`<p class="hint"><span class="spin"></span>Dohvaćam satno zračenje za 2023.–2025.…</p>`;
+  try{ const base=await pvBase(c[1],c[0]); PV.live={base,key:window.__cur&&window.__cur.key}; if(d.parcel) zg3dLoad(d.parcel).then(()=>pvLiveSoon()).catch(()=>{}); pvRenderKuca(); }
+  catch(e){ PV.live=null; o.innerHTML=`<p class="err">Proizvodnja se ne može izračunati: ${esc(e.message)}. Nijedna procjena nije prikazana jer nema podataka.</p>`; }
+}
 function pvHtml(){
   const R=window.__sim, roof=R?Math.round(R.hA*0.5):40;
   let h=`<details class="acc" data-k="pv"><summary><span>Sunčana elektrana</span><b id="pvSum">izračunaj</b></summary><div class="acc-body">`;
   h+=`<div class="bgrid"><label for="pvRoof">Površina krova za panele</label><span><input id="pvRoof" type="number" inputmode="decimal" min="5" step="1" value="${roof}"> m²</span>`;
   h+=`<label for="pvTilt">Nagib krova</label><span><input id="pvTilt" type="number" inputmode="decimal" min="0" max="90" step="1" value="30"> °</span>`;
-  h+=`<label for="pvAz">Orijentacija</label><select id="pvAz" class="bsel">${PV_AZ.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join("")}</select>`;
+  const kuca=!!TL.center;
+  h+=`<label for="pvAz">Orijentacija</label><select id="pvAz" class="bsel"><option value="kuca"${kuca?" selected":""}>prema kući na karti (uživo)</option>${PV_AZ.map(o=>`<option value="${o[0]}"${!kuca&&o[0]==="0"?" selected":""}>${o[1]}</option>`).join("")}</select>`;
   h+=`<label for="pvKwp">Snaga elektrane</label><span><input id="pvKwp" type="number" inputmode="decimal" min="0.5" step="0.1" value="${(roof*PV_KWP_M2).toFixed(1)}"> kWp</span>`;
-  h+=`<label for="pvShade">Zasjenjenje</label><span><input id="pvShade" type="number" inputmode="decimal" min="0" max="90" step="1" value="0"> % godišnje</span></div>`;
+  h+=`<label for="pvShade">Zasjenjenje</label><span><input id="pvShade" type="number" inputmode="decimal" min="0" max="90" step="1" value="0"> % godišnje <small class="meta">drveće, teren, dimnjaci</small></span>`;
+  h+=`<label for="pvNb">Okolne zgrade</label><span><input type="checkbox" id="pvNb"${PV.shadeOn===false?"":" checked"}> računaj njihovu sjenu (uz orijentaciju prema kući)</span></div>`;
   h+=`<div class="kd"><button type="button" class="ib" id="pvGo">Izračunaj proizvodnju</button></div><div id="pvOut"><p class="meta">Površina krova je predložena kao pola tlocrta kuće iz simulatora (jedna strana dvostrešnog krova). Zasjenjenje procijeni iz odjeljka "Sunce i sjena".</p></div></div></details>`;
   return h;
 }
 async function pvRun(){
   const o=document.getElementById("pvOut"), d=curData(); if(!o||!d) return;
+  if((document.getElementById("pvAz")||{}).value==="kuca") return pvRunKuca();
+  PV.live=null;
   const c=d.parcel?turf.centroid(d.parcel.geometry).geometry.coordinates:[d.ll.lng,d.ll.lat];
   const tilt=Math.max(0,Math.min(90,numv("pvTilt")??30)), az=+(document.getElementById("pvAz").value||0), kwp=numv("pvKwp")||0, sh=Math.max(0,Math.min(90,numv("pvShade")||0))/100;
   o.innerHTML=`<p class="hint"><span class="spin"></span>Dohvaćam satno zračenje za 2023.–2025.…</p>`;
@@ -3698,7 +3821,13 @@ async function pvRun(){
     o.innerHTML=h; const s=document.getElementById("pvSum"); if(s) s.textContent=`oko ${fmt(E)} kWh/god.`;
   }catch(e){o.innerHTML=`<p class="err">Proizvodnja se ne može izračunati: ${esc(e.message)}. Nijedna procjena nije prikazana jer nema podataka.</p>`}
 }
-sheet.addEventListener("click",e=>{ if(e.target.id==="pvGo") pvRun(); });
+sheet.addEventListener("click",e=>{ if(e.target.id==="pvGo") pvRun();
+  if(e.target.id==="pvBestRot"){ const r=+e.target.dataset.rot; if(isFinite(r)){ TL.rot=r; const i=document.getElementById("tRot"); if(i) i.value=r; const v=document.getElementById("tRotV"); if(v) v.textContent=r+"°"; tDraw(); pvLiveSoon(); } } });
+sheet.addEventListener("change",e=>{ const id=e.target.id;
+  if(id==="pvAz"){ PV.azManual=true; if(e.target.value==="kuca") pvRunKuca(); else { PV.live=null; const t=document.getElementById("pvTilt"); if(t){t.disabled=false; t.title="";} } }
+  if(id==="pvNb"){ PV.shadeOn=e.target.checked; pvLiveSoon(); }
+  if(/^(pvKwp|pvShade|pvTilt)$/.test(id)) pvLiveSoon();
+  if(/^t(Krov|Nagib|Slj|Fl|Pod)$/.test(id)) pvLiveSoon(); });
 sheet.addEventListener("input",e=>{ if(e.target.id==="pvRoof"&&!PV.manualKwp){const k=document.getElementById("pvKwp"), r=numv("pvRoof"); if(k&&r>0) k.value=(r*PV_KWP_M2).toFixed(1);} if(e.target.id==="pvKwp") PV.manualKwp=true; });
 
 // --- potresna opasnost: službene karte potresnih područja (HRN EN 1998-1:2011/NA, PMF Geofizički odsjek) nemaju javni upit
@@ -5403,7 +5532,7 @@ function v3dData(){
     if(OKU.res&&OKU.res.ulaz&&OKU.key===key) ulaz=OKU.res.ulaz.strana; // isti ulaz kao u prijedlogu okućnice
     const pvM=numv("pvRoof"), pvAz=document.getElementById("pvAz");
     M=v3dModel({c:TL.center,w:TL.w,d:TL.d,rot:TL.rot,V,krov:TL.krov,nagib:TL.nagib,alongW:TL.sljeme==="duz"?TL.w>=TL.d:TL.w<TL.d,
-      gar:TL.gar?{w:TL.gw,d:TL.gd,offX:TL.w/2+TL.gw/2,offY:(TL.gd-TL.d)/2}:null,etaza:{n:F.full,fh:TL.fh,pk:F.pk},ulaz,pv:pvM>0?{m2:pvM,az:pvAz?pvAz.value:"0"}:null});
+      gar:TL.gar?{w:TL.gw,d:TL.gd,offX:TL.w/2+TL.gw/2,offY:(TL.gd-TL.d)/2}:null,etaza:{n:F.full,fh:TL.fh,pk:F.pk},ulaz,pv:pvM>0?{m2:pvM,az:pvAz?(pvAz.value==="kuca"?String(PV.bestAzS??0):pvAz.value):"0"}:null});
     // prilaz (priprema): iz procjene gradnje, kad je odabrana vrsta prilaza i ima cesta; od ulaza do najbliže ceste
     try{ const H=key?projCleanHouse(projRaw(key).house):null;
       if(H&&H.prV&&PRILAZ[H.prV]&&np){ const S={S:[0,-TL.d/2-0.25],N:[0,TL.d/2+0.25],E:[TL.w/2+0.25,0],W:[-TL.w/2-0.25,0]}[ulaz], dp=M.L(S[0],S[1]);
