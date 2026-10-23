@@ -171,3 +171,18 @@ Potrebno: UPU 3 Punat, SN PGŽ 34/10 i 13/16 (ili pročišćeni tekst) i osnovni
 Naknadno priloženi PDF-ovi za Punat (21. 10. 2026.): UPU 2 (marina, brodogradilište; SN 15/11), UPU 4 (R6a; 26/11), UPU 5 (R6c; 22/11), UPU 6 (T2A/T3A, R6b; 22/11), UPU 8 (T2B/T3B, R6d; 22/11), UPU 10 (R6e; 15/11), uz ponovljene IV. izmjene PPUO. Sve su ugostiteljsko-turističke, sportske ili luke, bez uvjeta za obiteljske kuće (UPU 2 samo zadržava tri postojeće stambene građevine). Na njihovom obuhvatu aplikacija ostaje na „uvjete propisuje UPU”. Stambena pravila Punta i dalje čekaju UPU 3 (SN 34/10, 13/16) i osnovni PPUO.
 
 Registar prostornih planova ZZPU PGŽ (zavod.pgz.hr, stanje 6. 10. 2026.): popis planova i njihovih glasila (filteri po razini, vrsti, statusu), bez teksta plana. Punat: IV. izmjene PPUO (2021-10) na snazi; izmjene UPU 1, UPU 2 i UPU 3 (2025-44, 2025-44, 2025-37) u izradi. Omišalj: UPU 2 Njivice pročišćeni tekst (2025-38) na snazi; izmjene PPUO (2025-29) i UPU 1 u izradi. Dobrinj: usklađenje PPUO (2022-05) na snazi; izmjene PPUO (2024-07) u izradi.
+
+## Simulator kuće: granice iz plana (UPU 2 Kornić, 23. 10. 2026.)
+
+Simulator kuće na Krku provjerava i uvjete iz obrađenog plana, ne samo izgrađenost i GBP.
+
+**Što se provjerava**
+- **Nadzemne etaže i visina:** prema tipu građevine (čl. 38.–40.), uz iznimku za kosi teren. Potkrovlje se broji kao etaža. Katnosti iznad dopuštenog označene su već u izborniku etaža.
+- **Krov (čl. 38. d):** ravni ili kosi, s nagibom kosog krova 17°–23°; uz polje za nagib piše što plan traži.
+- **Zona zaštite baštine:** korisnik je bira prema karti 3A (čl. 83.). Simulator dok zona nije odabrana javlja „potrebna provjera".
+  - **Zona »C« (čl. 85.):** najviše dvije nadzemne etaže; potkrovlje s povišenim nadozidom nije dopušteno; ravni krov nije dopušten. Kosi krov dobiva „potrebna provjera", jer plan za zonu »C« traži nagib „oko 30°", a čl. 38. 17°–23°; nagib određuju posebni konzervatorski uvjeti.
+  - **Zona »B« (čl. 84.):** aplikacija ne računa uvjete gradnje, jer ih određuje konzervator.
+
+**Izvor i provjera**
+- Uvjeti su u `src/rules_krk.json` → `upu["UPU 2"].simulator`, svaki s člankom i doslovnim citatom.
+- Test u `tests/run.js` provjerava da se svih 24 citata iz pravila UPU-a 2 doslovno nalaze u spremljenom tekstu odluke (`tests/pgz-odgovori/735-76-kornic-2026-10-22/sn-19-16/odluka_34138_pdf_tekst.txt`).

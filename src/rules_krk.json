@@ -281,8 +281,61 @@
       ],
       "zonaNapomena": "Obiteljske i višeobiteljske kuće grade se u zonama M11 i M2 (čl. 37. st. 2.). Zona se ne može odrediti automatski jer je prikazana samo na rasterskoj karti 4 „Način i uvjeti gradnje” (čl. 37. st. 2.), bez vektorskog sloja; provjeri je na prikazu plana ili u lokacijskoj informaciji.",
       "upozorenja": [
-        "Zaštita kulturne baštine (čl. 83.–85.): zona »B« je kulturno-povijesna cjelina Kornić (Z-5332), a zona »C« (ambijentalna zaštita) obuhvaća šire područje naselja. Granice su na kartografskom prikazu 3A UPU-a. U zoni »C« nova gradnja smije imati najviše dvije nadzemne etaže, bez povišenja nadozida, kosi krov nagiba oko 30° s kupom kanalicom ili kamenim pločama, a za svaku novu gradnju trebaju posebni konzervatorski uvjeti odnosno prethodno odobrenje (čl. 85.). Ti uvjeti su stroži od izračuna ispod (npr. 3 nadzemne etaže na kosom terenu, krov 17°–23°)."
+        "Zaštita kulturne baštine (čl. 83.–85.): zona »B« je kulturno-povijesna cjelina Kornić (Z-5332), a zona »C« (ambijentalna zaštita) obuhvaća šire područje naselja. Granice su na kartografskom prikazu 3A UPU-a. U zoni »C« nova gradnja smije imati najviše dvije nadzemne etaže, bez povišenja nadozida, kosi krov nagiba oko 30° s kupom kanalicom ili kamenim pločama, a za svaku novu gradnju trebaju posebni konzervatorski uvjeti odnosno prethodno odobrenje (čl. 85.). Ti uvjeti su stroži od izračuna ispod (npr. 3 nadzemne etaže na kosom terenu, krov 17°–23°). Odaberi zonu zaštite prema karti 3A i simulator kuće će te uvjete provjeravati."
       ],
+      "simulator": {
+        "krov": {
+          "clanak": "38. d)",
+          "primjena": "za sve tipove (čl. 39. i 40. upućuju na čl. 38.)",
+          "ravniDopusten": true,
+          "nagibMin": 17,
+          "nagibMax": 23,
+          "txt": "krovište građevine može biti ravno ili koso; ako se gradi kao koso može biti dvostrešno ili višestrešno i mora biti s nagibom krovnih ploha između 17o i 23o"
+        },
+        "zastita": {
+          "karta": "3A",
+          "clanak": "83.",
+          "txt": "Granice zona »B« i »C« prikazane su na kartografskom prikazu 3A",
+          "opcije": [
+            [
+              "",
+              "— provjeri na karti 3A —"
+            ],
+            [
+              "izvan",
+              "izvan zona »B« i »C«"
+            ],
+            [
+              "C",
+              "zona »C« – ambijentalna zaštita (čl. 85.)"
+            ],
+            [
+              "B",
+              "zona »B« – kulturno-povijesna cjelina (čl. 84.)"
+            ]
+          ],
+          "C": {
+            "clanak": "85.",
+            "etazeMax": 2,
+            "nadozid": false,
+            "krovKosi": true,
+            "krovNagib": 30,
+            "txt": [
+              "visine najviše dvije nadzemne etaže, bez povišenja nadozida za potkrovlje",
+              "Građevine moraju imati kosi krov s nagibom tradicijskog krova (oko 30˚)",
+              "potrebno je ishoditi posebne konzervatorske uvjete odnosno prethodno odobrenje nadležnog konzervatorskog odjela"
+            ]
+          },
+          "B": {
+            "clanak": "84.",
+            "txt": [
+              "u cijelosti treba zadržati povijesnu matricu (zatečenu povijesnu parcelaciju)",
+              "obvezna je puna zaštita građevnog tkiva (oblika i izgleda)"
+            ],
+            "napomena": "U zoni »B« (kulturno-povijesna cjelina) štite se povijesna parcelacija i građevna struktura; nova gradnja moguća je samo prema posebnim konzervatorskim uvjetima (čl. 84.). Aplikacija za tu zonu ne računa uvjete gradnje."
+          }
+        }
+      },
       "karte": {
         "izvor": "čl. 3. st. 2. t. b) odluke (SN PGŽ 19/2016); šifra lista iz kataloga rastera PGŽ (npr. 618_karta4)",
         "listovi": {
