@@ -385,6 +385,8 @@ ol.zi{font-size:13.5px;padding-left:18px}
 #modBtn[aria-pressed=true] .mod-t{color:var(--accent);font-weight:600}
 @media (max-width:899px){#modBtn{flex-direction:column;gap:1px;padding:3px 4px;min-width:52px}#modBtn .mod-t{font-size:10px;line-height:1}}
 @media (max-width:420px){#go{font-size:0;min-width:44px}#go::before{content:"⌕";font-size:24px;line-height:1}}
+.vjet{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start}.vjet>div{flex:1;min-width:220px}
+.prom{border:1px solid var(--warn);border-radius:10px;padding:10px 12px;margin:8px 0;background:var(--panel)}
 .opt{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin:8px 0}
 .opt-k{border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:3px;background:var(--panel);font-size:14px}
 .opt-k .ib{margin-top:4px;align-self:flex-start}.opt-k small.fx{display:block}.opt-cur{background:var(--soft)}
@@ -2348,7 +2350,7 @@ function renderKrk(d){
     h+=`<ul class="checks" style="margin-top:6px"><li class="chk chk-${sev}"><b>Teren</b><span>Nadmorska visina oko ${s.h} m, nagib u okolini oko ${Math.round(s.slope)} %, pada prema ${s.down}u.${s.slope>=20?" Strm teren: računaj s potpornim zidovima i skupljim temeljima.":s.slope>=10?" Umjereno strm teren.":""}</span></li></ul><p class="meta">Nagib je iz modela visina rezolucije oko 90 m.</p>`;}
   else if(slope&&slope.e) h+=`<p class="meta">Nagib terena: Podaci nisu dostupni (${esc(slope.e)}).</p>`;
   else if(!env) h+=`<p class="hint"><span class="spin"></span>Učitavam teren, pristup i infrastrukturu…</p>`;
-  if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`+povHtml()+ptnHtml();
+  if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`+povHtml()+ptnHtml()+vjetHtml();
   h+=naHtml("Klizišta, kulturna baština, vodozaštita i druga ograničenja iz plana","Za Zagreb aplikacija provjerava gradske slojeve ograničenja; za Primorsko-goransku županiju takvi slojevi još nisu uključeni (zaštićena područja prirode i Natura 2000 provjeravaju se iznad). Ograničenja provjeri u prostornom planu (popis ispod) i lokacijskom informacijom.");
   h+=krkInfraHtml(env?d.ski||{e:"nije učitano"}:null);
   h+=env?envHtml(env):envHtml(null);
@@ -2426,7 +2428,7 @@ function renderHR(d){
     h+=`<ul class="checks" style="margin-top:6px"><li class="chk chk-${sev}"><b>Teren</b><span>Nadmorska visina oko ${s.h} m, nagib u okolini oko ${Math.round(s.slope)} %, pada prema ${s.down}u.${s.slope>=20?" Strm teren: računaj s potpornim zidovima i skupljim temeljima.":s.slope>=10?" Umjeren nagib: moguće su dodatni zemljani radovi.":" Gotovo ravan teren."}</span></li></ul>`;}
   else if(slope&&slope.e) h+=`<p class="meta">Nagib terena: Podaci nisu dostupni (${esc(slope.e)}).</p>`;
   else if(parcel&&!env) h+=`<p class="hint"><span class="spin"></span>Učitavam teren, pristup i infrastrukturu…</p>`;
-  if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`+povHtml()+ptnHtml();
+  if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`+povHtml()+ptnHtml()+vjetHtml();
   h+=naHtml("Namjena, klizišta, kulturna baština i druga ograničenja","Za područja izvan Grada Zagreba i otoka Krka aplikacija još ne provjerava slojeve plana. Namjenu i ograničenja provjeri u ISPU-u (ispu.mgipu.hr) i u prostornom planu općine ili grada.");
   h+=env?envHtml(env):envHtml(null);
   if(parcel) h+=naHtml("Postojeće zgrade i uvjeti gradnje","Uvjeti gradnje (izgrađenost, visina, katnost) i izračun smjestivosti kuće nisu obrađeni za ovo područje. Okolne zgrade u 3D pogledu preuzete su iz OpenStreetMapa i samo su ilustracija.");
@@ -2789,7 +2791,7 @@ function tDraw(){
     `<table class="rp"><tbody>${R.C.map(c=>`<tr><th>${esc(c.label)}</th><td><b>${esc(c.val)}</b> <em class="kind st-${ST[c.st][0]}">${ST[c.st][1]}</em>${c.note?`<small class="fx">${esc(c.note)}</small>`:""}</td></tr>`).join("")}</tbody></table>`+
     tDistHtml()+(curData()&&curData().krk?"":`<div class="kd"><button type="button" class="ib" id="tToFin">Prenesi kuću u procjenu troškova</button></div>`);
   if(s){s.textContent=`${String(TL.w).replace(".",",")} × ${String(TL.d).replace(".",",")} m, ${R.F.label}: ${ST[R.st][1]}`; s.className=R.st==="no"?"bad":"";}
-  window.__sim=R; projSaveSimSoon(); zgSync(); skicaUpdate(); okuSoon(); pvLiveSoon(); iskSoon();
+  window.__sim=R; projSaveSimSoon(); zgSync(); skicaUpdate(); okuSoon(); pvLiveSoon(); iskSoon(); osunSoon(); pogSoon();
 }
 function predNote(){const P=predlozakDims(+TL.pred,TL.fl), F=tFloors();
   return `Predložak ${TL.pred} m² nadzemnog GBP-a, ${F.label}: tlocrt oko ${fmt(P.tl)} m² → predloženo ${String(P.w).replace(".",",")} × ${String(P.d).replace(".",",")} m (${fmt(P.w*P.d)} m²). Dimenzije možeš promijeniti; tada predložak prelazi u vlastite dimenzije.`;}
@@ -3050,6 +3052,8 @@ function simHtml(pp,A,area,gbpMax,RP,lim){
   h+=`<p class="meta">Na karti kuću pomičeš povlačenjem oznake ✥, a okrećeš povlačenjem oznake ↻; dok držiš oznaku, karta miruje. Na karti: zeleno je prostor unutar udaljenosti od međa, narančasto pojas uz ulicu do udaljenosti građevnog pravca (ulica procijenjena iz OpenStreetMapa), a kuća postaje crvena kad izađe iz dopuštenog prostora. Tip kuće bira se u "Izračunu za ovu česticu".</p></div></details>`;
   h+=okuHtml();
   h+=iskHtml();
+  h+=osunHtml();
+  h+=pogHtml();
   h+=`<details class="acc skica" data-k="skica"${OPEN.has("skica")?" open":""}><summary><span>Skica kuće na terenu</span><b id="skSum">tlocrt, presjek i 3D</b></summary><div class="acc-body"><div id="skicaOut"></div></div></details>`;
   return h;
 }
@@ -4725,7 +4729,7 @@ function render(d){
     else if(!hits.length) h+=`<p class="verdict v-warn" style="margin:6px 0">Provjere nisu uspjele jer servisi ne odgovaraju. To ne znači da ograničenja nema; pokušaj ponovno kasnije.</p>`;
     if(slope&&slope.v){const s=slope.v, sev=s.slope>=20?"no":s.slope>=10?"warn":"ok";
       h+=`<ul class="checks" style="margin-top:6px"><li class="chk chk-${sev}"><b>Teren</b><span>Nadmorska visina oko ${s.h} m, nagib u okolini oko ${Math.round(s.slope)} %, pada prema ${s.down}u.${s.slope>=20?" Strm teren: računaj s potpornim zidovima, skupljim temeljima i geotehničkim elaboratom.":s.slope>=10?" Umjereno strm teren: moguć podrum ili suteren, ali i veći trošak iskopa.":""}</span></li></ul><p class="meta">Nagib je iz modela visina rezolucije oko 90 m, pa ne vidi lokalne strmine na samoj čestici.</p>`;}
-    if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`+povHtml()+ptnHtml();
+    if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`+povHtml()+ptnHtml()+vjetHtml();
     if(clear.length) h+=`<details><summary>Što je provjereno i čisto (${clear.length})</summary><ol>${clear.map(t=>`<li>${esc(t)}</li>`).join("")}</ol></details>`;
     if(errs.length) h+=`<p class="err">Nisu odgovorili: ${esc(errs.join(", "))}. <button type="button" class="ib retry">Pokušaj ponovno</button></p>`;
   }
@@ -5341,9 +5345,9 @@ async function iskPix(url){
 }
 const iskTileXY=(lon,lat,z)=>{const n=2**z, x=(lon+180)/360*n, s=Math.sin(lat*Math.PI/180), y=(0.5-Math.log((1+s)/(1-s))/(4*Math.PI))*n; return [x,y];};
 // model visina oko točke c (lon, lat) u krugu R metara: pločice jednog izvora i zooma; vraća funkciju visine u (lon, lat)
-async function iskModelTiles(c,R){
+async function iskModelTiles(c,R,o){
   const pix=window.__iskPix||iskPix, mx=111320*Math.cos(c[1]*Math.PI/180), my=110540, greske=[];
-  for(const S of ISK_IZVORI) for(const z of S.zooms){
+  for(const S of ISK_IZVORI) for(const z of (o&&o.zooms)||S.zooms){
     try{
       const a=iskTileXY(c[0]-R/mx,c[1]+R/my,z), b=iskTileXY(c[0]+R/mx,c[1]-R/my,z), tiles=new Map();
       const x0=Math.floor(a[0]), x1=Math.floor(b[0]), y0=Math.floor(a[1]), y1=Math.floor(b[1]);
@@ -5636,6 +5640,242 @@ document.addEventListener("click",e=>{ const t=e.target; if(!t||!t.closest) retu
   else if(t.id==="tOptVrati"&&OPT.prev){ const p=OPT.prev; OPT.prev=null; TL.center=p.center; TL.rot=p.rot; const ri=document.getElementById("tRot"); if(ri) ri.value=TL.rot; if(TL.marker) TL.marker.setLatLng([TL.center[1],TL.center[0]]); tDraw(); if(OPT.res&&!OPT.res.err){OPT.res.cur=optDetalj(OPT.res,optLok(OPT.res.O,TL.center),TL.rot);} const o=document.getElementById("tOptOut"); if(o) o.innerHTML=optHtmlRez(); }
   else { const b=t.closest("[data-opt]"); if(b&&OPT.res&&OPT.res.prikaz){ const x=OPT.res.prikaz[+b.dataset.opt]; if(x) optPostavi(x.c,x.rot); } } });
 
+// ================= OSUNČANOST DVORIŠTA (sunčani sati po točkama čestice) =================
+// Za odabrani dan (21. 6., 21. 3./23. 9. ili 21. 12.) i svakih 30 min dok je Sunce više od 2° iznad obzora provjerava se
+// je li točka u sjeni kuće iz simulatora ili okolnih zgrada (ZG3D u Zagrebu, tlocrti katastra na Krku, inače Topografska
+// osnova uz upisanu visinu). Točka je u sjeni kad dužina od nje prema Suncu, duga H / tan(visina Sunca), prolazi kroz tlocrt
+// zgrade visine H. Ravni teren, bez drveća, ograda i oblika krovova. Lokalni metri oko težišta čestice.
+const OSU={res:null,key:null,sez:"ljeto",on:false,layer:null,t:0};
+const OSU_SEZ={ljeto:["06-21","21. lipnja (najdulji dan)"],ekv:["03-21","21. ožujka (i 23. rujna)"],zima:["12-21","21. prosinca (najkraći dan)"]};
+const OSU_BIN=[[0,2,"#3b4a8c","manje od 2 h"],[2,4,"#5b7fb8","2–4 h"],[4,6,"#b9c97a","4–6 h"],[6,8,"#f2c94c","6–8 h"],[8,99,"#f29d38","8 h i više"]];
+// prepreke {r: prsten u lokalnim metrima, h: visina u m, b: okvir, kuca}
+function osuPrepreke(O){
+  const d=curData(), P=[], lok=p=>optLok(O,p);
+  const dodaj=(ring,h,kuca)=>{ if(!(h>0.3)||!ring||ring.length<3) return; const r=ring.map(lok), xs=r.map(p=>p[0]), ys=r.map(p=>p[1]); P.push({r,h,b:[Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys)],kuca:!!kuca}); };
+  if(TL.center){ const F=tFloors(), H=pvKrovH(); const r=tRect(), g=tGarage();
+    if(r) dodaj(r.geometry.coordinates[0].slice(0,4),H,true); if(g) dodaj(g.geometry.coordinates[0].slice(0,4),3,true); void F; }
+  const Z=d&&d.parcel?zg3dGet(d.parcel):null;
+  if(Z&&Z.st==="ok"&&Z.list) for(const B of Z.list){ let top=B.wall||0; for(const f of B.faces||[]) for(const q of f) if(q[2]>top) top=q[2]; for(const ring of B.foot||[]) dodaj(ring,top,false); }
+  else if(SUN.nb) for(const f of SUN.nb){ const g=f.geometry; const rings=g.type==="Polygon"?[g.coordinates[0]]:g.type==="MultiPolygon"?g.coordinates.map(c=>c[0]):[]; for(const ring of rings) dodaj(ring,SUN.hN,false); }
+  return P;
+}
+// čisti izračun: točke [[x,y]], prepreke, položaji Sunca [{alt,az}] (svaki = korak sati) → sati izravnog Sunca po točki
+function osuSati(T,P,S,korak){
+  const out=new Float32Array(T.length), r=Math.PI/180;
+  const S2=S.map(s=>({ux:Math.sin(s.az*r),uy:Math.cos(s.az*r),k:1/Math.tan(s.alt*r)}));
+  for(let i=0;i<T.length;i++){ const [px,py]=T[i]; let h=0;
+    for(const s of S2){ let sj=false;
+      for(const o of P){ const L=Math.min(150,o.h*s.k), qx=px+s.ux*L, qy=py+s.uy*L;
+        if(Math.max(px,qx)<o.b[0]||Math.min(px,qx)>o.b[2]||Math.max(py,qy)<o.b[1]||Math.min(py,qy)>o.b[3]) continue;
+        if(optUnutra([qx,qy],[o.r])||optUnutra([px,py],[o.r])){sj=true; break;}
+        const R=o.r; for(let j=0,n=R.length;j<n;j++){ if(optSijeku([px,py],[qx,qy],R[j],R[(j+1)%n])){sj=true; break;} } if(sj) break; }
+      if(!sj) h+=korak; }
+    out[i]=h; }
+  return out;
+}
+function osuSunce(ymd,lat,lon){ const S=[]; for(let h=4;h<=21.01;h+=0.5){ const p=solarPos(zgDate(ymd,h+0.25),lat,lon); if(p.alt>2) S.push({alt:p.alt,az:p.az}); } return S; }
+function osuIzracun(){
+  const d=curData(); if(!d||!d.parcel) return null;
+  const O=turf.centroid(d.parcel.geometry).geometry.coordinates, g=d.parcel.geometry, rings=(g.type==="Polygon"?[g.coordinates]:g.coordinates).map(pg=>pg.map(r=>r.map(p=>optLok(O,p))));
+  const A=turf.area(d.parcel), st=Math.max(1,Math.round(Math.sqrt(A/700)*2)/2), all=rings.flat(2), x0=Math.min(...all.map(p=>p[0])), x1=Math.max(...all.map(p=>p[0])), y0=Math.min(...all.map(p=>p[1])), y1=Math.max(...all.map(p=>p[1]));
+  const P=osuPrepreke(O), T=[];
+  for(let x=x0+st/2;x<x1;x+=st) for(let y=y0+st/2;y<y1;y+=st){ const p=[x,y]; if(!rings.some(r=>optUnutra(p,r))) continue; if(P.some(o=>optUnutra(p,[o.r]))) continue; T.push(p); }
+  const ymd=new Date().getFullYear()+"-"+OSU_SEZ[OSU.sez][0], S=osuSunce(ymd,O[1],O[0]), H=osuSati(T,P,S,0.5), dan=S.length*0.5;
+  // najsunčaniji dio: smjer od težišta prema prosjeku 20 % najosunčanijih točaka
+  const idx=[...T.keys()].sort((a,b)=>H[b]-H[a]).slice(0,Math.max(1,Math.round(T.length*0.2)));
+  const mx=idx.reduce((s,i)=>s+T[i][0],0)/idx.length, my=idx.reduce((s,i)=>s+T[i][1],0)/idx.length, smjer=Math.hypot(mx,my)>2?COMP((Math.atan2(mx,my)*180/Math.PI+360)%360):null;
+  const sr=H.length?H.reduce((a,b)=>a+b,0)/H.length:0, udio=k=>H.length?H.filter(v=>v>=k).length/H.length:0;
+  return {O,T,H,st,dan,sr,u6:udio(6),u4:udio(4),smjer,nPrep:P.filter(o=>!o.kuca).length,kuca:P.some(o=>o.kuca),ymd,izvorZgrada:(()=>{const Z=zg3dGet(d.parcel); return Z&&Z.st==="ok"?(Z.tip==="zg3d"?"ZG3D 2022 (Grad Zagreb)":Z.tip==="osm"?"OpenStreetMap, visine iz oznaka ili pretpostavljene":"katastar DGU, visine pretpostavljene"):SUN.nb?"Topografska osnova Grada Zagreba, visina "+dec(SUN.hN)+" m":null})()};
+}
+function osuBin(h){return OSU_BIN.find(b=>h>=b[0]&&h<b[1])||OSU_BIN[OSU_BIN.length-1];}
+function osuSvg(R){
+  const d=curData(), g=d.parcel.geometry, rings=(g.type==="Polygon"?[g.coordinates]:g.coordinates).flat().map(r=>r.map(p=>optLok(R.O,p)));
+  const all=rings.flat(), x0=Math.min(...all.map(p=>p[0])), x1=Math.max(...all.map(p=>p[0])), y0=Math.min(...all.map(p=>p[1])), y1=Math.max(...all.map(p=>p[1]));
+  const W=300, s=Math.min((W-30)/(x1-x0||1),(W-30)/(y1-y0||1)), Hh=Math.round((y1-y0)*s)+30, X=x=>10+(x-x0)*s, Y=y=>20+(y1-y)*s;
+  let h=`<svg viewBox="0 0 ${W} ${Hh}" width="100%" style="max-width:${W}px" role="img" aria-label="Sunčani sati po dijelovima čestice">`;
+  h+=R.T.map((p,i)=>`<rect x="${(X(p[0]-R.st/2)).toFixed(1)}" y="${(Y(p[1]+R.st/2)).toFixed(1)}" width="${(R.st*s+0.4).toFixed(1)}" height="${(R.st*s+0.4).toFixed(1)}" fill="${osuBin(R.H[i])[2]}"/>`).join("");
+  h+=rings.map(r=>`<polygon points="${r.map(p=>X(p[0]).toFixed(1)+","+Y(p[1]).toFixed(1)).join(" ")}" fill="none" stroke="currentColor" stroke-width="1.5"/>`).join("");
+  const kr=tRect(); if(kr) h+=`<polygon points="${kr.geometry.coordinates[0].map(p=>optLok(R.O,p)).map(p=>X(p[0]).toFixed(1)+","+Y(p[1]).toFixed(1)).join(" ")}" fill="#1565c0" fill-opacity=".5" stroke="#1565c0"/>`;
+  h+=`<text x="${W-2}" y="13" font-size="11" text-anchor="end" fill="currentColor">↑ S</text></svg>`;
+  return h;
+}
+function osuKarta(){
+  if(OSU.layer){ selLayer.removeLayer(OSU.layer); OSU.layer=null; }
+  const R=OSU.res; if(!OSU.on||!R) return; OSU.layer=L.layerGroup().addTo(selLayer);
+  for(const b of OSU_BIN){ const polys=[]; R.T.forEach((p,i)=>{ if(osuBin(R.H[i])!==b) return; const a=optGeo(R.O,[p[0]-R.st/2,p[1]-R.st/2]), c=optGeo(R.O,[p[0]+R.st/2,p[1]+R.st/2]); polys.push([[[a[0],a[1]],[c[0],a[1]],[c[0],c[1]],[a[0],c[1]],[a[0],a[1]]]]); });
+    if(polys.length) L.geoJSON({type:"Feature",geometry:{type:"MultiPolygon",coordinates:polys},properties:{}},{style:{stroke:false,fillColor:b[2],fillOpacity:.55},interactive:false}).addTo(OSU.layer); }
+}
+function osunHtml(){
+  return `<details class="acc" data-k="osun"${OPEN.has("osun")?" open":""}><summary><span>Osunčanost dvorišta</span><b id="osunSum">sunčani sati</b></summary><div class="acc-body">
+    <div class="bgrid"><label for="osunSez">Dan</label><select id="osunSez" class="bsel">${Object.entries(OSU_SEZ).map(([k,v])=>`<option value="${k}"${k===OSU.sez?" selected":""}>${v[1]}</option>`).join("")}</select>
+    <label for="osunOn">Karta</label><span><input type="checkbox" id="osunOn"${OSU.on?" checked":""}> prikaži na karti</span></div><div id="osunOut"></div></div></details>`;
+}
+function osunUpdate(){
+  const o=document.getElementById("osunOut"); if(!o) return; const det=o.closest("details"); if(det&&!det.open&&!OSU.on) return; // računa se kad je odjeljak otvoren
+  const R=osuIzracun(); OSU.res=R; OSU.key=window.__cur&&window.__cur.key; if(!R||!R.T.length){o.innerHTML=`<p class="meta">Podaci nisu dostupni.</p>`; return;}
+  const p=pzSet("osun","Osunčanost dvorišta",`${dec(R.sr.toFixed(1))} h prosječno (${OSU_SEZ[OSU.sez][1]})`,pz("C",{izvor:"položaj Sunca (NOAA), zgrade: "+(R.izvorZgrada||"nisu dostupne")+(R.kuca?"; kuća iz simulatora":""),metoda:"sjena tlocrta i visine zgrada na ravnom terenu",razlog:"bez terena, drveća i ograda; visine okolnih zgrada su djelomično pretpostavljene",provjera:"obilazak u različito doba dana"}));
+  let h=`<p class="meta" style="margin-top:0">${pzTag(p)} ${esc(OSU_SEZ[OSU.sez][1])}: Sunce je iznad obzora oko ${dec(R.dan.toFixed(1))} h.</p>`;
+  h+=`<table class="rp"><tbody><tr><th>Prosječno na dvorištu</th><td><b>${dec(R.sr.toFixed(1))} h izravnog Sunca</b></td></tr>`;
+  h+=`<tr><th>6 h i više</th><td><b>${Math.round(R.u6*100)} %</b> dvorišta <small class="fx">pogodno za povrtnjak i bazen</small></td></tr>`;
+  h+=`<tr><th>4 h i više</th><td><b>${Math.round(R.u4*100)} %</b> dvorišta</td></tr>`;
+  if(R.smjer) h+=`<tr><th>Najsunčaniji dio</th><td><b>${esc(R.smjer)} dio čestice</b></td></tr>`;
+  h+=`</tbody></table>${osuSvg(R)}<p class="isk-leg">${OSU_BIN.map(b=>`<span class="isk-k" style="background:${b[2]}"></span>${b[3]}`).join(" ")}${TL.center?' <span class="isk-k" style="background:#1565c0"></span>kuća':""}</p>`;
+  h+=`<p class="meta">Sjene: ${R.kuca?"kuća iz simulatora (s krovom)":"kuća nije postavljena u simulatoru"}${R.izvorZgrada?`, okolne zgrade (${R.nPrep}): ${esc(R.izvorZgrada)}`:", okolne zgrade za ovo područje nisu dostupne"}. Položaj Sunca svakih 30 minuta (NOAA), mreža ${dec(R.st)} m. Teren, drveće, ograde i oblačnost nisu uključeni; na kosom terenu i uz visoko drveće stvarne sjene su drukčije.</p>`;
+  o.innerHTML=h; const s=document.getElementById("osunSum"); if(s) s.textContent=`${dec(R.sr.toFixed(1))} h (${OSU.sez==="ljeto"?"ljeto":OSU.sez==="zima"?"zima":"proljeće/jesen"})`;
+  osuKarta();
+}
+function osunSoon(){clearTimeout(OSU.t); OSU.t=setTimeout(()=>{try{osunUpdate()}catch(e){console.error(e)}},250);}
+sheet.addEventListener("toggle",e=>{ if(e.target.dataset&&e.target.dataset.k==="osun"&&e.target.open) osunSoon(); },true);
+sheet.addEventListener("change",e=>{ const t=e.target; if(!t) return; if(t.id==="osunSez"){OSU.sez=t.value; osunUpdate();} else if(t.id==="osunOn"){OSU.on=t.checked; if(OSU.on) osunUpdate(); else osuKarta();} });
+// ================= VJETAR I BURA (ruža vjetrova iz satnih podataka 2023.–2025.) =================
+// Open-Meteo, povijesni podaci (model ERA5 / ERA5-Land, Copernicus): brzina i smjer vjetra na 10 m i udari, svaki sat tri godine.
+// Smjer je odakle vjetar puše. Sektori od 22,5°. „Jak udar” je udar od najmanje 17,2 m/s (8 Beauforta, olujni vjetar).
+// Bura i jugo ovdje su samo smjerovi (bura: sjever–istok, 0°–90°; jugo: istok–jug, 90°–180°), ne meteorološka definicija.
+// Model ne vidi lokalne prolaze i zavjetrine (na Krku je bura na mjestima jača nego u modelu), pa je pouzdanost C.
+const VJET={cache:{},st:null,res:null,key:null};
+const VJ_KLASE=[[0,3,"#9ec5e8","do 3 m/s"],[3,6,"#4f8fcf","3–6 m/s"],[6,10,"#1f5fa0","6–10 m/s"],[10,99,"#0b2f5c","10 m/s i više"]];
+const VJ_UDAR=17.2;
+async function vjetPodaci(lat,lon){
+  const k=lat.toFixed(2)+"|"+lon.toFixed(2); if(VJET.cache[k]) return VJET.cache[k];
+  const q=new URLSearchParams({latitude:lat.toFixed(4),longitude:lon.toFixed(4),start_date:"2023-01-01",end_date:"2025-12-31",hourly:"wind_speed_10m,wind_direction_10m,wind_gusts_10m",wind_speed_unit:"ms",timezone:"UTC"});
+  const j=await (window.__vjetHook?Promise.resolve(window.__vjetHook(lat,lon)):getJSON("https://archive-api.open-meteo.com/v1/archive?"+q.toString(),{},30000));
+  const H=j&&j.hourly; if(!H||!H.time||!H.time.length) throw new Error("servis nije vratio podatke o vjetru");
+  return VJET.cache[k]={t:H.time,v:H.wind_speed_10m||[],d:H.wind_direction_10m||[],g:H.wind_gusts_10m||[]};
+}
+// čisti izračun: 16 sektora × razredi brzine (% sati), tišina, jaki udari po sektoru (sati godišnje), bura i jugo
+function vjetRuza(D){
+  const n16=new Array(16).fill(0).map(()=>[0,0,0,0]), udar=new Array(16).fill(0), sredB=new Array(16).fill(0); let N=0, tis=0, bura=0, jugo=0, god=new Set(), mxG=0, mxGd=null;
+  for(let i=0;i<D.t.length;i++){ const v=D.v[i], d=D.d[i], g=D.g[i]; if(v==null||d==null) continue; N++; god.add(String(D.t[i]).slice(0,4));
+    if(v<0.5){tis++; continue;} const s=Math.round(((d%360)+360)%360/22.5)%16; n16[s][VJ_KLASE.findIndex(c=>v>=c[0]&&v<c[1])]++; sredB[s]+=v;
+    if(g!=null&&g>=VJ_UDAR){ udar[s]++; if(d>=0&&d<=90) bura++; else if(d>90&&d<=180) jugo++; }
+    if(g!=null&&g>mxG){mxG=g; mxGd=d;} }
+  const ny=god.size||1, uk=s=>n16[s].reduce((a,b)=>a+b,0), sek=[...Array(16).keys()];
+  const najcesci=sek.reduce((a,b)=>uk(b)>uk(a)?b:a,0), najjaci=sek.reduce((a,b)=>udar[b]>udar[a]?b:a,0);
+  return {N,ny,god:[...god].sort(),tis:N?tis/N:0,pct:n16.map(c=>c.map(x=>N?x/N*100:0)),sred:sek.map(s=>uk(s)?sredB[s]/uk(s):0),udarSati:udar.map(x=>x/ny),bura:bura/ny,jugo:jugo/ny,najcesci,najjaci:udar[najjaci]>0?najjaci:null,mxG,mxGd};
+}
+const VJ_SMJ=["S","SSI","SI","ISI","I","IJI","JI","JJI","J","JJZ","JZ","ZJZ","Z","ZSZ","SZ","SSZ"];
+const VJ_NAZ=["sjever","sjever-sjeveroistok","sjeveroistok","istok-sjeveroistok","istok","istok-jugoistok","jugoistok","jug-jugoistok","jug","jug-jugozapad","jugozapad","zapad-jugozapad","zapad","zapad-sjeverozapad","sjeverozapad","sjever-sjeverozapad"];
+function vjetSvg(R){
+  const S=230, c=S/2, Rm=c-22, tot=R.pct.map(a=>a.reduce((x,y)=>x+y,0)), mx=Math.max(...tot,1), sc=Rm/mx, r=Math.PI/180;
+  let g=`<svg viewBox="0 0 ${S} ${S}" width="${S}" height="${S}" style="max-width:100%" role="img" aria-label="Ruža vjetrova">`;
+  for(const f of [0.33,0.66,1]) g+=`<circle cx="${c}" cy="${c}" r="${(Rm*f).toFixed(1)}" fill="none" stroke="var(--line)"/>`;
+  g+=`<text x="${c+2}" y="${(c-Rm*0.66-2).toFixed(1)}" font-size="9" fill="var(--muted)">${dec((mx*0.66).toFixed(1))} %</text>`;
+  for(let s=0;s<16;s++){ let r0=0; const a0=(s*22.5-9)*r, a1=(s*22.5+9)*r;
+    R.pct[s].forEach((p,k)=>{ const r1=r0+p*sc; if(p>0){ const P=(rr,a)=>[(c+rr*Math.sin(a)).toFixed(1),(c-rr*Math.cos(a)).toFixed(1)]; const [x0,y0]=P(r0,a0),[x1,y1]=P(r1,a0),[x2,y2]=P(r1,a1),[x3,y3]=P(r0,a1);
+      g+=`<path d="M${x0},${y0}L${x1},${y1}A${r1.toFixed(1)},${r1.toFixed(1)} 0 0 1 ${x2},${y2}L${x3},${y3}${r0>0?`A${r0.toFixed(1)},${r0.toFixed(1)} 0 0 0 ${x0},${y0}`:""}Z" fill="${VJ_KLASE[k][2]}"><title>${VJ_SMJ[s]} ${VJ_KLASE[k][3]}: ${dec(p.toFixed(1))} % sati</title></path>`; } r0=r1; }); }
+  for(const [t,a] of [["S",0],["I",90],["J",180],["Z",270]]) g+=`<text x="${(c+(Rm+12)*Math.sin(a*r)).toFixed(1)}" y="${(c-(Rm+12)*Math.cos(a*r)+4).toFixed(1)}" font-size="11" text-anchor="middle" fill="var(--muted)">${t}</text>`;
+  return g+`</svg>`;
+}
+function vjetHtml(){ return `<details class="acc" data-k="vjet"${OPEN.has("vjet")?" open":""}><summary><span>Vjetar i bura</span><b id="vjetSum">ruža vjetrova</b></summary><div class="acc-body"><div id="vjetOut"><p class="meta">Otvori odjeljak i podaci se dohvate.</p></div></div></details>`; }
+async function vjetUpdate(){
+  const o=document.getElementById("vjetOut"), d=curData(); if(!o||!d) return; const key=window.__cur&&window.__cur.key;
+  const c=d.parcel?turf.centroid(d.parcel.geometry).geometry.coordinates:[d.ll.lng,d.ll.lat];
+  if(!(VJET.key===key&&VJET.res)){ o.innerHTML=`<p class="hint"><span class="spin"></span>Dohvaćam satne podatke o vjetru za 2023.–2025.…</p>`;
+    try{ const D=await vjetPodaci(c[1],c[0]); if((window.__cur&&window.__cur.key)!==key) return; VJET.res=vjetRuza(D); VJET.key=key; }
+    catch(e){ o.innerHTML=`<p class="flag">Podaci o vjetru nisu dostupni (${esc(e.message||"greška")}).</p>`; pzSet("vjet","Vjetar i bura",null,pz("C",{razlog:"podaci o vjetru nisu dohvaćeni",provjera:"DHMZ, mjesni podaci"})); return; } }
+  const R=VJET.res, nc=R.najcesci, nj=R.najjaci, sm=s=>VJ_NAZ[s];
+  const p=pzSet("vjet","Vjetar i bura",`najčešće ${sm(nc)}${nj!=null?`, najjači udari ${sm(nj)}`:""}`,pz("C",{izvor:"Open-Meteo, povijesni podaci (ERA5 / ERA5-Land, Copernicus) "+R.god.join(", "),metoda:"satni vjetar na 10 m i udari",razlog:"model razlučivosti 10–25 km ne vidi lokalne prolaze i zavjetrine",provjera:"DHMZ, najbliža postaja; iskustvo mještana"}));
+  let h=`<div class="vjet">${vjetSvg(R)}<div><table class="rp"><tbody>`;
+  h+=`<tr><th>Najčešće puše ${pzTag(p)}</th><td><b>sa ${VJ_SMJ[nc]} (${sm(nc)})</b> <small class="fx">${dec(R.pct[nc].reduce((a,b)=>a+b,0).toFixed(0))} % sati, prosječno ${dec(R.sred[nc].toFixed(1))} m/s</small></td></tr>`;
+  h+=`<tr><th>Jaki udari (od ${dec(VJ_UDAR)} m/s)</th><td>${nj!=null?`<b>najviše sa ${VJ_SMJ[nj]} (${sm(nj)})</b> <small class="fx">oko ${fmt(R.udarSati[nj])} sati godišnje iz tog smjera; najjači udar u tri godine ${dec(R.mxG.toFixed(0))} m/s (${fmt(R.mxG*3.6)} km/h) sa ${VJ_SMJ[Math.round(((R.mxGd%360)+360)%360/22.5)%16]}</small>`:"<b>nisu zabilježeni</b>"}</td></tr>`;
+  h+=`<tr><th>Bura (sjever–istok)</th><td><b>${fmt(R.bura)} h godišnje</b> s jakim udarima</td></tr>`;
+  h+=`<tr><th>Jugo (istok–jug)</th><td><b>${fmt(R.jugo)} h godišnje</b> s jakim udarima</td></tr>`;
+  h+=`<tr><th>Tišina (ispod 0,5 m/s)</th><td>${dec((R.tis*100).toFixed(0))} % sati</td></tr></tbody></table>`;
+  if(nj!=null) h+=`<p style="margin:6px 0">Terasu, ulaz i sjedenje vani smjesti u zavjetrinu: na stranu kuće prema <b>${sm((nj+8)%16)}u</b>, a sa strane prema ${sm(nj)}u računaj sa zaštitom od vjetra (zid, živica, staklena stijena) i jače učvršćenim krovom.</p>`;
+  h+=`<p class="isk-leg">${VJ_KLASE.map(k=>`<span class="isk-k" style="background:${k[2]}"></span>${k[3]}`).join(" ")}</p></div></div>`;
+  h+=`<p class="meta">Izvor: Open-Meteo, povijesni satni podaci ${R.god.join(", ")} (model ERA5 / ERA5-Land, Copernicus), vjetar na 10 m iznad tla; smjer je odakle vjetar puše. Bura i jugo su ovdje samo smjerovi, ne meteorološka definicija. Model ima razlučivost 10–25 km i ne vidi lokalne prolaze, padine i zavjetrine; na Krku i uz Velebit bura je na mjestima znatno jača. Za projekt (opterećenje vjetrom) mjerodavna je norma i podaci DHMZ-a.</p>`;
+  o.innerHTML=h; const s=document.getElementById("vjetSum"); if(s) s.textContent=nj!=null?`jaki udari sa ${VJ_SMJ[nj]}`:`najčešće sa ${VJ_SMJ[nc]}`;
+}
+sheet.addEventListener("toggle",e=>{ if(e.target.dataset&&e.target.dataset.k==="vjet"&&e.target.open) vjetUpdate(); },true);
+// ================= POGLED NA MORE S KUĆE (po etažama) =================
+// Iz sredine kuće (visina očiju 1,6 m iznad poda svake etaže) prati se teren u 180 smjerova (svaka 2°) do 8 km.
+// More je ondje gdje je model visina na razini mora (≤ 0,5 m). Dio mora je vidljiv ako je kut prema površini mora veći od
+// najvećeg kuta prema terenu ili zgradama bliže kući. Zakrivljenost Zemlje s lomom svjetlosti (k = 0,13) je uključena.
+// Model visina (pločice z11, piksel 27–54 m) ne vidi drveće ni zgrade bez podataka, pa je pouzdanost C.
+const POGL={st:null,res:null,key:null,model:null,mKey:null,t:0};
+const POGL_R=8000, POGL_OKO=1.6;
+// čisti izračun: zf(e,n) visina terena u lokalnim metrima, z0 tlo kuće, oči [m iznad tla], prepreke [{az0,az1,ang(oko)}]
+function pogIzracun(zf,z0,oci,zgrade,korak){
+  korak=korak||25; const out=oci.map(()=>({vid:new Array(180).fill(null)})), kZ=(1-0.13)/(2*6371000);
+  for(let b=0;b<180;b++){ const a=b*2*Math.PI/180, ux=Math.sin(a), uy=Math.cos(a);
+    const mx=oci.map(h=>{ const e=z0+h; let m=-Infinity; for(const Z of zgrade||[]) if(Z.az.includes(b)) m=Math.max(m,Math.atan2(Z.top-e,Z.d)); return m; });
+    for(let s=korak;s<=POGL_R;s+=korak){ const zt=zf(s*ux,s*uy); if(!isFinite(zt)) break; const pad=s*s*kZ, more=zt<=0.5;
+      oci.forEach((h,i)=>{ const e=z0+h, ang=Math.atan2((more?0:zt)-pad-e,s); if(more&&ang>=mx[i]&&out[i].vid[b]==null) out[i].vid[b]=s; if(ang>mx[i]) mx[i]=ang; }); } }
+  return out.map(o=>{ const v=o.vid.map(x=>x!=null), n=v.filter(Boolean).length; let sx=0,sy=0; v.forEach((x,b)=>{if(x){sx+=Math.sin(b*2*Math.PI/180); sy+=Math.cos(b*2*Math.PI/180);}});
+    const d=o.vid.filter(x=>x!=null); return {vid:v,dist:o.vid,stupnjeva:n*2,smjer:n?(Math.atan2(sx,sy)*180/Math.PI+360)%360:null,najbliže:d.length?Math.min(...d):null}; });
+}
+function pogHtml(){ return `<details class="acc" data-k="pogled"${OPEN.has("pogled")?" open":""}><summary><span>Pogled na more s kuće</span><b id="pogSum">po etažama</b></summary><div class="acc-body"><div id="pogOut"><p class="meta">Otvori odjeljak i pogled se izračuna.</p></div></div></details>`; }
+function pogSvg(R,naz){
+  const S=240, c=S/2, r0=26, dr=Math.max(10,(c-30-r0)/R.length), rad=Math.PI/180;
+  let g=`<svg viewBox="0 0 ${S} ${S}" width="${S}" height="${S}" style="max-width:100%" role="img" aria-label="Smjerovi s pogledom na more po etažama">`;
+  R.forEach((o,i)=>{ const ri=r0+i*dr, ro=ri+dr-2; g+=`<circle cx="${c}" cy="${c}" r="${((ri+ro)/2).toFixed(1)}" fill="none" stroke="var(--line)" stroke-width="${(dr-2).toFixed(1)}" stroke-opacity=".5"/>`;
+    o.vid.forEach((v,b)=>{ if(!v) return; const a0=(b*2-1)*rad, a1=(b*2+1)*rad, P=(r,a)=>[(c+r*Math.sin(a)).toFixed(1),(c-r*Math.cos(a)).toFixed(1)], [x0,y0]=P(ri,a0),[x1,y1]=P(ro,a0),[x2,y2]=P(ro,a1),[x3,y3]=P(ri,a1);
+      g+=`<path d="M${x0},${y0}L${x1},${y1}A${ro},${ro} 0 0 1 ${x2},${y2}L${x3},${y3}A${ri},${ri} 0 0 0 ${x0},${y0}Z" fill="#1e88e5"/>`; }); });
+  for(const [t,a] of [["S",0],["I",90],["J",180],["Z",270]]) g+=`<text x="${(c+(c-10)*Math.sin(a*rad)).toFixed(1)}" y="${(c-(c-10)*Math.cos(a*rad)+4).toFixed(1)}" font-size="11" text-anchor="middle" fill="var(--muted)">${t}</text>`;
+  g+=`<rect x="${c-6}" y="${c-6}" width="12" height="12" fill="#1565c0"/></svg>`;
+  return g+`<p class="isk-leg">Plavo: smjer s pogledom na more. Prstenovi od sredine prema van: ${naz.map(esc).join(", ")}.</p>`;
+}
+async function pogUpdate(){
+  const o=document.getElementById("pogOut"), d=curData(); if(!o||!d||!d.parcel) return;
+  if(!TL.center){ o.innerHTML=`<p class="meta">Postavi kuću u simulatoru.</p>`; return; }
+  const key=window.__cur&&window.__cur.key, c=TL.center, mk=c.map(v=>v.toFixed(3)).join(",");
+  if(POGL.mKey!==mk){ o.innerHTML=`<p class="hint"><span class="spin"></span>Učitavam model visina u krugu 8 km…</p>`;
+    try{ POGL.model=await iskModelTiles(c,POGL_R,{zooms:[11]}); POGL.mKey=mk; }catch(e){ POGL.model=null; POGL.mKey=null; o.innerHTML=`<p class="flag">Model visina nije dostupan (${esc((e.greske||[]).join("; ")||e.message)}).</p>`; return; } }
+  if((window.__cur&&window.__cur.key)!==key) return;
+  const M=POGL.model, O=c, mx=111320*Math.cos(O[1]*Math.PI/180), my=110540, zf=(e,n)=>M.vis(O[0]+e/mx,O[1]+n/my), z0=zf(0,0);
+  const F=tFloors(), oci=[], naz=[]; for(let i=0;i<F.full;i++){ oci.push(i*TL.fh+POGL_OKO); naz.push(i===0?"prizemlje":i+". kat"); } if(F.pk){ oci.push(F.full*TL.fh+POGL_OKO); naz.push("potkrovlje"); }
+  // okolne zgrade (do 150 m): kutni raspon i vrh (tlo iz modela + visina zgrade)
+  const Z=zg3dGet(d.parcel), zg=[];
+  if(Z&&Z.st==="ok") for(const B of Z.list||[]){ let top=B.wall||0; for(const f of B.faces||[]) for(const q of f) if(q[2]>top) top=q[2];
+    const pts=(B.foot[0]||[]).map(p=>[(p[0]-O[0])*mx,(p[1]-O[1])*my]); if(!pts.length) continue; const dd=Math.min(...pts.map(p=>Math.hypot(p[0],p[1]))); if(dd<4||dd>150) continue;
+    const azs=new Set(pts.map(p=>Math.floor(((Math.atan2(p[0],p[1])*180/Math.PI+360)%360)/2)%180)); const L=[...azs].sort((a,b)=>a-b);
+    let lo=L[0], hi=L[L.length-1]; if(hi-lo>90){ const w=L.map(x=>x<90?x+180:x); lo=Math.min(...w); hi=Math.max(...w); } const az=[]; for(let x=lo;x<=hi;x++) az.push(x%180);
+    const cx=pts.reduce((s,p)=>s+p[0],0)/pts.length, cy=pts.reduce((s,p)=>s+p[1],0)/pts.length; zg.push({az,d:dd,top:zf(cx,cy)+top}); }
+  const R=pogIzracun(zf,z0,oci,zg,25);
+  const imaMora=R.some(x=>x.stupnjeva>0), vrh=R[R.length-1];
+  const p=pzSet("pogled","Pogled na more",imaMora?`${vrh.stupnjeva}° (${naz[naz.length-1]})`:"nije vidljivo",pz("C",{izvor:M.izvor+", pločice z11",metoda:"vidljivost iz sredine kuće po etažama, do 8 km",razlog:"model visina ne vidi drveće, ograde ni zgrade bez podataka",provjera:"pogled s terena (npr. dron ili s visine kata)"}));
+  let h=`<div class="vjet">${pogSvg(R,naz)}<div><table class="rp"><tbody>`;
+  R.forEach((x,i)=>{ h+=`<tr><th>${esc(naz[i])}${i===0?" "+pzTag(p):""}</th><td>${x.stupnjeva?`<b>${x.stupnjeva}° pogleda na more</b> <small class="fx">uglavnom prema ${esc(VJ_NAZ[Math.round(x.smjer/22.5)%16])}u; najbliže vidljivo more oko ${x.najbliže>=1000?dec((x.najbliže/1000).toFixed(1))+" km":fmt(x.najbliže)+" m"}</small>`:"<b>more se ne vidi</b>"}</td></tr>`; });
+  h+=`</tbody></table>`;
+  if(!imaMora) h+=`<p class="meta">Model u krugu od 8 km ne vidi more ni s jedne etaže.</p>`;
+  h+=`</div></div><p class="meta">Visina očiju 1,6 m iznad poda svake etaže (visina etaže ${dec(TL.fh)} m), tlo kuće prema modelu oko ${dec(z0.toFixed(0))} m n. m. Model: ${esc(M.izvor)}, piksel oko ${dec(M.piksel.toFixed(0))} m. ${zg.length?`Uključene su okolne zgrade do 150 m (${zg.length}).`:"Okolne zgrade za ovo područje nisu uključene."} Drveće, ograde i nove zgrade nisu uključeni; pogled može biti manji. Pogled se ne smatra pravom: susjed može graditi u skladu s planom.</p>`;
+  o.innerHTML=h; const s=document.getElementById("pogSum"); if(s) s.textContent=imaMora?`${vrh.stupnjeva}° s ${naz[naz.length-1]=="prizemlje"?"prizemlja":naz[naz.length-1]==="potkrovlje"?"potkrovlja":naz[naz.length-1].replace(" kat"," kata")}`:"more se ne vidi";
+}
+function pogSoon(){ const d=document.querySelector('details[data-k="pogled"]'); if(!d||!d.open) return; clearTimeout(POGL.t); POGL.t=setTimeout(()=>{pogUpdate().catch(e=>console.error(e))},400); }
+sheet.addEventListener("toggle",e=>{ if(e.target.dataset&&e.target.dataset.k==="pogled"&&e.target.open) pogUpdate().catch(err=>console.error(err)); },true);
+// ================= PROMJENE NA SPREMLJENOJ ČESTICI I PODACI ZA USPOREDBU =================
+// Pri spremanju čestice sprema se snimka ključnih podataka (namjena, planovi, ZK, rizici). Kad se spremljena čestica ponovno
+// otvori, aplikacija usporedi službene podatke sa snimkom i pokaže što se promijenilo; „Označi kao pregledano” sprema novo stanje.
+// Uspoređuju se samo vrijednosti koje postoje i u snimci i sada (podatak koji se još učitava ili servis koji ne odgovara nije promjena).
+// Uz to se pamte zadnje poznate vrijednosti naprednih izračuna (cijena u općini, poplave, internet, iskop, pogled, vjetar, sunce)
+// za tablicu „Usporedba spremljenih čestica”. Sve ostaje samo u ovom pregledniku.
+const SNAP_SLUZB=[["namjena","Namjena"],["izgradenost","Izgrađenost građevinskog područja"],["zona","Zona"],["pravilo","Urbano pravilo"],["gp-podrucje","Građevinsko područje"],
+  ["upu-status","Status UPU-a"],["upu-izrada","UPU u izradi"],["plan-izrada","Planovi u izradi"],["plan-evidencija","Važeći planovi"],["zk-ulozak","ZK uložak"],["pov-zk","Površina u ZK"],["pov-kat","Površina u katastru"],
+  ["oko-poplave","Opasnost od poplava"],["oko-natura","Natura 2000"],["oko-zast","Zaštićeno područje"],["saz:Ima li tereta?","Tereti (sažetak)"]];
+const SNAP_USP=[["ptn","Cijena građ. zemljišta u općini"],["oko-poplave","Poplave"],["oko-internet","Internet"],["isk","Iskop i nasip"],["osun","Osunčanost dvorišta"],["pogled","Pogled na more"],["vjet","Vjetar"]];
+const PROM={t:0,key:null};
+function snapSad(){
+  const P={}; for(const [id] of [...SNAP_SLUZB,...SNAP_USP]){ if(id.startsWith("saz:")) continue; const it=PZREG.items.get(id); if(it&&it.vrijednost!=null&&it.vrijednost!=="") P[id]=String(it.vrijednost).slice(0,200); }
+  for(const r of window.__sazRows||[]) if(r&&r.q==="Ima li tereta?"&&r.a&&!/učitav|dohvaćam|dodirni/i.test(r.a)) P["saz:"+r.q]=String(r.a).slice(0,200);
+  return {t:pzDan(),polja:P};
+}
+// razlike: samo polja koja postoje u obje snimke
+function snapRazlike(a,b){ const out=[]; if(!a||!b) return out; for(const [id,naz] of SNAP_SLUZB){ const x=a.polja&&a.polja[id], y=b.polja&&b.polja[id]; if(x!=null&&y!=null&&x!==y) out.push({id,naz,prije:x,sada:y}); } return out; }
+const snapSpoji=(a,b)=>({t:b.t,polja:{...(a&&a.polja||{}),...(b&&b.polja||{})}});
+function promSoon(){ clearTimeout(PROM.t); PROM.t=setTimeout(()=>{try{promUpdate()}catch(e){console.error(e)}},2500); }
+function promUpdate(){
+  const c=window.__cur; if(!c) return; const a=favs(), f=a.find(x=>x.key===c.key); const box=document.getElementById("promBox");
+  if(!f){ if(box) box.remove(); return; }
+  const sad=snapSad(); if(!Object.keys(sad.polja).length) return;
+  f.zadnje=snapSpoji(f.zadnje,sad); if(!f.snap) f.snap=sad; else f.snap={...f.snap,polja:{...sad.polja,...f.snap.polja}}; // polja kojih u snimci nije bilo postaju početno stanje
+  setFavs(a);
+  const R=snapRazlike(f.snap,sad); PROM.key=c.key;
+  if(!R.length){ if(box) box.remove(); return; }
+  const h=`<p class="eyebrow" style="margin:0 0 4px">Promjene od zadnjeg pregleda (${esc(String(f.snap.t||f.saved||"").split("-").reverse().join(". "))}.)</p><ul class="checks">${R.map(r=>`<li class="chk chk-warn"><b>${esc(r.naz)}</b><span>bilo: ${esc(r.prije)}<br>sada: ${esc(r.sada)}</span></li>`).join("")}</ul><div class="kd"><button type="button" class="ib" id="promOk">Označi kao pregledano</button></div><p class="meta">Uspoređuju se službeni podaci sa stanjem kad si česticu spremio ili zadnji put označio kao pregledanu. Provjeri promjenu u izvoru prije odluke.</p>`;
+  let b=box; if(!b){ b=document.createElement("div"); b.id="promBox"; b.className="prom"; const s=document.getElementById("sazetak"); if(s) s.before(b); else { const g=sheet.querySelector('.grp[data-g=sum]'); if(g) g.appendChild(b); else return; } }
+  if(b.innerHTML!==h) b.innerHTML=h;
+}
+sheet.addEventListener("click",e=>{ if(!e.target||e.target.id!=="promOk") return; const c=window.__cur, a=favs(), f=c&&a.find(x=>x.key===c.key); if(!f) return; f.snap=snapSpoji(f.snap,snapSad()); setFavs(a); const b=document.getElementById("promBox"); if(b) b.remove(); });
 // ================= JEDINSTVENI PROJEKTNI MODEL =================
 // Projekt čestice = sve što korisnik planira za jednu česticu. Dijelovi koji već postoje ostaju u svojim spremištima
 // (buy, prep, infc, scen, ck2), a "proj" dodaje ono što se prije nije spremalo: kuću iz kalkulatora, simulator i zonu
@@ -6370,7 +6610,7 @@ const IZB=[[1,"Prostorni planovi i namjena","Što se nalazi na zemljištu i kakv
   [5,"Troškovi i investicija","Koliko će koštati zemljište, kuća i cijela investicija?"],[6,"Projekt i dokumentacija","Kako realizirati gradnju i što pripremiti?"]];
 const IZB_TR=new Set([5]); // „Troškovi i investicija”: na mobitelu samo u kartici „Troškovi”, bez broja (oznaka €); analiza ima 01–05
 const IZB_OZN={1:"01",2:"02",3:"03",4:"04",5:"€",6:"05"};
-const IZB_K={ptn:5,zk:3,risks:3,rparams:2,rex:2,tipcmp:2,gp:2,calc:2,tloc:2,oku:2,skica:2,sun:2,pv:2,vrij:5,buy:5,build:5,prep:5,kd:5,costs:5,krkKd:5,total:5,scen:5,proj:6,ph3:6,ph4:6,cklist:6};
+const IZB_K={pogled:2,vjet:3,osun:2,ptn:5,zk:3,risks:3,rparams:2,rex:2,tipcmp:2,gp:2,calc:2,tloc:2,oku:2,skica:2,sun:2,pv:2,vrij:5,buy:5,build:5,prep:5,kd:5,costs:5,krkKd:5,total:5,scen:5,proj:6,ph3:6,ph4:6,cklist:6};
 const IZB_ID={okolisBox:3,rkBox:1,pzBox:6,"sec-rizici":3,"sec-provjere":3,"sec-upu":1,"sec-uvjeti":2,"sec-sunce":2,"sec-novac":5,"sec-pouzdanost":6,"sec-troskovi":5};
 const IZB_H=[[/^(Rizici|Provjere|Potresna)/,3],[/^(Komunalna|Pristup)/,4],[/^(Karte prostornog|Prostorni plan)/,1],[/^(Uvjeti gradnje|Postojeće zgrade|Sunce)/,2],[/^Novac/,5],[/^(Pouzdanost|Dokumentacija|Kontrolna lista)/,6],[/^Gradnja i naknade/,5]];
 // prečaci na postojeće module (bez kopiranja): sunčana elektrana je u 02, a njezin financijski rezultat se otvara i iz 05
@@ -6436,7 +6676,7 @@ sheet.addEventListener("scroll",()=>{const b=document.getElementById("izbTop"); 
 // odmah nakon slaganja prikaza: sklapanje pojašnjenja, kategorije izbornika i sažetak (prije vraćanja položaja čitanja)
 // promjena sadržaja iznad mjesta čitanja ne smije pomaknuti tekst koji se čita (Safari nema „scroll anchoring”)
 function keepPos(fn){ const A=sheet.scrollTop>0?scrollAnchor():null; fn(); if(A) scrollRestore(A); }
-function sheetPost(){ try{srchNote()}catch(e){} try{ptnUpdate()}catch(e){console.error(e)} try{viseInfo()}catch(e){} try{izbWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){} }
+function sheetPost(){ try{srchNote()}catch(e){} try{ptnUpdate()}catch(e){console.error(e)} try{viseInfo()}catch(e){} try{izbWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){} try{promSoon()}catch(e){} }
 // položaj čitanja: zadnji odjeljak čiji je vrh iznad vrha panela i koliko je pomaknut; poslije ponovnog prikaza isti odjeljak
 // vraća se na isto mjesto, i kad se visina sadržaja iznad promijeni (npr. stigne uložak ili se sklope pojašnjenja)
 function scrollAnchor(){
@@ -6560,7 +6800,7 @@ sheet.addEventListener("input",e=>{ const t=e.target; if(!t||t.id!=="ptnTraz") r
 // Osnovni način samo SKRIVA prikaz (CSS na body.osnovno): izračuni, unosi i spremanje rade jednako, pa ukupni trošak
 // i dalje uključuje i stavke koje se uređuju u naprednom načinu (to piše uz ukupnu investiciju). Upozorenja i sažetak
 // se ne skrivaju. Kad se iz sažetka ili prečaca otvori napredni odjeljak, aplikacija sama prelazi u napredni način.
-const MOD_NAPREDNO_K=["ptn","isk","oku","skica","sun","pv","tipcmp","rparams","rex","krkTxt","risks","povijest","prep","kd","krkKd","costs","scen","vrij","proj","bfaze",
+const MOD_NAPREDNO_K=["pogled","vjet","osun","ptn","isk","oku","skica","sun","pv","tipcmp","rparams","rex","krkTxt","risks","povijest","prep","kd","krkKd","costs","scen","vrij","proj","bfaze",
   "pog:karte-prostornog-plana","pog:sunce-i-energija","pog:pouzdanost-podataka"];
 const MOD_NAPREDNO_ID=["rkBox","sec-upu","pzBox","sec-pouzdanost","sec-sunce"];
 // dijelovi simulatora kuće i procjene gradnje koji su napredni (oznaka i polje u istom retku tablice)
@@ -6641,6 +6881,7 @@ function sazetakUpdate(){
      rows.push({src:["vrij-proc","vrij-nas","ptn"],st:V?"ok":"?",q:"Koliko vrijedi zemljište?",a:V?`${V.t} prema tvojim usporedbama (orijentacijski)`:(N?`Prosjek naselja ${N.vrijednost}; `:"")+(tl?tl+"; ":"")+"za procjenu upiši barem tri kupoprodaje sličnih čestica",go:'details[data-k="vrij"]'});
    else if(T&&sheet.querySelector('details[data-k="ptn"]'))
      rows.push({src:["ptn"],st:T.S.zad?"info":"?",q:"Koliko vrijedi zemljište?",a:tl?tl+" (cijeli grad ili općina, ne ova čestica)":"za ovaj grad ili općinu medijan nije objavljen",go:'details[data-k="ptn"]'});}
+  window.__sazRows=rows;
   const C=[...PZREG.items.values()].filter(x=>x.raz==="C").length, ic={ok:"✓",warn:"!",no:"✕","?":"?",info:"i"};
   const srcOf=r=>{ if(r.srcTxt) return r.srcTxt; const its=(r.src||[]).map(id=>PZREG.items.get(id)).filter(Boolean); if(!its.length) return "";
     const seen=new Set(); return its.map(it=>{const t=(it.izvor||it.razlog||"").replace(/\s+/g," ").slice(0,90); const k=t+it.raz; if(seen.has(k)) return null; seen.add(k); return `${t}${it.datum?", "+it.datum.split("-").reverse().join(". ")+".":""} (${it.raz})`;}).filter(Boolean).join(" · "); };
@@ -6746,7 +6987,7 @@ function setLand(k,v){try{const o=JSON.parse(localStorage.getItem("land")||"{}")
 function saveCurrent(){
   const c=window.__cur; if(!c) return;
   let a=favs(); const i=a.findIndex(f=>f.key===c.key);
-  if(i>=0){a.splice(i,1)} else {a.push({...c,land:parseFloat(landPrice(c.key))||null,budget:window.__budget||null,saved:new Date().toISOString().slice(0,10)})}
+  if(i>=0){a.splice(i,1)} else {const sn=snapSad(); a.push({...c,land:parseFloat(landPrice(c.key))||null,budget:window.__budget||null,saved:new Date().toISOString().slice(0,10),snap:sn,zadnje:sn})}
   setFavs(a);
   const b=document.getElementById("saveBtn"); if(b) b.textContent=i>=0?"☆ Spremi":"★ Spremljeno";
 }
@@ -6766,6 +7007,7 @@ function showFavs(){
     ["€/m² zemljišta",f=>f.land&&f.area?fmt(f.land/f.area)+" €":"–"],
     ["Ukupni projekt",f=>f.budget?`${fmt(f.budget.lo)} – ${fmt(f.budget.hi)} €`:"–"],
     ["Scenariji",f=>pwaScenSummary(f.key)],
+    ...SNAP_USP.map(([id,naz])=>[naz,f=>esc(f.zadnje&&f.zadnje.polja&&f.zadnje.polja[id]||"–")]),
     ["Spremljeno",f=>esc(f.saved||"")]
   ];
   let h=`<div class="actions"><button type="button" class="ib" id="favPrint">Ispiši / spremi PDF</button></div><p class="eyebrow">Usporedba spremljenih čestica (${a.length})</p>`;
@@ -6776,7 +7018,7 @@ function showFavs(){
   h+=`<div class="cmp-wrap"><table class="cmp"><tbody>`;
   for(const [label,fn] of rowsDef) h+=`<tr><th>${label}</th>${a.map(f=>`<td>${fn(f)}</td>`).join("")}</tr>`;
   h+=`<tr class="noprint"><th></th>${a.map((f,i)=>`<td><button type="button" class="ib" data-open="${i}">Otvori</button> <button type="button" class="ib" data-del="${i}">Ukloni</button></td>`).join("")}</tr>`;
-  h+=`</tbody></table></div><p class="meta">Spremljeno samo u ovom pregledniku. Ukupni projekt je iz kalkulatora u trenutku spremanja ili zadnjeg upisa cijene zemljišta.</p>`;
+  h+=`</tbody></table></div><p class="meta">Spremljeno samo u ovom pregledniku. Ukupni projekt je iz kalkulatora u trenutku spremanja ili zadnjeg upisa cijene zemljišta. Napredni podaci (cijena u općini, poplave, internet, iskop, sunce, pogled, vjetar) su zadnje poznate vrijednosti iz vremena kad si česticu otvorio; prazno znači da taj odjeljak još nije izračunat.</p>`;
   auxOpen(h);
 }
 document.getElementById("favBtn").onclick=()=>setTab("spremljeno");
