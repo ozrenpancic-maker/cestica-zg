@@ -137,7 +137,7 @@ async function zgOssTests(){
       if(u.startsWith("https://oss-test.example/")) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({ok:true,id:"5",broj,ko:"ŠESTINE",katastar:1010,graficka:998.4,zk:[{broj,povrsina:1012,ulozak:"777",odjel:"Zemljišnoknjižni odjel Zagreb"}],dijelovi:[],dohvaceno:"2026-10-19T09:00:00Z"})});
       return Promise.reject(new Error("bez mreže u testu"));};
     const d=data(w,parcelRect(40,25),"2.2."); w.eval("render")(d); await tick(30);
-    const t=txt(w,"sheet"), q=calls.filter(u=>u.startsWith("https://oss-test.example/"));
+    const t=txt(w,"sheet"), q=calls.filter(u=>u.startsWith("https://oss-test.example/")&&!/[?&](poplave|internet)=/.test(u));
     if(expectOk){
       if(wms==="multi") ok(wmsN>=2,"Zagreb OSS: na prvoj točki je susjedna čestica, druga točka unutar čestice nađe pravu ("+wmsN+" upita sloju)");
       ok(q.length===1&&(wms?/\?id=5$/.test(q[0]):/\?lat=45\.84\d*&lon=15\.97\d*$/.test(q[0])),"Zagreb OSS: "+(wms?"s ID-om iz katastarskog sloja posrednik se pita po ID-u":"bez sloja karte posrednik se pita po točki unutar čestice")+" ("+(q[0]||"nema upita")+")");
@@ -151,7 +151,7 @@ async function zgOssTests(){
         setv(w,"areaSel","graf","change"); await tick(10); ok(w.__gbp===g0&&w.__tl===t0,"Zagreb: povratak na grafičku površinu");
         {await tick(5); const R=w.eval("PZREG").items, ct=R.get("calc-tlocrt"); ok(ct&&ct.raz!=="A"&&R.get("namjena").raz==="A"&&R.get("pravilo-karta")&&R.get("pravilo-karta").raz==="B"&&/Pouzdanost podataka/.test(txt(w,"sheet"))&&/Pristup s (javne )?prometne površine/.test(txt(w,"pzBox"))&&/Teorijski izračun/.test(txt(w,"sheet")),"Zagreb: oznake A/B/C (namjena A, granica pravila B, izračun najviše B) i popis otvorenih uvjeta");}
       }
-      w.eval("render")(d); await tick(10); ok(calls.filter(u=>u.startsWith("https://oss-test.example/")).length===1,"Zagreb OSS: ponovni prikaz ne šalje novi upit");
+      w.eval("render")(d); await tick(10); ok(calls.filter(u=>u.startsWith("https://oss-test.example/")&&!/[?&](poplave|internet)=/.test(u)).length===1,"Zagreb OSS: ponovni prikaz ne šalje novi upit");
       $(w,"krkZkMan").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!!$(w,"krkZkIn"),"Zagreb: može se upisati druga upisana površina");
       ok(!errs.length,"Zagreb OSS: bez JS grešaka "+errs.join("; "));
     }else{
@@ -430,6 +430,13 @@ async function infraTests(){
   const TL=w.eval("TL"), tDraw=w.eval("tDraw");
   tDraw(); let R=w.__sim;
   ok(R&&R.inEnv,"kuća 12 × 9 m u sredini je unutar udaljenosti od međa");
+  // kuća kroz kameru (WebXR): geometrija u lokalnim metrima, poruka kad uređaj ne podržava AR
+  {const E=x=>w.eval(x), G=E("arGeom")(), K=G&&G.kutevi;
+   const kuca=G.L.filter(l=>l[2][2]===.85), hMax=Math.max(...G.L.flatMap(l=>[l[0][2],l[1][2]]));
+   ok(G&&G.kuca&&K.length>=4&&kuca.length===17&&G.T.length>0&&G.L.some(l=>l[2][0]===1&&l[0][2]<0.1)&&hMax>3&&hMax<3+Math.tan(TL.nagib*Math.PI/180)*9/2+0.01,"AR: granica čestice, prostor za gradnju i kuća 12 × 9 m (zidovi, sljeme, krovne crte) u lokalnim metrima");
+   const ext=Math.max(...K.map(p=>Math.hypot(p[0],p[1]))); ok(ext>5&&ext<60,"AR: kutovi čestice oko težišta, u metrima ("+Math.round(ext)+" m)");
+   w.document.getElementById("arBtn").click(); const m=w.document.getElementById("arMsg");
+   ok(m&&!m.hidden&&/ne podržava prikaz kroz kameru|nije podržan/.test(m.textContent)&&!w.document.getElementById("arUi"),"AR: bez WebXR-a jasna poruka (Android, Chrome, ARCore), bez pokretanja");}
   const row=l=>R.C.find(x=>x.label.startsWith(l))||{};
   const tlx=w.eval("fmt")(Math.round(d.area*0.3)); ok(row("Tlocrt").st==="ok"&&row("Tlocrt").val.startsWith("108 od najviše "+tlx),"tlocrt 108 m² od dopuštenih "+tlx+" m² (30 % površine)");
   ok(row("GBP").st==="ok"&&/108 od najviše 400/.test(row("GBP").val),"GBP prizemnice 108 m², granica 400 m²");
@@ -1036,7 +1043,7 @@ async function krkTests(){
    rkMode="fail"; E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k); E("RKAT").clear(); E("renderKrk")(E("KRK_CUR")); for(let i=0;i<60&&!/Podaci nisu/.test(txt(w,"rkBox"));i++) await tick(100); ok(/Podaci nisu dostupni/.test(txt(w,"rkBox"))&&/Detaljna zona nije potvrđena/.test(txt(w,"rkBox")),"UPU karta: kad katalog ne odgovara, poruka bez izmišljene zone");
    rkMode="ok"; E("RKAT").clear(); E("renderKrk")(E("KRK_CUR")); await tick(30);}
   // upisana površina automatski iz OSS-a preko posrednika
-  ok(!calls.some(u=>u.includes("oss-test.example")),"Krk: bez adrese posrednika OSS se ne poziva");
+  ok(!calls.some(u=>u.includes("oss-test.example")&&!/[?&](poplave|internet)=/.test(u)),"Krk: bez adrese posrednika OSS se ne poziva");
   E("SRC_KRK").oss="https://oss-test.example/"; E("OSSZK").clear(); E("renderKrk")(E("KRK_CUR"));
   ok(/dohvaćam iz OSS-a/.test(txt(w,"sheet")),"Krk OSS: dok traje dohvat prikazuje se da se površina dohvaća");
   await tick(20); let to=txt(w,"sheet");
@@ -1059,11 +1066,11 @@ async function krkTests(){
   E("OSS_RETRY").splice(0,E("OSS_RETRY").length,5);
   // povremeno odbijanje: prvi upit 403, drugi uspije
   mode="oss403once"; E("OSSZK").clear(); const c403=calls.length; E("renderKrk")(E("KRK_CUR")); await tick(60); to=txt(w,"sheet");
-  ok(/OSS trenutno odbija upite/.test(to)&&!/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&calls.slice(c403).filter(u=>u.includes("oss-test.example")).length===1&&!!$(w,"krkOssRetry"),"Krk OSS: kad OSS odbija (403), nema automatskog ponavljanja (ne produžuje odbijanje); poruka i gumb „Pokušaj ponovno”");
+  ok(/OSS trenutno odbija upite/.test(to)&&!/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&calls.slice(c403).filter(u=>u.includes("oss-test.example")&&!/[?&](poplave|internet)=/.test(u)).length===1&&!!$(w,"krkOssRetry"),"Krk OSS: kad OSS odbija (403), nema automatskog ponavljanja (ne produžuje odbijanje); poruka i gumb „Pokušaj ponovno”");
   $(w,"krkOssRetry").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(30); to=txt(w,"sheet");
   ok(/Upisana u zemljišnoj knjizi ?642 m²/.test(to),"Krk OSS: „Pokušaj ponovno” nakon odbijanja dohvaća površinu");
   mode="ossFail"; E("OSSZK").clear(); E("ZKU").clear(); let n0=calls.length; E("renderKrk")(E("KRK_CUR")); await tick(80); to=txt(w,"sheet");
-  ok(/OSS: podaci nisu dostupni/.test(to)&&!!$(w,"krkZkIn")&&!/642 m²/.test(to)&&calls.slice(n0).filter(u=>u.includes("oss-test.example")).length===2,"Krk OSS: kad OSS ne odgovara ni nakon ponovnog pokušaja, poruka i ručni unos (bez izmišljene vrijednosti)");
+  ok(/OSS: podaci nisu dostupni/.test(to)&&!!$(w,"krkZkIn")&&!/642 m²/.test(to)&&calls.slice(n0).filter(u=>u.includes("oss-test.example")&&!/[?&](poplave|internet)=/.test(u)).length===2,"Krk OSS: kad OSS ne odgovara ni nakon ponovnog pokušaja, poruka i ručni unos (bez izmišljene vrijednosti)");
   ok(!!$(w,"krkOssRetry")&&[...w.document.querySelectorAll("#krkArea a")].some(a=>a.href==="https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info?parcelId=1"),"Krk OSS: gumbi „Pokušaj ponovno” i „Otvori česticu u OSS-u”");
   mode="ok"; $(w,"krkOssRetry").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20);
   ok(/Upisana u zemljišnoj knjizi ?642 m²/.test(txt(w,"sheet")),"Krk OSS: „Pokušaj ponovno” dohvaća površinu");
@@ -1851,6 +1858,55 @@ async function gpTests(){
   ok(errs.length===0,"bez JS grešaka (područje za gradnju): "+errs.join(" | "));
 }
 
+// kuća kroz kameru: preračun lokalnih metara u WebXR prema kompasu i GPS-u te poravnanje prema dvama kutovima čestice
+async function arTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), T=E("arToXr"), A=E("arAlign2"), H=E("arHeading"), bl=(a,b,e=1e-6)=>Math.abs(a-b)<e;
+  let q=T([0,10],0,[0,0]); ok(bl(q[0],0)&&bl(q[1],-10),"AR: okrenut prema sjeveru, točka 10 m sjevernije je 10 m ispred (z = −10)");
+  q=T([10,0],90,[0,0]); ok(bl(q[0],0)&&bl(q[1],-10),"AR: okrenut prema istoku, točka 10 m istočnije je ispred");
+  q=T([0,10],90,[0,0]); ok(bl(q[0],-10)&&bl(q[1],0),"AR: okrenut prema istoku, točka na sjeveru je lijevo");
+  const phi=37, U=[3.5,-6.2], P1=[-8,4], P2=[12,-3], Q1=T(P1,phi,U), Q2=T(P2,phi,U), R=A(P1,P2,Q1,Q2);
+  ok(bl(R.phi,phi,1e-9)&&bl(R.U[0],U[0],1e-9)&&bl(R.U[1],U[1],1e-9)&&bl(R.omjer,1,1e-9),"AR: dva označena kuta daju točan zakret i položaj (φ 37°, U)");
+  const R2=A(P1,P2,Q1,[Q2[0]+(Q2[0]-Q1[0])*0.3,Q2[1]+(Q2[1]-Q1[1])*0.3]); ok(Math.abs(R2.omjer-1)>0.1,"AR: kriva oznaka kuta vidi se po omjeru udaljenosti");
+  const P3=[5,9], q3=T(P3,R.phi,R.U), r3=T(P3,phi,U); ok(bl(q3[0],r3[0],1e-9)&&bl(q3[1],r3[1],1e-9),"AR: nakon poravnanja i ostali kutovi padaju na svoje mjesto");
+  ok(bl(H(0,90,0),0,1e-6)&&bl(H(90,90,0),270,1e-6)&&H(0,0,0)===null,"AR: smjer kamere iz kompasa (uspravan mobitel), bez smjera kad mobitel leži ravno");
+  ok(errs.length===0,"bez JS grešaka (AR): "+errs.join(" | "));
+}
+
+// rizici: poplave (Hrvatske vode preko posrednika), internet (HAKOM izravno, posrednik kao zamjena)
+async function rizTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  const ring=[[15.97,45.84],[15.9704,45.84],[15.9704,45.8403],[15.97,45.8403],[15.97,45.84]], parcel={type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{}};
+  const calls=[]; let hakomOk=true;
+  const popl=(hit)=>({ok:true,izvor:"Hrvatske vode, karte opasnosti od poplava (servisi.voda.hr/poplave_opasnosti/wms)",format:"application/json",slojevi:[
+    {name:"a",title:"Opasnost od poplava – velika vjerojatnost",pogodak:false},{name:"b",title:"Opasnost od poplava – srednja vjerojatnost",pogodak:false},{name:"c",title:"Opasnost od poplava – mala vjerojatnost",pogodak:hit,svojstva:hit?{dubina:"0,5–1,5 m",fid:"7"}:null}]});
+  let hit=true;
+  w.fetch=(u)=>{u=String(u); calls.push(u); const okj=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b)});
+    if(u.startsWith("https://p2.example/?poplave=")) return okj(popl(hit));
+    if(u.startsWith("https://p2.example/?internet=")) return okj({ok:true,izvor:"HAKOM",nepokretna:[{sloj:95,operatora:"jedan"}],pokretna:[{sloj:98,operatora:"više"}]});
+    if(u.startsWith("https://ekarta.hakom.hr/")){ if(!hakomOk) return Promise.reject(new TypeError("Failed to fetch")); const id=+u.match(/\/(\d+)\/query/)[1]; return okj({features:id===93||id===99?[{attributes:{BrojOperatora:"više"}}]:[]}); }
+    return Promise.reject(new TypeError("Failed to fetch"));};
+  E("SRC_KRK").oss2="https://p2.example/"; E("SRC_KRK").oss="";
+  const P=await E("loadPoplave")(parcel); ok(P.slojevi.length===3&&calls.some(u=>/^https:\/\/p2\.example\/\?poplave=45\.84\d*,15\.97\d*$/.test(u)),"Rizici: poplave se pitaju preko posrednika u točki unutar čestice");
+  const I=await E("loadInternet")(parcel); ok(I.nepokretna.length===1&&I.nepokretna[0].sloj===93&&I.pokretna[0].sloj===99&&!calls.some(u=>/\?internet=/.test(u)),"Rizici: HAKOM se pita izravno (9 slojeva), bez posrednika");
+  hakomOk=false; E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k); const I2=await E("loadInternet")(parcel); ok(I2.nepokretna[0].sloj===95&&calls.some(u=>/\?internet=/.test(u)),"Rizici: kad preglednik ne može izravno do HAKOM-a, ide preko posrednika");
+  // prikaz
+  w.__cur={key:"test:1"}; const O=E("OKO"); O.set("test:1",{natura:{st:"ok",v:[]},zast:{st:"ok",v:[]},popl:{st:"ok",v:P},net:{st:"ok",v:I}});
+  let h=E("okolisInner")(), R=E("PZREG").items;
+  ok(/U području opasnosti od poplava/.test(h)&&/mala vjerojatnost \(oko 1000 godina/.test(h)&&/dubina: 0,5–1,5 m/.test(h)&&!/fid/.test(h)&&R.get("oko-poplave").raz==="B"&&/vodopravni uvjeti/.test(h),"Rizici: poplava u scenariju male vjerojatnosti – povratno razdoblje, dubina, razina B (jedna točka)");
+  ok(/✓ Internet/.test(h)&&/do 100–300 Mbit\/s \(više operatora\)/.test(h)&&/pokretna mreža 30–100 Mbit\/s/.test(h)&&R.get("oko-internet").raz==="A","Rizici: internet – najveći razred na točki, broj operatora, pokretna mreža (HAKOM, razina A)");
+  O.set("test:1",{natura:{st:"ok",v:[]},zast:{st:"ok",v:[]},popl:{st:"ok",v:popl(false)},net:{st:"ok",v:{nepokretna:[{sloj:96,operatora:"jedan"}],pokretna:[]}}}); h=E("okolisInner")();
+  ok(/✓ Izvan područja opasnosti od poplava/.test(h)&&/nisu prikazani svi|ne prikazuju sve/.test(h)&&/! Internet/.test(h)&&/2–10 Mbit\/s/.test(h),"Rizici: izvan poplave (uz napomenu o scenarijima); spori internet je upozorenje");
+  O.set("test:1",{natura:{st:"ok",v:[]},zast:{st:"ok",v:[]},popl:{st:"err",e:"posrednik ne podržava upit za poplave"},net:{st:"err",e:"HAKOM nije dostupan"}}); h=E("okolisInner")();
+  ok(/\? Opasnost od poplava/.test(h)&&/Podaci nisu dostupni \(posrednik ne podržava/.test(h)&&/preglednik\.voda\.hr/.test(h)&&E("PZREG").items.get("oko-poplave").raz==="C"&&/\? Internet/.test(h)&&!/Potresna opasnost/.test(h),"Rizici: bez podataka – razlog, poveznica na kartu Hrvatskih voda, razina C; potres ostaje skriven");
+  E("SRC_KRK").oss2=""; let e1=""; try{await E("loadPoplave")(parcel)}catch(e){e1=e.message} ok(/posrednik nije postavljen/.test(e1),"Rizici: bez posrednika poplave se ne izmišljaju");
+  // povijest lokacije: ortofoto DGU po godinama (samo servisi za anonimne korisnike), okvir s okolicom, granica čestice
+  {const D=E("DOF_POV"), B=E("povOkvir")(parcel), u=new URL(E("povUrl")(D[0],B,640)), q=u.searchParams, mx=111320*Math.cos(45.84015*Math.PI/180);
+   ok(D.map(x=>x.g).join()==="2011.,2021./22.,2023./24."&&!D.some(x=>/2017|2019|sla|auth/.test(x.u))&&q.get("CRS")==="CRS:84"&&q.get("LAYERS")==="OrthoImagery"&&q.get("REQUEST")==="GetMap"&&u.hostname==="geoportal.dgu.hr","Povijest: snimke 2011., 2021./22., 2023./24. (bez onih koje traže registraciju), GetMap u CRS:84");
+   const sir=(B.x1-B.x0)*mx, vis=(B.y1-B.y0)*110540; ok(Math.abs(sir-vis)<0.5&&sir>=70,"Povijest: okvir je kvadrat u metrima, s okolicom oko čestice ("+Math.round(sir)+" m)");
+   const pts=E("povPoly")(parcel,B,640)[0].split(" ").map(x=>x.split(",").map(Number)); ok(pts.every(([x,y])=>x>0&&x<640&&y>0&&y<640)&&pts[0][1]>pts[2][1],"Povijest: granica čestice je unutar slike, sjever gore");}
+  ok(errs.length===0,"bez JS grešaka (rizici): "+errs.join(" | "));
+}
+
 // Street View: poveznica Google Maps URLs (bez ključa); točka na najbližoj cesti, kamera prema čestici
 async function svTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -1889,7 +1945,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

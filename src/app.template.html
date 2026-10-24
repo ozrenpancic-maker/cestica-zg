@@ -371,6 +371,16 @@ details.saz-d[open]>summary>em{transform:rotate(180deg)}
 .st-ok{background:var(--ok-bg);color:var(--ok)} .st-warn{background:var(--warn-bg);color:var(--warn)} .st-muted{background:var(--line);color:var(--muted)}
 .exhit{background:var(--warn-bg)}
 ol.zi{font-size:13.5px;padding-left:18px}
+#arUi{position:fixed;inset:0;z-index:5000;pointer-events:none;font:14px/1.35 system-ui;color:#fff}
+#arUi .ar-top{position:absolute;left:8px;right:8px;top:calc(env(safe-area-inset-top,0px) + 8px);background:rgba(0,0,0,.6);padding:8px 10px;border-radius:10px;pointer-events:auto}
+#arUi .ar-bot{position:absolute;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);display:flex;gap:8px;align-items:flex-end;pointer-events:auto}
+#arUi .ar-bot svg{background:rgba(0,0,0,.55);border-radius:10px;flex:none}
+#arUi .ar-ctl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:rgba(0,0,0,.6);padding:8px;border-radius:10px}
+#arUi .ar-ctl .ib{min-height:44px;min-width:44px}#arUi .ar-row{display:flex;gap:4px;flex-wrap:wrap}#arUi select{min-height:44px}
+.pov{position:relative;max-width:640px;margin:6px 0;line-height:0;background:var(--soft);border-radius:8px;overflow:hidden;touch-action:pan-y}
+.pov img{width:100%;height:auto;display:block}.pov img.pov-b{position:absolute;inset:0;clip-path:inset(0 0 0 var(--x,50%))}
+.pov svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.pov .pov-l{position:absolute;top:0;bottom:0;left:var(--x,50%);width:2px;background:#fff;box-shadow:0 0 3px #000}
+.pov .pov-t{position:absolute;top:6px;font:600 12px/1.2 system-ui;color:#fff;background:rgba(0,0,0,.55);padding:3px 6px;border-radius:4px}
 .pvbars{display:flex;gap:3px;align-items:flex-end;height:96px;margin:8px 0 2px}.pvbars b{font-size:9px;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;margin-bottom:2px}.pvbars div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}.pvbars span{display:block;width:100%;background:var(--warn);border-radius:3px 3px 0 0}.pvbars small{font-size:10px;color:var(--muted)}
 .favc{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0}
 @media (max-height:500px) and (max-width:899px){#tabs button{min-height:44px;flex-direction:row;gap:6px} #panel.st-half{height:60%}}
@@ -1462,7 +1472,7 @@ async function krkOssFetch(P,area){
   try{const c=turf.pointOnFeature(KRK_CUR.parcel).geometry.coordinates; katwFetchInto(k,c[1],c[0],upd);}catch(e){}
   return ossFetchInto(k,P,null,upd);
 }
-// ================= OKOLIŠ: EKOLOŠKA MREŽA NATURA 2000 (i poplave, kad se potvrdi servis) =================
+// ================= OKOLIŠ I RIZICI: NATURA 2000, ZAŠTIĆENA PODRUČJA, POPLAVE, INTERNET (potres je namjerno skriven, FEATURES.seis) =================
 // Natura 2000: Europska agencija za okoliš (EEA), granice područja koje dostavljaju države članice (za Hrvatsku Ministarstvo
 // zaštite okoliša i zelene tranzicije / Bioportal). ArcGIS sloj 2 „Habitats and Birds Directive Sites”: SITECODE, SITENAME,
 // SITETYPE (A = POP, područje očuvanja značajno za ptice; B = POVS, za vrste i stanišne tipove; C = oboje), RELEASE_DATE.
@@ -1490,11 +1500,40 @@ async function loadZasticena(parcel){
     for(const f of (j&&j.features)||[]){const p=f.properties||{}, k=String(p.zasticeno_podrucje_id||p.naziv||f.id); if(!out.has(k)) out.set(k,{naziv:p.naziv||"",kat:p.kategorija_zastite||"",pod:p.podkategorija_zastite||"",akt:p.naziv_akt||""});} }
   return [...out.values()];
 }
+// --- rizici: opasnost od poplava (Hrvatske vode, preko posrednika jer servis ne dopušta čitanje iz preglednika) i dostupnost
+// interneta (HAKOM eKarta, izravno; posrednik kao zamjena). Upit u jednoj točki unutar čestice (turf.pointOnFeature).
+const HAKOM_SPP="https://ekarta.hakom.hr/server/rest/services/DOSTUPNOST_SPP/";
+const HAKOM_RAZ={91:"1–10 Gbit/s",92:"300 Mbit/s – 1 Gbit/s",93:"100–300 Mbit/s",94:"30–100 Mbit/s",95:"10–30 Mbit/s",96:"2–10 Mbit/s",97:"do 2 Mbit/s",99:"30–100 Mbit/s",98:"2–30 Mbit/s"};
+const POPL_PREGLED="https://preglednik.voda.hr/?lang=hr&topic=Opasnosti%20od%20poplava&bgLayer=hr.raster.tk-crno-bijeli&layers=hr.karta-opasnosti-od-poplava-mala-vjerojatnost_2019&catalogNodes=1275";
+function rizTocka(parcel){try{return turf.pointOnFeature(parcel).geometry.coordinates}catch(e){return null}}
+async function posrednikTocka(par,lat,lon){
+  const bases=[SRC_KRK.oss2,SRC_KRK.oss].filter(Boolean); if(!bases.length) throw new Error("posrednik nije postavljen");
+  let last="posrednik ne odgovara";
+  for(const b of bases){ const ac=new AbortController(), t=setTimeout(()=>ac.abort(),25000);
+    try{ const r=await fetch(b+"?"+par+"="+lat.toFixed(5)+","+lon.toFixed(5),{signal:ac.signal,cache:"no-store"}), j=await r.json().catch(()=>null);
+      if(r.ok&&j&&j.ok) return j; last=(j&&j.greska)||("HTTP "+r.status); }
+    catch(e){ last=e.name==="AbortError"?"posrednik ne odgovara":"posrednik nije dostupan"; } finally{ clearTimeout(t); } }
+  throw new Error(last);
+}
+async function loadPoplave(parcel){ const c=rizTocka(parcel); if(!c) throw new Error("nema točke unutar čestice"); const j=await posrednikTocka("poplave",c[1],c[0]);
+  if(!Array.isArray(j.slojevi)||!j.slojevi.length) throw new Error("posrednik ne podržava upit za poplave"); return j; }
+async function loadInternet(parcel){
+  const c=rizTocka(parcel); if(!c) throw new Error("nema točke unutar čestice");
+  try{ const o={ok:true,izvor:"HAKOM, eKarta (Dostupnost SPP)",nepokretna:[],pokretna:[],dohvaceno:new Date().toISOString()};
+    const Q=[...[91,92,93,94,95,96,97].map(id=>["Dostupnost_SPP/FeatureServer/",id,"nepokretna"]),...[99,98].map(id=>["P/MapServer/",id,"pokretna"])];
+    const R=await Promise.all(Q.map(([put,id])=>getJSON(HAKOM_SPP+put+id+"/query?"+new URLSearchParams({geometry:c[0]+","+c[1],geometryType:"esriGeometryPoint",inSR:"4326",spatialRel:"esriSpatialRelIntersects",outFields:"*",returnGeometry:"false",f:"json"}).toString(),{},12000)));
+    R.forEach((j,i)=>{ if(j&&j.error) throw new Error(j.error.message||"HAKOM greška"); if(j&&(j.features||[]).length) o[Q[i][2]].push({sloj:Q[i][1],operatora:(j.features[0].attributes||{}).BrojOperatora||null}); });
+    return o; }
+  catch(e){ const j=await posrednikTocka("internet",c[1],c[0]); if(!Array.isArray(j.nepokretna)||!Array.isArray(j.pokretna)) throw new Error("HAKOM nije dostupan ("+e.message+")"); return j; } // preglednik možda ne smije čitati HAKOM izravno
+}
+const POPL_RAZD=t=>/velik/i.test(t)?"povratno razdoblje oko 25 godina":/srednj/i.test(t)?"oko 100 godina":/mal[aei]?\b/i.test(t)?"oko 1000 godina; uključuje i moguće rušenje nasipa i visokih brana":"";
 function okolisStart(parcel,key){
-  if(!parcel||!key||OKO.has(key)) return; const st={natura:{st:"load"},zast:{st:"load"}}; OKO.set(key,st);
+  if(!parcel||!key||OKO.has(key)) return; const st={natura:{st:"load"},zast:{st:"load"},popl:{st:"load"},net:{st:"load"}}; OKO.set(key,st);
   const fail=()=>setTimeout(()=>{if(OKO.get(key)===st) OKO.delete(key)},30000);
   loadNatura(parcel).then(v=>{st.natura={st:"ok",v}}).catch(e=>{st.natura={st:"err",e:e.message||"servis ne odgovara"}; fail();}).finally(okolisRefresh);
   loadZasticena(parcel).then(v=>{st.zast={st:"ok",v}}).catch(e=>{st.zast={st:"err",e:e.message||"servis ne odgovara"}; fail();}).finally(okolisRefresh);
+  loadPoplave(parcel).then(v=>{st.popl={st:"ok",v}}).catch(e=>{st.popl={st:"err",e:e.message||"servis ne odgovara"}; fail();}).finally(okolisRefresh);
+  loadInternet(parcel).then(v=>{st.net={st:"ok",v}}).catch(e=>{st.net={st:"err",e:e.message||"servis ne odgovara"}; fail();}).finally(okolisRefresh);
 }
 const ZAST_KAT=s=>String(s||"").replace(/\b([A-ZČĆĐŠŽ])([A-ZČĆĐŠŽ]+)\b/g,(m,a,b)=>a+b.toLowerCase());
 function okolisInner(){
@@ -1515,12 +1554,57 @@ function okolisInner(){
     h+=`<li class="chk chk-ok"><b>✓ Izvan zaštićenog područja prirode ${pzTag(p)}</b><span>U točkama unutar čestice nema zaštićenog područja (park prirode, značajni krajobraz, park-šuma i sl.).</span></li>`; }
   else { const p=pzSet("oko-zast","Zaštićena područja prirode",Z.v.map(x=>x.kat+" "+ZAST_KAT(x.naziv)).join(", "),pz("A",{izvor:"Bioportal, zaštićena područja (Ministarstvo zaštite okoliša i zelene tranzicije)",obuhvat:"točke unutar čestice",datum:pzDan()}));
     h+=`<li class="chk chk-warn"><b>! U zaštićenom području prirode ${pzTag(p)}</b><span>${Z.v.map(x=>`${esc(x.kat||"zaštićeno područje")}${x.pod?" ("+esc(x.pod)+")":""} ${esc(ZAST_KAT(x.naziv))}`).join("; ")}. Za gradnju u zaštićenom području mogu biti potrebni uvjeti zaštite prirode; provjeri s javnom ustanovom koja upravlja područjem i u prostornom planu.</span></li>`; }
-  // poplave: karte opasnosti Hrvatskih voda nisu dostupne drugim stranicama (preglednik ne dopušta čitanje), pa samo poveznica
-  pzSet("oko-poplave","Opasnost od poplava",null,pz("C",{razlog:"karte opasnosti od poplava nisu dostupne aplikaciji",provjera:"preglednik Hrvatskih voda (karte opasnosti od poplava)"}));
-  h+=`<li class="chk chk-warn"><b>? Opasnost od poplava</b><span>Aplikacija karte opasnosti od poplava ne može čitati automatski. Provjeri česticu na karti Hrvatskih voda (velika, srednja i mala vjerojatnost poplave).<span class="kd" style="margin:4px 0 0"><a class="ib" href="https://preglednik.voda.hr/?lang=hr&topic=Opasnosti%20od%20poplava" target="_blank" rel="noopener">Otvori kartu opasnosti od poplava</a></span></span></li>`;
-  h+=`</ul><p class="meta">Zaštićena područja: Bioportal (Ministarstvo zaštite okoliša i zelene tranzicije). Natura 2000: Europska agencija za okoliš (EEA), granice područja koje dostavlja Republika Hrvatska${N.st==="ok"&&N.v[0]&&N.v[0].datum?", stanje "+esc(new Date(N.v[0].datum).toLocaleDateString("hr-HR")):""}. Pregled na <a href="https://www.bioportal.hr/gis/" target="_blank" rel="noopener">Bioportalu</a>.</p>`;
+  // poplave: karte opasnosti Hrvatskih voda preko posrednika (servis ne dopušta čitanje iz preglednika); bez podataka samo poveznica
+  const PO=st.popl||{st:"load"}, lnk=`<span class="kd" style="margin:4px 0 0"><a class="ib" href="${POPL_PREGLED}" target="_blank" rel="noopener">Karta opasnosti od poplava</a></span>`;
+  const PV=PO.st==="ok"?PO.v:null, hit=PV?PV.slojevi.filter(x=>x.pogodak===true):[], nep=PV?PV.slojevi.filter(x=>x.pogodak==null):[];
+  if(PO.st==="load") h+=`<li class="chk chk-warn"><b>Opasnost od poplava</b><span><span class="spin"></span>provjeravam karte Hrvatskih voda…</span></li>`;
+  else if(PO.st==="err"){ pzSet("oko-poplave","Opasnost od poplava",null,pz("C",{razlog:"karte opasnosti od poplava nisu dohvaćene ("+PO.e+")",provjera:"preglednik Hrvatskih voda (karte opasnosti od poplava)"}));
+    h+=`<li class="chk chk-warn"><b>? Opasnost od poplava</b><span>Podaci nisu dostupni (${esc(PO.e)}). Provjeri česticu na karti Hrvatskih voda (velika, srednja i mala vjerojatnost poplave).${lnk}</span></li>`; }
+  else if(hit.length){ const p=pzSet("oko-poplave","Opasnost od poplava",hit.map(x=>x.title).join(", "),pz("B",{izvor:PV.izvor,obuhvat:"jedna točka unutar čestice",datum:pzDan(),razlog:"upit u jednoj točki; dio čestice može biti izvan ili unutar područja"}));
+    h+=`<li class="chk chk-warn"><b>! U području opasnosti od poplava ${pzTag(p)}</b><span>${hit.map(x=>`${esc(x.title)}${POPL_RAZD(x.title+" "+x.name)?" ("+POPL_RAZD(x.title+" "+x.name)+")":""}${x.svojstva?`<small class="fx">${esc(Object.entries(x.svojstva).filter(([k,v])=>v&&!/^(fid|id|objectid|gid)$/i.test(k)).map(([k,v])=>k+": "+v).join(" · "))}</small>`:""}`).join("; ")}. Za gradnju u području opasnosti od poplava mogu biti potrebni vodopravni uvjeti Hrvatskih voda.${lnk}</span></li>`; }
+  else if(nep.length===PV.slojevi.length){ pzSet("oko-poplave","Opasnost od poplava",null,pz("C",{razlog:"odgovor karata nije bilo moguće pročitati",provjera:"preglednik Hrvatskih voda"}));
+    h+=`<li class="chk chk-warn"><b>? Opasnost od poplava</b><span>Odgovor servisa nije bilo moguće pročitati. Provjeri na karti Hrvatskih voda.${lnk}</span></li>`; }
+  else { const p=pzSet("oko-poplave","Opasnost od poplava","izvan",pz("B",{izvor:PV.izvor,obuhvat:"jedna točka unutar čestice",datum:pzDan(),razlog:"upit u jednoj točki"+(nep.length?"; za "+nep.length+" sloj(a) odgovor nije pročitan":"")}));
+    h+=`<li class="chk chk-ok"><b>✓ Izvan područja opasnosti od poplava ${pzTag(p)}</b><span>U točki unutar čestice nema poplave ni za jedan scenarij (${PV.slojevi.filter(x=>x.pogodak===false).map(x=>esc(x.title)).join("; ")}). Karte ne prikazuju sve moguće scenarije plavljenja (npr. bujice, oborinske vode).${lnk}</span></li>`; }
+  // internet: HAKOM eKarta, razredi brzine na točki
+  const NE=st.net||{st:"load"};
+  if(NE.st==="load") h+=`<li class="chk chk-warn"><b>Internet</b><span><span class="spin"></span>provjeravam HAKOM-ovu kartu…</span></li>`;
+  else if(NE.st==="err"){ pzSet("oko-internet","Dostupnost interneta",null,pz("C",{razlog:"HAKOM nije odgovorio ("+NE.e+")",provjera:"HAKOM, interaktivni portal"}));
+    h+=`<li class="chk chk-warn"><b>? Internet</b><span>Podaci nisu dostupni (${esc(NE.e)}).<span class="kd" style="margin:4px 0 0"><a class="ib" href="https://ekarta.hakom.hr/" target="_blank" rel="noopener">HAKOM eKarta</a></span></span></li>`; }
+  else { const V=NE.v, raz=a=>a.slice().sort((x,y)=>x.sloj-y.sloj), F=raz(V.nepokretna)[0], M=V.pokretna.slice().sort((x,y)=>y.sloj-x.sloj)[0];
+    const op=x=>x&&x.operatora?` (${x.operatora==="jedan"?"jedan operator":x.operatora==="više"||x.operatora==="vise"?"više operatora":esc(x.operatora)+" operatora"})`:"";
+    const brzo=F&&F.sloj<=94, tx=(F?`širokopojasni pristup do ${HAKOM_RAZ[F.sloj]}${op(F)}`:"širokopojasni pristup: nema podatka za ovu točku")+" · "+(M?`pokretna mreža ${HAKOM_RAZ[M.sloj]}${op(M)}`:"pokretna mreža (iznad 2 Mbit/s): nema podatka");
+    const p=pzSet("oko-internet","Dostupnost interneta",tx,pz("A",{izvor:"HAKOM, eKarta (Dostupnost SPP, pokretna mreža)",obuhvat:"točka unutar čestice",datum:pzDan()}));
+    h+=`<li class="chk ${brzo?"chk-ok":"chk-warn"}"><b>${brzo?"✓":"!"} Internet ${pzTag(p)}</b><span>${tx.charAt(0).toUpperCase()+tx.slice(1)}. Prema HAKOM-ovoj karti dostupnosti; stvarnu ponudu za adresu provjeri kod operatera.</span></li>`; }
+  h+=`</ul><p class="meta">Poplave: Hrvatske vode, karte opasnosti od poplava (servis servisi.voda.hr, upit preko posrednika aplikacije); karte su izrađene u okviru Plana upravljanja rizicima od poplava i nisu prilagođene drugim namjenama, a na njima nisu prikazani svi mogući scenariji plavljenja. Internet: HAKOM, eKarta. Zaštićena područja: Bioportal (Ministarstvo zaštite okoliša i zelene tranzicije). Natura 2000: Europska agencija za okoliš (EEA), granice područja koje dostavlja Republika Hrvatska${N.st==="ok"&&N.v[0]&&N.v[0].datum?", stanje "+esc(new Date(N.v[0].datum).toLocaleDateString("hr-HR")):""}. Pregled na <a href="https://www.bioportal.hr/gis/" target="_blank" rel="noopener">Bioportalu</a>.</p>`;
   return h;
 }
+// --- povijest lokacije: digitalni ortofoto DGU iz više godina (servisi „za anonimne korisnike”, bez naknade; provjereno 24. 10. 2026.).
+// Snimci 2017./18. i 2019./20. traže registraciju i prihvaćanje uvjeta korištenja, pa nisu uključeni. Slika je GetMap u CRS:84 (lon, lat),
+// s omjerom stranica u metrima; granica čestice crta se preko slike. Usporedba: klizač otkriva noviji snimak preko starijeg.
+const DOF_POV=[{g:"2011.",u:"https://geoportal.dgu.hr/services/inspire/orthophoto_2011/wms",l:"OrthoImagery"},
+  {g:"2021./22.",u:"https://geoportal.dgu.hr/services/inspire/orthophoto_2021_2022/ows",l:"OI.OrthoimageCoverage"},
+  {g:"2023./24.",u:"https://geoportal.dgu.hr/services/inspire/orthophoto_2023_2024/wms",l:"OI.OrthoimageCoverage"}];
+const POV={a:0,b:2,x:50};
+function povOkvir(parcel){ const bb=turf.bbox(parcel), c=[(bb[0]+bb[2])/2,(bb[1]+bb[3])/2], mx=111320*Math.cos(c[1]*Math.PI/180), my=110540;
+  const half=Math.max(35,Math.max((bb[2]-bb[0])*mx,(bb[3]-bb[1])*my)/2+25); // čestica i najmanje 25 m okolice
+  return {x0:c[0]-half/mx,x1:c[0]+half/mx,y0:c[1]-half/my,y1:c[1]+half/my}; }
+function povUrl(d,B,W){ const q=new URLSearchParams({SERVICE:"WMS",VERSION:"1.3.0",REQUEST:"GetMap",LAYERS:d.l,STYLES:"",CRS:"CRS:84",BBOX:[B.x0,B.y0,B.x1,B.y1].map(v=>v.toFixed(7)).join(","),WIDTH:String(W),HEIGHT:String(W),FORMAT:"image/jpeg"}); return d.u+"?"+q.toString(); }
+function povPoly(parcel,B,W){ const g=parcel.geometry, R=g.type==="Polygon"?[g.coordinates[0]]:g.coordinates.map(p=>p[0]);
+  return R.map(r=>r.map(([x,y])=>((x-B.x0)/(B.x1-B.x0)*W).toFixed(1)+","+((B.y1-y)/(B.y1-B.y0)*W).toFixed(1)).join(" ")); }
+function povHtml(){ return `<details class="acc" data-k="povijest"><summary><span>Povijest lokacije (snimke iz zraka)</span><b id="povSum">${DOF_POV.map(d=>d.g).join(" · ")}</b></summary><div class="acc-body" id="povBody"><p class="meta">Otvori za usporedbu snimaka.</p></div></details>`; }
+function povRender(){
+  const el=document.getElementById("povBody"), d=curData(); if(!el||!d||!d.parcel) return;
+  const W=640, B=povOkvir(d.parcel), A=DOF_POV[POV.a], N=DOF_POV[POV.b], sel=(id,v)=>`<select id="${id}" class="bsel">${DOF_POV.map((x,i)=>`<option value="${i}"${i===v?" selected":""}>${x.g}</option>`).join("")}</select>`;
+  let h=`<div class="kd" style="margin:0 0 6px"><label for="povA">Lijevo</label>${sel("povA",POV.a)} <label for="povB">Desno</label>${sel("povB",POV.b)}</div>`;
+  h+=`<div class="pov" id="povBox" style="--x:${POV.x}%"><img class="pov-a" alt="Snimak ${A.g}" src="${esc(povUrl(A,B,W))}" width="${W}" height="${W}" onerror="this.dataset.err=1"><img class="pov-b" alt="Snimak ${N.g}" src="${esc(povUrl(N,B,W))}" width="${W}" height="${W}"><svg viewBox="0 0 ${W} ${W}" preserveAspectRatio="none">${povPoly(d.parcel,B,W).map(pts=>`<polygon points="${pts}" fill="none" stroke="#ffd400" stroke-width="3"/>`).join("")}</svg><span class="pov-l"></span><span class="pov-t" style="left:6px">${A.g}</span><span class="pov-t" style="right:6px">${N.g}</span></div>`;
+  h+=`<label for="povX" class="meta">Povuci za usporedbu</label> <input id="povX" type="range" min="0" max="100" step="1" value="${POV.x}" style="width:min(100%,640px)" aria-label="Granica između snimaka">`;
+  h+=`<p class="meta">Žuto: granica čestice iz katastra. Izvor: Državna geodetska uprava, digitalni ortofoto 1:5000 (${DOF_POV.map(x=>x.g).join(", ")}), servisi za anonimne korisnike. Kod snimaka 2021./22. i 2023./24. godina snimanja pojedinog dijela nije navedena (jedna od dvije godine). Usporedba pomaže uočiti novu gradnju, nasipavanje ili sječu, ali ne dokazuje je li gradnja zakonita; to se provjerava u katastru, zemljišnoj knjizi i kod nadležnog upravnog tijela. Ako je dio slike prazan, snimka za to područje nema.</p>`;
+  el.innerHTML=h;
+}
+sheet.addEventListener("toggle",e=>{ if(e.target.dataset&&e.target.dataset.k==="povijest"&&e.target.open) povRender(); },true);
+sheet.addEventListener("input",e=>{ if(e.target.id==="povX"){POV.x=+e.target.value; const b=document.getElementById("povBox"); if(b) b.style.setProperty("--x",POV.x+"%");} });
+sheet.addEventListener("change",e=>{ if(e.target.id==="povA"||e.target.id==="povB"){POV[e.target.id==="povA"?"a":"b"]=+e.target.value; povRender();} });
 function okolisRefresh(){const b=document.getElementById("okolisBox"); if(b){const nh=okolisInner(); if(b.innerHTML!==nh) keepPos(()=>{b.innerHTML=nh;});} if(typeof vrijUpdate==="function") vrijUpdate();}
 
 // --- ZK uložak iz javnog uvida OSS-a (sažetak posrednika): posjedovnica I i II, vlastovnica bez osoba, teretovnica, plomba
@@ -2248,7 +2332,7 @@ function renderKrk(d){
     h+=`<ul class="checks" style="margin-top:6px"><li class="chk chk-${sev}"><b>Teren</b><span>Nadmorska visina oko ${s.h} m, nagib u okolini oko ${Math.round(s.slope)} %, pada prema ${s.down}u.${s.slope>=20?" Strm teren: računaj s potpornim zidovima i skupljim temeljima.":s.slope>=10?" Umjereno strm teren.":""}</span></li></ul><p class="meta">Nagib je iz modela visina rezolucije oko 90 m.</p>`;}
   else if(slope&&slope.e) h+=`<p class="meta">Nagib terena: Podaci nisu dostupni (${esc(slope.e)}).</p>`;
   else if(!env) h+=`<p class="hint"><span class="spin"></span>Učitavam teren, pristup i infrastrukturu…</p>`;
-  if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`;
+  if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`+povHtml();
   h+=naHtml("Klizišta, kulturna baština, vodozaštita i druga ograničenja iz plana","Za Zagreb aplikacija provjerava gradske slojeve ograničenja; za Primorsko-goransku županiju takvi slojevi još nisu uključeni (zaštićena područja prirode i Natura 2000 provjeravaju se iznad). Ograničenja provjeri u prostornom planu (popis ispod) i lokacijskom informacijom.");
   h+=krkInfraHtml(env?d.ski||{e:"nije učitano"}:null);
   h+=env?envHtml(env):envHtml(null);
@@ -2326,7 +2410,7 @@ function renderHR(d){
     h+=`<ul class="checks" style="margin-top:6px"><li class="chk chk-${sev}"><b>Teren</b><span>Nadmorska visina oko ${s.h} m, nagib u okolini oko ${Math.round(s.slope)} %, pada prema ${s.down}u.${s.slope>=20?" Strm teren: računaj s potpornim zidovima i skupljim temeljima.":s.slope>=10?" Umjeren nagib: moguće su dodatni zemljani radovi.":" Gotovo ravan teren."}</span></li></ul>`;}
   else if(slope&&slope.e) h+=`<p class="meta">Nagib terena: Podaci nisu dostupni (${esc(slope.e)}).</p>`;
   else if(parcel&&!env) h+=`<p class="hint"><span class="spin"></span>Učitavam teren, pristup i infrastrukturu…</p>`;
-  if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`;
+  if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`+povHtml();
   h+=naHtml("Namjena, klizišta, kulturna baština i druga ograničenja","Za područja izvan Grada Zagreba i otoka Krka aplikacija još ne provjerava slojeve plana. Namjenu i ograničenja provjeri u ISPU-u (ispu.mgipu.hr) i u prostornom planu općine ili grada.");
   h+=env?envHtml(env):envHtml(null);
   if(parcel) h+=naHtml("Postojeće zgrade i uvjeti gradnje","Uvjeti gradnje (izgrađenost, visina, katnost) i izračun smjestivosti kuće nisu obrađeni za ovo područje. Okolne zgrade u 3D pogledu preuzete su iz OpenStreetMapa i samo su ilustracija.");
@@ -2700,6 +2784,144 @@ function tDistHtml(){
   const S=sideDists(); if(!S) return "";
   return `<p class="eyebrow" style="margin-top:10px">Udaljenost kuće od granice čestice</p><div class="bgrid tdist">${S.map((s,i)=>`<label for="tDs${i}">${s.n} (${COMP(s.brg)})</label><span><input id="tDs${i}" type="number" inputmode="decimal" min="0" step="0.5" value="${s.dist!=null?(Math.round(s.dist*10)/10):""}"> m</span>`).join("")}</div><p class="meta">Upiši željenu udaljenost i kuća se pomakne. Mjeri se od sredine svake stranice kuće okomito do granice čestice.</p>`;
 }
+// ================= KUĆA KROZ KAMERU (WebXR „immersive-ar”: Android, Chrome, Google Play usluge za AR) =================
+// Prikaz u stvarnoj veličini: granica čestice (žuto), prostor za gradnju (zeleno) i kuća iz simulatora (plavo).
+// Koordinate: lokalni metri (istok, sjever) oko težišta čestice. Veza sa slikom kamere je zakret φ i položaj korisnika U:
+// (a, b) = R(φ)·(P − U), gdje je a desno, b naprijed u odnosu na smjer mobitela na početku (x = a, z = −b u WebXR-u).
+// Početno φ = smjer kompasa, U = položaj iz GPS-a (oboje grubo, nekoliko metara i stupnjeva); točno poravnanje: kamerom
+// se na terenu označe dva kuta čestice (npr. međni kamenovi) i iz njih se izračunaju φ i U.
+const AR={s:null,gl:null,prog:null,ref:null,hts:null,hit:null,phi:0,U:[0,0],O:null,geo:null,marks:{},floorY:0,dirty:true,buf:null,head:[],gps:null,poravnato:false};
+function arEnu(O,ll){const mx=111320*Math.cos(O[1]*Math.PI/180), my=110540; return [(ll[0]-O[0])*mx,(ll[1]-O[1])*my];}
+function arToXr(P,phi,U){const r=phi*Math.PI/180, c=Math.cos(r), s=Math.sin(r), e=P[0]-U[0], n=P[1]-U[1]; return [e*c-n*s,-(e*s+n*c)];}
+// dva kuta čestice: P u lokalnim metrima (istok, sjever), Q u WebXR-u (x, z) → φ, U i omjer udaljenosti (provjera oznaka)
+function arAlign2(P1,P2,Q1,Q2){
+  const qa=[Q1[0],-Q1[1]], qb=[Q2[0],-Q2[1]], ap=Math.atan2(P2[1]-P1[1],P2[0]-P1[0]), aq=Math.atan2(qb[1]-qa[1],qb[0]-qa[0]);
+  const phi=(aq-ap)*180/Math.PI, r=-phi*Math.PI/180, c=Math.cos(r), s=Math.sin(r), v=[qa[0]*c-qa[1]*s,qa[0]*s+qa[1]*c];
+  return {phi:((phi%360)+360)%360,U:[P1[0]-v[0],P1[1]-v[1]],omjer:Math.hypot(qb[0]-qa[0],qb[1]-qa[1])/(Math.hypot(P2[0]-P1[0],P2[1]-P1[1])||1)};
+}
+// smjer stražnje kamere prema kompasu iz deviceorientationabsolute (W3C, primjer „compass heading”); null kad mobitel leži ravno
+function arHeading(alpha,beta,gamma){
+  const d=Math.PI/180, x=(beta||0)*d, y=(gamma||0)*d, z=(alpha||0)*d, cX=Math.cos(x), cY=Math.cos(y), cZ=Math.cos(z), sX=Math.sin(x), sY=Math.sin(y), sZ=Math.sin(z);
+  const Vx=-cZ*sY-sZ*sX*cY, Vy=-sZ*sY+cZ*sX*cY; if(Math.hypot(Vx,Vy)<0.2) return null;
+  let h=Math.atan(Vx/Vy); if(Vy<0) h+=Math.PI; else if(Vx<0) h+=2*Math.PI; return ((h*180/Math.PI)%360+360)%360;
+}
+function arKutevi(parcel,O){const g=parcel.geometry, r=g.type==="Polygon"?g.coordinates[0]:g.coordinates[0][0]; return r.slice(0,-1).map(p=>arEnu(O,p));}
+// geometrija u lokalnim metrima: crte [P1,P2,boja] i trokuti [P1,P2,P3,boja]; P = [istok, sjever, visina]
+function arGeom(){
+  const d=curData(); if(!d||!d.parcel) return null;
+  const O=turf.centroid(d.parcel).geometry.coordinates, L=[], T=[], Y=[1,.83,0,1], G=[.12,.75,.4,1], B=[.08,.4,.85,1], BF=[.08,.4,.85,.28];
+  const prsten=(r,h,c)=>{for(let i=0;i<r.length-1;i++) L.push([[...arEnu(O,r[i]),h],[...arEnu(O,r[i+1]),h],c]);};
+  const rings=g=>g.type==="Polygon"?g.coordinates:g.coordinates.flat();
+  for(const r of rings(d.parcel.geometry)) prsten(r,0.03,Y);
+  if(window.__env&&window.__env.geom) for(const r of rings(window.__env.geom)) prsten(r,0.06,G);
+  const tijelo=(poly,H,krov)=>{ const q=poly.geometry.coordinates[0].slice(0,4).map(p=>arEnu(O,p));
+    for(let i=0;i<4;i++){ const a=q[i], b=q[(i+1)%4]; L.push([[...a,0],[...b,0],B],[[...a,H],[...b,H],B],[[...a,0],[...a,H],B]); T.push([[...a,0],[...b,0],[...b,H],BF],[[...a,0],[...b,H],[...a,H],BF]); }
+    if(!krov){ T.push([[...q[0],H],[...q[1],H],[...q[2],H],BF],[[...q[0],H],[...q[2],H],[...q[3],H],BF]); return; }
+    // krov: sljeme kroz sredinu u smjeru sljemena; kutovi se spajaju s bližim krajem sljemena (kao na skici)
+    const C=[(q[0][0]+q[2][0])/2,(q[0][1]+q[2][1])/2], az=(TL.krov==="dvo"?sljemeAzimut():((TL.w>=TL.d?90:0)+TL.rot)%180)*Math.PI/180, u=[Math.sin(az),Math.cos(az)];
+    const pr=q.map(p=>(p[0]-C[0])*u[0]+(p[1]-C[1])*u[1]), Lr=Math.max(...pr)-Math.min(...pr), Sp=q.map(p=>Math.abs((p[0]-C[0])*u[1]-(p[1]-C[1])*u[0])).reduce((m,v)=>Math.max(m,v),0)*2;
+    const half=TL.krov==="cet"?Math.max(0,(Lr-Sp)/2):Lr/2, Hs=H+Math.tan((TL.nagib||0)*Math.PI/180)*Sp/2, r1=[C[0]-u[0]*half,C[1]-u[1]*half,Hs], r2=[C[0]+u[0]*half,C[1]+u[1]*half,Hs];
+    L.push([r1,r2,B]); for(let i=0;i<4;i++){ const p=[...q[i],H], e=pr[i]>0?r2:r1; L.push([p,e,B]); const n=[...q[(i+1)%4],H], en=pr[(i+1)%4]>0?r2:r1; T.push([p,[...q[(i+1)%4],H],en,BF]); if(e!==en) T.push([p,en,e,BF]); }
+  };
+  const F=tFloors(), V=F.full*TL.fh+(F.pk?1.2:0), r=tRect(), g=tGarage();
+  if(r) tijelo(r,V,TL.krov!=="ravni"); if(g) tijelo(g,2.8,false);
+  return {O,L,T,kutevi:arKutevi(d.parcel,O),kuca:!!r};
+}
+function arPoruka(t){const m=document.getElementById("arMsg"); if(m){m.textContent=t; m.hidden=!t;}}
+async function arStart(){
+  if(!window.isSecureContext||!navigator.xr){arPoruka("Ovaj uređaj ili preglednik ne podržava prikaz kroz kameru (WebXR). Treba Android s Chromeom i Google Play uslugama za AR (ARCore)."); return;}
+  let ok=false; try{ok=await navigator.xr.isSessionSupported("immersive-ar")}catch(e){}
+  if(!ok){arPoruka("Prikaz kroz kameru nije podržan na ovom uređaju (treba Android s Chromeom i Google Play uslugama za AR, ARCore)."); return;}
+  const geo=arGeom(); if(!geo||!geo.kuca){arPoruka("Prvo smjesti kuću na česticu u simulatoru."); return;}
+  arPoruka(""); AR.geo=geo; AR.marks={}; AR.poravnato=false; AR.dirty=true; arUi(true);
+  // kompas: prosjek zadnjih očitanja; GPS: jedno očitanje visoke točnosti (ako ga korisnik dopusti)
+  AR.head=[]; const onOr=e=>{ if(e.absolute===false) return; const h=arHeading(e.alpha,e.beta,e.gamma); if(h!=null){AR.head.push(h); if(AR.head.length>15) AR.head.shift();} };
+  window.addEventListener("deviceorientationabsolute",onOr); AR.offOr=()=>window.removeEventListener("deviceorientationabsolute",onOr);
+  AR.gps=null; try{ const p=await new Promise((res,rej)=>navigator.geolocation?navigator.geolocation.getCurrentPosition(res,rej,{enableHighAccuracy:true,timeout:10000,maximumAge:5000}):rej(new Error("nema GPS-a"))); AR.gps={ll:[p.coords.longitude,p.coords.latitude],acc:p.coords.accuracy}; }catch(e){}
+  try{
+    const s=await navigator.xr.requestSession("immersive-ar",{optionalFeatures:["local-floor","hit-test","dom-overlay"],domOverlay:{root:document.getElementById("arUi")}});
+    AR.s=s; const cv=document.createElement("canvas"), gl=cv.getContext("webgl",{xrCompatible:true,alpha:true,antialias:true}); AR.gl=gl;
+    await s.updateRenderState({baseLayer:new XRWebGLLayer(s,gl)});
+    try{AR.ref=await s.requestReferenceSpace("local-floor"); AR.floorY=0;}catch(e){AR.ref=await s.requestReferenceSpace("local"); AR.floorY=-1.4;}
+    try{const vs=await s.requestReferenceSpace("viewer"); AR.hts=await s.requestHitTestSource({space:vs});}catch(e){AR.hts=null;}
+    arGlInit(gl); arPocetak(); s.addEventListener("end",arKraj); s.requestAnimationFrame(arFrame); arStatus();
+  }catch(e){ arKraj(); arPoruka("Prikaz kroz kameru nije pokrenut ("+(e.message||e.name)+")."); }
+}
+// početni položaj: kompas + GPS; bez GPS-a kuća 8 m ispred korisnika
+function arPocetak(){
+  const H=AR.head.length?AR.head.slice().sort((a,b)=>a-b)[Math.floor(AR.head.length/2)]:0; AR.phi=H;
+  const k=AR.geo, r=tRect(), c=r?arEnu(k.O,turf.centroid(r).geometry.coordinates):[0,0], f=AR.phi*Math.PI/180;
+  AR.U=AR.gps?arEnu(k.O,AR.gps.ll):[c[0]-8*Math.sin(f),c[1]-8*Math.cos(f)];
+  AR.dirty=true;
+}
+function arKraj(){ if(AR.offOr) AR.offOr(); AR.offOr=null; if(AR.hts){try{AR.hts.cancel()}catch(e){}} AR.hts=null; AR.s=null; AR.gl=null; AR.buf=null; arUi(false); }
+function arUi(on){
+  let u=document.getElementById("arUi");
+  if(!u){ u=document.createElement("div"); u.id="arUi"; u.hidden=true; document.body.appendChild(u); }
+  u.hidden=!on; if(!on){u.innerHTML=""; return;}
+  const K=AR.geo.kutevi, ext=K.reduce((m,p)=>Math.max(m,Math.abs(p[0]),Math.abs(p[1])),1)*1.15, S=120, X=v=>(S/2+v/ext*S/2).toFixed(1), Yy=v=>(S/2-v/ext*S/2).toFixed(1);
+  const skica=`<svg viewBox="0 0 ${S} ${S}" width="${S}" height="${S}" aria-label="Skica čestice s brojevima kutova"><polygon points="${K.map(p=>X(p[0])+","+Yy(p[1])).join(" ")}" fill="rgba(255,212,0,.15)" stroke="#ffd400" stroke-width="2"/>${K.map((p,i)=>`<circle cx="${X(p[0])}" cy="${Yy(p[1])}" r="7" fill="#000" stroke="#ffd400"/><text x="${X(p[0])}" y="${(+Yy(p[1])+3.5).toFixed(1)}" font-size="9" fill="#fff" text-anchor="middle">${i+1}</text>`).join("")}<text x="${S-8}" y="11" font-size="10" fill="#fff">S</text></svg>`;
+  u.innerHTML=`<div class="ar-top"><span id="arStat">Pokrećem kameru…</span></div><div class="ar-bot">${skica}<div class="ar-ctl">
+    <label for="arKut">Kut</label><select id="arKut" class="bsel">${K.map((p,i)=>`<option value="${i}">${i+1}</option>`).join("")}</select><button type="button" class="ib" id="arMark">Ovo je kut</button>
+    <span class="ar-row"><button type="button" class="ib" data-ar="rl" aria-label="Okreni ulijevo">↺</button><button type="button" class="ib" data-ar="rr" aria-label="Okreni udesno">↻</button><button type="button" class="ib" data-ar="l" aria-label="Pomakni ulijevo">←</button><button type="button" class="ib" data-ar="u" aria-label="Pomakni naprijed">↑</button><button type="button" class="ib" data-ar="d" aria-label="Pomakni natrag">↓</button><button type="button" class="ib" data-ar="r" aria-label="Pomakni udesno">→</button></span>
+    <button type="button" class="ib" id="arIzlaz">Izlaz</button></div></div>`;
+}
+function arStatus(t){
+  const e=document.getElementById("arStat"); if(!e) return;
+  const n=Object.keys(AR.marks).length;
+  e.textContent=t||(AR.poravnato?`Poravnato prema kutovima ${Object.keys(AR.marks).map(k=>+k+1).join(" i ")}. Žuto: granica čestice, zeleno: prostor za gradnju, plavo: kuća.`
+    :`${AR.gps?`Položaj prema GPS-u (±${Math.round(AR.gps.acc)} m)`:"Bez GPS-a: kuća je postavljena 8 m ispred tebe"}${AR.head.length?" i kompasu":""} – grubo. Za točan prikaz usmjeri krug na kut čestice na tlu, odaberi njegov broj na skici i dodirni „Ovo je kut” (potrebna su dva kuta).${n?` Označeno: ${n}.`:""}`);
+}
+function arMark(){
+  if(!AR.hit){arStatus("Krug nije na tlu: usmjeri kameru prema tlu i polako pomakni mobitel dok se krug ne pojavi."); return;}
+  const i=+document.getElementById("arKut").value, p=AR.hit.transform.position; AR.marks[i]=[p.x,p.z];
+  const ks=Object.keys(AR.marks).map(Number); if(ks.length>=2){ const [a,b]=ks.slice(-2), K=AR.geo.kutevi, A=arAlign2(K[a],K[b],AR.marks[a],AR.marks[b]);
+    AR.phi=A.phi; AR.U=A.U; AR.poravnato=true; AR.dirty=true; arStatus(); if(Math.abs(A.omjer-1)>0.1) arStatus(`Udaljenost između označenih kutova na terenu razlikuje se od katastra za ${Math.round(Math.abs(A.omjer-1)*100)} %: provjeri jesi li označio prave kutove (ili katastar odstupa od stanja na terenu).`); }
+  else { const o=document.getElementById("arKut"); if(o&&o.options.length>1) o.value=String((i+1)%o.options.length); arStatus(); }
+}
+function arPomak(k){
+  if(k==="rl"||k==="rr"){ AR.phi=((AR.phi+(k==="rl"?-2:2))%360+360)%360; }
+  else { const st={l:[-0.5,0],r:[0.5,0],u:[0,0.5],d:[0,-0.5]}[k]; if(!st) return; const r=-AR.phi*Math.PI/180, c=Math.cos(r), s=Math.sin(r); AR.U=[AR.U[0]-(st[0]*c-st[1]*s),AR.U[1]-(st[0]*s+st[1]*c)]; }
+  AR.dirty=true;
+}
+// ---- WebGL: jedna sjena (boja po crti/trokutu), crte i prozirni trokuti
+function arGlInit(gl){
+  const sh=(t,src)=>{const s=gl.createShader(t); gl.shaderSource(s,src); gl.compileShader(s); return s;};
+  const p=gl.createProgram(); gl.attachShader(p,sh(gl.VERTEX_SHADER,"attribute vec3 p;attribute vec4 c;uniform mat4 P;uniform mat4 V;varying vec4 vc;void main(){vc=c;gl_Position=P*V*vec4(p,1.0);}"));
+  gl.attachShader(p,sh(gl.FRAGMENT_SHADER,"precision mediump float;varying vec4 vc;void main(){gl_FragColor=vc;}")); gl.linkProgram(p); AR.prog=p;
+  AR.loc={p:gl.getAttribLocation(p,"p"),c:gl.getAttribLocation(p,"c"),P:gl.getUniformLocation(p,"P"),V:gl.getUniformLocation(p,"V")};
+  AR.bL=gl.createBuffer(); AR.bT=gl.createBuffer(); AR.bR=gl.createBuffer();
+}
+function arVerts(){
+  const xr=([e,n,h])=>{const [x,z]=arToXr([e,n],AR.phi,AR.U); return [x,h+AR.floorY,z];}, L=[], T=[];
+  for(const [a,b,c] of AR.geo.L) L.push(...xr(a),...c,...xr(b),...c);
+  for(const [a,b,d,c] of AR.geo.T) T.push(...xr(a),...c,...xr(b),...c,...xr(d),...c);
+  return {L:new Float32Array(L),T:new Float32Array(T)};
+}
+function arDrawBuf(gl,buf,data,mode,n){ gl.bindBuffer(gl.ARRAY_BUFFER,buf); if(data) gl.bufferData(gl.ARRAY_BUFFER,data,gl.DYNAMIC_DRAW);
+  gl.enableVertexAttribArray(AR.loc.p); gl.vertexAttribPointer(AR.loc.p,3,gl.FLOAT,false,28,0); gl.enableVertexAttribArray(AR.loc.c); gl.vertexAttribPointer(AR.loc.c,4,gl.FLOAT,false,28,12); gl.drawArrays(mode,0,n); }
+function arFrame(t,frame){
+  const s=AR.s; if(!s) return; s.requestAnimationFrame(arFrame);
+  const pose=frame.getViewerPose(AR.ref), gl=AR.gl, Ly=s.renderState.baseLayer; if(!pose||!gl) return;
+  if(AR.hts){const r=frame.getHitTestResults(AR.hts); AR.hit=r.length?r[0].getPose(AR.ref):null;}
+  if(AR.dirty){AR.buf=arVerts(); AR.dirty=false; AR.novo=true;}
+  gl.bindFramebuffer(gl.FRAMEBUFFER,Ly.framebuffer); gl.clearColor(0,0,0,0); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA); gl.enable(gl.DEPTH_TEST); gl.useProgram(AR.prog); gl.lineWidth(2);
+  // krug na tlu gdje pogađa središte slike (hit-test)
+  let R=null; if(AR.hit){ const m=AR.hit.transform.matrix, v=[]; for(let i=0;i<=32;i++){ const a=i/32*Math.PI*2, x=Math.cos(a)*0.25, z=Math.sin(a)*0.25; v.push(m[0]*x+m[8]*z+m[12],m[1]*x+m[9]*z+m[13]+0.01,m[2]*x+m[10]*z+m[14],1,1,1,1); } R=new Float32Array(v); }
+  for(const view of pose.views){ const vp=Ly.getViewport(view); gl.viewport(vp.x,vp.y,vp.width,vp.height);
+    gl.uniformMatrix4fv(AR.loc.P,false,view.projectionMatrix); gl.uniformMatrix4fv(AR.loc.V,false,view.transform.inverse.matrix);
+    gl.depthMask(false); arDrawBuf(gl,AR.bT,AR.novo?AR.buf.T:null,gl.TRIANGLES,AR.buf.T.length/7); gl.depthMask(true);
+    arDrawBuf(gl,AR.bL,AR.novo?AR.buf.L:null,gl.LINES,AR.buf.L.length/7); AR.novo=false;
+    if(R) arDrawBuf(gl,AR.bR,R,gl.LINE_STRIP,R.length/7); }
+}
+document.addEventListener("click",e=>{
+  const t=e.target; if(!t||!t.closest) return;
+  if(t.id==="arBtn") arStart();
+  else if(t.id==="arMark") arMark();
+  else if(t.id==="arIzlaz"){ if(AR.s) AR.s.end(); else arKraj(); }
+  else { const b=t.closest("[data-ar]"); if(b&&AR.s) arPomak(b.dataset.ar); }
+});
 function tReset(){ for(const k of ["layer","marker","zl","rotM"]) if(TL[k]) selLayer.removeLayer(TL[k]); TL.layer=null; TL.marker=null; TL.zl=null; TL.rotM=null; TL.center=null; TL.zones=null; }
 sheet.addEventListener("input",e=>{
   const id=e.target.id; if(!/^t(W|D|Rot|Fh|Gw|Gd)$/.test(id)) return;
@@ -2751,7 +2973,7 @@ function simHtml(pp,A,area,gbpMax,RP,lim){
   h+=`<label for="tGar">Garaža</label><span><input type="checkbox" id="tGar"${TL.gar?" checked":""}> prizemna, uz desni bok kuće</span>`;
   h+=`</div><div class="bgrid" id="tGarBox" style="${TL.gar?"":"display:none"}"><label for="tGw">Garaža širina</label><span><input id="tGw" type="number" inputmode="decimal" min="2.5" step="0.5" value="${TL.gw}"> m</span><label for="tGd">Garaža dubina</label><span><input id="tGd" type="number" inputmode="decimal" min="4" step="0.5" value="${TL.gd}"> m</span></div>`;
   h+=`<p class="meta" id="tPredNote">${TL.pred?predNote():"Predložak predlaže pravokutni tlocrt za ciljnu nadzemnu bruto površinu (GBP); dimenzije možeš mijenjati."}</p>`;
-  h+=`<div class="kd"><button type="button" class="ib" id="tEdit">Uredi na karti</button><button type="button" class="ib" id="tCenterBtn">Vrati u sredinu</button></div><div id="tOut"></div>`;
+  h+=`<div class="kd"><button type="button" class="ib" id="tEdit">Uredi na karti</button><button type="button" class="ib" id="tCenterBtn">Vrati u sredinu</button><button type="button" class="ib" id="arBtn" title="Na Androidu s Chromeom: kuća, granica čestice i prostor za gradnju u stvarnoj veličini kroz kameru">Kuća kroz kameru (AR)</button></div><p id="arMsg" class="flag" hidden></p><div id="tOut"></div>`;
   h+=`<p class="meta">Skica tlocrta i presjeka (za izvještaj) je u odjeljku „Skica kuće na terenu” ispod.</p>`;
   h+=`<p class="meta">Na karti kuću pomičeš povlačenjem oznake ✥, a okrećeš povlačenjem oznake ↻; dok držiš oznaku, karta miruje. Na karti: zeleno je prostor unutar udaljenosti od međa, narančasto pojas uz ulicu do udaljenosti građevnog pravca (ulica procijenjena iz OpenStreetMapa), a kuća postaje crvena kad izađe iz dopuštenog prostora. Tip kuće bira se u "Izračunu za ovu česticu".</p></div></details>`;
   h+=okuHtml();
@@ -4430,7 +4652,7 @@ function render(d){
     else if(!hits.length) h+=`<p class="verdict v-warn" style="margin:6px 0">Provjere nisu uspjele jer servisi ne odgovaraju. To ne znači da ograničenja nema; pokušaj ponovno kasnije.</p>`;
     if(slope&&slope.v){const s=slope.v, sev=s.slope>=20?"no":s.slope>=10?"warn":"ok";
       h+=`<ul class="checks" style="margin-top:6px"><li class="chk chk-${sev}"><b>Teren</b><span>Nadmorska visina oko ${s.h} m, nagib u okolini oko ${Math.round(s.slope)} %, pada prema ${s.down}u.${s.slope>=20?" Strm teren: računaj s potpornim zidovima, skupljim temeljima i geotehničkim elaboratom.":s.slope>=10?" Umjereno strm teren: moguć podrum ili suteren, ali i veći trošak iskopa.":""}</span></li></ul><p class="meta">Nagib je iz modela visina rezolucije oko 90 m, pa ne vidi lokalne strmine na samoj čestici.</p>`;}
-    if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`;
+    if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`+povHtml();
     if(clear.length) h+=`<details><summary>Što je provjereno i čisto (${clear.length})</summary><ol>${clear.map(t=>`<li>${esc(t)}</li>`).join("")}</ol></details>`;
     if(errs.length) h+=`<p class="err">Nisu odgovorili: ${esc(errs.join(", "))}. <button type="button" class="ib retry">Pokušaj ponovno</button></p>`;
   }
@@ -5857,12 +6079,14 @@ function sazetakUpdate(){
    if(F&&F.total&&F.total.base){a=`${F.total.hasBuy?"Ukupno sa zemljištem":"Gradnja s naknadama"}: ${fmt(F.total.lo)}–${fmt(F.total.hi)} € (procjena)`; st="ok";}
    else a=d.krk?"Procjena cijene gradnje za Krk nije dostupna; komunalni doprinos je u „Troškovima”.":"Postavi kuću u simulatoru ili upiši površinu u procjeni gradnje.";
    rows.push({srcTxt:F&&F.total&&F.total.base?"procjena aplikacije prema cjenicima 2026. (B)":"",st,q:"Koliko bi koštalo?",a,go:d.krk?'details[data-k="krkKd"]':'details[data-k="total"], details[data-k="build"]'});}
-  // 6. priroda (Natura 2000); poplave se dodaju kad se potvrdi servis Hrvatskih voda
+  // 6. priroda (Natura 2000, zaštićena područja) i poplave (Hrvatske vode, preko posrednika)
   {const key=window.__cur&&window.__cur.key, O=key&&OKO.get(key), N=O&&O.natura;
    const Z=O&&O.zast, zt=!Z||Z.st==="load"?"zaštićena područja: provjeravam…":Z.st==="err"?"zaštićena područja: podaci nisu dostupni":Z.v.length?"u zaštićenom području: "+Z.v.map(x=>x.kat+" "+ZAST_KAT(x.naziv)).join(", "):"izvan zaštićenog područja";
    const nt=!N||N.st==="load"?"Natura 2000: provjeravam…":N.st==="err"?"Natura 2000: podaci nisu dostupni":N.v.length?"u ekološkoj mreži Natura 2000 ("+N.v.map(x=>x.ime).join(", ")+")":"izvan ekološke mreže Natura 2000";
    const any=(N&&N.st==="ok"&&N.v.length)||(Z&&Z.st==="ok"&&Z.v.length), done=N&&N.st==="ok"&&Z&&Z.st==="ok";
-   rows.push({src:["oko-natura","oko-zast"],st:any?"warn":done?"ok":"?",q:"Priroda i poplave",a:nt.charAt(0).toUpperCase()+nt.slice(1)+" · "+zt+" · poplave: provjeri na karti Hrvatskih voda",go:"#okolisBox"});}
+   const PO=O&&O.popl, ph=PO&&PO.st==="ok"?PO.v.slojevi.filter(x=>x.pogodak===true):null, pt=!PO||PO.st==="load"?"poplave: provjeravam…":PO.st==="err"||PO.v.slojevi.every(x=>x.pogodak==null)?"poplave: provjeri na karti Hrvatskih voda":ph.length?"u području opasnosti od poplava ("+ph.map(x=>x.title).join(", ")+")":"izvan područja opasnosti od poplava (točka unutar čestice)";
+   const anyP=any||(ph&&ph.length), doneP=done&&PO&&PO.st==="ok";
+   rows.push({src:["oko-natura","oko-zast","oko-poplave"],st:anyP?"warn":doneP?"ok":"?",q:"Priroda i poplave",a:nt.charAt(0).toUpperCase()+nt.slice(1)+" · "+zt+" · "+pt,go:"#okolisBox"});}
   // 7. vrijednost zemljišta
   {const V=window.__vrij, N=PZREG.items.get("vrij-nas"); if(sheet.querySelector('details[data-k="vrij"]'))
    rows.push({src:["vrij-proc","vrij-nas"],st:V?"ok":"?",q:"Koliko vrijedi zemljište?",a:V?`${V.t} prema tvojim usporedbama (orijentacijski)`:(N?`Prosjek naselja ${N.vrijednost}; `:"")+"za procjenu upiši barem tri kupoprodaje sličnih čestica",go:'details[data-k="vrij"]'});}
