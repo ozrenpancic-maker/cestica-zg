@@ -377,6 +377,10 @@ ol.zi{font-size:13.5px;padding-left:18px}
 #arUi .ar-bot svg{background:rgba(0,0,0,.55);border-radius:10px;flex:none}
 #arUi .ar-ctl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:rgba(0,0,0,.6);padding:8px;border-radius:10px}
 #arUi .ar-ctl .ib{min-height:44px;min-width:44px}#arUi .ar-row{display:flex;gap:4px;flex-wrap:wrap}#arUi select{min-height:44px}
+.isk-svg{width:100%;height:auto;display:block;margin:8px 0 2px;color:var(--fg)}
+.isk-leg{font-size:.82rem;color:var(--muted);margin:2px 0 8px}
+.isk-k{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 3px 0 8px;opacity:.7;vertical-align:-1px}
+.isk-k:first-child{margin-left:0}
 .pov{position:relative;max-width:640px;margin:6px 0;line-height:0;background:var(--soft);border-radius:8px;overflow:hidden;touch-action:pan-y}
 .pov img{width:100%;height:auto;display:block}.pov img.pov-b{position:absolute;inset:0;clip-path:inset(0 0 0 var(--x,50%))}
 .pov svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.pov .pov-l{position:absolute;top:0;bottom:0;left:var(--x,50%);width:2px;background:#fff;box-shadow:0 0 3px #000}
@@ -2773,7 +2777,7 @@ function tDraw(){
     `<table class="rp"><tbody>${R.C.map(c=>`<tr><th>${esc(c.label)}</th><td><b>${esc(c.val)}</b> <em class="kind st-${ST[c.st][0]}">${ST[c.st][1]}</em>${c.note?`<small class="fx">${esc(c.note)}</small>`:""}</td></tr>`).join("")}</tbody></table>`+
     tDistHtml()+(curData()&&curData().krk?"":`<div class="kd"><button type="button" class="ib" id="tToFin">Prenesi kuću u procjenu troškova</button></div>`);
   if(s){s.textContent=`${String(TL.w).replace(".",",")} × ${String(TL.d).replace(".",",")} m, ${R.F.label}: ${ST[R.st][1]}`; s.className=R.st==="no"?"bad":"";}
-  window.__sim=R; projSaveSimSoon(); zgSync(); skicaUpdate(); okuSoon(); pvLiveSoon();
+  window.__sim=R; projSaveSimSoon(); zgSync(); skicaUpdate(); okuSoon(); pvLiveSoon(); iskSoon();
 }
 function predNote(){const P=predlozakDims(+TL.pred,TL.fl), F=tFloors();
   return `Predložak ${TL.pred} m² nadzemnog GBP-a, ${F.label}: tlocrt oko ${fmt(P.tl)} m² → predloženo ${String(P.w).replace(".",",")} × ${String(P.d).replace(".",",")} m (${fmt(P.w*P.d)} m²). Dimenzije možeš promijeniti; tada predložak prelazi u vlastite dimenzije.`;}
@@ -2977,6 +2981,7 @@ function simHtml(pp,A,area,gbpMax,RP,lim){
   h+=`<p class="meta">Skica tlocrta i presjeka (za izvještaj) je u odjeljku „Skica kuće na terenu” ispod.</p>`;
   h+=`<p class="meta">Na karti kuću pomičeš povlačenjem oznake ✥, a okrećeš povlačenjem oznake ↻; dok držiš oznaku, karta miruje. Na karti: zeleno je prostor unutar udaljenosti od međa, narančasto pojas uz ulicu do udaljenosti građevnog pravca (ulica procijenjena iz OpenStreetMapa), a kuća postaje crvena kad izađe iz dopuštenog prostora. Tip kuće bira se u "Izračunu za ovu česticu".</p></div></details>`;
   h+=okuHtml();
+  h+=iskHtml();
   h+=`<details class="acc skica" data-k="skica"${OPEN.has("skica")?" open":""}><summary><span>Skica kuće na terenu</span><b id="skSum">tlocrt, presjek i 3D</b></summary><div class="acc-body"><div id="skicaOut"></div></div></details>`;
   return h;
 }
@@ -5225,11 +5230,209 @@ function prepUpdate(){
   h+=`<p class="meta">Cijene: ${PREP_SRC}. Rasponi su orijentacijski i ovise o tlu, pristupu stroju i udaljenosti deponija. Stvarne količine daje geodetski snimak i projekt, a cijene ponude izvođača.</p>`;
   o.innerHTML=h; if(sum) sum.textContent=its.length?r:"nije uneseno";
   const c=document.getElementById("prepConn"); if(c&&F&&F.items){const ci=F.items.filter(i=>["kdWorks","kdSeptic","kdWell"].includes(i.k)), v=ci.reduce((s,i)=>s+i.base,0); c.textContent=`Upisuje se u odjeljku "Priključci i dozvole" (radovi na kućnim priključcima, sabirna jama, bunar), da se ne broji dvaput.${v?" Trenutno upisano: "+fmt(v)+" €.":" Trenutno nije upisano."}`;}
-  const hb=document.getElementById("prepHint"); if(hb){const x=prepSlopeHint();
-    hb.innerHTML=x?`<div class="hintbox"><p class="meta" style="margin:0">Prema nagibu okoline (oko ${Math.round(x.slope)} %) i tlocrtu ${fmt(x.W)} × ${fmt(x.D)} m (${x.src}) visinska razlika preko kuće bila bi oko ${x.dz.toFixed(1).replace(".",",")} m, a poravnavanje bi tražilo oko ${fmt(x.v)} m³ iskopa i isto toliko nasipa. To je gruba orijentacija: model visina ima rezoluciju oko 90 m i ne vidi teren same čestice${x.dz>=1.2?"; uz ovoliku razliku vjerojatno treba i potporni zid":""}.</p><div class="kd"><button type="button" class="ib" id="prepUseHint" data-v="${x.v}">Upiši kao početnu procjenu</button></div></div>`:"";}
+  const hb=document.getElementById("prepHint"); if(hb){const x=prepSlopeHint(), I=ISK.res&&TL.center&&window.__cur&&ISK.key===window.__cur.key?ISK.res:null;
+    if(I) hb.innerHTML=`<div class="hintbox"><p class="meta" style="margin:0">Izračun u odjeljku „Iskop i nasip za plato kuće” (simulator kuće): iskop oko ${fmt(I.cut)} m³, nasip oko ${fmt(I.fill)} m³${I.zid?`, potporni zid oko ${fmt(I.zid.L)} m`:""}; teren: ${esc(I.izvor)}.</p><div class="kd"><button type="button" class="ib" id="iskUpis2">Upiši u Pripremu terena</button></div></div>`;
+    else hb.innerHTML=x?`<div class="hintbox"><p class="meta" style="margin:0">Prema nagibu okoline (oko ${Math.round(x.slope)} %) i tlocrtu ${fmt(x.W)} × ${fmt(x.D)} m (${x.src}) visinska razlika preko kuće bila bi oko ${x.dz.toFixed(1).replace(".",",")} m, a poravnavanje bi tražilo oko ${fmt(x.v)} m³ iskopa i isto toliko nasipa. To je gruba orijentacija: model visina ima rezoluciju oko 90 m i ne vidi teren same čestice${x.dz>=1.2?"; uz ovoliku razliku vjerojatno treba i potporni zid":""}.</p><div class="kd"><button type="button" class="ib" id="prepUseHint" data-v="${x.v}">Upiši kao početnu procjenu</button></div></div>`:"";}
 }
 sheet.addEventListener("input",e=>{ if(PREP_IDS.includes(e.target.id)){prepSave(); finUpdate();} });
 sheet.addEventListener("click",e=>{ if(e.target.id==="prepUseHint"){const v=+e.target.dataset.v; for(const id of ["pCut","pFill"]){const el=document.getElementById(id); if(el&&!(numv(id)>0)) el.value=v;} prepSave(); finUpdate();} });
+
+// ================= ISKOP I NASIP ZA PLATO KUĆE (zemljani radovi) =================
+// Kuća iz simulatora stoji na ravnom platou: tlocrt kuće (i garaže) uvećan za radni pojas oko kuće. Teren ispod platoa dolazi iz
+// modela visina (pločice visina u Terrarium kodiranju) ili iz visina kutova kuće koje korisnik izmjeri (npr. geodet, libela, laser).
+// Iskop = teren iznad platoa, nasip = teren ispod platoa (mreža 0,25 m), uz pokose na rubu ili potporni zid gdje je visina veća od 1 m.
+// Koordinate: „okvir kuće” (u desno uz širinu, v naprijed uz dubinu, metri od sredine kuće); okret kuće rot je smjer kazaljke na satu.
+// Izvori modela, redom: Mapterhorn (otvorene pločice visina, tiles.mapterhorn.com, Terrarium WebP 512 px), AWS Terrain Tiles
+// (Mapzen, Terrarium PNG 256 px; za Europu uključuje EU-DEM), zatim ravnina iz nagiba okoline (Copernicus DEM preko Open-Meteo, ~90 m).
+// Podrum: jama ispod platoa računa se posebno (u „Procjeni cijene gradnje” je stavka 2a), pa ne ulazi u iskop platoa.
+const ISK_IZVORI=[
+  {id:"mapterhorn",naziv:"Mapterhorn (otvoreni model visina)",url:(z,x,y)=>`https://tiles.mapterhorn.com/${z}/${x}/${y}.webp`,px:512,zooms:[15,12]},
+  {id:"aws",naziv:"AWS Terrain Tiles (Mapzen; za Europu EU-DEM, oko 30 m)",url:(z,x,y)=>`https://s3.amazonaws.com/elevation-tiles-prod/terrarium/${z}/${x}/${y}.png`,px:256,zooms:[15]}];
+// pretpostavke (nisu propis): nagib pokosa iskopa 1:1, nasipa 1:1,5; iznad 1 m visine predlaže se potporni zid;
+// rastresitost iskopanog materijala 1,25 (zemlja oko 1,2–1,3, kamen više); kamion kiper oko 10 m³
+const ISK_P={korak:0.25,pokosIskop:1,pokosNasip:1.5,zidOd:1.0,rastr:1.25,kamion:10};
+const ISK={key:null,st:null,model:null,err:null,res:null,t:0,izvorPokusaj:[]};
+const terrarium=(r,g,b)=>r*256+g+b/256-32768;
+function iskStore(){try{const s=JSON.parse(localStorage.getItem("isk")||"{}"); return s&&typeof s==="object"?s:{}}catch(e){return {}}}
+function iskGet(k){const o=k&&iskStore()[k]; return o&&typeof o==="object"?o:{}}
+function iskSet(k,o){try{const s=iskStore(); if(o&&Object.keys(o).length) s[k]=o; else delete s[k]; localStorage.setItem("isk",JSON.stringify(s))}catch(e){}}
+// postavke za česticu, samo valjane vrijednosti
+function iskPostavke(k){
+  const o=iskGet(k), n=v=>{const x=parseFloat(String(v==null?"":v).replace(",",".")); return isFinite(x)?x:null};
+  const m=n(o.m), kut=Array.isArray(o.kut)?o.kut.slice(0,4).map(n):[null,null,null,null];
+  return {mode:["bal","cut","fill","man"].includes(o.mode)?o.mode:"bal",z:n(o.z),m:m==null?1:Math.min(10,Math.max(0,m)),zid:!!o.zid,kut:[0,1,2,3].map(i=>kut[i]??null)};
+}
+// slika pločice → visine (Float32Array); u testovima se zamjenjuje kroz window.__iskPix
+async function iskPix(url){
+  const r=await fetch(url,{mode:"cors"}); if(!r.ok) throw new Error("HTTP "+r.status);
+  const bmp=await createImageBitmap(await r.blob()), W=bmp.width, H=bmp.height;
+  const cv=typeof OffscreenCanvas!=="undefined"?new OffscreenCanvas(W,H):Object.assign(document.createElement("canvas"),{width:W,height:H});
+  const cx=cv.getContext("2d"); cx.drawImage(bmp,0,0); const d=cx.getImageData(0,0,W,H).data, z=new Float32Array(W*H);
+  for(let i=0;i<W*H;i++) z[i]=terrarium(d[4*i],d[4*i+1],d[4*i+2]);
+  return {W,H,z};
+}
+const iskTileXY=(lon,lat,z)=>{const n=2**z, x=(lon+180)/360*n, s=Math.sin(lat*Math.PI/180), y=(0.5-Math.log((1+s)/(1-s))/(4*Math.PI))*n; return [x,y];};
+// model visina oko točke c (lon, lat) u krugu R metara: pločice jednog izvora i zooma; vraća funkciju visine u (lon, lat)
+async function iskModelTiles(c,R){
+  const pix=window.__iskPix||iskPix, mx=111320*Math.cos(c[1]*Math.PI/180), my=110540, greske=[];
+  for(const S of ISK_IZVORI) for(const z of S.zooms){
+    try{
+      const a=iskTileXY(c[0]-R/mx,c[1]+R/my,z), b=iskTileXY(c[0]+R/mx,c[1]-R/my,z), tiles=new Map();
+      const x0=Math.floor(a[0]), x1=Math.floor(b[0]), y0=Math.floor(a[1]), y1=Math.floor(b[1]);
+      if((x1-x0+1)*(y1-y0+1)>9) throw new Error("previše pločica");
+      for(let x=x0;x<=x1;x++) for(let y=y0;y<=y1;y++){ const t=await pix(S.url(z,x,y)); if(!t||!t.W||t.z.length!==t.W*t.H) throw new Error("neispravna pločica"); tiles.set(x+"/"+y,t); }
+      const vis=(lon,lat)=>{ // bilinearno, sredine piksela
+        const [fx,fy]=iskTileXY(lon,lat,z), get=(gx,gy)=>{const tx=Math.floor(gx/S.px), ty=Math.floor(gy/S.px), t=tiles.get(tx+"/"+ty); if(!t) return NaN; return t.z[(gy-ty*S.px)*t.W+(gx-tx*S.px)]};
+        const px=fx*S.px-0.5, py=fy*S.px-0.5, ix=Math.floor(px), iy=Math.floor(py), u=px-ix, v=py-iy;
+        return get(ix,iy)*(1-u)*(1-v)+get(ix+1,iy)*u*(1-v)+get(ix,iy+1)*(1-u)*v+get(ix+1,iy+1)*u*v; };
+      const h0=vis(c[0],c[1]); if(!isFinite(h0)||h0<-500||h0>3000) throw new Error("vrijednosti izvan raspona");
+      const piksel=40075016.7*Math.cos(c[1]*Math.PI/180)/(2**z*S.px);
+      return {tip:"model",izvor:S.naziv,id:S.id,zoom:z,piksel,vis,greske};
+    }catch(e){greske.push(S.id+" z"+z+": "+(e.message||e.name||"greška"));}
+  }
+  const e=new Error("pločice visina nisu dostupne"); e.greske=greske; throw e;
+}
+// teren u okviru kuće: funkcija z(u, v) i opis izvora; kut = ručno izmjerene visine 4 kuta (relativne), inače model ili ravnina
+function iskTeren(house,P,model,slope,parcelC){
+  const r=house.rot*Math.PI/180, ex=[Math.cos(r),-Math.sin(r)], ey=[Math.sin(r),Math.cos(r)], c=house.c, mx=111320*Math.cos(c[1]*Math.PI/180), my=110540;
+  const enu=(u,v)=>[u*ex[0]+v*ey[0],u*ex[1]+v*ey[1]];
+  if(P.kut.every(x=>x!=null)){ const [a,b,cc,d]=P.kut, W=house.w, D=house.d; // kutovi: 1 = (−š/2, −d/2), 2 = (+, −), 3 = (+, +), 4 = (−, +)
+    return {tip:"kut",relativno:true,z:(u,v)=>{const s=u/W+0.5, t=v/D+0.5; return a*(1-s)*(1-t)+b*s*(1-t)+cc*s*t+d*(1-s)*t;},
+      izvor:"tvoje izmjerene visine kutova kuće",opis:"izmjerene visine 4 kuta kuće, između i izvan njih linearno"}; }
+  if(model) return {tip:"model",z:(u,v)=>{const e=enu(u,v); return model.vis(c[0]+e[0]/mx,c[1]+e[1]/my);},izvor:model.izvor,
+    opis:`${model.izvor}, pločice z${model.zoom} (piksel oko ${dec(model.piksel.toFixed(1))} m)`};
+  if(slope&&slope.slope!=null&&isFinite(slope.h)){ const az=(slope.az||0)*Math.PI/180, g=slope.slope/100, o=parcelC?[(c[0]-parcelC[0])*mx,(c[1]-parcelC[1])*my]:[0,0];
+    return {tip:"ravnina",z:(u,v)=>{const e=enu(u,v); return slope.h-g*((e[0]+o[0])*Math.sin(az)+(e[1]+o[1])*Math.cos(az));},izvor:"Copernicus DEM preko Open-Meteo (rezolucija oko 90 m)",
+      opis:"ravnina iz nagiba okoline (Copernicus DEM preko Open-Meteo, oko 90 m)"}; }
+  return null;
+}
+// pravokutnici platoa u okviru kuće: kuća (i garaža) uvećani za radni pojas m
+function iskPravokutnici(h,m){
+  const R=[{u0:-h.w/2-m,u1:h.w/2+m,v0:-h.d/2-m,v1:h.d/2+m}];
+  if(h.gar){const cu=h.w/2+h.gw/2, cv=(h.gd-h.d)/2; R.push({u0:cu-h.gw/2-m,u1:cu+h.gw/2+m,v0:cv-h.gd/2-m,v1:cv+h.gd/2+m});}
+  return R;
+}
+// čisti izračun: kuća {w,d,rot,gar,gw,gd}, teren T {z(u,v)}, postavke P → količine, kota, rubovi, zid
+function iskIzracun(h,T,P){
+  const k=ISK_P.korak, R=iskPravokutnici(h,P.m), u0=Math.min(...R.map(r=>r.u0)), u1=Math.max(...R.map(r=>r.u1)), v0=Math.min(...R.map(r=>r.v0)), v1=Math.max(...R.map(r=>r.v1));
+  const unutra=(u,v)=>R.some(r=>u>=r.u0-1e-9&&u<=r.u1+1e-9&&v>=r.v0-1e-9&&v<=r.v1+1e-9), strogo=(u,v,r)=>u>r.u0+1e-9&&u<r.u1-1e-9&&v>r.v0+1e-9&&v<r.v1-1e-9;
+  const C=[]; for(let u=u0+k/2;u<u1;u+=k) for(let v=v0+k/2;v<v1;v+=k) if(unutra(u,v)){const z=T.z(u,v); if(!isFinite(z)) return null; C.push(z);}
+  // rub platoa: točke na rubovima pravokutnika koje nisu unutar drugog pravokutnika
+  const E=[]; for(const r of R){ const L=[[r.u0,r.v0,r.u1,r.v0],[r.u1,r.v0,r.u1,r.v1],[r.u1,r.v1,r.u0,r.v1],[r.u0,r.v1,r.u0,r.v0]];
+    for(const [a,b,c,d] of L){const len=Math.hypot(c-a,d-b), n=Math.max(1,Math.round(len/k)); for(let i=0;i<n;i++){const t=(i+0.5)/n, u=a+(c-a)*t, v=b+(d-b)*t; if(R.some(q=>q!==r&&strogo(u,v,q))) continue; const z=T.z(u,v); if(!isFinite(z)) return null; E.push({z,ds:len/n});}}}
+  const A=C.length*k*k, zMin=Math.min(...C), zMax=Math.max(...C);
+  const kuca=[]; for(let u=-h.w/2+k/2;u<h.w/2;u+=k) for(let v=-h.d/2+k/2;v<h.d/2;v+=k) kuca.push(T.z(u,v));
+  const vol=(zP,zid)=>{ let cut=0,fill=0,pc=0,pf=0,zL=0,zA=0,hMaxC=0,hMaxF=0;
+    for(const z of C){const d=z-zP; if(d>0) cut+=d*k*k; else fill+=-d*k*k;}
+    for(const e of E){const d=e.z-zP, hh=Math.abs(d); if(d>0) hMaxC=Math.max(hMaxC,d); else hMaxF=Math.max(hMaxF,-d);
+      if(zid&&hh>ISK_P.zidOd){zL+=e.ds; zA+=hh*e.ds; continue;}
+      if(d>0) pc+=ISK_P.pokosIskop*d*d/2*e.ds; else pf+=ISK_P.pokosNasip*d*d/2*e.ds;}
+    return {cut:cut+pc,fill:fill+pf,plato:{cut,fill},pokos:{cut:pc,fill:pf},zid:zL>0?{L:zL,H:zA/zL}:null,hMaxC,hMaxF}; };
+  let zP;
+  if(P.mode==="cut") zP=zMin; else if(P.mode==="fill") zP=zMax;
+  else if(P.mode==="man"&&P.z!=null) zP=P.z;
+  else { let a=zMin,b=zMax; for(let i=0;i<50;i++){const m=(a+b)/2, q=vol(m,P.zid); if(q.cut>q.fill) a=m; else b=m;} zP=(a+b)/2; }
+  const V=vol(zP,P.zid), vis=Math.max(0,V.cut-V.fill), man=Math.max(0,V.fill-V.cut);
+  const zidPrijedlog=vol(zP,true).zid; // gdje bi zid bio potreban (visina ruba > 1 m), neovisno o odabiru
+  return {A,zP,zMin,zMax,razlikaKuca:Math.max(...kuca)-Math.min(...kuca),mode:P.mode==="man"&&P.z==null?"bal":P.mode,...V,visak:vis,manjak:man,
+    odvoz:vis*ISK_P.rastr,kamiona:Math.ceil(vis*ISK_P.rastr/ISK_P.kamion-1e-9),zidPrijedlog,
+    podrum:h.podrum?{A:h.w*h.d,dub:h.fh+0.5,V:h.w*h.d*(h.fh+0.5)}:null};
+}
+// presjek kroz sredinu kuće u smjeru najvećeg pada terena ispod platoa (SVG)
+function iskPresjek(h,T,P,res){
+  const k=1, R=iskPravokutnici(h,P.m); let su=0,sv=0,suz=0,svz=0,n=0,zs=0;
+  for(const r of R) for(let u=r.u0;u<=r.u1;u+=k) for(let v=r.v0;v<=r.v1;v+=k){const z=T.z(u,v); su+=u*u; sv+=v*v; suz+=u*z; svz+=v*z; zs+=z; n++;}
+  let gu=su?suz/su:0, gv=sv?svz/sv:0; const gl=Math.hypot(gu,gv), dir=gl>1e-6?[-gu/gl,-gv/gl]:[0,1]; // jedinični vektor prema dolje
+  const inPl=(s)=>R.some(r=>{const u=s*dir[0], v=s*dir[1]; return u>=r.u0-1e-9&&u<=r.u1+1e-9&&v>=r.v0-1e-9&&v<=r.v1+1e-9;});
+  let sA=0,sB=0; for(let s=0;inPl(s);s+=0.05) sB=s; for(let s=0;inPl(s);s-=0.05) sA=s;
+  const inK=s=>{const u=s*dir[0], v=s*dir[1]; return Math.abs(u)<=h.w/2+1e-9&&Math.abs(v)<=h.d/2+1e-9;};
+  let kA=0,kB=0; for(let s=0;inK(s);s+=0.05) kB=s; for(let s=0;inK(s);s-=0.05) kA=s;
+  const ext=Math.max(6,Math.abs(res.hMaxC)*2,Math.abs(res.hMaxF)*2)+2, L0=sA-ext, L1=sB+ext, pts=[];
+  for(let s=L0;s<=L1+1e-9;s+=0.25) pts.push([s,T.z(s*dir[0],s*dir[1])]);
+  const zP=res.zP, zA=T.z(sA*dir[0],sA*dir[1]), zB=T.z(sB*dir[0],sB*dir[1]);
+  // pokos s lijeve (A) i desne (B) strane: do presjeka s terenom
+  const pokos=(s0,sg)=>{const z0=sg<0?zA:zB, d=z0-zP, n=d>0?ISK_P.pokosIskop:ISK_P.pokosNasip; if(P.zid&&Math.abs(d)>ISK_P.zidOd) return [[s0,zP],[s0,z0]];
+    let s=s0, zz=zP; for(let i=0;i<400;i++){s+=sg*0.05; zz=zP+Math.sign(d)*Math.abs(s-s0)/n; const zt=T.z(s*dir[0],s*dir[1]); if((d>0&&zz>=zt)||(d<=0&&zz<=zt)) break;} return [[s0,zP],[s,zz]];};
+  const pA=pokos(sA,-1), pB=pokos(sB,1), Hk=tFloors().et*h.fh;
+  const zs2=pts.map(p=>p[1]).concat([zP,zP+Hk]), zlo=Math.min(...zs2)-0.5, zhi=Math.max(...zs2)+0.5;
+  const W=640, sc=Math.min((W-20)/(L1-L0),220/(zhi-zlo)), Hh=Math.round((zhi-zlo)*sc)+20;
+  const X=s=>10+(s-L0)*sc, Y=z=>10+(zhi-z)*sc, poly=a=>a.map(p=>X(p[0]).toFixed(1)+","+Y(p[1]).toFixed(1)).join(" ");
+  // površine iskopa i nasipa između terena i linije platoa+pokosa
+  const linija=s=>s<=sA?(s>=pA[1][0]?zP+(pA[1][1]-zP)*(sA-s)/Math.max(1e-9,sA-pA[1][0]):null):s>=sB?(s<=pB[1][0]?zP+(pB[1][1]-zP)*(s-sB)/Math.max(1e-9,pB[1][0]-sB):null):zP;
+  let cutP="",fillP="";
+  for(let i=0;i<pts.length-1;i++){const [s,zt]=pts[i], [s2,zt2]=pts[i+1], l1=linija(s), l2=linija(s2); if(l1==null||l2==null) continue;
+    const q=`${X(s).toFixed(1)},${Y(zt).toFixed(1)} ${X(s2).toFixed(1)},${Y(zt2).toFixed(1)} ${X(s2).toFixed(1)},${Y(l2).toFixed(1)} ${X(s).toFixed(1)},${Y(l1).toFixed(1)}`;
+    if(zt+zt2>l1+l2) cutP+=`<polygon points="${q}"/>`; else fillP+=`<polygon points="${q}"/>`;}
+  const smjer=COMP((Math.atan2(dir[0]*Math.cos(h.rot*Math.PI/180)+dir[1]*Math.sin(h.rot*Math.PI/180),-dir[0]*Math.sin(h.rot*Math.PI/180)+dir[1]*Math.cos(h.rot*Math.PI/180))*180/Math.PI+360)%360);
+  return `<svg class="isk-svg" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Presjek terena kroz kuću: iskop i nasip">`+
+    `<g fill="#c2410c" fill-opacity=".35" stroke="none">${cutP}</g><g fill="#15803d" fill-opacity=".35" stroke="none">${fillP}</g>`+
+    `<polyline points="${poly(pts)}" fill="none" stroke="#7c5a2a" stroke-width="2"/>`+
+    `<polyline points="${poly([pA[1],[sA,zP],[sB,zP],pB[1]])}" fill="none" stroke="currentColor" stroke-width="2"/>`+
+    `<rect x="${X(kA).toFixed(1)}" y="${Y(zP+Hk).toFixed(1)}" width="${(X(kB)-X(kA)).toFixed(1)}" height="${(Hk*sc).toFixed(1)}" fill="#1565c0" fill-opacity=".12" stroke="#1565c0" stroke-width="1.5"/>`+`</svg>`+
+    `<p class="isk-leg"><span class="isk-k" style="background:#c2410c"></span>iskop <span class="isk-k" style="background:#15803d"></span>nasip <span class="isk-k" style="background:#7c5a2a"></span>teren <span class="isk-k" style="background:#1565c0"></span>kuća · presjek kroz sredinu kuće u smjeru pada terena (prema ${smjer}), mjerilo 1 : 1 po visini i duljini</p>`;
+}
+function iskHtml(){
+  return `<details class="acc" data-k="isk"${OPEN.has("isk")?" open":""}><summary><span>Iskop i nasip za plato kuće</span><b id="iskSum">teren ispod kuće</b></summary><div class="acc-body"><div id="iskOut"><p class="meta">Postavi kuću u simulatoru.</p></div></div></details>`;
+}
+function iskKuca(){ if(!TL.center) return null; return {c:TL.center.slice(),w:TL.w,d:TL.d,rot:TL.rot,gar:!!TL.gar,gw:TL.gw,gd:TL.gd,podrum:!!TL.podrum,fh:TL.fh}; }
+// učitavanje modela za česticu (jednom po čestici; pločice pokrivaju česticu i 40 m oko nje)
+function iskStart(){
+  const d=curData(), key=window.__cur&&window.__cur.key||(d&&d.parcel?JSON.stringify(turf.bbox(d.parcel)):null); if(!d||!d.parcel||!key) return;
+  if(ISK.key===key&&ISK.st) return; ISK.key=key; ISK.st="load"; ISK.model=null; ISK.err=null; const my=ISK;
+  const b=turf.bbox(d.parcel), c=[(b[0]+b[2])/2,(b[1]+b[3])/2], R=Math.max(60,Math.hypot((b[2]-b[0])*111320*Math.cos(c[1]*Math.PI/180),(b[3]-b[1])*110540)/2+40);
+  iskModelTiles(c,R).then(m=>{if(ISK!==my||ISK.key!==key) return; ISK.model=m; ISK.st="ok";}).catch(e=>{if(ISK.key!==key) return; ISK.st="err"; ISK.err=(e.greske||[]).join("; ")||e.message;}).finally(()=>{if(ISK.key===key) iskUpdate();});
+}
+function iskSoon(){clearTimeout(ISK.t); ISK.t=setTimeout(()=>{try{iskStart(); iskUpdate();}catch(e){console.error(e)}},120);}
+function iskUpdate(){
+  const o=document.getElementById("iskOut"); if(!o) return; const sum=document.getElementById("iskSum");
+  const h=iskKuca(), d=curData(); if(!h||!d||!d.parcel){o.innerHTML=`<p class="meta">Postavi kuću u simulatoru (gore) i ovdje se računa iskop i nasip.</p>`; return;}
+  const key=ISK.key, P=iskPostavke(key), slope=d.slope&&d.slope.v, pc=turf.centroid(d.parcel.geometry).geometry.coordinates;
+  const T=iskTeren(h,P,ISK.model,slope,pc), uc=[[-h.w/2,-h.d/2],[h.w/2,-h.d/2],[h.w/2,h.d/2],[-h.w/2,h.d/2]], r=h.rot*Math.PI/180;
+  const kutNaz=uc.map(([u,v])=>COMP((Math.atan2(u*Math.cos(r)+v*Math.sin(r),-u*Math.sin(r)+v*Math.cos(r))*180/Math.PI+360)%360));
+  const F=(id,v,ph,st="0.1")=>`<input id="${id}" type="number" inputmode="decimal" step="${st}" value="${v==null?"":v}"${ph?` placeholder="${ph}"`:""}>`;
+  let x=`<div class="bgrid">`;
+  x+=`<label for="iskMode">Visina platoa</label><select id="iskMode" class="bsel">${[["bal","ravnoteža iskopa i nasipa"],["cut","sve u iskop (najniža točka platoa)"],["fill","sve u nasip (najviša točka platoa)"],["man","upisujem sam"]].map(q=>`<option value="${q[0]}"${q[0]===P.mode?" selected":""}>${q[1]}</option>`).join("")}</select>`;
+  x+=`<label for="iskZ">Kota platoa</label><span>${F("iskZ",P.mode==="man"&&P.z!=null?P.z:"",T&&T.relativno?"relativno, kut 1 = 0":"m n. m.","0.05")} m</span>`;
+  x+=`<label for="iskM">Radni pojas oko kuće</label><span>${F("iskM",P.m,"1","0.5")} m</span>`;
+  x+=`<label for="iskZid">Rub platoa</label><span><input type="checkbox" id="iskZid"${P.zid?" checked":""}> potporni zid gdje je rub viši od ${dec(ISK_P.zidOd)} m (inače pokos)</span>`;
+  x+=`</div><details${P.kut.some(v=>v!=null)?" open":""}><summary>Izmjerene visine kutova kuće (točnije od modela)</summary><div class="bgrid">${uc.map((q,i)=>`<label for="iskK${i+1}">Kut ${i+1} (${kutNaz[i]})</label><span>${F("iskK"+(i+1),P.kut[i],i===0?"npr. 0":"")} m</span>`).join("")}</div><p class="meta">Upiši visine sva četiri kuta kuće na terenu, relativno (npr. kut 1 = 0, niži kut −0,8). Izmjeri ih geodet, laserska ili cijevna libela. Kutovi idu redom oko kuće (1 → 2 → 3 → 4), a uz broj je strana svijeta gledano od sredine kuće. Kad su upisana sva četiri, model visina se ne koristi.</p></details>`;
+  if(!T||(ISK.st==="load"&&T.tip!=="kut")){ x+=ISK.st==="load"?`<p class="hint"><span class="spin"></span>Učitavam model visina…</p>`:`<p class="flag">Model visina nije dostupan (${esc(ISK.err||"nema podataka")}). Upiši visine kutova kuće.</p>`;
+    pzSet("isk","Iskop i nasip za plato kuće",null,pz("C",{razlog:"nema podataka o terenu",provjera:"geodetski snimak"})); o.innerHTML=x; if(sum) sum.textContent="nema podataka o terenu"; return; }
+  const R=iskIzracun(h,T,P); if(!R){o.innerHTML=x+`<p class="flag">Model visina nema podatke za cijeli plato.</p>`; return;}
+  ISK.res={...R,izvor:T.izvor,tip:T.tip,relativno:!!T.relativno};
+  const p=pzSet("isk","Iskop i nasip za plato kuće",`iskop ${fmt(R.cut)} m³, nasip ${fmt(R.fill)} m³`,
+    T.tip==="kut"?pz("B",{izvor:"tvoje izmjerene visine kutova kuće",metoda:"plato i pokosi iz visina kutova",razlog:"visine između kutova su linearne; neravnine terena nisu uključene",provjera:"geodetski snimak i projekt"})
+    :pz("C",{izvor:T.izvor,metoda:"plato i pokosi iz modela visina",datum:pzDan(),razlog:"model visina ne vidi terase, zidove, stijene i lokalne nasipe na čestici",provjera:"geodetski snimak"}));
+  const m3=v=>fmt(v)+" m³", mm=v=>dec((Math.round(v*100)/100).toFixed(2)), kota=z=>T.relativno?(z>=0?"+":"")+mm(z)+" m (relativno)":mm(z)+" m n. m.";
+  const row=(a,b,f)=>`<tr><th>${a}</th><td><b>${b}</b>${f?`<small class="fx">${f}</small>`:""}</td></tr>`;
+  x+=`<p class="meta">${pzTag(p)} Teren: ${esc(T.opis)}${T.tip==="ravnina"?" – pločice visina nisu dostupne, pa je teren ravnina":""}.</p>`;
+  x+=`<table class="rp isk-t"><tbody>`;
+  x+=row("Kota platoa",kota(R.zP),{bal:"iskop i nasip u ravnoteži",cut:"plato na najnižoj točki terena: samo iskop",fill:"plato na najvišoj točki terena: samo nasip",man:"tvoja kota"}[R.mode]);
+  x+=row("Teren ispod kuće",`visinska razlika ${mm(R.razlikaKuca)} m`,`na cijelom platou od ${kota(R.zMin)} do ${kota(R.zMax)}`);
+  x+=row("Plato",`${fmt(R.A)} m²`,`kuća${h.gar?" i garaža":""} + radni pojas ${dec(P.m)} m`);
+  x+=row("Iskop",m3(R.cut),`plato ${m3(R.plato.cut)}${R.pokos.cut>0.5?` + pokosi ${m3(R.pokos.cut)}`:""}; najdublje ${mm(R.hMaxC)} m na rubu`);
+  x+=row("Nasip",m3(R.fill),`plato ${m3(R.plato.fill)}${R.pokos.fill>0.5?` + pokosi ${m3(R.pokos.fill)}`:""}; najviše ${mm(R.hMaxF)} m na rubu`);
+  if(Math.max(R.visak,R.manjak)<1) x+=row("Višak i manjak","nema","iskopani materijal pokriva nasip, ako je prikladan za nasip (kamen i glina često nisu; tada se iskop odvozi, a nasip dovozi)");
+  else x+=row(R.visak>=R.manjak?"Višak za odvoz":"Manjak za dovoz",R.visak>=R.manjak?`${m3(R.visak)} (rastresito oko ${m3(R.odvoz)}, ${R.kamiona} ${R.kamiona%10===1&&R.kamiona%100!==11?"kamion":"kamiona"})`:m3(R.manjak),
+    R.visak>=R.manjak?`rastresitost ${dec(ISK_P.rastr)} i kamion oko ${ISK_P.kamion} m³ su pretpostavke`:"nasip treba dovesti (ili iskopani materijal nije prikladan za nasip)");
+  const Z=P.zid?R.zid:R.zidPrijedlog;
+  x+=row("Potporni zid",Z?`oko ${fmt(Z.L)} m, prosječno ${dec(Z.H.toFixed(1))} m visine`:"nije potreban",Z?(P.zid?"uključen umjesto pokosa gdje je rub viši od "+dec(ISK_P.zidOd)+" m":"prijedlog: rub viši od "+dec(ISK_P.zidOd)+" m; uključi „potporni zid” da se računa umjesto pokosa"):`rub platoa nigdje nije viši od ${dec(ISK_P.zidOd)} m`);
+  if(R.podrum) x+=row("Podrum (posebno)",m3(R.podrum.V),`jama ispod platoa ${fmt(R.podrum.A)} m² × ${dec(R.podrum.dub.toFixed(1))} m (visina etaže + 0,5 m za ploču i tampon); u „Procjeni cijene gradnje” je stavka 2a`);
+  x+=`</tbody></table>`;
+  try{x+=iskPresjek(h,T,P,R)}catch(e){console.error(e)}
+  if(document.getElementById("pCut")) x+=`<div class="kd"><button type="button" class="ib" id="iskUpis">Upiši u Pripremu terena</button></div>`;
+  x+=`<p class="meta">Iskop i nasip za temelje (humus i tampon ispod kuće) su u stavci 1 procjene gradnje, a ovdje je samo poravnavanje terena na plato. Pretpostavke: pokos iskopa 1 : 1, nasipa 1 : 1,5, potporni zid iznad ${dec(ISK_P.zidOd)} m; kutovi pokosa nisu uračunati. ${T.tip==="kut"?"Visine kutova su tvoje.":"Model visina je orijentacijski: ne vidi terase, suhozide, stijene ni nasipe na samoj čestici, pa za ponudu i projekt treba geodetski snimak."} Tlo (zemlja ili kamen) jako mijenja cijenu iskopa; na kršu je iskop stijene skuplji i traži pikamer.</p>`;
+  o.innerHTML=x; if(sum) sum.textContent=`iskop ${m3(R.cut)}, nasip ${m3(R.fill)}`;
+  if(document.getElementById("prepHint")) try{prepUpdate()}catch(e){}
+}
+sheet.addEventListener("change",e=>{ const t=e.target; if(!t||!t.id||!/^isk(Mode|Zid)$/.test(t.id)) return; const k=ISK.key, o=iskGet(k);
+  if(t.id==="iskMode"){o.mode=t.value; if(t.value==="man"&&ISK.res&&!(o.z!=null&&o.z!=="")) o.z=Math.round(ISK.res.zP*100)/100;} else o.zid=t.checked; iskSet(k,o); iskUpdate(); });
+sheet.addEventListener("input",e=>{ const t=e.target; if(!t||!t.id||!/^isk(Z|M|K[1-4])$/.test(t.id)) return; const k=ISK.key, o=iskGet(k), v=t.value.trim();
+  if(t.id==="iskZ"){o.z=v; if(v!=="") o.mode="man";} else if(t.id==="iskM") o.m=v; else {o.kut=Array.isArray(o.kut)?o.kut:[null,null,null,null]; o.kut[+t.id.slice(4)-1]=v===""?null:v;}
+  iskSet(k,o); clearTimeout(ISK.ti); ISK.ti=setTimeout(()=>{const a=document.activeElement&&document.activeElement.id; iskUpdate(); if(a){const el=document.getElementById(a); if(el){el.focus(); try{const n=el.value.length; el.setSelectionRange&&el.setSelectionRange(n,n)}catch(_){}}}},400); });
+sheet.addEventListener("click",e=>{ if(!e.target||!/^iskUpis2?$/.test(e.target.id)||!ISK.res) return; const R=ISK.res, P=iskPostavke(ISK.key), set=(id,v)=>{const el=document.getElementById(id); if(el) el.value=v;};
+  set("pCut",Math.round(R.cut)); set("pFill",Math.round(R.fill)); if(P.zid&&R.zid){set("pWallL",Math.round(R.zid.L*2)/2); set("pWallH",Math.round(R.zid.H*10)/10);}
+  prepSave(); finUpdate(); const b=e.target; b.textContent="Upisano u Pripremu terena"; });
 
 // ================= JEDINSTVENI PROJEKTNI MODEL =================
 // Projekt čestice = sve što korisnik planira za jednu česticu. Dijelovi koji već postoje ostaju u svojim spremištima
