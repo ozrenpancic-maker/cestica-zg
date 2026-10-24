@@ -1969,6 +1969,35 @@ async function modTests(){
   ok(errs.length===0,"bez JS grešaka (način): "+errs.join(" | "));
 }
 
+// cijene zemljišta u općini (MPGI i EIZ): grad/općina iz plana, adrese (OSM) ili ručno; medijan, raspon, tražena cijena
+async function ptnTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), G=[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025];
+  const D={izvor:"test",godine:G,jls:[[1333,"Grad Zagreb","ZAGREB",[44,47,33,42,33,36,42,47,64,62,65,68,79,79],[952,729,751,623,752,14,817,1195,910,1085,1046,1141,1094,1050],[2.75,2.49,2.43,2.45,2.48,1.94,2.6,2.93,3.46,3.44,4.7,4,5,5],null],
+    [2151,"Primorsko-goranska","KRK",[63,58,64,60,63,76,70,75,64,74,91,76,105,94],[106,78,91,73,149,11,149,143,123,166,182,145,114,97],null,null],
+    [2534,"Primorsko-goranska","MALINSKA-DUBAŠNICA",[1,1,1,1,1,1,1,1,1,1,1,152,166,"z"],[1,1,1,1,1,1,1,1,1,1,1,80,59,"z"],null,null],
+    [9999,"Splitsko-dalmatinska","KRK",[1,1,1,1,1,1,1,1,1,1,1,1,1,1],null,null,null]]};
+  w.__ptnHook=()=>D;
+  ok(E("ptnNorm")("Općina Malinska - Dubašnica")==="MALINSKADUBAŠNICA"&&E("ptnNadji")("MALINSKA - DUBAŠNICA")===null,"cijene: bez podataka nema pogotka (podaci se učitavaju)");
+  const d=data(w,parcelRect(30,25),"2.2."); E("OPEN").add("ptn"); E("render")(d); await new Promise(r=>setTimeout(r,30));
+  const o=()=>$(w,"ptnOut").textContent.replace(/\s+/g," ");
+  ok(/Zagreb/.test(o())&&/79 €\/m²/.test(o())&&/medijan 2025\., 1\.050 kupoprodaja/.test(o()),"cijene: Zagreb, medijan 2025. i broj kupoprodaja: "+o().slice(0,160));
+  const A=w.__cur.area, f=x=>Math.round(x).toLocaleString("hr-HR");
+  ok(/68–79 €\/m²/.test(o())&&o().includes(`Orijentacijski za ${f(A)} m²`)&&o().includes(`${f(68*A)}–${f(79*A)} €`),"cijene: raspon 2023.–2025. i orijentacijski iznos za površinu čestice: "+o().slice(0,300));
+  ok($(w,"ptnOut").querySelector("svg")&&$(w,"ptnOut").querySelector(".pz-C"),"cijene: grafikon 2012.–2025. i pouzdanost C");
+  setv(w,"ptnTraz",String(Math.round(100*A))); await new Promise(r=>setTimeout(r,600));
+  ok(/To je 100 €\/m², iznad raspona/.test(o())&&/\+27 %/.test(o()),"cijene: tražena cijena = 100 €/m², iznad raspona (+27 % prema medijanu): "+o().slice(-700));
+  ok(/Koliko vrijedi zemljište/.test(txt(w,"sazetak"))&&/medijan građevinskog zemljišta \(Zagreb, 2025\.\): 79 €\/m²/.test(txt(w,"sazetak")),"cijene: sažetak (osnovni način) navodi medijan općine");
+  // čestica izvan Zagreba i Krka: grad/općina iz adrese (OpenStreetMap); isto ime u dvije županije → prema županiji
+  w.__ptnGeoHook=()=>({address:{village:"Kornić",municipality:"Grad Krk",county:"Primorsko-goranska županija"}});
+  const C=w.__cur; C.key="hr:test"; C.jlsHint=null; E("ptnUpdate")(); await new Promise(r=>setTimeout(r,30));
+  ok(/Krk/.test(o())&&/prema adresi \(OpenStreetMap\)/.test(o())&&/94 €\/m²/.test(o()),"cijene: grad iz adrese, ispravna županija za isto ime: "+o().slice(0,120));
+  // medijan za 2025. nije objavljen (manje od 10 kupoprodaja): zadnja objavljena godina
+  const sel=$(w,"ptnJlsSel"); sel.value="2534"; sel.dispatchEvent(new w.Event("change",{bubbles:true}));
+  ok(/tvoj odabir/.test(o())&&/166 €\/m²/.test(o())&&/medijan 2024\./.test(o())&&/za 2025\. nije objavljen \(manje od 10 kupoprodaja\)/.test(o()),"cijene: ručni odabir općine i zadnja objavljena godina kad 2025. ima manje od 10 kupoprodaja");
+  ok(E("ptnRucnoGet")("hr:test")===2534,"cijene: ručni odabir se pamti po čestici");
+  ok(errs.length===0,"bez JS grešaka (cijene zemljišta): "+errs.join(" | "));
+}
+
 // rizici: poplave (Hrvatske vode preko posrednika), internet (HAKOM izravno, posrednik kao zamjena)
 async function rizTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -2042,7 +2071,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

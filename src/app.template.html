@@ -2312,7 +2312,7 @@ function renderKrk(d){
   const ptc=parcel?(()=>{try{const c=turf.pointOnFeature(parcel).geometry.coordinates; return {lat:c[1],lng:c[0]}}catch(e){return ll}})():ll;
   window.__lastLL=ll; const prevKeyK=window.__cur&&window.__cur.key;
   window.__cur={key:"krk:"+(P.ref||P.broj||(ll.lat.toFixed(6)+","+ll.lng.toFixed(6))),region:"krk",ll:{lat:ptc.lat,lng:ptc.lng},ces:P.broj||null,ko:P.ko||null,area,buildArea:null,code:null,
-    namjena:rows[0]?krkZoneLabel(rows[0].p):null,analitika:null,risks:null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:null};
+    namjena:rows[0]?krkZoneLabel(rows[0].p):null,analitika:null,risks:null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:null,jlsHint:jls||null,jlsZup:"Primorsko-goranska",jlsKako:"prema prostornom planu (PGŽ)"};
   window.__prist=parcel&&env&&env.v?pristupOcjena(parcel,env.v.roadLines):null; if(window.__prist) pristupMedju(window.__cur.key,window.__prist,P.broj||null);
   const keepScroll=prevKeyK===window.__cur.key?scrollAnchor():null; // ista čestica: zadrži mjesto čitanja
   GRP=null; window.__areaCmp=null;
@@ -2348,7 +2348,7 @@ function renderKrk(d){
     h+=`<ul class="checks" style="margin-top:6px"><li class="chk chk-${sev}"><b>Teren</b><span>Nadmorska visina oko ${s.h} m, nagib u okolini oko ${Math.round(s.slope)} %, pada prema ${s.down}u.${s.slope>=20?" Strm teren: računaj s potpornim zidovima i skupljim temeljima.":s.slope>=10?" Umjereno strm teren.":""}</span></li></ul><p class="meta">Nagib je iz modela visina rezolucije oko 90 m.</p>`;}
   else if(slope&&slope.e) h+=`<p class="meta">Nagib terena: Podaci nisu dostupni (${esc(slope.e)}).</p>`;
   else if(!env) h+=`<p class="hint"><span class="spin"></span>Učitavam teren, pristup i infrastrukturu…</p>`;
-  if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`+povHtml();
+  if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`+povHtml()+ptnHtml();
   h+=naHtml("Klizišta, kulturna baština, vodozaštita i druga ograničenja iz plana","Za Zagreb aplikacija provjerava gradske slojeve ograničenja; za Primorsko-goransku županiju takvi slojevi još nisu uključeni (zaštićena područja prirode i Natura 2000 provjeravaju se iznad). Ograničenja provjeri u prostornom planu (popis ispod) i lokacijskom informacijom.");
   h+=krkInfraHtml(env?d.ski||{e:"nije učitano"}:null);
   h+=env?envHtml(env):envHtml(null);
@@ -2426,7 +2426,7 @@ function renderHR(d){
     h+=`<ul class="checks" style="margin-top:6px"><li class="chk chk-${sev}"><b>Teren</b><span>Nadmorska visina oko ${s.h} m, nagib u okolini oko ${Math.round(s.slope)} %, pada prema ${s.down}u.${s.slope>=20?" Strm teren: računaj s potpornim zidovima i skupljim temeljima.":s.slope>=10?" Umjeren nagib: moguće su dodatni zemljani radovi.":" Gotovo ravan teren."}</span></li></ul>`;}
   else if(slope&&slope.e) h+=`<p class="meta">Nagib terena: Podaci nisu dostupni (${esc(slope.e)}).</p>`;
   else if(parcel&&!env) h+=`<p class="hint"><span class="spin"></span>Učitavam teren, pristup i infrastrukturu…</p>`;
-  if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`+povHtml();
+  if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`+povHtml()+ptnHtml();
   h+=naHtml("Namjena, klizišta, kulturna baština i druga ograničenja","Za područja izvan Grada Zagreba i otoka Krka aplikacija još ne provjerava slojeve plana. Namjenu i ograničenja provjeri u ISPU-u (ispu.mgipu.hr) i u prostornom planu općine ili grada.");
   h+=env?envHtml(env):envHtml(null);
   if(parcel) h+=naHtml("Postojeće zgrade i uvjeti gradnje","Uvjeti gradnje (izgrađenost, visina, katnost) i izračun smjestivosti kuće nisu obrađeni za ovo područje. Okolne zgrade u 3D pogledu preuzete su iz OpenStreetMapa i samo su ilustracija.");
@@ -4659,7 +4659,7 @@ function render(d){
   window.__lastLL=ll; window.__tl=null; window.__gbp=null; window.__ruleP=null; window.__rule=null;
   window.__cur={key:favKey(parcel,ll),ll:{lat:ll.lat,lng:ll.lng},ces:parcel?parcel.properties.KATASTARSKA_CESTICA:null,ko:parcel?parcel.properties.KATASTARSKA_OPCINA:null,area,buildArea,
     code:(()=>{const r=ruleLookup(up,rows);return r.code?(r.se?"SE ":"")+r.code:null})(),namjena:rows[0]?(rows[0].p.Namjena||rows[0].p.Analitika):null,analitika:rows[0]?rows[0].p.Analitika:null,
-    risks:checks?checks.filter(r=>r.v&&r.v.length).map(r=>r.c.label):null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:envelope?Math.round(envelope.area):null};
+    risks:checks?checks.filter(r=>r.v&&r.v.length).map(r=>r.c.label):null,slope:slope&&slope.v?Math.round(slope.v.slope):null,envelope:envelope?Math.round(envelope.area):null,jlsHint:"ZAGREB",jlsZup:"Grad Zagreb",jlsKako:""};
   window.__prist=parcel&&d.env&&d.env.v?pristupOcjena(parcel,d.env.v.roadLines):null; if(window.__prist) pristupMedju(window.__cur.key,window.__prist,parcel.properties.KATASTARSKA_CESTICA||null);
   if(!snap&&parcel) projApplySim(window.__cur.key);
   GRP=null; let zkH=""; window.__areaCmp=null;
@@ -4725,7 +4725,7 @@ function render(d){
     else if(!hits.length) h+=`<p class="verdict v-warn" style="margin:6px 0">Provjere nisu uspjele jer servisi ne odgovaraju. To ne znači da ograničenja nema; pokušaj ponovno kasnije.</p>`;
     if(slope&&slope.v){const s=slope.v, sev=s.slope>=20?"no":s.slope>=10?"warn":"ok";
       h+=`<ul class="checks" style="margin-top:6px"><li class="chk chk-${sev}"><b>Teren</b><span>Nadmorska visina oko ${s.h} m, nagib u okolini oko ${Math.round(s.slope)} %, pada prema ${s.down}u.${s.slope>=20?" Strm teren: računaj s potpornim zidovima, skupljim temeljima i geotehničkim elaboratom.":s.slope>=10?" Umjereno strm teren: moguć podrum ili suteren, ali i veći trošak iskopa.":""}</span></li></ul><p class="meta">Nagib je iz modela visina rezolucije oko 90 m, pa ne vidi lokalne strmine na samoj čestici.</p>`;}
-    if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`+povHtml();
+    if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`+povHtml()+ptnHtml();
     if(clear.length) h+=`<details><summary>Što je provjereno i čisto (${clear.length})</summary><ol>${clear.map(t=>`<li>${esc(t)}</li>`).join("")}</ol></details>`;
     if(errs.length) h+=`<p class="err">Nisu odgovorili: ${esc(errs.join(", "))}. <button type="button" class="ib retry">Pokušaj ponovno</button></p>`;
   }
@@ -6370,7 +6370,7 @@ const IZB=[[1,"Prostorni planovi i namjena","Što se nalazi na zemljištu i kakv
   [5,"Troškovi i investicija","Koliko će koštati zemljište, kuća i cijela investicija?"],[6,"Projekt i dokumentacija","Kako realizirati gradnju i što pripremiti?"]];
 const IZB_TR=new Set([5]); // „Troškovi i investicija”: na mobitelu samo u kartici „Troškovi”, bez broja (oznaka €); analiza ima 01–05
 const IZB_OZN={1:"01",2:"02",3:"03",4:"04",5:"€",6:"05"};
-const IZB_K={zk:3,risks:3,rparams:2,rex:2,tipcmp:2,gp:2,calc:2,tloc:2,oku:2,skica:2,sun:2,pv:2,vrij:5,buy:5,build:5,prep:5,kd:5,costs:5,krkKd:5,total:5,scen:5,proj:6,ph3:6,ph4:6,cklist:6};
+const IZB_K={ptn:5,zk:3,risks:3,rparams:2,rex:2,tipcmp:2,gp:2,calc:2,tloc:2,oku:2,skica:2,sun:2,pv:2,vrij:5,buy:5,build:5,prep:5,kd:5,costs:5,krkKd:5,total:5,scen:5,proj:6,ph3:6,ph4:6,cklist:6};
 const IZB_ID={okolisBox:3,rkBox:1,pzBox:6,"sec-rizici":3,"sec-provjere":3,"sec-upu":1,"sec-uvjeti":2,"sec-sunce":2,"sec-novac":5,"sec-pouzdanost":6,"sec-troskovi":5};
 const IZB_H=[[/^(Rizici|Provjere|Potresna)/,3],[/^(Komunalna|Pristup)/,4],[/^(Karte prostornog|Prostorni plan)/,1],[/^(Uvjeti gradnje|Postojeće zgrade|Sunce)/,2],[/^Novac/,5],[/^(Pouzdanost|Dokumentacija|Kontrolna lista)/,6],[/^Gradnja i naknade/,5]];
 // prečaci na postojeće module (bez kopiranja): sunčana elektrana je u 02, a njezin financijski rezultat se otvara i iz 05
@@ -6436,7 +6436,7 @@ sheet.addEventListener("scroll",()=>{const b=document.getElementById("izbTop"); 
 // odmah nakon slaganja prikaza: sklapanje pojašnjenja, kategorije izbornika i sažetak (prije vraćanja položaja čitanja)
 // promjena sadržaja iznad mjesta čitanja ne smije pomaknuti tekst koji se čita (Safari nema „scroll anchoring”)
 function keepPos(fn){ const A=sheet.scrollTop>0?scrollAnchor():null; fn(); if(A) scrollRestore(A); }
-function sheetPost(){ try{srchNote()}catch(e){} try{viseInfo()}catch(e){} try{izbWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){} }
+function sheetPost(){ try{srchNote()}catch(e){} try{ptnUpdate()}catch(e){console.error(e)} try{viseInfo()}catch(e){} try{izbWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){} }
 // položaj čitanja: zadnji odjeljak čiji je vrh iznad vrha panela i koliko je pomaknut; poslije ponovnog prikaza isti odjeljak
 // vraća se na isto mjesto, i kad se visina sadržaja iznad promijeni (npr. stigne uložak ili se sklope pojašnjenja)
 function scrollAnchor(){
@@ -6456,12 +6456,110 @@ function pogIdi(el){ if(!el) return; if(modSkriven(el)) modPostavi(true); for(le
   if(isMobile()&&UI.state!=="full") setState("full");
   setTimeout(()=>{const r=el.getBoundingClientRect(), sr=sheet.getBoundingClientRect(); sheet.scrollTop+=r.top-sr.top-8;},isMobile()?260:30); }
 
+// ================= CIJENE ZEMLJIŠTA U OPĆINI (MPGI i EIZ, Pregled tržišta nekretnina RH 2025) =================
+// Medijalne cijene po m² i broj kupoprodaja građevinskog i poljoprivrednog zemljišta po gradu/općini (JLS), 2012.–2025.
+// Podaci su u data/ptn/ptn2025.json (tools/ptn/pripremi.py iz službenih priloga). „z” = manje od 10 kupoprodaja (podatak
+// nije objavljen), null = nema kupoprodaja. Grad/općina: iz prostornog plana (PGŽ, Krk), Zagreb, inače iz adrese (OpenStreetMap,
+// Nominatim) ili tvoj odabir. Medijan općine ne zna ništa o samoj čestici (položaj, pogled, pristup, veličina): pouzdanost C.
+const PTN={data:null,st:null,err:null,jls:new Map(),t:0};
+const ptnNorm=s=>String(s||"").toUpperCase().replace(/^(GRAD|OPĆINA|OPCINA)\s+/,"").replace(/[^A-ZČĆĐŠŽ]/g,"");
+function ptnLoad(){
+  // jedan pokušaj; poslije greške novi tek nakon 60 s (inače bi se osvježavanje i ponovni pokušaj vrtjeli u krug)
+  if(PTN.data||PTN.st==="load"||(PTN.st==="err"&&Date.now()-PTN.errT<60000)) return; PTN.st="load";
+  const src=window.__ptnHook?Promise.resolve(window.__ptnHook()):fetch("data/ptn/ptn2025.json").then(r=>{if(!r.ok) throw new Error("HTTP "+r.status); return r.json();});
+  src.then(j=>{ if(!j||!Array.isArray(j.jls)) throw new Error("neispravna datoteka"); PTN.data=j; PTN.st="ok"; }).catch(e=>{PTN.st="err"; PTN.errT=Date.now(); PTN.err=e.message||"nije učitano";}).finally(()=>{ptnUpdate(); try{sazetakUpdate()}catch(e){}});
+}
+function ptnRed(sifra){return PTN.data&&PTN.data.jls.find(r=>r[0]===sifra)||null;}
+// naziv (i po želji županija) → red; prvo točno ime, zatim ime bez razmaka i crtica
+function ptnNadji(naziv,zup){
+  if(!PTN.data||!naziv) return null; const n=ptnNorm(naziv), z=zup?ptnNorm(zup).replace(/ŽUPANIJA$/,""):null;
+  const L=PTN.data.jls.filter(r=>ptnNorm(r[2])===n); if(!L.length) return null; if(L.length===1||!z) return L[0];
+  return L.find(r=>ptnNorm(r[1]).startsWith(z)||z.startsWith(ptnNorm(r[1])))||L[0];
+}
+function ptnRucnoGet(k){try{const o=JSON.parse(localStorage.getItem("ptnJls")||"{}"); return o[k]||null}catch(e){return null}}
+function ptnRucnoSet(k,s){try{const o=JSON.parse(localStorage.getItem("ptnJls")||"{}"); if(s) o[k]=s; else delete o[k]; localStorage.setItem("ptnJls",JSON.stringify(o))}catch(e){}}
+function ptnTrazGet(k){try{const o=JSON.parse(localStorage.getItem("ptnTraz")||"{}"); return o[k]>0?o[k]:null}catch(e){return null}}
+function ptnTrazSet(k,v){try{const o=JSON.parse(localStorage.getItem("ptnTraz")||"{}"); if(v>0) o[k]=v; else delete o[k]; localStorage.setItem("ptnTraz",JSON.stringify(o))}catch(e){}}
+// grad/općina za trenutnu česticu: {red, kako} ili null; adresa iz OSM-a se traži jednom po čestici
+function ptnJls(){
+  const c=window.__cur; if(!c||!PTN.data) return null; const k=c.key, ru=ptnRucnoGet(k);
+  if(ru){ const r=ptnRed(ru); if(r) return {red:r,kako:"tvoj odabir"}; }
+  if(c.jlsHint){ const r=ptnNadji(c.jlsHint,c.jlsZup); if(r) return {red:r,kako:c.jlsKako||"prema prostornom planu"}; }
+  const m=PTN.jls.get(k); if(m&&m.red) return m; if(m) return null;
+  PTN.jls.set(k,{st:"load"}); const ll=c.ll;
+  const q=new URLSearchParams({format:"jsonv2",lat:ll.lat.toFixed(6),lon:ll.lng.toFixed(6),zoom:"10",addressdetails:"1","accept-language":"hr"});
+  (window.__ptnGeoHook?Promise.resolve(window.__ptnGeoHook(ll)):getJSON("https://nominatim.openstreetmap.org/reverse?"+q.toString(),{},10000)).then(j=>{
+    const a=j&&j.address||{}, zup=a.county||a.state||"", kand=[a.municipality,a.city,a.town,a.village,a.city_district].filter(Boolean);
+    let r=null; for(const x of kand){ r=ptnNadji(x,zup); if(r) break; }
+    PTN.jls.set(k,r?{red:r,kako:"prema adresi (OpenStreetMap)"}:{st:"err",e:kand.length?"„"+kand[0]+"” nije u popisu gradova i općina":"adresa nije pronađena"});
+  }).catch(e=>PTN.jls.set(k,{st:"err",e:e.message||"adresa nije dostupna"})).finally(()=>{ if(window.__cur&&window.__cur.key===k){ ptnUpdate(); try{sazetakUpdate()}catch(e){} } });
+  return null;
+}
+// zadnja godina s objavljenim medijanom i raspon zadnjih triju objavljenih godina (2023.–2025.)
+function ptnStat(cij,br){
+  const G=PTN.data.godine; let i=G.length-1; while(i>=0&&typeof cij[i]!=="number") i--;
+  const zad=i>=0?{g:G[i],v:cij[i],n:br?br[i]:undefined}:null, tri=[];
+  for(let j=G.length-3;j<G.length;j++) if(typeof cij[j]==="number") tri.push(cij[j]);
+  return {zad,lo:tri.length?Math.min(...tri):null,hi:tri.length?Math.max(...tri):null,n3:tri.length,z25:cij[G.length-1]};
+}
+function ptnSvg(cij){
+  const G=PTN.data.godine, W=320, H=96, P=28, pts=G.map((g,i)=>typeof cij[i]==="number"?[g,cij[i]]:null), v=pts.filter(Boolean).map(p=>p[1]); if(v.length<2) return "";
+  const y0=0, y1=Math.max(...v)*1.12, X=g=>P+(g-G[0])/(G[G.length-1]-G[0])*(W-P-10), Y=x=>H-16-(x-y0)/(y1-y0)*(H-26);
+  let d="", pen=false; for(const p of pts){ if(!p){pen=false; continue;} d+=(pen?"L":"M")+X(p[0]).toFixed(1)+","+Y(p[1]).toFixed(1); pen=true; }
+  let g=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px" role="img" aria-label="Medijan cijene građevinskog zemljišta po godinama">`;
+  g+=`<line x1="${P}" y1="${H-16}" x2="${W-10}" y2="${H-16}" stroke="var(--line)"/>`;
+  for(const t of [G[0],2016,2020,G[G.length-1]]) g+=`<text x="${X(t).toFixed(1)}" y="${H-4}" font-size="9" text-anchor="middle" fill="var(--muted)">${t}.</text>`;
+  g+=`<text x="2" y="${(Y(Math.max(...v))+3).toFixed(1)}" font-size="9" fill="var(--muted)">${fmt(Math.max(...v))}</text>`;
+  g+=`<path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2"/>${pts.filter(Boolean).map(p=>`<circle cx="${X(p[0]).toFixed(1)}" cy="${Y(p[1]).toFixed(1)}" r="2.5" fill="var(--accent)"><title>${p[0]}.: ${fmt(p[1])} €/m²</title></circle>`).join("")}</svg>`;
+  return g;
+}
+const ptnEur=v=>v==null?"–":v<10&&!Number.isInteger(v)?dec(v.toFixed(2)):fmt(v); // od 2023. izvor daje cijele eure
+const ptnBr=v=>v==="z"?"manje od 10":v==null?"nema":fmt(v);
+function ptnHtml(){ return `<details class="acc" data-k="ptn"${OPEN.has("ptn")?" open":""}><summary><span>Cijene zemljišta u općini</span><b id="ptnSum"></b></summary><div class="acc-body"><div id="ptnOut"><p class="hint"><span class="spin"></span>Učitavam cijene…</p></div></div></details>`; }
+// rezultat za trenutnu česticu (bez prikaza): koristi ga i sažetak
+function ptnRez(){
+  if(!PTN.data) return null; const J=ptnJls(); if(!J) return null; const r=J.red, S=ptnStat(r[3],r[4]), A=window.__cur&&window.__cur.area;
+  return {J,S,A,pol:r[5]?ptnStat(r[5],r[6]):null};
+}
+function ptnUpdate(){
+  const o=document.getElementById("ptnOut"); ptnLoad(); if(!o) return; const sum=document.getElementById("ptnSum"), k=window.__cur&&window.__cur.key;
+  if(PTN.st==="err"){ o.innerHTML=`<p class="flag">Podaci nisu dostupni (${esc(PTN.err)}).</p>`; return; }
+  if(!PTN.data) return;
+  const R=ptnRez(), m=PTN.jls.get(k), sel=`<select id="ptnJlsSel" class="bsel" aria-label="Grad ili općina"><option value="">${R?"promijeni grad ili općinu…":"odaberi grad ili općinu…"}</option>${PTN.data.jls.slice().sort((a,b)=>a[2].localeCompare(b[2],"hr")).map(r=>`<option value="${r[0]}">${esc(krkJlsNaziv(r[2]))} (${esc(r[1])})</option>`).join("")}</select>`;
+  if(!R){ o.innerHTML=(m&&m.st==="load")?`<p class="hint"><span class="spin"></span>Tražim grad ili općinu…</p>`:`<p class="meta">Grad ili općina nije prepoznat${m&&m.e?" ("+esc(m.e)+")":""}. Odaberi ga:</p>${sel}`; if(sum) sum.textContent=""; return; }
+  const {J,S,A,pol}=R, red=J.red, naz=krkJlsNaziv(red[2]);
+  let h=`<p style="margin:0 0 6px"><b>${esc(naz)}</b>${ptnNorm(red[1])!==ptnNorm(red[2])&&!/^Grad /.test(red[1])?` (${esc(red[1])})`:""}${J.kako?` <small class="meta">${esc(J.kako)}</small>`:""}</p>`;
+  const p=pzSet("ptn","Cijena građevinskog zemljišta u općini",S.zad?`medijan ${S.zad.g}. ${ptnEur(S.zad.v)} €/m²`:null,pz("C",{izvor:"MPGI i EIZ, Pregled tržišta nekretnina RH 2025 (prilozi)",obuhvat:"cijeli grad ili općina, sve kupoprodaje građevinskog zemljišta",datum:"2026-04-30",razlog:"medijan za cijelu općinu, ne za ovu česticu",provjera:"usporedive kupoprodaje u blizini, procjena ovlaštenog procjenitelja"}));
+  if(!S.zad){ h+=`<p class="meta">${pzTag(p)} Za građevinsko zemljište u ovoj općini medijan nije objavljen (manje od 10 kupoprodaja godišnje ili ih nema).</p>`; }
+  else {
+    h+=`<table class="rp"><tbody>`;
+    h+=`<tr><th>Građevinsko zemljište ${pzTag(p)}</th><td><b>${ptnEur(S.zad.v)} €/m²</b> <small class="fx">medijan ${S.zad.g}.${S.zad.n!==undefined?", "+ptnBr(S.zad.n)+" kupoprodaja":""}${S.zad.g<PTN.data.godine[PTN.data.godine.length-1]?`; za ${PTN.data.godine[PTN.data.godine.length-1]}. nije objavljen (${S.z25==="z"?"manje od 10 kupoprodaja":"nema kupoprodaja"})`:""}</small></td></tr>`;
+    if(S.n3>=2) h+=`<tr><th>Raspon 2023.–2025.</th><td><b>${ptnEur(S.lo)}–${ptnEur(S.hi)} €/m²</b> <small class="fx">najniži i najviši godišnji medijan</small></td></tr>`;
+    if(A>0){ const lo=(S.n3>=2?S.lo:S.zad.v)*A, hi=(S.n3>=2?S.hi:S.zad.v)*A;
+      h+=`<tr><th>Orijentacijski za ${fmt(A)} m²</th><td><b>${lo===hi?fmt(lo):fmt(lo)+"–"+fmt(hi)} €</b> <small class="fx">površina × ${S.n3>=2?"raspon medijana":"medijan"}; nije procjena ove čestice</small></td></tr>`; }
+    if(pol&&pol.zad) h+=`<tr><th>Poljoprivredno zemljište</th><td><b>${ptnEur(pol.zad.v)} €/m²</b> <small class="fx">medijan ${pol.zad.g}.${pol.zad.n!==undefined?", "+ptnBr(pol.zad.n)+" kupoprodaja":""}; vrijedi za dio čestice izvan građevinskog područja</small></td></tr>`;
+    h+=`</tbody></table>`;
+    h+=`<p class="eyebrow" style="margin:10px 0 2px">Medijan građevinskog zemljišta 2012.–2025. (€/m²)</p>${ptnSvg(red[3])}`;
+    // tražena cijena iz oglasa
+    const tr=ptnTrazGet(k);
+    h+=`<div class="bgrid" style="margin-top:8px"><label for="ptnTraz">Tražena cijena</label><span><input id="ptnTraz" type="number" inputmode="decimal" min="0" step="1000" placeholder="iz oglasa" value="${tr||""}"> €</span></div>`;
+    if(tr&&A>0){ const pm=tr/A, lo=S.n3>=2?S.lo:S.zad.v, hi=S.n3>=2?S.hi:S.zad.v, x=pm/S.zad.v;
+      h+=`<p style="margin:4px 0">To je <b>${ptnEur(pm)} €/m²</b>, ${pm<lo?"<b>ispod</b> raspona medijana općine":pm>hi?"<b>iznad</b> raspona medijana općine":"<b>unutar</b> raspona medijana općine"} (${x>=1?"+":"−"}${dec(Math.abs((x-1)*100).toFixed(0))} % prema medijanu ${S.zad.g}.).</p>`; }
+  }
+  h+=`<div class="kd">${sel}</div>`;
+  h+=`<p class="meta">Izvor: Ministarstvo prostornoga uređenja, graditeljstva i državne imovine i Ekonomski institut, Zagreb, „Pregled tržišta nekretnina Republike Hrvatske 2025”, prilozi (objavljeno 30. 4. 2026.): medijalne cijene po m² i broj kupoprodaja po gradovima i općinama. Medijan je srednja cijena svih kupoprodaja građevinskog zemljišta u cijeloj općini u toj godini; ne uzima u obzir položaj čestice, pogled, pristup, komunalnu opremljenost, veličinu ni namjenu. Gdje je manje od 10 kupoprodaja, podatak nije objavljen. Za stvarnu vrijednost usporedi prodaje u blizini (npr. eNekretnine) ili naruči procjenu ovlaštenog procjenitelja.</p>`;
+  const ak=document.activeElement&&document.activeElement.id; o.innerHTML=h;
+  if(ak==="ptnTraz"){const el=document.getElementById("ptnTraz"); if(el){el.focus(); const n=el.value.length; try{el.setSelectionRange(n,n)}catch(e){}}}
+  if(sum) sum.textContent=S.zad?`${ptnEur(S.zad.v)} €/m² (${S.zad.g}.)`:"nije objavljeno";
+}
+sheet.addEventListener("change",e=>{ const t=e.target; if(!t||t.id!=="ptnJlsSel"||!t.value) return; const k=window.__cur&&window.__cur.key; if(!k) return; ptnRucnoSet(k,+t.value); ptnUpdate(); try{sazetakUpdate()}catch(_){} });
+sheet.addEventListener("input",e=>{ const t=e.target; if(!t||t.id!=="ptnTraz") return; const k=window.__cur&&window.__cur.key; if(!k) return; ptnTrazSet(k,parseFloat(String(t.value).replace(",","."))||0); clearTimeout(PTN.t); PTN.t=setTimeout(ptnUpdate,500); });
 // ================= OSNOVNI I NAPREDNI NAČIN =================
 // Pri svakom pokretanju aplikacija je u osnovnom načinu; prekidač „Napredno” u zaglavlju prikazuje sve napredne alate.
 // Osnovni način samo SKRIVA prikaz (CSS na body.osnovno): izračuni, unosi i spremanje rade jednako, pa ukupni trošak
 // i dalje uključuje i stavke koje se uređuju u naprednom načinu (to piše uz ukupnu investiciju). Upozorenja i sažetak
 // se ne skrivaju. Kad se iz sažetka ili prečaca otvori napredni odjeljak, aplikacija sama prelazi u napredni način.
-const MOD_NAPREDNO_K=["isk","oku","skica","sun","pv","tipcmp","rparams","rex","krkTxt","risks","povijest","prep","kd","krkKd","costs","scen","vrij","proj","bfaze",
+const MOD_NAPREDNO_K=["ptn","isk","oku","skica","sun","pv","tipcmp","rparams","rex","krkTxt","risks","povijest","prep","kd","krkKd","costs","scen","vrij","proj","bfaze",
   "pog:karte-prostornog-plana","pog:sunce-i-energija","pog:pouzdanost-podataka"];
 const MOD_NAPREDNO_ID=["rkBox","sec-upu","pzBox","sec-pouzdanost","sec-sunce"];
 // dijelovi simulatora kuće i procjene gradnje koji su napredni (oznaka i polje u istom retku tablice)
@@ -6537,8 +6635,11 @@ function sazetakUpdate(){
    const anyP=any||(ph&&ph.length), doneP=done&&PO&&PO.st==="ok";
    rows.push({src:["oko-natura","oko-zast","oko-poplave"],st:anyP?"warn":doneP?"ok":"?",q:"Priroda i poplave",a:nt.charAt(0).toUpperCase()+nt.slice(1)+" · "+zt+" · "+pt,go:"#okolisBox"});}
   // 7. vrijednost zemljišta
-  {const V=window.__vrij, N=PZREG.items.get("vrij-nas"); if(sheet.querySelector('details[data-k="vrij"]'))
-   rows.push({src:["vrij-proc","vrij-nas"],st:V?"ok":"?",q:"Koliko vrijedi zemljište?",a:V?`${V.t} prema tvojim usporedbama (orijentacijski)`:(N?`Prosjek naselja ${N.vrijednost}; `:"")+"za procjenu upiši barem tri kupoprodaje sličnih čestica",go:'details[data-k="vrij"]'});}
+  {const V=window.__vrij, N=PZREG.items.get("vrij-nas"), T=(()=>{try{return ptnRez()}catch(e){return null}})(), tl=T&&T.S.zad?`medijan građevinskog zemljišta (${krkJlsNaziv(T.J.red[2])}, ${T.S.zad.g}.): ${ptnEur(T.S.zad.v)} €/m²`:"";
+   if(sheet.querySelector('details[data-k="vrij"]'))
+     rows.push({src:["vrij-proc","vrij-nas","ptn"],st:V?"ok":"?",q:"Koliko vrijedi zemljište?",a:V?`${V.t} prema tvojim usporedbama (orijentacijski)`:(N?`Prosjek naselja ${N.vrijednost}; `:"")+(tl?tl+"; ":"")+"za procjenu upiši barem tri kupoprodaje sličnih čestica",go:'details[data-k="vrij"]'});
+   else if(T&&sheet.querySelector('details[data-k="ptn"]'))
+     rows.push({src:["ptn"],st:T.S.zad?"info":"?",q:"Koliko vrijedi zemljište?",a:tl?tl+" (cijeli grad ili općina, ne ova čestica)":"za ovaj grad ili općinu medijan nije objavljen",go:'details[data-k="ptn"]'});}
   const C=[...PZREG.items.values()].filter(x=>x.raz==="C").length, ic={ok:"✓",warn:"!",no:"✕","?":"?",info:"i"};
   const srcOf=r=>{ if(r.srcTxt) return r.srcTxt; const its=(r.src||[]).map(id=>PZREG.items.get(id)).filter(Boolean); if(!its.length) return "";
     const seen=new Set(); return its.map(it=>{const t=(it.izvor||it.razlog||"").replace(/\s+/g," ").slice(0,90); const k=t+it.raz; if(seen.has(k)) return null; seen.add(k); return `${t}${it.datum?", "+it.datum.split("-").reverse().join(". ")+".":""} (${it.raz})`;}).filter(Boolean).join(" · "); };
