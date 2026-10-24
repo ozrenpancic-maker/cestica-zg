@@ -2036,6 +2036,45 @@ async function napTests(){
   ok(errs.length===0,"bez JS grešaka (napredne ideje): "+errs.join(" | "));
 }
 
+// izvoz za projektanta (DXF, glTF), kišnica i cisterna, energija kuće (čiste funkcije i prikaz)
+async function izvTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  const d=data(w,parcelRect(30,25),"2.2."); w.__env=d.envelope; E("OPEN").add("tloc"); E("render")(d); E("tDraw")();
+  // DXF
+  const o=E("expPodaci")(), dx=E("expDxf")(o), L=dx.split("\r\n");
+  ok(/^0\r\nSECTION\r\n2\r\nHEADER/.test(dx)&&/\r\nEOF\r\n$/.test(dx)&&L.length%2===1,"DXF: zaglavlje, kraj datoteke i parovi kod/vrijednost");
+  ok(["CESTICA","PROSTOR_GRADNJE","KUCA","UDALJENOSTI","TEKST"].every(s=>dx.includes("\r\n8\r\n"+s+"\r\n")),"DXF: slojevi čestica, prostor, kuća, udaljenosti, tekst");
+  const xs=[]; for(let i=0;i<L.length-1;i+=2) if(L[i]==="10") xs.push(+L[i+1]); const ys=[]; for(let i=0;i<L.length-1;i+=2) if(L[i]==="20") ys.push(+L[i+1]);
+  const xv=xs.filter(v=>v!==0), yv=ys.filter(v=>v!==0);
+  ok(xv.every(v=>v>400000&&v<600000)&&yv.every(v=>v>5000000&&v<5200000),"DXF: koordinate u HTRS96/TM (Zagreb: E oko 458 km, N oko 5.077 km)");
+  ok(/^[\x00-\x7f]*$/.test(dx)&&dx.includes("k.c. 1/1  k.o. SESTINE"),"DXF: tekst samo ASCII (č, š → c, s)");
+  ok(o.udaljenosti.length===4&&(dx.match(/\r\nLINE\r\n/g)||[]).length===4,"DXF: četiri udaljenosti kuće od granice");
+  // glTF
+  const g=E("expGltf")(), b64=g.buffers[0].uri.split(",")[1], n=w.atob(b64).length;
+  ok(g.asset.version==="2.0"&&n===g.buffers[0].byteLength&&g.bufferViews[0].byteLength+g.bufferViews[1].byteLength===n&&g.accessors[0].count*28===g.bufferViews[0].byteLength,"glTF: verzija 2.0, duljine međuspremnika i pristupnika se slažu");
+  ok(g.accessors[0].count%3===0&&g.accessors[2].count%2===0&&g.asset.extras.ishodiste_HTRS96TM[0]>400000,"glTF: trokuti, crte i ishodište u HTRS96/TM");
+  // kišnica: kiša svaki dan 2 mm na 100 m² (0,2 m³) = potrošnja 4 × 50 L → nikad bez vode
+  const T=[]; for(let y=2016;y<=2025;y++) for(let m=1;m<=12;m++) for(let dd=1;dd<=28;dd++) T.push(y+"-"+String(m).padStart(2,"0")+"-"+String(dd).padStart(2,"0"));
+  let K=E("kisIzracun")({t:T,p:T.map(()=>2)},{A:100,koef:1,os:4,l:50,lj:0});
+  ok(K.red.every(r=>r.bez===0)&&K.prep.V===2&&Math.abs(K.uk.dot-K.uk.pot)<1e-6,"kišnica: dotok jednak potrošnji, nema dana bez vode");
+  K=E("kisIzracun")({t:T,p:T.map(t=>+t.slice(5,7)<=4||+t.slice(5,7)>=11?6:0)},{A:100,koef:1,os:4,l:50,lj:0});
+  ok(K.red.every((r,i)=>i===0||r.bez<=K.red[i-1].bez)&&K.red[0].bez>100&&K.red[K.red.length-1].bez<K.red[0].bez,"kišnica: kiša samo zimi → veći spremnik, manje dana bez vode");
+  // energija: stalno 0 °C, kuća 10 × 10 m, prizemnica 3 m, ravni krov
+  const D={t:T,tm:T.map(()=>0),tn:T.map(()=>-2)};
+  const R=E("eneIzracun")(D,{w:10,d:10,gar:false,full:1,pk:0,fh:3,krov:"ravni",nagib:0},{U:E("ENE_U").kont,proz:0.15,n:0.5,scop:3.5});
+  const H=0.30*(120-18)+1.40*18+0.25*100+0.30*100+0.34*0.5*300, dani=T.length/10, Q=H*20*24*dani/1000-0.95*5*100*dani*24/1000;
+  ok(R.zona==="kont"&&Math.abs(R.H-H)<1e-6&&Math.abs(R.Q-Q)<1e-6&&Math.abs(R.f0-320/300)<1e-9&&R.nzeb===75,"energija: gubici, toplina i granica nZEB (Tablica 8) ručno izračunati");
+  ok(E("ENE_NZEB").prim(0.5)===17.16+38.42*0.5&&E("ENE_NZEB").kont(0.1)===40.5,"energija: granice nZEB za primorsku i kontinentalnu klimu");
+  // prikaz uz lažne dnevne podatke
+  w.__klimaHook=()=>({daily:{time:T,precipitation_sum:T.map(t=>+t.slice(8,10)%4===0?8:0),temperature_2m_mean:T.map(t=>+t.slice(5,7)<=2||+t.slice(5,7)===12?2:15),temperature_2m_min:T.map(()=>-3)}});
+  E("OPEN").add("kis"); E("OPEN").add("ene"); E("render")(d); E("tDraw")(); await E("kisUpdate")(); await E("eneUpdate")();
+  ok(/Preporučeni spremnik/.test(txt(w,"kisOut"))&&/m³ godišnje/.test(txt(w,"kisOut"))&&$(w,"kisOut").querySelector("svg")&&!/NaN|undefined/.test(txt(w,"kisOut")),"kišnica: prikaz s preporukom i grafikonom: "+txt(w,"kisOut").slice(0,160));
+  ok(/kontinentalna/.test(txt(w,"eneOut"))&&/Granica nZEB/.test(txt(w,"eneOut"))&&/Snaga grijanja/.test(txt(w,"eneOut"))&&!/NaN|undefined/.test(txt(w,"eneOut")),"energija: prikaz s klimom, nZEB i snagom grijanja: "+txt(w,"eneOut").slice(0,160));
+  setv(w,"eneUz","0.15"); await new Promise(r=>setTimeout(r,500)); ok(E("ENE").res.HT<R.HT+1000&&E("ENE").res.HT<E("eneIzracun")(D,{w:TL_W(w),d:TL_D(w),gar:false,full:1,pk:0,fh:3,krov:"dvo",nagib:30},{U:E("ENE_U").kont,proz:0.15,n:0.5,scop:3.5}).HT,"energija: manji U zida smanjuje gubitke");
+  ok(errs.length===0,"bez JS grešaka (izvoz, kišnica, energija): "+errs.join(" | "));
+}
+const TL_W=w=>w.eval("TL").w, TL_D=w=>w.eval("TL").d;
+
 // rizici: poplave (Hrvatske vode preko posrednika), internet (HAKOM izravno, posrednik kao zamjena)
 async function rizTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -2109,7 +2148,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(napTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(napTests).then(izvTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
