@@ -114,3 +114,38 @@ console.log("worker.next: uložak OK");
   assert.equal(r.status, 503); assert.ok(o.blok && /^OSS je u održavanju \(HTTP 200, nginx, text\/html, \d+ B, „Poštovani, u tijeku je održavanje sustava\.”\)$/.test(o.greska), o.greska);
   console.log("worker.next: OSS u održavanju OK");
 }
+// poplave: slojevi iz popisa servisa (GetCapabilities), upit po točki, prepoznavanje pogotka; bez imena slojeva upisanih u kod
+{
+  store = new Map(); const pitano = [];
+  const cap = `<?xml version="1.0"?><WMS_Capabilities version="1.3.0"><Capability><Request><GetFeatureInfo><Format>text/html</Format><Format>application/json</Format></GetFeatureInfo></Request><Layer><Title>Opasnosti</Title>
+    <Layer queryable="1"><Name>hv:opasnost_velika_2019</Name><Title>Opasnost od poplava – velika vjerojatnost</Title></Layer>
+    <Layer queryable="1"><Name>hv:opasnost_srednja_2019</Name><Title>Opasnost od poplava – srednja vjerojatnost</Title></Layer>
+    <Layer queryable="1"><Name>hv:opasnost_mala_2019</Name><Title>Opasnost od poplava – mala vjerojatnost</Title></Layer>
+    <Layer queryable="0"><Name>hv:podloga</Name><Title>Podloga</Title></Layer></Layer></Capability></WMS_Capabilities>`;
+  globalThis.fetch = async u => { u = String(u); pitano.push(u);
+    if (/GetCapabilities/.test(u)) return new Response(cap, { status: 200, headers: { "content-type": "text/xml" } });
+    const L = new URL(u).searchParams.get("QUERY_LAYERS"), ima = /mala/.test(L);
+    return new Response(JSON.stringify({ type: "FeatureCollection", features: ima ? [{ properties: { dubina: "0,5–1,5 m", scenarij: "mala" } }] : [] }), { status: 200, headers: { "content-type": "application/json" } }); };
+  const r = await W.fetch(new Request("https://w.dev/?poplave=45.8,15.97", { headers: { Origin: "https://ozrenpancic-maker.github.io" } }), {}, ctx), o = await r.json();
+  assert.equal(r.status, 200, JSON.stringify(o)); assert.equal(r.headers.get("Access-Control-Allow-Origin"), "https://ozrenpancic-maker.github.io");
+  assert.deepEqual(o.slojevi.map(s => [s.title.split("– ")[1], s.pogodak]), [["velika vjerojatnost", false], ["srednja vjerojatnost", false], ["mala vjerojatnost", true]]);
+  assert.equal(o.format, "application/json"); assert.equal(o.slojevi[2].svojstva.dubina, "0,5–1,5 m"); assert.ok(!pitano.some(u => /podloga/.test(u)), "sloj koji se ne smije upitati se ne pita");
+  const n = pitano.length; const o2 = await (await W.fetch(new Request("https://w.dev/?poplave=45.8,15.97"), {}, ctx)).json(); assert.ok(o2.izCachea && pitano.length === n, "rezultat se pamti");
+  const d = await (await W.fetch(new Request("https://w.dev/?poplave=45.8,15.97&dijag=1"), {}, ctx)).json(); assert.ok(d.sviSlojevi.length === 4 && /ne upituje se/.test(d.sviSlojevi[3]));
+  const x = await W.fetch(new Request("https://w.dev/?poplave=48.1,11.5"), {}, ctx); assert.equal(x.status, 400);
+  // servis vrati stranicu umjesto popisa slojeva: jasna greška, ništa izmišljeno
+  store = new Map(); globalThis.fetch = async () => new Response("<html>Poštovani, u tijeku je održavanje sustava.</html>", { status: 200, headers: { "content-type": "text/html" } });
+  const e = await (await W.fetch(new Request("https://w.dev/?poplave=45.8,15.97"), {}, ctx)).json(); assert.ok(!e.ok && /popis slojeva nije dostupan \(HTTP 200, text\/html/.test(e.greska), e.greska);
+  console.log("worker.next: poplave (slojevi iz popisa servisa, pogodak, predmemorija, greške) OK");
+}
+// HAKOM: razredi brzine na točki (nepokretna i pokretna mreža)
+{
+  store = new Map(); const pitano = [];
+  globalThis.fetch = async u => { u = String(u); pitano.push(u); const id = +u.match(/\/(\d+)\/query/)[1], ima = id === 92 || id === 94 || id === 99;
+    return new Response(JSON.stringify({ features: ima ? [{ attributes: { BrojOperatora: id === 92 ? "jedan" : "više" } }] : [] }), { status: 200, headers: { "content-type": "application/json" } }); };
+  const o = await (await W.fetch(new Request("https://w.dev/?internet=45.04,14.61"), {}, ctx)).json();
+  assert.ok(o.ok); assert.deepEqual(o.nepokretna, [{ sloj: 92, operatora: "jedan" }, { sloj: 94, operatora: "više" }]); assert.deepEqual(o.pokretna, [{ sloj: 99, operatora: "više" }]); assert.equal(pitano.length, 9);
+  globalThis.fetch = async () => new Response(JSON.stringify({ error: { code: 500, message: "json" } }), { status: 200 });
+  store = new Map(); const e = await (await W.fetch(new Request("https://w.dev/?internet=45.04,14.61"), {}, ctx)).json(); assert.ok(!e.ok && /HAKOM: json/.test(e.greska));
+  console.log("worker.next: HAKOM internet (razredi, greška) OK");
+}

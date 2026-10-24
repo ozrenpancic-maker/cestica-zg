@@ -1,6 +1,6 @@
 // Čestica HR – posrednik prema javnom OSS-u (oss.uredjenazemlja.hr) za upisanu površinu čestice.
 // PRIJEDLOG (worker.next.js): nije objavljen. Dodaje sažetak ZK uloška (?id=…&ulozak=1), vidi PRIJEDLOG-tereti.md.
-// Cloudflare Worker. Poziv: GET https://<worker>/?id=<CESTICA_ID>[&ulozak=1]
+// Cloudflare Worker. Poziv: GET https://<worker>/?id=<CESTICA_ID>[&ulozak=1]; ?poplave=<lat>,<lon>[&dijag=1]; ?internet=<lat>,<lon>
 // Vraća SAMO površine, dijelove čestice i oznake ZK uloška. Imena, adrese i udjeli posjednika/vlasnika se NE prosljeđuju.
 // OSS-ova adresa /oss/public/cad/parcel-info nije službeno dokumentirano sučelje i može se promijeniti bez najave.
 
@@ -176,6 +176,81 @@ async function ulozak(broj, mb) {
   return o;
 }
 
+// ---- karte opasnosti od poplava (Hrvatske vode) i dostupnost interneta (HAKOM): upit po točki ----
+// Poplave: servisi.voda.hr/poplave_opasnosti/wms ne dopušta čitanje iz preglednika (CORS), pa upit ide ovdje. Nazivi slojeva nisu
+// provjereni unaprijed: posrednik ih čita iz popisa servisa (GetCapabilities, pamti 7 dana) i pita samo slojeve koji se smiju upitati.
+// HAKOM: javni ArcGIS (eKarta, „Dostupnost SPP” i pokretna mreža); aplikacija ga pita izravno, a ovo je zamjena ako preglednik ne smije.
+const POPLAVE_WMS = "https://servisi.voda.hr/poplave_opasnosti/wms";
+const HAKOM = "https://ekarta.hakom.hr/server/rest/services/DOSTUPNOST_SPP/";
+const HAKOM_SLOJEVI = [["Dostupnost_SPP/FeatureServer/", [91, 92, 93, 94, 95, 96, 97], "nepokretna"], ["P/MapServer/", [99, 98], "pokretna"]];
+const TJEDAN = 7 * 24 * 3600;
+const xmlDec = s => String(s).replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&#(\d+);/g, (m, n) => String.fromCharCode(+n)).replace(/&#x([0-9a-f]+);/gi, (m, n) => String.fromCharCode(parseInt(n, 16))).replace(/&amp;/g, "&");
+async function zapamceno(kljuc, s, fn) {
+  const ck = new Request("https://cache.local/" + kljuc), hit = await caches.default.match(ck);
+  if (hit) { const o = await hit.json(); o.izCachea = true; return o; }
+  const o = await fn(); if (o && o.ok) await caches.default.put(ck, new Response(JSON.stringify(o), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + s } }));
+  return o;
+}
+async function wmsPopis(url) {
+  const ck = new Request("https://cache.local/wmscap/" + encodeURIComponent(url)), hit = await caches.default.match(ck); let xml;
+  if (hit) xml = await hit.text();
+  else {
+    const r = await fetch(url + "?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0", { headers: { Accept: "application/xml,text/xml", ...UA }, signal: AbortSignal.timeout(15000) });
+    xml = await r.text();
+    if (!r.ok || !/WMS_Capabilities|WMT_MS_Capabilities/.test(xml)) throw new Error("popis slojeva nije dostupan (HTTP " + r.status + ", " + ((r.headers.get("content-type") || "?").split(";")[0]) + ", " + xml.length + " B)");
+    await caches.default.put(ck, new Response(xml, { headers: { "Cache-Control": "max-age=" + TJEDAN } }));
+  }
+  const slojevi = [], re = /<Layer\b([^>]*)>\s*<Name>([^<]+)<\/Name>\s*<Title>([^<]*)<\/Title>/g; let m;
+  while ((m = re.exec(xml))) slojevi.push({ name: xmlDec(m[2].trim()), title: xmlDec(m[3].trim()), q: /queryable\s*=\s*"(1|true)"/i.test(m[1]) });
+  const gfi = (xml.match(/<GetFeatureInfo>[\s\S]*?<\/GetFeatureInfo>/) || [""])[0], formati = [...gfi.matchAll(/<Format>([^<]+)<\/Format>/g)].map(x => x[1].trim());
+  return { slojevi, formati };
+}
+// odgovor GetFeatureInfo: ima li objekata na točki (true/false), null kad se ne može odrediti; svojstva (najviše 6, kratko) za prikaz
+function gfiPogodak(txt, fmt) {
+  const t = String(txt || "");
+  if (/json/i.test(fmt)) { try { const j = JSON.parse(t), f = (j.features || [])[0]; return { pogodak: !!(j.features && j.features.length), svojstva: f && f.properties ? Object.fromEntries(Object.entries(f.properties).slice(0, 6).map(([k, v]) => [k, String(v ?? "").slice(0, 60)])) : null }; } catch (e) { return { pogodak: null }; } }
+  if (/text\/plain/i.test(fmt)) { if (/no features were found/i.test(t) || !t.trim()) return { pogodak: false }; return { pogodak: /Results for FeatureType|=/.test(t) ? true : null }; }
+  if (/xml|gml/i.test(fmt)) { const n = (t.match(/featureMember|<gml:featureMembers|<wfs:member/gi) || []).length; return { pogodak: n > 0 ? true : /FeatureCollection/i.test(t) ? false : null }; }
+  return { pogodak: null };
+}
+async function poplaveNaTocki(lat, lon, dijag) {
+  const P = await wmsPopis(POPLAVE_WMS);
+  const fmt = ["application/json", "application/geo+json", "text/plain", "application/vnd.ogc.gml", "text/xml"].find(f => P.formati.includes(f)) || null;
+  const q = P.slojevi.filter(s => s.q), izbor = (q.filter(s => /velik|srednj|mal[aei]?\b|vjerojatnost|probab/i.test(s.name + " " + s.title)).length ? q.filter(s => /velik|srednj|mal[aei]?\b|vjerojatnost|probab/i.test(s.name + " " + s.title)) : q).slice(0, 8);
+  const o = { ok: true, izvor: "Hrvatske vode, karte opasnosti od poplava (servisi.voda.hr/poplave_opasnosti/wms)", format: fmt, dohvaceno: new Date().toISOString(), slojevi: [] };
+  if (dijag) o.sviSlojevi = P.slojevi.map(s => s.name + (s.q ? "" : " (ne upituje se)") + " – " + s.title).slice(0, 60);
+  if (!fmt) { o.ok = false; o.greska = "servis ne nudi čitljiv odgovor na upit po točki (" + P.formati.join(", ") + ")"; return o; }
+  if (!izbor.length) { o.ok = false; o.greska = "u popisu servisa nema slojeva koji se smiju upitati"; return o; }
+  const d = 0.00005;
+  for (const s of izbor) {
+    const p = new URLSearchParams({ SERVICE: "WMS", VERSION: "1.3.0", REQUEST: "GetFeatureInfo", LAYERS: s.name, QUERY_LAYERS: s.name, STYLES: "", CRS: "EPSG:4326", BBOX: [lat - d, lon - d, lat + d, lon + d].map(v => v.toFixed(7)).join(","), WIDTH: "101", HEIGHT: "101", I: "50", J: "50", INFO_FORMAT: fmt, FEATURE_COUNT: "3", FORMAT: "image/png" });
+    let r, txt; try { r = await fetch(POPLAVE_WMS + "?" + p, { headers: { ...UA }, signal: AbortSignal.timeout(12000) }); txt = await r.text(); } catch (e) { o.slojevi.push({ name: s.name, title: s.title, pogodak: null, greska: e.name || "greška" }); continue; }
+    o.slojevi.push({ name: s.name, title: s.title, ...(r.ok ? gfiPogodak(txt, r.headers.get("content-type") || fmt) : { pogodak: null, greska: "HTTP " + r.status }) });
+  }
+  if (o.slojevi.every(s => s.pogodak == null)) { o.ok = false; o.greska = "odgovor servisa nije bilo moguće pročitati"; }
+  return o;
+}
+async function internetNaTocki(lat, lon) {
+  const o = { ok: true, izvor: "HAKOM, eKarta (Dostupnost SPP)", dohvaceno: new Date().toISOString(), nepokretna: [], pokretna: [] };
+  for (const [put, ids, vrsta] of HAKOM_SLOJEVI) for (const id of ids) {
+    const p = new URLSearchParams({ geometry: lon + "," + lat, geometryType: "esriGeometryPoint", inSR: "4326", spatialRel: "esriSpatialRelIntersects", outFields: "*", returnGeometry: "false", f: "json" });
+    const r = await fetch(HAKOM + put + id + "/query?" + p, { headers: { ...UA }, signal: AbortSignal.timeout(12000) }); const j = await r.json().catch(() => null);
+    if (!r.ok || !j || j.error) { o.ok = false; o.greska = "HAKOM: " + ((j && j.error && j.error.message) || "HTTP " + r.status); return o; }
+    if ((j.features || []).length) o[vrsta].push({ sloj: id, operatora: (j.features[0].attributes || {}).BrojOperatora || null });
+  }
+  return o;
+}
+async function tockaUpit(sp, origin) {
+  const [la, lo] = String(sp.get("poplave") || sp.get("internet") || "").split(",").map(parseFloat);
+  if (!Number.isFinite(la) || !Number.isFinite(lo) || la < 42 || la > 46.6 || lo < 13 || lo > 19.5) return out({ ok: false, greska: "točka je izvan Hrvatske ili neispravna" }, 400, origin);
+  const k = la.toFixed(4) + "," + lo.toFixed(4);
+  try {
+    const o = sp.has("poplave") ? (sp.get("dijag") ? await poplaveNaTocki(la, lo, true) : await zapamceno("poplave/" + k, TJEDAN, () => poplaveNaTocki(la, lo, false)))
+      : await zapamceno("internet/" + k, TJEDAN, () => internetNaTocki(la, lo));
+    return out(o, o.ok ? 200 : 502, origin);
+  } catch (e) { return out({ ok: false, greska: (sp.has("poplave") ? "Hrvatske vode: " : "HAKOM: ") + (e.message || e.name || "servis ne odgovara") }, 502, origin); }
+}
+
 export default {
   async fetch(req, env, ctx) {
     const origin = req.headers.get("Origin") || "";
@@ -183,6 +258,7 @@ export default {
     if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: { ...cors(origin), "Access-Control-Allow-Methods": "GET", "Access-Control-Max-Age": "86400" } });
     if (req.method !== "GET") return out({ ok: false, greska: "samo GET" }, 405, origin);
     const sp = new URL(req.url).searchParams;
+    if (sp.has("poplave") || sp.has("internet")) return tockaUpit(sp, origin);
     let id = sp.get("id") || "", tocka = null;
     const lat = parseFloat(sp.get("lat")), lon = parseFloat(sp.get("lon"));
     if (!id && Number.isFinite(lat) && Number.isFinite(lon)) {
