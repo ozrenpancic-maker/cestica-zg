@@ -1210,6 +1210,27 @@ async function krkTests(){
   setv(w,"krkTip","obit","change");
   setv(w,"krkZona","druga","change"); ok(w.__krkCalc===null&&/samo u zonama M11 i M2/.test(txt(w,"sheet")),"UPU 2, druga zona: bez izračuna, uz razlog (čl. 37.)");
   setv(w,"krkZona","M11","change"); setv(w,"krkOblik","slob","change");
+  // granice iz UPU-a 2 u simulatoru kuće: etaže, visina, krov (čl. 38. d) i zona zaštite (čl. 83.–85.)
+  {const TL=E("TL"), chk=()=>{E("tDraw")(); return (w.__sim&&w.__sim.C)||[];}, row=(C,l)=>C.find(c=>c.label===l);
+   let L=TL.lim; ok(L&&L.etMax===2&&L.visMax===7.5&&L.krov&&L.krov.nagibMin===17&&L.zast&&L.zast.v===""&&$(w,"krkZast")&&$(w,"krkZast").value==="","Simulator UPU 2: granice iz plana (2 nadzemne etaže, 7,5 m, krov 17°–23°, zona zaštite nije odabrana)");
+   Object.assign(TL,{fl:"2.5",krov:"dvo",nagib:30}); let C=chk();
+   ok(row(C,"Nadzemne etaže").st==="no"&&row(C,"Krov").st==="no"&&row(C,"Zona zaštite baštine").st==="warn"&&w.__sim.st==="no"&&/više od dopuštenog/.test([...$(w,"tFl").options].find(o=>o.value==="3").textContent),"Simulator UPU 2: P + 1 + potkrovlje (3 etaže) i krov 30° ne zadovoljavaju; P + 2 označen kao više od dopuštenog");
+   Object.assign(TL,{fl:"2",nagib:20}); C=chk(); ok(row(C,"Nadzemne etaže").st==="ok"&&row(C,"Krov").st==="ok"&&/17°–23°/.test(row(C,"Krov").val),"Simulator UPU 2: P + 1 i krov 20° zadovoljavaju");
+   TL.krov="ravni"; C=chk(); ok(row(C,"Krov").st==="ok","Simulator UPU 2: ravni krov je dopušten izvan zone »C« (čl. 38. d)");
+   setv(w,"krkZast","C","change"); L=TL.lim; Object.assign(TL,{fl:"1.5",krov:"ravni"}); C=chk();
+   ok(L.zast.v==="C"&&/čl\. 85\. \(zona »C«\)/.test(row(C,"Nadzemne etaže").note)&&row(C,"Krov (zona »C«)").st==="no"&&row(C,"Potkrovlje (zona »C«)").st==="no"&&/konzervatorski/.test(row(C,"Zona zaštite baštine").note)&&/zona »C«: kosi, oko 30°/.test(txt(w,"tGrid")),"Simulator UPU 2, zona »C«: ravni krov i potkrovlje s povišenim nadozidom nisu dopušteni (čl. 85.)");
+   Object.assign(TL,{fl:"2",krov:"dvo",nagib:30}); C=chk(); ok(row(C,"Krov (zona »C«)").st==="warn"&&/dva različita nagiba/.test(row(C,"Krov (zona »C«)").note)&&!row(C,"Krov"),"Simulator UPU 2, zona »C«: kosi krov 30° – plan traži dva različita nagiba, odlučuje konzervator (bez presude aplikacije)");
+   setv(w,"krkTip","visobit","change"); ok(E("TL").lim.etMax===2&&/iznimka za kosi teren .* ovdje ne vrijedi/.test(txt(w,"sheet")),"UPU 2, zona »C«: najviše 2 nadzemne etaže i za višeobiteljsku kuću na kosom terenu");
+   setv(w,"krkTip","obit","change");
+   setv(w,"krkZast","B","change"); ok(w.__krkCalc===null&&/zoni »B«.*konzervatorskim uvjetima/.test(txt(w,"sheet")),"UPU 2, zona »B«: bez izračuna, uvjete određuje konzervator (čl. 84.)");
+   setv(w,"krkZast","","change"); Object.assign(TL,{fl:"1",krov:"dvo",nagib:30});}
+  // svaki citat u pravilima UPU-a 2 mora se doslovno nalaziti u spremljenom tekstu odluke (SN PGŽ 19/2016)
+  {const fs=require("fs"), path=require("path"), src=fs.readFileSync(path.join(__dirname,"pgz-odgovori/735-76-kornic-2026-10-22/sn-19-16/odluka_34138_pdf_tekst.txt"),"utf8");
+   const N=x=>String(x).normalize("NFC").replace(/-\s*\n\s*/g,"").replace(/\u00a0/g," ").replace(/m²/g,"m2").replace(/\s+/g," ").trim().toLowerCase(), T=N(src), q=[];
+   const walk=(o,k)=>{ if(Array.isArray(o)) o.forEach(x=>walk(x,k)); else if(o&&typeof o==="object") for(const [kk,v] of Object.entries(o)) walk(v,kk==="txt"||k==="txt"||/^txt/.test(kk)?"txt":kk); else if(typeof o==="string"&&k==="txt") q.push(o); };
+   walk(E("RULES_KRK").upu["UPU 2"],"");
+   const miss=q.filter(s=>s.split(/\s*…\s*|\s*\(.*?\)\s*/).map(N).filter(x=>x.length>8).some(x=>!T.includes(x)));
+   ok(q.length>=20&&miss.length===0,`UPU 2: svih ${q.length} citata iz pravila doslovno je u tekstu odluke SN 19/2016`+(miss.length?" – nedostaje: "+miss.join(" | "):""));}
   plans.pop();
   // UPU 1 Krk (SN 29/2020): pravila po zonama
   plans.push({GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Pročišćeni tekst odredbi za provođenje Urbanističkog plana uređenja UPU 1 - Krk (NA1, R11)",SN_BROJ:"2020-29"});

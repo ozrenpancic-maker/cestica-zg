@@ -1045,6 +1045,20 @@ const KRK_TIP={tip:"obit",oblik:"slob"};
 function krkZonaKey(){return window.__cur&&window.__cur.key?"krkZona:"+window.__cur.key:null}
 function krkZonaGet(){const k=krkZonaKey(); try{return k?localStorage.getItem(k)||"":""}catch(e){return ""}}
 function krkZonaSet(v){const k=krkZonaKey(); try{if(k){if(v) localStorage.setItem(k,v); else localStorage.removeItem(k)}}catch(e){}}
+// zona zaštite baštine (npr. karta 3A UPU-a 2) koju je korisnik odabrao, također posebno za svaku česticu
+function krkZastKey(){return window.__cur&&window.__cur.key?"krkZast:"+window.__cur.key:null}
+function krkZastGet(){const k=krkZastKey(); try{return k?localStorage.getItem(k)||"":""}catch(e){return ""}}
+function krkZastSet(v){const k=krkZastKey(); try{if(k){if(v) localStorage.setItem(k,v); else localStorage.removeItem(k)}}catch(e){}}
+// granice za simulator kuće iz pravila (etaže, visina, krov, zona zaštite), s člankom; null kad pravila nisu obrađena
+function krkSimLim(RS,T,kosi){
+  const num=s=>{const m=String(s||"").match(/(\d+)\s*nadzemn/i); return m?+m[1]:null;};
+  const Z=RS.simulator||{}, zv=Z.zastita?krkZastGet():"", zc=Z.zastita&&zv?Z.zastita[zv]||null:null, ko=kosi&&T.kosi;
+  const L={plan:RS.kod,clanak:"čl. "+T.clanak+(/\.$/.test(T.clanak)?"":"."),etMax:num(ko?T.kosi.etaze:T.etaze),visMax:ko?T.kosi.visina:T.visina||null,kosi:!!ko,
+    krov:Z.krov||null,zast:Z.zastita?{v:zv,cfg:zc,karta:Z.zastita.karta,opcije:Z.zastita.opcije}:null};
+  if(zc&&zc.etazeMax){const zt="čl. "+zc.clanak+" (zona »"+zv+"«)";
+    if(L.etMax==null||zc.etazeMax<L.etMax){L.etMax=zc.etazeMax; L.etIz=zt;} else if(zc.etazeMax===L.etMax) L.etIz=L.clanak+" i "+zt;}
+  return L;
+}
 try{const v=JSON.parse(localStorage.getItem("krkTip")||"null"); if(v&&RULES_KRK&&RULES_KRK.tipovi[v.tip]&&/^(slob|dvoj|ugr)$/.test(v.oblik)) Object.assign(KRK_TIP,{tip:v.tip,oblik:v.oblik})}catch(e){}
 function krkNaselje(name){
   if(!RULES_KRK||!name) return null; const n=" "+norm(name)+" ";
@@ -1115,7 +1129,7 @@ function krkRuleStateJls(d,jls){
 }
 function krkRulesHtml(d){
   const R=RULES_KRK, S=krkRuleState(d); let h=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>%%PREK%%`; window.__krkS=S; krkEnvLayer.clearLayers(); gpLayer.clearLayers(); window.__gp=null; pzDel("gp-podrucje");
-  window.__krkCalc=null; window.__env=null;
+  window.__krkCalc=null; window.__env=null; window.__krkLim=null;
   if(S.st==="ne"||S.st==="upuNe"){h+=`<p class="hint">${esc(S.msg)}</p>`; return h;}
   if(S.st==="blok"){h+=`<div class="verdict v-no">${esc(S.msg)}</div><p class="meta">Čl. ${esc(S.cl)}.: „${esc(S.txt)}“</p>`; return h;}
   const isUpu=S.st==="upu";
@@ -1144,6 +1158,12 @@ function krkRulesHtml(d){
   if(isUpu){
     h+=`<div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label>${sel("krkZona",[["","— odaberi zonu —"],...RS.zone],zona)}</div><p class="flag">Izračun je za zonu koju si odabrao (${esc(zona)}). Detaljna zona nije potvrđena službenim vektorskim slojem ni lokacijskom informacijom.</p><p class="meta">${esc(RS.zonaNapomena)}</p>`+(RS.upozorenja||[]).map(n=>`<p class="flag">${esc(n)}</p>`).join("");
     if(zona==="druga"){h+=`<p class="hint">${esc(RS.drugaZona||"Za ovu zonu uvjeti za obiteljske i višeobiteljske kuće nisu obrađeni.")}</p>`; return h;}
+    const ZS=RS.simulator&&RS.simulator.zastita;
+    if(ZS){const zv=krkZastGet();
+      h+=`<div class="kd" style="margin:6px 0"><label for="krkZast">Zona zaštite (karta ${esc(ZS.karta)})</label>${sel("krkZast",ZS.opcije,zv)}</div>`;
+      h+=zv?`<p class="meta">Zonu zaštite odabrao si sam prema karti ${esc(ZS.karta)}; potvrđuje je lokacijska informacija.</p>`:`<p class="flag">Zona zaštite nije odabrana: pogledaj kartu ${esc(ZS.karta)} (granice zona »B« i »C«, čl. ${esc(ZS.clanak)}). Simulator do tada ne provjerava uvjete zaštite.</p>`;
+      if(zv==="B"&&ZS.B){h+=`<div class="verdict v-warn">${esc(ZS.B.napomena)}</div>`; return h;}
+    }
   }
   h+=`<div class="kd" style="margin:6px 0"><label for="krkTip">Građevina</label>${sel("krkTip",Object.entries(RS.tipovi).map(([k,t])=>[k,t.naziv]),RS.tipovi[KRK_TIP.tip]?KRK_TIP.tip:Object.keys(RS.tipovi)[0])}</div>`;
   h+=`<p class="meta" style="margin:0 0 6px">${esc(T.naziv)}: ${esc(T.opis)}.</p>`;
@@ -1200,6 +1220,8 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
     if(g&&g.geometry) env={geom:g.geometry,area:turf.area(g)};}}catch(e){}
   window.__env=env?{geom:env.geom,area:env.area}:null; // za simulator kuće (isti kao za Zagreb)
   window.__krkCalc={plan:RS.kod,A,tl,gbpN,gbpP,kis:P.kis,minOk,minEx,env:env?Math.round(env.area):null,tip:Object.keys(RS.tipovi).find(k=>RS.tipovi[k]===T),oblik:oblSel,st:S.st,kosi};
+  window.__krkLim=krkSimLim(RS,T,kosi);
+  if(window.__krkLim.zast&&window.__krkLim.zast.v==="C"&&T.kosi) h+=`<p class="flag">U zoni »C« najviše su dvije nadzemne etaže (čl. 85.), pa iznimka za kosi teren (${esc(T.kosi.etaze)}, ${dec(T.kosi.visina)} m) ovdje ne vrijedi.</p>`;
   // pouzdanost izračuna: nikad bolja od B; zona koju je korisnik odabrao (UPU) ili nepotvrđen uvjet daje C
   const pzA=PZREG.items.get(AS&&AS.k?"pov-"+AS.k:"pov-graf")||PZREG.items.get("pov-graf"), pzR=pzSet("pravilo","Pravila gradnje",RS.kod+" · "+T.naziv+", čl. "+T.clanak,/^\s*(na snazi|važeći)/i.test(String(I.status||""))?pz("A",{izvor:I.naziv+(I.sn?", "+I.sn:""),obuhvat:"tekst odredbi, ručno prenesen u aplikaciju",razlog:/izradi/i.test(I.status)?"izmjene plana su u izradi":null}):pz("C",{izvor:I.naziv,razlog:"status plana: "+(I.status||"nepoznat"),provjera:"Službene novine, lokacijska informacija"}));
   const pzZ=isUpu?PZREG.items.get("zona-korisnik"):PZREG.items.get("namjena"), pzS=S.st==="provjera"?pz("C",{naziv:"Uvjet iz plana",razlog:S.msg||"potrebna dodatna provjera"}):null;
@@ -1295,8 +1317,9 @@ function krkKdUpdate(){
 sheet.addEventListener("input",e=>{ if(/^krkKd/.test(e.target.id||"")) krkKdUpdate(); });
 sheet.addEventListener("change",e=>{ if(/^krkKd/.test(e.target.id||"")) krkKdUpdate(); });
 sheet.addEventListener("change",e=>{
-  if((e.target.id==="krkTip"||e.target.id==="krkOblik"||e.target.id==="krkZona")&&KRK_CUR){
+  if((e.target.id==="krkTip"||e.target.id==="krkOblik"||e.target.id==="krkZona"||e.target.id==="krkZast")&&KRK_CUR){
     if(e.target.id==="krkZona") krkZonaSet(e.target.value);
+    else if(e.target.id==="krkZast") krkZastSet(e.target.value);
     else{KRK_TIP[{krkTip:"tip",krkOblik:"oblik"}[e.target.id]]=e.target.value; try{localStorage.setItem("krkTip",JSON.stringify(KRK_TIP))}catch(err){}}
     renderKrk(KRK_CUR);
   }
@@ -2234,7 +2257,7 @@ function renderKrk(d){
   if(parcel&&rkKatalog(ll)) h+=`<h2 id="sec-upu">${esc(rkKatalog(ll).naslov)}</h2><div id="rkBox">${rkInner()}</div>`;
   // uvjeti gradnje i izračun
   h+=krkRulesHtml(d); {let ph=""; try{ph=krkPrekHtml(d)}catch(err){console.error(err)} h=h.replace("%%PREK%%",ph);}
-  {const C=window.__krkCalc; if(parcel&&C&&window.__env) h+=simHtml({izg:C.tl/C.A,kis:C.kis},C.A,area,C.gbpN,null);}
+  {const C=window.__krkCalc; if(parcel&&C&&window.__env) h+=simHtml({izg:C.tl/C.A,kis:C.kis},C.A,area,C.gbpN,null,window.__krkLim);}
   if(RULES_DB){const m=rows[0]?rows[0].p:{}, T=RULES_KRK&&RULES_KRK.tipovi&&RULES_KRK.tipovi[KRK_TIP.tip];
     h+=dbHtml({jls:jlsName,zone:rows.filter(r=>r.share==null||r.share>0.05).map(r=>r.p.OZNAKA_NAMJENE).filter(Boolean),izgradenost:m.IZGRADJENOST||null,vrsta:T?T.naziv:null,nacin:{slob:"slobodnostojeća",dvoj:"dvojna",ugr:"ugrađena"}[KRK_TIP.oblik]||null},
       parcel?{P,area,share:window.__areaCmp?window.__areaCmp.share:1}:null);}
@@ -2582,7 +2605,22 @@ function tChecks(){
     add("Prirodni teren",left<need?`ostaje ${fmt(left)} m², a treba najmanje ${fmt(need)} m²`:`ostaje najviše ${fmt(left)} m², treba ${fmt(need)} m²`,left<need?"no":"warn","staze, terase i parkirališta ne ulaze u prirodni teren; provjeri s projektom uređenja");}
   if(TIP!=="slob"&&!(curData()&&curData().krk)) add("Tip kuće",TIPOVI.find(t=>t[0]===TIP)[1],"warn","poluugrađena i ugrađena kuća prislanja se na među; prostor na karti računa razmak od svih međa");
   if(TL.podrum) add("Podrum",`${fmt(gbpP)} m² (ne ulazi u nadzemni GBP)`,"warn","ulazi li podrum u ograničenje GBP-a ovisi o definiciji u odluci; potrebna provjera");
-  add("Visina do vijenca (procjena)",`oko ${String(height.toFixed(1)).replace(".",",")} m`,"info",`${F.full} × ${String(TL.fh).replace(".",",")} m${F.pk?" + nadozid potkrovlja oko 1,2 m":""}`);
+  const LM=TL.lim, hTxt=`${F.full} × ${String(TL.fh).replace(".",",")} m${F.pk?" + nadozid potkrovlja oko 1,2 m":""}`;
+  if(LM){ // granice iz obrađenog plana (Krk): etaže, visina, krov, zona zaštite
+    const zv=LM.zast&&LM.zast.v, zc=LM.zast&&LM.zast.cfg, zC=zv==="C"?zc:null, kr=LM.krov, deg=v=>String(v).replace(".",",")+"°";
+    if(LM.etMax&&!etMax) add("Nadzemne etaže",`${F.et} od najviše ${LM.etMax}`,F.et<=LM.etMax?"ok":"no",`${LM.etIz||LM.clanak}${LM.kosi&&!LM.etIz?", iznimka za kosi teren":""}; potkrovlje se broji kao etaža`);
+    if(zC&&zC.nadozid===false&&F.pk) add("Potkrovlje (zona »C«)","s povišenim nadozidom (oko 1,2 m)","no",`čl. ${zC.clanak}: „bez povišenja nadozida za potkrovlje”; simulator potkrovlje računa s nadozidom`);
+    if(LM.visMax) add("Visina (procjena)",`oko ${String(height.toFixed(1)).replace(".",",")} m od najviše ${String(LM.visMax).replace(".",",")} m`,height<=LM.visMax+1e-9?"ok":"no",`${hTxt}; visina se mjeri od najniže kote zaravnatog terena uz građevinu (${LM.clanak}), pa ovisi o terenu`);
+    else add("Visina do vijenca (procjena)",`oko ${String(height.toFixed(1)).replace(".",",")} m`,"info",hTxt);
+    if(kr||zC){ const ravni=TL.krov==="ravni", n=ravni?0:TL.nagib;
+      if(zC&&zC.krovKosi&&ravni) add("Krov (zona »C«)","ravni krov","no",`čl. ${zC.clanak}: građevine moraju imati kosi krov (oko ${zC.krovNagib}°)`);
+      else if(zC&&!ravni) add("Krov (zona »C«)",`kosi, nagib ${deg(n)}`,"warn",`plan traži dva različita nagiba: čl. ${zC.clanak} „oko ${zC.krovNagib}°” za zonu »C«, a čl. ${kr?kr.clanak:"38."} ${kr?kr.nagibMin+"°–"+kr.nagibMax+"°":""}. Nagib određuju posebni konzervatorski uvjeti`);
+      else if(kr&&ravni) add("Krov","ravni krov",kr.ravniDopusten?"ok":"no",`čl. ${kr.clanak}: ${kr.ravniDopusten?"krov može biti ravan ili kos":"ravni krov nije predviđen"}`);
+      else if(kr) add("Krov",`kosi, nagib ${deg(n)} (dopušteno ${kr.nagibMin}°–${kr.nagibMax}°)`,n>=kr.nagibMin-1e-9&&n<=kr.nagibMax+1e-9?"ok":"no",`čl. ${kr.clanak}; pokrov mediteran crijep ili kupa kanalica`); }
+    if(LM.zast){ if(!zv) add("Zona zaštite baštine",`nije odabrana (karta ${LM.zast.karta})`,"warn","u zoni »C« vrijede stroži uvjeti (najviše 2 nadzemne etaže, kosi krov), a u zoni »B« nova gradnja samo prema konzervatorskim uvjetima");
+      else if(zv==="C") add("Zona zaštite baštine","zona »C« (tvoj odabir)","warn",`čl. ${zc.clanak}: za novu gradnju potrebni su posebni konzervatorski uvjeti odnosno prethodno odobrenje`);
+      else if(zv==="izvan") add("Zona zaštite baštine",`izvan zona »B« i »C« (tvoj odabir prema karti ${LM.zast.karta})`,"info","nije potvrđeno lokacijskom informacijom"); }
+  } else add("Visina do vijenca (procjena)",`oko ${String(height.toFixed(1)).replace(".",",")} m`,"info",hTxt);
   const st=C.some(c=>c.st==="no")?"no":C.some(c=>c.st==="warn")?"warn":"ok";
   return {C,st,tl,gbpN,gbpP,hA,gA,F,height,inEnv};
 }
@@ -2663,8 +2701,8 @@ sheet.addEventListener("change",e=>{
   const id=e.target.id;
   if(id==="tFl"){TL.fl=e.target.value; predApply(); tDraw();}
   if(id==="tPred"){TL.pred=e.target.value; if(TL.pred) predApply(); else{const n=document.getElementById("tPredNote"); if(n) n.textContent="Vlastite dimenzije.";} tDraw();}
-  if(id==="tKrov"){TL.krov=e.target.value; const n=document.getElementById("tNagib"), sl=document.getElementById("tSlj"); if(n){n.disabled=TL.krov==="ravni"; n.value=TL.krov==="ravni"?0:TL.nagib;} if(sl) sl.disabled=TL.krov!=="dvo"; projSaveSimSoon(); zgSync();}
-  if(id==="tNagib"){const v=parseFloat(String(e.target.value).replace(",",".")); if(v>=0&&v<=60){TL.nagib=v; projSaveSimSoon(); zgSync();}}
+  if(id==="tKrov"){TL.krov=e.target.value; const n=document.getElementById("tNagib"), sl=document.getElementById("tSlj"); if(n){n.disabled=TL.krov==="ravni"; n.value=TL.krov==="ravni"?0:TL.nagib;} if(sl) sl.disabled=TL.krov!=="dvo"; projSaveSimSoon(); zgSync(); if(TL.lim) tDraw();}
+  if(id==="tNagib"){const v=parseFloat(String(e.target.value).replace(",",".")); if(v>=0&&v<=60){TL.nagib=v; projSaveSimSoon(); zgSync(); if(TL.lim) tDraw();}}
   if(id==="tSlj"){TL.sljeme=e.target.value==="pop"?"pop":"duz"; projSaveSimSoon(); zgSync();}
   if(id==="tPod"){TL.podrum=e.target.checked; tDraw();}
   const m=id.match(/^tDs(\d)$/); if(m){const v=parseFloat(String(e.target.value).replace(",",".")); if(v>=0){tMoveSide(+m[1],v); tDraw();}}
@@ -2681,19 +2719,21 @@ sheet.addEventListener("click",e=>{
     OPEN.add("build"); const b=document.querySelector('details[data-k="build"]'); if(b){b.open=true; b.scrollIntoView({block:"start",behavior:"smooth"});}
     e.target.textContent="✓ Preneseno: "+fmt(R.gbpN)+" m²"; }
 });
-function simHtml(pp,A,area,gbpMax,RP){
-  const et=RP&&RP.find(x=>x.id==="etaze"), F=tFloors();
+function simHtml(pp,A,area,gbpMax,RP,lim){
+  const et=RP&&RP.find(x=>x.id==="etaze"), F=tFloors(); TL.lim=lim||null;
   let h=`<details class="acc" data-k="tloc"><summary><span>Simulator kuće na čestici</span><b id="tSum">stane li kuća?</b></summary><div class="acc-body">`;
   h+=`<div class="bgrid" id="tGrid" data-tl="${pp.izg?Math.round(A*pp.izg):""}" data-area="${Math.round(area)}" data-gbp="${gbpMax?Math.round(gbpMax):""}" data-kis="${pp.kis||""}" data-teren="${pp.teren||""}" data-et="${et&&et.num?et.num:""}">`;
   const stp=(id,d)=>`<button type="button" class="ib step" data-step="${id}" data-d="${-d}" aria-label="smanji">−</button>`, stu=(id,d)=>`<button type="button" class="ib step" data-step="${id}" data-d="${d}" aria-label="povećaj">+</button>`;
   h+=`<label for="tPred">Predložak</label><select id="tPred" class="bsel"><option value="">vlastite dimenzije</option>${PREDLOSCI.map(p=>`<option value="${p}"${String(p)===String(TL.pred)?" selected":""}>${p} m² nadzemnog GBP-a</option>`).join("")}</select>`;
   h+=`<label for="tW">Širina</label><span>${stp("tW",0.5)}<input id="tW" type="number" inputmode="decimal" min="3" step="0.5" value="${TL.w}">${stu("tW",0.5)} m</span>`;
   h+=`<label for="tD">Dubina</label><span>${stp("tD",0.5)}<input id="tD" type="number" inputmode="decimal" min="3" step="0.5" value="${TL.d}">${stu("tD",0.5)} m</span>`;
-  h+=`<label for="tFl">Etaže</label><select id="tFl" class="bsel">${FLOOR_OPTS.map(o=>`<option value="${o[0]}"${o[0]===TL.fl?" selected":""}>${o[1]}</option>`).join("")}</select>`;
+  const etL=lim&&lim.etMax;
+  h+=`<label for="tFl">Etaže</label><select id="tFl" class="bsel">${FLOOR_OPTS.map(o=>`<option value="${o[0]}"${o[0]===TL.fl?" selected":""}>${o[1]}${etL&&o[2]+o[3]>etL?" – više od dopuštenog":""}</option>`).join("")}</select>`;
   h+=`<label for="tFh">Visina etaže</label><span><input id="tFh" type="number" inputmode="decimal" min="2.4" max="4.5" step="0.1" value="${TL.fh}"> m</span>`;
   h+=`<label for="tRot">Okret</label><span>${stp("tRot",5)}<input id="tRot" type="number" inputmode="decimal" min="0" max="359" step="1" value="${TL.rot}">${stu("tRot",5)} °<output id="tRotV" hidden>${TL.rot}°</output></span>`;
   h+=`<label for="tKrov">Krov</label><select id="tKrov" class="bsel">${KROVOVI.map(k=>`<option value="${k[0]}"${k[0]===TL.krov?" selected":""}>${k[1]}</option>`).join("")}</select>`;
-  h+=`<label for="tNagib">Nagib krova</label><span><input id="tNagib" type="number" inputmode="decimal" min="0" max="60" step="1" value="${TL.krov==="ravni"?0:TL.nagib}"${TL.krov==="ravni"?" disabled":""}> °</span>`;
+  const kr=lim&&lim.krov, zC=lim&&lim.zast&&lim.zast.cfg&&lim.zast.v==="C"?lim.zast.cfg:null;
+  h+=`<label for="tNagib">Nagib krova</label><span><input id="tNagib" type="number" inputmode="decimal" min="0" max="60" step="1" value="${TL.krov==="ravni"?0:TL.nagib}"${TL.krov==="ravni"?" disabled":""}> °${kr?` <small class="meta">plan: ${kr.ravniDopusten&&!zC?"ravni ili ":""}${kr.nagibMin}°–${kr.nagibMax}° (čl. ${esc(kr.clanak)})${zC?`; zona »C«: kosi, oko ${zC.krovNagib}° (čl. ${esc(zC.clanak)})`:""}</small>`:""}</span>`;
   h+=`<label for="tSlj">Sljeme</label><select id="tSlj" class="bsel"${TL.krov!=="dvo"?" disabled":""}><option value="duz"${TL.sljeme==="duz"?" selected":""}>uzduž dulje strane</option><option value="pop"${TL.sljeme==="pop"?" selected":""}>uzduž kraće strane</option></select>`;
   h+=`<label for="tPod">Podrum</label><span><input type="checkbox" id="tPod"${TL.podrum?" checked":""}> ispod cijele kuće</span>`;
   h+=`<label for="tGar">Garaža</label><span><input type="checkbox" id="tGar"${TL.gar?" checked":""}> prizemna, uz desni bok kuće</span>`;
