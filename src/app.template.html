@@ -1410,10 +1410,12 @@ async function krkOssJedan(base,P,k,q,ul){
   catch(e){return {st:"err",e:e.name==="AbortError"?"OSS ne odgovara":"mreža ili posrednik nedostupan",retry:true,rez:true}}
   finally{clearTimeout(t)}
 }
-// prvo glavni posrednik (Cloudflare); ako je odbijen ili nedostupan, isti upit jednom ide na rezervni (Deno). 404/400 su pravi odgovori, bez rezerve.
+// prvo glavni posrednik (Cloudflare); ako je odbijen ili nedostupan, isti upit jednom ide na rezervni (Deno). 404/400 od glavnog su pravi odgovori, bez rezerve.
+// Rezervni posrednik može dobiti prazan odgovor OSS-a i javiti „nema čestice” i za česticu koja postoji (provjereno 24. 10. 2026.:
+// Deno za 735/58 Kornić javlja 404, a Cloudflare vraća podatke). Zato se njegov 404 ne prihvaća kao konačan: ostaje greška glavnog, s gumbom „Pokušaj ponovno”.
 async function krkOssOnce(P,k,q,ul){
   let r=await krkOssJedan(SRC_KRK.oss,P,k,q,ul);
-  if(r.st==="err"&&r.rez&&SRC_KRK.oss2){const r2=await krkOssJedan(SRC_KRK.oss2,P,k,q,ul); if(r2.st==="ok"||r2.rez===false) return r2;}
+  if(r.st==="err"&&r.rez&&SRC_KRK.oss2){const r2=await krkOssJedan(SRC_KRK.oss2,P,k,q,ul); if(r2.st==="ok") return r2; if(r2.rez===false) r={...r,e:r.e+"; ni rezervni posrednik nije dobio podatke"};}
   return r;
 }
 // dohvat površine s ponovnim pokušajima; stanje u OSSZK pod ključem k, onUpd osvježava prikaz.

@@ -108,11 +108,14 @@ async function cesticaNaTocki(lat, lon) {
 async function parcelInfo(id) {
   // bez ponavljanja ovdje: ponovni pokušaj radi aplikacija, da OSS ne dobiva niz upita
   let r; try { r = await ossFetch(OSS + id, { "Accept": "application/json, text/plain, */*" }); } catch (e) { if (e.blok) return { status: 503, greska: e.message, blok: true }; throw e; } const last = null;
-  if (r.status === 404 || r.status === 204) return { status: 404 };
+  // za dijagnostiku: status, poslužitelj, vrsta i duljina odgovora OSS-a (bez sadržaja); prazan odgovor može biti prikriveno odbijanje
+  const opis = (n) => "HTTP " + r.status + ", " + (r.headers.get("server") || "poslužitelj ?") + ", " + ((r.headers.get("content-type") || "?").split(";")[0]) + ", " + n + " B";
+  if (r.status === 404 || r.status === 204) return { status: 404, oss: opis(r.headers.get("content-length") || "?") };
   if (!r.ok) return { status: 502, greska: "OSS HTTP " + (last || r.status) };
   const txt = await r.text(); let d;
-  try { d = txt.trim().startsWith("<") ? xmlToObj(txt) : JSON.parse(txt); } catch (e) { return { status: 502, greska: "OSS je vratio nečitljiv odgovor" }; }
-  if (!d || (d.parcelId == null && d.area == null)) return { status: 404 };
+  if (!txt.trim()) return { status: 503, greska: "OSS je vratio prazan odgovor (" + opis(0) + ")" };
+  try { d = txt.trim().startsWith("<") ? xmlToObj(txt) : JSON.parse(txt); } catch (e) { return { status: 502, greska: "OSS je vratio nečitljiv odgovor (" + opis(txt.length) + ")" }; }
+  if (!d || (d.parcelId == null && d.area == null)) return { status: 404, oss: opis(txt.length) };
   return { status: 200, o: sazmi(d) };
 }
 
@@ -188,7 +191,7 @@ export default {
     else {
       let res;
       try { res = await parcelInfo(id); } catch (e) { return out({ ok: false, greska: "OSS ne odgovara (" + (e.name || "greška") + ")" }, 502, origin); }
-      if (res.status === 404) return out({ ok: false, greska: "OSS nema česticu s tim ID-om" }, 404, origin);
+      if (res.status === 404) return out({ ok: false, greska: "OSS nema česticu s tim ID-om", oss: res.oss || null }, 404, origin);
       if (res.status !== 200) return out({ ok: false, greska: res.greska, ...(res.blok ? { blok: true } : {}) }, res.blok ? 503 : 502, origin);
       o = res.o;
       ctx.waitUntil(cache.put(ck, new Response(JSON.stringify(o), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + CACHE_S } })));
