@@ -120,6 +120,7 @@ async function parcelInfo(id) {
     const tekst = txt.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 80);
     const o = opis(txt.length) + (tekst ? ", „" + tekst + "”" : "");
     try { await caches.default.put(BLOK, new Response(o, { headers: { "Cache-Control": "max-age=" + BLOK_S } })); } catch (e) {}
+    if (/održavanj/i.test(tekst)) return { status: 503, greska: "OSS je u održavanju (" + o + ")", blok: true };
     return { status: 503, greska: "OSS je umjesto podataka vratio HTML stranicu (" + o + ")", blok: true };
   }
   try { d = txt.trim().startsWith("<") ? xmlToObj(txt) : JSON.parse(txt); } catch (e) { return { status: 502, greska: "OSS je vratio nečitljiv odgovor (" + opis(txt.length) + ")" }; }

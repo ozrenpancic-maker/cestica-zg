@@ -106,3 +106,11 @@ console.log("worker.next: uložak OK");
   const n = calls.length; await W.fetch(new Request("https://w.dev/?id=19311110"), {}, ctx); assert.equal(calls.length, n, "nakon HTML odbijanja pauza bez upita prema OSS-u");
   console.log("worker.next: HTML stranica umjesto podataka → odbijanje (503, blok, pauza) OK");
 }
+// stranica OSS-a o održavanju (24. 10. 2026.): poruka „OSS je u održavanju”
+{
+  store = new Map();
+  globalThis.fetch = async u => new Response("<html><body><p>Poštovani, u tijeku je održavanje sustava.</p></body></html>", { status: 200, headers: { server: "nginx", "content-type": "text/html" } });
+  const r = await W.fetch(new Request("https://w.dev/?id=19311109"), {}, ctx), o = await r.json();
+  assert.equal(r.status, 503); assert.ok(o.blok && /^OSS je u održavanju \(HTTP 200, nginx, text\/html, \d+ B, „Poštovani, u tijeku je održavanje sustava\.”\)$/.test(o.greska), o.greska);
+  console.log("worker.next: OSS u održavanju OK");
+}
