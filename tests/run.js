@@ -1872,6 +1872,50 @@ async function arTests(){
   ok(errs.length===0,"bez JS grešaka (AR): "+errs.join(" | "));
 }
 
+// iskop i nasip za plato kuće: čisti izračun, model iz pločica (lažne pločice), izmjereni kutovi, prikaz i upis u pripremu
+async function iskTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), I=E("iskIzracun"), bl=(a,b,e=0.02)=>Math.abs(a-b)<=e;
+  ok(E("terrarium")(128,0,0)===0&&E("terrarium")(128,100,128)===100.5,"iskop: Terrarium dekodiranje (r·256 + g + b/256 − 32768)");
+  const H={c:[15.97,45.84],w:10,d:10,rot:0,gar:false,gw:3,gd:6,podrum:false,fh:3}, ravn=g=>({z:(u,v)=>g*v});
+  const P0={mode:"man",z:0,m:0,zid:false,kut:[null,null,null,null]};
+  let R=I(H,ravn(0.1),P0);
+  ok(bl(R.plato.cut,12.5)&&bl(R.plato.fill,12.5),"iskop: ravnina 10 % ispod 10 × 10 m, plato na sredini: 12,5 m³ iskopa i 12,5 m³ nasipa");
+  ok(bl(R.pokos.cut,1.25+0.4167,0.03)&&bl(R.pokos.fill,1.875+0.625,0.03),"iskop: pokosi 1:1 i 1:1,5 na rubovima (ručno izračunato)");
+  ok(bl(R.razlikaKuca,0.975,0.01)&&R.A===100,"iskop: visinska razlika ispod kuće i površina platoa");
+  R=I(H,ravn(0.1),{...P0,mode:"bal"}); ok(Math.abs(R.cut-R.fill)<0.05&&R.zP<0&&R.zP>-0.1,"iskop: ravnoteža iskopa i nasipa (s pokosima) spušta plato malo ispod sredine");
+  R=I(H,ravn(0.1),{...P0,mode:"cut"}); ok(R.plato.fill<1e-9&&R.cut>20,"iskop: „sve u iskop” nema nasipa na platou");
+  R=I(H,ravn(0.1),{...P0,mode:"fill"}); ok(R.plato.cut<1e-9&&R.fill>20,"iskop: „sve u nasip” nema iskopa na platou");
+  R=I(H,ravn(0.1),{...P0,m:1}); ok(R.A===144&&R.plato.cut>12.5,"iskop: radni pojas 1 m povećava plato na 12 × 12 m");
+  R=I(H,ravn(0.3),{...P0,mode:"bal"}); ok(!R.zid&&R.zidPrijedlog&&R.zidPrijedlog.L>9,"iskop: na 30 % rub viši od 1 m: predlaže se potporni zid");
+  const Rz=I(H,ravn(0.3),{...P0,mode:"bal",zid:true}); ok(Rz.zid&&Rz.zid.H>1&&Rz.pokos.cut<R.pokos.cut,"iskop: s potpornim zidom nema pokosa ondje gdje je zid");
+  R=I({...H,gar:true},ravn(0.1),P0); ok(bl(R.A,100+18,0.01),"iskop: garaža se dodaje platou (bez dvostrukog brojanja)");
+  // kutovi: 1 i 2 na v = −5, 3 i 4 na v = +5; kut 3 i 4 metar niže
+  const T=E("iskTeren")(H,{...P0,kut:[0,0,-1,-1]},null,null,null); ok(T.tip==="kut"&&T.relativno&&bl(T.z(0,5),-1,1e-9)&&bl(T.z(0,0),-0.5,1e-9),"iskop: izmjereni kutovi daju linearan teren");
+  // model iz pločica: prvi izvor ne radi, drugi vraća ravnu plohu 123,4 m
+  const pitano=[]; w.__iskPix=async url=>{pitano.push(url); if(/mapterhorn/.test(url)) throw new Error("CORS"); return {W:256,H:256,z:new Float32Array(256*256).fill(123.4)};};
+  const M=await E("iskModelTiles")([15.97,45.84],60); ok(M.id==="aws"&&M.zoom===15&&bl(M.vis(15.9701,45.8401),123.4,1e-3)&&pitano.some(u=>/mapterhorn/.test(u)),"iskop: kad Mapterhorn ne radi, model visina dolazi iz AWS pločica");
+  // prikaz: čestica, kuća u simulatoru, nagib iz Open-Meteo kao zamjena dok pločice ne rade
+  w.__iskPix=async()=>{throw new Error("bez mreže")};
+  const pr=parcelRect(30,25), d=data(w,pr,"2.2."); d.slope={v:{h:200,slope:12,down:"jug",az:180}};
+  w.__env=d.envelope; E("OPEN").add("tloc"); E("OPEN").add("isk"); E("render")(d); E("tDraw")();
+  for(let i=0;i<40&&!/m³/.test(txt(w,"iskSum"));i++) await new Promise(r=>setTimeout(r,50));
+  ok(/iskop \d+ m³, nasip \d+ m³/.test(txt(w,"iskSum")),"iskop: sažetak u naslovu odjeljka: "+txt(w,"iskSum"));
+  const o=()=>$(w,"iskOut");
+  ok(/Open-Meteo/.test(o().textContent)&&o().querySelector(".pz-C")&&o().querySelector("svg.isk-svg"),"iskop: bez pločica teren je ravnina iz nagiba (C) i crta se presjek");
+  ok(!/NaN|undefined/.test(o().textContent),"iskop: prikaz bez NaN/undefined");
+  for(const [i,v] of [[1,0],[2,0],[3,-1.2],[4,-1.2]]) setv(w,"iskK"+i,String(v));
+  await new Promise(r=>setTimeout(r,500));
+  ok(/izmjerene visine/.test(o().textContent)&&o().querySelector(".pz-B")&&/relativno/.test(o().textContent),"iskop: s izmjerenim kutovima pouzdanost B i relativne kote");
+  setv(w,"iskZid",true,"change"); ok(/potporni zid gdje je rub viši/.test(o().textContent),"iskop: izbor potpornog zida");
+  setv(w,"iskMode","cut","change"); ok(/samo iskop/.test(o().textContent),"iskop: način „sve u iskop”");
+  ok(E("iskPostavke")(w.__cur.key).mode==="cut"&&E("iskPostavke")(w.__cur.key).kut[2]===-1.2,"iskop: postavke se pamte po čestici");
+  // upis u pripremu terena (procjena troškova postoji samo u zagrebačkom prikazu)
+  const up=$(w,"iskUpis")||$(w,"iskUpis2");
+  if(up){ up.dispatchEvent(new w.Event("click",{bubbles:true})); ok(+$(w,"pCut").value>0&&w.__fin.items.some(i=>i.k==="prep_cut"),"iskop: gumb upisuje iskop u Pripremu terena"); }
+  else ok(true,"iskop: priprema terena nije u ovom prikazu");
+  ok(errs.length===0,"bez JS grešaka (iskop): "+errs.join(" | "));
+}
+
 // rizici: poplave (Hrvatske vode preko posrednika), internet (HAKOM izravno, posrednik kao zamjena)
 async function rizTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -1945,7 +1989,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
