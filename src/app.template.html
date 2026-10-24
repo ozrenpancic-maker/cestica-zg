@@ -2227,7 +2227,7 @@ function renderKrk(d){
   }
   h+=`<div id="sumEnd"></div>`;
   const key=window.__cur.key;
-  h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(key)?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="shareBtn">Podijeli</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button>${parcel?`<button type="button" class="ib" id="geoDl">Preuzmi GeoJSON čestice</button>`:""}</div>`;
+  h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(key)?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="shareBtn">Podijeli</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button><button type="button" class="ib" id="svBtn" title="Otvara Google Street View na snimci najbližoj čestici (Google Maps, nova kartica). Ako uz česticu nema snimke, prikazuje se najbliža koju Google ima.">Street View ↗</button>${parcel?`<button type="button" class="ib" id="geoDl">Preuzmi GeoJSON čestice</button>`:""}</div>`;
   h+=G("analiza");
   if(parcel) h+=krkZkBlock(parcel.properties,ll);
   // provjere (isti raspored kao za Zagreb)
@@ -2306,7 +2306,7 @@ function renderHR(d){
     h+=ces.e?`<p class="err">Katastar (DGU): Podaci nisu dostupni (${esc(ces.e)}). Pokušaj ponovno za nekoliko trenutaka.</p>`:`<p class="meta">Ovdje u katastru nije pronađena čestica (more, cesta ili rub čestice).</p>`;
   }
   h+=`<div id="sumEnd"></div>`;
-  h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(key)?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="shareBtn">Podijeli</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button></div>`;
+  h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(key)?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="shareBtn">Podijeli</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button><button type="button" class="ib" id="svBtn" title="Otvara Google Street View na snimci najbližoj čestici (Google Maps, nova kartica). Ako uz česticu nema snimke, prikazuje se najbliža koju Google ima.">Street View ↗</button></div>`;
   h+=G("analiza");
   if(parcel) h+=krkZkBlock(P,ll);
   h+=`<h2 id="sec-provjere">Provjere</h2>`;
@@ -4362,7 +4362,7 @@ function render(d){
   else if(nam&&nam.e) pzSet("namjena","Namjena",null,pz("C",{razlog:"servis namjene nije odgovorio",provjera:"lokacijska informacija"}));
   pzOtvoreno();
   let h=G("sum")+`<p id="printHead" class="print-only"></p><div id="printMap"></div>`;
-  if(checks) h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(favKey(parcel,ll))?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="shareBtn">Podijeli</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button>${parcel?`<button type="button" class="ib" id="geoDl">Preuzmi GeoJSON čestice</button>`:""}</div>`;
+  if(checks) h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(favKey(parcel,ll))?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="shareBtn">Podijeli</button><button type="button" class="ib" id="printBtn">Ispiši / spremi PDF</button><button type="button" class="ib" id="svBtn" title="Otvara Google Street View na snimci najbližoj čestici (Google Maps, nova kartica). Ako uz česticu nema snimke, prikazuje se najbliža koju Google ima.">Street View ↗</button>${parcel?`<button type="button" class="ib" id="geoDl">Preuzmi GeoJSON čestice</button>`:""}</div>`;
   // Čestica
   if(parcel){
     const p=parcel.properties;
@@ -6254,6 +6254,19 @@ sheet.addEventListener("change",async e=>{
 });
 
 // --- dijeljenje: link otvara točno ovu česticu
+// Street View: službena poveznica Google Maps URLs (map_action=pano, bez API ključa); točka na najbližoj cesti (OSM), kamera prema čestici
+function svUrlFor(target,roads){
+  let vp=target, hd=null;
+  try{ const L=(roads||[]).filter(r=>r&&r.geom&&r.geom.length>1&&r.ok!==false&&!r.svc).map(r=>turf.lineString(r.geom)); let np=null;
+    for(const l of L){const q=turf.nearestPointOnLine(l,turf.point(target),{units:"kilometers"}); if(!np||q.properties.dist<np.properties.dist) np=q;}
+    if(np&&np.properties.dist*1000<=150&&np.properties.dist*1000>=1){ vp=np.geometry.coordinates; hd=(Math.round(turf.bearing(turf.point(vp),turf.point(target)))%360+360)%360; } }catch(e){}
+  return "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint="+vp[1].toFixed(6)+","+vp[0].toFixed(6)+(hd!=null?"&heading="+hd:"");
+}
+function svUrl(){ const d=curData(), ll=window.__lastLL; let t=null;
+  try{ if(d&&d.parcel) t=turf.pointOnFeature(d.parcel).geometry.coordinates; }catch(e){}
+  if(!t&&ll) t=[ll.lng,ll.lat]; if(!t) return null;
+  return svUrlFor(t,d&&d.env&&d.env.v&&d.env.v.roadLines); }
+sheet.addEventListener("click",e=>{ if(e.target.id!=="svBtn") return; const u=svUrl(); if(u) window.open(u,"_blank","noopener"); });
 function shareUrl(){const ll=window.__lastLL; return location.origin+location.pathname+"?c="+ll.lat.toFixed(6)+","+ll.lng.toFixed(6);}
 sheet.addEventListener("click",async e=>{
   if(e.target.id!=="shareBtn"||!window.__lastLL) return;

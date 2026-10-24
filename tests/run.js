@@ -1109,7 +1109,7 @@ async function krkTests(){
    ok(["Provjere","Uvjeti gradnje","Gradnja i naknade","Novac i kupnja","Sunce i energija","Dokumentacija i gdje se obratiti"].every(x=>hs.includes(x)),"Krk: isti odjeljci kao Zagreb ("+hs.join(", ")+")");
    ok(!!$(w,"saveBtn")&&!!$(w,"shareBtn")&&!!$(w,"printBtn"),"Krk: spremanje, dijeljenje i ispis kao za Zagreb");
    ok(/Procjena cijene gradnje\s*nije dostupno/.test(tu)&&/Priključci i dozvole\s*nije dostupno/.test(tu)&&/Postojeće zgrade i dogradnja\s*nije dostupno/.test(tu)&&/Podaci nisu dostupni za ovo područje/.test(tu)&&/okolicu Zagreba i ne vrijede za ovo područje/.test(tu),"Krk: odjeljci bez podataka označeni „nije dostupno” s razlogom");
-   ok(!!$(w,"sunDate")&&!!$(w,"pvGo"),"Krk: sunce i sunčana elektrana dostupni");
+   ok(!!$(w,"svBtn")&&!!$(w,"sunDate")&&!!$(w,"pvGo"),"Krk: Street View, sunce i sunčana elektrana dostupni");
    setv(w,"yPrice","60000"); const B=w.__fin&&w.__fin.buy;
    ok(B&&near(B.rows.find(r=>r.k==="porez").v,1800)&&Math.abs(B.area-600)<1.5,"Krk: kupnja zemljišta – porez na promet 3 % od 60.000 € = 1.800 €, površina 600 m²");
    $(w,"saveBtn").dispatchEvent(new w.Event("click",{bubbles:true}));
@@ -1844,6 +1844,17 @@ async function gpTests(){
   ok(errs.length===0,"bez JS grešaka (područje za gradnju): "+errs.join(" | "));
 }
 
+// Street View: poveznica Google Maps URLs (bez ključa); točka na najbližoj cesti, kamera prema čestici
+async function svTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  const t=[15.97,45.84], dy=12/110540, road=[{ok:true,geom:[[15.969,45.84-dy],[15.971,45.84-dy]]}];
+const u=new URL(E("svUrlFor")(t,road)), q=u.searchParams, vp=q.get("viewpoint").split(",").map(Number);
+  ok(/viewpoint=-?[\d.]+,-?[\d.]+/.test(E("svUrlFor")(t,road))&&u.origin+u.pathname==="https://www.google.com/maps/@"&&q.get("api")==="1"&&q.get("map_action")==="pano"&&!q.has("key")&&Math.abs(vp[0]-(45.84-dy))<1e-6&&Math.abs(vp[1]-15.97)<1e-5&&q.get("heading")==="0","Street View: točka na cesti 12 m južno od čestice, kamera prema sjeveru (na česticu), bez API ključa");
+  const far=[{ok:true,geom:[[15.969,45.84-500/110540],[15.971,45.84-500/110540]]}], q2=new URL(E("svUrlFor")(t,far)).searchParams;
+  ok(q2.get("viewpoint")==="45.840000,15.970000"&&!q2.has("heading"),"Street View: bez ceste u blizini (do 150 m) točka je na čestici, bez smjera kamere");
+  ok(errs.length===0,"bez JS grešaka (Street View): "+errs.join(" | "));
+}
+
 // sunčana elektrana uživo: lokalni model na plohu, plohe krova iz kuće, sjena okolnih zgrada, okretanje
 async function pvLiveTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -1871,7 +1882,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
