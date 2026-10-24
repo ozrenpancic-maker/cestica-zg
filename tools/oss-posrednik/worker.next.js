@@ -178,7 +178,8 @@ async function ulozak(broj, mb) {
 
 // ---- karte opasnosti od poplava (Hrvatske vode) i dostupnost interneta (HAKOM): upit po točki ----
 // Poplave: servisi.voda.hr/poplave_opasnosti/wms ne dopušta čitanje iz preglednika (CORS), pa upit ide ovdje. Nazivi slojeva nisu
-// provjereni unaprijed: posrednik ih čita iz popisa servisa (GetCapabilities, pamti 7 dana) i pita samo slojeve koji se smiju upitati.
+// provjereni unaprijed: posrednik ih čita iz popisa servisa (GetCapabilities, pamti 7 dana). Stvarni servis (24. 10. 2026.) nema slojeva
+// koji se smiju upitati po točki, pa se za svaki scenarij čita prozirnost male slike (GetMap) oko točke.
 // HAKOM: javni ArcGIS (eKarta, „Dostupnost SPP” i pokretna mreža); aplikacija ga pita izravno, a ovo je zamjena ako preglednik ne smije.
 const POPLAVE_WMS = "https://servisi.voda.hr/poplave_opasnosti/wms";
 const HAKOM = "https://ekarta.hakom.hr/server/rest/services/DOSTUPNOST_SPP/";
@@ -213,14 +214,74 @@ function gfiPogodak(txt, fmt) {
   if (/xml|gml/i.test(fmt)) { const n = (t.match(/featureMember|<gml:featureMembers|<wfs:member/gi) || []).length; return { pogodak: n > 0 ? true : /FeatureCollection/i.test(t) ? false : null }; }
   return { pogodak: null };
 }
+// ---- čitanje PNG-a (bez biblioteka): treba samo prozirnost piksela; inflate preko DecompressionStream (Cloudflare i Deno) ----
+async function pngAlfa(buf) {
+  const b = new Uint8Array(buf), dv = new DataView(b.buffer, b.byteOffset, b.byteLength);
+  if (b.length < 33 || b[0] !== 0x89 || b[1] !== 0x50 || b[2] !== 0x4e || b[3] !== 0x47) throw new Error("odgovor nije PNG slika");
+  let p = 8, W = 0, H = 0, dub = 8, tip = 0, inter = 0, tRNS = null; const idat = [];
+  while (p + 8 <= b.length) {
+    const len = dv.getUint32(p), vr = String.fromCharCode(b[p + 4], b[p + 5], b[p + 6], b[p + 7]), d = b.subarray(p + 8, p + 8 + len);
+    if (vr === "IHDR") { W = dv.getUint32(p + 8); H = dv.getUint32(p + 12); dub = d[8]; tip = d[9]; inter = d[12]; }
+    else if (vr === "tRNS") tRNS = d.slice();
+    else if (vr === "IDAT") idat.push(d);
+    else if (vr === "IEND") break;
+    p += 12 + len;
+  }
+  if (!W || !H || inter) throw new Error("nepodržan PNG (" + W + "×" + H + ", interlace " + inter + ")");
+  const kan = { 0: 1, 2: 3, 3: 1, 4: 2, 6: 4 }[tip]; if (!kan) throw new Error("nepodržan tip PNG-a " + tip);
+  const ukupno = idat.reduce((s, x) => s + x.length, 0), z = new Uint8Array(ukupno); let o = 0; for (const x of idat) { z.set(x, o); o += x.length; }
+  const raw = new Uint8Array(await new Response(new Blob([z]).stream().pipeThrough(new DecompressionStream("deflate"))).arrayBuffer());
+  const bpp = Math.max(1, (kan * dub) >> 3), red = (W * kan * dub + 7) >> 3, px = new Uint8Array(red * H); let prev = new Uint8Array(red);
+  for (let y = 0; y < H; y++) {
+    const f = raw[y * (red + 1)], src = raw.subarray(y * (red + 1) + 1, (y + 1) * (red + 1)), cur = px.subarray(y * red, (y + 1) * red);
+    for (let i = 0; i < red; i++) {
+      const a = i >= bpp ? cur[i - bpp] : 0, up = prev[i], c = i >= bpp ? prev[i - bpp] : 0;
+      let v = src[i];
+      if (f === 1) v += a; else if (f === 2) v += up; else if (f === 3) v += (a + up) >> 1;
+      else if (f === 4) { const pp = a + up - c, pa = Math.abs(pp - a), pb = Math.abs(pp - up), pc = Math.abs(pp - c); v += pa <= pb && pa <= pc ? a : pb <= pc ? up : c; }
+      cur[i] = v & 255;
+    }
+    prev = cur;
+  }
+  const uzorak = (x, y, k) => { // vrijednost k-tog kanala (gornji bajt kod 16 bita; indeks kod palete)
+    if (dub < 8) { const bit = x * dub, by = px[y * red + (bit >> 3)]; return (by >> (8 - dub - (bit & 7))) & ((1 << dub) - 1); }
+    return px[y * red + x * kan * (dub >> 3) + k * (dub >> 3)];
+  };
+  const alfa = (x, y) => {
+    if (tip === 6) return uzorak(x, y, 3);
+    if (tip === 4) return uzorak(x, y, 1);
+    if (tip === 3) { const i = uzorak(x, y, 0); return tRNS && i < tRNS.length ? tRNS[i] : 255; }
+    if (tRNS) { const t = k => tRNS[2 * k + 1] ?? 0; const isti = tip === 0 ? uzorak(x, y, 0) === t(0) : uzorak(x, y, 0) === t(0) && uzorak(x, y, 1) === t(1) && uzorak(x, y, 2) === t(2); return isti ? 0 : 255; }
+    return null; // slika bez prozirnosti: iz nje se ne može zaključiti
+  };
+  return { W, H, alfa };
+}
+// pogodak iz slike: GetMap s prozirnom pozadinom oko točke (~1 m po pikselu); obojen piksel u sredini (3×3) znači da je točka u području
+async function slikaPogodak(sloj, lat, lon) {
+  const d = 0.00005, n = 11, p = new URLSearchParams({ SERVICE: "WMS", VERSION: "1.3.0", REQUEST: "GetMap", LAYERS: sloj, STYLES: "", CRS: "EPSG:4326", BBOX: [lat - d, lon - d, lat + d, lon + d].map(v => v.toFixed(7)).join(","), WIDTH: String(n), HEIGHT: String(n), FORMAT: "image/png", TRANSPARENT: "TRUE" });
+  const r = await fetch(POPLAVE_WMS + "?" + p, { headers: { Accept: "image/png", ...UA }, signal: AbortSignal.timeout(12000) });
+  const ct = r.headers.get("content-type") || "";
+  if (!r.ok || !/png/i.test(ct)) { const t = await r.text().catch(() => ""); return { pogodak: null, greska: "HTTP " + r.status + ", " + ct.split(";")[0] + (t ? ", " + t.replace(/\s+/g, " ").slice(0, 120) : "") }; }
+  const img = await pngAlfa(await r.arrayBuffer()), c = n >> 1; let obojeno = 0, bez = false;
+  for (let y = c - 1; y <= c + 1; y++) for (let x = c - 1; x <= c + 1; x++) { const a = img.alfa(x, y); if (a == null) bez = true; else if (a > 32) obojeno++; }
+  if (bez) return { pogodak: null, greska: "servis ne vraća prozirnu sliku" };
+  return { pogodak: obojeno > 0 };
+}
 async function poplaveNaTocki(lat, lon, dijag) {
   const P = await wmsPopis(POPLAVE_WMS);
   const fmt = ["application/json", "application/geo+json", "text/plain", "application/vnd.ogc.gml", "text/xml"].find(f => P.formati.includes(f)) || null;
   const q = P.slojevi.filter(s => s.q), izbor = (q.filter(s => /velik|srednj|mal[aei]?\b|vjerojatnost|probab/i.test(s.name + " " + s.title)).length ? q.filter(s => /velik|srednj|mal[aei]?\b|vjerojatnost|probab/i.test(s.name + " " + s.title)) : q).slice(0, 8);
   const o = { ok: true, izvor: "Hrvatske vode, karte opasnosti od poplava (servisi.voda.hr/poplave_opasnosti/wms)", format: fmt, dohvaceno: new Date().toISOString(), slojevi: [] };
   if (dijag) o.sviSlojevi = P.slojevi.map(s => s.name + (s.q ? "" : " (ne upituje se)") + " – " + s.title).slice(0, 60);
-  if (!fmt) { o.ok = false; o.greska = "servis ne nudi čitljiv odgovor na upit po točki (" + P.formati.join(", ") + ")"; return o; }
-  if (!izbor.length) { o.ok = false; o.greska = "u popisu servisa nema slojeva koji se smiju upitati"; return o; }
+  if (!fmt || !izbor.length) {
+    // servis ne dopušta upit po točki (slojevi nisu „queryable”): pita se slika svakog scenarija posebno (velika, srednja, mala vjerojatnost)
+    const scen = P.slojevi.filter(s => /velik|srednj|mal[aei]?\b/i.test(s.name + " " + s.title) && !/tri scenarija/i.test(s.title)).slice(0, 4);
+    if (!scen.length) { o.ok = false; o.greska = "u popisu servisa nema slojeva po scenarijima"; return o; }
+    o.metoda = "slika"; o.format = "image/png";
+    for (const s of scen) { try { o.slojevi.push({ name: s.name, title: s.title, ...(await slikaPogodak(s.name, lat, lon)) }); } catch (e) { o.slojevi.push({ name: s.name, title: s.title, pogodak: null, greska: e.message || e.name || "greška" }); } }
+    if (o.slojevi.every(s => s.pogodak == null)) { o.ok = false; o.greska = "slike servisa nije bilo moguće pročitati"; }
+    return o;
+  }
   const d = 0.00005;
   for (const s of izbor) {
     const p = new URLSearchParams({ SERVICE: "WMS", VERSION: "1.3.0", REQUEST: "GetFeatureInfo", LAYERS: s.name, QUERY_LAYERS: s.name, STYLES: "", CRS: "EPSG:4326", BBOX: [lat - d, lon - d, lat + d, lon + d].map(v => v.toFixed(7)).join(","), WIDTH: "101", HEIGHT: "101", I: "50", J: "50", INFO_FORMAT: fmt, FEATURE_COUNT: "3", FORMAT: "image/png" });
