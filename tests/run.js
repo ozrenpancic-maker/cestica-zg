@@ -1982,10 +1982,12 @@ async function ptnTests(){
   const o=()=>$(w,"ptnOut").textContent.replace(/\s+/g," ");
   ok(/Zagreb/.test(o())&&/79 €\/m²/.test(o())&&/medijan 2025\., 1\.050 kupoprodaja/.test(o()),"cijene: Zagreb, medijan 2025. i broj kupoprodaja: "+o().slice(0,160));
   const A=w.__cur.area, f=x=>Math.round(x).toLocaleString("hr-HR");
-  ok(/68–79 €\/m²/.test(o())&&o().includes(`Orijentacijski za ${f(A)} m²`)&&o().includes(`${f(68*A)}–${f(79*A)} €`),"cijene: raspon 2023.–2025. i orijentacijski iznos za površinu čestice: "+o().slice(0,300));
+  ok(/68–79 €\/m²/.test(o())&&o().includes(`Po medijanu grada ili općine, ${f(A)} m²`)&&o().includes(`${f(68*A)}–${f(79*A)} €`),"cijene: raspon 2023.–2025. i orijentacijski iznos za površinu čestice: "+o().slice(0,300));
   ok($(w,"ptnOut").querySelector("svg")&&$(w,"ptnOut").querySelector(".pz-C"),"cijene: grafikon 2012.–2025. i pouzdanost C");
   setv(w,"ptnTraz",String(Math.round(100*A))); await new Promise(r=>setTimeout(r,600));
-  ok(/To je 100 €\/m², iznad raspona/.test(o())&&/\+27 %/.test(o()),"cijene: tražena cijena = 100 €/m², iznad raspona (+27 % prema medijanu): "+o().slice(-700));
+  ok(/To je 100 €\/m², iznad raspona/.test(o())&&/\+27 %/.test(o())&&!/samo po sebi/.test(o()),"cijene: tražena cijena = 100 €/m², iznad raspona (+27 % prema medijanu): "+o().slice(-700));
+  setv(w,"ptnTraz",String(Math.round(395*A))); await new Promise(r=>setTimeout(r,600));
+  ok(/To je 395 €\/m², iznad raspona medijana/.test(o())&&/5,0 × medijan/.test(o())&&/ne znači da je cijena previsoka/.test(o()),"cijene: tražena cijena višestruko iznad medijana: višekratnik i objašnjenje (ne „previsoko”)");
   ok(/Koliko vrijedi zemljište/.test(txt(w,"sazetak"))&&/medijan građevinskog zemljišta \(Zagreb, 2025\.\): 79 €\/m²/.test(txt(w,"sazetak")),"cijene: sažetak (osnovni način) navodi medijan općine");
   // čestica izvan Zagreba i Krka: grad/općina iz adrese (OpenStreetMap); isto ime u dvije županije → prema županiji
   w.__ptnGeoHook=()=>({address:{village:"Kornić",municipality:"Grad Krk",county:"Primorsko-goranska županija"}});
