@@ -64,3 +64,9 @@ Postavke (način, kota, pojas, zid, kutovi) pamte se po čestici u `localStorage
 Otvoriti česticu na kosom terenu (npr. Kornić) i u odjeljku vidjeti koji je izvor naveden.
 - **Mapterhorn ili AWS:** pločice rade.
 - **Open-Meteo:** pločice preglednik nije mogao pročitati.
+
+## Dopuna: mjerenje mobitelom i prijedlog položaja
+
+- Visine kutova mogu se izmjeriti mobitelom kroz kameru (AR): gumb „Izmjeri kutove mobitelom (AR)” u odjeljku izmjerenih visina.
+- Izračun iskopa koristi i prijedlog položaja kuće („Predloži položaj” u simulatoru).
+- Detalji: `docs/polozaj-kuce.md`.

@@ -1916,6 +1916,42 @@ async function iskTests(){
   ok(errs.length===0,"bez JS grešaka (iskop): "+errs.join(" | "));
 }
 
+// prijedlog položaja kuće (zemljani radovi, sunce, kompromis) i mjerenje visina kutova kroz kameru (čiste funkcije)
+async function optTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  const S=E("optStane"), poly=[[[[0,0],[20,0],[20,15],[0,15],[0,0]]]];
+  ok(S([[[2,2],[14,2],[14,11],[2,11]]],poly)&&!S([[[10,2],[22,2],[22,11],[10,11]]],poly),"položaj: kuća unutar prostora stane, preko ruba ne stane");
+  ok(!S([[[2,2],[14,2],[14,11],[2,11]]],[[[[0,0],[20,0],[20,15],[0,15],[0,0]],[[5,5],[8,5],[8,8],[5,8],[5,5]]]]),"položaj: rupa u prostoru (unutarnji prsten) se poštuje");
+  const pr=parcelRect(40,32), d=data(w,pr,"2.2."); d.slope={v:{h:200,slope:15,down:"istok",az:90}};
+  w.__env=d.envelope; E("OPEN").add("tloc"); E("render")(d); E("tDraw")();
+  const TL=E("TL"); TL.w=12; TL.d=9; TL.krov="dvo"; TL.sljeme="duz"; TL.nagib=30; TL.gar=false; E("tDraw")();
+  // umjetno zračenje: Sunce samo s juga (podne), da je jasno koji okret je najbolji za panele
+  const r=Math.PI/180, base={ny:1,years:["2024"],rows:[{m:5,g:800,b:700,d:100,alt:50,az:180,cz:Math.sin(50*r),ca:Math.cos(50*r)}]};
+  const R=E("optIzracun")({base});
+  ok(!R.err&&R.kand>50,"položaj: pregledano dovoljno položaja u prostoru za gradnju ("+R.kand+")");
+  const P=Object.fromEntries(R.prijedlozi.map(x=>[x.id,x.k]));
+  const m180=x=>((x%180)+180)%180;
+  ok(P.zem&&Math.abs(m180(P.zem.rot)-90)<0.5,"položaj: teren pada prema istoku → najmanje zemljanih radova kad je kraća strana kuće niz padinu (okret 90°): "+(P.zem&&P.zem.rot));
+  ok(P.sun&&Math.abs(m180(P.sun.rot))<0.5,"položaj: Sunce s juga → krovna ploha prema jugu (okret 0°): "+(P.sun&&P.sun.rot));
+  ok(P.kom&&R.prijedlozi.length===3,"položaj: tri različita prijedloga (zemljani radovi, sunce, kompromis)");
+  // kad je teren ravan na jug, oba kriterija biraju isti okret → jedan spojeni prijedlog
+  d.slope.v.az=180; const R2=E("optIzracun")({base});
+  ok(R2.prijedlozi.some(x=>/·/.test(x.naziv)),"položaj: isti položaj pod dva kriterija prikazuje se jednom: "+R2.prijedlozi.map(x=>x.naziv).join(" | "));
+  // prikaz i primjena prijedloga
+  d.slope.v.az=90; w.eval("PV").live={base,key:w.__cur.key}; await E("optPokreni")();
+  const o=$(w,"tOptOut"); ok(o&&/Najmanje zemljanih radova/.test(o.textContent)&&/kWh\/kWp/.test(o.textContent)&&!/NaN|undefined/.test(o.textContent),"položaj: prijedlozi prikazani s m³ i kWh/kWp");
+  const b=o.querySelector("[data-opt]"), rot0=TL.rot; b.dispatchEvent(new w.Event("click",{bubbles:true}));
+  ok(TL.rot!==rot0||!!$(w,"tOptVrati"),"položaj: „Postavi kuću ovdje” pomiče i okreće kuću");
+  ok(E("withinEnv")(E("tFoot")(),w.__env.geom),"položaj: postavljena kuća je unutar prostora za gradnju");
+  $(w,"tOptVrati").dispatchEvent(new w.Event("click",{bubbles:true})); ok(TL.rot===rot0,"položaj: „Vrati prethodni položaj”");
+  // mjerenje visina kroz kameru: relativne visine i razmaci
+  const V=E("arVisRel"), vis={0:{x:0,y:-1.4,z:0},1:{x:12,y:-1.55,z:0},2:{x:12,y:-2.1,z:-9},3:{x:0,y:-1.9,z:-9}};
+  const q=V(vis,{w:12,d:9}); ok(q.sve&&q.kut.join()==="0,-0.15,-0.7,-0.5"&&q.raz.length===4&&Math.abs(q.raz[1].m-9)<1e-9,"AR visine: relativne visine prema kutu 1 i razmaci kutova");
+  const AR=E("AR"); AR.vis=vis; E("ISK").key=w.__cur.key; E("arVisSpremi")();
+  ok(E("iskPostavke")(w.__cur.key).kut.join()==="0,-0.15,-0.7,-0.5","AR visine: „Spremi u iskop” upisuje visine kutova");
+  ok(errs.length===0,"bez JS grešaka (položaj, AR visine): "+errs.join(" | "));
+}
+
 // rizici: poplave (Hrvatske vode preko posrednika), internet (HAKOM izravno, posrednik kao zamjena)
 async function rizTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -1989,7 +2025,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
