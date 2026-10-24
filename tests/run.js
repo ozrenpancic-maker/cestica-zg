@@ -1619,6 +1619,8 @@ async function sazTests(){
   w.__env=d.envelope; E("render")(d); await tick(80);
   {const t=txt(w,"okolisBox"); ok(/U zaštićenom području prirode/.test(t)&&/Park prirode Medvednica/.test(t)&&/uvjeti zaštite prirode/.test(t)&&E("PZREG").items.get("oko-zast").raz==="A"&&/Opasnost od poplava/.test(t)&&!!$(w,"okolisBox").querySelector('a[href*="preglednik.voda.hr"]')&&E("PZREG").items.get("oko-poplave").raz==="C","Zaštićena područja (Bioportal): Park prirode Medvednica, oznaka A; poplave: poveznica na kartu Hrvatskih voda, C");}
   {const t=txt(w,"okolisBox"); ok(/U ekološkoj mreži Natura 2000/.test(t)&&/Medvednica \(HR2000583, POVS/.test(t)&&/ocjena prihvatljivosti/.test(t)&&E("PZREG").items.get("oko-natura").raz==="A"&&/esriSpatialRelIntersects/.test(decodeURIComponent(natBody||"")),"Natura 2000: presjek čestice sa slojem EEA; područje, kod i vrsta (POVS), oznaka A");}
+  // sažetak se osvježava nakon odgovora servisa (asinkrono): pričekaj najviše 2 s da redak „Priroda i poplave” dobije Naturu
+  for(let i=0;i<40;i++){ const r=[...($(w,"sazetak")||{querySelectorAll:()=>[]}).querySelectorAll(".saz-b")]; if(r[5]&&/Medvednica/.test(r[5].textContent)) break; await tick(50); }
   const S=$(w,"sazetak"), rows=S?[...S.querySelectorAll(".saz-b")]:[];
   ok(rows.length===7&&/Smije li se graditi\?/.test(S.textContent)&&/Koliko velika kuća\?/.test(S.textContent)&&/tlocrt do/.test(rows[1].textContent)&&/Ima li tereta\?/.test(S.textContent)&&/Koliko bi koštalo\?/.test(S.textContent),"Sažetak: sedam odgovora na vrhu analize (gradnja, veličina, tereti, pristup, trošak, priroda, vrijednost), uz izvor");
   ok(/Grad Zagreb, GIS baza planirane namjene/.test(rows[0].textContent)&&/\(A\)/.test(rows[0].textContent)&&/Medvednica/.test(rows[5].textContent),"Sažetak: uz odgovor izvor i oznaka pouzdanosti; Natura 2000 u retku „Priroda i poplave”");
@@ -2000,6 +2002,40 @@ async function ptnTests(){
   ok(errs.length===0,"bez JS grešaka (cijene zemljišta): "+errs.join(" | "));
 }
 
+// osunčanost dvorišta, vjetar i bura, pogled na more, promjene na spremljenoj čestici (čiste funkcije i prikaz)
+async function napTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  // sjena: zid 10 m visok, 2 m širok, sjeverno od točke; Sunce s juga na 45° → točka sjeverno od zida u sjeni, južno nije
+  const zid={r:[[-20,0],[20,0],[20,2],[-20,2]],h:10,b:[-20,0,20,2]}, S=[{alt:45,az:180}];
+  const H=E("osuSati")([[0,5],[0,-3],[0,15]],[zid],S,1);
+  ok(H[0]===0&&H[1]===1&&H[2]===1,"osunčanost: iza zida (sjever, 3 m od zida visokog 10 m) sjena, ispred Sunce, 13 m dalje opet Sunce: "+[...H].join(","));
+  const S2=E("osuSunce")("2025-06-21",45.84,15.97), S3=E("osuSunce")("2025-12-21",45.84,15.97);
+  ok(S2.length*0.5>14&&S3.length*0.5<9,"osunčanost: 21. 6. više od 14 h Sunca iznad 2°, 21. 12. manje od 9 h");
+  const d=data(w,parcelRect(30,25),"2.2."); w.__env=d.envelope; E("OPEN").add("tloc"); E("OPEN").add("osun"); E("render")(d); E("tDraw")();
+  E("osunUpdate")(); const o=$(w,"osunOut");
+  ok(o&&/h izravnog Sunca/.test(o.textContent)&&o.querySelector("svg")&&o.querySelector(".pz-C")&&!/NaN|undefined/.test(o.textContent),"osunčanost: prikaz s prosjekom, kartom i pouzdanošću C");
+  const R=E("OSU").res; ok(R.kuca&&R.T.length>100&&R.sr>0&&R.sr<=R.dan,"osunčanost: kuća baca sjenu, prosjek između 0 i trajanja dana");
+  // vjetar: 3 godine sintetičkih sati — 60 % SI 8 m/s s udarima 20 m/s, 40 % JZ 3 m/s
+  const t=[], v=[], dd=[], g=[]; for(let i=0;i<1000;i++){ t.push((2023+(i%3))+"-01-01T00:00"); const si=i%10<6; v.push(si?8:3); dd.push(si?45:225); g.push(si?20:5); }
+  const VR=E("vjetRuza")({t,v,d:dd,g});
+  ok(VR.najcesci===2&&VR.najjaci===2&&Math.abs(VR.bura-200)<1e-9&&VR.jugo===0&&Math.abs(VR.pct[2][2]-60)<1e-9,"vjetar: najčešći i najjači sa SI, bura 200 h godišnje, razred 6–10 m/s");
+  w.__vjetHook=()=>({hourly:{time:t,wind_speed_10m:v,wind_direction_10m:dd,wind_gusts_10m:g}}); E("OPEN").add("vjet"); await E("vjetUpdate")();
+  ok(/sa SI \(sjeveroistok\)/.test(txt(w,"vjetOut"))&&/zavjetrinu: na stranu kuće prema jugozapadu/.test(txt(w,"vjetOut"))&&$(w,"vjetOut").querySelector("svg path"),"vjetar: ruža i preporuka zavjetrine: "+txt(w,"vjetOut").slice(0,200));
+  // pogled: brdo 30 m visoko 200–300 m sjeverno; more južno od 500 m; na sjeveru iza brda more od 1 km
+  const zf=(x,y)=>y>200&&y<300?30:y<-500||y>1000?-5:5;
+  const P=E("pogIzracun")(zf,5,[1.6,4.6],[],25);
+  ok(P[0].vid[90]&&!P[0].vid[0]&&P[0].stupnjeva===360-2*Math.round(0)-P[0].vid.filter(x=>!x).length*2,"pogled: more na jugu vidljivo, na sjeveru zaklonjeno brdom");
+  ok(Math.round(P[0].smjer/10)*10===180||Math.abs(P[0].smjer-180)<30,"pogled: glavni smjer pogleda prema jugu: "+P[0].smjer);
+  const Pz=E("pogIzracun")(zf,5,[1.6],[{az:[90],d:10,top:40}],25); ok(!Pz[0].vid[90]&&Pz[0].vid[89],"pogled: bliska visoka zgrada zaklanja svoj smjer");
+  // promjene: spremi, promijeni namjenu, ponovno izračunaj
+  w.localStorage.removeItem("favs"); E("saveCurrent")(); const f0=E("favs")()[0]; ok(f0&&f0.snap&&f0.snap.polja,"promjene: pri spremanju se sprema snimka stanja");
+  const a=E("favs")(); a[0].snap.polja.namjena="Stara namjena"; E("setFavs")(a); E("promUpdate")();
+  ok(/Promjene od zadnjeg pregleda/.test(txt(w,"promBox"))&&/bilo: Stara namjena/.test(txt(w,"promBox")),"promjene: promjena namjene prikazana: "+txt(w,"promBox").slice(0,160));
+  $(w,"promOk").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!$(w,"promBox")&&E("favs")()[0].snap.polja.namjena!=="Stara namjena","promjene: „Označi kao pregledano” sprema novo stanje");
+  ok(E("snapRazlike")({polja:{namjena:"A"}},{polja:{}}).length===0,"promjene: podatak koji sada nedostaje nije promjena");
+  ok(errs.length===0,"bez JS grešaka (napredne ideje): "+errs.join(" | "));
+}
+
 // rizici: poplave (Hrvatske vode preko posrednika), internet (HAKOM izravno, posrednik kao zamjena)
 async function rizTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -2073,7 +2109,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(napTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
