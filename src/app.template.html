@@ -377,6 +377,14 @@ ol.zi{font-size:13.5px;padding-left:18px}
 #arUi .ar-bot svg{background:rgba(0,0,0,.55);border-radius:10px;flex:none}
 #arUi .ar-ctl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:rgba(0,0,0,.6);padding:8px;border-radius:10px}
 #arUi .ar-ctl .ib{min-height:44px;min-width:44px}#arUi .ar-row{display:flex;gap:4px;flex-wrap:wrap}#arUi select{min-height:44px}
+.mod-nap{font-size:13px;color:var(--muted);margin:4px 0 8px}
+#modBtn{display:flex;align-items:center;gap:6px;white-space:nowrap;padding:4px 10px}
+#modBtn .mod-sw{position:relative;width:34px;height:20px;border-radius:10px;background:var(--line);flex:none;transition:background .15s}
+#modBtn .mod-sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--panel);box-shadow:0 1px 2px rgba(0,0,0,.3);transition:left .15s}
+#modBtn[aria-pressed=true] .mod-sw{background:var(--accent)}#modBtn[aria-pressed=true] .mod-sw::after{left:16px}
+#modBtn[aria-pressed=true] .mod-t{color:var(--accent);font-weight:600}
+@media (max-width:899px){#modBtn{flex-direction:column;gap:1px;padding:3px 4px;min-width:52px}#modBtn .mod-t{font-size:10px;line-height:1}}
+@media (max-width:420px){#go{font-size:0;min-width:44px}#go::before{content:"⌕";font-size:24px;line-height:1}}
 .opt{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin:8px 0}
 .opt-k{border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:3px;background:var(--panel);font-size:14px}
 .opt-k .ib{margin-top:4px;align-self:flex-start}.opt-k small.fx{display:block}.opt-cur{background:var(--soft)}
@@ -494,6 +502,7 @@ ul.risk small{color:var(--muted)}
     <button class="ib" id="go" type="button">Traži</button>
     <button class="ib" id="me" type="button" aria-label="Prikaži moju lokaciju" title="Prikaži moju lokaciju">◎</button>
     <button class="ib" id="favBtn" type="button" aria-label="Spremljene čestice">★</button>
+    <button class="ib" id="modBtn" type="button" role="switch" aria-pressed="false" aria-label="Napredni način"><span class="mod-sw" aria-hidden="true"></span><span class="mod-t">Napredno</span></button>
     <button class="ib" id="menuBtn" type="button" aria-label="Izbornik">☰</button>
   </header>
   <div id="menu" hidden><p class="meta" id="ver" style="margin:0 0 6px"></p><a href="#" id="statBtn2" class="ib">Stanje servisa</a><a href="#" id="goKrk" class="ib">Otok Krk (pilot)</a><label id="aiOnRow" class="aion" hidden><input type="checkbox" id="aiOn"> AI asistent (testno)</label></div>
@@ -6442,11 +6451,55 @@ function scrollRestore(A){
   const top=sheet.getBoundingClientRect().top, r=e.getBoundingClientRect(); if(!r.height) return; sheet.scrollTop+=(r.top-top)-A.a.off;
 }
 // otvori odjeljak (i sve iznad njega) i pomakni se do njega
-function pogIdi(el){ if(!el) return; for(let p=el;p;p=p.parentElement) if(p.tagName==="DETAILS") p.open=true;
+function pogIdi(el){ if(!el) return; if(modSkriven(el)) modPostavi(true); for(let p=el;p;p=p.parentElement) if(p.tagName==="DETAILS") p.open=true;
   const kz=el.closest("details.izb"), n=kz?+kz.dataset.n:0, tab=kz?(IZB_TR.has(n)?"troskovi":"analiza"):(UI.tab==="troskovi"?"troskovi":"analiza"); if(isMobile()&&UI.tab!==tab) setTab(tab,{scrollTo:"__none"});
   if(isMobile()&&UI.state!=="full") setState("full");
   setTimeout(()=>{const r=el.getBoundingClientRect(), sr=sheet.getBoundingClientRect(); sheet.scrollTop+=r.top-sr.top-8;},isMobile()?260:30); }
 
+// ================= OSNOVNI I NAPREDNI NAČIN =================
+// Pri svakom pokretanju aplikacija je u osnovnom načinu; prekidač „Napredno” u zaglavlju prikazuje sve napredne alate.
+// Osnovni način samo SKRIVA prikaz (CSS na body.osnovno): izračuni, unosi i spremanje rade jednako, pa ukupni trošak
+// i dalje uključuje i stavke koje se uređuju u naprednom načinu (to piše uz ukupnu investiciju). Upozorenja i sažetak
+// se ne skrivaju. Kad se iz sažetka ili prečaca otvori napredni odjeljak, aplikacija sama prelazi u napredni način.
+const MOD_NAPREDNO_K=["isk","oku","skica","sun","pv","tipcmp","rparams","rex","krkTxt","risks","povijest","prep","kd","krkKd","costs","scen","vrij","proj","bfaze",
+  "pog:karte-prostornog-plana","pog:sunce-i-energija","pog:pouzdanost-podataka"];
+const MOD_NAPREDNO_ID=["rkBox","sec-upu","pzBox","sec-pouzdanost","sec-sunce"];
+// dijelovi simulatora kuće i procjene gradnje koji su napredni (oznaka i polje u istom retku tablice)
+const MOD_NAPREDNO_POLJA=["tFh","tKrov","tNagib","tSlj","tPod","tGar","bTem","bPrV","bYard","bUnit"];
+const MOD={napredno:false};
+function modCss(){
+  const k=MOD_NAPREDNO_K.map(x=>`body.osnovno details[data-k="${x}"],body.osnovno .izb-c[data-izb-go='details[data-k="${x}"]']`);
+  const id=MOD_NAPREDNO_ID.map(x=>`body.osnovno #${x},body.osnovno .izb-c[data-izb-go="#${x}"]`);
+  const p=MOD_NAPREDNO_POLJA.map(x=>`body.osnovno .bgrid>label[for="${x}"],body.osnovno .bgrid>:has(>#${x}),body.osnovno .bgrid>#${x}`);
+  return [...k,...id,...p,"body.osnovno #tGarBox","body.osnovno #arBtn","body.osnovno #tOut .tdist","body.osnovno #tOut .tdist+p.meta","body.osnovno #tOut p.eyebrow"].join(",\n")+"{display:none!important}";
+}
+function modPostavi(n,o){
+  MOD.napredno=!!n; document.body.classList.toggle("osnovno",!MOD.napredno);
+  const b=document.getElementById("modBtn"); if(b){b.setAttribute("aria-pressed",String(MOD.napredno)); b.title=MOD.napredno?"Napredni način: svi alati. Dodirni za osnovni prikaz.":"Osnovni način: osnovne informacije. Dodirni za sve napredne alate.";}
+  try{modNap()}catch(e){}
+  if(!(o&&o.tiho)) try{izbWrap()}catch(e){}
+}
+// je li element skriven zbog osnovnog načina (on ili netko iznad njega)
+function modSkriven(el){
+  if(MOD.napredno||!el) return false;
+  for(let p=el;p&&p!==document.body;p=p.parentElement){
+    if(p.dataset&&p.dataset.k&&MOD_NAPREDNO_K.includes(p.dataset.k)) return true;
+    if(p.id&&(MOD_NAPREDNO_ID.includes(p.id)||p.id==="tGarBox"||p.id==="arBtn")) return true; }
+  return false;
+}
+// napomena uz ukupnu investiciju: koje stavke u zbroju se uređuju u naprednom načinu
+function modNap(){
+  const o=document.getElementById("totOut"); if(!o) return; let n=document.getElementById("modNap");
+  const F=window.__fin, it=F&&F.items?F.items.filter(i=>i.base>0&&(["priprema","okucnica","naknade"].includes(i.group)||["prilaz","okolis"].includes(i.k))):[];
+  const t=!MOD.napredno&&it.length?`Ukupno uključuje i stavke koje se uređuju u naprednom načinu: ${[...new Set(it.map(i=>i.label))].join(", ")}.`:"";
+  if(!t){ if(n) n.remove(); return; }
+  if(!n){ n=document.createElement("p"); n.id="modNap"; n.className="mod-nap"; o.after(n); }
+  if(n.textContent!==t) n.textContent=t;
+}
+document.addEventListener("click",e=>{ const b=e.target&&e.target.closest&&e.target.closest("#modBtn"); if(!b) return; modPostavi(!MOD.napredno); });
+(()=>{ const st=document.createElement("style"); st.id="modCss"; st.textContent=modCss(); document.head.appendChild(st); modPostavi(false,{tiho:true}); })();
+// ukupna investicija se preračunava u finUpdate: nakon toga osvježi napomenu o naprednim stavkama
+finUpdate=(f=>function(){ const r=f.apply(this,arguments); try{modNap()}catch(e){} return r; })(finUpdate);
 // ================= SAŽETAK NA VRHU ANALIZE =================
 // Pet kratkih odgovora; dodir otvara odgovarajući odjeljak. Svaki odgovor je preuzet iz odjeljka ispod (isti izvor i oznaka).
 function sazetakUpdate(){

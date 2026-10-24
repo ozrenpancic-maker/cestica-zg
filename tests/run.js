@@ -1952,6 +1952,23 @@ async function optTests(){
   ok(errs.length===0,"bez JS grešaka (položaj, AR visine): "+errs.join(" | "));
 }
 
+// osnovni i napredni način: pri pokretanju osnovni; prekidač; skriveni odjeljci samo CSS-om; napomena uz ukupnu investiciju
+async function modTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), b=$(w,"modBtn");
+  ok(w.document.body.classList.contains("osnovno")&&b&&b.getAttribute("aria-pressed")==="false"&&E("MOD").napredno===false,"način: aplikacija se pokreće u osnovnom načinu");
+  const css=$(w,"modCss").textContent; ok(/details\[data-k="isk"\]/.test(css)&&/#rkBox/.test(css)&&/label\[for="tKrov"\]/.test(css)&&!/data-k="zk"/.test(css)&&!/okolisBox/.test(css)&&!/data-k="total"/.test(css),"način: napredni odjeljci se skrivaju, a ZK, priroda i poplave i ukupna investicija ne");
+  b.dispatchEvent(new w.Event("click",{bubbles:true})); ok(!w.document.body.classList.contains("osnovno")&&b.getAttribute("aria-pressed")==="true","način: prekidač uključuje napredni način");
+  b.dispatchEvent(new w.Event("click",{bubbles:true})); ok(w.document.body.classList.contains("osnovno"),"način: prekidač vraća osnovni način");
+  // čestica s troškovima: priprema terena upisana u naprednom načinu i dalje je u ukupnoj investiciji
+  const d=data(w,parcelRect(30,25),"2.2."); E("render")(d);
+  ok(E("modSkriven")(w.document.querySelector('details[data-k="prep"]'))&&!E("modSkriven")(w.document.querySelector('details[data-k="total"]')),"način: priprema terena je napredna, ukupna investicija osnovna");
+  const lo0=w.__fin.total.lo; $(w,"pCut").value="100"; $(w,"pCut").dispatchEvent(new w.Event("input",{bubbles:true}));
+  ok(w.__fin.total.lo>lo0&&/naprednom načinu: .*Iskop s odvozom/.test(txt(w,"modNap")),"način: ukupno uključuje skrivenu stavku i to piše uz ukupnu investiciju: "+txt(w,"modNap"));
+  // otvaranje naprednog odjeljka (npr. iz sažetka) prelazi u napredni način
+  E("pogIdi")(w.document.querySelector('details[data-k="prep"]')); ok(E("MOD").napredno&&!$(w,"modNap"),"način: otvaranje naprednog odjeljka uključuje napredni način");
+  ok(errs.length===0,"bez JS grešaka (način): "+errs.join(" | "));
+}
+
 // rizici: poplave (Hrvatske vode preko posrednika), internet (HAKOM izravno, posrednik kao zamjena)
 async function rizTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -2025,7 +2042,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
