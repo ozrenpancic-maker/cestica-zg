@@ -97,3 +97,12 @@ console.log("worker.next: uložak OK");
   await W.fetch(new Request("https://w.dev/?id=19311109&ulozak=1"), {}, ctx); assert.equal(n, 2, "uložak iz predmemorije po broju");
   console.log("worker.next: odbijanje (403) → pauza bez ponavljanja, predmemorija uloška OK");
 }
+// OSS vrati HTML stranicu (200, text/html) umjesto podataka: to je odbijanje (503, blok, pauza), a ne „nema čestice”
+{
+  store = new Map(); calls.length = 0;
+  globalThis.fetch = async u => { u = String(u); calls.push(u); return new Response("<html><head><title>Zabranjeno</title></head><body><h1>Pristup odbijen</h1></body></html>", { status: 200, headers: { server: "nginx", "content-type": "text/html" } }); };
+  const r = await W.fetch(new Request("https://w.dev/?id=19311109"), {}, ctx), o = await r.json();
+  assert.equal(r.status, 503); assert.equal(o.ok, false); assert.ok(o.blok, JSON.stringify(o)); assert.ok(/HTML stranicu \(HTTP 200, nginx, text\/html, \d+ B, „Zabranjeno Pristup odbijen”\)/.test(o.greska), o.greska); assert.ok(!/nema česticu/.test(o.greska));
+  const n = calls.length; await W.fetch(new Request("https://w.dev/?id=19311110"), {}, ctx); assert.equal(calls.length, n, "nakon HTML odbijanja pauza bez upita prema OSS-u");
+  console.log("worker.next: HTML stranica umjesto podataka → odbijanje (503, blok, pauza) OK");
+}
