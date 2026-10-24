@@ -47,3 +47,12 @@ Stanje 24. 10. 2026., grana `razvoj`.
 - grad iz adrese, s istim imenom u dvije županije;
 - ručni odabir;
 - zadnju objavljenu godinu kad za 2025. ima manje od 10 kupoprodaja.
+
+## Dopuna 24. 10. 2026.: tražena cijena višestruko iznad medijana
+
+- Primjer korisnika: Ledine (Kornić), 709 m², tražena cijena oko 280.000 € (oko 395 €/m²), uređena građevinska čestica s dozvolom. Medijan za Krk 2025. je 94 €/m².
+- Razlog razlike: medijan je sredina svih ugovorenih kupoprodaja građevinskog zemljišta u cijelom gradu ili općini. Među njima su i manje vrijedne čestice (unutrašnjost, bez pristupa i priključaka, dijelovi čestica, suvlasnički udjeli), a ugovorene cijene su obično niže od oglašenih. Izvor ne objavljuje kvartile, pa najskuplji dio tržišta nije vidljiv.
+- Prikaz:
+  - redak „Po medijanu grada ili općine” umjesto „Orijentacijski”;
+  - kod 1,95 × medijana ili više, odnos se prikazuje kao višekratnik („4,2 × medijan”);
+  - od 1,5 × medijana ili više dodaje se objašnjenje da to samo po sebi ne znači da je cijena previsoka, uz uputu na usporedbe u blizini i Plan približnih vrijednosti (ISPU).
