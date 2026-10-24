@@ -114,6 +114,14 @@ async function parcelInfo(id) {
   if (!r.ok) return { status: 502, greska: "OSS HTTP " + (last || r.status) };
   const txt = await r.text(); let d;
   if (!txt.trim()) return { status: 503, greska: "OSS je vratio prazan odgovor (" + opis(0) + ")" };
+  // HTML stranica umjesto podataka (24. 10. 2026. Deno je dobivao „HTTP 200, nginx, text/html, 212 B”): odbijanje ili zaštita, a ne „nema čestice".
+  // Isto kao 403: pauza bez upita prema OSS-u; u poruci i početak teksta stranice (bez oznaka, najviše 80 znakova) za dijagnostiku.
+  if (/text\/html/i.test(r.headers.get("content-type") || "") || /^\s*<(!doctype|html|head|body)\b/i.test(txt)) {
+    const tekst = txt.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 80);
+    const o = opis(txt.length) + (tekst ? ", „" + tekst + "”" : "");
+    try { await caches.default.put(BLOK, new Response(o, { headers: { "Cache-Control": "max-age=" + BLOK_S } })); } catch (e) {}
+    return { status: 503, greska: "OSS je umjesto podataka vratio HTML stranicu (" + o + ")", blok: true };
+  }
   try { d = txt.trim().startsWith("<") ? xmlToObj(txt) : JSON.parse(txt); } catch (e) { return { status: 502, greska: "OSS je vratio nečitljiv odgovor (" + opis(txt.length) + ")" }; }
   if (!d || (d.parcelId == null && d.area == null)) return { status: 404, oss: opis(txt.length) };
   return { status: 200, o: sazmi(d) };
