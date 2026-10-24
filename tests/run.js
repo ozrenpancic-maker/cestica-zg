@@ -1085,15 +1085,18 @@ async function krkTests(){
   ok(/ne povezuje ni s jednim ZK uloškom/.test(txt(w,"zkOss"))&&!$(w,"zkUlRetry"),"Krk OSS: kad OSS česticu ne povezuje s uloškom, to piše (bez gumba za ponovni pokušaj)");
   mode="ok"; E("OSSZK").clear(); E("ZKU").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20);
   // rezervni posrednik (Deno): jednom, kad glavni javi blok/403 ili je nedostupan; ne i za pravi 404
-  {const f0=w.fetch; let cA=0,cB=0,kodA=403; E("SRC_KRK").oss2="https://oss2-test.example/";
+  {const f0=w.fetch; let cA=0,cB=0,kodA=403,kodB=200; E("SRC_KRK").oss2="https://oss2-test.example/";
    w.fetch=(u)=>{u=String(u); if(u.startsWith("https://oss-test.example/")){cA++; return kodA==="mreza"?Promise.reject(new TypeError("Failed to fetch")):Promise.resolve({ok:false,status:kodA,json:()=>Promise.resolve({ok:false,greska:kodA===404?"OSS nema česticu s tim ID-om":"OSS je odbio upit (HTTP 403)",blok:kodA===403})});}
-     if(u.startsWith("https://oss2-test.example/")){cB++; return okj({ok:true,id:"1",broj:"2345/6",ko:"KORNIĆ",katastar:640,zk:[],dijelovi:[],posrednik:"deno"});} return f0(u);};
+     if(u.startsWith("https://oss2-test.example/")){cB++; if(kodB===404) return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve({ok:false,greska:"OSS nema česticu s tim ID-om",posrednik:"deno"})}); return okj({ok:true,id:"1",broj:"2345/6",ko:"KORNIĆ",katastar:640,zk:[],dijelovi:[],posrednik:"deno"});} return f0(u);};
    let r=await E("krkOssOnce")({broj:"2345/6"},"1",null,false);
    ok(r.st==="ok"&&r.d.posrednik==="deno"&&cA===1&&cB===1,"Krk OSS: kad glavni posrednik javi blok (403), isti upit jednom ide na rezervni (Deno)");
    cA=cB=0; kodA="mreza"; r=await E("krkOssOnce")({broj:"2345/6"},"1",null,false);
    ok(r.st==="ok"&&cA===1&&cB===1,"Krk OSS: kad glavni posrednik nije dostupan (mreža), pita se rezervni");
    cA=cB=0; kodA=404; r=await E("krkOssOnce")({broj:"2345/6"},"1",null,false);
    ok(r.st==="err"&&cA===1&&cB===0,"Krk OSS: pravi odgovor 404 ne ide na rezervni posrednik");
+   cA=cB=0; kodA=403; kodB=404; r=await E("krkOssOnce")({broj:"2345/6"},"1",null,false);
+   ok(r.st==="err"&&r.retry===false&&r.rez===true&&/odbio/.test(r.e)&&/ni rezervni posrednik/.test(r.e)&&!/nema česticu/.test(r.e)&&cA===1&&cB===1,"Krk OSS: „nema čestice” od rezervnog posrednika nije konačan odgovor (ostaje greška glavnog, uz gumb Pokušaj ponovno)");
+   kodB=200;
    E("SRC_KRK").oss2=""; cA=cB=0; kodA=403; r=await E("krkOssOnce")({broj:"2345/6"},"1",null,false);
    ok(r.st==="err"&&cA===1&&cB===0,"Krk OSS: bez adrese rezervnog posrednika ponašanje je kao prije"); w.fetch=f0;}
   mode="ok"; E("SRC_KRK").oss=""; E("OSSZK").clear(); E("renderKrk")(E("KRK_CUR"));
