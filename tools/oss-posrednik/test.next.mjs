@@ -138,6 +138,55 @@ console.log("worker.next: uložak OK");
   const e = await (await W.fetch(new Request("https://w.dev/?poplave=45.8,15.97"), {}, ctx)).json(); assert.ok(!e.ok && /popis slojeva nije dostupan \(HTTP 200, text\/html/.test(e.greska), e.greska);
   console.log("worker.next: poplave (slojevi iz popisa servisa, pogodak, predmemorija, greške) OK");
 }
+// poplave, stvarni servis (24. 10. 2026.): slojevi nisu „queryable” → čita se prozirnost slike svakog scenarija
+{
+  const zlib = await import("node:zlib");
+  const crcT = Array.from({ length: 256 }, (_, n) => { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; return c >>> 0; });
+  const crc = b => { let c = 0xffffffff; for (const x of b) c = crcT[(c ^ x) & 255] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; };
+  const chunk = (t, d) => { const l = Buffer.alloc(4); l.writeUInt32BE(d.length); const td = Buffer.concat([Buffer.from(t), d]), c = Buffer.alloc(4); c.writeUInt32BE(crc(td)); return Buffer.concat([l, td, c]); };
+  // png(n, boja(x,y) → [r,g,b,a]); paleta=true → tip 3 s tRNS; filtri se izmjenjuju (0–4) da se provjeri dekodiranje
+  const png = (n, boja, paleta) => {
+    const ih = Buffer.alloc(13); ih.writeUInt32BE(n, 0); ih.writeUInt32BE(n, 4); ih[8] = 8; ih[9] = paleta ? 3 : 6;
+    const kan = paleta ? 1 : 4, red = n * kan, rows = [], pal = [[0, 0, 0, 0], [40, 90, 200, 180]];
+    let prev = Buffer.alloc(red);
+    for (let y = 0; y < n; y++) {
+      const cur = Buffer.alloc(red); for (let x = 0; x < n; x++) { const c = boja(x, y); if (paleta) cur[x] = c[3] ? 1 : 0; else cur.set(c, x * 4); }
+      const f = y % 5, out = Buffer.alloc(red);
+      for (let i = 0; i < red; i++) { const a = i >= kan ? cur[i - kan] : 0, up = prev[i], c = i >= kan ? prev[i - kan] : 0;
+        const pr = f === 0 ? 0 : f === 1 ? a : f === 2 ? up : f === 3 ? (a + up) >> 1 : (() => { const p = a + up - c, pa = Math.abs(p - a), pb = Math.abs(p - up), pc = Math.abs(p - c); return pa <= pb && pa <= pc ? a : pb <= pc ? up : c; })();
+        out[i] = (cur[i] - pr) & 255; }
+      rows.push(Buffer.from([f]), out); prev = cur;
+    }
+    const dij = [Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), chunk("IHDR", ih)];
+    if (paleta) dij.push(chunk("PLTE", Buffer.from(pal.flatMap(p => p.slice(0, 3)))), chunk("tRNS", Buffer.from(pal.map(p => p[3]))));
+    dij.push(chunk("IDAT", zlib.deflateSync(Buffer.concat(rows))), chunk("IEND", Buffer.alloc(0)));
+    return Buffer.concat(dij);
+  };
+  const cap = `<WMS_Capabilities version="1.3.0"><Capability><Request><GetFeatureInfo><Format>application/json</Format></GetFeatureInfo></Request>
+    <Layer><Name>hr.fd.opasnost-od-poplave-mala-vjerojatnost</Name><Title>Opasnosti od poplava, mala vjerojatnost pojavljivanja</Title></Layer>
+    <Layer><Name>hr.fd.opasnost-od-poplave-srednja-vjerojatnost</Name><Title>Opasnosti od poplava, srednja vjerojatnost pojavljivanja</Title></Layer>
+    <Layer><Name>hr.fd.opasnost-od-poplave-velika-vjerojatnost</Name><Title>Opasnosti od poplava, velika vjerojatnost pojavljivanja</Title></Layer>
+    <Layer><Name>hr.fd.vjerojatnost-pojavljivanja</Name><Title>Opasnost od poplava, tri scenarija plavljenja</Title></Layer></Capability></WMS_Capabilities>`;
+  const prazno = () => [0, 0, 0, 0], puno = () => [30, 80, 200, 200], rub = (x, y) => x < 3 ? [30, 80, 200, 200] : [0, 0, 0, 0];
+  const odg = { mala: [puno, true], srednja: [puno, false], velika: [rub, false] }, pitano = [];
+  store = new Map();
+  globalThis.fetch = async u => { u = String(u); pitano.push(u);
+    if (/GetCapabilities/.test(u)) return new Response(cap, { status: 200, headers: { "content-type": "text/xml" } });
+    assert.ok(/REQUEST=GetMap/.test(u) && /TRANSPARENT=TRUE/.test(u) && !/vjerojatnost-pojavljivanja/.test(u), u);
+    const k = u.match(/poplave-(mala|srednja|velika)/)[1], [f, pal] = odg[k];
+    return new Response(png(11, f, pal), { status: 200, headers: { "content-type": "image/png" } }); };
+  const o = await (await W.fetch(new Request("https://w.dev/?poplave=45.04,14.61&dijag=1"), {}, ctx)).json();
+  assert.ok(o.ok && o.metoda === "slika", JSON.stringify(o));
+  const po = Object.fromEntries(o.slojevi.map(s => [s.name.match(/(mala|srednja|velika)/)[1], s.pogodak]));
+  assert.deepEqual(po, { mala: true, srednja: true, velika: false });
+  assert.ok(o.slojevi.every(s => /vjerojatnost pojavljivanja/.test(s.title)));
+  // sve prozirno → izvan; slika bez prozirnosti → ne može se odrediti
+  odg.mala = [prazno, true]; odg.srednja = [prazno, false]; odg.velika = [prazno, false]; store = new Map();
+  const o2 = await (await W.fetch(new Request("https://w.dev/?poplave=45.04,14.62"), {}, ctx)).json(); assert.ok(o2.ok && o2.slojevi.every(s => s.pogodak === false));
+  globalThis.fetch = async u => /GetCapabilities/.test(String(u)) ? new Response(cap, { status: 200, headers: { "content-type": "text/xml" } }) : new Response("<ServiceExceptionReport>x</ServiceExceptionReport>", { status: 200, headers: { "content-type": "text/xml" } });
+  store = new Map(); const e = await (await W.fetch(new Request("https://w.dev/?poplave=45.04,14.63"), {}, ctx)).json(); assert.ok(!e.ok && /slike servisa/.test(e.greska) && /ServiceException/.test(e.slojevi[0].greska), JSON.stringify(e));
+  console.log("worker.next: poplave preko slike (slojevi bez upita po točki, PNG RGBA i paleta) OK");
+}
 // HAKOM: razredi brzine na točki (nepokretna i pokretna mreža)
 {
   store = new Map(); const pitano = [];

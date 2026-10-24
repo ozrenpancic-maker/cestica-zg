@@ -14,6 +14,7 @@ Stanje 24. 10. 2026., grana `razvoj`.
 - Servis ne dopušta čitanje iz preglednika (CORS), pa upit ide preko posrednika: `worker.next.js`, `?poplave=<lat>,<lon>`. Koristi ga Deno; Cloudflare ga dobiva tek ručnom objavom.
 - Nazivi slojeva nisu upisani u kod. Posrednik čita popis slojeva iz servisa (GetCapabilities, pamti ga 7 dana) i pita samo slojeve koji se smiju upitati, a uz to nose naziv scenarija.
 - Pogodak se čita iz odgovora GetFeatureInfo (JSON, običan tekst ili GML). Rezultat po točki pamti se 7 dana.
+- **Stvarni servis (provjereno na Denou 24. 10. 2026.):** ima četiri sloja (`hr.fd.opasnost-od-poplave-velika-vjerojatnost`, `…-srednja-…`, `…-mala-…` i zajednički `hr.fd.vjerojatnost-pojavljivanja`), a nijedan se ne smije upitati po točki. Zato posrednik za svaki od tri scenarija traži malu prozirnu sliku (GetMap PNG, 11 × 11 piksela, oko 1 m po pikselu) i provjerava je li sredina (3 × 3 piksela) obojena. Tako se dobiva samo da/ne po scenariju, bez dubine. PNG se čita u posredniku bez biblioteka.
 - **Dijagnostika:** `?poplave=<lat>,<lon>&dijag=1` vraća i popis svih slojeva servisa.
 
 **Prikaz**
@@ -27,7 +28,7 @@ Stanje 24. 10. 2026., grana `razvoj`.
 - Licenca na data.gov.hr nije navedena. **Otvoreno:** potvrditi s Hrvatskim vodama smije li se servis koristiti u aplikaciji.
 
 **Provjera**
-Iz razvojnog okruženja servis nije dostupan. Nakon objave na Denou treba otvoriti `…deno.net/?poplave=45.80,15.97&dijag=1` i provjeriti nazive slojeva i odgovor.
+Popis slojeva provjeren je na Denou (`?poplave=…&dijag=1`). Čitanje slike treba još jednom provjeriti istim URL-om nakon objave; poznata točka u području opasnosti (npr. uz Savu) mora vratiti `pogodak: true`.
 
 ### Internet (HAKOM)
 
