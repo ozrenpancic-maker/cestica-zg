@@ -2067,6 +2067,34 @@ async function ighTests(){
   ok(errs.length===0,"bez JS grešaka (Bilten, kredit): "+errs.join(" | "));
 }
 
+// skener građevinskih čestica (Zagreb): razvrstaj po namjeni, pravilu i najmanjoj površini, zgrade, UPU
+async function skenTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  const kx=111320*Math.cos(45.84*Math.PI/180), ky=110540, o=[15.97,45.84];
+  const pr=(x,y,W,D,props)=>({type:"Feature",properties:props||{},geometry:{type:"Polygon",coordinates:[[[o[0]+x/kx,o[1]+y/ky],[o[0]+(x+W)/kx,o[1]+y/ky],[o[0]+(x+W)/kx,o[1]+(y+D)/ky],[o[0]+x/kx,o[1]+(y+D)/ky],[o[0]+x/kx,o[1]+y/ky]]]}});
+  const ces=[pr(0,0,30,25,{KATASTARSKA_CESTICA:"10/1",KATASTARSKA_OPCINA:"ŠESTINE"}),pr(40,0,20,20,{KATASTARSKA_CESTICA:"10/2",KATASTARSKA_OPCINA:"ŠESTINE"}),
+    pr(0,40,30,25,{KATASTARSKA_CESTICA:"10/3",KATASTARSKA_OPCINA:"ŠESTINE"}),pr(40,40,30,25,{KATASTARSKA_CESTICA:"10/4",KATASTARSKA_OPCINA:"ŠESTINE"}),pr(200,0,40,40,{KATASTARSKA_CESTICA:"11/1",KATASTARSKA_OPCINA:"ŠESTINE"})];
+  const H={cestice:ces,namjena:[pr(-10,-10,100,90,{Analitika:"Stambena i mješovita"}),pr(190,-10,60,60,{Analitika:"Šume"})],pravila:[pr(-10,-10,300,100,{BROJ_UP:"2.2"})],
+    pravilaSE:[],upu:[pr(38,38,40,30,{TextString:"UPU Test"})],objekti:[pr(10,50,8,8,{OBJECTID:1})]};
+  const kljuc=u=>/KatastarskeCestice/.test(u)?"cestice":/planirana_namjena/.test(u)?"namjena":/4a_urbana_pravila/.test(u)?"pravila":/Sesvet/.test(u)?"pravilaSE":/4b_procedure/.test(u)?"upu":/Objekti/.test(u)?"objekti":null;
+  let hookErr=null; w.__skenHook=u=>{ const k=kljuc(u); if(hookErr&&hookErr===k) return Promise.reject(new Error("HTTP 500")); return {type:"FeatureCollection",features:H[k]||[]}; };
+  const min22=E("parseParams")(E("normKeys")(E("pickZone")(E("RULES")["2.2."],"Stambena i mješovita")),"slob").minC;
+  ok(min22===600,"Skener: pravilo 2.2. za slobodnostojeću kuću traži najmanje 600 m²");
+  E("map").setView([45.8402,15.9705],18,{animate:false}); $(w,"lyrSken").checked=true; $(w,"lyrSken").dispatchEvent(new w.Event("change",{bubbles:true})); await new Promise(r=>setTimeout(r,80));
+  const R=E("SKEN").res, k=c=>{const f=R.out.find(f=>f.properties.ces===c); return f&&f.properties.k;};
+  ok(R&&R.C===5&&R.out.length===4&&k("10/1")==="pot"&&["mala","izn"].includes(k("10/2"))&&k("10/3")==="izg"&&k("10/4")==="upu"&&!k("11/1"),"Skener: 750 m² neizgrađena = potencijalna; 400 m² premala; sa zgradom = izgrađena; u obuhvatu UPU-a; šuma se ne prikazuje: "+JSON.stringify(R&&R.out.map(f=>[f.properties.ces,f.properties.k])));
+  const t=txt(w,"skenInfo"); ok(/Pregledano 5 čestica, u građevinskom području 4/.test(t)&&/Potencijalne čestice \(2\)/.test(t)&&/k\.č\. 10\/1/.test(t)&&/najmanje 600 m², pravilo 2\.2\./.test(t)&&/Površina je grafička/.test(t),"Skener: legenda, broj po razredu i popis potencijalnih čestica s pravilom: "+t.slice(0,300));
+  ok(E("SKEN").layer.getLayers().length===4,"Skener: na karti su samo čestice u građevinskom području");
+  // drugi tip kuće mijenja najmanju površinu (ugrađena) i razred se računa ponovno
+  ok(E("skenRazred")({analitika:"Stambena i mješovita",pravilo:{rule:E("RULES")["2.2."]},A:599,zgrada:false,upu:false,tip:"slob"}).k!=="pot","Skener: 599 m² nije dovoljno uz najmanje 600 m²");
+  ok(E("skenRazred")({analitika:"Promet",pravilo:null,A:5000}).k===null&&E("skenRazred")({analitika:"Stambena i mješovita",pravilo:null,A:900}).k==="bez","Skener: izvan građevinskog područja nema razreda; bez pravila „bez” (ne izmišlja najmanju površinu)");
+  // oddaljeno: zum premali i greška servisa
+  E("map").setZoom(15,{animate:false}); await E("skenPokreni")(); ok(/Približi kartu/.test(txt(w,"skenInfo"))&&E("SKEN").layer.getLayers().length===0,"Skener: ispod zuma 17 ne pita servise");
+  E("map").setZoom(18,{animate:false}); hookErr="objekti"; await E("skenPokreni")(); ok(/Nisu dohvaćeni: zgrade/.test(txt(w,"skenInfo")),"Skener: kad zgrade nisu dostupne, to piše");
+  hookErr="cestice"; await E("skenPokreni")(); ok(/Podaci nisu dostupni \(HTTP 500\)/.test(txt(w,"skenInfo")),"Skener: bez čestica „Podaci nisu dostupni”");
+  ok(errs.length===0,"bez JS grešaka (skener): "+errs.join(" | "));
+}
+
 // osunčanost dvorišta, vjetar i bura, pogled na more, promjene na spremljenoj čestici (čiste funkcije i prikaz)
 async function napTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -2260,7 +2288,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
