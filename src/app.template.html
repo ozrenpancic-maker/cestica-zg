@@ -387,6 +387,11 @@ ol.zi{font-size:13.5px;padding-left:18px}
 @media (max-width:420px){#go{font-size:0;min-width:44px}#go::before{content:"⌕";font-size:24px;line-height:1}}
 .vjet{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start}.vjet>div{flex:1;min-width:220px}
 .prom{border:1px solid var(--warn);border-radius:10px;padding:10px 12px;margin:8px 0;background:var(--panel)}
+#arFotoBox{position:absolute;top:calc(env(safe-area-inset-top,0px) + 70px);left:8px;right:8px;background:rgba(0,0,0,.75);border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:8px;pointer-events:auto}
+#arFotoBox img{width:100%;max-height:45vh;object-fit:contain;border-radius:8px}#arFotoBox .ib{min-height:44px;text-decoration:none;display:inline-flex;align-items:center}
+#dosjeProg{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);z-index:5000;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:12px;padding:14px 18px;box-shadow:0 8px 30px rgba(0,0,0,.25);display:flex;flex-direction:column;gap:6px;min-width:260px}
+@media print{#dosjeProg{display:none}}
+.rpt-pov-r{display:flex;gap:10px}.rpt-pov figure{flex:1;margin:0}.rpt-pov figure>div{position:relative;line-height:0}.rpt-pov img{width:100%;height:auto;display:block}.rpt-pov svg{position:absolute;inset:0;width:100%;height:100%}.rpt-pov figcaption{font-size:12px;text-align:center;margin-top:4px}.pov-greska img,.pov-greska svg{display:none}.pov-greska figcaption::after{content:" – snimka nije učitana (DGU)"}
 .opt{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin:8px 0}
 .opt-k{border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:3px;background:var(--panel);font-size:14px}
 .opt-k .ib{margin-top:4px;align-self:flex-start}.opt-k small.fx{display:block}.opt-cur{background:var(--soft)}
@@ -510,7 +515,7 @@ ul.risk small{color:var(--muted)}
   <div id="menu" hidden><p class="meta" id="ver" style="margin:0 0 6px"></p><a href="#" id="statBtn2" class="ib">Stanje servisa</a><a href="#" id="goKrk" class="ib">Otok Krk (pilot)</a><label id="aiOnRow" class="aion" hidden><input type="checkbox" id="aiOn"> AI asistent (testno)</label></div>
   <main>
     <div id="map"></div>
-    <div id="v3d" hidden role="dialog" aria-label="3D pogled na česticu"><div class="v3d-bar"><b id="v3dTtl">3D pogled</b><span class="v3d-act"><button type="button" class="ib" id="v3dRot">Zaustavi</button><button type="button" class="ib" id="v3dPod">Karta</button><label><input type="checkbox" id="v3dKat" checked> Čestice</label><label id="v3dOkolL" hidden title="Okolne zgrade iz neslužbenog 3D modela Grada Zagreba (ZG3D)"><input type="checkbox" id="v3dOkol" checked> Okolne zgrade</label><label title="Solarni paneli prema odjeljku Solarna elektrana"><input type="checkbox" id="v3dPv"> Paneli</label><button type="button" class="ib" id="v3dClose" aria-label="Zatvori">✕</button></span></div><div id="v3dMap"></div><p class="v3d-note" id="v3dNote"></p></div>
+    <div id="v3d" hidden role="dialog" aria-label="3D pogled na česticu"><div class="v3d-bar"><b id="v3dTtl">3D pogled</b><span class="v3d-act"><button type="button" class="ib" id="v3dRot">Zaustavi</button><button type="button" class="ib" id="v3dPod">Karta</button><label><input type="checkbox" id="v3dKat" checked> Čestice</label><label id="v3dOkolL" hidden title="Okolne zgrade iz neslužbenog 3D modela Grada Zagreba (ZG3D)"><input type="checkbox" id="v3dOkol" checked> Okolne zgrade</label><label title="Solarni paneli prema odjeljku Solarna elektrana"><input type="checkbox" id="v3dPv"> Paneli</label><button type="button" class="ib" id="v3dVid" title="Video od 18 s: kamera kruži, dan prelazi u večer, spuštanje prema ulazu">🎬 Prolet</button><button type="button" class="ib" id="v3dClose" aria-label="Zatvori">✕</button></span></div><div id="v3dMap"></div><p class="v3d-note" id="v3dNote"></p></div>
     <div class="layers" id="layers">
       <button type="button" class="ib fab" id="lyrBtn" aria-expanded="false" aria-controls="lyrList">Slojevi</button>
       <button type="button" class="ib fab" id="aiBtn" hidden aria-label="AI asistent">AI</button>
@@ -2858,7 +2863,7 @@ async function arStart(mod){
   window.addEventListener("deviceorientationabsolute",onOr); AR.offOr=()=>window.removeEventListener("deviceorientationabsolute",onOr);
   AR.gps=null; try{ const p=await new Promise((res,rej)=>navigator.geolocation?navigator.geolocation.getCurrentPosition(res,rej,{enableHighAccuracy:true,timeout:10000,maximumAge:5000}):rej(new Error("nema GPS-a"))); AR.gps={ll:[p.coords.longitude,p.coords.latitude],acc:p.coords.accuracy}; }catch(e){}
   try{
-    const s=await navigator.xr.requestSession("immersive-ar",{optionalFeatures:["local-floor","hit-test","dom-overlay"],domOverlay:{root:document.getElementById("arUi")}});
+    const s=await navigator.xr.requestSession("immersive-ar",{optionalFeatures:["local-floor","hit-test","dom-overlay","camera-access"],domOverlay:{root:document.getElementById("arUi")}});
     AR.s=s; const cv=document.createElement("canvas"), gl=cv.getContext("webgl",{xrCompatible:true,alpha:true,antialias:true}); AR.gl=gl;
     await s.updateRenderState({baseLayer:new XRWebGLLayer(s,gl)});
     try{AR.ref=await s.requestReferenceSpace("local-floor"); AR.floorY=0;}catch(e){AR.ref=await s.requestReferenceSpace("local"); AR.floorY=-1.4;}
@@ -2873,7 +2878,7 @@ function arPocetak(){
   AR.U=AR.gps?arEnu(k.O,AR.gps.ll):[c[0]-8*Math.sin(f),c[1]-8*Math.cos(f)];
   AR.dirty=true;
 }
-function arKraj(){ if(AR.offOr) AR.offOr(); AR.offOr=null; if(AR.hts){try{AR.hts.cancel()}catch(e){}} AR.hts=null; AR.s=null; AR.gl=null; AR.buf=null; arUi(false); }
+function arKraj(){ AR.bind=null; AR.progCam=null; AR.snimi=false; if(AR.offOr) AR.offOr(); AR.offOr=null; if(AR.hts){try{AR.hts.cancel()}catch(e){}} AR.hts=null; AR.s=null; AR.gl=null; AR.buf=null; arUi(false); }
 function arUi(on){
   let u=document.getElementById("arUi");
   if(!u){ u=document.createElement("div"); u.id="arUi"; u.hidden=true; document.body.appendChild(u); }
@@ -2884,7 +2889,7 @@ function arUi(on){
   u.innerHTML=`<div class="ar-top"><span id="arStat">Pokrećem kameru…</span></div><div class="ar-bot">${skica}<div class="ar-ctl">
     <label for="arKut">Kut</label><select id="arKut" class="bsel">${K.map((p,i)=>`<option value="${i}">${i+1}</option>`).join("")}</select><button type="button" class="ib" id="arMark">Ovo je kut</button>
     <span class="ar-row"><button type="button" class="ib" data-ar="rl" aria-label="Okreni ulijevo">↺</button><button type="button" class="ib" data-ar="rr" aria-label="Okreni udesno">↻</button><button type="button" class="ib" data-ar="l" aria-label="Pomakni ulijevo">←</button><button type="button" class="ib" data-ar="u" aria-label="Pomakni naprijed">↑</button><button type="button" class="ib" data-ar="d" aria-label="Pomakni natrag">↓</button><button type="button" class="ib" data-ar="r" aria-label="Pomakni udesno">→</button></span>
-    <button type="button" class="ib" id="arModV">Mjeri visine kutova</button><button type="button" class="ib" id="arIzlaz">Izlaz</button></div></div>`;
+    <button type="button" class="ib" id="arFoto">📷 Snimi</button><button type="button" class="ib" id="arModV">Mjeri visine kutova</button><button type="button" class="ib" id="arIzlaz">Izlaz</button></div></div>`;
 }
 function arStatus(t){
   const e=document.getElementById("arStat"); if(!e) return;
@@ -2937,7 +2942,8 @@ function arFrame(t,frame){
     gl.depthMask(false); arDrawBuf(gl,AR.bT,AR.novo?AR.buf.T:null,gl.TRIANGLES,AR.buf.T.length/7); gl.depthMask(true);
     arDrawBuf(gl,AR.bL,AR.novo?AR.buf.L:null,gl.LINES,AR.buf.L.length/7); AR.novo=false;
     if(R) arDrawBuf(gl,AR.bR,R,gl.LINE_STRIP,R.length/7);
-    if(AR.mod==="visine"&&AR.bufM&&AR.bufM.length) arDrawBuf(gl,AR.bM,AR.bufM,gl.LINES,AR.bufM.length/7); }
+    if(AR.mod==="visine"&&AR.bufM&&AR.bufM.length) arDrawBuf(gl,AR.bM,AR.bufM,gl.LINES,AR.bufM.length/7);
+    if(AR.snimi&&view===pose.views[0]){ try{arSnimiOkvir(view,gl)}catch(e){ AR.snimi=false; arStatus("Fotografija nije uspjela ("+(e.message||e.name)+")."); } } }
 }
 document.addEventListener("click",e=>{
   const t=e.target; if(!t||!t.closest) return;
@@ -2978,7 +2984,7 @@ function arUiVisine(){
     <label for="arVKut">Kut kuće</label><select id="arVKut" class="bsel">${[0,1,2,3].map(i=>`<option value="${i}"${i===AR.vKut?" selected":""}>${i+1}${AR.vis[i]?" ✓":""}</option>`).join("")}</select>
     <select id="arVNacin" class="bsel" aria-label="Način mjerenja"><option value="tlo"${AR.visNacin==="tlo"?" selected":""}>krug na tlu</option><option value="mob"${AR.visNacin==="mob"?" selected":""}>visina mobitela (štap)</option></select>
     <button type="button" class="ib" id="arVMjeri">Izmjeri</button><button type="button" class="ib" id="arVSpremi"${R.sve?"":" disabled"}>Spremi u iskop</button>
-    <button type="button" class="ib" id="arModP">Poravnaj kuću</button><button type="button" class="ib" id="arIzlaz">Izlaz</button></div></div>`;
+    <button type="button" class="ib" id="arFoto">📷 Snimi</button><button type="button" class="ib" id="arModP">Poravnaj kuću</button><button type="button" class="ib" id="arIzlaz">Izlaz</button></div></div>`;
 }
 function arVisMarkeri(){ const v=[], G=[.2,.9,.3,1]; for(const p of Object.values(AR.vis)){ v.push(p.x-0.15,p.y,p.z,...G,p.x+0.15,p.y,p.z,...G,p.x,p.y,p.z-0.15,...G,p.x,p.y,p.z+0.15,...G,p.x,p.y,p.z,...G,p.x,p.y+0.4,p.z,...G); } AR.bufM=new Float32Array(v); }
 function arVisMjeri(){
@@ -2996,6 +3002,52 @@ function arVisSpremi(){
 document.addEventListener("change",e=>{ const t=e.target; if(!t) return;
   if(t.id==="arVKut"){ AR.vKut=+t.value; AR.dirty=true; arUi(true); }
   else if(t.id==="arVNacin"){ AR.visNacin=t.value==="mob"?"mob":"tlo"; arStatus(); } });
+// ---- fotografija s kućom kroz kameru (WebXR „camera-access”: slika kamere + kuća u istom kadru, spremanje kao JPEG) ----
+// U sljedećem okviru nakon „Snimi” slika kamere (XRWebGLBinding.getCameraImage) i prizor (granica, prostor, kuća) crtaju se
+// u zaseban međuspremnik veličine slike kamere, čitaju (readPixels) i slažu u JPEG s natpisom. Bez podrške za „camera-access”
+// (stariji Chrome ili uređaj) fotografija nije moguća i to se javlja; AR prikaz radi i dalje.
+function arFotoNatpis(c){ c=c||window.__cur||{}; const F=tFloors();
+  return `Čestica HR · k.č. ${c.ces||"?"}${c.ko?", k.o. "+c.ko:""} · kuća ${dec(TL.w)} × ${dec(TL.d)} m, ${F.label} · ilustracija, nije projekt · ${new Date().toLocaleDateString("hr-HR")}`; }
+function arCamProg(gl){
+  if(AR.progCam) return AR.progCam; const sh=(t,src)=>{const s=gl.createShader(t); gl.shaderSource(s,src); gl.compileShader(s); return s;};
+  const p=gl.createProgram(); gl.attachShader(p,sh(gl.VERTEX_SHADER,"attribute vec2 p;varying vec2 uv;void main(){uv=p*0.5+0.5;gl_Position=vec4(p,0.0,1.0);}"));
+  gl.attachShader(p,sh(gl.FRAGMENT_SHADER,"precision mediump float;varying vec2 uv;uniform sampler2D t;void main(){gl_FragColor=texture2D(t,uv);}")); gl.linkProgram(p);
+  AR.progCam={p,loc:gl.getAttribLocation(p,"p"),t:gl.getUniformLocation(p,"t"),buf:gl.createBuffer()}; gl.bindBuffer(gl.ARRAY_BUFFER,AR.progCam.buf); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  return AR.progCam;
+}
+function arSnimiOkvir(view,gl){
+  AR.snimi=false; const cam=view.camera; if(!cam||typeof XRWebGLBinding==="undefined"){ arStatus("Ovaj uređaj ili preglednik ne daje sliku kamere aplikaciji (WebXR „camera-access”), pa fotografija nije moguća. Snimku zaslona možeš napraviti tipkama mobitela."); return; }
+  const W=cam.width, H=cam.height, bind=AR.bind||(AR.bind=new XRWebGLBinding(AR.s,gl)), tex=bind.getCameraImage(cam); if(!tex){ arStatus("Slika kamere nije dostupna u ovom trenutku; pokušaj ponovno."); return; }
+  const fb=gl.createFramebuffer(), ct=gl.createTexture(), rb=gl.createRenderbuffer();
+  gl.bindTexture(gl.TEXTURE_2D,ct); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,W,H,0,gl.RGBA,gl.UNSIGNED_BYTE,null); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+  gl.bindRenderbuffer(gl.RENDERBUFFER,rb); gl.renderbufferStorage(gl.RENDERBUFFER,gl.DEPTH_COMPONENT16,W,H);
+  gl.bindFramebuffer(gl.FRAMEBUFFER,fb); gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,ct,0); gl.framebufferRenderbuffer(gl.FRAMEBUFFER,gl.DEPTH_ATTACHMENT,gl.RENDERBUFFER,rb);
+  gl.viewport(0,0,W,H); gl.clearColor(0,0,0,1); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  const C=arCamProg(gl); gl.disable(gl.DEPTH_TEST); gl.useProgram(C.p); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,tex); gl.uniform1i(C.t,0);
+  gl.bindBuffer(gl.ARRAY_BUFFER,C.buf); gl.enableVertexAttribArray(C.loc); gl.vertexAttribPointer(C.loc,2,gl.FLOAT,false,0,0); gl.drawArrays(gl.TRIANGLE_STRIP,0,4); gl.disableVertexAttribArray(C.loc);
+  gl.enable(gl.DEPTH_TEST); gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA); gl.useProgram(AR.prog);
+  gl.uniformMatrix4fv(AR.loc.P,false,view.projectionMatrix); gl.uniformMatrix4fv(AR.loc.V,false,view.transform.inverse.matrix);
+  const B=arVerts(); gl.depthMask(false); arDrawBuf(gl,AR.bT,B.T,gl.TRIANGLES,B.T.length/7); gl.depthMask(true); arDrawBuf(gl,AR.bL,B.L,gl.LINES,B.L.length/7); AR.novo=true;
+  const px=new Uint8Array(W*H*4); gl.readPixels(0,0,W,H,gl.RGBA,gl.UNSIGNED_BYTE,px);
+  gl.bindFramebuffer(gl.FRAMEBUFFER,AR.s.renderState.baseLayer.framebuffer); gl.deleteFramebuffer(fb); gl.deleteTexture(ct); gl.deleteRenderbuffer(rb);
+  // u 2D platno: okreni retke (WebGL čita odozdo) i dodaj traku s natpisom
+  const cv=document.createElement("canvas"), bar=Math.max(28,Math.round(H*0.045)); cv.width=W; cv.height=H+bar; const cx=cv.getContext("2d"), im=cx.createImageData(W,H);
+  for(let y=0;y<H;y++) im.data.set(px.subarray((H-1-y)*W*4,(H-y)*W*4),y*W*4);
+  cx.putImageData(im,0,0); cx.fillStyle="#1d2420"; cx.fillRect(0,H,W,bar); cx.fillStyle="#fff"; cx.font=`${Math.round(bar*0.45)}px system-ui,sans-serif`; cx.textBaseline="middle";
+  cx.fillText(arFotoNatpis(),Math.round(bar*0.4),H+bar/2,W-bar*0.8);
+  cv.toBlob(b=>{ if(!b){arStatus("Fotografija nije spremljena."); return;} if(AR.foto) URL.revokeObjectURL(AR.foto.url); AR.foto={blob:b,url:URL.createObjectURL(b)}; arFotoUi(); },"image/jpeg",0.9);
+}
+function arFotoIme(){ const c=window.__cur||{}; return (geoSlug(c.ko)||"ko")+"_cestica_"+(geoSlug(c.ces)||"bez_broja")+"_kuca_"+new Date().toISOString().slice(0,10)+".jpg"; }
+function arFotoUi(){
+  const u=document.getElementById("arUi"); if(!u||!AR.foto) return; let p=document.getElementById("arFotoBox");
+  if(!p){ p=document.createElement("div"); p.id="arFotoBox"; u.appendChild(p); }
+  p.innerHTML=`<img src="${AR.foto.url}" alt="Fotografija s kućom"><div class="ar-row"><a class="ib" id="arFotoSpremi" href="${AR.foto.url}" download="${esc(arFotoIme())}">Spremi</a>${navigator.share?`<button type="button" class="ib" id="arFotoDijeli">Podijeli</button>`:""}<button type="button" class="ib" id="arFotoZatvori">Zatvori</button></div>`;
+}
+document.addEventListener("click",e=>{ const t=e.target; if(!t) return;
+  if(t.id==="arFoto"){ if(!AR.s){arPoruka("Fotografija se snima u prikazu kroz kameru."); return;} AR.snimi=true; arStatus("Snimam…"); }
+  else if(t.id==="arFotoZatvori"){ const p=document.getElementById("arFotoBox"); if(p) p.remove(); arStatus(); }
+  else if(t.id==="arFotoDijeli"&&AR.foto){ const f=new File([AR.foto.blob],arFotoIme(),{type:"image/jpeg"}); const d={files:[f],title:"Kuća na čestici",text:arFotoNatpis()};
+    if(navigator.canShare&&!navigator.canShare(d)){ arStatus("Dijeljenje slike nije podržano; dodirni „Spremi”."); return; } navigator.share(d).catch(()=>{}); } });
 function tReset(){ for(const k of ["layer","marker","zl","rotM"]) if(TL[k]) selLayer.removeLayer(TL[k]); TL.layer=null; TL.marker=null; TL.zl=null; TL.rotM=null; TL.center=null; TL.zones=null; }
 sheet.addEventListener("input",e=>{
   const id=e.target.id; if(!/^t(W|D|Rot|Fh|Gw|Gd)$/.test(id)) return;
@@ -6555,8 +6607,8 @@ sheet.addEventListener("input",e=>{if(e.target.matches&&e.target.matches("[data-
 sheet.addEventListener("click",e=>{
   if(e.target.id!=="printBtn") return;
   const ph=document.getElementById("printHead");
-  if(ph) ph.textContent="Izvještaj o čestici · "+new Date().toLocaleDateString("hr-HR")+" · "+(window.__lastLL?window.__lastLL.lat.toFixed(5)+", "+window.__lastLL.lng.toFixed(5):"");
-  rptPrint();
+  if(ph) ph.textContent="Dosje čestice · "+new Date().toLocaleDateString("hr-HR")+" · "+(window.__lastLL?window.__lastLL.lat.toFixed(5)+", "+window.__lastLL.lng.toFixed(5):"");
+  dosjePripremi().then(rptPrint).catch(err=>{console.error(err); dosjeProg(null); rptPrint();});
 });
 // karta za ispis: premjesti kartu na vrh izvještaja, zumiraj na česticu, pričekaj podloge
 const mapEl=document.getElementById("map"), mapHome=mapEl.parentNode, mapNext=mapEl.nextSibling;
@@ -6740,6 +6792,49 @@ async function v3dOpen(){
   m.once("idle",fin); setTimeout(fin,8000); // ako neki sloj ne odgovori, slika se ipak spremi nakon 8 s
   V3D.rot=true; document.getElementById("v3dRot").textContent="Zaustavi"; v3dSpin();
 }
+// ================= 3D PROLET KAO VIDEO (kamera kruži, dan prelazi u večer, spuštanje prema kući) =================
+// Snima se 3D pogled (MapLibre) u pozadinsko 2D platno s natpisom, a platno se snima MediaRecorderom (MP4 gdje ga preglednik
+// podržava, inače WebM). Položaj Sunca za 21. lipnja (NOAA): svjetlo na modelu i sjena kuće pomiču se od jutra do večeri.
+const PROL={on:false,rec:null,url:null,t0:0,raf:0,T:18};
+// čisti izračun kadra: t sekundi od početka, T trajanje, b0 početni smjer, z0 početni zum, bU smjer prema ulazu kuće
+function proletKadar(t,T,b0,z0,bU){
+  const u=Math.max(0,Math.min(1,t/T)), e=x=>x<0.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
+  if(u<0.5){ const k=e(u/0.5); return {bearing:b0+300*k,pitch:58,zoom:z0,sat:9}; }
+  if(u<0.78){ const k=(u-0.5)/0.28; return {bearing:b0+300+40*k,pitch:56,zoom:z0+0.15*k,sat:9+11*k}; }
+  const k=e((u-0.78)/0.22), bs=b0+340, db=((bU-bs)%360+540)%360-180; return {bearing:bs+db*k,pitch:56+16*k,zoom:z0+0.15+1.0*k,sat:20};
+}
+function proletMime(){ if(typeof MediaRecorder==="undefined") return null; for(const m of ["video/mp4;codecs=avc1.42E01E","video/mp4","video/webm;codecs=vp9","video/webm;codecs=vp8","video/webm"]) try{ if(MediaRecorder.isTypeSupported(m)) return m; }catch(e){} return null; }
+async function proletSnimi(){
+  const m=V3D.map, note=document.getElementById("v3dNote"); if(!m||PROL.on) return;
+  const mime=proletMime(), src=m.getCanvas(); if(!mime||!src.captureStream&&!HTMLCanvasElement.prototype.captureStream){ note.textContent="Ovaj preglednik ne može snimati video (MediaRecorder). Probaj u Chromeu ili Edgeu."; return; }
+  V3D.rot=false; const rb=document.getElementById("v3dRot"); if(rb) rb.textContent="Okreći"; cancelAnimationFrame(V3D.raf);
+  await new Promise(r=>{ let ok=false; const f=()=>{ if(!ok){ok=true; r();} }; m.once("idle",f); setTimeout(f,6000); });
+  const cv=document.createElement("canvas"); cv.width=src.width; cv.height=src.height; const cx=cv.getContext("2d");
+  const st=cv.captureStream(30), rec=new MediaRecorder(st,{mimeType:mime,videoBitsPerSecond:6e6}), dijelovi=[]; rec.ondataavailable=e=>{ if(e.data&&e.data.size) dijelovi.push(e.data); };
+  const D=v3dData(), c=D.c, b0=m.getBearing(), z0=m.getZoom(), bU={S:180,N:0,E:90,W:270}[D.ulaz||"S"]+(TL.rot||0)+180, god=new Date().getFullYear()+"-06-21", stari=[V3M.sunAz,V3M.sunPolar];
+  const cur=window.__cur||{}, natpis=`Čestica HR · k.č. ${D.broj||cur.ces||"?"}${cur.ko?", k.o. "+cur.ko:""} · ilustracija, nije projekt`;
+  let zadnjiSat=-1, sjT=0;
+  const crtaj=(sat)=>{ cx.fillStyle=sat!=null&&sat>=19?"#c9b8a6":"#cfe0ea"; cx.fillRect(0,0,cv.width,cv.height); cx.drawImage(src,0,0,cv.width,cv.height); /* pozadina: 3D platno je prozirno iznad obzora i gdje podloga nije učitana */ const h=Math.round(cv.height*0.06), fs=Math.round(h*0.42);
+    cx.fillStyle="rgba(20,25,23,.72)"; cx.fillRect(0,cv.height-h,cv.width,h); cx.fillStyle="#fff"; cx.font=`${fs}px system-ui,sans-serif`; cx.textBaseline="middle"; cx.fillText(natpis,Math.round(h*0.4),cv.height-h/2,cv.width-h*3);
+    if(sat!=null){ const t=hhmm(sat); cx.font=`600 ${Math.round(fs*1.3)}px system-ui,sans-serif`; cx.textAlign="right"; cx.fillText("☀ "+t+" · 21. lipnja",cv.width-Math.round(h*0.4),Math.round(h*0.8)); cx.textAlign="left"; } };
+  PROL.on=true; note.textContent="Snimam prolet (18 s)…"; rec.start(250); PROL.t0=performance.now(); let sat=null;
+  const korak=()=>{ if(V3D.map!==m){ PROL.on=false; try{rec.stop()}catch(e){} return; } const t=(performance.now()-PROL.t0)/1000; const K=proletKadar(t,PROL.T,b0,z0,bU);
+    m.jumpTo({bearing:K.bearing,pitch:K.pitch,zoom:K.zoom,center:c});
+    if(K.sat!==zadnjiSat){ zadnjiSat=K.sat; sat=K.sat; const sp=solarPos(zgDate(god,K.sat),c[1],c[0]);
+      try{ m.setLight({anchor:"map",position:[1.15,sp.az,Math.max(5,Math.min(88,90-sp.alt))],color:sp.alt>8?"#ffffff":"#ffd8a8",intensity:sp.alt>0?0.42:0.2}); }catch(e){}
+      if(performance.now()-sjT>150&&sp.alt>1){ sjT=performance.now(); V3M.sunAz=sp.az; V3M.sunPolar=90-sp.alt; try{ const s=m.getSource("sjena"); if(s) s.setData(v3dData().sjena); }catch(e){} } }
+    crtaj(t>PROL.T*0.5?sat:null);
+    if(t<PROL.T) PROL.raf=requestAnimationFrame(korak); else zavrsi(); };
+  const zavrsi=()=>{ rec.onstop=()=>{ PROL.on=false; V3M.sunAz=stari[0]; V3M.sunPolar=stari[1]; try{ m.setLight({anchor:"map",position:[1.15,V3M.sunAz,V3M.sunPolar],color:"#ffffff",intensity:0.42}); const s=m.getSource("sjena"); if(s) s.setData(v3dData().sjena); }catch(e){}
+      const b=new Blob(dijelovi,{type:mime.split(";")[0]}); if(PROL.url) URL.revokeObjectURL(PROL.url); PROL.url=URL.createObjectURL(b); PROL.blob=b;
+      const ext=/mp4/.test(mime)?"mp4":"webm", ime=(geoSlug(cur.ko)||"ko")+"_cestica_"+(geoSlug(cur.ces||D.broj)||"bez_broja")+"_prolet."+ext; PROL.ime=ime;
+      note.innerHTML=`Prolet je snimljen (${(b.size/1e6).toFixed(1).replace(".",",")} MB, ${ext.toUpperCase()}). <a class="ib" href="${PROL.url}" download="${esc(ime)}">Spremi video</a>${navigator.share?` <button type="button" class="ib" id="v3dVidDijeli">Podijeli</button>`:""}`; };
+    rec.stop(); };
+  PROL.raf=requestAnimationFrame(korak);
+}
+document.addEventListener("click",e=>{ const t=e.target; if(!t) return;
+  if(t.id==="v3dVid") proletSnimi().catch(err=>{ PROL.on=false; const n=document.getElementById("v3dNote"); if(n) n.textContent="Snimanje nije uspjelo ("+(err.message||err.name)+")."; });
+  else if(t.id==="v3dVidDijeli"&&PROL.blob){ const f=new File([PROL.blob],PROL.ime,{type:PROL.blob.type}), d={files:[f],title:"Prolet nad česticom"}; if(navigator.canShare&&!navigator.canShare(d)){ const n=document.getElementById("v3dNote"); if(n) n.append(" Dijeljenje videa nije podržano; spremi ga."); return; } navigator.share(d).catch(()=>{}); } });
 function v3dClose(){ document.getElementById("v3d").hidden=true; if(isMobile()) setState("peek"); cancelAnimationFrame(V3D.raf); if(V3D.map){try{V3D.map.remove()}catch(e){} V3D.map=null;} }
 document.getElementById("v3dBtn").addEventListener("click",v3dOpen);
 document.getElementById("v3dClose").addEventListener("click",v3dClose);
@@ -7137,6 +7232,42 @@ function rptClean(src){
 function rptAfter(h){const out=[]; if(!h) return out; let n=h.nextElementSibling; while(n&&n.tagName!=="H2"){out.push(n); n=n.nextElementSibling;} return out;}
 const rptH2=t=>[...sheet.querySelectorAll("h2")].find(h=>h.textContent.trim().startsWith(t));
 const rptQ=sel=>sheet.querySelector(sel);
+// ================= DOSJE ČESTICE (priprema izvještaja) =================
+// Prije ispisa otvaraju se svi odjeljci (pa se računaju i napredne analize koje se inače računaju tek na otvaranje),
+// čeka se najviše 15 s da se dohvate podaci, a ako kuća postoji i 3D slika nije snimljena, 3D pogled se otvori i snimi.
+function dosjeProg(t){ let o=document.getElementById("dosjeProg"); if(t==null){ if(o) o.remove(); return; }
+  if(!o){ o=document.createElement("div"); o.id="dosjeProg"; o.setAttribute("role","status"); document.body.appendChild(o); } o.innerHTML=`<b>Pripremam dosje čestice</b><span><span class="spin"></span>${esc(t)}</span>`; }
+function dosjePodrucje(c){ c=c||{}; if(c.region==="krk") return " · Otok Krk"; if(c.region==="hr"){ let j=null; try{const r=ptnRez(); j=r&&r.J?krkJlsNaziv(r.J.red[2]):null;}catch(e){} return j?" · "+j:" · Hrvatska"; } return " · Grad Zagreb"; }
+async function dosjePripremi(){
+  dosjeProg("otvaram odjeljke i računam napredne analize…");
+  sheet.querySelectorAll("details").forEach(d=>d.open=true);
+  const z=[]; const pok=f=>{ try{ const r=f(); if(r&&r.then) z.push(r.catch(()=>{})); }catch(e){} };
+  pok(()=>osunUpdate()); pok(()=>vjetUpdate()); pok(()=>kisUpdate()); pok(()=>eneUpdate()); pok(()=>pogUpdate()); pok(()=>{iskStart(); iskUpdate();});
+  await Promise.race([Promise.all(z),new Promise(r=>setTimeout(r,15000))]);
+  const key=window.__cur&&window.__cur.key;
+  if(TL.center&&key&&!V3D.snap.has(key)&&document.getElementById("v3dBtn")){
+    dosjeProg("snimam 3D pogled…");
+    try{ await Promise.race([v3dOpen(),new Promise(r=>setTimeout(r,9000))]); if(V3D.map) await new Promise(r=>{ const t0=Date.now(), f=()=>{ if(V3D.snap.has(key)||Date.now()-t0>10000) r(); else setTimeout(f,300); }; f(); }); }catch(e){}
+    try{ v3dClose(); }catch(e){}
+  }
+  dosjeProg("slažem dosje i karte…");
+}
+// snimke iz zraka 2011. i 2023./24. jedna uz drugu, s granicom čestice
+function dosjePovijest(parcel){
+  const B=povOkvir(parcel), W=560, a=DOF_POV[0], b=DOF_POV[DOF_POV.length-1], el=document.createElement("div"); el.className="rpt-pov";
+  const fig=d=>`<figure><div><img alt="Snimka iz zraka ${esc(d.g)}" src="${povUrl(d,B,W)}" onerror="this.closest('figure').classList.add('pov-greska')"><svg viewBox="0 0 ${W} ${W}">${povPoly(parcel,B,W).map(pts=>`<polygon points="${pts}" fill="none" stroke="#ffd400" stroke-width="3"/>`).join("")}</svg></div><figcaption>${esc(d.g)}</figcaption></figure>`;
+  el.innerHTML=`<div class="rpt-pov-r">${fig(a)}${fig(b)}</div><p class="meta">Državna geodetska uprava, digitalni ortofoto 1:5000 (servisi za anonimne korisnike). Žuto: granica čestice iz katastra. Usporedba ne dokazuje je li gradnja zakonita.</p>`;
+  return el;
+}
+// svi izvori iz registra pouzdanosti (jedinstveni), s brojem stavki i najslabijom oznakom
+function dosjeIzvori(){
+  const M=new Map(); for(const it of PZREG.items.values()){ const z=String(it.izvor||"").trim(); if(!z) continue; const m=M.get(z)||{n:0,raz:"A",st:[]}; m.n++; if(it.raz>m.raz) m.raz=it.raz; if(m.st.length<4) m.st.push(it.naziv); M.set(z,m); }
+  if(!M.size) return null; const el=document.createElement("div");
+  el.innerHTML=`<table class="rp"><tbody>${[...M.entries()].sort((x,y)=>x[0].localeCompare(y[0],"hr")).map(([z,m])=>`<tr><th>${esc(z)}</th><td>${pzTag(pz(m.raz))} ${esc(m.st.join(", "))}${m.n>m.st.length?` i još ${m.n-m.st.length}`:""}</td></tr>`).join("")}</tbody></table><p class="meta">Oznaka uz izvor je najslabija pouzdanost među stavkama iz tog izvora.</p>`;
+  return el;
+}
+// odjeljci koji imaju vlastito poglavlje u dosjeu (ne ponavljaju se u poglavlju u kojem stoje na zaslonu)
+const RPT_VLASTITA="[data-k=isk],[data-k=osun],[data-k=pogled],[data-k=ene],[data-k=kis],[data-k=vjet],[data-k=ptn],[data-k=povijest],[data-k=vrij]";
 function buildReport(){
   let R=document.getElementById("report"); if(R) R.remove(); R=document.createElement("div"); R.id="report"; R.className="rpt";
   const D=curData()||{}, cur=window.__cur||{}, ces=(rptQ(".parcel")||{}).textContent||"", ko=((rptQ(".eyebrow")||{}).textContent||"").replace(/^.*?k\.o\.\s*/i,"").trim();
@@ -7147,8 +7278,8 @@ function buildReport(){
   const kpi=[["Površina čestice",cur.area?fmt(cur.area)+" m²":"Podaci nisu dostupni"],["Namjena",zona.replace(/\s+/g," ").replace(/\d+\s*%$/,"").trim().slice(0,60)||"Podaci nisu dostupni"],
     ["Područje za gradnju",window.__gp?fmt(window.__gp.area)+" m²":"nije izračunato"],["Izračun za česticu",sumB("calc").slice(0,70)||"—"],
     ["Ukupna investicija (procjena)",sumB("total")||"nije izračunata"],["Pouzdanost podataka",`A ${C.A} · B ${C.B} · C ${C.C}`]];
-  let h=`<section class="rpt-cover"><div class="rpt-band"><span class="rpt-brand">Čestica HR</span><span>Izvještaj o čestici</span></div>
-    <div class="rpt-ttl"><p class="rpt-kicker">Katastarska čestica</p><h1>${esc(ces)}</h1><p class="rpt-ko">${ko?"k.o. "+esc(ko):""}${D.krk?" · Otok Krk":" · Grad Zagreb"}</p>
+  let h=`<section class="rpt-cover"><div class="rpt-band"><span class="rpt-brand">Čestica HR</span><span>Dosje čestice</span></div>
+    <div class="rpt-ttl"><p class="rpt-kicker">Katastarska čestica</p><h1>${esc(ces)}</h1><p class="rpt-ko">${ko?"k.o. "+esc(ko):""}${esc(dosjePodrucje(cur))}</p>
     <p class="rpt-date">${esc(dat)}${ll?` · ${ll.lat.toFixed(5)}° N, ${ll.lng.toFixed(5)}° E`:""}</p></div>
     <div class="rpt-map" id="rpMap"></div>
     <div class="rpt-kpi">${kpi.map(([a,b])=>`<div><small>${esc(a)}</small><b>${esc(b)}</b></div>`).join("")}</div>
@@ -7156,17 +7287,20 @@ function buildReport(){
   const parts=[
     ["Sažetak: prije svega provjeri",[rptQ(".prek"),rptQ("#pzBox .verdict")],true],
     ["Čestica i namjena",(()=>{const g=sheet.querySelector(".grp"); return g?[...g.children].filter(e=>!e.matches(".actions,#printHead,#printMap,.cards,.parcel")&&!(e.classList.contains("eyebrow")&&/čestica/i.test(e.textContent))):[];})()],
-    ["Uvjeti gradnje",rptAfter(rptH2("Uvjeti gradnje")).filter(e=>!e.matches(".prek,[data-k=gp],[data-k=tloc],[data-k=skica]")),true],
+    ["Uvjeti gradnje",rptAfter(rptH2("Uvjeti gradnje")).filter(e=>!e.matches(".prek,[data-k=gp],[data-k=tloc],[data-k=skica]")&&!e.matches(RPT_VLASTITA)),true],
     ["Kuća na čestici",[rptQ('[data-k="tloc"] #tOut'),rptQ('[data-k="gp"]'),"LEGENDA",rptQ('[data-k="skica"]'),rptQ('[data-k="oku"]'),"3D"],true],
-    ["Rizici i provjere",[...rptAfter(rptH2("Rizici")),...rptAfter(rptH2("Provjere"))]],
-    ["Infrastruktura, pristup i okolina",[...rptAfter(rptH2("Komunalna infrastruktura")),...rptAfter(rptH2("Pristup i okolina")),...rptAfter(rptH2("Karte prostornog plana"))]],
-    ["Troškovi i investicija",["build","prep","kd","costs","buy","total"].map(k=>rptQ(`details[data-k="${k}"]`)),true],
+    ["Rizici i provjere",[...rptAfter(rptH2("Rizici")),...rptAfter(rptH2("Provjere"))].filter(e=>!e.matches(RPT_VLASTITA))],
+    ["Infrastruktura, pristup i okolina",[...rptAfter(rptH2("Komunalna infrastruktura")),...rptAfter(rptH2("Pristup i okolina")),...rptAfter(rptH2("Karte prostornog plana"))].filter(e=>!e.matches(RPT_VLASTITA))],
+    ["Povijest lokacije (snimke iz zraka)",[D.parcel?dosjePovijest(D.parcel):null]],
+    ["Napredne analize",["isk","osun","pogled","ene","kis","vjet"].map(k=>rptQ(`details[data-k="${k}"]`)),true],
+    ["Troškovi i investicija",["build","prep","kd","costs","buy","total","ptn","vrij"].map(k=>rptQ(`details[data-k="${k}"]`)),true],
     ["Sunce i energija",[rptQ('details[data-k="pv"]'),rptQ('details[data-k="sun"]')]],
     ["Pouzdanost podataka",[rptQ("#pzBox")],true],
+    ["Izvori podataka",[dosjeIzvori()]],
     ["Izvori i napomene",[rptQ(".note"),...[...sheet.querySelectorAll("p.meta")].filter(p=>/Adrese su sa službenih/.test(p.textContent))]]];
   R.innerHTML=h; let no=0;
   // prazni odjeljci (bez unosa) i upute za rad u aplikaciji ne idu u izvještaj
-  const prazno=e=>e&&e.matches&&(e.matches('details[data-k="scen"],details[data-k="proj"]')||(e.matches('details[data-k="zk"]')&&!e.querySelector(".zkoss,#zkOut *"))||(e.matches("details")&&/upiši cijenu|nije uneseno|nema spremljenih/.test(((e.querySelector(":scope>summary>b")||{}).textContent||""))));
+  const prazno=e=>e&&e.matches&&(e.matches('details[data-k="scen"],details[data-k="proj"]')||(e.matches('details[data-k="zk"]')&&!e.querySelector(".zkoss,#zkOut *"))||(e.matches("details")&&/upiši cijenu|nije uneseno|nema spremljenih/.test(((e.querySelector(":scope>summary>b")||{}).textContent||"")))||(e.matches("details[data-k]")&&/Otvori odjeljak|Postavi kuću u simulatoru|Učitavam|Dohvaćam|Prvo smjesti/.test((e.querySelector(":scope>.acc-body")||e).textContent)&&!e.querySelector("table")));
   for(const [t,els,brk] of parts){ const list=els.filter(e=>e==="3D"?V3D.snap.has(cur.key):e&&!prazno(e)); if(!list.length) continue; no++;
     const sec=document.createElement("section"); sec.className="rpt-sec"+(brk?" rpt-brk":""); sec.innerHTML=`<div class="rpt-h"><span>${String(no).padStart(2,"0")}</span><h2>${esc(t)}</h2></div>`;
     for(const e of list){ if(e==="3D"){const im=V3D.snap.get(cur.key); if(im){const f=document.createElement("figure"); f.className="rpt-3d"; f.innerHTML=`<h4><span>3D pogled</span></h4><img alt="3D pogled na česticu" src="${im}"><figcaption>Satelitska snimka (Esri) s modelom terena oko 30 m, granice čestica DGU, kuća iz simulatora. Ilustracija, ne projekt.</figcaption>`; sec.appendChild(f);} continue;}
@@ -7177,7 +7311,7 @@ function buildReport(){
 function rptPrint(){
   // pravila stranice (podnožje s brojem stranice) dodaju se tek za ispis izvještaja
   if(!document.getElementById("rptPage")){const st=document.createElement("style"); st.id="rptPage"; st.media="print";
-    st.textContent=`@page{size:A4;margin:17mm 15mm 19mm 15mm;@bottom-left{content:"Čestica HR · Izvještaj o čestici";font:8pt Georgia,serif;color:#9a8f7a}@bottom-right{content:"Stranica " counter(page) " / " counter(pages);font:8pt Georgia,serif;color:#9a8f7a}}@page :first{margin:0;@bottom-left{content:none}@bottom-right{content:none}}`;
+    st.textContent=`@page{size:A4;margin:17mm 15mm 19mm 15mm;@bottom-left{content:"Čestica HR · Dosje čestice";font:8pt Georgia,serif;color:#9a8f7a}@bottom-right{content:"Stranica " counter(page) " / " counter(pages);font:8pt Georgia,serif;color:#9a8f7a}}@page :first{margin:0;@bottom-left{content:none}@bottom-right{content:none}}`;
     document.head.appendChild(st);}
   sheet.querySelectorAll("details").forEach(d=>d.open=true);
   try{skicaRender()}catch(e){}
@@ -7185,7 +7319,8 @@ function rptPrint(){
   const pm=document.getElementById("rpMap"); pm.appendChild(mapEl); mapEl.classList.add("in-print"); map.invalidateSize();
   if(window.__lastBounds) map.fitBounds(window.__lastBounds,{padding:[30,30],maxZoom:19}); else if(window.__lastLL) map.setView(window.__lastLL,18);
   const base=map.hasLayer(sat)?sat:osm;
-  return new Promise(res=>{let done=false;const fin=()=>{if(!done){done=true;setTimeout(res,400)}};base.once("load",fin);setTimeout(fin,3000);}).then(()=>window.print());
+  const slike=[...R.querySelectorAll("img")].map(im=>im.complete?Promise.resolve():new Promise(r=>{im.onload=im.onerror=r;}));
+  return Promise.all([new Promise(res=>{let done=false;const fin=()=>{if(!done){done=true;setTimeout(res,400)}};base.once("load",fin);setTimeout(fin,3000);}),Promise.race([Promise.all(slike),new Promise(r=>setTimeout(r,6000))])]).then(()=>{dosjeProg(null); window.print();});
 }
 function rptDone(){ if(!document.body.classList.contains("print-report")) return; document.body.classList.remove("print-report");
   if(mapEl.classList.contains("in-print")){mapEl.classList.remove("in-print"); mapHome.insertBefore(mapEl,mapNext); map.invalidateSize();}
