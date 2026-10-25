@@ -2075,6 +2075,31 @@ async function izvTests(){
 }
 const TL_W=w=>w.eval("TL").w, TL_D=w=>w.eval("TL").d;
 
+// fotografija s kućom (AR), 3D prolet kao video, dosje čestice
+async function dosTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), K=E("proletKadar"), bl=(a,b,e=1e-6)=>Math.abs(a-b)<e, m360=x=>((x%360)+360)%360;
+  let k=K(0,18,-20,18.5,135); ok(bl(k.bearing,-20)&&k.pitch===58&&k.zoom===18.5&&k.sat===9,"prolet: početak kadra");
+  k=K(18,18,-20,18.5,135); ok(bl(m360(k.bearing),135,1e-6)&&bl(k.pitch,72)&&bl(k.zoom,19.65)&&k.sat===20,"prolet: kraj — spuštanje prema ulazu, pogled 72°, 20 h");
+  k=K(0.64*18,18,-20,18.5,135); ok(k.sat>9&&k.sat<20&&k.pitch===56,"prolet: sredina — Sunce prolazi dan");
+  ok(E("proletMime")()===null,"prolet: bez MediaRecorder nema snimanja (jsdom)");
+  const d=data(w,parcelRect(30,25),"2.2."); w.__env=d.envelope; E("OPEN").add("tloc"); E("render")(d); E("tDraw")();
+  ok(/k\.č\. 1\/1, k\.o\. ŠESTINE/.test(E("arFotoNatpis")())&&/ilustracija, nije projekt/.test(E("arFotoNatpis")()),"AR fotografija: natpis s česticom i napomenom");
+  $(w,"arFoto")||true; w.document.body.insertAdjacentHTML("beforeend",'<button id="arFoto"></button>'); w.document.getElementById("arFoto").dispatchEvent(new w.Event("click",{bubbles:true}));
+  ok(/u prikazu kroz kameru/.test(txt(w,"arMsg")),"AR fotografija: bez AR sesije poruka umjesto snimanja");
+  // dosje: lažni podaci za vjetar i klimu, da se napredne analize izračunaju
+  const T=[]; for(let y=2016;y<=2025;y++) for(let m=1;m<=12;m++) for(let dd=1;dd<=28;dd++) T.push(y+"-"+String(m).padStart(2,"0")+"-"+String(dd).padStart(2,"0"));
+  w.__klimaHook=()=>({daily:{time:T,precipitation_sum:T.map((x,i)=>i%5?0:9),temperature_2m_mean:T.map(x=>+x.slice(5,7)<3?3:16),temperature_2m_min:T.map(()=>-2)}});
+  const t0=Date.now(); await E("dosjePripremi")(); ok(Date.now()-t0<16000&&!!$(w,"dosjeProg"),"dosje: priprema završi i pokazuje napredak");
+  const R=E("buildReport")(), secs=[...R.querySelectorAll(".rpt-h h2")].map(h=>h.textContent);
+  ok(/Dosje čestice/.test(R.querySelector(".rpt-band").textContent)&&/Grad Zagreb/.test(R.querySelector(".rpt-ko").textContent),"dosje: naslovnica i područje");
+  ok(secs.includes("Povijest lokacije (snimke iz zraka)")&&R.querySelectorAll(".rpt-pov img").length===2&&/orthophoto_2011/.test(R.querySelector(".rpt-pov img").src),"dosje: snimke iz zraka 2011. i 2023./24. s granicom");
+  ok(secs.includes("Napredne analize")&&/Osunčanost dvorišta/.test(R.textContent)&&/Energija kuće/.test(R.textContent)&&/Kišnica/.test(R.textContent),"dosje: napredne analize (osunčanost, energija, kišnica): "+secs.join(" | "));
+  ok(secs.includes("Izvori podataka")&&R.querySelectorAll(".rpt-sec table.rp").length>0&&/Open-Meteo/.test(R.textContent),"dosje: popis izvora s oznakama pouzdanosti");
+  ok(!/Otvori odjeljak i podaci se dohvate/.test(R.textContent),"dosje: neizračunati odjeljci se ne ispisuju");
+  E("dosjeProg")(null); R.remove();
+  ok(errs.length===0,"bez JS grešaka (dosje, prolet, AR fotografija): "+errs.join(" | "));
+}
+
 // rizici: poplave (Hrvatske vode preko posrednika), internet (HAKOM izravno, posrednik kao zamjena)
 async function rizTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -2148,7 +2173,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(napTests).then(izvTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
