@@ -825,6 +825,7 @@ async function ai2Tests(){
       if(last.role==="user") return R(200,{text:"",tool_calls:[{id:"tu1",name:"getUrbanRules",args:{parcelId:w.__cur.key}}],usage:{input_tokens:3000,output_tokens:50},model:"claude-haiku-5-5",potrosnja:{spent:0.011,limit:5,n:4}});
       return R(200,{text:"KRATKO: Vrijedi pravilo 2.2. <img src=x onerror=alert(1)>\nDETALJI: Najveći GBP je IZRAČUN aplikacije. POTVRĐENO: pravilo iz GUP-a.\nIZVORI: Odluka o GUP-u, 2025 | GIS namjena 2023\nPROVJERITI: lokacijska informacija | pristup cesti",tool_calls:[],usage:{input_tokens:5000,output_tokens:200},model:"claude-haiku-5-5",potrosnja:{spent:0.012,limit:5,n:5}});}
     return R(404,{error:{code:"NOT_FOUND",msg:"x"}});};
+  w.__ppvHook=()=>[]; w.__hgiHook=()=>({features:[]}); w.__ecbHook=()=>""; // ostali servisi ne idu kroz lažni Worker
   const P=parcelRect(30,25,{KATASTARSKA_CESTICA:"3101/2",KATASTARSKA_OPCINA:"REMETE"}), d=data(w,P,"2.2.");
   w.__env=d.envelope; E("render")(d); E("AI_UI").retryMs=5;
   // zadano (Android faza): AI je potpuno isključen
@@ -2039,6 +2040,33 @@ async function ppvTests(){
   ok(errs.length===0,"bez JS grešaka (Plan približnih vrijednosti): "+errs.join(" | "));
 }
 
+// Bilten IGH (cijena gradnje tipske kuće) i financiranje (anuitet, kamate ECB MIR za Hrvatsku)
+async function ighTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  const csv=(rows)=>'KEY,FREQ,REF_AREA,TITLE,TIME_PERIOD,OBS_VALUE,NAT_TITLE\r\n'+rows.map(([m,v])=>`MIR.M.HR,M,HR,"Bank interest rates, house purchase",${m},${v},"Croatia, AAR"`).join("\r\n");
+  w.__ecbHook=k=>({A:csv([["2025-08",3.4],["2026-07",2.91],["2026-08",2.91]]),P:csv([["2026-08",2.93]]),F:csv([["2026-08",3.17]])})[k];
+  const d=data(w,parcelRect(30,25),"2.2."); E("OPEN").add("build"); E("OPEN").add("kred"); E("render")(d); await new Promise(r=>setTimeout(r,50));
+  const U=E("ighUsporedba")({hA:150,flK:"P1",base:false,gradnja:200000,unit:1300});
+  ok(U.t==="A.1"&&U.G.g==="ZAGREB"&&Math.abs(U.gbpM2-283316.61/173.6)<0.01&&Math.abs(U.iznos-150*283316.61/173.6)<0.5&&Math.abs(U.iznosPdv-U.iznos*1.25)<0.01,"Bilten: P+1 s kosim krovom = tip A.1, Zagreb, €/m² GBP i iznos s PDV-om 25 %");
+  E("TL").krov="ravni"; ok(E("ighUsporedba")({hA:150,flK:"P1",base:true,gradnja:1,unit:1}).t==="A.3.a"&&E("ighUsporedba")({hA:150,flK:"PPk",base:false,gradnja:1,unit:1}).t==="A.2","Bilten: ravni krov s podrumom = A.3.a; P + potkrovlje = A.2"); E("TL").krov="dvo";
+  const U2=E("ighUsporedba")({hA:150,flK:"P",base:false,gradnja:1,unit:1}); ok(U2.t===null&&U2.nkpM2===2327&&U2.iznos===null,"Bilten: prizemnica nema tipsku kuću → prosjek grupe A po m² neto, bez preračunavanja na GBP");
+  const c0=w.__cur; w.__cur=Object.assign({},c0,{region:"hr",ll:{lat:43.6,lng:16.5}}); ok(E("ighGrad")().g==="SPLIT","Bilten: izvan Zagreba najbliži od četiri grada (Split)"); w.__cur=c0;
+  const bo=txt(w,"bOut"); ok(/Bilten IGH/.test(bo)&&/Procjena aplikacije \(faze 1–8\)/.test(bo)&&/Bilten N\.I\. III-2026/.test(bo)&&!/NaN|undefined/.test(bo),"Bilten: usporedba u procjeni gradnje (izvor, PDV s člankom, procjena aplikacije): "+bo.slice(bo.indexOf("Usporedba"),bo.indexOf("Usporedba")+300));
+  // anuitet
+  const A=E("anuitet")(100000,3,25); ok(Math.abs(A.mj-474.21)<0.01&&A.n===300&&Math.abs(A.kamate-(A.mj*300-100000))<1e-6,"Kredit: anuitet 100.000 €, 3 %, 25 god. = 474,21 € mjesečno: "+A.mj.toFixed(2));
+  ok(Math.abs(E("anuitet")(12000,0,1).mj-1000)<1e-9&&E("anuitet")(0,3,25)===null,"Kredit: bez kamate rata = glavnica / broj rata; bez iznosa nema izračuna");
+  const C=E("kredCsv")(csv([["2026-08",2.91],["2026-07",2.9]])); ok(C.length===2&&C[1].m==="2026-08"&&C[1].v===2.91,"Kredit: CSV ECB-a s navodnicima i zarezima u poljima, sortirano po mjesecu");
+  // prikaz: ukupna investicija iz aplikacije, kamata iz ECB-a, vlastita sredstva
+  await new Promise(r=>setTimeout(r,30)); E("kredUpdate")(); const T=w.__fin.total.base; let o=txt(w,"kredOut");
+  ok(T>0&&/Mjesečna rata/.test(o)&&/2,91 % godišnje, 25 god\. \(300 rata\)/.test(o)&&/fiksna kamata dulje od 10 godina/.test(o)&&/prije godinu dana 3,40? %/.test(o)&&/Hrvatska narodna banka/.test(o),"Kredit: rata uz prosječnu kamatu (ECB MIR, HNB), usporedba fiksne i promjenjive, godinu ranije: "+o.slice(0,300));
+  setv(w,"kVl",String(Math.round(T/2))); setv(w,"kKam","4"); await new Promise(r=>setTimeout(r,500)); o=txt(w,"kredOut");
+  const ex=E("anuitet")(T-Math.round(T/2),4,25).mj; ok(o.includes(Math.round(ex).toLocaleString("hr-HR")+" €")&&/umanjeno za vlastita sredstva/.test(o)&&E("PZREG").items.get("kred").raz==="B","Kredit: tvoja kamata i vlastita sredstva mijenjaju ratu (razina B): "+o.slice(0,240));
+  ok(JSON.parse(w.localStorage.getItem("kred")).kam===4,"Kredit: unosi se pamte");
+  w.__ecbHook=()=>{throw new Error("HTTP 503")}; E("KRED").st=null; w.localStorage.removeItem("kred"); setv(w,"kKam",""); E("kredUpdate")(); await new Promise(r=>setTimeout(r,500)); o=txt(w,"kredOut");
+  ok(/podaci nisu dostupni \(HTTP 503\)/.test(o),"Kredit: bez ECB-a poruka i upis kamate iz ponude: "+o.slice(0,200));
+  ok(errs.length===0,"bez JS grešaka (Bilten, kredit): "+errs.join(" | "));
+}
+
 // osunčanost dvorišta, vjetar i bura, pogled na more, promjene na spremljenoj čestici (čiste funkcije i prikaz)
 async function napTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -2232,7 +2260,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

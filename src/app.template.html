@@ -5298,6 +5298,7 @@ function finUpdate(){
     h+=frow("Preporučena rezerva",`+ ${fmt(F.build.rez)} €`,{f:"15 % gradnje, projekata, nadzora, okoliša i pripreme terena; nije uključena u ukupno"});
     h+=`</div>`;
     if(F.warn.length) h+=`<p class="meta">${F.warn.map(esc).join(" ")}</p>`;
+    try{ h+=ighHtml(H); }catch(e){ console.error(e); }
     h+=`<p class="meta">Tržišne cijene za okolicu Zagreba, 2026. (izvori: trebam.hr, montazneidrvenekuce.info Q1 2026, reporter.hr). ${H.t==="mont"?"Montažna cijena po m² ne uključuje temelje; računaju se zasebno (faze 1 i 2). ":""}${H.prilaz?`Prilaz: ${PRILAZ_SRC}${H.prilaz.auto?"; duljina je procjena od kuće u simulatoru do ruba ceste iz OpenStreetMapa (os ceste − 3 m), upiši stvarnu":""}. `:""}Podrum je procjena. Zemljište i troškovi kupnje su u odjeljku "Novac i kupnja". Za stvarnu cijenu traži barem tri ponude.</p>`;
     g("bOut").innerHTML=h; if(g("bSum")) g("bSum").textContent=fmt(F.build.lo)+" – "+fmt(F.build.hi)+" €";
   }
@@ -5337,6 +5338,7 @@ function finUpdate(){
   }
   try{cardsUpdate()}catch(e){}
   try{prepUpdate()}catch(e){console.error(e)}
+  try{kredUpdate()}catch(e){console.error(e)}
   try{scUpdate()}catch(e){console.error(e)}
   try{projUpdate()}catch(e){console.error(e)}
   window.__budget=F.total.base?{lo:F.total.lo,hi:F.total.hi,base:F.total.base,land:F.buy?F.buy.price:null,kupnja:F.buy?F.buy.costs:null,acq:F.buy?F.buy.acq:null,build:F.build?{lo:F.build.lo,hi:F.build.hi}:null}:null;
@@ -6503,6 +6505,7 @@ function moneyHtml(key,area){
   h+=`<label for="yKapara">Kapara</label><span><input id="yKapara" type="number" inputmode="decimal" min="0" step="500" placeholder="0" value="${b.kapara>0?b.kapara:""}"> € <small class="meta">dio cijene</small></span>`;
   h+=`</div><div id="buyOut"></div></div></details>`;
   h+=`<details class="acc" data-k="total"><summary><span>Ukupna investicija</span><b id="totSum"></b></summary><div class="acc-body"><div id="totOut"></div></div></details>`;
+  h+=kredHtml();
   return h;
 }
 function buyRead(){
@@ -6984,7 +6987,7 @@ const IZB=[[1,"Prostorni planovi i namjena","Što se nalazi na zemljištu i kakv
   [5,"Troškovi i investicija","Koliko će koštati zemljište, kuća i cijela investicija?"],[6,"Projekt i dokumentacija","Kako realizirati gradnju i što pripremiti?"]];
 const IZB_TR=new Set([5]); // „Troškovi i investicija”: na mobitelu samo u kartici „Troškovi”, bez broja (oznaka €); analiza ima 01–05
 const IZB_OZN={1:"01",2:"02",3:"03",4:"04",5:"€",6:"05"};
-const IZB_K={ene:2,kis:4,pogled:2,vjet:3,osun:2,ptn:5,zk:3,risks:3,rparams:2,rex:2,tipcmp:2,gp:2,calc:2,tloc:2,oku:2,skica:2,sun:2,pv:2,vrij:5,buy:5,build:5,prep:5,kd:5,costs:5,krkKd:5,total:5,scen:5,proj:6,ph3:6,ph4:6,cklist:6};
+const IZB_K={kred:5,ene:2,kis:4,pogled:2,vjet:3,osun:2,ptn:5,zk:3,risks:3,rparams:2,rex:2,tipcmp:2,gp:2,calc:2,tloc:2,oku:2,skica:2,sun:2,pv:2,vrij:5,buy:5,build:5,prep:5,kd:5,costs:5,krkKd:5,total:5,scen:5,proj:6,ph3:6,ph4:6,cklist:6};
 const IZB_ID={okolisBox:3,rkBox:1,pzBox:6,"sec-rizici":3,"sec-provjere":3,"sec-upu":1,"sec-uvjeti":2,"sec-sunce":2,"sec-novac":5,"sec-pouzdanost":6,"sec-troskovi":5};
 const IZB_H=[[/^(Rizici|Provjere|Potresna)/,3],[/^(Komunalna|Pristup)/,4],[/^(Karte prostornog|Prostorni plan)/,1],[/^(Uvjeti gradnje|Postojeće zgrade|Sunce)/,2],[/^Novac/,5],[/^(Pouzdanost|Dokumentacija|Kontrolna lista)/,6],[/^Gradnja i naknade/,5]];
 // prečaci na postojeće module (bez kopiranja): sunčana elektrana je u 02, a njezin financijski rezultat se otvara i iz 05
@@ -7237,12 +7240,126 @@ function ptnUpdate0(){
 }
 sheet.addEventListener("change",e=>{ const t=e.target; if(!t||t.id!=="ptnJlsSel"||!t.value) return; const k=window.__cur&&window.__cur.key; if(!k) return; ptnRucnoSet(k,+t.value); ptnUpdate(); try{sazetakUpdate()}catch(_){} });
 sheet.addEventListener("input",e=>{ const t=e.target; if(!t||t.id!=="ptnTraz") return; const k=window.__cur&&window.__cur.key; if(!k) return; ptnTrazSet(k,parseFloat(String(t.value).replace(",","."))||0); clearTimeout(PTN.t); PTN.t=setTimeout(ptnUpdate,500); });
+// ================= USPOREDBA S BILTENOM IGH (MPGI) I FINANCIRANJE =================
+// Bilten N.I. „Standardna kalkulacija radova u visokogradnji – nadogradnja I”, III-2026 (Institut IGH d.d. za Ministarstvo
+// prostornoga uređenja, graditeljstva i državne imovine), cijene na dan 31. 3. 2026., bez PDV-a, EUR. Bilten se smije
+// preuzimati bez naknade uz navođenje izvora (str. 3). „UKUPNO KUĆA” je trošak same kuće (bez septičke jame, uređenja čestice
+// i garaže) za tipsku kuću standardne opremljenosti; nkp = neto korisna površina, gbp = građevinska bruto površina tipske kuće.
+// Tipovi V (samostojeće obiteljske kuće, 4 osobe): A.1 P+1 kosi krov; A.1.a s podrumom; A.2 P+potkrovlje; A.2.a s podrumom;
+// A.3 P+1 ravni krov; A.3.a Po+P+1 ravni krov. Grupa A = prosjek tipova A.1–A.3.a (str. 363–366 za Zagreb).
+const IGH={izdanje:"Bilten N.I. III-2026 (Institut IGH d.d. / MPGI), cijene 31. 3. 2026.",
+  url:"https://mpgi.gov.hr/UserDocsImages/dokumenti/Graditeljstvo/Bilten_N_I_3_26_cor13.pdf",
+  gradovi:{ZAGREB:[45.815,15.982],RIJEKA:[45.327,14.442],SPLIT:[43.508,16.440],OSIJEK:[45.554,18.695]},
+  tip:{
+    "A.1":{opis:"samostojeća kuća P+1, kosi krov",gbp:173.6,nkp:133,eur:{ZAGREB:283316.61,RIJEKA:296797.25,SPLIT:307399,OSIJEK:314904.48},pn:{ZAGREB:153.66,RIJEKA:157.58,SPLIT:163.76,OSIJEK:166.6},str:{ZAGREB:207}},
+    "A.1.a":{opis:"samostojeća kuća s podrumom, P+1",gbp:193.05,nkp:147.9,eur:{ZAGREB:355565.49,RIJEKA:334307.2,SPLIT:351294.27,OSIJEK:349936.66},pn:{ZAGREB:166.36,RIJEKA:155.58,SPLIT:163.65,OSIJEK:162.61},str:{ZAGREB:220}},
+    "A.2":{opis:"samostojeća kuća P + stambeno potkrovlje",gbp:142.6,nkp:127.65,eur:{ZAGREB:291322.4,RIJEKA:277540.6,SPLIT:275307.26,OSIJEK:306360.04},pn:{ZAGREB:165.14,RIJEKA:156.09,SPLIT:156.16,OSIJEK:170.77},str:{ZAGREB:233}},
+    "A.2.a":{opis:"samostojeća kuća s podrumom, P + potkrovlje",gbp:162.05,nkp:142.55,eur:{ZAGREB:326714.13,RIJEKA:319766.53,SPLIT:324822.52,OSIJEK:323288.1},pn:{ZAGREB:161.28,RIJEKA:156.01,SPLIT:159.51,OSIJEK:158.33},str:{ZAGREB:246}},
+    "A.3":{opis:"samostojeća kuća P+1, ravni krov",gbp:173.6,nkp:133,eur:{ZAGREB:306498.74,RIJEKA:292695.15,SPLIT:305013.05,OSIJEK:312386.41},pn:{ZAGREB:164.23,RIJEKA:155.62,SPLIT:162.48,OSIJEK:165.3},str:{ZAGREB:272}},
+    "A.3.a":{opis:"samostojeća kuća s podrumom, P+1, ravni krov",gbp:193.05,nkp:147.9,eur:{ZAGREB:399146.26,RIJEKA:402845.17,SPLIT:388491.58,OSIJEK:387087.83},pn:{ZAGREB:182.26,RIJEKA:181.65,SPLIT:177.14,OSIJEK:176.09},str:{ZAGREB:285}}
+  },
+  grupaA:{ZAGREB:2327,RIJEKA:2278,SPLIT:2313,OSIJEK:2370}, // €/m² nkp, prosjek tipova A.1–A.3.a, Q1 2026 (grafikoni grupe A)
+  pdv:0.25 // Zakon o porezu na dodanu vrijednost (NN 73/13 i izmjene), čl. 38. st. 1.: opća stopa 25 %
+};
+function ighGrad(){
+  const c=window.__cur; if(!c) return null; const d=curData();
+  if(!c.region&&!(d&&d.krk)) return {g:"ZAGREB",kako:"čestica je u Zagrebu"};
+  if(c.region==="krk"||(d&&d.krk)) return {g:"RIJEKA",kako:"najbliži grad iz Biltena"};
+  const ll=c.ll; if(!ll) return null; let best=null;
+  for(const [g,[la,lo]] of Object.entries(IGH.gradovi)){ const dd=Math.hypot(la-ll.lat,(lo-ll.lng)*Math.cos(ll.lat*Math.PI/180)); if(!best||dd<best.d) best={g,d:dd}; }
+  return {g:best.g,kako:"najbliži od četiri grada u Biltenu"};
+}
+// tip iz Biltena za kuću iz procjene: P+1 (kosi ili ravni krov), P+potkrovlje, s podrumom ili bez; ostalo: prosjek grupe A
+function ighTip(H){
+  const ravni=typeof TL!=="undefined"&&TL.krov==="ravni", b=H.base?".a":"";
+  if(H.flK==="P1") return (ravni?"A.3":"A.1")+b;
+  if(H.flK==="PPk") return "A.2"+b;
+  return null;
+}
+function ighUsporedba(H){
+  const G=ighGrad(); if(!G||!H||!(H.hA>0)) return null; const t=ighTip(H), T=t?IGH.tip[t]:null;
+  const nkpM2=T?T.eur[G.g]/T.nkp:IGH.grupaA[G.g];               // €/m² neto korisne
+  const omjer=T?T.nkp/T.gbp:null, gbpM2=T?T.eur[G.g]/T.gbp:null;  // €/m² GBP (samo za određeni tip)
+  const iznos=gbpM2?gbpM2*H.hA:null, pn=T?T.pn[G.g]*T.nkp/T.gbp*H.hA:null;
+  return {G,t,T,nkpM2,gbpM2,omjer,iznos,iznosPdv:iznos!=null?iznos*(1+IGH.pdv):null,pn,app:H.gradnja};
+}
+function ighHtml(H){
+  const U=ighUsporedba(H); if(!U) return "";
+  const p=pzSet("igh","Cijena gradnje prema Biltenu IGH",U.gbpM2?fmt(U.gbpM2)+" €/m² GBP bez PDV-a":fmt(U.nkpM2)+" €/m² neto bez PDV-a",pz("B",{izvor:IGH.izdanje,obuhvat:(U.t?"tipska kuća "+U.t:"prosjek tipova A.1–A.3.a")+", "+U.G.g.charAt(0)+U.G.g.slice(1).toLowerCase(),datum:"2026-03-31",razlog:"tipska kuća standardne opremljenosti, ne tvoj projekt",provjera:"troškovnik projektanta i ponude izvođača"}));
+  const grad=U.G.g.charAt(0)+U.G.g.slice(1).toLowerCase();
+  let h=`<p class="eyebrow" style="margin:12px 0 2px">Usporedba: Bilten IGH za Ministarstvo graditeljstva ${pzTag(p)}</p><div class="calc" style="background:var(--panel)">`;
+  if(U.T){
+    h+=frow(`Tipska kuća ${esc(U.t)} (${esc(U.T.opis)}), ${esc(grad)}`,`${fmt(U.nkpM2)} €/m² neto`,{f:`${fmt(U.T.eur[U.G.g])} € bez PDV-a za ${dec(U.T.nkp)} m² neto korisne površine (${dec(U.T.gbp)} m² GBP)`});
+    h+=frow("Preračunato na GBP",`${fmt(U.gbpM2)} €/m² GBP`,{f:`neto/GBP tipske kuće ${dec(U.omjer.toFixed(2))}`});
+    h+=frow(`Za tvojih ${fmt(H.hA)} m² GBP, bez PDV-a`,`${fmt(U.iznos)} €`,{f:"samo kuća: bez septičke jame, uređenja čestice i garaže"});
+    h+=frow("S PDV-om 25 %",`${fmt(U.iznosPdv)} €`,{bold:true,f:"Zakon o PDV-u, čl. 38. st. 1."});
+    h+=frow("Projektiranje i stručni nadzor (Bilten)",`${fmt(U.pn)} €`,{f:`${dec(U.T.pn[U.G.g].toFixed(2))} €/m² neto, bez PDV-a`});
+  } else {
+    h+=frow(`Prosjek samostojećih kuća A.1–A.3.a, ${esc(grad)}`,`${fmt(U.nkpM2)} €/m² neto`,{f:"bez PDV-a; za tvoj broj etaža Bilten nema odgovarajuću tipsku kuću, pa se iznos ne preračunava na GBP"});
+  }
+  h+=frow("Procjena aplikacije (faze 1–8)",`${fmt(U.app)} €`,{f:`${fmt(H.unit)} €/m² GBP${U.iznos?"; "+(U.app>=U.iznosPdv?"iznad":U.app>=U.iznos?"između iznosa bez i s PDV-om":"ispod")+" Biltena":""}`});
+  h+=`</div><p class="meta">Izvor: <a href="${IGH.url}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(IGH.izdanje)}</a>, rekapitulacije cijena građenja tipskih obiteljskih kuća (${U.t&&U.T.str[U.G.g]?"za Zagreb str. "+U.T.str[U.G.g]+"; ":""}grad: ${esc(grad)}, ${esc(U.G.kako)}). Bilten računa tipsku kuću za četveročlanu obitelj iz stvarnih troškovnika, cijene materijala i rada skupljene u četiri grada; tvoja kuća može imati drukčiji oblik, opremu i uvjete na gradilištu. Bilten se smije koristiti uz navođenje izvora.</p>`;
+  return h;
+}
+
+// ---- financiranje: anuitetni kredit; kamate iz ECB-ove statistike kamatnih stopa banaka (MIR) za Hrvatsku, koju dostavlja HNB
+const KRED={st:null,v:null,err:null};
+const KRED_SER=[["A","svi novi stambeni krediti"],["P","fiksna kamata dulje od 10 godina"],["F","promjenjiva ili fiksna do 1 godine"]];
+function kredUcitaj(){
+  if(KRED.st==="load"||KRED.st==="ok"||(KRED.st==="err"&&Date.now()-KRED.t<60000)) return; KRED.st="load";
+  const dohvat=k=>window.__ecbHook?Promise.resolve().then(()=>window.__ecbHook(k)):fetch("https://data-api.ecb.europa.eu/service/data/MIR/M.HR.B.A2C."+k+".R.A.2250.EUR.N?lastNObservations=13&format=csvdata").then(r=>{if(!r.ok) throw new Error("HTTP "+r.status); return r.text();});
+  Promise.all(KRED_SER.map(([k])=>dohvat(k).then(kredCsv))).then(R=>{ KRED.v=Object.fromEntries(KRED_SER.map(([k],i)=>[k,R[i]])); if(!R[0].length) throw new Error("prazan odgovor"); KRED.st="ok"; })
+    .catch(e=>{ KRED.st="err"; KRED.t=Date.now(); KRED.err=e.message||"ECB nije dostupan"; }).finally(kredUpdate);
+}
+function kredCsv(t){
+  const L=String(t||"").trim().split(/\r?\n/); if(L.length<2) return []; const red=l=>(l.match(/("([^"]|"")*"|[^,]*)(,|$)/g)||[]).map(x=>x.replace(/,$/,"").replace(/^"|"$/g,""));
+  const H=red(L[0]), ti=H.indexOf("TIME_PERIOD"), vi=H.indexOf("OBS_VALUE"); if(ti<0||vi<0) return [];
+  return L.slice(1).map(red).map(c=>({m:c[ti],v:parseFloat(c[vi])})).filter(x=>x.m&&Number.isFinite(x.v)).sort((a,b)=>a.m<b.m?-1:1);
+}
+function anuitet(P,godKam,god){ const n=Math.round(god*12), r=godKam/100/12; if(!(P>0)||!(n>0)) return null; const m=r>0?P*r/(1-Math.pow(1+r,-n)):P/n; return {mj:m,ukupno:m*n,kamate:m*n-P,n}; }
+function kredGet(){ try{ return JSON.parse(localStorage.getItem("kred")||"{}"); }catch(e){ return {}; } }
+function kredSet(o){ try{ localStorage.setItem("kred",JSON.stringify(o)); }catch(e){} }
+function kredHtml(){ return `<details class="acc" data-k="kred"${OPEN.has("kred")?" open":""}><summary><span>Financiranje (stambeni kredit)</span><b id="kredSum"></b></summary><div class="acc-body"><div class="bgrid">`+
+  `<label for="kVl">Vlastita sredstva</label><span><input id="kVl" type="number" inputmode="decimal" min="0" step="1000" placeholder="0"> €</span>`+
+  `<label for="kGod">Rok otplate</label><span><input id="kGod" type="number" inputmode="numeric" min="1" max="40" step="1" placeholder="25"> godina</span>`+
+  `<label for="kKam">Kamatna stopa</label><span><input id="kKam" type="number" inputmode="decimal" min="0" max="20" step="0.05" placeholder="prosjek"> % godišnje</span>`+
+  `</div><div id="kredOut"><p class="hint"><span class="spin"></span>Učitavam kamatne stope…</p></div></div></details>`; }
+const mjesec=m=>{ const [g,mm]=String(m).split("-"); return (+mm)+". "+g+"."; };
+function kredUpdate(){
+  const o=document.getElementById("kredOut"); if(!o) return; kredUcitaj(); const S=kredGet(), g=id=>document.getElementById(id);
+  for(const [id,k] of [["kVl","vl"],["kGod","god"],["kKam","kam"]]){ const e=g(id); if(e&&document.activeElement!==e&&S[k]!=null&&e.value==="") e.value=String(S[k]); }
+  const F=window.__fin, T=F&&F.total, inv=T&&T.base>0?T.base:null, vl=S.vl>0?S.vl:0, god=S.god>0&&S.god<=40?S.god:25;
+  const zad=KRED.st==="ok"?KRED.v.A[KRED.v.A.length-1]:null, kam=S.kam>=0&&S.kam<=20&&S.kam!==""&&S.kam!=null?+S.kam:(zad?zad.v:null);
+  const kp=g("kKam"); if(kp) kp.placeholder=zad?dec(zad.v.toFixed(2)):"upiši";
+  let h="";
+  if(KRED.st==="err") h+=`<p class="flag">Kamatne stope: podaci nisu dostupni (${esc(KRED.err)}). Upiši kamatnu stopu iz ponude banke.</p>`;
+  if(!inv){ h+=`<p class="meta">Ukupna investicija još nije izračunata (upiši cijenu zemljišta ili podatke o kući). Iznos kredita se računa kao ukupna investicija umanjena za vlastita sredstva.</p>`; }
+  else if(kam==null){ h+=`<p class="meta">${KRED.st==="load"?'<span class="spin"></span>Učitavam kamatne stope…':"Upiši kamatnu stopu."}</p>`; }
+  else { const P=Math.max(0,inv-vl), A=anuitet(P,kam,god);
+    const p=pzSet("kred","Mjesečna rata kredita",A?fmt(A.mj)+" €":null,pz(S.kam!=null&&S.kam!==""?"B":"C",{izvor:S.kam!=null&&S.kam!==""?"tvoja kamatna stopa":"ECB, statistika kamatnih stopa banaka (MIR), Hrvatska, podaci HNB-a",obuhvat:"anuitetni otplatni plan, mjesečne rate",datum:zad?zad.m+"-01":pzDan(),razlog:"bez naknada, osiguranja i promjene kamate; prosjek tržišta, ne ponuda banke",provjera:"informativna ponuda banke (EKS)"}));
+    h+=`<div class="calc" style="background:var(--panel);margin-top:8px">`;
+    h+=frow("Ukupna investicija",fmt(inv)+" €",{f:"osnovni iznos iz odjeljka „Ukupna investicija” (bez rezerve)"});
+    h+=frow("Iznos kredita",fmt(P)+" €",{f:vl?"umanjeno za vlastita sredstva "+fmt(vl)+" €":"bez vlastitih sredstava"});
+    if(A){ h+=frow(`Mjesečna rata ${pzTag(p)}`,`<b>${fmt(A.mj)} €</b>`,{bold:true,f:`${dec(kam.toFixed(2))} % godišnje, ${god} god. (${A.n} rata), anuitetna otplata`});
+      h+=frow("Ukupno otplaćeno",fmt(A.ukupno)+" €",{f:"od toga kamate "+fmt(A.kamate)+" €"}); }
+    h+=`</div>`;
+    if(KRED.st==="ok"&&A){ h+=`<table class="rp" style="margin-top:8px"><tbody>`;
+      for(const [k,n] of KRED_SER){ const s=KRED.v[k], z=s&&s[s.length-1]; if(!z) continue; const B=anuitet(P,z.v,god);
+        h+=`<tr><th>${esc(n)}</th><td><b>${dec(z.v.toFixed(2))} %</b> → ${fmt(B.mj)} € mjesečno <small class="fx">prosjek novih kredita, ${esc(mjesec(z.m))}${(()=>{const [g,mm]=z.m.split("-"), p=s.find(x=>x.m===(g-1)+"-"+mm); return p?"; prije godinu dana "+dec(p.v.toFixed(2))+" %":"";})()}</small></td></tr>`; }
+      h+=`</tbody></table>`; }
+  }
+  h+=`<p class="meta">Kamatne stope: Europska središnja banka, statistika kamatnih stopa banaka (MIR) za Hrvatsku, novi stambeni krediti kućanstvima, ugovorena godišnja kamatna stopa; podatke dostavlja Hrvatska narodna banka. To je prosjek tržišta, a ne ponuda banke: banka određuje kamatu prema tvojoj kreditnoj sposobnosti, a efektivna kamatna stopa (EKS) uključuje i naknade i osiguranje. Rata ne uključuje osiguranje nekretnine i života, procjenu nekretnine ni javnobilježničke troškove.</p>`;
+  const ak=document.activeElement&&document.activeElement.id; o.innerHTML=h;
+  const sum=g("kredSum"); if(sum) sum.textContent=inv&&kam!=null?(()=>{const A=anuitet(Math.max(0,inv-vl),kam,god); return A?fmt(A.mj)+" € mjesečno":""})():"";
+}
+sheet.addEventListener("input",e=>{ const t=e.target, k={kVl:"vl",kGod:"god",kKam:"kam"}[t&&t.id]; if(!k) return; const S=kredGet(), v=parseFloat(String(t.value).replace(",","."));
+  if(Number.isFinite(v)) S[k]=v; else delete S[k]; kredSet(S); clearTimeout(KRED.tt); KRED.tt=setTimeout(kredUpdate,400); });
 // ================= OSNOVNI I NAPREDNI NAČIN =================
 // Pri svakom pokretanju aplikacija je u osnovnom načinu; prekidač „Napredno” u zaglavlju prikazuje sve napredne alate.
 // Osnovni način samo SKRIVA prikaz (CSS na body.osnovno): izračuni, unosi i spremanje rade jednako, pa ukupni trošak
 // i dalje uključuje i stavke koje se uređuju u naprednom načinu (to piše uz ukupnu investiciju). Upozorenja i sažetak
 // se ne skrivaju. Kad se iz sažetka ili prečaca otvori napredni odjeljak, aplikacija sama prelazi u napredni način.
-const MOD_NAPREDNO_K=["ene","kis","pogled","vjet","osun","ptn","isk","oku","skica","sun","pv","tipcmp","rparams","rex","krkTxt","risks","povijest","prep","kd","krkKd","costs","scen","vrij","proj","bfaze",
+const MOD_NAPREDNO_K=["kred","ene","kis","pogled","vjet","osun","ptn","isk","oku","skica","sun","pv","tipcmp","rparams","rex","krkTxt","risks","povijest","prep","kd","krkKd","costs","scen","vrij","proj","bfaze",
   "pog:karte-prostornog-plana","pog:sunce-i-energija","pog:pouzdanost-podataka"];
 const MOD_NAPREDNO_ID=["expBox","rkBox","sec-upu","pzBox","sec-pouzdanost","sec-sunce"];
 // dijelovi simulatora kuće i procjene gradnje koji su napredni (oznaka i polje u istom retku tablice)
