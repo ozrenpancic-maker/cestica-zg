@@ -2791,7 +2791,7 @@ function tDraw(){
     `<table class="rp"><tbody>${R.C.map(c=>`<tr><th>${esc(c.label)}</th><td><b>${esc(c.val)}</b> <em class="kind st-${ST[c.st][0]}">${ST[c.st][1]}</em>${c.note?`<small class="fx">${esc(c.note)}</small>`:""}</td></tr>`).join("")}</tbody></table>`+
     tDistHtml()+(curData()&&curData().krk?"":`<div class="kd"><button type="button" class="ib" id="tToFin">Prenesi kuću u procjenu troškova</button></div>`);
   if(s){s.textContent=`${String(TL.w).replace(".",",")} × ${String(TL.d).replace(".",",")} m, ${R.F.label}: ${ST[R.st][1]}`; s.className=R.st==="no"?"bad":"";}
-  window.__sim=R; projSaveSimSoon(); zgSync(); skicaUpdate(); okuSoon(); pvLiveSoon(); iskSoon(); osunSoon(); pogSoon();
+  window.__sim=R; projSaveSimSoon(); zgSync(); skicaUpdate(); okuSoon(); pvLiveSoon(); iskSoon(); osunSoon(); pogSoon(); eneSoon(); kisSoon();
 }
 function predNote(){const P=predlozakDims(+TL.pred,TL.fl), F=tFloors();
   return `Predložak ${TL.pred} m² nadzemnog GBP-a, ${F.label}: tlocrt oko ${fmt(P.tl)} m² → predloženo ${String(P.w).replace(".",",")} × ${String(P.d).replace(".",",")} m (${fmt(P.w*P.d)} m²). Dimenzije možeš promijeniti; tada predložak prelazi u vlastite dimenzije.`;}
@@ -3047,13 +3047,15 @@ function simHtml(pp,A,area,gbpMax,RP,lim){
   h+=`<label for="tGar">Garaža</label><span><input type="checkbox" id="tGar"${TL.gar?" checked":""}> prizemna, uz desni bok kuće</span>`;
   h+=`</div><div class="bgrid" id="tGarBox" style="${TL.gar?"":"display:none"}"><label for="tGw">Garaža širina</label><span><input id="tGw" type="number" inputmode="decimal" min="2.5" step="0.5" value="${TL.gw}"> m</span><label for="tGd">Garaža dubina</label><span><input id="tGd" type="number" inputmode="decimal" min="4" step="0.5" value="${TL.gd}"> m</span></div>`;
   h+=`<p class="meta" id="tPredNote">${TL.pred?predNote():"Predložak predlaže pravokutni tlocrt za ciljnu nadzemnu bruto površinu (GBP); dimenzije možeš mijenjati."}</p>`;
-  h+=`<div class="kd"><button type="button" class="ib" id="tEdit">Uredi na karti</button><button type="button" class="ib" id="tCenterBtn">Vrati u sredinu</button><button type="button" class="ib" id="tOpt" title="Položaj i okret s najmanje zemljanih radova, najviše sunca na krovu i kompromis">Predloži položaj</button><button type="button" class="ib" id="arBtn" title="Na Androidu s Chromeom: kuća, granica čestice i prostor za gradnju u stvarnoj veličini kroz kameru">Kuća kroz kameru (AR)</button></div><p id="arMsg" class="flag" hidden></p><div id="tOptOut">${OPT.res&&OPT.key&&window.__cur&&OPT.key===window.__cur.key?optHtmlRez():""}</div><div id="tOut"></div>`;
+  h+=`<div class="kd"><button type="button" class="ib" id="tEdit">Uredi na karti</button><button type="button" class="ib" id="tCenterBtn">Vrati u sredinu</button><button type="button" class="ib" id="tOpt" title="Položaj i okret s najmanje zemljanih radova, najviše sunca na krovu i kompromis">Predloži položaj</button><button type="button" class="ib" id="arBtn" title="Na Androidu s Chromeom: kuća, granica čestice i prostor za gradnju u stvarnoj veličini kroz kameru">Kuća kroz kameru (AR)</button></div>${expHtml()}<p id="arMsg" class="flag" hidden></p><div id="tOptOut">${OPT.res&&OPT.key&&window.__cur&&OPT.key===window.__cur.key?optHtmlRez():""}</div><div id="tOut"></div>`;
   h+=`<p class="meta">Skica tlocrta i presjeka (za izvještaj) je u odjeljku „Skica kuće na terenu” ispod.</p>`;
   h+=`<p class="meta">Na karti kuću pomičeš povlačenjem oznake ✥, a okrećeš povlačenjem oznake ↻; dok držiš oznaku, karta miruje. Na karti: zeleno je prostor unutar udaljenosti od međa, narančasto pojas uz ulicu do udaljenosti građevnog pravca (ulica procijenjena iz OpenStreetMapa), a kuća postaje crvena kad izađe iz dopuštenog prostora. Tip kuće bira se u "Izračunu za ovu česticu".</p></div></details>`;
   h+=okuHtml();
   h+=iskHtml();
   h+=osunHtml();
   h+=pogHtml();
+  h+=eneHtml();
+  h+=kisHtml();
   h+=`<details class="acc skica" data-k="skica"${OPEN.has("skica")?" open":""}><summary><span>Skica kuće na terenu</span><b id="skSum">tlocrt, presjek i 3D</b></summary><div class="acc-body"><div id="skicaOut"></div></div></details>`;
   return h;
 }
@@ -5876,6 +5878,220 @@ function promUpdate(){
   if(b.innerHTML!==h) b.innerHTML=h;
 }
 sheet.addEventListener("click",e=>{ if(!e.target||e.target.id!=="promOk") return; const c=window.__cur, a=favs(), f=c&&a.find(x=>x.key===c.key); if(!f) return; f.snap=snapSpoji(f.snap,snapSad()); setFavs(a); const b=document.getElementById("promBox"); if(b) b.remove(); });
+// ================= IZVOZ ZA PROJEKTANTA (DXF u HTRS96/TM i 3D model glTF) =================
+// DXF (AutoCAD R12, ASCII, metri, EPSG:3765 HTRS96/TM): granica čestice, prostor za gradnju, pojas uz ulicu, kuća, garaža,
+// plato iskopa (radni pojas), udaljenosti kuće od granice (crta i tekst) i natpisi (čestica, k.o., površina, izvor, datum).
+// glTF 2.0 (jedna datoteka .gltf): kuća iz simulatora s krovom, granica čestice, prostor za gradnju i teren iz modela visina
+// (ako je učitan), u lokalnim metrima oko težišta čestice (x istok, y gore, z jug); ishodište u HTRS96/TM je u asset.extras.
+// Ništa se ne šalje na poslužitelj: datoteke nastaju u pregledniku. Nije geodetska podloga ni projekt.
+function expPreuzmi(ime,sadrzaj,tip){
+  const blob=new Blob([sadrzaj],{type:tip}), u=URL.createObjectURL(blob), a=document.createElement("a");
+  a.href=u; a.download=ime; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(u); a.remove()},1500);
+}
+function expIme(){ const c=window.__cur||{}; return (geoSlug(c.ko)||"ko")+"_cestica_"+(geoSlug(c.ces)||"bez_broja"); }
+const expPrsteni=g=>!g?[]:g.type==="Polygon"?g.coordinates:g.type==="MultiPolygon"?g.coordinates.flat():[];
+// sadržaj DXF-a kao niz entiteta; tm(lon,lat) → [E, N]
+function expDxf(o){
+  const L=[], br=x=>Number(x).toFixed(3);
+  const sloj=[["CESTICA",7],["PROSTOR_GRADNJE",3],["POJAS_ULICA",30],["KUCA",5],["GARAZA",4],["PLATO",8],["UDALJENOSTI",1],["TEKST",7]];
+  const pl=(sl,P,zatv)=>{ L.push("0","POLYLINE","8",sl,"66","1","70",zatv?"1":"0","10","0","20","0","30","0"); for(const p of P) L.push("0","VERTEX","8",sl,"10",br(p[0]),"20",br(p[1]),"30","0"); L.push("0","SEQEND","8",sl); };
+  const ln=(sl,a,b)=>L.push("0","LINE","8",sl,"10",br(a[0]),"20",br(a[1]),"30","0","11",br(b[0]),"21",br(b[1]),"31","0");
+  const tx=(sl,p,h,t)=>L.push("0","TEXT","8",sl,"10",br(p[0]),"20",br(p[1]),"30","0","40",String(h),"1",String(t).replace(/[\r\n]+/g," ").replace(/[đĐ]/g,x=>x==="đ"?"d":"D").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\x20-\x7e]/g,"?")); // R12: samo ASCII
+  const tm=o.tm, prsten=(sl,r)=>{ const P=r.map(q=>tm(q[0],q[1])); const zat=P.length>2&&Math.hypot(P[0][0]-P[P.length-1][0],P[0][1]-P[P.length-1][1])<1e-6; pl(sl,zat?P.slice(0,-1):P,true); };
+  for(const r of expPrsteni(o.cestica)) prsten("CESTICA",r);
+  for(const r of expPrsteni(o.prostor)) prsten("PROSTOR_GRADNJE",r);
+  for(const r of expPrsteni(o.pojas)) prsten("POJAS_ULICA",r);
+  for(const r of expPrsteni(o.kuca)) prsten("KUCA",r);
+  for(const r of expPrsteni(o.garaza)) prsten("GARAZA",r);
+  for(const r of o.plato||[]) prsten("PLATO",r);
+  for(const u of o.udaljenosti||[]){ const a=tm(u.a[0],u.a[1]), b=tm(u.b[0],u.b[1]); ln("UDALJENOSTI",a,b); tx("UDALJENOSTI",[(a[0]+b[0])/2+0.3,(a[1]+b[1])/2+0.3],0.4,u.t); }
+  for(const t of o.tekst||[]) tx("TEKST",tm(t.p[0],t.p[1]),t.h||0.6,t.t);
+  const H=["0","SECTION","2","HEADER","9","$ACADVER","1","AC1009","9","$INSUNITS","70","6","0","ENDSEC",
+    "0","SECTION","2","TABLES","0","TABLE","2","LAYER","70",String(sloj.length),...sloj.flatMap(([n,c])=>["0","LAYER","2",n,"70","0","62",String(c),"6","CONTINUOUS"]),"0","ENDTAB","0","ENDSEC",
+    "0","SECTION","2","ENTITIES"];
+  return [...H,...L,"0","ENDSEC","0","EOF"].join("\r\n")+"\r\n";
+}
+// prikupi geometriju trenutne čestice i kuće (WGS84); null kad nema čestice
+function expPodaci(){
+  const d=curData(); if(!d||!d.parcel) return null; const c=window.__cur||{};
+  const Z=TL.zones||(window.__env&&window.__env.geom?tZones():null), r=tRect(), g=tGarage();
+  const o={cestica:d.parcel.geometry,prostor:Z&&Z.green?(Z.green.geometry||Z.green):(window.__env&&window.__env.geom)||null,pojas:Z&&Z.orange?(Z.orange.geometry||Z.orange):null,
+    kuca:r?r.geometry:null,garaza:g?g.geometry:null,plato:[],udaljenosti:[],tekst:[]};
+  if(r&&ISK&&ISK.res){ const P=iskPostavke(ISK.key), K=iskKuca(); if(K) for(const q of iskPravokutnici(K,P.m)){ const rr=K.rot*Math.PI/180, ex=[Math.cos(rr),-Math.sin(rr)], ey=[Math.sin(rr),Math.cos(rr)], mx=111320*Math.cos(K.c[1]*Math.PI/180), my=110540;
+      const toG=(u,v)=>[K.c[0]+(u*ex[0]+v*ey[0])/mx,K.c[1]+(u*ex[1]+v*ey[1])/my]; o.plato.push([toG(q.u0,q.v0),toG(q.u1,q.v0),toG(q.u1,q.v1),toG(q.u0,q.v1)]); } }
+  const S=TL.center?sideDists():null;
+  if(S) for(const s of S){ if(s.dist==null) continue; const half=s.ax==="d"?TL.d/2:TL.w/2, mid=turf.destination(turf.point(TL.center),half/1000,s.brg,{units:"kilometers"}).geometry.coordinates, end=turf.destination(turf.point(mid),s.dist/1000,s.brg,{units:"kilometers"}).geometry.coordinates;
+    o.udaljenosti.push({a:mid,b:end,t:dec(s.dist.toFixed(2))+" m"}); }
+  const ce=turf.centroid(d.parcel).geometry.coordinates, A=turf.area(d.parcel);
+  o.tekst.push({p:ce,h:0.8,t:`k.c. ${c.ces||"?"}  k.o. ${c.ko||"?"}`},{p:[ce[0],ce[1]-1.5/110540],h:0.5,t:`grafička površina ${fmt(A)} m2`});
+  if(r){ const kc=turf.centroid(r).geometry.coordinates, F=tFloors(); o.tekst.push({p:kc,h:0.5,t:`kuća ${dec(TL.w)} x ${dec(TL.d)} m, ${F.label}${ISK&&ISK.res&&!ISK.res.relativno?`, plato ${dec(ISK.res.zP.toFixed(2))} m n.m.`:""}`}); }
+  o.tekst.push({p:[ce[0],ce[1]-3/110540],h:0.35,t:`Izvor: DGU katastar (graficki prikaz), Cestica HR ${pzDan()}. Nije geodetska podloga.`});
+  o.tm=(lon,lat)=>tmFwd(lon,lat);
+  return o;
+}
+// glTF 2.0: trokuti i crte s bojama vrhova, jedna .gltf datoteka s ugrađenim međuspremnikom (base64)
+function expGltf(){
+  const geo=arGeom(), d=curData(); if(!geo||!d) return null; const O=geo.O, tris=[], lines=[];
+  const boja={Y:[1,.83,0,1],G:[.12,.65,.35,1],B:[.75,.8,.86,1],R:[.62,.27,.18,1],T:[.55,.62,.45,1]};
+  // visine: teren iz modela (relativno prema tlu u sredini kuće), kuća na platou ako je izračunat
+  const M=ISK&&ISK.model&&ISK.key===(window.__cur&&window.__cur.key)?ISK.model:null, mx=111320*Math.cos(O[1]*Math.PI/180), my=110540;
+  const kc=TL.center?arEnu(O,TL.center):[0,0], zt=(e,n)=>M?M.vis(O[0]+e/mx,O[1]+n/my):0, z0=zt(kc[0],kc[1]);
+  const zK=ISK&&ISK.res&&!ISK.res.relativno&&M?ISK.res.zP-z0:0;
+  const P=(p,h)=>[p[0],h,-p[1]];
+  for(const [a,b,c] of geo.L){ const col=c[1]>0.7&&c[0]>0.9?boja.Y:c[1]>0.6?boja.G:boja.B; const ha=col===boja.B?a[2]+zK:(M?zt(a[0],a[1])-z0:0)+a[2], hb=col===boja.B?b[2]+zK:(M?zt(b[0],b[1])-z0:0)+b[2]; lines.push([P(a,ha),col],[P(b,hb),col]); }
+  for(const [a,b,c] of geo.T.map(t=>[t[0],t[1],t[2]])){ const col=a[2]>0.1&&b[2]>0.1&&c[2]>0.1?boja.R:boja.B; /* krov: svi vrhovi iznad tla; zidovi imaju vrh na tlu */ tris.push([P(a,a[2]+zK),col],[P(b,b[2]+zK),col],[P(c,c[2]+zK),col]); }
+  if(M){ const b=turf.bbox(d.parcel), e0=(b[0]-O[0])*mx-10, e1=(b[2]-O[0])*mx+10, n0=(b[1]-O[1])*my-10, n1=(b[3]-O[1])*my+10, st=Math.max(1,Math.ceil(Math.max(e1-e0,n1-n0)/120));
+    for(let e=e0;e<e1;e+=st) for(let n=n0;n<n1;n+=st){ const q=[[e,n],[e+st,n],[e+st,n+st],[e,n+st]].map(p=>P(p,zt(p[0],p[1])-z0)); for(const i of [0,1,2,0,2,3]) tris.push([q[i],boja.T]); } }
+  const pack=V=>{ const f=new Float32Array(V.length*7); V.forEach(([p,c],i)=>{f.set(p,i*7); f.set(c,i*7+3);}); return f; };
+  const fT=pack(tris), fL=pack(lines), buf=new Uint8Array(fT.byteLength+fL.byteLength); buf.set(new Uint8Array(fT.buffer),0); buf.set(new Uint8Array(fL.buffer),fT.byteLength);
+  let bin=""; for(let i=0;i<buf.length;i+=0x8000) bin+=String.fromCharCode.apply(null,buf.subarray(i,i+0x8000));
+  const mm=(f,off)=>{ const mn=[Infinity,Infinity,Infinity], mxv=[-Infinity,-Infinity,-Infinity]; for(let i=0;i<f.length;i+=7) for(let k=0;k<3;k++){mn[k]=Math.min(mn[k],f[i+k]); mxv[k]=Math.max(mxv[k],f[i+k]);} void off; return [mn,mxv]; };
+  const [tMin,tMax]=mm(fT), [lMin,lMax]=mm(fL), E=tmFwd(O[0],O[1]);
+  const acc=[], bv=[{buffer:0,byteOffset:0,byteLength:fT.byteLength,byteStride:28,target:34962},{buffer:0,byteOffset:fT.byteLength,byteLength:fL.byteLength,byteStride:28,target:34962}];
+  acc.push({bufferView:0,byteOffset:0,componentType:5126,count:tris.length,type:"VEC3",min:tMin,max:tMax},{bufferView:0,byteOffset:12,componentType:5126,count:tris.length,type:"VEC4"},
+    {bufferView:1,byteOffset:0,componentType:5126,count:lines.length,type:"VEC3",min:lMin,max:lMax},{bufferView:1,byteOffset:12,componentType:5126,count:lines.length,type:"VEC4"});
+  const prim=[]; if(tris.length) prim.push({attributes:{POSITION:0,COLOR_0:1},mode:4,material:0}); if(lines.length) prim.push({attributes:{POSITION:2,COLOR_0:3},mode:1,material:0});
+  const c=window.__cur||{};
+  const g={asset:{version:"2.0",generator:"Čestica HR",extras:{cestica:c.ces||null,katastarska_opcina:c.ko||null,ishodiste_HTRS96TM:[+E[0].toFixed(3),+E[1].toFixed(3)],ishodiste_WGS84:[+O[0].toFixed(8),+O[1].toFixed(8)],
+      osi:"x = istok, y = gore, z = jug (metri)",teren:M?M.izvor+", visine relativno prema tlu u sredini kuće":"teren nije učitan (ravno)",napomena:"Grafički prikaz iz katastra i simulatora; nije geodetska podloga ni projekt.",izvezeno:new Date().toISOString()}},
+    scene:0,scenes:[{nodes:[0]}],nodes:[{mesh:0,name:"cestica_i_kuca"}],meshes:[{primitives:prim}],materials:[{pbrMetallicRoughness:{baseColorFactor:[1,1,1,1],metallicFactor:0,roughnessFactor:1},doubleSided:true}],
+    accessors:acc,bufferViews:bv,buffers:[{byteLength:buf.length,uri:"data:application/octet-stream;base64,"+btoa(bin)}]};
+  return g;
+}
+function expHtml(){ return `<div id="expBox" class="kd"><button type="button" class="ib" id="expDxf" title="Granica čestice, prostor za gradnju, kuća, plato i udaljenosti u HTRS96/TM (AutoCAD, ArchiCAD, QGIS)">Izvoz DXF (HTRS96/TM)</button><button type="button" class="ib" id="expGltf" title="Kuća, granica čestice i teren u 3D (Blender, SketchUp, ArchiCAD, preglednici glTF)">Izvoz 3D (glTF)</button></div>`; }
+document.addEventListener("click",e=>{ const t=e.target; if(!t) return;
+  if(t.id==="expDxf"){ const o=expPodaci(); if(!o){alert("Prvo odaberi česticu."); return;} expPreuzmi(expIme()+".dxf",expDxf(o),"application/dxf"); }
+  else if(t.id==="expGltf"){ if(!TL.center){alert("Prvo smjesti kuću na česticu u simulatoru."); return;} const g=expGltf(); if(!g) return; expPreuzmi(expIme()+".gltf",JSON.stringify(g),"model/gltf+json"); } });
+// ================= DNEVNA KLIMA LOKACIJE (oborine i temperatura 2016.–2025., Open-Meteo / ERA5) =================
+const KLIMA={cache:{}};
+async function klimaPodaci(lat,lon){
+  const k=lat.toFixed(2)+"|"+lon.toFixed(2); if(KLIMA.cache[k]) return KLIMA.cache[k];
+  const q=new URLSearchParams({latitude:lat.toFixed(4),longitude:lon.toFixed(4),start_date:"2016-01-01",end_date:"2025-12-31",daily:"precipitation_sum,temperature_2m_mean,temperature_2m_min",timezone:"Europe/Zagreb"});
+  const j=await (window.__klimaHook?Promise.resolve(window.__klimaHook(lat,lon)):getJSON("https://archive-api.open-meteo.com/v1/archive?"+q.toString(),{},30000));
+  const D=j&&j.daily; if(!D||!D.time||D.time.length<3000) throw new Error("servis nije vratio dnevne podatke");
+  const out={t:D.time,p:D.precipitation_sum||[],tm:D.temperature_2m_mean||[],tn:D.temperature_2m_min||[]}; out.god=[...new Set(out.t.map(x=>String(x).slice(0,4)))]; return KLIMA.cache[k]=out;
+}
+function klimaTocka(){ const d=curData(); if(!d) return null; const c=TL.center||(d.parcel?turf.centroid(d.parcel.geometry).geometry.coordinates:[d.ll.lng,d.ll.lat]); return c; }
+const klimaMj=t=>+String(t).slice(5,7);
+
+// ================= KIŠNICA I CISTERNA =================
+// Dnevna bilanca spremnika kroz 10 godina stvarnih oborina: dotok = oborina × površina krova × koeficijent otjecanja,
+// potrošnja = osobe × litara po osobi na dan (+ dodatno ljeti, lipanj–rujan). Spremnik je na početku pun.
+// „Dan bez vode” je dan kad spremnik ne može dati cijelu dnevnu potrošnju. Koeficijent i potrošnja su tvoje pretpostavke.
+const KIS={res:null,key:null,t:0}, KIS_SPR=[2,4,6,8,10,12,15,20,25,30,40,50,60];
+function kisPostavke(){ const n=id=>{const v=parseFloat(String((document.getElementById(id)||{}).value||"").replace(",",".")); return isFinite(v)?v:null;};
+  const krov=TL.center?Math.round(TL.w*TL.d+(TL.gar?TL.gw*TL.gd:0)):null;
+  return {A:n("kisKrov")??krov,koef:Math.min(1,Math.max(0.1,n("kisKoef")??0.8)),os:Math.max(0,n("kisOs")??4),l:Math.max(0,n("kisL")??50),lj:Math.max(0,n("kisLj")??0)}; }
+// čisti izračun: dani (D.t, D.p) i postavke → za svaki spremnik prosječni dani bez vode godišnje i pokrivenost
+function kisIzracun(D,P,sprem){
+  const ny=new Set(D.t.map(x=>String(x).slice(0,4))).size||1, dn=D.t.map(t=>{const m=klimaMj(t); return (P.os*P.l+(m>=6&&m<=9?P.lj:0))/1000;}), din=D.p.map(p=>Math.max(0,p||0)/1000*P.A*P.koef);
+  const uk={dot:din.reduce((a,b)=>a+b,0)/ny,pot:dn.reduce((a,b)=>a+b,0)/ny};
+  const red=(sprem||KIS_SPR).map(V=>{ let s=V, bez=0, dano=0, maxNiz=0, niz=0;
+    for(let i=0;i<dn.length;i++){ s=Math.min(V,s+din[i]); if(s>=dn[i]-1e-9){ s-=dn[i]; dano+=dn[i]; niz=0; } else { dano+=s; s=0; bez++; niz++; if(niz>maxNiz) maxNiz=niz; } }
+    return {V,bez:bez/ny,pokr:dn.reduce((a,b)=>a+b,0)?dano/dn.reduce((a,b)=>a+b,0):1,maxNiz}; });
+  const prep=red.find(r=>r.bez<=5)||null;
+  // mjesečni prosjeci: oborina (mm), dotok i potrošnja (m³)
+  const mj=Array.from({length:12},()=>({p:0,dot:0,pot:0})); D.t.forEach((t,i)=>{const m=klimaMj(t)-1; mj[m].p+=Math.max(0,D.p[i]||0); mj[m].dot+=din[i]; mj[m].pot+=dn[i];}); mj.forEach(x=>{x.p/=ny; x.dot/=ny; x.pot/=ny;});
+  return {ny,uk,red,prep,mj};
+}
+function kisHtml(){ return `<details class="acc" data-k="kis"${OPEN.has("kis")?" open":""}><summary><span>Kišnica i cisterna</span><b id="kisSum">koliko vode s krova</b></summary><div class="acc-body">
+  <div class="bgrid"><label for="kisKrov">Površina krova (tlocrt)</label><span><input id="kisKrov" type="number" inputmode="decimal" min="0" step="1" placeholder="iz simulatora"> m²</span>
+  <label for="kisKoef">Koeficijent otjecanja</label><span><input id="kisKoef" type="number" inputmode="decimal" min="0.1" max="1" step="0.05" value="0.8"> <small class="meta">dio kiše koji stigne u spremnik</small></span>
+  <label for="kisOs">Osoba</label><span><input id="kisOs" type="number" inputmode="decimal" min="0" step="1" value="4"></span>
+  <label for="kisL">Potrošnja kišnice</label><span><input id="kisL" type="number" inputmode="decimal" min="0" step="5" value="50"> L po osobi na dan</span>
+  <label for="kisLj">Dodatno ljeti</label><span><input id="kisLj" type="number" inputmode="decimal" min="0" step="50" value="0"> L na dan (lipanj–rujan: vrt, bazen)</span></div><div id="kisOut"><p class="meta">Otvori odjeljak i podaci se dohvate.</p></div></div></details>`; }
+function kisSvg(R){
+  const W=320,H=120,P=30, mx=Math.max(10,...R.red.map(r=>r.bez)), bw=(W-P-6)/R.red.length;
+  let g=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px" role="img" aria-label="Dani bez vode godišnje prema veličini spremnika"><line x1="${P}" y1="${H-18}" x2="${W-4}" y2="${H-18}" stroke="var(--line)"/>`;
+  R.red.forEach((r,i)=>{ const h=(H-30)*r.bez/mx, x=P+i*bw+2; g+=`<rect x="${x.toFixed(1)}" y="${(H-18-h).toFixed(1)}" width="${(bw-4).toFixed(1)}" height="${h.toFixed(1)}" fill="${R.prep&&r.V===R.prep.V?"#2e7d32":r.bez<=5?"#7cb342":"#5b7fb8"}"><title>${r.V} m³: ${dec(r.bez.toFixed(1))} dana godišnje</title></rect><text x="${(x+(bw-4)/2).toFixed(1)}" y="${H-5}" font-size="9" text-anchor="middle" fill="var(--muted)">${r.V}</text>`; });
+  g+=`<text x="2" y="12" font-size="9" fill="var(--muted)">${fmt(mx)} dana</text><text x="${W-4}" y="${H-5+0}" font-size="9" text-anchor="end" fill="var(--muted)"></text></svg><p class="isk-leg">Stupci: prosječni dani bez vode godišnje za spremnik od 2 do 60 m³ (oznaka ispod stupca); zeleno: najmanji spremnik s najviše 5 dana bez vode.</p>`;
+  return g;
+}
+async function kisUpdate(){
+  const o=document.getElementById("kisOut"); if(!o) return; const c=klimaTocka(); if(!c) return; const P=kisPostavke();
+  if(!(P.A>0)){ o.innerHTML=`<p class="meta">Upiši površinu krova ili postavi kuću u simulatoru.</p>`; return; }
+  let D; try{ if(!KLIMA.cache[c[1].toFixed(2)+"|"+c[0].toFixed(2)]) o.innerHTML=`<p class="hint"><span class="spin"></span>Dohvaćam dnevne oborine 2016.–2025.…</p>`; D=await klimaPodaci(c[1],c[0]); }
+  catch(e){ o.innerHTML=`<p class="flag">Podaci o oborinama nisu dostupni (${esc(e.message||"greška")}).</p>`; return; }
+  const R=kisIzracun(D,P); KIS.res=R; const pr=R.prep, gm=R.mj.reduce((a,b)=>a+b.p,0);
+  const p=pzSet("kis","Kišnica i cisterna",pr?`spremnik oko ${pr.V} m³`:"ni 60 m³ ne pokriva potrošnju",pz("C",{izvor:"Open-Meteo, dnevne oborine "+D.god[0]+"–"+D.god[D.god.length-1]+" (ERA5 / ERA5-Land)",metoda:"dnevna bilanca spremnika",razlog:"oborine iz modela; koeficijent otjecanja i potrošnja su pretpostavke",provjera:"projektant vodoopskrbe, stvarna potrošnja"}));
+  let h=`<table class="rp"><tbody>`;
+  h+=`<tr><th>Oborine ${pzTag(p)}</th><td><b>${fmt(gm)} mm godišnje</b> <small class="fx">prosjek ${D.god[0]}.–${D.god[D.god.length-1]}.</small></td></tr>`;
+  h+=`<tr><th>S krova ${fmt(P.A)} m²</th><td><b>${fmt(R.uk.dot)} m³ godišnje</b> <small class="fx">${fmt(gm)} mm × ${fmt(P.A)} m² × ${dec(P.koef)}</small></td></tr>`;
+  h+=`<tr><th>Potrošnja</th><td><b>${fmt(R.uk.pot)} m³ godišnje</b> <small class="fx">${dec(P.os)} × ${dec(P.l)} L/dan${P.lj?` + ${fmt(P.lj)} L/dan ljeti`:""}</small></td></tr>`;
+  h+=`<tr><th>Preporučeni spremnik</th><td>${pr?`<b>oko ${pr.V} m³</b> <small class="fx">prosječno ${dec(pr.bez.toFixed(1))} dana bez vode godišnje, pokriva ${Math.round(pr.pokr*100)} % potrošnje; najdulje ${pr.maxNiz} dana zaredom u 10 godina</small>`:`<b>ni 60 m³ nije dovoljno</b> <small class="fx">s 60 m³ ostaje ${dec(R.red[R.red.length-1].bez.toFixed(0))} dana bez vode godišnje; krov daje ${R.uk.dot<R.uk.pot?"manje vode nego što se troši":"dovoljno vode, ali ne u pravo vrijeme"}</small>`}</td></tr></tbody></table>`;
+  h+=kisSvg(R);
+  const mxm=Math.max(...R.mj.map(x=>Math.max(x.dot,x.pot)),0.01), M=["sij","velj","ožu","tra","svi","lip","srp","kol","ruj","lis","stu","pro"];
+  h+=`<p class="eyebrow" style="margin:8px 0 2px">Po mjesecima (m³): kišnica i potrošnja</p><div class="pvbars" role="img" aria-label="Kišnica i potrošnja po mjesecima">${R.mj.map((x,i)=>`<div><b>${fmt(x.dot)}</b><span style="height:${Math.round(60*x.dot/mxm)}px;background:#4f8fcf" title="kišnica ${fmt(x.dot)} m³, potrošnja ${fmt(x.pot)} m³, oborina ${fmt(x.p)} mm"></span><small>${M[i]}</small></div>`).join("")}</div><p class="isk-leg">Brojevi: kišnica s krova; potrošnja je oko ${fmt(R.uk.pot/12)} m³ mjesečno${P.lj?" (ljeti više)":""}.</p>`;
+  h+=`<p class="meta">Dnevna bilanca kroz ${R.ny} godina stvarnih oborina (Open-Meteo, model ERA5 / ERA5-Land, razlučivost 10–25 km). Koeficijent otjecanja (dio kiše koji stigne u spremnik, nakon gubitaka na krovu i filtru) i potrošnja su tvoje pretpostavke. Kišnica bez pročišćavanja nije pitka voda. Uvjete za cisternu (veličina, smještaj, preljev) mogu propisati prostorni plan i komunalno poduzeće; provjeri ih.</p>`;
+  o.innerHTML=h; const s=document.getElementById("kisSum"); if(s) s.textContent=pr?`spremnik oko ${pr.V} m³`:"krov nije dovoljan";
+}
+function kisSoon(){ const d=document.querySelector('details[data-k="kis"]'); if(!d||!d.open) return; clearTimeout(KIS.t); KIS.t=setTimeout(()=>kisUpdate().catch(e=>console.error(e)),400); }
+sheet.addEventListener("toggle",e=>{ if(e.target.dataset&&e.target.dataset.k==="kis"&&e.target.open) kisUpdate().catch(err=>console.error(err)); },true);
+sheet.addEventListener("input",e=>{ if(e.target&&/^kis(Krov|Koef|Os|L|Lj)$/.test(e.target.id)) kisSoon(); });
+
+// ================= ENERGIJA KUĆE I DIZALICA TOPLINE =================
+// Gruba procjena potrebne topline za grijanje iz stvarne dnevne temperature lokacije (2016.–2025.) i ovojnice kuće iz simulatora.
+// Koeficijenti prolaska topline U zadano su najveće dopuštene vrijednosti za nove zgrade (Tehnički propis o racionalnoj uporabi
+// energije i toplinskoj zaštiti u zgradama, Prilog B, Tablica 1, NN 128/15), stupac prema klimi lokacije: θmm ≤ 3 °C ili > 3 °C
+// (čl. 4. t. 33. u verziji NN 102/20; θmm = srednja temperatura najhladnijeg mjeseca). Granica nZEB za obiteljsku kuću:
+// Prilog B, Tablica 8 (NN 102/20, čl. 7.). Procjena NIJE proračun iz propisa (HRN EN ISO 52016-1) ni energetski certifikat.
+const ENE={res:null,t:0};
+const ENE_U={kont:{zid:0.30,krov:0.25,pod:0.30,proz:1.40},prim:{zid:0.45,krov:0.30,pod:0.50,proz:1.80}};
+const ENE_NZEB={kont:f=>f<=0.20?40.50:f>=1.05?75.00:32.39+40.58*f,prim:f=>f<=0.20?24.84:f>=1.05?57.50:17.16+38.42*f};
+// pretpostavke aplikacije (nisu propis): unutarnja temperatura 20 °C, granica grijanja 15 °C (dnevna srednja), unutarnji dobici 5 W/m²
+const ENE_P={tin:20,granica:15,dobici:5};
+// čisti izračun: klima D (dnevne srednje i minimalne temperature), kuća K, postavke P
+function eneIzracun(D,K,P){
+  const ny=new Set(D.t.map(x=>String(x).slice(0,4))).size||1, mj=Array.from({length:12},()=>[0,0]);
+  D.t.forEach((t,i)=>{ const v=D.tm[i]; if(v==null) return; const m=klimaMj(t)-1; mj[m][0]+=v; mj[m][1]++; });
+  const tmm=Math.min(...mj.map(x=>x[1]?x[0]/x[1]:99)), zona=tmm<=3?"kont":"prim";
+  const fp=K.w*K.d, o=2*(K.w+K.d), hz=K.full*K.fh+(K.pk?1.2:0), nag=(K.krov==="ravni"?0:K.nagib||0)*Math.PI/180;
+  const Azid=o*hz, Aproz=Azid*P.proz, Akrov=K.pk&&K.krov!=="ravni"?fp/Math.cos(nag):fp, Apod=fp;
+  const Ve=fp*K.full*K.fh+(K.pk?fp*(1.2+Math.tan(nag)*Math.min(K.w,K.d)/4):0), Ak=fp*(K.full+(K.pk?0.75:0));
+  const U=P.U, HT=U.zid*(Azid-Aproz)+U.proz*Aproz+U.krov*Akrov+U.pod*Apod, HV=0.34*P.n*Ve, H=HT+HV, Aov=Azid+Akrov+Apod, f0=Aov/Ve;
+  let kdh=0, dani=0; D.tm.forEach(v=>{ if(v!=null&&v<ENE_P.granica){ kdh+=(ENE_P.tin-v)*24; dani++; } });
+  const Qg=H*kdh/1000/ny, Qd=ENE_P.dobici*Ak*dani*24/1000/ny, Q=Math.max(0,Qg-0.95*Qd), q=Q/Ak;
+  const tn=D.tn.filter(v=>v!=null).sort((a,b)=>a-b), tproj=tn.length?tn[Math.floor(tn.length*0.01)]:null, Pmax=tproj!=null?H*(ENE_P.tin-tproj)/1000:null;
+  let hl=0; D.tm.forEach(v=>{ if(v!=null&&v>24) hl+=v-24; });
+  return {zona,tmm,Azid,Aproz,Akrov,Apod,Ve,Ak,f0,HT,HV,H,Q,q,nzeb:ENE_NZEB[zona](f0),tproj,Pmax,Eel:Q/P.scop,dani:dani/ny,hl:hl/ny,ny};
+}
+function eneHtml(){ return `<details class="acc" data-k="ene"${OPEN.has("ene")?" open":""}><summary><span>Energija kuće i dizalica topline</span><b id="eneSum">grijanje</b></summary><div class="acc-body"><div id="eneForm"></div><div id="eneOut"><p class="meta">Otvori odjeljak i podaci se dohvate.</p></div></div></details>`; }
+function enePostavke(zona){
+  const n=id=>{const v=parseFloat(String((document.getElementById(id)||{}).value||"").replace(",",".")); return isFinite(v)&&v>0?v:null;}, d=ENE_U[zona||"kont"];
+  return {U:{zid:n("eneUz")??d.zid,krov:n("eneUk")??d.krov,pod:n("eneUp")??d.pod,proz:n("eneUw")??d.proz},proz:Math.min(0.6,(n("eneProz")??15)/100),n:(document.getElementById("eneVent")||{}).value==="rek"?0.15:0.5,scop:n("eneScop")??3.5};
+}
+function eneFormHtml(zona){ const d=ENE_U[zona]; const f=(id,l,v,u,st)=>`<label for="${id}">${l}</label><span><input id="${id}" type="number" inputmode="decimal" min="0" step="${st||0.05}" placeholder="${v}"> ${u}</span>`;
+  return `<div class="bgrid">${f("eneUz","U vanjski zid",dec(d.zid),"W/m²K")}${f("eneUk","U krov",dec(d.krov),"W/m²K")}${f("eneUp","U pod na tlu",dec(d.pod),"W/m²K")}${f("eneUw","U prozori",dec(d.proz),"W/m²K")}${f("eneProz","Prozori",15,"% zidova",1)}
+  <label for="eneVent">Provjetravanje</label><select id="eneVent" class="bsel"><option value="pri">prozorima (0,5 izmjene zraka na sat)</option><option value="rek">rekuperator (učinkovito oko 0,15 na sat)</option></select>${f("eneScop","SCOP dizalice topline","3,5","",0.1)}</div>
+  <p class="meta">Prazna polja: najveće dopuštene vrijednosti U za nove zgrade u ovoj klimi (Tablica 1, Prilog B propisa). Za bolju izolaciju upiši manji U.</p>`; }
+async function eneUpdate(){
+  const o=document.getElementById("eneOut"), fm=document.getElementById("eneForm"); if(!o) return; if(!TL.center){ o.innerHTML=`<p class="meta">Postavi kuću u simulatoru.</p>`; return; }
+  const c=klimaTocka(); let D; try{ if(!KLIMA.cache[c[1].toFixed(2)+"|"+c[0].toFixed(2)]) o.innerHTML=`<p class="hint"><span class="spin"></span>Dohvaćam dnevne temperature 2016.–2025.…</p>`; D=await klimaPodaci(c[1],c[0]); }
+  catch(e){ o.innerHTML=`<p class="flag">Podaci o temperaturi nisu dostupni (${esc(e.message||"greška")}).</p>`; return; }
+  const F=tFloors(), K={w:TL.w,d:TL.d,gar:TL.gar,full:F.full,pk:F.pk,fh:TL.fh,krov:TL.krov,nagib:TL.nagib};
+  const z0=eneIzracun(D,K,{U:ENE_U.kont,proz:0.15,n:0.5,scop:3.5}).zona; if(fm&&fm.dataset.z!==z0){ fm.innerHTML=eneFormHtml(z0); fm.dataset.z=z0; }
+  const P=enePostavke(z0), R=eneIzracun(D,K,P); ENE.res=R;
+  const pv=typeof PV!=="undefined"&&PV.curE>0?PV.curE:null;
+  const p=pzSet("ene","Potrebna toplina za grijanje",`oko ${fmt(R.Q)} kWh/god (${fmt(R.q)} kWh/m²)`,pz("C",{izvor:"Open-Meteo, dnevne temperature "+D.god[0]+"–"+D.god[D.god.length-1]+"; Tehnički propis (NN 128/15, 102/20)",metoda:"stupanj-sati grijanja × koeficijent gubitaka ovojnice i provjetravanja",razlog:"pojednostavljeno: bez sunčevih dobitaka, toplinskih mostova i stvarnih slojeva; nije proračun po HRN EN ISO 52016-1",provjera:"elaborat racionalne uporabe energije i toplinske zaštite (projekt)"}));
+  const zn=R.zona==="kont"?"kontinentalna (θmm ≤ 3 °C)":"primorska (θmm > 3 °C)";
+  let h=`<table class="rp"><tbody>`;
+  h+=`<tr><th>Klima lokacije</th><td><b>${zn}</b> <small class="fx">najhladniji mjesec prosječno ${dec(R.tmm.toFixed(1))} °C; čl. 4. t. 33. propisa</small></td></tr>`;
+  h+=`<tr><th>Ovojnica</th><td><b>${fmt(R.Azid+R.Akrov+R.Apod)} m²</b> <small class="fx">zidovi ${fmt(R.Azid-R.Aproz)}, prozori ${fmt(R.Aproz)}, krov ${fmt(R.Akrov)}, pod ${fmt(R.Apod)} m²; grijani obujam ${fmt(R.Ve)} m³; f0 = ${dec(R.f0.toFixed(2))}</small></td></tr>`;
+  h+=`<tr><th>Gubici topline</th><td><b>${fmt(R.H)} W/K</b> <small class="fx">kroz ovojnicu ${fmt(R.HT)}, provjetravanjem ${fmt(R.HV)} W/K</small></td></tr>`;
+  h+=`<tr><th>Toplina za grijanje ${pzTag(p)}</th><td><b>oko ${fmt(R.Q)} kWh godišnje</b> <small class="fx">${fmt(R.q)} kWh/m² korisne površine (oko ${fmt(R.Ak)} m²); oko ${fmt(R.dani)} dana grijanja godišnje</small></td></tr>`;
+  h+=`<tr><th>Granica nZEB (obiteljska kuća)</th><td><b>${dec(R.nzeb.toFixed(1))} kWh/m²</b> <small class="fx">Q''H,nd prema Tablici 8 (NN 102/20) za f0 = ${dec(R.f0.toFixed(2))}; ${R.q<=R.nzeb?"procjena je ispod granice":"procjena je iznad granice (bez sunčevih dobitaka procjena je nešto viša od stvarne); za nZEB vjerojatno treba bolja izolacija od najmanje propisane ili rekuperator"} – gruba usporedba, mjerodavan je elaborat</small></td></tr>`;
+  if(R.Pmax!=null) h+=`<tr><th>Snaga grijanja</th><td><b>oko ${dec(R.Pmax.toFixed(1))} kW</b> <small class="fx">pri ${dec(R.tproj.toFixed(0))} °C vani (najhladnijih 1 % dana 2016.–2025.); uz pripremu tople vode dizalica je obično nešto jača</small></td></tr>`;
+  h+=`<tr><th>Struja za dizalicu topline</th><td><b>oko ${fmt(R.Eel)} kWh godišnje</b> <small class="fx">${fmt(R.Q)} kWh ÷ SCOP ${dec(P.scop)}; bez tople vode i hlađenja</small></td></tr>`;
+  if(pv) h+=`<tr><th>Sunčana elektrana</th><td><b>${fmt(pv)} kWh godišnje</b> <small class="fx">${pv>=R.Eel?"godišnje pokriva struju za grijanje":"pokriva oko "+Math.round(pv/R.Eel*100)+" % struje za grijanje"} (zimi elektrana proizvodi manje, pa dio struje ide iz mreže)</small></td></tr>`;
+  else h+=`<tr><th>Sunčana elektrana</th><td><small class="fx">izračunaj u odjeljku „Sunčana elektrana” i ovdje se prikaže koliko pokriva grijanje</small></td></tr>`;
+  h+=`<tr><th>Hlađenje</th><td><small class="fx">oko ${fmt(R.hl)} stupanj-dana iznad 24 °C godišnje (informativno)</small></td></tr></tbody></table>`;
+  h+=`<p class="meta">Pojednostavljena procjena: gubici = U × površina za zidove, prozore, krov i pod, plus provjetravanje (0,34 Wh/m³K × izmjene zraka × obujam); stupanj-sati iz dnevnih srednjih temperatura ${D.god[0]}.–${D.god[D.god.length-1]}. (Open-Meteo, ERA5) za dane ispod ${ENE_P.granica} °C, unutra ${ENE_P.tin} °C; unutarnji dobici ${ENE_P.dobici} W/m²; sunčevi dobici, toplinski mostovi i podrum nisu uključeni. Granica grijanja, dobici, udio prozora i provjetravanje su pretpostavke aplikacije. Ovo nije proračun iz Tehničkog propisa ni energetski certifikat.</p>`;
+  o.innerHTML=h; const s=document.getElementById("eneSum"); if(s) s.textContent=`oko ${fmt(R.Q)} kWh/god`;
+}
+function eneSoon(){ const d=document.querySelector('details[data-k="ene"]'); if(!d||!d.open) return; clearTimeout(ENE.t); ENE.t=setTimeout(()=>eneUpdate().catch(e=>console.error(e)),400); }
+sheet.addEventListener("toggle",e=>{ if(e.target.dataset&&e.target.dataset.k==="ene"&&e.target.open) eneUpdate().catch(err=>console.error(err)); },true);
+sheet.addEventListener("input",e=>{ if(e.target&&/^ene(Uz|Uk|Up|Uw|Proz|Scop)$/.test(e.target.id)) eneSoon(); });
+sheet.addEventListener("change",e=>{ if(e.target&&e.target.id==="eneVent") eneSoon(); });
 // ================= JEDINSTVENI PROJEKTNI MODEL =================
 // Projekt čestice = sve što korisnik planira za jednu česticu. Dijelovi koji već postoje ostaju u svojim spremištima
 // (buy, prep, infc, scen, ck2), a "proj" dodaje ono što se prije nije spremalo: kuću iz kalkulatora, simulator i zonu
@@ -6610,7 +6826,7 @@ const IZB=[[1,"Prostorni planovi i namjena","Što se nalazi na zemljištu i kakv
   [5,"Troškovi i investicija","Koliko će koštati zemljište, kuća i cijela investicija?"],[6,"Projekt i dokumentacija","Kako realizirati gradnju i što pripremiti?"]];
 const IZB_TR=new Set([5]); // „Troškovi i investicija”: na mobitelu samo u kartici „Troškovi”, bez broja (oznaka €); analiza ima 01–05
 const IZB_OZN={1:"01",2:"02",3:"03",4:"04",5:"€",6:"05"};
-const IZB_K={pogled:2,vjet:3,osun:2,ptn:5,zk:3,risks:3,rparams:2,rex:2,tipcmp:2,gp:2,calc:2,tloc:2,oku:2,skica:2,sun:2,pv:2,vrij:5,buy:5,build:5,prep:5,kd:5,costs:5,krkKd:5,total:5,scen:5,proj:6,ph3:6,ph4:6,cklist:6};
+const IZB_K={ene:2,kis:4,pogled:2,vjet:3,osun:2,ptn:5,zk:3,risks:3,rparams:2,rex:2,tipcmp:2,gp:2,calc:2,tloc:2,oku:2,skica:2,sun:2,pv:2,vrij:5,buy:5,build:5,prep:5,kd:5,costs:5,krkKd:5,total:5,scen:5,proj:6,ph3:6,ph4:6,cklist:6};
 const IZB_ID={okolisBox:3,rkBox:1,pzBox:6,"sec-rizici":3,"sec-provjere":3,"sec-upu":1,"sec-uvjeti":2,"sec-sunce":2,"sec-novac":5,"sec-pouzdanost":6,"sec-troskovi":5};
 const IZB_H=[[/^(Rizici|Provjere|Potresna)/,3],[/^(Komunalna|Pristup)/,4],[/^(Karte prostornog|Prostorni plan)/,1],[/^(Uvjeti gradnje|Postojeće zgrade|Sunce)/,2],[/^Novac/,5],[/^(Pouzdanost|Dokumentacija|Kontrolna lista)/,6],[/^Gradnja i naknade/,5]];
 // prečaci na postojeće module (bez kopiranja): sunčana elektrana je u 02, a njezin financijski rezultat se otvara i iz 05
@@ -6800,9 +7016,9 @@ sheet.addEventListener("input",e=>{ const t=e.target; if(!t||t.id!=="ptnTraz") r
 // Osnovni način samo SKRIVA prikaz (CSS na body.osnovno): izračuni, unosi i spremanje rade jednako, pa ukupni trošak
 // i dalje uključuje i stavke koje se uređuju u naprednom načinu (to piše uz ukupnu investiciju). Upozorenja i sažetak
 // se ne skrivaju. Kad se iz sažetka ili prečaca otvori napredni odjeljak, aplikacija sama prelazi u napredni način.
-const MOD_NAPREDNO_K=["pogled","vjet","osun","ptn","isk","oku","skica","sun","pv","tipcmp","rparams","rex","krkTxt","risks","povijest","prep","kd","krkKd","costs","scen","vrij","proj","bfaze",
+const MOD_NAPREDNO_K=["ene","kis","pogled","vjet","osun","ptn","isk","oku","skica","sun","pv","tipcmp","rparams","rex","krkTxt","risks","povijest","prep","kd","krkKd","costs","scen","vrij","proj","bfaze",
   "pog:karte-prostornog-plana","pog:sunce-i-energija","pog:pouzdanost-podataka"];
-const MOD_NAPREDNO_ID=["rkBox","sec-upu","pzBox","sec-pouzdanost","sec-sunce"];
+const MOD_NAPREDNO_ID=["expBox","rkBox","sec-upu","pzBox","sec-pouzdanost","sec-sunce"];
 // dijelovi simulatora kuće i procjene gradnje koji su napredni (oznaka i polje u istom retku tablice)
 const MOD_NAPREDNO_POLJA=["tFh","tKrov","tNagib","tSlj","tPod","tGar","bTem","bPrV","bYard","bUnit"];
 const MOD={napredno:false};
