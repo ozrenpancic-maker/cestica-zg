@@ -1,6 +1,6 @@
 // Čestica HR – posrednik prema javnom OSS-u (oss.uredjenazemlja.hr) za upisanu površinu čestice.
 // PRIJEDLOG (worker.next.js): nije objavljen. Dodaje sažetak ZK uloška (?id=…&ulozak=1), vidi PRIJEDLOG-tereti.md.
-// Cloudflare Worker. Poziv: GET https://<worker>/?id=<CESTICA_ID>[&ulozak=1]; ?poplave=<lat>,<lon>[&dijag=1]; ?internet=<lat>,<lon>
+// Cloudflare Worker. Poziv: GET https://<worker>/?id=<CESTICA_ID>[&ulozak=1]; ?poplave=<lat>,<lon>[&dijag=1]; ?internet=<lat>,<lon>; ?kultura=<lat>,<lon>[;<lat>,<lon>…]
 // Vraća SAMO površine, dijelove čestice i oznake ZK uloška. Imena, adrese i udjeli posjednika/vlasnika se NE prosljeđuju.
 // OSS-ova adresa /oss/public/cad/parcel-info nije službeno dokumentirano sučelje i može se promijeniti bez najave.
 
@@ -301,6 +301,42 @@ async function internetNaTocki(lat, lon) {
   }
   return o;
 }
+// Kulturna dobra: Registar kulturnih dobara RH (Ministarstvo kulture i medija), geoportal.kulturnadobra.hr. Njegovo sučelje
+// „identify” (isto koje koristi geoportal) ne dopušta čitanje iz drugih stranica (CORS), pa upit ide ovdje. Ulaz: točka ili
+// prsten čestice (lat,lon;lat,lon;…, najviše 60 točaka), pretvara se u HTRS96/TM (WKT). Slojevi (ElKat): 15 Z-lista,
+// 16 P-lista, 41–43 konzervatorske podloge (KPC, PZO, GOPS), 47–48 UNESCO (jezgra, kontaktna zona). Vraća se sažetak bez geometrije.
+const KD_IDENT = "https://geoportal.kulturnadobra.hr/api/wfs/identify", KD_ELKAT = "15,16,41,42,43,47,48";
+const kdTxt = (v, n) => v == null ? null : String(v).replace(/\s+/g, " ").trim().slice(0, n || 200) || null;
+function kdSazmi(j) {
+  const o = { ok: true, izvor: "Registar kulturnih dobara Republike Hrvatske (Ministarstvo kulture i medija), geoportal.kulturnadobra.hr", dohvaceno: new Date().toISOString(), dobra: [], podloge: [], unesco: [], konzervator: null };
+  const vidjeno = new Set();
+  for (const k of j.KulturnaDobra || []) {
+    const id = (k.RegistarskiBroj || "") + "|" + (k.Naziv || ""); if (vidjeno.has(id)) continue; vidjeno.add(id);
+    o.dobra.push({ naziv: kdTxt(k.Naziv), vrsta: kdTxt(k.Vrsta), klas: kdTxt(k.Klasifikacija), reg: kdTxt(k.RegistarskiBroj, 30), status: kdTxt(k.StatusZastite), datacija: kdTxt(k.Datacija), naselje: kdTxt(k.Naselje), opis: kdTxt(k.Opis, 700) });
+  }
+  const ob = j.Obrasci || {};
+  for (const [v, a] of [["KPC", ob.Kpc], ["PZO", ob.Pzo], ["GOPS", ob.Gops]]) for (const x of a || []) o.podloge.push({ vrsta: v, naziv: kdTxt(x.Naziv), reg: kdTxt(x.RegistraskiBroj || x.RegistarskiBroj, 30) });
+  for (const u of j.Unesco || []) o.unesco.push(kdTxt(typeof u === "string" ? u : u.Naziv || u.naziv || u.NazivDobra || ""));
+  const ko = (j.KonzervatorskiOdjeli || [])[0];
+  if (ko) o.konzervator = { naziv: kdTxt(ko.NazivKonzervatorskogUreda), adresa: kdTxt([[ko.UlicaNaziv, ko.KucniBroj ? ko.KucniBroj + (ko.KucniBrojSlovcaniDodatak || "") : ""].filter(Boolean).join(" "), ko.NaseljeNaziv].filter(Boolean).join(", ")), email: kdTxt(ko.Email, 80), tel: kdTxt(ko.Telefon, 40) };
+  o.unesco = o.unesco.filter(Boolean);
+  return o;
+}
+async function kulturaUpit(pts) {
+  const xy = pts.map(([la, lo]) => tmFwd(lo, la).map(v => v.toFixed(2)).join(" "));
+  const wkt = xy.length === 1 ? "POINT(" + xy[0] + ")" : "POLYGON((" + [...xy, xy[0]].join(",") + "))";
+  const r = await fetch(KD_IDENT + "?wktGeom=" + encodeURIComponent(wkt) + "&elKatIds=" + KD_ELKAT + "&language=hr", { headers: { "User-Agent": UA["User-Agent"], "Accept": "application/json" }, signal: AbortSignal.timeout(15000) });
+  const j = await r.json().catch(() => null);
+  if (!r.ok || !j || typeof j !== "object" || !("KulturnaDobra" in j)) throw new Error("registar kulturnih dobara ne odgovara (HTTP " + r.status + ")");
+  return kdSazmi(j);
+}
+async function kulturaRuta(sp, origin) {
+  const pts = String(sp.get("kultura") || "").split(";").filter(Boolean).map(t => t.split(",").map(parseFloat));
+  if (!pts.length || pts.length > 60 || pts.some(p => p.length !== 2 || !p.every(Number.isFinite) || p[0] < 42 || p[0] > 46.6 || p[1] < 13 || p[1] > 19.5)) return out({ ok: false, greska: "neispravna točka ili granica (najviše 60 točaka u Hrvatskoj)" }, 400, origin);
+  const k = pts.map(p => p[0].toFixed(5) + "," + p[1].toFixed(5)).join(";");
+  try { const o = await zapamceno("kultura/" + k, TJEDAN, () => kulturaUpit(pts)); return out(o, 200, origin); }
+  catch (e) { return out({ ok: false, greska: "Registar kulturnih dobara: " + (e.message || e.name || "servis ne odgovara") }, 502, origin); }
+}
 async function tockaUpit(sp, origin) {
   const [la, lo] = String(sp.get("poplave") || sp.get("internet") || "").split(",").map(parseFloat);
   if (!Number.isFinite(la) || !Number.isFinite(lo) || la < 42 || la > 46.6 || lo < 13 || lo > 19.5) return out({ ok: false, greska: "točka je izvan Hrvatske ili neispravna" }, 400, origin);
@@ -320,6 +356,7 @@ export default {
     if (req.method !== "GET") return out({ ok: false, greska: "samo GET" }, 405, origin);
     const sp = new URL(req.url).searchParams;
     if (sp.has("poplave") || sp.has("internet")) return tockaUpit(sp, origin);
+    if (sp.has("kultura")) return kulturaRuta(sp, origin);
     let id = sp.get("id") || "", tocka = null;
     const lat = parseFloat(sp.get("lat")), lon = parseFloat(sp.get("lon"));
     if (!id && Number.isFinite(lat) && Number.isFinite(lon)) {

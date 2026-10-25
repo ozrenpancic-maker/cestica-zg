@@ -198,3 +198,25 @@ console.log("worker.next: uložak OK");
   store = new Map(); const e = await (await W.fetch(new Request("https://w.dev/?internet=45.04,14.61"), {}, ctx)).json(); assert.ok(!e.ok && /HAKOM: json/.test(e.greska));
   console.log("worker.next: HAKOM internet (razredi, greška) OK");
 }
+// Registar kulturnih dobara: prsten čestice → WKT u HTRS96/TM, sažetak bez geometrije, predmemorija, greške
+{
+  store = new Map(); const pitano = [];
+  const odg = { KulturnaDobra: [{ Naziv: "Kulturno-povijesna urbanistička cjelina grada Krka", Vrsta: "Kulturnopovijesne cjeline", Klasifikacija: "urbana cjelina", RegistarskiBroj: "Z-2684", StatusZastite: "Zaštićeno kulturno dobro", Geometrija: "MULTIPOLYGON (((1 1,2 2,3 3,1 1)))", Opis: "Opis  cjeline", Datacija: "antika", Naselje: "KRK" },
+      { Naziv: "Kulturno-povijesna urbanistička cjelina grada Krka", RegistarskiBroj: "Z-2684" }],
+    Obrasci: { Kpc: [{ Id: 528, Naziv: "Kulturno-povijesna urbanistička cjelina grada Krka", RegistraskiBroj: "Z-2684" }], Pzo: [], Gops: [] }, Unesco: [],
+    KonzervatorskiOdjeli: [{ NazivKonzervatorskogUreda: "Područni konzervatorski ured Rijeka\r\n", UlicaNaziv: "Užarska", KucniBroj: 26, NaseljeNaziv: "Rijeka", Email: "pou@min-kulture.hr", Telefon: "051 311 300", Procelnik: "ime" }] };
+  globalThis.fetch = async u => { u = String(u); pitano.push(u); return new Response(JSON.stringify(odg), { status: 200, headers: { "content-type": "application/json" } }); };
+  const r = await W.fetch(new Request("https://w.dev/?kultura=45.027,14.5735;45.0271,14.5736;45.0272,14.5734", { headers: { Origin: "https://ozrenpancic-maker.github.io" } }), {}, ctx), o = await r.json();
+  assert.equal(r.status, 200, JSON.stringify(o)); const w = decodeURIComponent(new URL(pitano[0]).searchParams.get("wktGeom"));
+  assert.ok(/^POLYGON\(\(348\d{3}\.\d\d 4989\d{3}\.\d\d,/.test(w) && w.split(",").length === 4 && /elKatIds=15,16,41,42,43,47,48/.test(pitano[0]), w);
+  assert.equal(o.dobra.length, 1); assert.equal(o.dobra[0].reg, "Z-2684"); assert.equal(o.dobra[0].opis, "Opis cjeline"); assert.ok(!JSON.stringify(o).includes("MULTIPOLYGON") && !JSON.stringify(o).includes("Procelnik") && !JSON.stringify(o).includes("ime\""));
+  assert.deepEqual(o.podloge, [{ vrsta: "KPC", naziv: "Kulturno-povijesna urbanistička cjelina grada Krka", reg: "Z-2684" }]);
+  assert.deepEqual(o.konzervator, { naziv: "Područni konzervatorski ured Rijeka", adresa: "Užarska 26, Rijeka", email: "pou@min-kulture.hr", tel: "051 311 300" });
+  const n = pitano.length; const o2 = await (await W.fetch(new Request("https://w.dev/?kultura=45.027,14.5735;45.0271,14.5736;45.0272,14.5734"), {}, ctx)).json(); assert.ok(o2.izCachea && pitano.length === n);
+  const t = await (await W.fetch(new Request("https://w.dev/?kultura=45.8,15.97"), {}, ctx)).json(); assert.ok(t.ok && /^POINT\(/.test(decodeURIComponent(new URL(pitano.at(-1)).searchParams.get("wktGeom"))));
+  assert.equal((await W.fetch(new Request("https://w.dev/?kultura=48.1,11.5"), {}, ctx)).status, 400);
+  assert.equal((await W.fetch(new Request("https://w.dev/?kultura=" + Array(61).fill("45.1,15.1").join(";")), {}, ctx)).status, 400);
+  store = new Map(); globalThis.fetch = async () => new Response('{"Message":"An error has occurred."}', { status: 500, headers: { "content-type": "application/json" } });
+  const e = await W.fetch(new Request("https://w.dev/?kultura=45.8,15.97"), {}, ctx), eo = await e.json(); assert.ok(e.status === 502 && !eo.ok && /HTTP 500/.test(eo.greska), eo.greska);
+  console.log("worker.next: kulturna dobra (WKT HTRS96/TM, sažetak, predmemorija, greške) OK");
+}

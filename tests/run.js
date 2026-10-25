@@ -137,7 +137,7 @@ async function zgOssTests(){
       if(u.startsWith("https://oss-test.example/")) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({ok:true,id:"5",broj,ko:"ŠESTINE",katastar:1010,graficka:998.4,zk:[{broj,povrsina:1012,ulozak:"777",odjel:"Zemljišnoknjižni odjel Zagreb"}],dijelovi:[],dohvaceno:"2026-10-19T09:00:00Z"})});
       return Promise.reject(new Error("bez mreže u testu"));};
     const d=data(w,parcelRect(40,25),"2.2."); w.eval("render")(d); await tick(30);
-    const t=txt(w,"sheet"), q=calls.filter(u=>u.startsWith("https://oss-test.example/")&&!/[?&](poplave|internet)=/.test(u));
+    const t=txt(w,"sheet"), q=calls.filter(u=>u.startsWith("https://oss-test.example/")&&!/[?&](poplave|internet|kultura)=/.test(u));
     if(expectOk){
       if(wms==="multi") ok(wmsN>=2,"Zagreb OSS: na prvoj točki je susjedna čestica, druga točka unutar čestice nađe pravu ("+wmsN+" upita sloju)");
       ok(q.length===1&&(wms?/\?id=5$/.test(q[0]):/\?lat=45\.84\d*&lon=15\.97\d*$/.test(q[0])),"Zagreb OSS: "+(wms?"s ID-om iz katastarskog sloja posrednik se pita po ID-u":"bez sloja karte posrednik se pita po točki unutar čestice")+" ("+(q[0]||"nema upita")+")");
@@ -151,7 +151,7 @@ async function zgOssTests(){
         setv(w,"areaSel","graf","change"); await tick(10); ok(w.__gbp===g0&&w.__tl===t0,"Zagreb: povratak na grafičku površinu");
         {await tick(5); const R=w.eval("PZREG").items, ct=R.get("calc-tlocrt"); ok(ct&&ct.raz!=="A"&&R.get("namjena").raz==="A"&&R.get("pravilo-karta")&&R.get("pravilo-karta").raz==="B"&&/Pouzdanost podataka/.test(txt(w,"sheet"))&&/Pristup s (javne )?prometne površine/.test(txt(w,"pzBox"))&&/Teorijski izračun/.test(txt(w,"sheet")),"Zagreb: oznake A/B/C (namjena A, granica pravila B, izračun najviše B) i popis otvorenih uvjeta");}
       }
-      w.eval("render")(d); await tick(10); ok(calls.filter(u=>u.startsWith("https://oss-test.example/")&&!/[?&](poplave|internet)=/.test(u)).length===1,"Zagreb OSS: ponovni prikaz ne šalje novi upit");
+      w.eval("render")(d); await tick(10); ok(calls.filter(u=>u.startsWith("https://oss-test.example/")&&!/[?&](poplave|internet|kultura)=/.test(u)).length===1,"Zagreb OSS: ponovni prikaz ne šalje novi upit");
       $(w,"krkZkMan").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!!$(w,"krkZkIn"),"Zagreb: može se upisati druga upisana površina");
       ok(!errs.length,"Zagreb OSS: bez JS grešaka "+errs.join("; "));
     }else{
@@ -1043,7 +1043,7 @@ async function krkTests(){
    rkMode="fail"; E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k); E("RKAT").clear(); E("renderKrk")(E("KRK_CUR")); for(let i=0;i<60&&!/Podaci nisu/.test(txt(w,"rkBox"));i++) await tick(100); ok(/Podaci nisu dostupni/.test(txt(w,"rkBox"))&&/Detaljna zona nije potvrđena/.test(txt(w,"rkBox")),"UPU karta: kad katalog ne odgovara, poruka bez izmišljene zone");
    rkMode="ok"; E("RKAT").clear(); E("renderKrk")(E("KRK_CUR")); await tick(30);}
   // upisana površina automatski iz OSS-a preko posrednika
-  ok(!calls.some(u=>u.includes("oss-test.example")&&!/[?&](poplave|internet)=/.test(u)),"Krk: bez adrese posrednika OSS se ne poziva");
+  ok(!calls.some(u=>u.includes("oss-test.example")&&!/[?&](poplave|internet|kultura)=/.test(u)),"Krk: bez adrese posrednika OSS se ne poziva");
   E("SRC_KRK").oss="https://oss-test.example/"; E("OSSZK").clear(); E("renderKrk")(E("KRK_CUR"));
   ok(/dohvaćam iz OSS-a/.test(txt(w,"sheet")),"Krk OSS: dok traje dohvat prikazuje se da se površina dohvaća");
   await tick(20); let to=txt(w,"sheet");
@@ -1066,11 +1066,11 @@ async function krkTests(){
   E("OSS_RETRY").splice(0,E("OSS_RETRY").length,5);
   // povremeno odbijanje: prvi upit 403, drugi uspije
   mode="oss403once"; E("OSSZK").clear(); const c403=calls.length; E("renderKrk")(E("KRK_CUR")); await tick(60); to=txt(w,"sheet");
-  ok(/OSS trenutno odbija upite/.test(to)&&!/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&calls.slice(c403).filter(u=>u.includes("oss-test.example")&&!/[?&](poplave|internet)=/.test(u)).length===1&&!!$(w,"krkOssRetry"),"Krk OSS: kad OSS odbija (403), nema automatskog ponavljanja (ne produžuje odbijanje); poruka i gumb „Pokušaj ponovno”");
+  ok(/OSS trenutno odbija upite/.test(to)&&!/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&calls.slice(c403).filter(u=>u.includes("oss-test.example")&&!/[?&](poplave|internet|kultura)=/.test(u)).length===1&&!!$(w,"krkOssRetry"),"Krk OSS: kad OSS odbija (403), nema automatskog ponavljanja (ne produžuje odbijanje); poruka i gumb „Pokušaj ponovno”");
   $(w,"krkOssRetry").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(30); to=txt(w,"sheet");
   ok(/Upisana u zemljišnoj knjizi ?642 m²/.test(to),"Krk OSS: „Pokušaj ponovno” nakon odbijanja dohvaća površinu");
   mode="ossFail"; E("OSSZK").clear(); E("ZKU").clear(); let n0=calls.length; E("renderKrk")(E("KRK_CUR")); await tick(80); to=txt(w,"sheet");
-  ok(/OSS: podaci nisu dostupni/.test(to)&&!!$(w,"krkZkIn")&&!/642 m²/.test(to)&&calls.slice(n0).filter(u=>u.includes("oss-test.example")&&!/[?&](poplave|internet)=/.test(u)).length===2,"Krk OSS: kad OSS ne odgovara ni nakon ponovnog pokušaja, poruka i ručni unos (bez izmišljene vrijednosti)");
+  ok(/OSS: podaci nisu dostupni/.test(to)&&!!$(w,"krkZkIn")&&!/642 m²/.test(to)&&calls.slice(n0).filter(u=>u.includes("oss-test.example")&&!/[?&](poplave|internet|kultura)=/.test(u)).length===2,"Krk OSS: kad OSS ne odgovara ni nakon ponovnog pokušaja, poruka i ručni unos (bez izmišljene vrijednosti)");
   ok(!!$(w,"krkOssRetry")&&[...w.document.querySelectorAll("#krkArea a")].some(a=>a.href==="https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info?parcelId=1"),"Krk OSS: gumbi „Pokušaj ponovno” i „Otvori česticu u OSS-u”");
   mode="ok"; $(w,"krkOssRetry").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20);
   ok(/Upisana u zemljišnoj knjizi ?642 m²/.test(txt(w,"sheet")),"Krk OSS: „Pokušaj ponovno” dohvaća površinu");
@@ -2002,6 +2002,43 @@ async function ptnTests(){
   ok(errs.length===0,"bez JS grešaka (cijene zemljišta): "+errs.join(" | "));
 }
 
+// Plan približnih vrijednosti Grada Zagreba (cjenovni blokovi, 2019.–2026.)
+async function ppvTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  const G=[2019,2020,2021,2022,2023,2024,2025,2026], vals=[98,99,88,89,120,180,160,180];
+  const atr=(o)=>Object.assign({cb_naziv:"STARO BRESTJE BRESTOVEČKA",cb_oznaka_namjene:"S",cb_opis_namjene:"STAMBENA NAMJENA",cb_koef_iskoristivosti:"1.2",ppv_kz_26:"1.",ppv_ki_26:1.2,ppv_nz_26:"S",ppv_pv_eu_26:180,ppv_kz_26_2:null,ppv_ki_26_2:null,ppv_nz_26_2:null,ppv_pv_eu_26_2:null},Object.fromEntries(G.map((g,i)=>["ppv_pv_eu_"+String(g).slice(2),vals[i]])),o||{});
+  const okvir=(x0,y0,x1,y1)=>({type:"Polygon",coordinates:[[[x0,y0],[x1,y0],[x1,y1],[x0,y1],[x0,y0]]]});
+  let hook=g=>{ const b=w.turf.bbox(g); return [{type:"Feature",properties:atr(),geometry:okvir(b[0]-0.01,b[1]-0.01,b[2]+0.01,b[3]+0.01)}]; };
+  w.__ppvHook=g=>hook(g); w.__ptnHook=()=>({izvor:"t",godine:[2025],jls:[[1333,"Grad Zagreb","ZAGREB",[79],[1050],null,null]]});
+  const d=data(w,parcelRect(30,25),"2.2."); E("OPEN").add("ptn"); E("render")(d); await new Promise(r=>setTimeout(r,40));
+  const o=()=>$(w,"ppvOut").textContent.replace(/\s+/g," "), A=w.__cur.area, f=x=>Math.round(x).toLocaleString("hr-HR");
+  ok(/STARO BRESTJE BRESTOVEČKA/.test(o())&&/180 €\/m²/.test(o())&&/1\. kategorija: na čestici su ispunjeni uvjeti/.test(o())&&/koeficijent iskoristivosti uzor-čestice 1,2/.test(o()),"PPV: blok, vrijednost 2026., kategorija i koeficijent uzor-čestice: "+o().slice(0,240));
+  ok(o().includes(`Po planu, ${f(A)} m²`)&&o().includes(`${f(180*A)} €`),"PPV: orijentacijski iznos = površina × približna vrijednost");
+  ok($(w,"ppvOut").querySelector("svg")&&$(w,"ppvOut").querySelector(".pz-B")&&/NN 78\/15, čl\. 8/.test(o()),"PPV: grafikon 2019.–2026., pouzdanost B i referenca na zakon");
+  ok(/180 €\/m² \(plan 2026\.\)/.test(txt(w,"ptnSum")),"PPV: u naslovu odjeljka vrijednost iz plana: "+txt(w,"ptnSum"));
+  ok(/Plan približnih vrijednosti 2026\. \(STARO BRESTJE BRESTOVEČKA\): 180 €\/m²/.test(txt(w,"sazetak")),"PPV: sažetak navodi plan: "+txt(w,"sazetak").slice(0,400));
+  setv(w,"ptnTraz",String(Math.round(360*A))); await new Promise(r=>setTimeout(r,600));
+  ok(/Tražena cijena \(360 €\/m²\) je 2,0 × približna vrijednost/.test(o()),"PPV: tražena cijena prema približnoj vrijednosti: "+o().slice(-500));
+  // čestica u dva bloka (pola-pola): iznos po dijelovima, bez grafikona
+  hook=g=>{ const b=w.turf.bbox(g), xm=(b[0]+b[2])/2; return [{type:"Feature",properties:atr(),geometry:okvir(b[0]-0.01,b[1]-0.01,xm,b[3]+0.01)},{type:"Feature",properties:atr({cb_naziv:"DRUGI BLOK",ppv_pv_eu_26:100,ppv_kz_26:"3."}),geometry:okvir(xm,b[1]-0.01,b[2]+0.01,b[3]+0.01)}]; };
+  w.__cur.key="ppv:2"; E("ptnUpdate")(); await new Promise(r=>setTimeout(r,30));
+  ok(/DRUGI BLOK/.test(o())&&/50 % čestice/.test(o())&&/3\. kategorija: građevinsko zemljište za koje nisu doneseni svi propisani planovi/.test(o())&&!$(w,"ppvOut").querySelector("svg"),"PPV: dva bloka s udjelima i kategorijom 3: "+o().slice(0,300));
+  const I=E("ppvIznos")(E("PPV").m.get("ppv:2").v,A); ok(Math.abs(I.lo-140*A)<A*0.5&&I.lo===I.hi,"PPV: iznos po dijelovima (180 i 100 po pola = 140 €/m²): "+I.lo);
+  // blok bez utvrđene vrijednosti (npr. kategorija 0) i blok s dvije vrijednosti
+  hook=()=>[{type:"Feature",properties:atr({ppv_kz_26:"0",ppv_pv_eu_26:null,ppv_ki_26:0}),geometry:null}];
+  w.__cur.key="ppv:3"; E("ptnUpdate")(); await new Promise(r=>setTimeout(r,30));
+  ok(/nije utvrđena/.test(o())&&!/Po planu/.test(o())&&!/plan 2026/.test(txt(w,"ptnSum")),"PPV: bez približne vrijednosti nema iznosa ni izmišljene brojke: "+o().slice(0,200));
+  hook=()=>[{type:"Feature",properties:atr({ppv_kz_26_2:"4.1.",ppv_nz_26_2:"P1",ppv_ki_26_2:0,ppv_pv_eu_26_2:8}),geometry:null}];
+  w.__cur.key="ppv:4"; E("ptnUpdate")(); await new Promise(r=>setTimeout(r,30));
+  ok(/180 €\/m²/.test(o())&&/8 €\/m²/.test(o())&&/podskupina 4\.1/.test(o())&&o().includes(`${f(8*A)}–${f(180*A)} €`),"PPV: blok s dvije vrijednosti daje raspon: "+o().slice(0,400));
+  // servis ne odgovara
+  hook=()=>Promise.reject(new Error("HTTP 503")); w.__cur.key="ppv:5"; E("ptnUpdate")(); await new Promise(r=>setTimeout(r,30));
+  ok(/podaci nisu dostupni \(HTTP 503\)/.test(o()),"PPV: greška servisa → „podaci nisu dostupni”");
+  // izvan Zagreba nema plana
+  w.__cur.region="hr"; E("ptnUpdate")(); ok($(w,"ppvOut").innerHTML==="","PPV: izvan Zagreba se ne prikazuje");
+  ok(errs.length===0,"bez JS grešaka (Plan približnih vrijednosti): "+errs.join(" | "));
+}
+
 // osunčanost dvorišta, vjetar i bura, pogled na more, promjene na spremljenoj čestici (čiste funkcije i prikaz)
 async function napTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -2111,6 +2148,7 @@ async function rizTests(){
   w.fetch=(u)=>{u=String(u); calls.push(u); const okj=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b)});
     if(u.startsWith("https://p2.example/?poplave=")) return okj(popl(hit));
     if(u.startsWith("https://p2.example/?internet=")) return okj({ok:true,izvor:"HAKOM",nepokretna:[{sloj:95,operatora:"jedan"}],pokretna:[{sloj:98,operatora:"više"}]});
+    if(u.startsWith("https://p2.example/?kultura=")) return okj({ok:true,izvor:"Registar",dobra:[{naziv:"Povijesna urbana cjelina grad Zagreb",vrsta:"Kulturnopovijesne cjeline",klas:"urbana cjelina",reg:"Z-1525",status:"Zaštićeno kulturno dobro",datacija:null,opis:"Opis cjeline."}],podloge:[],unesco:[],konzervator:{naziv:"Grad Zagreb - Gradski zavod za zaštitu spomenika kulture i prirode",adresa:"Kuševićeva 2, Zagreb",email:"zastita.spomenika@zagreb.hr",tel:"01 610 1970"}});
     if(u.startsWith("https://ekarta.hakom.hr/")){ if(!hakomOk) return Promise.reject(new TypeError("Failed to fetch")); const id=+u.match(/\/(\d+)\/query/)[1]; return okj({features:id===93||id===99?[{attributes:{BrojOperatora:"više"}}]:[]}); }
     return Promise.reject(new TypeError("Failed to fetch"));};
   E("SRC_KRK").oss2="https://p2.example/"; E("SRC_KRK").oss="";
@@ -2126,6 +2164,27 @@ async function rizTests(){
   ok(/✓ Izvan područja opasnosti od poplava/.test(h)&&/nisu prikazani svi|ne prikazuju sve/.test(h)&&/! Internet/.test(h)&&/2–10 Mbit\/s/.test(h),"Rizici: izvan poplave (uz napomenu o scenarijima); spori internet je upozorenje");
   O.set("test:1",{natura:{st:"ok",v:[]},zast:{st:"ok",v:[]},popl:{st:"err",e:"posrednik ne podržava upit za poplave"},net:{st:"err",e:"HAKOM nije dostupan"}}); h=E("okolisInner")();
   ok(/\? Opasnost od poplava/.test(h)&&/Podaci nisu dostupni \(posrednik ne podržava/.test(h)&&/preglednik\.voda\.hr/.test(h)&&E("PZREG").items.get("oko-poplave").raz==="C"&&/\? Internet/.test(h)&&!/Potresna opasnost/.test(h),"Rizici: bez podataka – razlog, poveznica na kartu Hrvatskih voda, razina C; potres ostaje skriven");
+  // kulturna dobra (Registar, preko posrednika) i geologija (HGI WFS)
+  const KU=await E("loadKultura")(parcel), ku=calls.find(u=>/\?kultura=/.test(u)), kt=decodeURIComponent(ku.split("kultura=")[1]).split(";");
+  ok(KU.dobra[0].reg==="Z-1525"&&kt.length>=3&&kt.length<=40&&kt.every(t=>{const [a,b]=t.split(",").map(Number); return a>45.84&&a<45.8403&&b>15.97&&b<15.9704;}),"Kulturna dobra: granica čestice uvučena od međa, do 40 točaka, preko posrednika: "+kt.length);
+  const big={type:"Feature",geometry:{type:"Polygon",coordinates:[[...Array(400)].map((_,i)=>{const a=i/400*2*Math.PI; return [15.97+0.001*Math.cos(a)+0.00003*Math.sin(37*a),45.84+0.0007*Math.sin(a)]}).concat([[15.971,45.84]])]},properties:{}};
+  ok(E("kultPrsten")(big).length<=40,"Kulturna dobra: složena granica se pojednostavljuje na najviše 40 točaka");
+  const hgiOdg=u=>{ const q=new URL(u).searchParams, rid=q.get("RESOURCEID");
+    if(!rid) return {features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[[[15.96,45.83],[15.98,45.83],[15.98,45.85],[15.96,45.85],[15.96,45.83]]]},properties:{specification:{href:"#GeologicUnit_258"}}},
+      {type:"Feature",geometry:{type:"LineString",coordinates:[[15.9730,45.83],[15.9730,45.85]]},properties:{specification:{href:"#ShearDisplacementStructure_4"}}}]};
+    if(rid==="GeologicUnit_258") return {features:[{properties:{inspireId:{Identifier:{localId:"258"}},geologicHistory:{href:"#GeologicEvent_31"},composition:{CompositionPart:{material:{href:"https://cgi.vocabs.ga.gov.au/object?uri=http%3A//resource.geosciml.org/classifier/cgi/lithology/sedimentary_material"}}}}}]};
+    if(rid==="GeologicEvent_31") return {features:[{properties:{olderNamedAge:{href:"http://inspire.ec.europa.eu/codelist/GeochronologicEraValue/holocene"},youngerNamedAge:{href:"http://inspire.ec.europa.eu/codelist/GeochronologicEraValue/holocene"}}}]};
+    return {features:[]}; };
+  const hgiPit=[]; w.__hgiHook=u=>{hgiPit.push(u); return Promise.resolve(hgiOdg(u));};
+  const GE=await E("loadGeologija")(parcel);
+  ok(GE.jedinica&&GE.jedinica.sastav.join()==="sedimentni materijal"&&GE.jedinica.dob==="holocen"&&GE.rasjedM>150&&GE.rasjedM<300&&/BBOX=45\.8/.test(decodeURIComponent(hgiPit[0]))&&/geo%2Bjson|geo\+json/.test(hgiPit[0]),"Geologija: jedinica na točki (sastav, starost) i udaljenost do rasjeda s karte: "+JSON.stringify(GE));
+  O.set("test:1",{natura:{st:"ok",v:[]},zast:{st:"ok",v:[]},popl:{st:"ok",v:popl(false)},net:{st:"ok",v:I},kult:{st:"ok",v:KU},geo:{st:"ok",v:GE}}); h=E("okolisInner")(); R=E("PZREG").items;
+  ok(/! Kulturno dobro/.test(h)&&/Povijesna urbana cjelina grad Zagreb/.test(h)&&/Z-1525/.test(h)&&/Kuševićeva 2/.test(h)&&/posebni uvjeti i odobrenje konzervatora/.test(h)&&R.get("oko-kult").raz==="A","Kulturna dobra: naziv, registarski broj, nadležni konzervator, oznaka A");
+  ok(/Geološka podloga/.test(h)&&/Sedimentni materijal \(holocen\)/.test(h)&&/rasjed s karte na oko \d+ m/.test(h)&&/geotehnički izvještaj/.test(h)&&R.get("oko-geo").raz==="C","Geologija: sastav, starost, rasjed; pouzdanost C i upućivanje na geotehnički izvještaj");
+  O.set("test:1",{natura:{st:"ok",v:[]},zast:{st:"ok",v:[]},popl:{st:"ok",v:popl(false)},net:{st:"ok",v:I},kult:{st:"ok",v:{dobra:[],podloge:[],unesco:[],konzervator:null}},geo:{st:"ok",v:{izvor:"HGI",jedinica:null,rasjedM:null,radijus:500}}}); h=E("okolisInner")();
+  ok(/✓ Nema upisanog kulturnog dobra/.test(h)&&/evidentirana dobra kojih nema u registru/.test(h)&&/jedinica na karti nije pronađena · bez rasjeda s karte u krugu od 500 m/i.test(h),"Kulturna dobra i geologija: bez pogotka – napomena o evidentiranim dobrima, bez izmišljenih podataka");
+  O.set("test:1",{natura:{st:"ok",v:[]},zast:{st:"ok",v:[]},popl:{st:"ok",v:popl(false)},net:{st:"ok",v:I},kult:{st:"err",e:"posrednik nije dostupan"},geo:{st:"err",e:"HTTP 503"}}); h=E("okolisInner")();
+  ok(/\? Kulturna dobra/.test(h)&&/Podaci nisu dostupni \(posrednik nije dostupan\)/.test(h)&&/\? Geološka podloga/.test(h)&&E("PZREG").items.get("oko-kult").raz==="C","Kulturna dobra i geologija: greška servisa → „Podaci nisu dostupni”, razina C");
   E("SRC_KRK").oss2=""; let e1=""; try{await E("loadPoplave")(parcel)}catch(e){e1=e.message} ok(/posrednik nije postavljen/.test(e1),"Rizici: bez posrednika poplave se ne izmišljaju");
   // povijest lokacije: ortofoto DGU po godinama (samo servisi za anonimne korisnike), okvir s okolicom, granica čestice
   {const D=E("DOF_POV"), B=E("povOkvir")(parcel), u=new URL(E("povUrl")(D[0],B,640)), q=u.searchParams, mx=111320*Math.cos(45.84015*Math.PI/180);
@@ -2173,7 +2232,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
