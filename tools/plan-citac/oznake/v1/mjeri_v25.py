@@ -43,19 +43,58 @@ def struktura(r):
             "odbijenih_recenica": sum(len(c.get("nepokriveno", [])) for c in C)}
 
 
-def pripremi_usporedbu():
-    M22.mapa = M24.mapa
+def mapa25():
+    MP = M24.mapa()
+    dop = json.loads((D / "mapiranje_v25.json").read_text(encoding="utf-8"))
+    for k, v in dop["parametri"].items():
+        MP["parametri"].setdefault(k, v[0]); MP["parametri_v22"][k] = list(v)
+    for k, v in dop["vrsta_gradevine_istoznacnice"].items():
+        st = MP["vrsta_gradevine_istoznacnice"].get(k, [])
+        st = [st] if isinstance(st, str) else list(st)
+        MP["vrsta_gradevine_istoznacnice"][k] = st + [x for x in v if x not in st]
+    return MP
+
+
+BROJ_ETAZA = "najveći broj etaža"
+PRIMJENE = {"JEDINICA_BROJA_ETAZA": set()}
+
+
+_V12 = O.razlike_v12
+
+
+def razlike25(z, o, MP):
+    """O.razlike_v12 + JEDINICA_BROJA_ETAZA (mapiranje_v25.json: pravila_usporedbe)."""
+    r = _V12(z, o, MP)
+    if "jedinica" in r and o["parametar"] == BROJ_ETAZA and z["jedinica"] == "koeficijent" and o["jedinica"] is None \
+            and isinstance(z["vrijednost"], (int, float)) and isinstance(o["vrijednost"], (int, float)):
+        r = [x for x in r if x != "jedinica"]
+        PRIMJENE["JEDINICA_BROJA_ETAZA"].add((z["id"], o["id"]))
+    return r
+
+
+def pripremi_usporedbu(v25_pravila=True):
+    """Ista pravila usporedbe kao mjeri_v24 (ocijeni_v1_2.ocijeni s verzijom »v2.3« i odlukom 3, granularnost v2.4),
+    uz nazive v2.5 i JEDINICA_BROJA_ETAZA kad je v25_pravila."""
+    M22.mapa = mapa25 if v25_pravila else M24.mapa
     M22.KONTEKST[:] = json.loads((D / "odluke_suca_v1_1.json").read_text(encoding="utf-8"))["kontekst_clanka"]
     M23.granularnost = M24.granularnost
+    O.razlike_v12 = razlike25 if v25_pravila else _V12
+
+
+def usporedi_nv(izl, Z, clanci=(19, 20, 23, 24)):
+    """Kao ocijeni_v1_2.ocijeni, ali nad neovisnim oznakama NV (jedna skupina)."""
     U22.razlike = O.razlike_v12
-
-
-def kontekst_za(izl):
+    M22.granularnost = M23.granularnost
     M23.KONT.clear()
-    for x in izl.values():
-        for c in x["clanci"].values():
-            for p in c.get("pravila", []):
-                M23.KONT[p["id"]] = p.get("kontekst_primjene") or []
+    for c in izl["clanci"].values():
+        for p in c.get("pravila", []):
+            M23.KONT[p["id"]] = p.get("kontekst_primjene") or []
+    MP = M22.mapa()
+    P = [p for c in izl["clanci"].values() for p in c.get("pravila", [])]
+    s, d = M22.usporedi(P, Z, MP)
+    po = {c: M22.usporedi([p for p in P if p["clanak"] == c], [o for o in Z if o["clanak"] == c], MP)[0] for c in clanci}
+    U22.razlike = O._raz; M22.granularnost = O._gran22
+    return s, d, po
 
 
 def main():
@@ -70,30 +109,25 @@ def main():
     for v, s in VERZIJE.items():
         r = {n: s.strukturiraj(d, None, n) for n, d in doc.items()}
         out["struktura"][v] = {n: struktura(x) for n, x in r.items()}
-        # Krk: referenca v1.2 (samo označeni članci/stavci, kao u mjeri_v24)
-        izl = {"ppug": r["PPUG Krk"], "upu1": {"clanci": {k: c for k, c in r["UPU 1 Krk"]["clanci"].items() if k in ("14", "24")}}}
-        kontekst_za(izl)
-        MP = M22.mapa()
-        uP, uZ = [], []
-        for g, (izv, opseg) in M22.PODRUCJE.items():
-            Z = ref["skupine"][g]["zapisi"]
-            P = [p for c in izl[izv]["clanci"].values() for p in c.get("pravila", []) if (p["clanak"], p["stavak"]) in opseg]
-            uP += P; uZ += [dict(o, id=f"{g}:{o['id']}") for o in Z]
-        sk, dk = M22.usporedi(uP, uZ, MP)
-        out["krk"][v] = {"ukupno": sk, "pogresno": dk["pogresno"]}
+        # Krk: referenca v1.2, isti postupak kao mjeri_v24 (ocijeni_v1_2.ocijeni)
+        izl = {"ppug": r["PPUG Krk"], "upu1": s.strukturiraj(izdvoji_tekst(M / U2.IZVOR, [14, 24], dio=2), None, "UPU 1 – Krk")}
+        rk = O.ocijeni(izl, ref, "v2.3", True)
+        out["krk"][v] = {"ukupno": rk["ukupno"], "po_skupini": rk["po_skupini"], "pogresno": rk["detalji_ukupno"]["pogresno"]}
         # Kornić: zamrznuti ocijeni.py nad čl. 38.–40.
         r2 = r["UPU 2 Kornić"]
         out["kornic"][v] = oc.ocijeni({"clanci": {k: c for k, c in r2["clanci"].items() if k in ("38", "39", "40")}},
                                       json.loads((M / "oznake/upu2_cl38_40.json").read_text(encoding="utf-8")))[0]
         # Novi Vinodolski: neovisne oznake, čl. 19., 20., 23., 24.
         rn = r["UPU Novi Vinodolski"]
-        izn = {"nv": {"clanci": {k: c for k, c in rn["clanci"].items() if k in ("19", "20", "23", "24")}}}
-        kontekst_za(izn)
-        Pn = [p for c in izn["nv"]["clanci"].values() for p in c.get("pravila", [])]
-        sn, dn = M22.usporedi(Pn, Znv, MP)
-        out["novi_vinodolski"][v] = {"ukupno": sn, "po_clanku": {c: M22.usporedi([p for p in Pn if p["clanak"] == c], [o for o in Znv if o["clanak"] == c], MP)[0]
-                                                                for c in (19, 20, 23, 24)},
-                                     "pogresno": dn["pogresno"], "pregled_bez_oznake": [x for x in dn["pregled"] if not x["oznaka"]]}
+        sn, dn, po = usporedi_nv({"clanci": {k: c for k, c in rn["clanci"].items() if k in ("19", "20", "23", "24")}}, Znv)
+        out["novi_vinodolski"][v] = {"ukupno": sn, "po_clanku": po, "pogresno": dn["pogresno"],
+                                     "pregled_bez_oznake": [x for x in dn["pregled"] if not x["oznaka"]]}
+    # isti izlaz v2.5 na NV bez pravila usporedbe v2.5 (bez naziva v2.5 i bez JEDINICA_BROJA_ETAZA): koliko ovisi o njima
+    pripremi_usporedbu(False)
+    sn0, dn0, _ = usporedi_nv({"clanci": {k: c for k, c in rn["clanci"].items() if k in ("19", "20", "23", "24")}}, Znv)
+    pripremi_usporedbu(True)
+    out["novi_vinodolski_v25_bez_pravila_usporedbe_v25"] = {"ukupno": sn0, "pogresno": dn0["pogresno"]}
+    out["pravila_usporedbe_v25"] = {"JEDINICA_BROJA_ETAZA_ispitani_parovi": len(PRIMJENE["JEDINICA_BROJA_ETAZA"])}
     O.integritet()
     p = D / "mjerenje_v25.json"
     p.write_text(json.dumps(out, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
@@ -119,4 +153,8 @@ if __name__ == "__main__":
     for v, x in o["krk"].items():
         for e in x["pogresno"]:
             print("KRK POGR", v, e["id"], e["parametar"], e["vrijednost"], e["najbliza_oznaka"])
+    x = o["novi_vinodolski_v25_bez_pravila_usporedbe_v25"]
+    print("NV v2.5 bez pravila usporedbe v2.5:", " ".join(f"{n}={x['ukupno'][a]}" for a, n in K))
+    for e in x["pogresno"]:
+        print("   ", e["id"], e["parametar"], e["vrijednost"], e["najbliza_oznaka"])
     print("sha", s)

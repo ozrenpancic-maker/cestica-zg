@@ -144,12 +144,12 @@
    },
    "UPU Novi Vinodolski": {
     "clanaka": 176,
-    "clanaka_s_pravilima": 9,
+    "clanaka_s_pravilima": 10,
     "clanaka_odbijenih_vrsta": 148,
-    "kandidata": 20,
-    "prijedlog": 6,
-    "pregled": 14,
-    "odbijenih_recenica": 197
+    "kandidata": 70,
+    "prijedlog": 18,
+    "pregled": 52,
+    "odbijenih_recenica": 171
    }
   }
  },
@@ -172,6 +172,98 @@
     "pokrivenost_prihvacanja": 0.276,
     "pokrivenost_prihvacanja_od_JASAN": 0.487,
     "udio_pregleda": 0.412
+   },
+   "po_skupini": {
+    "G1_ppug_22_23": {
+     "oznaka": 61,
+     "oznaka_JASAN": 48,
+     "zapisa_modula": 55,
+     "tocno_prihvaceno": 7,
+     "tocno_uz_pravilo_granularnosti": 33,
+     "pogresno_prihvaceno": 0,
+     "pravilno_na_pregled": 4,
+     "nepotrebno_na_pregled": 2,
+     "pregled_bez_oznake": 9,
+     "propusteno": 15,
+     "preciznost_prihvacenih_strogo": 0.175,
+     "preciznost_prihvacenih": 1.0,
+     "pokrivenost_izdvajanja": 0.754,
+     "pokrivenost_prihvacanja": 0.656,
+     "pokrivenost_prihvacanja_od_JASAN": 0.833,
+     "udio_pregleda": 0.273
+    },
+    "G2_ppug_25_33": {
+     "oznaka": 33,
+     "oznaka_JASAN": 13,
+     "zapisa_modula": 34,
+     "tocno_prihvaceno": 10,
+     "tocno_uz_pravilo_granularnosti": 3,
+     "pogresno_prihvaceno": 0,
+     "pravilno_na_pregled": 9,
+     "nepotrebno_na_pregled": 1,
+     "pregled_bez_oznake": 11,
+     "propusteno": 10,
+     "preciznost_prihvacenih_strogo": 0.769,
+     "preciznost_prihvacenih": 1.0,
+     "pokrivenost_izdvajanja": 0.697,
+     "pokrivenost_prihvacanja": 0.394,
+     "pokrivenost_prihvacanja_od_JASAN": 1.0,
+     "udio_pregleda": 0.618
+    },
+    "G3_ppug_20_38_39_50": {
+     "oznaka": 77,
+     "oznaka_JASAN": 42,
+     "zapisa_modula": 12,
+     "tocno_prihvaceno": 2,
+     "tocno_uz_pravilo_granularnosti": 2,
+     "pogresno_prihvaceno": 3,
+     "pravilno_na_pregled": 0,
+     "nepotrebno_na_pregled": 0,
+     "pregled_bez_oznake": 5,
+     "propusteno": 73,
+     "preciznost_prihvacenih_strogo": 0.286,
+     "preciznost_prihvacenih": 0.571,
+     "pokrivenost_izdvajanja": 0.052,
+     "pokrivenost_prihvacanja": 0.052,
+     "pokrivenost_prihvacanja_od_JASAN": 0.095,
+     "udio_pregleda": 0.417
+    },
+    "G4_upu1_14": {
+     "oznaka": 34,
+     "oznaka_JASAN": 13,
+     "zapisa_modula": 15,
+     "tocno_prihvaceno": 7,
+     "tocno_uz_pravilo_granularnosti": 0,
+     "pogresno_prihvaceno": 0,
+     "pravilno_na_pregled": 4,
+     "nepotrebno_na_pregled": 1,
+     "pregled_bez_oznake": 3,
+     "propusteno": 22,
+     "preciznost_prihvacenih_strogo": 1.0,
+     "preciznost_prihvacenih": 1.0,
+     "pokrivenost_izdvajanja": 0.353,
+     "pokrivenost_prihvacanja": 0.206,
+     "pokrivenost_prihvacanja_od_JASAN": 0.538,
+     "udio_pregleda": 0.533
+    },
+    "G5_upu1_24": {
+     "oznaka": 63,
+     "oznaka_JASAN": 36,
+     "zapisa_modula": 15,
+     "tocno_prihvaceno": 8,
+     "tocno_uz_pravilo_granularnosti": 2,
+     "pogresno_prihvaceno": 0,
+     "pravilno_na_pregled": 0,
+     "nepotrebno_na_pregled": 1,
+     "pregled_bez_oznake": 4,
+     "propusteno": 52,
+     "preciznost_prihvacenih_strogo": 0.8,
+     "preciznost_prihvacenih": 1.0,
+     "pokrivenost_izdvajanja": 0.175,
+     "pokrivenost_prihvacanja": 0.159,
+     "pokrivenost_prihvacanja_od_JASAN": 0.278,
+     "udio_pregleda": 0.333
+    }
    },
    "pogresno": [
     {
@@ -236,76 +328,112 @@
     "oznaka_JASAN": 152,
     "zapisa_modula": 131,
     "tocno_prihvaceno": 43,
-    "tocno_uz_pravilo_granularnosti": 31,
-    "pogresno_prihvaceno": 3,
+    "tocno_uz_pravilo_granularnosti": 34,
+    "pogresno_prihvaceno": 0,
     "pravilno_na_pregled": 19,
     "nepotrebno_na_pregled": 5,
     "pregled_bez_oznake": 30,
-    "propusteno": 170,
+    "propusteno": 167,
     "preciznost_prihvacenih_strogo": 0.558,
-    "preciznost_prihvacenih": 0.961,
-    "pokrivenost_izdvajanja": 0.366,
-    "pokrivenost_prihvacanja": 0.276,
-    "pokrivenost_prihvacanja_od_JASAN": 0.487,
+    "preciznost_prihvacenih": 1.0,
+    "pokrivenost_izdvajanja": 0.377,
+    "pokrivenost_prihvacanja": 0.287,
+    "pokrivenost_prihvacanja_od_JASAN": 0.507,
     "udio_pregleda": 0.412
    },
-   "pogresno": [
-    {
-     "id": "24.0.b7.-.2.1.11",
-     "clanak": 24,
-     "stavak": null,
-     "parametar": "najveća površina tlocrtne projekcije građevine",
-     "vrsta_gradevine": "pomoćna građevina",
-     "operator": "<=",
-     "vrijednost": 50.0,
-     "uvjet": "uz građevinu osnovne namjene",
-     "vrsta_pravila": "OSNOVNO",
-     "citat": "Najveća tlocrtna projekcija iznosi 50 m 2 .",
-     "najbliza_oznaka": [
-      "G5_upu1_24:R049",
-      [
-       "uvjet"
-      ]
-     ]
+   "po_skupini": {
+    "G1_ppug_22_23": {
+     "oznaka": 61,
+     "oznaka_JASAN": 48,
+     "zapisa_modula": 55,
+     "tocno_prihvaceno": 12,
+     "tocno_uz_pravilo_granularnosti": 28,
+     "pogresno_prihvaceno": 0,
+     "pravilno_na_pregled": 6,
+     "nepotrebno_na_pregled": 2,
+     "pregled_bez_oznake": 7,
+     "propusteno": 13,
+     "preciznost_prihvacenih_strogo": 0.3,
+     "preciznost_prihvacenih": 1.0,
+     "pokrivenost_izdvajanja": 0.787,
+     "pokrivenost_prihvacanja": 0.656,
+     "pokrivenost_prihvacanja_od_JASAN": 0.833,
+     "udio_pregleda": 0.273
     },
-    {
-     "id": "24.0.b7.-.3.1.12",
-     "clanak": 24,
-     "stavak": null,
-     "parametar": "oblik krovišta",
-     "vrsta_gradevine": "pomoćna građevina",
-     "operator": "dopustenje",
-     "vrijednost": "ravna ili kosa",
-     "uvjet": "uz građevinu osnovne namjene",
-     "vrsta_pravila": "ALTERNATIVA",
-     "citat": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
-     "najbliza_oznaka": [
-      "G5_upu1_24:R050",
-      [
-       "vrsta_pravila",
-       "uvjet"
-      ]
-     ]
+    "G2_ppug_25_33": {
+     "oznaka": 33,
+     "oznaka_JASAN": 13,
+     "zapisa_modula": 34,
+     "tocno_prihvaceno": 11,
+     "tocno_uz_pravilo_granularnosti": 2,
+     "pogresno_prihvaceno": 0,
+     "pravilno_na_pregled": 9,
+     "nepotrebno_na_pregled": 1,
+     "pregled_bez_oznake": 11,
+     "propusteno": 10,
+     "preciznost_prihvacenih_strogo": 0.846,
+     "preciznost_prihvacenih": 1.0,
+     "pokrivenost_izdvajanja": 0.697,
+     "pokrivenost_prihvacanja": 0.394,
+     "pokrivenost_prihvacanja_od_JASAN": 1.0,
+     "udio_pregleda": 0.618
     },
-    {
-     "id": "24.0.b7.-.5.1.17",
-     "clanak": 24,
-     "stavak": null,
-     "parametar": "najmanja udaljenost od regulacijskog pravca",
-     "vrsta_gradevine": "pomoćna građevina",
-     "operator": ">=",
-     "vrijednost": 5.0,
-     "uvjet": "uz građevinu osnovne namjene",
-     "vrsta_pravila": "OSNOVNO",
-     "citat": "Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 5,0 m.",
-     "najbliza_oznaka": [
-      "G5_upu1_24:R058",
-      [
-       "uvjet"
-      ]
-     ]
+    "G3_ppug_20_38_39_50": {
+     "oznaka": 77,
+     "oznaka_JASAN": 42,
+     "zapisa_modula": 12,
+     "tocno_prihvaceno": 7,
+     "tocno_uz_pravilo_granularnosti": 0,
+     "pogresno_prihvaceno": 0,
+     "pravilno_na_pregled": 0,
+     "nepotrebno_na_pregled": 0,
+     "pregled_bez_oznake": 5,
+     "propusteno": 70,
+     "preciznost_prihvacenih_strogo": 1.0,
+     "preciznost_prihvacenih": 1.0,
+     "pokrivenost_izdvajanja": 0.091,
+     "pokrivenost_prihvacanja": 0.091,
+     "pokrivenost_prihvacanja_od_JASAN": 0.167,
+     "udio_pregleda": 0.417
+    },
+    "G4_upu1_14": {
+     "oznaka": 34,
+     "oznaka_JASAN": 13,
+     "zapisa_modula": 15,
+     "tocno_prihvaceno": 7,
+     "tocno_uz_pravilo_granularnosti": 0,
+     "pogresno_prihvaceno": 0,
+     "pravilno_na_pregled": 4,
+     "nepotrebno_na_pregled": 1,
+     "pregled_bez_oznake": 3,
+     "propusteno": 22,
+     "preciznost_prihvacenih_strogo": 1.0,
+     "preciznost_prihvacenih": 1.0,
+     "pokrivenost_izdvajanja": 0.353,
+     "pokrivenost_prihvacanja": 0.206,
+     "pokrivenost_prihvacanja_od_JASAN": 0.538,
+     "udio_pregleda": 0.533
+    },
+    "G5_upu1_24": {
+     "oznaka": 63,
+     "oznaka_JASAN": 36,
+     "zapisa_modula": 15,
+     "tocno_prihvaceno": 6,
+     "tocno_uz_pravilo_granularnosti": 4,
+     "pogresno_prihvaceno": 0,
+     "pravilno_na_pregled": 0,
+     "nepotrebno_na_pregled": 1,
+     "pregled_bez_oznake": 4,
+     "propusteno": 52,
+     "preciznost_prihvacenih_strogo": 0.6,
+     "preciznost_prihvacenih": 1.0,
+     "pokrivenost_izdvajanja": 0.175,
+     "pokrivenost_prihvacanja": 0.159,
+     "pokrivenost_prihvacanja_od_JASAN": 0.278,
+     "udio_pregleda": 0.333
     }
-   ]
+   },
+   "pogresno": []
   },
   "v2.4": {
    "ukupno": {
@@ -313,75 +441,112 @@
     "oznaka_JASAN": 152,
     "zapisa_modula": 189,
     "tocno_prihvaceno": 67,
-    "tocno_uz_pravilo_granularnosti": 37,
-    "pogresno_prihvaceno": 5,
-    "pravilno_na_pregled": 24,
+    "tocno_uz_pravilo_granularnosti": 41,
+    "pogresno_prihvaceno": 1,
+    "pravilno_na_pregled": 30,
     "nepotrebno_na_pregled": 11,
-    "pregled_bez_oznake": 45,
-    "propusteno": 129,
+    "pregled_bez_oznake": 39,
+    "propusteno": 119,
     "preciznost_prihvacenih_strogo": 0.615,
-    "preciznost_prihvacenih": 0.954,
-    "pokrivenost_izdvajanja": 0.519,
-    "pokrivenost_prihvacanja": 0.388,
-    "pokrivenost_prihvacanja_od_JASAN": 0.684,
+    "preciznost_prihvacenih": 0.991,
+    "pokrivenost_izdvajanja": 0.556,
+    "pokrivenost_prihvacanja": 0.403,
+    "pokrivenost_prihvacanja_od_JASAN": 0.711,
     "udio_pregleda": 0.423
    },
+   "po_skupini": {
+    "G1_ppug_22_23": {
+     "oznaka": 61,
+     "oznaka_JASAN": 48,
+     "zapisa_modula": 55,
+     "tocno_prihvaceno": 12,
+     "tocno_uz_pravilo_granularnosti": 28,
+     "pogresno_prihvaceno": 0,
+     "pravilno_na_pregled": 6,
+     "nepotrebno_na_pregled": 2,
+     "pregled_bez_oznake": 7,
+     "propusteno": 13,
+     "preciznost_prihvacenih_strogo": 0.3,
+     "preciznost_prihvacenih": 1.0,
+     "pokrivenost_izdvajanja": 0.787,
+     "pokrivenost_prihvacanja": 0.656,
+     "pokrivenost_prihvacanja_od_JASAN": 0.833,
+     "udio_pregleda": 0.273
+    },
+    "G2_ppug_25_33": {
+     "oznaka": 33,
+     "oznaka_JASAN": 13,
+     "zapisa_modula": 34,
+     "tocno_prihvaceno": 11,
+     "tocno_uz_pravilo_granularnosti": 2,
+     "pogresno_prihvaceno": 0,
+     "pravilno_na_pregled": 9,
+     "nepotrebno_na_pregled": 1,
+     "pregled_bez_oznake": 11,
+     "propusteno": 10,
+     "preciznost_prihvacenih_strogo": 0.846,
+     "preciznost_prihvacenih": 1.0,
+     "pokrivenost_izdvajanja": 0.697,
+     "pokrivenost_prihvacanja": 0.394,
+     "pokrivenost_prihvacanja_od_JASAN": 1.0,
+     "udio_pregleda": 0.618
+    },
+    "G3_ppug_20_38_39_50": {
+     "oznaka": 77,
+     "oznaka_JASAN": 42,
+     "zapisa_modula": 62,
+     "tocno_prihvaceno": 30,
+     "tocno_uz_pravilo_granularnosti": 6,
+     "pogresno_prihvaceno": 0,
+     "pravilno_na_pregled": 9,
+     "nepotrebno_na_pregled": 6,
+     "pregled_bez_oznake": 11,
+     "propusteno": 26,
+     "preciznost_prihvacenih_strogo": 0.833,
+     "preciznost_prihvacenih": 1.0,
+     "pokrivenost_izdvajanja": 0.662,
+     "pokrivenost_prihvacanja": 0.468,
+     "pokrivenost_prihvacanja_od_JASAN": 0.857,
+     "udio_pregleda": 0.419
+    },
+    "G4_upu1_14": {
+     "oznaka": 34,
+     "oznaka_JASAN": 13,
+     "zapisa_modula": 15,
+     "tocno_prihvaceno": 7,
+     "tocno_uz_pravilo_granularnosti": 0,
+     "pogresno_prihvaceno": 0,
+     "pravilno_na_pregled": 4,
+     "nepotrebno_na_pregled": 1,
+     "pregled_bez_oznake": 3,
+     "propusteno": 22,
+     "preciznost_prihvacenih_strogo": 1.0,
+     "preciznost_prihvacenih": 1.0,
+     "pokrivenost_izdvajanja": 0.353,
+     "pokrivenost_prihvacanja": 0.206,
+     "pokrivenost_prihvacanja_od_JASAN": 0.538,
+     "udio_pregleda": 0.533
+    },
+    "G5_upu1_24": {
+     "oznaka": 63,
+     "oznaka_JASAN": 36,
+     "zapisa_modula": 23,
+     "tocno_prihvaceno": 7,
+     "tocno_uz_pravilo_granularnosti": 5,
+     "pogresno_prihvaceno": 1,
+     "pravilno_na_pregled": 2,
+     "nepotrebno_na_pregled": 1,
+     "pregled_bez_oznake": 7,
+     "propusteno": 48,
+     "preciznost_prihvacenih_strogo": 0.538,
+     "preciznost_prihvacenih": 0.923,
+     "pokrivenost_izdvajanja": 0.238,
+     "pokrivenost_prihvacanja": 0.19,
+     "pokrivenost_prihvacanja_od_JASAN": 0.333,
+     "udio_pregleda": 0.435
+    }
+   },
    "pogresno": [
-    {
-     "id": "24.0.b7.-.2.1.11",
-     "clanak": 24,
-     "stavak": null,
-     "parametar": "najveća površina tlocrtne projekcije građevine",
-     "vrsta_gradevine": "pomoćna građevina",
-     "operator": "<=",
-     "vrijednost": 50.0,
-     "uvjet": "uz građevinu osnovne namjene",
-     "vrsta_pravila": "OSNOVNO",
-     "citat": "Najveća tlocrtna projekcija iznosi 50 m 2 .",
-     "najbliza_oznaka": [
-      "G5_upu1_24:R049",
-      [
-       "uvjet"
-      ]
-     ]
-    },
-    {
-     "id": "24.0.b7.-.3.1.12",
-     "clanak": 24,
-     "stavak": null,
-     "parametar": "oblik krovišta",
-     "vrsta_gradevine": "pomoćna građevina",
-     "operator": "dopustenje",
-     "vrijednost": "ravna ili kosa",
-     "uvjet": "uz građevinu osnovne namjene",
-     "vrsta_pravila": "ALTERNATIVA",
-     "citat": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
-     "najbliza_oznaka": [
-      "G5_upu1_24:R050",
-      [
-       "vrsta_pravila",
-       "uvjet"
-      ]
-     ]
-    },
-    {
-     "id": "24.0.b7.-.5.1.17",
-     "clanak": 24,
-     "stavak": null,
-     "parametar": "najmanja udaljenost od regulacijskog pravca",
-     "vrsta_gradevine": "pomoćna građevina",
-     "operator": ">=",
-     "vrijednost": 5.0,
-     "uvjet": "uz građevinu osnovne namjene",
-     "vrsta_pravila": "OSNOVNO",
-     "citat": "Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 5,0 m.",
-     "najbliza_oznaka": [
-      "G5_upu1_24:R058",
-      [
-       "uvjet"
-      ]
-     ]
-    },
     {
      "id": "v24.24.0.b7.-.1.1.3",
      "clanak": 24,
@@ -397,24 +562,6 @@
       "G5_upu1_24:R048",
       [
        "vrijednost",
-       "uvjet"
-      ]
-     ]
-    },
-    {
-     "id": "v24.24.0.b7.-.4.1.6",
-     "clanak": 24,
-     "stavak": null,
-     "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
-     "vrsta_gradevine": "pomoćna građevina",
-     "operator": "dopustenje",
-     "vrijednost": "do granice građevne čestice",
-     "uvjet": "uz građevinu osnovne namjene",
-     "vrsta_pravila": "OSNOVNO",
-     "citat": "Pomoćne građevine se mogu graditi do granice građevne čestice.",
-     "najbliza_oznaka": [
-      "G5_upu1_24:R054",
-      [
        "uvjet"
       ]
      ]
@@ -427,75 +574,112 @@
     "oznaka_JASAN": 152,
     "zapisa_modula": 189,
     "tocno_prihvaceno": 67,
-    "tocno_uz_pravilo_granularnosti": 37,
-    "pogresno_prihvaceno": 5,
-    "pravilno_na_pregled": 24,
+    "tocno_uz_pravilo_granularnosti": 41,
+    "pogresno_prihvaceno": 1,
+    "pravilno_na_pregled": 30,
     "nepotrebno_na_pregled": 11,
-    "pregled_bez_oznake": 45,
-    "propusteno": 129,
+    "pregled_bez_oznake": 39,
+    "propusteno": 119,
     "preciznost_prihvacenih_strogo": 0.615,
-    "preciznost_prihvacenih": 0.954,
-    "pokrivenost_izdvajanja": 0.519,
-    "pokrivenost_prihvacanja": 0.388,
-    "pokrivenost_prihvacanja_od_JASAN": 0.684,
+    "preciznost_prihvacenih": 0.991,
+    "pokrivenost_izdvajanja": 0.556,
+    "pokrivenost_prihvacanja": 0.403,
+    "pokrivenost_prihvacanja_od_JASAN": 0.711,
     "udio_pregleda": 0.423
    },
+   "po_skupini": {
+    "G1_ppug_22_23": {
+     "oznaka": 61,
+     "oznaka_JASAN": 48,
+     "zapisa_modula": 55,
+     "tocno_prihvaceno": 12,
+     "tocno_uz_pravilo_granularnosti": 28,
+     "pogresno_prihvaceno": 0,
+     "pravilno_na_pregled": 6,
+     "nepotrebno_na_pregled": 2,
+     "pregled_bez_oznake": 7,
+     "propusteno": 13,
+     "preciznost_prihvacenih_strogo": 0.3,
+     "preciznost_prihvacenih": 1.0,
+     "pokrivenost_izdvajanja": 0.787,
+     "pokrivenost_prihvacanja": 0.656,
+     "pokrivenost_prihvacanja_od_JASAN": 0.833,
+     "udio_pregleda": 0.273
+    },
+    "G2_ppug_25_33": {
+     "oznaka": 33,
+     "oznaka_JASAN": 13,
+     "zapisa_modula": 34,
+     "tocno_prihvaceno": 11,
+     "tocno_uz_pravilo_granularnosti": 2,
+     "pogresno_prihvaceno": 0,
+     "pravilno_na_pregled": 9,
+     "nepotrebno_na_pregled": 1,
+     "pregled_bez_oznake": 11,
+     "propusteno": 10,
+     "preciznost_prihvacenih_strogo": 0.846,
+     "preciznost_prihvacenih": 1.0,
+     "pokrivenost_izdvajanja": 0.697,
+     "pokrivenost_prihvacanja": 0.394,
+     "pokrivenost_prihvacanja_od_JASAN": 1.0,
+     "udio_pregleda": 0.618
+    },
+    "G3_ppug_20_38_39_50": {
+     "oznaka": 77,
+     "oznaka_JASAN": 42,
+     "zapisa_modula": 62,
+     "tocno_prihvaceno": 30,
+     "tocno_uz_pravilo_granularnosti": 6,
+     "pogresno_prihvaceno": 0,
+     "pravilno_na_pregled": 9,
+     "nepotrebno_na_pregled": 6,
+     "pregled_bez_oznake": 11,
+     "propusteno": 26,
+     "preciznost_prihvacenih_strogo": 0.833,
+     "preciznost_prihvacenih": 1.0,
+     "pokrivenost_izdvajanja": 0.662,
+     "pokrivenost_prihvacanja": 0.468,
+     "pokrivenost_prihvacanja_od_JASAN": 0.857,
+     "udio_pregleda": 0.419
+    },
+    "G4_upu1_14": {
+     "oznaka": 34,
+     "oznaka_JASAN": 13,
+     "zapisa_modula": 15,
+     "tocno_prihvaceno": 7,
+     "tocno_uz_pravilo_granularnosti": 0,
+     "pogresno_prihvaceno": 0,
+     "pravilno_na_pregled": 4,
+     "nepotrebno_na_pregled": 1,
+     "pregled_bez_oznake": 3,
+     "propusteno": 22,
+     "preciznost_prihvacenih_strogo": 1.0,
+     "preciznost_prihvacenih": 1.0,
+     "pokrivenost_izdvajanja": 0.353,
+     "pokrivenost_prihvacanja": 0.206,
+     "pokrivenost_prihvacanja_od_JASAN": 0.538,
+     "udio_pregleda": 0.533
+    },
+    "G5_upu1_24": {
+     "oznaka": 63,
+     "oznaka_JASAN": 36,
+     "zapisa_modula": 23,
+     "tocno_prihvaceno": 7,
+     "tocno_uz_pravilo_granularnosti": 5,
+     "pogresno_prihvaceno": 1,
+     "pravilno_na_pregled": 2,
+     "nepotrebno_na_pregled": 1,
+     "pregled_bez_oznake": 7,
+     "propusteno": 48,
+     "preciznost_prihvacenih_strogo": 0.538,
+     "preciznost_prihvacenih": 0.923,
+     "pokrivenost_izdvajanja": 0.238,
+     "pokrivenost_prihvacanja": 0.19,
+     "pokrivenost_prihvacanja_od_JASAN": 0.333,
+     "udio_pregleda": 0.435
+    }
+   },
    "pogresno": [
-    {
-     "id": "24.0.b7.-.2.1.11",
-     "clanak": 24,
-     "stavak": null,
-     "parametar": "najveća površina tlocrtne projekcije građevine",
-     "vrsta_gradevine": "pomoćna građevina",
-     "operator": "<=",
-     "vrijednost": 50.0,
-     "uvjet": "uz građevinu osnovne namjene",
-     "vrsta_pravila": "OSNOVNO",
-     "citat": "Najveća tlocrtna projekcija iznosi 50 m 2 .",
-     "najbliza_oznaka": [
-      "G5_upu1_24:R049",
-      [
-       "uvjet"
-      ]
-     ]
-    },
-    {
-     "id": "24.0.b7.-.3.1.12",
-     "clanak": 24,
-     "stavak": null,
-     "parametar": "oblik krovišta",
-     "vrsta_gradevine": "pomoćna građevina",
-     "operator": "dopustenje",
-     "vrijednost": "ravna ili kosa",
-     "uvjet": "uz građevinu osnovne namjene",
-     "vrsta_pravila": "ALTERNATIVA",
-     "citat": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
-     "najbliza_oznaka": [
-      "G5_upu1_24:R050",
-      [
-       "vrsta_pravila",
-       "uvjet"
-      ]
-     ]
-    },
-    {
-     "id": "24.0.b7.-.5.1.17",
-     "clanak": 24,
-     "stavak": null,
-     "parametar": "najmanja udaljenost od regulacijskog pravca",
-     "vrsta_gradevine": "pomoćna građevina",
-     "operator": ">=",
-     "vrijednost": 5.0,
-     "uvjet": "uz građevinu osnovne namjene",
-     "vrsta_pravila": "OSNOVNO",
-     "citat": "Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 5,0 m.",
-     "najbliza_oznaka": [
-      "G5_upu1_24:R058",
-      [
-       "uvjet"
-      ]
-     ]
-    },
     {
      "id": "v24.24.0.b7.-.1.1.3",
      "clanak": 24,
@@ -511,24 +695,6 @@
       "G5_upu1_24:R048",
       [
        "vrijednost",
-       "uvjet"
-      ]
-     ]
-    },
-    {
-     "id": "v24.24.0.b7.-.4.1.6",
-     "clanak": 24,
-     "stavak": null,
-     "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
-     "vrsta_gradevine": "pomoćna građevina",
-     "operator": "dopustenje",
-     "vrijednost": "do granice građevne čestice",
-     "uvjet": "uz građevinu osnovne namjene",
-     "vrsta_pravila": "OSNOVNO",
-     "citat": "Pomoćne građevine se mogu graditi do granice građevne čestice.",
-     "najbliza_oznaka": [
-      "G5_upu1_24:R054",
-      [
        "uvjet"
       ]
      ]
@@ -1003,97 +1169,190 @@
    "ukupno": {
     "oznaka": 151,
     "oznaka_JASAN": 103,
-    "zapisa_modula": 10,
-    "tocno_prihvaceno": 3,
+    "zapisa_modula": 56,
+    "tocno_prihvaceno": 13,
     "tocno_uz_pravilo_granularnosti": 0,
     "pogresno_prihvaceno": 0,
-    "pravilno_na_pregled": 3,
-    "nepotrebno_na_pregled": 0,
-    "pregled_bez_oznake": 4,
-    "propusteno": 145,
+    "pravilno_na_pregled": 9,
+    "nepotrebno_na_pregled": 15,
+    "pregled_bez_oznake": 19,
+    "propusteno": 114,
     "preciznost_prihvacenih_strogo": 1.0,
     "preciznost_prihvacenih": 1.0,
-    "pokrivenost_izdvajanja": 0.04,
-    "pokrivenost_prihvacanja": 0.02,
-    "pokrivenost_prihvacanja_od_JASAN": 0.029,
-    "udio_pregleda": 0.7
+    "pokrivenost_izdvajanja": 0.245,
+    "pokrivenost_prihvacanja": 0.086,
+    "pokrivenost_prihvacanja_od_JASAN": 0.126,
+    "udio_pregleda": 0.768
    },
    "po_clanku": {
     "19": {
      "oznaka": 63,
      "oznaka_JASAN": 38,
-     "zapisa_modula": 0,
+     "zapisa_modula": 14,
      "tocno_prihvaceno": 0,
      "tocno_uz_pravilo_granularnosti": 0,
      "pogresno_prihvaceno": 0,
      "pravilno_na_pregled": 0,
-     "nepotrebno_na_pregled": 0,
-     "pregled_bez_oznake": 0,
-     "propusteno": 63,
+     "nepotrebno_na_pregled": 7,
+     "pregled_bez_oznake": 7,
+     "propusteno": 56,
      "preciznost_prihvacenih_strogo": null,
      "preciznost_prihvacenih": null,
-     "pokrivenost_izdvajanja": 0.0,
+     "pokrivenost_izdvajanja": 0.111,
      "pokrivenost_prihvacanja": 0.0,
      "pokrivenost_prihvacanja_od_JASAN": 0.0,
-     "udio_pregleda": null
+     "udio_pregleda": 1.0
     },
     "20": {
      "oznaka": 34,
      "oznaka_JASAN": 22,
-     "zapisa_modula": 3,
-     "tocno_prihvaceno": 1,
+     "zapisa_modula": 19,
+     "tocno_prihvaceno": 4,
      "tocno_uz_pravilo_granularnosti": 0,
      "pogresno_prihvaceno": 0,
-     "pravilno_na_pregled": 1,
-     "nepotrebno_na_pregled": 0,
-     "pregled_bez_oznake": 1,
-     "propusteno": 32,
+     "pravilno_na_pregled": 4,
+     "nepotrebno_na_pregled": 2,
+     "pregled_bez_oznake": 9,
+     "propusteno": 24,
      "preciznost_prihvacenih_strogo": 1.0,
      "preciznost_prihvacenih": 1.0,
-     "pokrivenost_izdvajanja": 0.059,
-     "pokrivenost_prihvacanja": 0.029,
-     "pokrivenost_prihvacanja_od_JASAN": 0.045,
-     "udio_pregleda": 0.667
+     "pokrivenost_izdvajanja": 0.294,
+     "pokrivenost_prihvacanja": 0.118,
+     "pokrivenost_prihvacanja_od_JASAN": 0.182,
+     "udio_pregleda": 0.789
     },
     "23": {
      "oznaka": 20,
      "oznaka_JASAN": 17,
-     "zapisa_modula": 2,
-     "tocno_prihvaceno": 1,
+     "zapisa_modula": 8,
+     "tocno_prihvaceno": 4,
      "tocno_uz_pravilo_granularnosti": 0,
      "pogresno_prihvaceno": 0,
-     "pravilno_na_pregled": 0,
-     "nepotrebno_na_pregled": 0,
+     "pravilno_na_pregled": 2,
+     "nepotrebno_na_pregled": 1,
      "pregled_bez_oznake": 1,
-     "propusteno": 19,
+     "propusteno": 13,
      "preciznost_prihvacenih_strogo": 1.0,
      "preciznost_prihvacenih": 1.0,
-     "pokrivenost_izdvajanja": 0.05,
-     "pokrivenost_prihvacanja": 0.05,
-     "pokrivenost_prihvacanja_od_JASAN": 0.059,
+     "pokrivenost_izdvajanja": 0.35,
+     "pokrivenost_prihvacanja": 0.2,
+     "pokrivenost_prihvacanja_od_JASAN": 0.235,
      "udio_pregleda": 0.5
     },
     "24": {
      "oznaka": 34,
      "oznaka_JASAN": 26,
-     "zapisa_modula": 5,
-     "tocno_prihvaceno": 1,
+     "zapisa_modula": 15,
+     "tocno_prihvaceno": 5,
      "tocno_uz_pravilo_granularnosti": 0,
      "pogresno_prihvaceno": 0,
-     "pravilno_na_pregled": 2,
-     "nepotrebno_na_pregled": 0,
+     "pravilno_na_pregled": 3,
+     "nepotrebno_na_pregled": 5,
      "pregled_bez_oznake": 2,
-     "propusteno": 31,
+     "propusteno": 21,
      "preciznost_prihvacenih_strogo": 1.0,
      "preciznost_prihvacenih": 1.0,
-     "pokrivenost_izdvajanja": 0.088,
-     "pokrivenost_prihvacanja": 0.029,
-     "pokrivenost_prihvacanja_od_JASAN": 0.038,
-     "udio_pregleda": 0.8
+     "pokrivenost_izdvajanja": 0.382,
+     "pokrivenost_prihvacanja": 0.147,
+     "pokrivenost_prihvacanja_od_JASAN": 0.192,
+     "udio_pregleda": 0.667
     }
    },
    "pogresno": [],
    "pregled_bez_oznake": [
+    {
+     "id": "v25.19.1.-.13.1.4",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KATEGORIJA_NEVALIDIRANA",
+      "PARAMETAR_IZVAN_POPISA",
+      "PREDMET_OGRADA",
+      "U_PRAVILU",
+      "VRSTA_IZ_UVODA_V25"
+     ],
+     "parametar": "drugo: najveća visina ograde",
+     "vrijednost": 150.0
+    },
+    {
+     "id": "v25.19.1.-.13.3.5",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KATEGORIJA_NEVALIDIRANA",
+      "PARAMETAR_IZVAN_POPISA",
+      "PREDMET_OGRADA",
+      "VRSTA_IZ_UVODA_V25"
+     ],
+     "parametar": "drugo: najveća visina ograde",
+     "vrijednost": 1.5
+    },
+    {
+     "id": "v25.19.1.-.13.4.6",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KATEGORIJA_NEVALIDIRANA",
+      "PARAMETAR_IZVAN_POPISA",
+      "PREDMET_OGRADA",
+      "VRSTA_IZ_UVODA_V25"
+     ],
+     "parametar": "drugo: najveća visina punog (čvrstog) dijela ograde",
+     "vrijednost": 100.0
+    },
+    {
+     "id": "v25.19.1.-.13.6.7",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KATEGORIJA_NEVALIDIRANA",
+      "PARAMETAR_IZVAN_POPISA",
+      "PREDMET_OGRADA",
+      "VRSTA_IZ_UVODA_V25"
+     ],
+     "parametar": "drugo: najveća visina ograde",
+     "vrijednost": 2.0
+    },
+    {
+     "id": "v25.19.1.-.13.8.8",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KATEGORIJA_NEVALIDIRANA",
+      "PARAMETAR_IZVAN_POPISA",
+      "PREDMET_PODZID",
+      "VRSTA_IZ_UVODA_V25"
+     ],
+     "parametar": "?visinaPodzidaMax",
+     "vrijednost": 150.0
+    },
+    {
+     "id": "v25.19.1.-.13.10.9",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KATEGORIJA_NEVALIDIRANA",
+      "PARAMETAR_IZVAN_POPISA",
+      "PREDMET_KASKADA",
+      "VRSTA_IZ_UVODA_V25"
+     ],
+     "parametar": "drugo: najveća visina kaskade",
+     "vrijednost": 150.0
+    },
+    {
+     "id": "v25.19.1.-.13.10.10",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KATEGORIJA_NEVALIDIRANA",
+      "OPERATOR_NEIZRICIT",
+      "PARAMETAR_IZVAN_POPISA",
+      "PREDMET_KASKADA",
+      "VRSTA_IZ_UVODA_V25"
+     ],
+     "parametar": "drugo: odmak kaskada (horizontalne terase)",
+     "vrijednost": 0.5
+    },
     {
      "id": "20.2.-.5.1.2",
      "oznaka": null,
@@ -1103,6 +1362,95 @@
      ],
      "parametar": "?kis",
      "vrijednost": 2.0
+    },
+    {
+     "id": "v25.20.2.-.2.1.2",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "VRSTA_IZ_IZNIMKE"
+     ],
+     "parametar": "najmanja površina građevne čestice",
+     "vrijednost": 500.0
+    },
+    {
+     "id": "v25.20.2.-.11.1.10",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KATEGORIJA_NEVALIDIRANA"
+     ],
+     "parametar": "najveći broj etaža",
+     "vrijednost": 2
+    },
+    {
+     "id": "v25.20.2.-.11.1.11",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KATEGORIJA_NEVALIDIRANA",
+      "PARAMETAR_IZVAN_POPISA"
+     ],
+     "parametar": "najveća površina tlocrtne projekcije građevine",
+     "vrijednost": "tlocrtno manje od građevina osnovne namjene"
+    },
+    {
+     "id": "v25.20.2.-.11.1.12",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KATEGORIJA_NEVALIDIRANA",
+      "OPERATOR_NEIZRICIT",
+      "REFERENTNA_VISINA_NEPOZNATA"
+     ],
+     "parametar": "najveća visina građevine",
+     "vrijednost": 4.0
+    },
+    {
+     "id": "v25.20.2.-.11.2.13",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KATEGORIJA_NEVALIDIRANA",
+      "OPERATOR_NEIZRICIT",
+      "SUBJEKT_IZ_ALINEJE"
+     ],
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "vrijednost": 4.0
+    },
+    {
+     "id": "v25.20.2.-.11.2.14",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KATEGORIJA_NEVALIDIRANA",
+      "OPERATOR_NEIZRICIT",
+      "SUBJEKT_IZ_ALINEJE"
+     ],
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "vrijednost": 3.0
+    },
+    {
+     "id": "v25.20.2.-.11.3.15",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KATEGORIJA_NEVALIDIRANA",
+      "SUBJEKT_IZ_ALINEJE"
+     ],
+     "parametar": "najmanja udaljenost od regulacijskog pravca",
+     "vrijednost": 10.0
+    },
+    {
+     "id": "v25.20.2.-.11.3.16",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KATEGORIJA_NEVALIDIRANA",
+      "SUBJEKT_IZ_ALINEJE"
+     ],
+     "parametar": "najmanja udaljenost od regulacijskog pravca",
+     "vrijednost": 4.0
     },
     {
      "id": "23.1.-.7.1.2",
@@ -1138,5 +1486,102 @@
   }
  },
  "pravno_potvrdeno": 0,
- "napomena": "sva tri plana su razvojni skupovi za v2.5; generalizacija se mjeri tek slijepim testom na trećem planu"
+ "napomena": "sva tri plana su razvojni skupovi za v2.5; generalizacija se mjeri tek slijepim testom na trećem planu",
+ "novi_vinodolski_v25_bez_pravila_usporedbe_v25": {
+  "ukupno": {
+   "oznaka": 151,
+   "oznaka_JASAN": 103,
+   "zapisa_modula": 56,
+   "tocno_prihvaceno": 9,
+   "tocno_uz_pravilo_granularnosti": 0,
+   "pogresno_prihvaceno": 4,
+   "pravilno_na_pregled": 7,
+   "nepotrebno_na_pregled": 7,
+   "pregled_bez_oznake": 29,
+   "propusteno": 128,
+   "preciznost_prihvacenih_strogo": 0.692,
+   "preciznost_prihvacenih": 0.692,
+   "pokrivenost_izdvajanja": 0.152,
+   "pokrivenost_prihvacanja": 0.06,
+   "pokrivenost_prihvacanja_od_JASAN": 0.087,
+   "udio_pregleda": 0.768
+  },
+  "pogresno": [
+   {
+    "id": "v25.20.2.-.6.1.3",
+    "clanak": 20,
+    "stavak": 2,
+    "parametar": "najveći broj etaža",
+    "vrsta_gradevine": "poslovna građevina (nova)",
+    "operator": "<=",
+    "vrijednost": 4,
+    "uvjet": "nadzemne etaže | uz uvjet da je 4. nadzemna etaža potkrovlje bez nadozida",
+    "vrsta_pravila": "UVJETNO",
+    "citat": "građevine mogu imati do 4 nadzemne etaže uz uvjet da je 4. nadzemna etaža potkrovlje bez nadozida.",
+    "najbliza_oznaka": [
+     "Z076",
+     [
+      "jedinica"
+     ]
+    ]
+   },
+   {
+    "id": "v25.23.1.-.8.1.6",
+    "clanak": 23,
+    "stavak": 1,
+    "parametar": "najveći broj etaža",
+    "vrsta_gradevine": "poslovna građevina (nova)",
+    "operator": "<=",
+    "vrijednost": 4,
+    "uvjet": "nadzemne etaže | uz uvjet da je četvrta etaža potkrovlje bez nadozida",
+    "vrsta_pravila": "UVJETNO",
+    "citat": "građevina može imati do četiri (4) nadzemne etaže uz uvjet da je četvrta etaža potkrovlje bez nadozida;",
+    "najbliza_oznaka": [
+     "Z106",
+     [
+      "jedinica"
+     ]
+    ]
+   },
+   {
+    "id": "v25.24.2.-.6.1.8",
+    "clanak": 24,
+    "stavak": 2,
+    "parametar": "najveći broj etaža",
+    "vrsta_gradevine": "poslovna građevina",
+    "operator": "<=",
+    "vrijednost": 2,
+    "uvjet": "nadzemne etaže | uz uvjet da je druga etaža potkrovlje bez nadozida",
+    "vrsta_pravila": "UVJETNO",
+    "citat": "najveći dopušteni broj etaža građevine poslovne namjene su dvije (2) nadzemne etaže uz uvjet da je druga etaža potkrovlje bez nadozida te jedna (1) podzemna etaža ukoliko geotehnički uvjeti to dopuštaju u funkciji osnovne namjene, pomoćnih i tehničkih prostorija, te garaža;",
+    "najbliza_oznaka": [
+     "Z126",
+     [
+      "jedinica"
+     ]
+    ]
+   },
+   {
+    "id": "v25.24.4.-.2.1.10",
+    "clanak": 24,
+    "stavak": 4,
+    "parametar": "najveći broj etaža",
+    "vrsta_gradevine": "poslovna građevina",
+    "operator": "<=",
+    "vrijednost": 3,
+    "uvjet": "površina označena oznakom K21 | nadzemne etaže | uz uvjet da je treća etaža potkrovlje bez nadozida",
+    "vrsta_pravila": "IZNIMKA",
+    "citat": "najveći dopušteni broj etaža građevine poslovne namjene su tri (3) nadzemne etaže uz uvjet da je treća etaža potkrovlje bez nadozida te jedna (1) podzemna etaža ukoliko geotehnički uvjeti to dopuštaju u funkciji osnovne namjene, pomoćnih i tehničkih prostorija, te garaža;",
+    "najbliza_oznaka": [
+     "Z148",
+     [
+      "jedinica"
+     ]
+    ]
+   }
+  ]
+ },
+ "pravila_usporedbe_v25": {
+  "JEDINICA_BROJA_ETAZA_ispitani_parovi": 65
+ }
 }

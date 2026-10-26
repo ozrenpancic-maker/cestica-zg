@@ -1,0 +1,21 @@
+{
+ "opis": "Nazivi za nove šifre parametara v2.5 i istoznačnice vrsta za skupne uvode (samo nazivi, za usporedbu s neovisnim oznakama Novog Vinodolskog i referencom v1.2). Vrijednosti, operatori i uvjeti se ne mapiraju. Sva pravila s ovim šiframa osim etaža, regulacije, nagiba i oblika krovišta su PREGLED (KATEGORIJA_NEVALIDIRANA).",
+ "parametri": {
+  "visinaOgradeMax": ["drugo: najveća visina ograde"],
+  "visinaPunogDijelaOgradeMax": ["drugo: najveća visina punog (čvrstog) dijela ograde"],
+  "visinaKaskadeMax": ["drugo: najveća visina kaskade"],
+  "odmakKaskade": ["drugo: odmak kaskada (horizontalne terase)"],
+  "udioRavnogKrovaMax": ["drugo: najveći udio ravnog krova"],
+  "krovneKucice": ["drugo: krovni prozori i krovne kućice"],
+  "povrsinaKrovneKuciceMax": ["drugo: najveća površina pojedine krovne kućice"],
+  "izgradjenostPodzemnihMax": ["drugo: najveća izgrađenost građevne čestice podzemnim etažama"],
+  "povrsinaPodzemnihMax": ["drugo: najveća površina podzemnih etaža u odnosu na gradivi dio građevne čestice"]
+ },
+ "vrsta_gradevine_istoznacnice": {
+  "poslovna+ugostiteljsko_turisticka (nova)": ["poslovna i ugostiteljsko-turistička građevina (nova)"],
+  "poslovna+ugostiteljsko_turisticka": ["poslovna i ugostiteljsko-turistička građevina"]
+ },
+ "pravila_usporedbe": {
+  "JEDINICA_BROJA_ETAZA": "Zamrznuti usporedi_v22._zapis broj bez jedinice zapisuje kao »koeficijent«. Za »najveći broj etaža« s brojčanom vrijednošću i bez jedinice i u čitaču i u oznaci to nije razlika."
+ }
+}

@@ -115,6 +115,25 @@ def strukturiraj_clanak(br, c, plan):
     return r5 if (r5["pravila"] or r5["nepokriveno"]) else r
 
 
+def _kontekst_dijela25(cl, c, sb, blok):
+    """Kao strukturiraj_v24._kontekst_dijela; kad vrsta nije nađena, uzima se vrsta iz cijele uvodne rečenice stavka (v2.5),
+    a za stavak koji upućuje na »površine iz stavka (n)« ili nema vlastitog uvoda – uvod prvog stavka članka."""
+    k = s24._kontekst_dijela(cl, c, sb, blok)
+    if k.get("skupine"):
+        return k
+    S = g1.stavci(c["tekst"])
+    st = dict(S).get(sb, "") if sb is not None else ""
+    sk = g5.skupina_uvoda(st.split(":")[0]) if st else None
+    if not sk and S:
+        uv1 = S[0][1].split(":")[0]
+        sk = g2.skupina_strogo(uv1) or g5.skupina_uvoda(uv1)
+    return dict(k, skupine=sk, vrsta_v25=True) if sk else k
+
+
+VRSTA_V25 = g2.R("VRSTA_IZ_UVODA_V25", "vrsta građevine preuzeta je iz uvoda stavka/članka novim pravilom v2.5 (dio bez vlastitih pravila); "
+                 "prihvaća se tek nakon provjere")
+
+
 def dodatni_oblici(cl, c, plan, oblici, prefiks, verzija):
     """Isto kao strukturiraj_v24._v24_clanak, s danom funkcijom oblika (v2.4 ili v2.5)."""
     br = cl["clanak"]
@@ -132,8 +151,9 @@ def dodatni_oblici(cl, c, plan, oblici, prefiks, verzija):
     sirovi, uzeti = [], []
     for izvor, x in kand:
         sb, blok = x.get("stavak"), x["_blok"]
-        kont = s24._kontekst_dijela(cl, c, sb, blok)
-        res = oblici(x["dokaz"], dict(kont))
+        kont = _kontekst_dijela25(cl, c, sb, blok)
+        prva_al = prve.get((sb, blok, x.get("tocka"), x.get("alineja"))) if x.get("alineja") else None
+        res = oblici(x["dokaz"], dict(kont, prva=prva_al or ""))
         if not res:
             continue
         zap, isk = res
@@ -144,9 +164,11 @@ def dodatni_oblici(cl, c, plan, oblici, prefiks, verzija):
         lits = [b["literal"] for b in brojevi(g2.normaliziraj(x["dokaz"]))]
         ostatak = [l for l in lits if l not in isk and not re.fullmatch(r"2", l)]
         for z in zap:
+            z["razlozi"] = list(z["razlozi"])
             if not z.get("skupine"):
                 z["skupine"] = kont.get("skupine")
-            z["razlozi"] = list(z["razlozi"])
+            if kont.get("vrsta_v25") and tuple(z["skupine"] or ()) == tuple(kont["skupine"]) and VRSTA_V25 not in z["razlozi"]:
+                z["razlozi"].append(VRSTA_V25)  # vrsta pravila je upravo ona preuzeta novim putem v2.5
             gr = g2._gradjevina_iz(z["skupine"], kont.get("gradjevina"))
             sirovi.append((sb, x.get("tocka"), x.get("alineja"), x.get("recenica"), x["dokaz"], x["dokaz"], gr, z,
                            ostatak if z is zap[0] else [], [], {"obuhvat": [], "iznimka": None, "blok": blok}))
@@ -218,6 +240,44 @@ def kontekst_v25(cl, c):
         p["obrazlozenje_statusa"] = g2._obrazlozenje(p)
 
 
+def nadredjena_alineja(cl, c):
+    """Zaštita (v2.5 t. 7): pravilo iz podalineje (alineja iza alineje koja završava dvotočkom, npr. »Iznimno, … na površinama
+    označenim oznakom K24 … prema slijedećim općim uvjetima: - …, - …«) nosi kontekst nadređene alineje: uvod se zapisuje,
+    zone idu u prostorni obuhvat, »Iznimno« daje IZNIMKA, a pravilo ide na PREGLED (KONTEKST_NADREDJENE_ALINEJE)."""
+    S = dict(g1.stavci(c["tekst"]))
+    for p in cl.get("pravila", []):
+        st = S.get(p["stavak"])
+        if not st:
+            continue
+        pos = st.find(p["izvorni_citat"][:60])
+        if pos < 0:
+            continue
+        seg = st[:pos]
+        i = seg.rfind(";")
+        if i < 0:
+            continue
+        sub = seg[i + 1:]
+        if ":" not in sub:
+            continue
+        uvod = sub[:sub.rfind(":")].strip(" -•")
+        if not uvod or RX_PODBLOK.search(uvod):
+            continue  # numerirani naslov podbloka (»1.2. Uređenje građevne čestice:«) već je blok pravila
+        if re.search(r"[.;]\s+(?:-|•|\d{1,2}\.)\s", uvod) or not re.match(r"\s*[-•]", sub):
+            continue  # nadređena alineja mora biti neposredno prethodna alineja (iza »;«), ne naslov bloka iza više alineja
+        p["nadredjeni_uvod"] = uvod
+        p["kontekst_primjene"] = list(p.get("kontekst_primjene") or []) + [uvod]
+        zone = g5.oznake_zona(uvod)
+        postoji = {o.get("oznaka") for o in p["prostorni_obuhvat"]}
+        nove = [z for z in zone if z not in postoji]
+        if nove:
+            p["prostorni_obuhvat"] = [o for o in p["prostorni_obuhvat"] if o["vrsta"] != "NIJE_NAVEDEN_U_ODREDBI"] + \
+                [{"vrsta": "ZONA_PLANA", "oznaka": z, "dokaz": uvod, "utvrdjeno_na_lokaciji": False, "izvor": "nadređena alineja (v2.5)"} for z in nove]
+        if re.match(r"iznimno\b", uvod, re.I) and p["vrsta_pravila"] in ("OSNOVNO", "UVJETNO", "ALTERNATIVA"):
+            p["vrsta_pravila"] = "IZNIMKA"
+        _pregled(p, "KONTEKST_NADREDJENE_ALINEJE", "pravilo je u podalineji; vrijedi samo uz uvod nadređene alineje, koji nije provjereno prenesen")
+        p["obrazlozenje_statusa"] = g2._obrazlozenje(p)
+
+
 def strukturiraj(dokazi, clanci, plan, v25_oblici=True):
     O = {k: c["tekst"] for k, c in dokazi["clanci"].items()}
     dT = dict(dokazi, clanci={k: dict(c, tekst=g5.pripremi(c["tekst"])) for k, c in dokazi["clanci"].items()})
@@ -242,7 +302,9 @@ def strukturiraj(dokazi, clanci, plan, v25_oblici=True):
             kont, uvod = U.get((p["stavak"], p.get("blok") if p["stavak"] is None else None), ([], ""))
             s23._dodaj_kontekst(p, kont, uvod, cl["clanak"])
             s23._samo_kao(p)
+            p["obrazac_v23"] = s23.VERZIJA
         kontekst_v25(cl, c)
+        nadredjena_alineja(cl, c)
     for k in list(out["clanci"]):
         out["clanci"][k] = g5.vrati_sve(out["clanci"][k], dT["clanci"][k]["tekst"], O[k])
     sv = [p for c in out["clanci"].values() for p in c.get("pravila", [])]
