@@ -1,0 +1,50 @@
+{
+ "datum": "2026-10-26",
+ "verzija": "v2.3",
+ "opis": "Zamrznut čitač v2.3 (v2.2 + prijenos konteksta primjene iz uvoda stavka/bloka + »samo kao« u načinu gradnje) prije slijepog testa na drugom, neviđenom prostornom planu. Kod se tijekom testa ne mijenja; svaka izmjena nakon uvida u rezultat otvara v2.4.",
+ "kod": {
+  "citac.py": "8dc9d6499ac781df575f62a25fcf0bcf6a2ae1505a388b6295d768632741be33",
+  "citac_tekst.py": "9c42aab0d7167a5c963a8830e0b3b84165729c9181140540be7993f5ee64aab9",
+  "gramatika.py": "8c39cea4b959c67c18252956ce38ab5e2ec8789de734bc3fd35fd88757ec4574",
+  "strukturiraj.py": "b21885c593fc0a0cf58df9049a4b4097e5c0f7025e3156ae08b7c980a78addfa",
+  "ocijeni.py": "b6196fe9340c958f48d4319608a5c65f93adae9b939740293bac68d83cc152ff",
+  "ocijeni_neovisno.py": "dca6ff2c723959ac0d8325f3cd0c25462827f3a140685f5beee629e23001fdef",
+  "gramatika_v2.py": "c215de66e3cb27973961355f2c1d91763ac4e52b74b37cfa60a01bfc91ff4190",
+  "strukturiraj_v2.py": "2914f53f5d389861f4ba602df2d1226a21a65d6990f6f092176f26c695153a23",
+  "jezik_hr.py": "84196e5ae57c484438acaef2fecc1ca5bf584f9b07d6d039bbf682db8f3581cf",
+  "semantika_hr.py": "e1f336b37824690af19c63197f632b3d4acaf0050c85ee99dc674c517cbafa15",
+  "usporedi_v2.py": "90945101f1e8c11b67564250a66ab34cd8fc969e72d33d9245e3166a843ef6df",
+  "gramatika_v22.py": "07d42d39557227833eee09726f53932987875a8e2c549dfa49b7eb2639fef179",
+  "strukturiraj_v22.py": "ec96ee923ff8b3c47377a4579d6676815260e15a8d1e9986139bb4ff252f7d4b",
+  "morfologija_hr.py": "a4aea29cdf2c6e41a1f03dc14b860eca0bd93f179a8cfc01ca5e67d72c3adbfd",
+  "vrste_gradevina.py": "9c5abe3525b6fc813abd1cfe913b2e01b85350344b23ebeece4105da91e0c89f",
+  "usporedi_v22.py": "4f34464bb4c61189d09b28bc2e74973f352f1fa99739a83808df6f7d76af3140",
+  "slijepi_v22.py": "c13f55b496d20a697fcb7981948f6e8a9619a43f4ae42d2d36812894a1f4e2cb",
+  "test_v22.py": "9f23da3c913530e35b5ba49e03263428ab5c44b1ba6acf36d84fa35ec734890e",
+  "usporedi_dodatak.py": "774e14d877f3d0b00e30c3084cd369a570ad8b6d08700b4bf8097528c6965ae8",
+  "strukturiraj_v23.py": "af652e26a97f7c775875918c32535a4483f62ceea9310e176c00e649507351d0",
+  "slijepi_v23.py": "7059e1449e8885da99adcef588b6395ff4a8e294ae7e013242e88d564e42fdc9",
+  "test_v23.py": "bee2717158bbf1085656de596b0b4dcac697368ada188cccb56658385777d494",
+  "oznake/v1/mjeri_v22.py": "306c64b6f7948bce61ef631e3bfab11953521d82093f33afbeb87ff44cf9d665",
+  "oznake/v1/mjeri_v23.py": "010ad2df23c66d6bebe1ea52ddec9e867a4708d231b339b2d1748173d3fcceb2"
+ },
+ "mapiranje": {
+  "oznake/neovisno_cl25_33/mapiranje_v2.json": "d8b5a6b3df42bd3ef74b877e32128a5ff496807350639a2764bdba6c191d1a4c",
+  "oznake/mapiranje_v22.json": "da6a6601447349fbad00e3176cb2652a752824352164790a466a707d73bf8b0e",
+  "oznake/neovisno/mapiranje.json": "904acf7348db37e81049730e2544c05329d3f5ffa86170cc7f47ed284606545b",
+  "oznake/v1/mapiranje_ref_v1.json": "a8a3048a72b79611e4244c291de070a5734b8425ee2b8665c52033fc5bc16e15"
+ },
+ "referenca_razvojna": {
+  "oznake/v1/referenca_v1.json": "e6b2f7a5282d99694ad8cd0cd5939e5db350fa28c8736ffd6e1eddd44a7f85cc",
+  "oznake/v1/odluke_suca_v1.json": "eab06151f4d1fa36494c5daf5a172333809cea805c9fab088485ffb7a6464ac9",
+  "oznake/v1/odluke_suca_v1_1.json": "492b3e8de4ba32a0795e58124ae6161ba246d42c51821f54b8676f82714ac0d7",
+  "oznake/v1/mjerenje_v23_ref_v1_1.json": "23f933e056cb55219e47c9fc6c366c600cb0e366ed9925491b2cf392c3e87fbb"
+ },
+ "upute_za_slijepi_test": {
+  "oznake/v1/UPUTE_OZNACAVANJA_v1_1.md": "d2a2a9ef33aefddc15292f05c6a2d82d8107bbd87ca575f2b602c4bd5219446b"
+ },
+ "zamrznuto_v2_2": "5c8b834528cbb55833b2ea034817c0f7433e38af48e9d56dc5603569d807b733",
+ "testovi": "143/143 (test_citac 22, test_strukturiraj 36, test_v2 41, test_v22 29, test_v23 15)",
+ "pravilo": "Faza E: slijepi_v23.py odaberi → tekst → neovisne oznake po uputama v1.1 → zamrzavanje oznaka → slijepi_v23.py usporedi.",
+ "pravno_potvrdeno": 0
+}
