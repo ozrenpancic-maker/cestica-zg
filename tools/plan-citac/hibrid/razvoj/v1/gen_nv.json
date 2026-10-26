@@ -1,0 +1,3418 @@
+{
+ "generator": "Kandidati izdvojeni po alinejama. Brojevi u čl. 19 st. 1 (1.1.–1.4.) nisu slovne točke, pa su alineje (• i -) označene s tocka \"-\" i brojane redom kroz cijeli stavak (1–23). Tamo gdje je odredba bez subjekta, vrsta je uzeta iz uvoda stavka ili članka. Kis bez naznake 'nadzemni' svrstan je pod 'uz podrum ili ukupni' i označen kao nejasan. Vrijednosti u cm pretvorene su u m i to je navedeno u polju nejasno.",
+ "kandidati": [
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "Građevine moraju imati pristup na izgrađenu javnu prometnu površinu minimalne širine 4,5 m za jednosmjerni",
+   "parametar": "drugo: najmanja širina pristupne javne prometne površine",
+   "operator": ">=",
+   "vrijednost": 4.5,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna i ugostiteljsko-turistička građevina (nova)",
+    "izraz": "novih poslovnih i ugostiteljsko-turističkih građevina",
+    "citat_izraza": "opći uvjeti za izgradnju novih poslovnih i ugostiteljsko-turističkih građevina",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "izgradnju novih poslovnih",
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "jednosmjerni promet",
+     "citat": "za jednosmjerni",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Uvod se odnosi na dvije vrste (poslovne i ugostiteljsko-turističke). Alternativa je 'ili je uređenje iste započelo na temelju programa gradnje'."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "odnosno 5,5 za dvosmjerni promet",
+   "parametar": "drugo: najmanja širina pristupne javne prometne površine",
+   "operator": ">=",
+   "vrijednost": 5.5,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna i ugostiteljsko-turistička građevina (nova)",
+    "izraz": "novih poslovnih i ugostiteljsko-turističkih građevina",
+    "citat_izraza": "opći uvjeti za izgradnju novih poslovnih i ugostiteljsko-turističkih građevina",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "izgradnju novih poslovnih",
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "dvosmjerni promet",
+     "citat": "za dvosmjerni promet",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "U tekstu nema jedinice uz 5,5 (pretpostavljeno m). Uvod se odnosi na dvije vrste."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "ugostiteljsko-turističke građevine na građevnim česticama od 2500 m 2 i manjim mogu imati pristup na izgrađenu javnu prometnu površinu minimalne širine 3,5 m",
+   "parametar": "drugo: najmanja širina pristupne javne prometne površine",
+   "operator": ">=",
+   "vrijednost": 3.5,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "ugostiteljsko-turistička građevina (nova)",
+    "izraz": "ugostiteljsko-turističke građevine",
+    "citat_izraza": "ugostiteljsko-turističke građevine na građevnim česticama od 2500 m 2 i manjim",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "izgradnju novih poslovnih",
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "građevna čestica do 2500 m²",
+     "citat": "na građevnim česticama od 2500 m 2 i manjim",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "iznimka od prethodne alineje (4,5/5,5 m)",
+     "citat": "Iznimno, od prethodne alineje"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "bez obzira na veličinu čestice, pristup ugostiteljsko-turističkih građevina se može osigurati i postojećim pješačkim prolazom ili stubištem širine najmanje 1,5 m",
+   "parametar": "drugo: najmanja širina pješačkog prolaza ili stubišta kao pristupa",
+   "operator": ">=",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "ugostiteljsko-turistička građevina (nova)",
+    "izraz": "ugostiteljsko-turističkih građevina",
+    "citat_izraza": "pristup ugostiteljsko-turističkih građevina se može osigurati",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "izgradnju novih poslovnih",
+   "zona": {
+    "oznake": [
+     "T11K-1P"
+    ],
+    "citat": "Unutar površina označenih planskim oznakama T11K-1P"
+   },
+   "uvjeti": [
+    {
+     "tekst": "postojeći pješački prolaz ili stubište",
+     "citat": "postojećim pješačkim prolazom ili stubištem",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "u alineji uvedenoj s 'Iznimno'",
+     "citat": "Iznimno, od prethodne alineje"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "Oznaka 'T11K-1P' razlikuje se od 'T11K-T11P' u alineji o parkiranju, pa je moguća pogreška u tekstu."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Građevine moraju biti priključene na sustav javne odvodnje određen ovim Planom",
+   "parametar": "drugo: obveza priključenja na javnu odvodnju",
+   "operator": "opis",
+   "vrijednost": "priključenje na sustav javne odvodnje",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna i ugostiteljsko-turistička građevina (nova)",
+    "izraz": "novih poslovnih i ugostiteljsko-turističkih građevina",
+    "citat_izraza": "opći uvjeti za izgradnju novih poslovnih i ugostiteljsko-turističkih građevina",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "izgradnju novih poslovnih",
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "Subjekt je samo 'Građevine', a uvod navodi dvije vrste."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "ugostiteljsko-turističke građevine unutar površina ugostiteljsko-turističke namjene (T) do izgradnje sustava javne odvodnje određenog ovim Planom mogu izgraditi vlastiti zatvoreni kanalizacijski sustav sa uređajem (biodisk i sl.)",
+   "parametar": "drugo: vlastiti zatvoreni kanalizacijski sustav",
+   "operator": "dopustenje",
+   "vrijednost": "vlastiti zatvoreni kanalizacijski sustav sa uređajem",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "ugostiteljsko-turistička građevina (nova)",
+    "izraz": "ugostiteljsko-turističke građevine",
+    "citat_izraza": "ugostiteljsko-turističke građevine unutar površina ugostiteljsko-turističke namjene (T)",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "izgradnju novih poslovnih",
+   "zona": {
+    "oznake": [
+     "T"
+    ],
+    "citat": "unutar površina ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "do izgradnje sustava javne odvodnje",
+     "citat": "do izgradnje sustava javne odvodnje određenog ovim Planom",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "iznimka od obveze priključenja na javnu odvodnju",
+     "citat": "Iznimno, ugostiteljsko-turističke građevine"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Parkiranje ili garažiranje vozila rješava se obavezno u građevini i/ili na građevnoj čestici poslovne namjene, a broj mjesta u skladu s namjenama poslovnih prostora i člankom 83. ovih Odredbi",
+   "parametar": "drugo: smještaj i broj parkirališnih mjesta",
+   "operator": "opis",
+   "vrijednost": "u građevini i/ili na građevnoj čestici; broj prema članku 83.",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina (nova)",
+    "izraz": "građevnoj čestici poslovne namjene",
+    "citat_izraza": "u građevini i/ili na građevnoj čestici poslovne namjene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "izgradnju novih poslovnih",
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "Upućuje na članak 83. Nije jasno odnosi li se i na ugostiteljsko-turističke građevine."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "kod gradnje novih i rekonstrukcije postojećih ugostiteljsko-turističkih građevina kao i kod prenamjene građevina stambene namjene u ugostiteljsko-turističke građevine investitor može osigurati parkirališna mjesta (najmom ili zakupom GPM) na drugoj čestici u radijusu najviše 200 m od građevne čestice",
+   "parametar": "drugo: najveća udaljenost parkirališnih mjesta na drugoj čestici",
+   "operator": "<=",
+   "vrijednost": 200,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "ugostiteljsko-turistička građevina",
+    "izraz": "novih i rekonstrukcije postojećih ugostiteljsko-turističkih građevina",
+    "citat_izraza": "kod gradnje novih i rekonstrukcije postojećih ugostiteljsko-turističkih građevina",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T11K-T11P"
+    ],
+    "citat": "unutar površina označenih planskim oznakama T11K-T11P"
+   },
+   "uvjeti": [
+    {
+     "tekst": "parkirališna mjesta osigurana najmom ili zakupom na drugoj čestici",
+     "citat": "(najmom ili zakupom GPM) na drugoj čestici",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "iznimka od parkiranja na vlastitoj čestici",
+     "citat": "Iznimno, na površinama koje se nalaze unutar površina označenih planskim oznakama T11K-T11P"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "Odredba vrijedi i za nove i za postojeće građevine (rekonstrukcija, prenamjena), pa stanje nije jedno. 'GPM' nije definiran."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "Ako se podzemne etaže koriste kao garažni prostori mogu zauzimati do 100% površine gradivog dijela građevne čestice",
+   "parametar": "drugo: najveća zauzetost podzemnih etaža (garaže) u odnosu na gradivi dio čestice",
+   "operator": "<=",
+   "vrijednost": 100,
+   "jedinica": "%",
+   "vrsta_gradevine": {
+    "naziv": "poslovna i ugostiteljsko-turistička građevina (nova)",
+    "izraz": "novih poslovnih i ugostiteljsko-turističkih građevina",
+    "citat_izraza": "opći uvjeti za izgradnju novih poslovnih i ugostiteljsko-turističkih građevina",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "izgradnju novih poslovnih",
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "podzemne etaže koriste se kao garaža",
+     "citat": "Ako se podzemne etaže koriste kao garažni prostori",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Uvod se odnosi na dvije vrste."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "Podzemne etaže mogu se graditi i na regulacijskom pravcu",
+   "parametar": "drugo: gradnja podzemnih etaža na regulacijskom pravcu",
+   "operator": "dopustenje",
+   "vrijednost": "na regulacijskom pravcu",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna i ugostiteljsko-turistička građevina (nova)",
+    "izraz": "novih poslovnih i ugostiteljsko-turističkih građevina",
+    "citat_izraza": "opći uvjeti za izgradnju novih poslovnih i ugostiteljsko-turističkih građevina",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "izgradnju novih poslovnih",
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "Uvod se odnosi na dvije vrste."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "od susjednih građevnih čestica moraju biti udaljene najmanje koliko je određeno ovim Planom za građevine osnovne namjene u njihovom nadzemnom dijelu",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": "opis",
+   "vrijednost": "kao za nadzemni dio građevine osnovne namjene",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "podzemna etaža poslovne i ugostiteljsko-turističke građevine (nova)",
+    "izraz": "Podzemne etaže",
+    "citat_izraza": "Podzemne etaže mogu se graditi i na regulacijskom pravcu",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "izgradnju novih poslovnih",
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "Vrijednost se određuje upućivanjem na druge odredbe Plana."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "Ne računaju se u izgrađenost građevne čestice ukoliko se krovna površina hortikulturno obradi kao okolni teren",
+   "parametar": "drugo: uračunavanje podzemnih etaža u izgrađenost",
+   "operator": "opis",
+   "vrijednost": "ne računaju se u izgrađenost",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "podzemna etaža poslovne i ugostiteljsko-turističke građevine (nova)",
+    "izraz": "Podzemne etaže",
+    "citat_izraza": "Podzemne etaže mogu se graditi i na regulacijskom pravcu",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "izgradnju novih poslovnih",
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "krovna površina hortikulturno obrađena kao okolni teren",
+     "citat": "ukoliko se krovna površina hortikulturno obradi kao okolni teren",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Nije jasno odnosi li se samo na garažne podzemne etaže ili na sve podzemne etaže."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 8,
+   "citat": "Na površini poslovne namjene mogu se urediti i javna parkirališta, a podzemne etaže građevine namijeniti i za javne garaže",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "javna parkirališta i javne garaže u podzemnim etažama",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "javno parkiralište / javna garaža",
+    "izraz": "javna parkirališta",
+    "citat_izraza": "mogu se urediti i javna parkirališta",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "površina gospodarske namjene – poslovne (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "Odredba obuhvaća dvije vrste (parkiralište i garažu)."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 9,
+   "citat": "Potrebno je ozeleniti i hortikulturno urediti najmanje 30 % građevne čestice ugostiteljsko-turističke namjene",
+   "parametar": "najmanji udio zelenila na građevnoj čestici",
+   "operator": ">=",
+   "vrijednost": 30,
+   "jedinica": "%",
+   "vrsta_gradevine": {
+    "naziv": "ugostiteljsko-turistička građevina (nova)",
+    "izraz": "građevne čestice ugostiteljsko-turističke namjene",
+    "citat_izraza": "najmanje 30 % građevne čestice ugostiteljsko-turističke namjene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "izgradnju novih poslovnih",
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "ne odnosi se na rekonstrukcije postojećih ugostiteljsko-turističkih građevina ni na prenamjenu stambenih građevina",
+     "citat": "Ova odredba ne odnosi se na rekonstrukcije postojećih ugostiteljsko-turističkih građevina kao i rekonstrukcije (prenamjene) postojećih građevina stambene namjene u ugostiteljsko-turističke građevine",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 10,
+   "citat": "Potrebno je ozeleniti i hortikulturno urediti najmanje 20 % građevne čestice poslovne namjene",
+   "parametar": "najmanji udio zelenila na građevnoj čestici",
+   "operator": ">=",
+   "vrijednost": 20,
+   "jedinica": "%",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina (nova)",
+    "izraz": "građevne čestice poslovne namjene",
+    "citat_izraza": "najmanje 20 % građevne čestice poslovne namjene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "izgradnju novih poslovnih",
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 12,
+   "citat": "Ulična ograda podiže se iza regulacijskog pravca u odnosu na javnu prometnu površinu, a postavlja se s unutrašnje strane međe",
+   "parametar": "drugo: položaj ulične ograde",
+   "operator": "opis",
+   "vrijednost": "iza regulacijskog pravca, s unutrašnje strane međe",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "ulična ograda",
+    "izraz": "Ulična ograda",
+    "citat_izraza": "Ulična ograda podiže se iza regulacijskog pravca",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Ulične ograde u pravilu se izvode uz primjenu kamena i zelenila ili kombinacije kamena, zelenila i metala, visine najviše 150 cm (mjereno od kote višeg terena)",
+   "parametar": "drugo: najveća visina ulične ograde",
+   "operator": "<=",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "ulična ograda",
+    "izraz": "Ulične ograde",
+    "citat_izraza": "Ulične ograde u pravilu se izvode",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "U tekstu piše 150 cm (pretvoreno u m). 'U pravilu' umanjuje obveznost."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Upotreba montažnih ograda od prefabriciranog betona nije dopuštena",
+   "parametar": "drugo: montažne ograde od prefabriciranog betona",
+   "operator": "zabrana",
+   "vrijednost": "montažne ograde od prefabriciranog betona",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "ograda",
+    "izraz": "montažnih ograda",
+    "citat_izraza": "Upotreba montažnih ograda od prefabriciranog betona",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "NEGATIVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Ograde između građevinskih čestica ne mogu biti više od 1,50 metara (mjereno od kote višeg terena)",
+   "parametar": "drugo: najveća visina ograde između čestica",
+   "operator": "<=",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "ograda između građevnih čestica",
+    "izraz": "Ograde između građevinskih čestica",
+    "citat_izraza": "Ograde između građevinskih čestica ne mogu biti više od 1,50 metara",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "U visini od najviše 100 cm ograda se izvodi kao puna ili čvrsta ograda",
+   "parametar": "drugo: najveća visina punog dijela ograde",
+   "operator": "<=",
+   "vrijednost": 1.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "ograda",
+    "izraz": "ograda",
+    "citat_izraza": "ograda se izvodi kao puna ili čvrsta ograda",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "U tekstu piše 100 cm (pretvoreno u m). Iznimno se dopuštaju potpuno perforirane ili prozračne ograde."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "ograde između građevnih čestica mogu biti više od 1,50 m, ali ne više od 2,0 m, kada je to određeno posebnim propisom",
+   "parametar": "drugo: najveća visina ograde između čestica",
+   "operator": "<=",
+   "vrijednost": 2.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "ograda između građevnih čestica",
+    "izraz": "ograde između građevnih čestica",
+    "citat_izraza": "ograde između građevnih čestica mogu biti više od 1,50 m",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "kada je određeno posebnim propisom",
+     "citat": "kada je to određeno posebnim propisom",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "iznimka od najviše 1,50 m",
+     "citat": "Iznimno, ograde između građevnih čestica mogu biti više od 1,50 m"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "Upućuje na posebni propis koji nije naveden."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Radi očuvanja izgleda padina na kosim građevinskim česticama, zabranjuje se gradnja podzida viših od 150 cm",
+   "parametar": "drugo: najveća visina podzida",
+   "operator": "<=",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "podzid",
+    "izraz": "podzida",
+    "citat_izraza": "zabranjuje se gradnja podzida viših od 150 cm",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "kose građevne čestice",
+     "citat": "na kosim građevinskim česticama",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "NEGATIVNO",
+   "nejasno": "U tekstu piše 150 cm (pretvoreno u m). Zabrana je izražena kao gornja granica."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Kaskade mogu biti najviše 150 cm visoke",
+   "parametar": "drugo: najveća visina kaskade",
+   "operator": "<=",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "kaskadni zid",
+    "izraz": "Kaskade",
+    "citat_izraza": "Kaskade mogu biti najviše 150 cm visoke",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "nema opasnosti od narušavanja prirodnog izgleda ambijenta",
+     "citat": "ako nema opasnosti od narušavanja prirodnog izgleda ambijenta",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "kaskadni način izgradnje dopušten je iznimno",
+     "citat": "Iznimno, ako nema opasnosti od narušavanja prirodnog izgleda ambijenta može se izvesti kaskadni način izgradnje"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "U tekstu piše 150 cm (pretvoreno u m)."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "uz obavezan odmak kaskada (horizontalne terase) od 0,5 m",
+   "parametar": "drugo: odmak kaskada (horizontalne terase)",
+   "operator": "=",
+   "vrijednost": 0.5,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "kaskadni zid",
+    "izraz": "kaskada",
+    "citat_izraza": "obavezan odmak kaskada (horizontalne terase)",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "kaskadni način izgradnje dopušten je iznimno",
+     "citat": "Iznimno, ako nema opasnosti od narušavanja prirodnog izgleda ambijenta može se izvesti kaskadni način izgradnje"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "Nije jasno je li 0,5 m najmanji ili točan odmak."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Broj maksimalnih kaskada nije određen",
+   "parametar": "drugo: najveći broj kaskada",
+   "operator": "nije_propisano",
+   "vrijednost": null,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "kaskadni zid",
+    "izraz": "kaskada",
+    "citat_izraza": "Broj maksimalnih kaskada nije određen",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 16,
+   "citat": "Navedeni sadržaji ne ulaze u izgrađenost građevne čestice, ali moraju biti u nivou terena",
+   "parametar": "drugo: visinski položaj sportskih terena, bazena i terasa",
+   "operator": "opis",
+   "vrijednost": "u nivou terena; ne ulaze u izgrađenost",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "sportski teren, otvoreni bazen, terasa",
+    "izraz": "sportski tereni, otvoreni bazeni, terase i sl.",
+    "citat_izraza": "U sklopu građevne čestice mogu se predvidjeti sportski tereni, otvoreni bazeni, terase i sl.",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "Obuhvaća više vrsta."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 16,
+   "citat": "mogu biti i iznad kote prirodnog terena (slojnica terena) i to maksimalno do vis. od 1,0 m",
+   "parametar": "drugo: najveća visina iznad kote prirodnog terena",
+   "operator": "<=",
+   "vrijednost": 1.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "sportski teren, otvoreni bazen, terasa",
+    "izraz": "sportski tereni, otvoreni bazeni, terase i sl.",
+    "citat_izraza": "U sklopu građevne čestice mogu se predvidjeti sportski tereni, otvoreni bazeni, terase i sl.",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "iznimka od gradnje u nivou terena",
+     "citat": "Iznimno, mogu biti i iznad kote prirodnog terena"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "Obuhvaća više vrsta."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 16,
+   "citat": "a od susjedne građevne čestice moraju biti udaljeni najmanje 4 metra",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 4,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "sportski teren, otvoreni bazen, terasa (iznad terena)",
+    "izraz": "sportski tereni, otvoreni bazeni, terase i sl.",
+    "citat_izraza": "U sklopu građevne čestice mogu se predvidjeti sportski tereni, otvoreni bazeni, terase i sl.",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "sadržaji iznad kote prirodnog terena",
+     "citat": "mogu biti i iznad kote prirodnog terena (slojnica terena)",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "u iznimnoj rečenici",
+     "citat": "Iznimno, mogu biti i iznad kote prirodnog terena"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "Nije jasno vrijedi li 4 m samo za sadržaje iznad terena ili za sve."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 16,
+   "citat": "Otvoreni bazeni i terase mogu se graditi na granici građevne čestice uz javnu prometnu površinu ili obalnu šetnicu",
+   "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+   "operator": "dopustenje",
+   "vrijednost": "na granici čestice uz javnu prometnu površinu ili obalnu šetnicu",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "otvoreni bazen, terasa",
+    "izraz": "Otvoreni bazeni i terase",
+    "citat_izraza": "Otvoreni bazeni i terase mogu se graditi na granici građevne čestice",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "granica uz javnu prometnu površinu ili obalnu šetnicu",
+     "citat": "uz javnu prometnu površinu ili obalnu šetnicu",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 19,
+   "citat": "Krovna ploha građevina može se izvesti kao kosa nagiba između 18o i 25o, ravna ili drugog oblika",
+   "parametar": "oblik krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "kosa, ravna ili drugog oblika",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna i ugostiteljsko-turistička građevina (nova)",
+    "izraz": "građevina",
+    "citat_izraza": "Krovna ploha građevina može se izvesti",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "izgradnju novih poslovnih",
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "Subjekt je samo 'građevina'; vrsta je uzeta iz uvoda stavka (dvije vrste)."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 19,
+   "citat": "kosa nagiba između 18o i 25o",
+   "parametar": "nagib krovnih ploha",
+   "operator": "izmedju",
+   "vrijednost": "18–25",
+   "jedinica": "°",
+   "vrsta_gradevine": {
+    "naziv": "poslovna i ugostiteljsko-turistička građevina (nova)",
+    "izraz": "građevina",
+    "citat_izraza": "Krovna ploha građevina može se izvesti",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "izgradnju novih poslovnih",
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "kosa krovna ploha",
+     "citat": "kao kosa",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "U tekstu je oznaka 'o' umjesto znaka °."
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 20,
+   "citat": "pojedina kućica može imati površinu od najviše 6 m 2",
+   "parametar": "drugo: najveća površina krovne kućice",
+   "operator": "<=",
+   "vrijednost": 6,
+   "jedinica": "m²",
+   "vrsta_gradevine": {
+    "naziv": "krovna kućica",
+    "izraz": "krovnih kućica",
+    "citat_izraza": "Dozvoljena je izgradnja krovnih prozora i krovnih kućica",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 19,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 21,
+   "citat": "Međusobnu udaljenost građevina na građevnoj čestici ne može biti manja od udaljenosti propisanih važećim Pravilnikom o mjerama zaštite od elementarnih nepogoda i ratnih opasnosti u prostornom planiranju i uređenju prostora",
+   "parametar": "najmanja udaljenost između građevina na istoj čestici",
+   "operator": "opis",
+   "vrijednost": "prema Pravilniku o mjerama zaštite od elementarnih nepogoda i ratnih opasnosti",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna i ugostiteljsko-turistička građevina (nova)",
+    "izraz": "građevina",
+    "citat_izraza": "Međusobnu udaljenost građevina na građevnoj čestici",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "izgradnju novih poslovnih",
+   "zona": {
+    "oznake": [
+     "K",
+     "T"
+    ],
+    "citat": "unutar površina gospodarske namjene – poslovne (K) i unutar ugostiteljsko-turističke namjene (T)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "Upućuje na drugi propis (Pravilnik)."
+  },
+  {
+   "clanak": 19,
+   "stavak": 2,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Uvjeti za izgradnju hostela iz skupine 'ostali ugostiteljski objekti za smještaj' određeni su člancima 38., 39. i 42.",
+   "parametar": "drugo: upućivanje na druge članke",
+   "operator": "opis",
+   "vrijednost": "članci 38., 39. i 42.",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "hostel",
+    "izraz": "hostela",
+    "citat_izraza": "Uvjeti za izgradnju hostela",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": ""
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "Upućuje na druge članke. Tekst iza ovoga (2.1., 2.1.1.) su naslovi odjeljaka."
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "ukoliko to zahtjeva tehnološki proces građevine na građevnoj čestici se može graditi jedna ili više građevina osnovne namjene unutar dopuštenih graničnih vrijednosti propisanih ovim Planom",
+   "parametar": "drugo: broj građevina osnovne namjene na čestici",
+   "operator": "dopustenje",
+   "vrijednost": "jedna ili više",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina (nova)",
+    "izraz": "poslovne građevine",
+    "citat_izraza": "grade se poslovne građevine i uređuju površine prema slijedećim uvjetima za novu izgradnju",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "ako to zahtijeva tehnološki proces",
+     "citat": "ukoliko to zahtjeva tehnološki proces građevine",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "Iznimno, izvan gradivog dijela građevne čestice mogu se graditi i uređivati potporni zidovi, parkirališta, komunalne građevine i uređaji, prometne građevine i uređaji",
+   "parametar": "drugo: gradnja izvan gradivog dijela čestice",
+   "operator": "dopustenje",
+   "vrijednost": "izvan gradivog dijela građevne čestice",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "ostale građevine (potporni zid, parkiralište, komunalna i prometna građevina)",
+    "izraz": "potporni zidovi, parkirališta, komunalne građevine i uređaji, prometne građevine i uređaji",
+    "citat_izraza": "mogu se graditi i uređivati potporni zidovi, parkirališta, komunalne građevine i uređaji, prometne građevine i uređaji",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "ostale građevine u pravilu se grade unutar gradivog dijela",
+     "citat": "Iznimno, izvan gradivog dijela građevne čestice"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "Obuhvaća više vrsta."
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "površina građevne čestice ne može biti manja od 600 m 2",
+   "parametar": "najmanja površina građevne čestice",
+   "operator": ">=",
+   "vrijednost": 600,
+   "jedinica": "m²",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina (nova)",
+    "izraz": "poslovne građevine",
+    "citat_izraza": "grade se poslovne građevine i uređuju površine prema slijedećim uvjetima za novu izgradnju",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "iznimno za benzinske stanice 500 m 2",
+   "parametar": "najmanja površina građevne čestice",
+   "operator": ">=",
+   "vrijednost": 500,
+   "jedinica": "m²",
+   "vrsta_gradevine": {
+    "naziv": "benzinska stanica (nova)",
+    "izraz": "benzinske stanice",
+    "citat_izraza": "iznimno za benzinske stanice 500 m 2",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "iznimka od 600 m²",
+     "citat": "iznimno za benzinske stanice"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "najveća dopuštena veličina građevne čestice nije određena",
+   "parametar": "najveća površina građevne čestice",
+   "operator": "nije_propisano",
+   "vrijednost": null,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina (nova)",
+    "izraz": "poslovne građevine",
+    "citat_izraza": "grade se poslovne građevine i uređuju površine prema slijedećim uvjetima za novu izgradnju",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "najveći dopušteni koeficijent izgrađenosti (Kig) iznosi 0,4",
+   "parametar": "najveći koeficijent izgrađenosti (kig)",
+   "operator": "<=",
+   "vrijednost": 0.4,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina (nova)",
+    "izraz": "poslovne građevine",
+    "citat_izraza": "grade se poslovne građevine i uređuju površine prema slijedećim uvjetima za novu izgradnju",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "najveći dopušteni koeficijent iskorištenosti (Kis) iznosi 2,0",
+   "parametar": "najveći koeficijent iskoristivosti (kis) (uz podrum ili ukupni)",
+   "operator": "<=",
+   "vrijednost": 2.0,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina (nova)",
+    "izraz": "poslovne građevine",
+    "citat_izraza": "grade se poslovne građevine i uređuju površine prema slijedećim uvjetima za novu izgradnju",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "Nije navedeno je li Kis nadzemni ili ukupni."
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "građevine mogu imati do 4 nadzemne etaže uz uvjet da je 4. nadzemna etaža potkrovlje bez nadozida",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": 4,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina (nova)",
+    "izraz": "poslovne građevine",
+    "citat_izraza": "grade se poslovne građevine i uređuju površine prema slijedećim uvjetima za novu izgradnju",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "4. nadzemna etaža je potkrovlje bez nadozida",
+     "citat": "uz uvjet da je 4. nadzemna etaža potkrovlje bez nadozida",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Broj nadzemnih etaža."
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Moguća je izgradnja 2 podzemne etaže, ukoliko geotehnički uvjeti to dopuštaju",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": 2,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina (nova)",
+    "izraz": "poslovne građevine",
+    "citat_izraza": "grade se poslovne građevine i uređuju površine prema slijedećim uvjetima za novu izgradnju",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "geotehnički uvjeti dopuštaju",
+     "citat": "ukoliko geotehnički uvjeti to dopuštaju",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Broj podzemnih etaža. Nije jasno je li 2 najviše ili točan broj."
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "Najveća dopuštena visina građevine iznosi 11,0 metara",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 11.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina (nova)",
+    "izraz": "poslovne građevine",
+    "citat_izraza": "grade se poslovne građevine i uređuju površine prema slijedećim uvjetima za novu izgradnju",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "Točka mjerenja visine nije navedena."
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "Iznimno, 10% tlocrtne površine građevine može biti i veće visine, bez ograničenja, u skladu s tehnološkim procesom građevine",
+   "parametar": "najveća visina građevine",
+   "operator": "opis",
+   "vrijednost": "bez ograničenja za 10% tlocrtne površine",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina (nova)",
+    "izraz": "poslovne građevine",
+    "citat_izraza": "grade se poslovne građevine i uređuju površine prema slijedećim uvjetima za novu izgradnju",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "u skladu s tehnološkim procesom; najviše 10% tlocrtne površine",
+     "citat": "10% tlocrtne površine građevine može biti i veće visine, bez ograničenja, u skladu s tehnološkim procesom građevine",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "iznimka od 11,0 m",
+     "citat": "Iznimno, 10% tlocrtne površine građevine može biti i veće visine"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 8,
+   "citat": "može imati neposredan pristup i na postojeću ulicu Antuna Mataije (glavnu mjesnu) uz suglasnost nadležnih pravnih osoba koje upravljaju prometnicom",
+   "parametar": "drugo: pristup na ulicu Antuna Mataije",
+   "operator": "dopustenje",
+   "vrijednost": "neposredan pristup na ulicu Antuna Mataije",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina (nova)",
+    "izraz": "poslovne građevine",
+    "citat_izraza": "grade se poslovne građevine i uređuju površine prema slijedećim uvjetima za novu izgradnju",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "pristup na ostale prometnice nije moguć; suglasnost upravitelja prometnice",
+     "citat": "ukoliko to nije u mogućnosti (dio površine između planiranih ostalih prometnica)",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "iznimka od pristupa na ostale prometnice",
+     "citat": "Iznimno, ukoliko to nije u mogućnosti"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 9,
+   "citat": "najmanja udaljenost građevina od regulacijskog pravca ul. Antuna Mataije iznosi 10 metara",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 10,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina (nova)",
+    "izraz": "poslovne građevine",
+    "citat_izraza": "grade se poslovne građevine i uređuju površine prema slijedećim uvjetima za novu izgradnju",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "ulica Antuna Mataije",
+     "citat": "regulacijskog pravca ul. Antuna Mataije",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 9,
+   "citat": "odnosno 4 metra od ostalih ulica te ostalih javnih površina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 4,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina (nova)",
+    "izraz": "poslovne građevine",
+    "citat_izraza": "grade se poslovne građevine i uređuju površine prema slijedećim uvjetima za novu izgradnju",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "ostale ulice i javne površine",
+     "citat": "od ostalih ulica te ostalih javnih površina",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 10,
+   "citat": "najmanja udaljenost od granice susjedne građevne čestice iznosi 5,0 m za građevine visine do 10,0 m",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 5.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina (nova)",
+    "izraz": "poslovne građevine",
+    "citat_izraza": "grade se poslovne građevine i uređuju površine prema slijedećim uvjetima za novu izgradnju",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "visina građevine do 10,0 m",
+     "citat": "za građevine visine do 10,0 m",
+     "izvor": "odredba"
+    },
+    {
+     "tekst": "udaljenost do susjedne građevine prema Pravilniku",
+     "citat": "uz uvjet da udaljenost do građevine na susjednoj građevnoj čestici ne iznosi manje od udaljenosti propisanih važećim Pravilnikom o mjerama zaštite od elementarnih nepogoda i ratnih opasnosti u prostornom planiranju i uređenju prostora",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Upućuje na Pravilnik."
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 10,
+   "citat": "odnosno najmanje 6,0 m za više građevine",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 6.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina (nova)",
+    "izraz": "poslovne građevine",
+    "citat_izraza": "grade se poslovne građevine i uređuju površine prema slijedećim uvjetima za novu izgradnju",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "visina građevine veća od 10,0 m",
+     "citat": "za više građevine",
+     "izvor": "odredba"
+    },
+    {
+     "tekst": "udaljenost do susjedne građevine prema Pravilniku",
+     "citat": "uz uvjet da udaljenost do građevine na susjednoj građevnoj čestici ne iznosi manje od udaljenosti propisanih važećim Pravilnikom o mjerama zaštite od elementarnih nepogoda i ratnih opasnosti u prostornom planiranju i uređenju prostora",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Upućuje na Pravilnik."
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 11,
+   "citat": "mogu se graditi i pomoćne građevine (garaže, spremišta i sl.) najviše kao dvoetažne od kojih je druga etaža obavezno potkrovlje bez nadozida",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": 2,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina (nova)",
+    "izraz": "pomoćne građevine (garaže, spremišta i sl.)",
+    "citat_izraza": "mogu se graditi i pomoćne građevine (garaže, spremišta i sl.)",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "druga etaža je potkrovlje bez nadozida",
+     "citat": "od kojih je druga etaža obavezno potkrovlje bez nadozida",
+     "izvor": "odredba"
+    },
+    {
+     "tekst": "uz građevine osnovne namjene, unutar Kig i Kis",
+     "citat": "uz građevine osnovne namjene, unutar dopuštenih graničnih vrijednosti propisanih ovim Planom (Kig i Kis)",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 11,
+   "citat": "tlocrtno manje od građevina osnovne namjene, visine 4,0 metra",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina (nova)",
+    "izraz": "pomoćne građevine (garaže, spremišta i sl.)",
+    "citat_izraza": "mogu se graditi i pomoćne građevine (garaže, spremišta i sl.)",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "'visine 4,0 metra' nije izričito najveća visina. Točka mjerenja nije navedena."
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 11,
+   "citat": "tlocrtno manje od građevina osnovne namjene",
+   "parametar": "najveća površina tlocrtne projekcije građevine",
+   "operator": "opis",
+   "vrijednost": "manje od građevine osnovne namjene",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina (nova)",
+    "izraz": "pomoćne građevine (garaže, spremišta i sl.)",
+    "citat_izraza": "mogu se graditi i pomoćne građevine (garaže, spremišta i sl.)",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 11,
+   "citat": "Građevine moraju biti udaljene 4,0 metra od susjedne građevinske čestice ukoliko imaju otvore",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina (nova)",
+    "izraz": "Građevine",
+    "citat_izraza": "Građevine moraju biti udaljene 4,0 metra od susjedne građevinske čestice",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar површина označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "građevina ima otvore",
+     "citat": "ukoliko imaju otvore",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Subjekt 'Građevine' je u alineji o pomoćnim građevinama; nije sigurno odnosi li se samo na pomoćne. Nije jasno je li 4,0 m točna ili najmanja udaljenost."
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 11,
+   "citat": "odnosno 3,0 metra kada nemaju otvore",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina (nova)",
+    "izraz": "Građevine",
+    "citat_izraza": "Građevine moraju biti udaljene 4,0 metra od susjedne građevinske čestice",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "građevina nema otvore",
+     "citat": "kada nemaju otvore",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Subjekt 'Građevine' je u alineji o pomoćnim građevinama; nije sigurno odnosi li se samo na pomoćne."
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 11,
+   "citat": "Najmanja udaljenost građevina od regulacijskog pravca ul. Antuna Mataije iznosi 10,0 metara",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 10.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina (nova)",
+    "izraz": "građevina",
+    "citat_izraza": "Najmanja udaljenost građevina od regulacijskog pravca ul. Antuna Mataije iznosi 10,0 metara",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "ulica Antuna Mataije",
+     "citat": "regulacijskog pravca ul. Antuna Mataije",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Subjekt 'građevina' je u alineji o pomoćnim građevinama, a ponavlja alineju 9."
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 11,
+   "citat": "odnosno 4,0 metra od ostalih javnih površina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina (nova)",
+    "izraz": "građevina",
+    "citat_izraza": "Najmanja udaljenost građevina od regulacijskog pravca ul. Antuna Mataije iznosi 10,0 metara",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "ostale javne površine",
+     "citat": "od ostalih javnih površina",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Subjekt nije jednoznačan (pomoćne ili sve građevine)."
+  },
+  {
+   "clanak": 20,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 12,
+   "citat": "nadstrešnice (otvorene najmanje sa dvije strane) mogu se graditi i na granici sa susjednom građevnom česticom",
+   "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+   "operator": "dopustenje",
+   "vrijednost": "na granici sa susjednom građevnom česticom",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "nadstrešnica (nova)",
+    "izraz": "nadstrešnice",
+    "citat_izraza": "nadstrešnice (otvorene najmanje sa dvije strane)",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K1"
+    ],
+    "citat": "Unutar površina označenih planskom oznakom (K1)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "otvorena najmanje s dvije strane",
+     "citat": "(otvorene najmanje sa dvije strane)",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "površina se ne može dijeliti na manje cjeline",
+   "parametar": "drugo: dioba površine na manje cjeline",
+   "operator": "zabrana",
+   "vrijednost": "dioba na manje cjeline",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina s pretežito uslužnom namjenom (nova)",
+    "izraz": "poslovne građevine s pretežito uslužnom namjenom",
+    "citat_izraza": "namijenjena je izgradnji poslovne građevine s pretežito uslužnom namjenom",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "uvjetima za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K11"
+    ],
+    "citat": "Površina označena planskom oznakom (K11)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "NEGATIVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "planirana je izgradnja samo jedne građevine osnovne namjene",
+   "parametar": "drugo: najveći broj građevina osnovne namjene",
+   "operator": "=",
+   "vrijednost": 1,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina s pretežito uslužnom namjenom (nova)",
+    "izraz": "poslovne građevine s pretežito uslužnom namjenom",
+    "citat_izraza": "namijenjena je izgradnji poslovne građevine s pretežito uslužnom namjenom",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "uvjetima za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K11"
+    ],
+    "citat": "Površina označena planskom oznakom (K11)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "građevina mora imati obavezno jednu etažu uređenu kao javnu garažu",
+   "parametar": "drugo: obvezna etaža javne garaže",
+   "operator": "=",
+   "vrijednost": 1,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina s pretežito uslužnom namjenom (nova)",
+    "izraz": "poslovne građevine s pretežito uslužnom namjenom",
+    "citat_izraza": "namijenjena je izgradnji poslovne građevine s pretežito uslužnom namjenom",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "uvjetima za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K11"
+    ],
+    "citat": "Površina označena planskom oznakom (K11)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "podzemne etaže mogu imati 100% izgrađenost građevne čestice",
+   "parametar": "drugo: najveća izgrađenost čestice podzemnim etažama",
+   "operator": "<=",
+   "vrijednost": 100,
+   "jedinica": "%",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina s pretežito uslužnom namjenom (nova)",
+    "izraz": "poslovne građevine s pretežito uslužnom namjenom",
+    "citat_izraza": "namijenjena je izgradnji poslovne građevine s pretežito uslužnom namjenom",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "uvjetima za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K11"
+    ],
+    "citat": "Površina označena planskom oznakom (K11)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "nije moguća izgradnja pomoćnih građevina",
+   "parametar": "dopuštenost gradnje",
+   "operator": "zabrana",
+   "vrijednost": "pomoćne građevine",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "pomoćnih građevina",
+    "citat_izraza": "nije moguća izgradnja pomoćnih građevina",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "uvjetima za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K11"
+    ],
+    "citat": "Površina označena planskom oznakom (K11)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "NEGATIVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "najveći dopušteni koeficijent izgrađenosti (Kig) iznosi 0,4",
+   "parametar": "najveći koeficijent izgrađenosti (kig)",
+   "operator": "<=",
+   "vrijednost": 0.4,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina s pretežito uslužnom namjenom (nova)",
+    "izraz": "poslovne građevine s pretežito uslužnom namjenom",
+    "citat_izraza": "namijenjena je izgradnji poslovne građevine s pretežito uslužnom namjenom",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "uvjetima za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K11"
+    ],
+    "citat": "Površina označena planskom oznakom (K11)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "najveći dopušteni koeficijent iskorištenosti (Kis) iznosi 2,4",
+   "parametar": "najveći koeficijent iskoristivosti (kis) (uz podrum ili ukupni)",
+   "operator": "<=",
+   "vrijednost": 2.4,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina s pretežito uslužnom namjenom (nova)",
+    "izraz": "poslovne građevine s pretežito uslužnom namjenom",
+    "citat_izraza": "namijenjena je izgradnji poslovne građevine s pretežito uslužnom namjenom",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "uvjetima za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K11"
+    ],
+    "citat": "Površina označena planskom oznakom (K11)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "Nije navedeno je li Kis nadzemni ili ukupni."
+  },
+  {
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 8,
+   "citat": "građevina može imati do četiri (4) nadzemne etaže uz uvjet da je četvrta etaža potkrovlje bez nadozida",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": 4,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina s pretežito uslužnom namjenom (nova)",
+    "izraz": "poslovne građevine s pretežito uslužnom namjenom",
+    "citat_izraza": "namijenjena je izgradnji poslovne građevine s pretežito uslužnom namjenom",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "uvjetima za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K11"
+    ],
+    "citat": "Površina označena planskom oznakom (K11)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "četvrta etaža je potkrovlje bez nadozida",
+     "citat": "uz uvjet da je četvrta etaža potkrovlje bez nadozida",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Broj nadzemnih etaža."
+  },
+  {
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 9,
+   "citat": "ukoliko geotehnički uvjeti to dopuštaju moguća je izgradnja više podzemnih etaža",
+   "parametar": "najveći broj etaža",
+   "operator": "opis",
+   "vrijednost": "više podzemnih etaža",
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina s pretežito uslužnom namjenom (nova)",
+    "izraz": "poslovne građevine s pretežito uslužnom namjenom",
+    "citat_izraza": "namijenjena je izgradnji poslovne građevine s pretežito uslužnom namjenom",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "uvjetima za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K11"
+    ],
+    "citat": "Površina označena planskom oznakom (K11)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "geotehnički uvjeti dopuštaju",
+     "citat": "ukoliko geotehnički uvjeti to dopuštaju",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Broj podzemnih etaža nije brojčano ograničen."
+  },
+  {
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 10,
+   "citat": "najveća dopuštena visina građevine iznosi 10,5 m na površini",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 10.5,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina s pretežito uslužnom namjenom (nova)",
+    "izraz": "poslovne građevine s pretežito uslužnom namjenom",
+    "citat_izraza": "namijenjena je izgradnji poslovne građevine s pretežito uslužnom namjenom",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "uvjetima za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K11"
+    ],
+    "citat": "Površina označena planskom oznakom (K11)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "'na površini' je nejasno (možda ostatak teksta). Točka mjerenja nije navedena."
+  },
+  {
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 11,
+   "citat": "najmanja udaljenost nadzemnog dijela građevine od regulacijskog pravca ul. Antuna Mataije iznosi 10 metara",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 10,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina s pretežito uslužnom namjenom (nova)",
+    "izraz": "poslovne građevine s pretežito uslužnom namjenom",
+    "citat_izraza": "namijenjena je izgradnji poslovne građevine s pretežito uslužnom namjenom",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "uvjetima za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K11"
+    ],
+    "citat": "Površina označena planskom oznakom (K11)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "ulica Antuna Mataije; nadzemni dio",
+     "citat": "nadzemnog dijela građevine od regulacijskog pravca ul. Antuna Mataije",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 11,
+   "citat": "odnosno 4 metra od ostalih ulica te ostalih javnih površina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 4,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina s pretežito uslužnom namjenom (nova)",
+    "izraz": "poslovne građevine s pretežito uslužnom namjenom",
+    "citat_izraza": "namijenjena je izgradnji poslovne građevine s pretežito uslužnom namjenom",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "uvjetima za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K11"
+    ],
+    "citat": "Površina označena planskom oznakom (K11)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "ostale ulice i javne površine",
+     "citat": "od ostalih ulica te ostalih javnih površina",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 12,
+   "citat": "najmanja udaljenost od granice susjedne građevne čestice iznosi 4,0 m za građevine visine do 10,0 m",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina s pretežito uslužnom namjenom (nova)",
+    "izraz": "poslovne građevine s pretežito uslužnom namjenom",
+    "citat_izraza": "namijenjena je izgradnji poslovne građevine s pretežito uslužnom namjenom",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "uvjetima za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K11"
+    ],
+    "citat": "Površina označena planskom oznakom (K11)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "visina građevine do 10,0 m",
+     "citat": "za građevine visine do 10,0 m",
+     "izvor": "odredba"
+    },
+    {
+     "tekst": "udaljenost do susjedne građevine prema Pravilniku",
+     "citat": "uz uvjet da udaljenost do građevine na susjednoj građevnoj čestici ne iznosi manje od udaljenosti propisanih važećim Pravilnikom o mjerama zaštite od elementarnih nepogoda i ratnih opasnosti u prostornom planiranju i uređenju prostora",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Upućuje na Pravilnik."
+  },
+  {
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 12,
+   "citat": "odnosno najmanje 6,0 m za više građevine",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 6.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina s pretežito uslužnom namjenom (nova)",
+    "izraz": "poslovne građevine s pretežito uslužnom namjenom",
+    "citat_izraza": "namijenjena je izgradnji poslovne građevine s pretežito uslužnom namjenom",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "uvjetima za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K11"
+    ],
+    "citat": "Površina označena planskom oznakom (K11)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "visina građevine veća od 10,0 m",
+     "citat": "za više građevine",
+     "izvor": "odredba"
+    },
+    {
+     "tekst": "udaljenost do susjedne građevine prema Pravilniku",
+     "citat": "uz uvjet da udaljenost do građevine na susjednoj građevnoj čestici ne iznosi manje od udaljenosti propisanih važećim Pravilnikom o mjerama zaštite od elementarnih nepogoda i ratnih opasnosti u prostornom planiranju i uređenju prostora",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Upućuje na Pravilnik."
+  },
+  {
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "površina (K11) može imati neposredan pristup samo sa južne strane površine sa 'ostale ulice'",
+   "parametar": "drugo: strana pristupa",
+   "operator": "opis",
+   "vrijednost": "samo s južne strane, s 'ostale ulice'",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina s pretežito uslužnom namjenom (nova)",
+    "izraz": "poslovne građevine s pretežito uslužnom namjenom",
+    "citat_izraza": "namijenjena je izgradnji poslovne građevine s pretežito uslužnom namjenom",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "uvjetima za novu izgradnju",
+   "zona": {
+    "oznake": [
+     "K11"
+    ],
+    "citat": "površina (K11)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 23,
+   "stavak": 3,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Na površini (K11) prije privođenja planiranoj namjeni potrebno je ukloniti postojeće građevine",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "opis",
+   "vrijednost": "uklanjanje postojećih građevina prije privođenja namjeni; do tada samo održavanje",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevina (postojeća)",
+    "izraz": "postojeće građevine",
+    "citat_izraza": "potrebno je ukloniti postojeće građevine",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "postojeća",
+   "citat_stanja": "postojeće građevine",
+   "zona": {
+    "oznake": [
+     "K11"
+    ],
+    "citat": "Na površini (K11)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "zadržavanje uz održavanje do privođenja namjeni",
+     "citat": "Postojeće građevine zadržavaju se u prostoru s mogućnošću održavanja do privođenja površine planiranoj namjeni",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Vrsta postojećih građevina nije navedena."
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "površine se ne mogu dijeliti na manje cjeline",
+   "parametar": "drugo: dioba površine na manje cjeline",
+   "operator": "zabrana",
+   "vrijednost": "dioba na manje cjeline",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "poslovnih građevina pretežito trgovačkog sadržaja",
+    "citat_izraza": "namijenjene su izgradnji poslovnih građevina pretežito trgovačkog sadržaja",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K22",
+     "K23",
+     "K24"
+    ],
+    "citat": "površina označene planskim oznakama (K22), (K23) i (K24)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "NEGATIVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "moguća je izgradnja samo jedne građevine osnovne namjene",
+   "parametar": "drugo: najveći broj građevina osnovne namjene",
+   "operator": "=",
+   "vrijednost": 1,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "poslovnih građevina pretežito trgovačkog sadržaja",
+    "citat_izraza": "namijenjene su izgradnji poslovnih građevina pretežito trgovačkog sadržaja",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K22",
+     "K23",
+     "K24"
+    ],
+    "citat": "površina označene planskim oznakama (K22), (K23) i (K24)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "na površini označenoj planskom oznakom K24 moguća je izgradnja više građevina koje moraju zajedno činiti jedinstvenu arhitektonsku cjelinu",
+   "parametar": "drugo: najveći broj građevina osnovne namjene",
+   "operator": "dopustenje",
+   "vrijednost": "više građevina",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "poslovnih građevina pretežito trgovačkog sadržaja",
+    "citat_izraza": "namijenjene su izgradnji poslovnih građevina pretežito trgovačkog sadržaja",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K24"
+    ],
+    "citat": "na površini označenoj planskom oznakom K24"
+   },
+   "uvjeti": [
+    {
+     "tekst": "zajedno čine jedinstvenu arhitektonsku cjelinu",
+     "citat": "koje moraju zajedno činiti jedinstvenu arhitektonsku cjelinu",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "iznimka od jedne građevine",
+     "citat": "Iznimno, na površini označenoj planskom oznakom K24"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "najveći dopušteni koeficijent izgrađenosti (Kig) iznosi 0,4",
+   "parametar": "najveći koeficijent izgrađenosti (kig)",
+   "operator": "<=",
+   "vrijednost": 0.4,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "poslovnih građevina pretežito trgovačkog sadržaja",
+    "citat_izraza": "namijenjene su izgradnji poslovnih građevina pretežito trgovačkog sadržaja",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K22",
+     "K23",
+     "K24"
+    ],
+    "citat": "površina označene planskim oznakama (K22), (K23) i (K24)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "najveći dopušteni koeficijent iskorištenosti (Kis) iznosi 2,0",
+   "parametar": "najveći koeficijent iskoristivosti (kis) (uz podrum ili ukupni)",
+   "operator": "<=",
+   "vrijednost": 2.0,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "poslovnih građevina pretežito trgovačkog sadržaja",
+    "citat_izraza": "namijenjene su izgradnji poslovnih građevina pretežito trgovačkog sadržaja",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K22",
+     "K23",
+     "K24"
+    ],
+    "citat": "površina označene planskim oznakama (K22), (K23) i (K24)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "Nije navedeno je li Kis nadzemni ili ukupni. Uz 2 nadzemne etaže i Kig 0,4 vrijednost 2,0 nije dostižna."
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "na površinama nije moguća izgradnja pomoćnih građevina",
+   "parametar": "dopuštenost gradnje",
+   "operator": "zabrana",
+   "vrijednost": "pomoćne građevine",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "pomoćnih građevina",
+    "citat_izraza": "nije moguća izgradnja pomoćnih građevina",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K22",
+     "K23",
+     "K24"
+    ],
+    "citat": "površina označene planskim oznakama (K22), (K23) i (K24)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "NEGATIVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "najveći dopušteni broj etaža građevine poslovne namjene su dvije (2) nadzemne etaže uz uvjet da je druga etaža potkrovlje bez nadozida",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": 2,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina",
+    "izraz": "građevine poslovne namjene",
+    "citat_izraza": "najveći dopušteni broj etaža građevine poslovne namjene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K22",
+     "K23",
+     "K24"
+    ],
+    "citat": "površina označene planskim oznakama (K22), (K23) i (K24)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "druga etaža je potkrovlje bez nadozida",
+     "citat": "uz uvjet da je druga etaža potkrovlje bez nadozida",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Broj nadzemnih etaža."
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "te jedna (1) podzemna etaža ukoliko geotehnički uvjeti to dopuštaju",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": 1,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina",
+    "izraz": "građevine poslovne namjene",
+    "citat_izraza": "najveći dopušteni broj etaža građevine poslovne namjene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K22",
+     "K23",
+     "K24"
+    ],
+    "citat": "površina označene planskim oznakama (K22), (K23) i (K24)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "geotehnički uvjeti dopuštaju",
+     "citat": "ukoliko geotehnički uvjeti to dopuštaju",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Broj podzemnih etaža."
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "Najveća dopuštena visina građevine iznosi 5,5 m",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 5.5,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "poslovnih građevina pretežito trgovačkog sadržaja",
+    "citat_izraza": "namijenjene su izgradnji poslovnih građevina pretežito trgovačkog sadržaja",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K22",
+     "K23",
+     "K24"
+    ],
+    "citat": "površina označene planskim oznakama (K22), (K23) i (K24)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "Točka mjerenja visine nije navedena."
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 8,
+   "citat": "10 metara od glavnih mjesnih ulica",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 10,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "poslovnih građevina pretežito trgovačkog sadržaja",
+    "citat_izraza": "namijenjene su izgradnji poslovnih građevina pretežito trgovačkog sadržaja",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K22",
+     "K23",
+     "K24"
+    ],
+    "citat": "površina označene planskim oznakama (K22), (K23) i (K24)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "glavne mjesne ulice",
+     "citat": "od glavnih mjesnih ulica",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Podalineja unutar alineje 'najmanja udaljenost građevine od regulacijskog pravca iznosi:'."
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 8,
+   "citat": "4 metra od sabirnih i ostalih ulica te ostalih javnih površina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 4,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "poslovnih građevina pretežito trgovačkog sadržaja",
+    "citat_izraza": "namijenjene su izgradnji poslovnih građevina pretežito trgovačkog sadržaja",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K22",
+     "K23",
+     "K24"
+    ],
+    "citat": "površina označene planskim oznakama (K22), (K23) i (K24)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "sabirne i ostale ulice te ostale javne površine",
+     "citat": "od sabirnih i ostalih ulica te ostalih javnih površina",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Podalineja."
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 9,
+   "citat": "udaljenost građevine od granice građevne čestice iznosi najmanje 5 metara",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 5,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "poslovnih građevina pretežito trgovačkog sadržaja",
+    "citat_izraza": "namijenjene su izgradnji poslovnih građevina pretežito trgovačkog sadržaja",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K22",
+     "K23",
+     "K24"
+    ],
+    "citat": "površina označene planskim oznakama (K22), (K23) i (K24)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "udaljenost do susjedne građevine prema Pravilniku",
+     "citat": "uz uvjet da udaljenost do građevine na susjednoj građevnoj čestici ne iznosi manje od udaljenosti propisanih važećim Pravilnikom o mjerama zaštite od elementarnih nepogoda i ratnih opasnosti u prostornom planiranju i uređenju prostora",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "Upućuje na Pravilnik. Alineja je označena s '•' među alinejama s '-'."
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 10,
+   "citat": "površine označene planskim oznakama K22 i K23 mogu imati pristup samo sa ostalih ceste koje su planirane duž južnih strana površina",
+   "parametar": "drugo: strana pristupa",
+   "operator": "opis",
+   "vrijednost": "samo s ostalih cesta duž južnih strana",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "poslovnih građevina pretežito trgovačkog sadržaja",
+    "citat_izraza": "namijenjene su izgradnji poslovnih građevina pretežito trgovačkog sadržaja",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K22",
+     "K23"
+    ],
+    "citat": "površine označene planskim oznakama K22 i K23"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 11,
+   "citat": "površina označena planskom oznakom K24 može imati pristup samo sa ceste koja se nalazi duž sjeverne strane površine",
+   "parametar": "drugo: strana pristupa",
+   "operator": "opis",
+   "vrijednost": "samo s ceste duž sjeverne strane",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "poslovnih građevina pretežito trgovačkog sadržaja",
+    "citat_izraza": "namijenjene su izgradnji poslovnih građevina pretežito trgovačkog sadržaja",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K24"
+    ],
+    "citat": "površina označena planskom oznakom K24"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 12,
+   "citat": "na površinama označenim planskom oznakom K24 nije dozvoljena gradnja montažnih objekata",
+   "parametar": "dopuštenost gradnje",
+   "operator": "zabrana",
+   "vrijednost": "montažni objekti",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "montažni objekt",
+    "izraz": "montažnih objekata",
+    "citat_izraza": "nije dozvoljena gradnja montažnih objekata",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K24"
+    ],
+    "citat": "na površinama označenim planskom oznakom K24"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "iznimka od čl. 19 st. (1) točke 1.3.",
+     "citat": "Iznimno, od čl.19. st.(1) točke 1.3. ovih Odredbi"
+    }
+   ],
+   "vrsta_pravila": "NEGATIVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 12,
+   "citat": "krovište građevine treba biti razvedeno, koso",
+   "parametar": "oblik krovišta",
+   "operator": "=",
+   "vrijednost": "razvedeno, koso",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "čvrstih građevina",
+    "citat_izraza": "već samo čvrstih građevina usklađenih s načinom izgradnje unutar povijesne jezgre",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K24"
+    ],
+    "citat": "na površinama označenim planskom oznakom K24"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "iznimka od čl. 19 st. (1) točke 1.3.",
+     "citat": "Iznimno, od čl.19. st.(1) točke 1.3. ovih Odredbi"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "Podalineja općih uvjeta za K24."
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 12,
+   "citat": "s nagibom krovnih ploha između 18o-25o",
+   "parametar": "nagib krovnih ploha",
+   "operator": "izmedju",
+   "vrijednost": "18–25",
+   "jedinica": "°",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "čvrstih građevina",
+    "citat_izraza": "već samo čvrstih građevina usklađenih s načinom izgradnje unutar povijesne jezgre",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K24"
+    ],
+    "citat": "na površinama označenim planskom oznakom K24"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "iznimka od čl. 19 st. (1) točke 1.3.",
+     "citat": "Iznimno, od čl.19. st.(1) točke 1.3. ovih Odredbi"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 12,
+   "citat": "dozvoljava se djelomična izgradnja ravnog krova u površini od 30% građevine",
+   "parametar": "drugo: najveći udio ravnog krova",
+   "operator": "<=",
+   "vrijednost": 30,
+   "jedinica": "%",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "čvrstih građevina",
+    "citat_izraza": "već samo čvrstih građevina usklađenih s načinom izgradnje unutar povijesne jezgre",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K24"
+    ],
+    "citat": "na površinama označenim planskom oznakom K24"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "iznimka od čl. 19 st. (1) točke 1.3.",
+     "citat": "Iznimno, od čl.19. st.(1) točke 1.3. ovih Odredbi"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "Nije jasno je li 30% najviše ili točno, ni od koje površine (tlocrt ili krov)."
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 12,
+   "citat": "pokrov mediteran crijep ili kupa kanalica",
+   "parametar": "vrsta pokrova",
+   "operator": "=",
+   "vrijednost": "mediteran crijep ili kupa kanalica",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "čvrstih građevina",
+    "citat_izraza": "već samo čvrstih građevina usklađenih s načinom izgradnje unutar povijesne jezgre",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K24"
+    ],
+    "citat": "na površinama označenim planskom oznakom K24"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "iznimka od čl. 19 st. (1) točke 1.3.",
+     "citat": "Iznimno, od čl.19. st.(1) točke 1.3. ovih Odredbi"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 24,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 12,
+   "citat": "fasade od kamena ili glatko ožbukane u kombinaciji sa staklenim površinama",
+   "parametar": "drugo: materijal i boja fasade",
+   "operator": "opis",
+   "vrijednost": "kamen ili glatka žbuka sa staklom; svijetli pastelni tonovi ili bijela",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "čvrstih građevina",
+    "citat_izraza": "već samo čvrstih građevina usklađenih s načinom izgradnje unutar povijesne jezgre",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K24"
+    ],
+    "citat": "na površinama označenim planskom oznakom K24"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "iznimka od čl. 19 st. (1) točke 1.3.",
+     "citat": "Iznimno, od čl.19. st.(1) točke 1.3. ovih Odredbi"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "Spaja dvije podalineje (materijal i boja: 'boja fasade svijetlih pastelnih tonova ili bijela')."
+  },
+  {
+   "clanak": 24,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "Najveća dopuštena visina građevine iznosi 11,0 m",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 11.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "poslovnih građevina pretežito trgovačkog sadržaja",
+    "citat_izraza": "namijenjene su izgradnji poslovnih građevina pretežito trgovačkog sadržaja",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K21"
+    ],
+    "citat": "površina označena oznakom K21"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "posebni uvjeti za K21",
+     "citat": "Iznimno, površina označena oznakom K21 može se graditi u skladu sa sljedećim uvjetima"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "Točka mjerenja visine nije navedena."
+  },
+  {
+   "clanak": 24,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "najveći dopušteni broj etaža građevine poslovne namjene su tri (3) nadzemne etaže uz uvjet da je treća etaža potkrovlje bez nadozida",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": 3,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina",
+    "izraz": "građevine poslovne namjene",
+    "citat_izraza": "najveći dopušteni broj etaža građevine poslovne namjene su tri (3) nadzemne etaže",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K21"
+    ],
+    "citat": "površina označena oznakom K21"
+   },
+   "uvjeti": [
+    {
+     "tekst": "treća etaža je potkrovlje bez nadozida",
+     "citat": "uz uvjet da je treća etaža potkrovlje bez nadozida",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "posebni uvjeti za K21",
+     "citat": "Iznimno, površina označena oznakom K21 može se graditi u skladu sa sljedećim uvjetima"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "Broj nadzemnih etaža."
+  },
+  {
+   "clanak": 24,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "te jedna (1) podzemna etaža ukoliko geotehnički uvjeti to dopuštaju",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": 1,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina",
+    "izraz": "građevine poslovne namjene",
+    "citat_izraza": "najveći dopušteni broj etaža građevine poslovne namjene su tri (3) nadzemne etaže",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K21"
+    ],
+    "citat": "površina označena oznakom K21"
+   },
+   "uvjeti": [
+    {
+     "tekst": "geotehnički uvjeti dopuštaju",
+     "citat": "ukoliko geotehnički uvjeti to dopuštaju",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "posebni uvjeti za K21",
+     "citat": "Iznimno, površina označena oznakom K21 može se graditi u skladu sa sljedećim uvjetima"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "Broj podzemnih etaža; tekst se ponavlja i u st. 2, pa citat nije jedinstven u članku."
+  },
+  {
+   "clanak": 24,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "do izgradnje sustava javne odvodnje određenog ovim Planom dopušta se gradnja vlastitog zatvorenog kanalizacijskog sustava sa uređajem (biodisk i sl.)",
+   "parametar": "drugo: vlastiti zatvoreni kanalizacijski sustav",
+   "operator": "dopustenje",
+   "vrijednost": "vlastiti zatvoreni kanalizacijski sustav sa uređajem",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "poslovnih građevina pretežito trgovačkog sadržaja",
+    "citat_izraza": "namijenjene su izgradnji poslovnih građevina pretežito trgovačkog sadržaja",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K21"
+    ],
+    "citat": "površina označena oznakom K21"
+   },
+   "uvjeti": [
+    {
+     "tekst": "do izgradnje sustava javne odvodnje",
+     "citat": "do izgradnje sustava javne odvodnje određenog ovim Planom",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "posebni uvjeti za K21",
+     "citat": "Iznimno, površina označena oznakom K21 može se graditi u skladu sa sljedećim uvjetima"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 24,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "preostali uvjeti gradnje određeni su stavcima 2. i 3. ovog članka",
+   "parametar": "drugo: upućivanje na stavke 2. i 3.",
+   "operator": "opis",
+   "vrijednost": "stavci 2. i 3. članka 24.",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina pretežito trgovačkog sadržaja",
+    "izraz": "poslovnih građevina pretežito trgovačkog sadržaja",
+    "citat_izraza": "namijenjene su izgradnji poslovnih građevina pretežito trgovačkog sadržaja",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K21"
+    ],
+    "citat": "površina označena oznakom K21"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "posebni uvjeti za K21",
+     "citat": "Iznimno, površina označena oznakom K21 može se graditi u skladu sa sljedećim uvjetima"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "Stavak 2. odnosi se na K22–K24; nije jasno koje se njegove alineje (npr. K24 oblikovanje, pristup) primjenjuju na K21. Napomena: st. (3) članaka 20., 23. i 24. upućuje na opće uvjete iz čl. 19 i nije izdvojen kao kandidat."
+  }
+ ],
+ "metapodaci": {
+  "skup": "nv",
+  "pozvani_alati": [
+   "SubagentHandback"
+  ],
+  "tokena": 123580,
+  "trajanje_ms": 345055,
+  "generator": "izolirani agent u razvojnoj sesiji, bez alata za čitanje; samo upute generatora v1 i tekst",
+  "upute": "hibrid/UPUTE_GENERATORA_v1.md"
+ }
+}
