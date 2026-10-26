@@ -168,7 +168,7 @@ function filtri(){
   mozePisati=user?(user.isOwner()||user.can("data.write")!==false):true;
   if(!db){$("#progTxt").textContent="Pohrana nije dostupna u ovom prikazu. Otvorite stranicu prijavljeni na claude.ai.";return}
   db.collection("sporovi").onSnapshot(q=>{
-    sporovi=q.docs.map(d=>d.data()).sort((a,b)=>(a.red||0)-(b.red||0));filtri();render();
+    sporovi=q.docs.map(d=>d.data()).sort((a,b)=>a.skupina<b.skupina?-1:a.skupina>b.skupina?1:(a.red||0)-(b.red||0));filtri();render();
   },e=>{$("#progTxt").textContent="Sporovi se ne mogu učitati ("+e.code+").";});
   db.collection("odluke").onSnapshot(q=>{odluke={};q.docs.forEach(d=>{odluke[d.id]=d.data()});render();},()=>{});
 })();
