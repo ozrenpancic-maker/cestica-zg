@@ -2467,7 +2467,98 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(napTests).then(izvTests).then(dosTests).then(()=>{
+// EKSPERIMENT zona M11/M2 (v0.24.24-exp): izolirani modul inferDetailedZone; isključen za korisnike, bez utjecaja na uvjete gradnje
+async function zoneExpTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), T=w.turf, tick=(ms=30)=>new Promise(r=>setTimeout(r,ms));
+  const decodePng=require("./zone-exp/png.js"), Z=E("ZONE_EXP"), inf=E("inferDetailedZone"), CFG=E("ZONE_EXP_CFG");
+  const ST=["M11_CANDIDATE","M2_CANDIDATE","MIXED_REVIEW","EDGE_AMBIGUOUS","LOW_CONFIDENCE","NO_DATA"];
+  ok(CFG&&CFG.ukljuceno===false&&JSON.stringify(CFG.statusi)===JSON.stringify(ST)&&Array.isArray(CFG.profili)&&CFG.profili.length===0&&!E("ZONE_EXP.ukljuceno()"),"Zona exp: konfiguracija je ugrađena, isključena, bez ugrađenih profila boja (nema boja ni koordinata pojedine čestice)");
+  // sintetička karta: 200×200 px, 0,25 m/px, okvir u EPSG:3765; čestica kvadrat 20×20 m u sredini
+  const X0=400000,Y0=5000000,RES=0.25,N=200, okvir={xmin:X0,ymin:Y0,xmax:X0+N*RES,ymax:Y0+N*RES,wkid:3765};
+  const sq=(cx,cy,h)=>[[[cx-h,cy-h],[cx+h,cy-h],[cx+h,cy+h],[cx-h,cy+h],[cx-h,cy-h]]], PAR=sq(X0+25,Y0+25,10);
+  const A=[236,219,92], B=[230,140,60], WHITE=[250,250,250];
+  const img=f=>{const d=new Uint8ClampedArray(N*N*4); for(let y=0;y<N;y++) for(let x=0;x<N;x++){const e=X0+(x+.5)*RES, n=Y0+N*RES-(y+.5)*RES, c=f(e,n); d.set([c[0],c[1],c[2],255],(y*N+x)*4);} return {data:d,width:N,height:N};};
+  const prof2={id:"test-2",plan:"TEST",karta:"1",status:"KALIBRIRANO",uzorci:[{zona:"M11",rgb:A,tolerancija:30,izvor:"sintetički"},{zona:"M2",rgb:B,tolerancija:30,izvor:"sintetički"}]};
+  const prof1={id:"test-1",plan:"TEST",karta:"1",status:"KALIBRIRANO",uzorci:[{zona:"M11",rgb:A,tolerancija:30,izvor:"sintetički"}]};
+  const run=(slika,o)=>inf({slika,okvir,prstenovi:PAR,profil:prof2,...(o||{})});
+  // čiste zone
+  const r1=run(img(()=>A)), r2=run(img(()=>B));
+  ok(r1.status==="M11_CANDIDATE"&&r1.kandidat==="M11"&&r1.pravnoPotvrdeno===false&&r1.eksperiment===true&&w.Object.isFrozen(r1)&&r1.udjeli.M11===1&&/nije potvrda zone/i.test(r1.napomena),"Zona exp: čista M11 → M11_CANDIDATE (kandidat, nije pravno potvrđeno, nepromjenjiv rezultat)");
+  ok(r2.status==="M2_CANDIDATE"&&r2.kandidat==="M2"&&r2.pravnoPotvrdeno===false,"Zona exp: čista M2 → M2_CANDIDATE");
+  // bez uzoraka M2 nema kandidata M2, a ni M11 se ne potvrđuje kao razlikovan
+  const r3=run(img(()=>B),{profil:prof1}), r4=run(img(()=>A),{profil:prof1});
+  ok(r3.status==="LOW_CONFIDENCE"&&r3.kandidat===null&&r4.status==="LOW_CONFIDENCE"&&/nema uzoraka za M2/.test(r4.razlog),"Zona exp: bez uzoraka M2 nema kandidata M2 ("+r3.status+"), a M11 bez uzorka M2 je LOW_CONFIDENCE");
+  // miješane zone
+  const r5=run(img(e=>e<X0+25?A:B)), r6=run(img(e=>e<X0+20?B:A));
+  ok(r5.status==="MIXED_REVIEW"&&r5.kandidat===null&&Math.abs(r5.udjeli.M11-0.5)<0.05,"Zona exp: pola M11, pola M2 → MIXED_REVIEW ("+r5.udjeli.M11.toFixed(2)+")");
+  ok(r6.status==="MIXED_REVIEW"&&r6.udjeli.M2>0.1&&r6.udjeli.M2<0.9,"Zona exp: manji dio M2 (≈ 20 %) → MIXED_REVIEW, ne kandidat M11 (M2 "+r6.udjeli.M2.toFixed(2)+")");
+  // rubni pikseli: druga zona tik uz granicu (0,5 m izvan) → EDGE_AMBIGUOUS; 3 m izvan → kandidat
+  const r7=run(img(e=>e>X0+35.5?B:A)), r8=run(img(e=>e>X0+38?B:A)), r9=run(img(e=>e>X0+34.6?B:A));
+  ok(r7.status==="EDGE_AMBIGUOUS"&&r7.kandidat===null&&r7.rubDrugaZona>0.05,"Zona exp: M2 0,5 m izvan granice → EDGE_AMBIGUOUS (rub "+(r7.rubDrugaZona*100).toFixed(1)+" %)");
+  ok(r8.status==="M11_CANDIDATE"&&r9.status==="EDGE_AMBIGUOUS","Zona exp: M2 3 m izvan granice → M11_CANDIDATE; M2 unutar rubnog pojasa (0,4 m) → EDGE_AMBIGUOUS");
+  // nedostajući podaci
+  const nd=[run(null),run({data:new Uint8ClampedArray(10),width:N,height:N}),run(img(()=>A),{prstenovi:[]}),run(img(()=>A),{profil:null}),inf({slika:img(()=>A),okvir,prstenovi:PAR,profil:{id:"p",uzorci:[]}}),inf(null),run(img(()=>A),{cfg:{}})];
+  ok(nd.every(r=>r.status==="NO_DATA"&&r.kandidat===null&&r.pravnoPotvrdeno===false),"Zona exp: bez slike, s krivom duljinom piksela, bez granice, bez profila, s praznim profilom, bez ulaza i bez konfiguracije → NO_DATA: "+nd.map(r=>r.razlog).join(" | "));
+  const r10=run(img(()=>WHITE)), r11=run(img((e,n)=>((Math.floor(e/RES)+Math.floor(n/RES))%2)?A:[128,128,128]));
+  ok(r10.status==="LOW_CONFIDENCE"&&r11.status==="LOW_CONFIDENCE","Zona exp: bijela čestica i boje izvan uzoraka → LOW_CONFIDENCE ("+r10.razlog+"; "+r11.razlog+")");
+  const r12=run(img(()=>A),{prstenovi:sq(X0+25,Y0+25,2)});
+  ok(r12.status==="LOW_CONFIDENCE"&&/premalo piksela/.test(r12.razlog),"Zona exp: premala čestica za razlučivost karte → LOW_CONFIDENCE");
+  // pogrešna georeferencija
+  const g=[run(img(()=>A),{okvir:{...okvir,wkid:3857}}),run(img(()=>A),{okvir:{...okvir,xmax:okvir.xmax+20}}),run(img(()=>A),{prstenovi:sq(X0+80,Y0+25,10)}),run(img(()=>A),{trazeniOkvir:{...okvir,xmin:okvir.xmin+10,xmax:okvir.xmax+10}}),run(img(()=>A),{okvir:{...okvir,xmax:NaN}})];
+  ok(g.every(r=>r.status==="NO_DATA"),"Zona exp: krivi koordinatni sustav, izobličen okvir, čestica izvan izreza, okvir pomaknut 10 m od traženog i neispravan okvir → NO_DATA: "+g.map(r=>r.razlog).join(" | "));
+  ok(run(img(()=>A),{trazeniOkvir:{...okvir,xmin:okvir.xmin+0.2}}).status==="M11_CANDIDATE","Zona exp: odstupanje okvira ispod 2 px je dopušteno");
+  // neuspješno čitanje slike: greška se prenosi kao NO_DATA, ništa se ne zaobilazi
+  const r13=run(null,{greska:"canvas je zaštićen (slika bez CORS dozvole)"});
+  let ce=""; try{await Z.ucitaj("https://gisportal.pgz.hr/x.png");}catch(e){ce=e.message}
+  ok(r13.status==="NO_DATA"&&/CORS/.test(r13.razlog)&&/CORS/.test(ce),"Zona exp: neuspješno čitanje slike (CORS/mreža) → NO_DATA ("+ce+")");
+  ok((await Z.pokreni()).status==="NO_DATA"&&/isključen/.test((await Z.pokreni()).razlog),"Zona exp: ručno pokretanje bez razvojne zastavice vraća NO_DATA (eksperiment je isključen)");
+  // stvarni izrez: karta 4 UPU-a 2 Kornić (PP_RASTERI, sloj 5, OBJECTID 7104) i čestica 735/76
+  const D=path.join(__dirname,"pgz-odgovori/735-76-kornic-2026-10-22/"), meta=JSON.parse(fs.readFileSync(D+"karte/_meta.json","utf8")).karta4;
+  const K4=decodePng(fs.readFileSync(D+"karte/karta4_izvorno.png")), OV=decodePng(fs.readFileSync(D+"karte/karta4_s_cesticom.png"));
+  const gj=JSON.parse(fs.readFileSync(path.join(__dirname,"../docs/primjeri/kornic_cestica_735_76.geojson"),"utf8")).features[0];
+  const ring=gj.geometry.coordinates[0].map(p=>E("tmFwd")(p[0],p[1])), ox={...meta.extent,wkid:meta.extent.spatialReference.latestWkid};
+  const proj=[[351560.0,4991071.7],[351576.06,4991051.4],[351578.64,4991049.85],[351588.01,4991063.74],[351576.54,4991074.18],[351572.8,4991079.91],[351569.4,4991078.62],[351563.04,4991074.27]];
+  ok(ring.slice(0,8).every((p,i)=>Math.hypot(p[0]-proj[i][0],p[1]-proj[i][1])<0.05),"Zona exp: tmFwd (HTRS96/TM) se slaže s PROJ-om (pyproj EPSG:4326→3765) unutar 5 cm na svih 8 lomnih točaka");
+  const rx=(ox.xmax-ox.xmin)/K4.width, pxr=ring.map(([e,n])=>[(e-ox.xmin)/rx,(ox.ymax-n)/rx]); let hit=0,tot=0;
+  for(let i=1;i<pxr.length;i++){const [a,b]=pxr[i-1],[c,d]=pxr[i], L=Math.ceil(Math.hypot(c-a,d-b)); for(let k=0;k<L;k++){const x=a+(c-a)*k/L,y=b+(d-b)*k/L; tot++; let f=false; for(let dy=-2;dy<=2&&!f;dy++) for(let dx=-2;dx<=2&&!f;dx++){const o=((Math.round(y)+dy)*OV.width+Math.round(x)+dx)*4; if(OV.data[o]>200&&OV.data[o+1]<90&&OV.data[o+2]<90) f=true;} if(f) hit++;}}
+  ok(K4.width===800&&K4.height===800&&Math.abs(rx-0.225)<1e-6&&hit/tot>0.95,"Zona exp: okvir izreza 180 m / 800 px = 0,225 m/px; granica čestice preračunata u piksele pada na ucrtanu crvenu granicu ("+(hit/tot*100).toFixed(1)+" % točaka unutar 2 px)");
+  const P1=JSON.parse(fs.readFileSync(path.join(__dirname,"zone-exp/profil_upu2_k4_privremeni.json"),"utf8"));
+  const rk=inf({slika:K4,okvir:ox,prstenovi:[ring],profil:P1});
+  ok(rk.status==="LOW_CONFIDENCE"&&rk.kandidat===null&&/nema uzoraka za M2/.test(rk.razlog)&&rk.udjeli.M11===1&&rk.pokrivenost>0.75&&rk.upozorenja.some(u=>/nije kalibriran/.test(u)),"Zona exp: 735/76 s privremenim profilom (samo M11, uzorak izvan čestice) → LOW_CONFIDENCE, jer M2 nema uzoraka (pokrivenost "+(rk.pokrivenost*100).toFixed(1)+" %, piksela "+rk.pikseli.unutra+")");
+  const P2={...P1,uzorci:[...P1.uzorci,{zona:"M2",rgb:[230,140,60],tolerancija:30,izvor:"SINTETIČKI uzorak samo za test, nije iz legende"}]}, rk2=inf({slika:K4,okvir:ox,prstenovi:[ring],profil:P2});
+  ok(rk2.status==="M11_CANDIDATE"&&rk2.pravnoPotvrdeno===false&&rk2.upozorenja.length>0,"Zona exp: 735/76 uz sintetički uzorak M2 → "+rk2.status+" (M11 "+(rk2.udjeli.M11*100).toFixed(1)+" %), i dalje nepotvrđeno i s upozorenjem o kalibraciji");
+  ok(E("ZONE_EXP.profil")(CFG,"UPU 2 Kornić","4. Način i uvjeti gradnje",7104)===null,"Zona exp: aplikacija nema ugrađen profil ni za UPU 2 Kornić (bez kalibracije nema kandidata)");
+  const all=[r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,rk,rk2,...nd,...g];
+  ok(all.every(r=>ST.includes(r.status)&&r.pravnoPotvrdeno===false),"Zona exp: svi rezultati su iz dopuštenog popisa statusa i nijedan nije pravno potvrđen");
+  // izolacija: nijedan rezultat ne mijenja uvjete gradnje Krka (735/76)
+  const rd=f=>JSON.parse(fs.readFileSync(D+f,"utf8")), bez3=g=>JSON.parse(JSON.stringify(g,(k,v)=>Array.isArray(v)&&v.length===3&&v.every(x=>typeof x==="number")?v.slice(0,2):v));
+  const parcel=w.JSON.parse(JSON.stringify({type:"Feature",geometry:bez3(gj.geometry),properties:{broj:"735/76",ko:"KORNIĆ",ref:"735/76@315907",cid:19311099}}));
+  const area=T.area(parcel), nam=rd("namjena_cestica_app.geojson").features.map(f=>w.JSON.parse(JSON.stringify(bez3(f))));
+  const rows=nam.map(f=>{let sh=0; try{const i=T.intersect(parcel,f); sh=i?T.area(i)/area:0;}catch(e){} return {p:f.properties,share:sh,geom:f.geometry};}).filter(r=>r.share>0).sort((a,b)=>b.share-a.share);
+  const c=T.pointOnFeature(parcel).geometry.coordinates, d={region:"krk",ll:{lat:c[1],lng:c[0]},parcel,area,rows,ces:{v:[parcel]},nam:{v:nam},pl:{v:w.JSON.parse(JSON.stringify(rd("planovi_tocka_app.geojson").features))},slope:null,env:null};
+  for(const k of Object.keys(w.localStorage)) if(/^krk(Zona|Zast|Tip|Kd)/.test(k)) w.localStorage.removeItem(k);
+  E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob"; E("OPEN").add("gp");
+  const snap=()=>JSON.stringify({h:w.document.getElementById("sheet").innerHTML,pz:[...E("PZREG").items.entries()].map(([k,v])=>[k,v.raz,v.vrijednost]),ls:Object.keys(w.localStorage).filter(k=>k!=="zadnjaCestica").sort().map(k=>[k,w.localStorage.getItem(k)]),calc:E("window.__krkCalc"),cmp:E("window.__tipCmp")||null,zona:E("krkZonaGet")(),zast:E("krkZastGet")()});
+  E("renderKrk")(d); await tick(); E("renderKrk")(d); await tick(); const s0=snap();
+  for(const r of all) void r; inf({slika:K4,okvir:ox,prstenovi:[ring],profil:P2}); E("renderKrk")(d); await tick();
+  const s0b=snap(), razl0=Object.keys(JSON.parse(s0)).filter(k=>JSON.stringify(JSON.parse(s0)[k])!==JSON.stringify(JSON.parse(s0b)[k]));
+  ok(s0b===s0&&E("krkZonaGet")()===""&&E("window.__krkCalc")===null&&!E("PZREG").items.get("zona-korisnik"),"Zona exp: kandidat M11 ne bira zonu, ne pokreće tlocrt ni GBP i ne dodaje pouzdanost (prikaz bez odabira zone isti prije i poslije)"+(razl0.length?" (razlika: "+razl0.join(", ")+")":""));
+  // ručno pokretanje uz razvojnu zastavicu: lažni učitani izrez (okvir kao što ga aplikacija traži), jednolična boja M11
+  E("krkZonaSet")("M2"); E("renderKrk")(d); await tick(400); E("renderKrk")(d); await tick(400); const s1=snap(); // čekanje: dohvati aplikacije (bez mreže) moraju završiti prije zamjene stanja izreza
+  const key=E("rkKey")(), oldRK=E("RKAT").get(key), oldCtx=E("RK_CTX"); E("RK_CTX={parcel:"+JSON.stringify(parcel)+",key:"+JSON.stringify(key)+"}");
+  const BX=E("rkBox")(parcel,1.5); E("RKAT").set(key,w.JSON.parse(JSON.stringify({st:"ok",items:[{plan:"UPU 2 - Kornić",karta:"4",OBJECTID:7104}],sel:0,img:{st:"ok",href:"https://primjer.invalid/k.png",scale:1.5,extent:{xmin:BX.xmin,ymin:BX.ymin,xmax:BX.xmax,ymax:BX.ymax,spatialReference:{wkid:3765}}}})));
+  w.localStorage.setItem("cestica-dev-zone-exp","1"); w.__zoneExpHook=async()=>{const N8=800,dd=new Uint8ClampedArray(N8*N8*4); for(let i=0;i<N8*N8;i++) dd.set([236,219,92,255],i*4); return {data:dd,width:N8,height:N8};};
+  const rp=await Z.pokreni({profil:P2});
+  w.localStorage.removeItem("cestica-dev-zone-exp"); delete w.__zoneExpHook; if(oldRK) E("RKAT").set(key,oldRK); else E("RKAT").delete(key); w.__oldCtx=oldCtx; E("RK_CTX=window.__oldCtx"); delete w.__oldCtx; E("renderKrk")(d); await tick(400);
+  const s2=snap(), razl=Object.keys(JSON.parse(s1)).filter(k=>JSON.stringify(JSON.parse(s1)[k])!==JSON.stringify(JSON.parse(s2)[k]));
+  ok(rp.status==="M11_CANDIDATE"&&s2===s1&&E("krkZonaGet")()==="M2"&&E("PZREG").items.get("zona-korisnik").raz==="C"&&E("window.__krkCalc")!==null,"Zona exp: uz korisnički odabranu M2 eksperiment (uključen razvojnom zastavicom, kandidat "+rp.status+") ne mijenja odabir, izračun, pouzdanost ni spremljene podatke"+(razl.length?" (razlika: "+razl.join(", ")+")":""));
+  // statička provjera izolacije: modul ne poziva ništa što mijenja stanje, a ostatak aplikacije ga ne koristi
+  const SRC=fs.readFileSync(path.join(__dirname,"../src/app.template.html"),"utf8"), i0=SRC.indexOf("// ===== EKSPERIMENT (isključeno za korisnike)"), i1=SRC.indexOf("const inferDetailedZone=ZONE_EXP.infer;"), BL=SRC.slice(i0,i1), REST=SRC.slice(0,i0)+SRC.slice(i1+40);
+  ok(i0>0&&i1>i0&&!/pzSet|pzUser|krkZonaSet|krkZastSet|setItem|removeItem|renderKrk|krkCalcHtml|innerHTML|indexedDB|RKAT\.set|\.img=|S\.img\s*=/.test(BL)&&!/ZONE_EXP|inferDetailedZone/.test(REST.replace("const ZONE_EXP_CFG = /*ZONE_EXP_CFG*/null;","")),"Zona exp: modul ne zapisuje stanje, ne crta prikaz i nigdje se ne poziva iz aplikacije (nema korisničkog prikaza)");
+  ok(errs.length===0,"bez JS grešaka (zona exp): "+errs.join(" | "));
+}
+
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(zoneExpTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

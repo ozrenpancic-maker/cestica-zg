@@ -1,0 +1,23 @@
+{
+  "_opis": "EKSPERIMENT: prepoznavanje detaljne zone (npr. M11/M2) iz boje rastera UPU-a. Nije pravna potvrda zone. Modul je isključen za korisnike; uključuje se samo ručno (localStorage 'cestica-dev-zone-exp' = '1') i rezultat ispisuje samo u konzolu.",
+  "verzija": "exp-0.1",
+  "ukljuceno": false,
+  "statusi": ["M11_CANDIDATE", "M2_CANDIDATE", "MIXED_REVIEW", "EDGE_AMBIGUOUS", "LOW_CONFIDENCE", "NO_DATA"],
+  "zone": ["M11", "M2"],
+  "pragovi": {
+    "rubMetara": 1.0,
+    "minUnutarnjihPiksela": 200,
+    "maxUdioZanemarenih": 0.6,
+    "minPokrivenost": 0.75,
+    "dominantna": 0.9,
+    "mijesanaMin": 0.1,
+    "rubDrugaZona": 0.05,
+    "maxOdstupanjeOkviraPx": 2,
+    "maxRazlucivostM": 1.0
+  },
+  "zanemari": [
+    {"naziv": "bijela pozadina", "rgbMin": [225, 225, 225], "rgbMax": [255, 255, 255]},
+    {"naziv": "tamne linije i oznake", "svjetlinaMax": 110}
+  ],
+  "profili": []
+}

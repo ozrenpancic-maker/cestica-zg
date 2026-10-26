@@ -1987,6 +1987,118 @@ const RK_PIX={async share(blob,polys,W,H){
   for(let y=y0;y<=y1;y+=st) for(let x=x0;x<=x1;x+=st){ if(!inside(x+.5,y+.5)) continue; n++; const o=(y*W+x)*4; if(d[o+3]>16&&!(d[o]>245&&d[o+1]>245&&d[o+2]>245)) hit++; }
   return n?hit/n:null;
 }};
+// ===== EKSPERIMENT (isključeno za korisnike): kandidat detaljne zone (M11/M2) iz boje rastera UPU-a =====
+// Izoliran modul: ne bira zonu, ne pokreće izračun, ne mijenja pouzdanost (PZREG), ne piše u localStorage ni u podatke čestice.
+// Boje, tolerancije i pragovi su u src/zone_exp.json; profil boja veže se uz plan i kartu, nikad uz pojedinu česticu.
+const ZONE_EXP_CFG = /*ZONE_EXP_CFG*/null;
+const ZONE_EXP=(()=>{
+  const ST=["M11_CANDIDATE","M2_CANDIDATE","MIXED_REVIEW","EDGE_AMBIGUOUS","LOW_CONFIDENCE","NO_DATA"], KAND={M11:"M11_CANDIDATE",M2:"M2_CANDIDATE"};
+  const fin=v=>typeof v==="number"&&Number.isFinite(v);
+  function rez(status,o){
+    o=o||{}; if(!ST.includes(status)) status="NO_DATA";
+    const kandidat=Object.keys(KAND).find(z=>KAND[z]===status)||null;
+    return Object.freeze({...o,status,kandidat,eksperiment:true,pravnoPotvrdeno:false,
+      napomena:"Eksperimentalni kandidat iz boje karte. Nije potvrda zone, ne bira zonu i ne ulazi u izračun."});
+  }
+  function profil(cfg,plan,karta,objectid){
+    const P=(cfg&&Array.isArray(cfg.profili))?cfg.profili:[];
+    return P.find(p=>p&&(p.objectid&&objectid!=null?[].concat(p.objectid).map(Number).includes(Number(objectid)):(p.plan&&p.karta&&new RegExp(p.plan,"i").test(plan||"")&&new RegExp(p.karta,"i").test(karta||""))))||null;
+  }
+  function zanemari(cfg,r,g,b){
+    for(const z of cfg.zanemari||[]){
+      if(z.rgbMin&&z.rgbMax&&r>=z.rgbMin[0]&&g>=z.rgbMin[1]&&b>=z.rgbMin[2]&&r<=z.rgbMax[0]&&g<=z.rgbMax[1]&&b<=z.rgbMax[2]) return true;
+      if(fin(z.svjetlinaMax)&&0.299*r+0.587*g+0.114*b<=z.svjetlinaMax) return true;
+    }
+    return false;
+  }
+  function klasa(cfg,uz,r,g,b){
+    if(zanemari(cfg,r,g,b)) return "ign";
+    let best=null,bd=Infinity;
+    for(const u of uz){const d=Math.hypot(r-u.rgb[0],g-u.rgb[1],b-u.rgb[2]); if(d<=u.tolerancija&&d<bd){bd=d;best=u.zona;}}
+    return best||"nep";
+  }
+  const segDist=(x,y,[x1,y1],[x2,y2])=>{const dx=x2-x1,dy=y2-y1,L=dx*dx+dy*dy; let t=L?((x-x1)*dx+(y-y1)*dy)/L:0; t=Math.max(0,Math.min(1,t)); return Math.hypot(x-(x1+t*dx),y-(y1+t*dy));};
+  function unutra(rings,x,y){let k=false; for(const r of rings) for(let i=0,j=r.length-1;i<r.length;j=i++){const [xi,yi]=r[i],[xj,yj]=r[j]; if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi) k=!k;} return k;}
+  function dist(rings,x,y){let m=Infinity; for(const r of rings) for(let i=0,j=r.length-1;i<r.length;j=i++) m=Math.min(m,segDist(x,y,r[j],r[i])); return m;}
+  // ulaz: {slika:{data,width,height}|null, greska, okvir:{xmin,ymin,xmax,ymax,wkid}, trazeniOkvir, prstenovi (EPSG:3765), plan, karta, objectid, cfg, profil}
+  function infer(inp){
+    inp=inp||{}; const cfg=inp.cfg||ZONE_EXP_CFG;
+    if(!cfg||!cfg.pragovi) return rez("NO_DATA",{razlog:"nema konfiguracije modula"});
+    const T=cfg.pragovi, base={verzija:cfg.verzija||null};
+    if(inp.greska) return rez("NO_DATA",{...base,razlog:"slika nije pročitana: "+inp.greska});
+    const S=inp.slika;
+    if(!S||!fin(S.width)||!fin(S.height)||S.width<1||S.height<1||!S.data||S.data.length!==S.width*S.height*4) return rez("NO_DATA",{...base,razlog:"nema čitljive slike (piksela)"});
+    const W=S.width,H=S.height,x=inp.okvir;
+    if(!x||![x.xmin,x.ymin,x.xmax,x.ymax].every(fin)||!(x.xmax>x.xmin)||!(x.ymax>x.ymin)) return rez("NO_DATA",{...base,razlog:"slika nema ispravan okvir (georeferenciju)"});
+    if(Number(x.wkid)!==3765) return rez("NO_DATA",{...base,razlog:"okvir nije u HTRS96/TM (EPSG:3765)"});
+    const rx=(x.xmax-x.xmin)/W, ry=(x.ymax-x.ymin)/H;
+    if(Math.abs(rx-ry)/Math.max(rx,ry)>0.02) return rez("NO_DATA",{...base,razlog:"razlučivost po osima se razlikuje (izobličen okvir)"});
+    const tq=inp.trazeniOkvir;
+    if(tq){const dev=Math.max(Math.abs(tq.xmin-x.xmin),Math.abs(tq.xmax-x.xmax),Math.abs(tq.ymin-x.ymin),Math.abs(tq.ymax-x.ymax))/rx;
+      if(!(dev<=T.maxOdstupanjeOkviraPx)) return rez("NO_DATA",{...base,razlog:"vraćeni okvir odstupa od traženog za "+(fin(dev)?dev.toFixed(1):"?")+" px"});}
+    const R=(inp.prstenovi||[]).filter(r=>Array.isArray(r)&&r.length>=3);
+    if(!R.length||!R.every(r=>r.every(p=>Array.isArray(p)&&fin(p[0])&&fin(p[1])))) return rez("NO_DATA",{...base,razlog:"nema granice čestice"});
+    const px=R.map(r=>r.map(([e,n])=>[(e-x.xmin)/rx,(x.ymax-n)/ry]));
+    if(!px.every(r=>r.every(([a,b])=>a>=0&&a<=W&&b>=0&&b<=H))) return rez("NO_DATA",{...base,razlog:"čestica izlazi iz izreza karte (provjeri georeferenciju)"});
+    const P=inp.profil||profil(cfg,inp.plan,inp.karta,inp.objectid);
+    if(!P) return rez("NO_DATA",{...base,razlog:"nema profila boja za ovu kartu (kalibracija nije napravljena)"});
+    const uz=(P.uzorci||[]).filter(u=>u&&(cfg.zone||[]).includes(u.zona)&&Array.isArray(u.rgb)&&u.rgb.length===3&&u.rgb.every(fin)&&fin(u.tolerancija));
+    if(!uz.length) return rez("NO_DATA",{...base,profil:P.id||null,razlog:"profil nema uzoraka boja"});
+    const rubPx=T.rubMetara/rx, xs=px.flat().map(p=>p[0]), ys=px.flat().map(p=>p[1]);
+    const x0=Math.max(0,Math.floor(Math.min(...xs)-rubPx)), x1=Math.min(W-1,Math.ceil(Math.max(...xs)+rubPx)), y0=Math.max(0,Math.floor(Math.min(...ys)-rubPx)), y1=Math.min(H-1,Math.ceil(Math.max(...ys)+rubPx));
+    const inn={n:0,ign:0,nep:0,z:{}}, rub={n:0,ign:0,nep:0,z:{}};
+    for(let yy=y0;yy<=y1;yy++) for(let xx=x0;xx<=x1;xx++){
+      const cx=xx+.5,cy=yy+.5, ins=unutra(px,cx,cy), d=dist(px,cx,cy);
+      if(!ins&&d>=rubPx) continue;
+      const A=ins&&d>=rubPx?inn:rub, o=(yy*W+xx)*4, D=S.data;
+      A.n++; if(D[o+3]<=16){A.ign++; continue;}
+      const k=klasa(cfg,uz,D[o],D[o+1],D[o+2]); if(k==="ign") A.ign++; else if(k==="nep") A.nep++; else A.z[k]=(A.z[k]||0)+1;
+    }
+    const sum=z=>Object.values(z).reduce((a,b)=>a+b,0), cl=sum(inn.z), valid=inn.n-inn.ign;
+    const udjeli=Object.fromEntries((cfg.zone||[]).map(z=>[z,cl?(inn.z[z]||0)/cl:0]));
+    const upoz=[]; if(P.status!=="KALIBRIRANO") upoz.push("profil boja nije kalibriran iz legende plana ("+(P.status||"bez statusa")+")");
+    const info={...base,profil:P.id||null,razlucivostM:+rx.toFixed(4),udjeli,pikseli:{unutra:inn.n,rub:rub.n,zanemareno:inn.ign,nepoznato:inn.nep,prepoznato:cl},pokrivenost:valid?cl/valid:0,upozorenja:upoz};
+    if(rx>T.maxRazlucivostM) return rez("LOW_CONFIDENCE",{...info,razlog:"pregruba razlučivost karte ("+rx.toFixed(2)+" m/px)"});
+    if(inn.n<T.minUnutarnjihPiksela) return rez("LOW_CONFIDENCE",{...info,razlog:"premalo piksela unutar čestice ("+inn.n+")"});
+    if(inn.ign/inn.n>T.maxUdioZanemarenih) return rez("LOW_CONFIDENCE",{...info,razlog:"čestica je većinom bez boje zone (pozadina, linije, oznake)"});
+    if(info.pokrivenost<T.minPokrivenost) return rez("LOW_CONFIDENCE",{...info,razlog:"boje na čestici ne odgovaraju uzorcima profila"});
+    const red=Object.entries(udjeli).sort((a,b)=>b[1]-a[1]), [z1,u1]=red[0], u2=red[1]?red[1][1]:0;
+    if(u1>=T.dominantna){
+      const bez=(cfg.zone||[]).filter(z=>!uz.some(u=>u.zona===z));
+      if(bez.length) return rez("LOW_CONFIDENCE",{...info,razlog:"nema uzoraka za "+bez.join(", ")+", pa se zone ne mogu razlikovati"});
+      const rcl=sum(rub.z), druga=rcl?(rcl-(rub.z[z1]||0))/rcl:0; info.rubDrugaZona=druga;
+      if(druga>T.rubDrugaZona) return rez("EDGE_AMBIGUOUS",{...info,razlog:"uz granicu čestice ("+T.rubMetara+" m) pojavljuje se druga zona"});
+      return rez(KAND[z1]||"LOW_CONFIDENCE",{...info,razlog:"prevladava boja zone "+z1});
+    }
+    if(u2>=T.mijesanaMin) return rez("MIXED_REVIEW",{...info,razlog:"na čestici su boje više zona"});
+    return rez("LOW_CONFIDENCE",{...info,razlog:"nijedna zona ne prevladava"});
+  }
+  function ukljuceno(){ if(ZONE_EXP_CFG&&ZONE_EXP_CFG.ukljuceno===true) return true; try{return localStorage.getItem("cestica-dev-zone-exp")==="1"}catch(e){return false} }
+  // čitanje piksela izreza: fetch (CORS) → ImageBitmap → canvas.getImageData; greška se vraća kao razlog, ne zaobilazi se
+  async function ucitaj(url){
+    const H=window.__zoneExpHook; if(H) return await H(url);
+    let res; try{res=await fetch(url,{mode:"cors",credentials:"omit",cache:"no-store"});}catch(e){throw new Error("preglednik nije dopustio čitanje (CORS) ili mreža nije dostupna")}
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    if(typeof createImageBitmap!=="function") throw new Error("preglednik ne podržava createImageBitmap");
+    const bm=await createImageBitmap(await res.blob()), c=document.createElement("canvas"); c.width=bm.width; c.height=bm.height;
+    const g=c.getContext&&c.getContext("2d"); if(!g) throw new Error("canvas nije dostupan"); g.drawImage(bm,0,0);
+    try{const d=g.getImageData(0,0,bm.width,bm.height); return {data:d.data,width:bm.width,height:bm.height};}catch(e){throw new Error("canvas je zaštićen (slika bez CORS dozvole)")}
+  }
+  // ručno pokretanje iz konzole (razvoj): rezultat se samo vraća i ispisuje
+  async function pokreni(opts){
+    opts=opts||{};
+    if(!ukljuceno()) return rez("NO_DATA",{razlog:"eksperiment je isključen"});
+    const S=RKAT.get(rkKey()), it=S&&S.items&&S.items[S.sel], im=S&&S.img, parcel=RK_CTX&&RK_CTX.parcel;
+    if(!S||!it||!im||im.st!=="ok"||!parcel) return rez("NO_DATA",{razlog:"izrez karte za česticu nije učitan"});
+    const B=rkBox(parcel,im.scale||1); let slika=null,greska=null;
+    try{slika=await ucitaj(im.href);}catch(e){greska=e.message}
+    const r=infer({slika,greska,okvir:{...im.extent,wkid:(im.extent.spatialReference&&(im.extent.spatialReference.latestWkid||im.extent.spatialReference.wkid))||3765},trazeniOkvir:B,prstenovi:B.pts,plan:it.plan,karta:it.karta,objectid:it.OBJECTID,profil:opts.profil,cfg:opts.cfg});
+    try{console.info("[zona-eksperiment]",r)}catch(e){}
+    return r;
+  }
+  return Object.freeze({infer,ukljuceno,ucitaj,pokreni,profil});
+})();
+const inferDetailedZone=ZONE_EXP.infer;
 const RK_WMS={
   async query(K,E,N,ll){
     const C=await wmsCaps(K), pt=ll;

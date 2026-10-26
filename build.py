@@ -61,6 +61,21 @@ def check_krk(r):
     if errs: print("\n".join(errs)); sys.exit(1)
 rules_krk = json.loads((root / "src/rules_krk.json").read_text(encoding="utf-8")); check_krk(rules_krk)
 data_krk = json.dumps(rules_krk, ensure_ascii=False).replace("</", "<\\/")
+def check_zone_exp(c):
+    """EKSPERIMENT zona: konfiguracija mora biti isključena, s dopuštenim statusima i bez koordinata čestica u profilima."""
+    errs=[]
+    if c.get("ukljuceno") is not False: errs.append("ZONE_EXP: 'ukljuceno' mora biti false (eksperiment je isključen za korisnike)")
+    if c.get("statusi") != ["M11_CANDIDATE","M2_CANDIDATE","MIXED_REVIEW","EDGE_AMBIGUOUS","LOW_CONFIDENCE","NO_DATA"]: errs.append("ZONE_EXP: popis statusa je promijenjen")
+    for k in ("rubMetara","minUnutarnjihPiksela","maxUdioZanemarenih","minPokrivenost","dominantna","mijesanaMin","rubDrugaZona","maxOdstupanjeOkviraPx","maxRazlucivostM"):
+        if not isinstance(c.get("pragovi",{}).get(k),(int,float)): errs.append(f"ZONE_EXP: nedostaje prag '{k}'")
+    for p in c.get("profili",[]):
+        if any(k in p for k in ("cestica","prstenovi","koordinate","okvir")): errs.append(f"ZONE_EXP profil {p.get('id')}: profil se ne smije vezati uz česticu ni koordinate")
+        if not (p.get("objectid") or (p.get("plan") and p.get("karta"))): errs.append(f"ZONE_EXP profil {p.get('id')}: treba plan i kartu ili objectid lista")
+        for u in p.get("uzorci",[]):
+            if u.get("zona") not in c.get("zone",[]) or not u.get("izvor"): errs.append(f"ZONE_EXP profil {p.get('id')}: uzorak bez poznate zone ili izvora")
+    if errs: print("\n".join(errs)); sys.exit(1)
+zone_exp = json.loads((root / "src/zone_exp.json").read_text(encoding="utf-8")); check_zone_exp(zone_exp)
+data_zone = json.dumps(zone_exp, ensure_ascii=False).replace("</", "<\\/")
 # baza pravila iz ČesticaHR Data Managera (nije obavezna): provjera prije ugradnje (tools/baza/provjeri.py)
 data_db = "null"
 db_path = root / "src/baza/baza.json"
@@ -81,7 +96,7 @@ if ispu_path.exists():
     print(f"ISPU šifre: {sum(1 for z in _is['zapisi'] if z.get('status') == 'potvrđeno')} potvrđenih")
 import datetime
 ver = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=2))).strftime("%d.%m.%Y. %H:%M")
-(root / "index.html").write_text(tpl.replace("/*RULES*/null", data).replace("/*RULES_SE*/null", data_se).replace("/*RULES_PP*/null", data_pp).replace("/*RULES_META*/null", data_meta).replace("/*RULES_KRK*/null", data_krk).replace("/*RULES_DB*/null", data_db).replace("/*ISPU_SIFRE*/null", data_ispu).replace("/*VERSION*/", ver), encoding="utf-8")
+(root / "index.html").write_text(tpl.replace("/*RULES*/null", data).replace("/*RULES_SE*/null", data_se).replace("/*RULES_PP*/null", data_pp).replace("/*RULES_META*/null", data_meta).replace("/*RULES_KRK*/null", data_krk).replace("/*ZONE_EXP_CFG*/null", data_zone).replace("/*RULES_DB*/null", data_db).replace("/*ISPU_SIFRE*/null", data_ispu).replace("/*VERSION*/", ver), encoding="utf-8")
 # service worker: verzija = sažetak sadržaja stranice i ljuske, pa svaka promjena aplikacije daje novi sw.js
 import hashlib
 h = hashlib.sha256()
