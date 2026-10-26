@@ -1,0 +1,703 @@
+{
+ "clanci": [
+  14,
+  24
+ ],
+ "oznaka": 101,
+ "zapisa_modula": 0,
+ "tocno": 0,
+ "pogresno": 0,
+ "pregled": 0,
+ "pregled_odgovara_oznaci": 0,
+ "propusteno": 101,
+ "oznake_izvan_rjecnika": 50,
+ "odbijene_odredbe_modula": [],
+ "clanci_odbijeni": {
+  "14": [
+   {
+    "razlog": "vrsta građevine iz uvodne rečenice članka nije prepoznata"
+   },
+   {
+    "razlog": "vrsta građevine iz uvoda članka nije prepoznata",
+    "razlog_kod": "SKUPINA_NEPOZNATA"
+   }
+  ],
+  "24": [
+   {
+    "razlog": "vrsta građevine iz uvodne rečenice članka nije prepoznata"
+   },
+   {
+    "razlog": "vrsta građevine iz uvoda članka nije prepoznata",
+    "razlog_kod": "SKUPINA_NEPOZNATA"
+   }
+  ]
+ },
+ "detalji": {
+  "tocno": [],
+  "pogresno": [],
+  "pregled": [],
+  "propusteno": [
+   {
+    "oznaka": "B001",
+    "parametar": "drugo: dopuštene vrste građevina i sadržaja u zoni",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B002",
+    "parametar": "drugo: kategorija uređenosti građevinskog zemljišta",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B003",
+    "parametar": "drugo: smještaj parkiranja/garažiranja vozila",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B004",
+    "parametar": "drugo: najmanji udio parkovnih nasada i prirodnog zelenila u građevinskom području (zoni)",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B005",
+    "parametar": "drugo: najveća ukupna tlocrtna bruto površina zatvorenih i natkrivenih građevina u odnosu na površinu sportskih terena i sadržaja",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B006",
+    "parametar": "drugo: najveća ukupna tlocrtna bruto površina zatvorenih i natkrivenih građevina u odnosu na površinu zone",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B007",
+    "parametar": "drugo: dopuštenost gradnje",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B008",
+    "parametar": "drugo: namjena građevine",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B009",
+    "parametar": "drugo: dopušteni prateći sadržaji",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B010",
+    "parametar": "drugo: broj građevina na građevnoj čestici",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B011",
+    "parametar": "najmanja površina građevne čestice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B012",
+    "parametar": "najveći koeficijent izgrađenosti (kig)",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B013",
+    "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B014",
+    "parametar": "najveći koeficijent iskoristivosti (kis)",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B015",
+    "parametar": "najveća visina građevine",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B016",
+    "parametar": "drugo: najveća katnost",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B017",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B018",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B019",
+    "parametar": "drugo: najmanja udaljenost između građevina na istoj građevnoj čestici",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B020",
+    "parametar": "drugo: najmanji udio zelenila na čestici",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B021",
+    "parametar": "drugo: oblikovanje građevine",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B022",
+    "parametar": "oblik krovišta",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B023",
+    "parametar": "nagib krovnih ploha",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B024",
+    "parametar": "drugo: krovište/pokrov prema usvojenoj tehnologiji građenja",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B025",
+    "parametar": "drugo: zabrana gradnje u pojasu od obalne crte",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B026",
+    "parametar": "drugo: iznimka od zabrane gradnje u pojasu od obalne crte",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B027",
+    "parametar": "drugo: iznimka od zabrane gradnje u pojasu od obalne crte",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B028",
+    "parametar": "drugo: iznimka od zabrane gradnje u pojasu od obalne crte",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B029",
+    "parametar": "drugo: iznimka od zabrane gradnje u pojasu od obalne crte",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B030",
+    "parametar": "rekonstrukcija i prenamjena",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B031",
+    "parametar": "drugo: formiranje građevne čestice na k.č. 3932/1 k.o. Krk-grad",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B032",
+    "parametar": "drugo: povećanje građevne čestice na susjedne čestice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B033",
+    "parametar": "najveća površina tlocrtne projekcije građevine",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B034",
+    "parametar": "najveća visina građevine",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B035",
+    "parametar": "drugo: najveća katnost",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B036",
+    "parametar": "drugo: primjena ostalih uvjeta članka",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B037",
+    "parametar": "drugo: namjena površine",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B038",
+    "parametar": "rekonstrukcija i prenamjena",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B039",
+    "parametar": "drugo: smanjenje površine građevne čestice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B040",
+    "parametar": "najveća površina građevne čestice",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B041",
+    "parametar": "drugo: način određivanja površine građevne čestice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B042",
+    "parametar": "rekonstrukcija i prenamjena",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B043",
+    "parametar": "rekonstrukcija i prenamjena",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B044",
+    "parametar": "rekonstrukcija i prenamjena",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B045",
+    "parametar": "drugo: dopušteni prateći sadržaji",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B046",
+    "parametar": "drugo: broj građevina na građevnoj čestici",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B047",
+    "parametar": "najveći koeficijent izgrađenosti (kig)",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B048",
+    "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B049",
+    "parametar": "najveći koeficijent iskoristivosti (kis)",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B050",
+    "parametar": "drugo: koeficijent iskorištenosti potpuno ukopanog podruma",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B051",
+    "parametar": "drugo: gustoća korištenja pri rekonstrukciji",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B052",
+    "parametar": "gabariti pri rekonstrukciji",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B053",
+    "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B054",
+    "parametar": "gabariti pri rekonstrukciji",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B055",
+    "parametar": "najveća visina građevine",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B056",
+    "parametar": "drugo: najveća katnost",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B057",
+    "parametar": "gabariti pri rekonstrukciji",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B058",
+    "parametar": "najveća visina građevine",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B059",
+    "parametar": "najveća visina građevine",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B060",
+    "parametar": "najveća površina tlocrtne projekcije građevine",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B061",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B062",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B063",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B064",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B065",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B066",
+    "parametar": "položaj građevnog pravca",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B067",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B068",
+    "parametar": "drugo: najmanja udaljenost između građevina na istoj građevnoj čestici",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B069",
+    "parametar": "drugo: najmanje udaljenosti (od granice čestice i između građevina) pri rekonstrukciji",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B070",
+    "parametar": "drugo: najmanje udaljenosti (od granice čestice i između građevina) pri dogradnji",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B071",
+    "parametar": "drugo: oblikovanje građevine",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B072",
+    "parametar": "oblik krovišta",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B073",
+    "parametar": "nagib krovnih ploha",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B074",
+    "parametar": "vrsta pokrova",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B075",
+    "parametar": "drugo: priključenje na prometnu infrastrukturu",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B076",
+    "parametar": "drugo: priključenje na komunalnu infrastrukturu",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B077",
+    "parametar": "drugo: najmanji udio zelenila na čestici",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B078",
+    "parametar": "drugo: dopušteni sadržaji uređenja građevne čestice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B079",
+    "parametar": "drugo: najveća visina podzida",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B080",
+    "parametar": "drugo: smještaj parkiranja/garažiranja vozila",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B081",
+    "parametar": "drugo: obveza parkiranja pri rekonstrukciji",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B082",
+    "parametar": "drugo: dopuštenost gradnje i rekonstrukcije",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B083",
+    "parametar": "najveća visina građevine",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B084",
+    "parametar": "najveća visina građevine",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B085",
+    "parametar": "drugo: najveća katnost",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B086",
+    "parametar": "najveća površina tlocrtne projekcije građevine",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B087",
+    "parametar": "oblik krovišta",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B088",
+    "parametar": "vrsta kosog krovišta",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B089",
+    "parametar": "nagib krovnih ploha",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B090",
+    "parametar": "vrsta pokrova",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B091",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B092",
+    "parametar": "drugo: vatrobrani zid prema susjednoj građevini",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B093",
+    "parametar": "drugo: smjer nagiba krova",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B094",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B095",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B096",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B097",
+    "parametar": "drugo: visina garaže na regulacijskom pravcu (završna kota ravnog krova)",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B098",
+    "parametar": "drugo: visina garaže na regulacijskom pravcu (završna kota ravnog krova)",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B099",
+    "parametar": "rekonstrukcija i prenamjena",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B100",
+    "parametar": "gabariti pri rekonstrukciji",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "B101",
+    "parametar": "drugo: mjere zaštite okoliša",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   }
+  ]
+ },
+ "izlaz_modula": {
+  "shema": "plan-citac-pravila/2.1",
+  "gramatika": "gramatika-v2.1",
+  "izvor": "ppug_krk_sn_2020_29.html",
+  "sha256_izvora": "f67ac384d8f30d444cf19a10165f29b65ee93cf37281bb6e183abd981f5cf318",
+  "plan": "UPU 1 – Krk",
+  "clanci": {
+   "14": {
+    "clanak": 14,
+    "vrste": null,
+    "pravila": [],
+    "upucivanja": [],
+    "nepokriveno": [],
+    "pregled": [
+     {
+      "razlog": "vrsta građevine iz uvodne rečenice članka nije prepoznata"
+     },
+     {
+      "razlog": "vrsta građevine iz uvoda članka nije prepoznata",
+      "razlog_kod": "SKUPINA_NEPOZNATA"
+     }
+    ]
+   },
+   "24": {
+    "clanak": 24,
+    "vrste": null,
+    "pravila": [],
+    "upucivanja": [],
+    "nepokriveno": [],
+    "pregled": [
+     {
+      "razlog": "vrsta građevine iz uvodne rečenice članka nije prepoznata"
+     },
+     {
+      "razlog": "vrsta građevine iz uvoda članka nije prepoznata",
+      "razlog_kod": "SKUPINA_NEPOZNATA"
+     }
+    ]
+   }
+  },
+  "automatska_potvrda": 0,
+  "pravno_potvrdeno": false,
+  "statusi": {
+   "PRIJEDLOG": "ACCEPTED – automatski prihvaćen prijedlog (nije pravna potvrda)",
+   "PREGLED": "REVIEW",
+   "ODBIJENO": "REJECTED"
+  },
+  "sazetak": {
+   "pravila": 0,
+   "prijedlog": 0,
+   "pregled": 0,
+   "odbijeno": 0
+  }
+ },
+ "pravno_potvrdeno": 0
+}
