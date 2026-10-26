@@ -173,6 +173,11 @@ class Regresija(unittest.TestCase):
             self.assertEqual(self.o["upu1_14_24"]["po_clanku"][k]["pogresno_prihvaceno"], 0)
         self.assertEqual(self.o["dodatak_22_23"]["sazetak"]["pogresno_prihvaceno"], 0)
 
+    def test_dodatna_prihvacena_pravila_neovisno_provjerena(self):
+        s = self.o["dodatak_ppug_20_38_39_50"]["sazetak"]
+        self.assertEqual((s["tocno_prihvaceno"], s["pogresno_prihvaceno"]), (7, 0))
+        self.assertEqual(self.o["ostali_clanci_ppug"]["bez_ikakve_oznake"], [])
+
     def test_upu2(self):
         s = self.o["upu2"]["cl38_40_vlastite_oznake"]
         self.assertEqual((s["tocno"], s["pogresno"], s["dvosmisleno"], s["propusteno"]), (92, 0, 7, 0))

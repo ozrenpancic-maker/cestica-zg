@@ -23,7 +23,8 @@ J = lambda p: json.loads((M / p).read_text(encoding="utf-8"))
 OZNAKE = {"oznake/neovisno/neovisne_oznake_ppug_22_23.json": "b56057965c75f1434a4e9c7684eac1e86393994454787ab94b2f09681be660b5",
           "oznake/neovisno_cl25_33/neovisne_oznake_ppug_25_33.json": "b47d15c3f8d8005e53f9d1f44414155658177c30e16cf64e29a4f626f03c452d",
           "slijepo/ppug_krk/slijepi_v2/neovisne_oznake_upu1.json": "91d187e430c92fc74c8a9f8c8e655a04b3263108021ed5a38a32654150b30ee6",
-          "oznake/dodatak_22_23/oznake_dodatak_st2.json": "7e64ed66b56c9ba317efd0f41eb7035163a5070907092dee44adb6881cb6a170"}
+          "oznake/dodatak_22_23/oznake_dodatak_st2.json": "7e64ed66b56c9ba317efd0f41eb7035163a5070907092dee44adb6881cb6a170",
+          "oznake/dodatak_ppug_v22/oznake_ppug_20_38_39_50.json": "4955259790c4a8d146ad4887510fee735ca3b49873d7ea4eba6ffe11a340e883"}
 
 
 def provjeri_integritet():
@@ -202,6 +203,18 @@ def dodatak(r):
     return {"sazetak": s, "detalji": d, "napomena": "dodatak oznaka bilježi vrijednost dopuštenja gradnje drukčije (vrijednost/uvjet); vidi oznake/dodatak_22_23/IZVJESTAJ_dodatak.md"}
 
 
+def dodatak_ppug(r):
+    """Neovisna provjera prihvaćenih pravila v2.2 u neoznačenim člancima PPUG-a (čl. 20. st. 3, 38. st. 6, 39. st. 2,
+    50. st. 4). Oznaka vrste »pomoćna građevina (uz građevinu …)«: zagrada opisuje uz koju se građevinu gradi i ne
+    ulazi u usporedbu vrste (modul to bilježi u kontekstu članka)."""
+    Z = [dict(o, vrsta_gradevine=re.sub(r"\s*\(uz građevin[^)]*\)", "", o["vrsta_gradevine"]))
+         for o in J("oznake/dodatak_ppug_v22/oznake_ppug_20_38_39_50.json")["zapisi"]]
+    opseg = {(20, 3), (38, 6), (39, 2), (50, 4)}
+    pr = [p for k in ("20", "38", "39", "50") for p in r["clanci"][k]["pravila"] if (p["clanak"], p["stavak"]) in opseg]
+    s, d = usporedi_oznake(pr, Z, mapa())
+    return {"sazetak": s, "detalji": d}
+
+
 def ostali(r, oznaceni):
     out = [{"clanak": p["clanak"], "stavak": p.get("stavak"), "blok": p.get("blok"), "tocka": p.get("tocka"), "alineja": p.get("alineja"), "parametar": p["parametar"],
             "operator": p.get("operator"), "vrijednost": p.get("vrijednost"), "uvjet": p.get("uvjet"), "skupine": (p.get("vrsta_gradevine") or {}).get("skupine"),
@@ -231,7 +244,10 @@ def sve():
     out["upu1_14_24"] = {"po_clanku": po_clanku(Pu, Zu, MP, (14, 24)), "ukupno": usporedi_oznake(Pu, Zu, MP)[0], "detalji": usporedi_oznake(Pu, Zu, MP)[1],
                          "oznake_izvan_rjecnika_parametara": sum(1 for o in Zu if str(o["parametar"]).startswith("drugo:"))}
     out["dodatak_22_23"] = dodatak(r)
+    out["dodatak_ppug_20_38_39_50"] = dodatak_ppug(r)
     out["ostali_clanci_ppug"] = ostali(r, ("22", "23", "25", "33"))
+    ozn = {(x["clanak"], x["stavak"]) for x in out["ostali_clanci_ppug"]["pravila"]}
+    out["ostali_clanci_ppug"]["bez_ikakve_oznake"] = sorted(ozn - {(20, 3), (38, 6), (39, 2), (50, 4)})
     d2 = J("izlaz/upu2_kornic_sn_19_2016.json")
     r2 = s22.strukturiraj(d2, None, "UPU 2 – Kornić")
     out["upu2"] = {"cl38_40_vlastite_oznake": oc.ocijeni({"clanci": {k: v for k, v in r2["clanci"].items() if k in ("38", "39", "40")}}, J("oznake/upu2_cl38_40.json"))[0],
@@ -247,4 +263,5 @@ if __name__ == "__main__":
     print("izlaz/usporedba_v2_2.json", s22.zapisi_json(o, M / "izlaz/usporedba_v2_2.json"))
     print(json.dumps({"determinizam": o["determinizam"]["isto"], "22_23": o["cl22_23"]["v2_1"], "promjene_22_23": o["cl22_23"]["promjene_po_oznaci"],
                       "25_33": o["cl25_33"]["po_clanku"], "upu1": o["upu1_14_24"]["po_clanku"], "dodatak": o["dodatak_22_23"]["sazetak"],
-                      "ostali_prijedlog": o["ostali_clanci_ppug"]["prijedlog"], "upu2": o["upu2"]}, ensure_ascii=False, indent=1))
+                      "ostali_prijedlog": o["ostali_clanci_ppug"]["prijedlog"], "ostali_bez_oznake": o["ostali_clanci_ppug"]["bez_ikakve_oznake"],
+                      "dodatak_ppug": o["dodatak_ppug_20_38_39_50"]["sazetak"], "upu2": o["upu2"]}, ensure_ascii=False, indent=1))

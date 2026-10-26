@@ -1,0 +1,45 @@
+{
+ "datum": "2026-10-26",
+ "verzija": "v2.2",
+ "opis": "Zamrznut čitač v2.2 prije slijepog testa na drugom, neviđenom prostornom planu. Kod se tijekom testa ne mijenja; svaka izmjena nakon uvida u rezultat otvara v2.3.",
+ "kod": {
+  "citac.py": "8dc9d6499ac781df575f62a25fcf0bcf6a2ae1505a388b6295d768632741be33",
+  "citac_tekst.py": "9c42aab0d7167a5c963a8830e0b3b84165729c9181140540be7993f5ee64aab9",
+  "gramatika.py": "8c39cea4b959c67c18252956ce38ab5e2ec8789de734bc3fd35fd88757ec4574",
+  "strukturiraj.py": "b21885c593fc0a0cf58df9049a4b4097e5c0f7025e3156ae08b7c980a78addfa",
+  "ocijeni.py": "b6196fe9340c958f48d4319608a5c65f93adae9b939740293bac68d83cc152ff",
+  "ocijeni_neovisno.py": "dca6ff2c723959ac0d8325f3cd0c25462827f3a140685f5beee629e23001fdef",
+  "gramatika_v2.py": "c215de66e3cb27973961355f2c1d91763ac4e52b74b37cfa60a01bfc91ff4190",
+  "strukturiraj_v2.py": "2914f53f5d389861f4ba602df2d1226a21a65d6990f6f092176f26c695153a23",
+  "jezik_hr.py": "84196e5ae57c484438acaef2fecc1ca5bf584f9b07d6d039bbf682db8f3581cf",
+  "semantika_hr.py": "e1f336b37824690af19c63197f632b3d4acaf0050c85ee99dc674c517cbafa15",
+  "usporedi_v2.py": "90945101f1e8c11b67564250a66ab34cd8fc969e72d33d9245e3166a843ef6df",
+  "gramatika_v22.py": "07d42d39557227833eee09726f53932987875a8e2c549dfa49b7eb2639fef179",
+  "strukturiraj_v22.py": "ec96ee923ff8b3c47377a4579d6676815260e15a8d1e9986139bb4ff252f7d4b",
+  "morfologija_hr.py": "a4aea29cdf2c6e41a1f03dc14b860eca0bd93f179a8cfc01ca5e67d72c3adbfd",
+  "vrste_gradevina.py": "9c5abe3525b6fc813abd1cfe913b2e01b85350344b23ebeece4105da91e0c89f",
+  "usporedi_v22.py": "4f34464bb4c61189d09b28bc2e74973f352f1fa99739a83808df6f7d76af3140",
+  "slijepi_v22.py": "c13f55b496d20a697fcb7981948f6e8a9619a43f4ae42d2d36812894a1f4e2cb",
+  "test_v22.py": "9f23da3c913530e35b5ba49e03263428ab5c44b1ba6acf36d84fa35ec734890e",
+  "usporedi_dodatak.py": "774e14d877f3d0b00e30c3084cd369a570ad8b6d08700b4bf8097528c6965ae8"
+ },
+ "mapiranje": {
+  "oznake/neovisno_cl25_33/mapiranje_v2.json": "d8b5a6b3df42bd3ef74b877e32128a5ff496807350639a2764bdba6c191d1a4c",
+  "oznake/mapiranje_v22.json": "da6a6601447349fbad00e3176cb2652a752824352164790a466a707d73bf8b0e",
+  "oznake/neovisno/mapiranje.json": "904acf7348db37e81049730e2544c05329d3f5ffa86170cc7f47ed284606545b"
+ },
+ "izlazi": {
+  "izlaz/ppug_v2_2.json": "a73bbe0f56bd6d1ac14a6ecedf2c982fbbdbcbb06dc9da2baf71ab46b166f230",
+  "izlaz/upu1_14_24_v2_2.json": "6e9c2aca2978972fa33431596ac2fdd176fb27dd572a18da58ae5841c6a9552b",
+  "izlaz/usporedba_v2_2.json": "262f835ecd250f35b380ce0586ae9a553afd507cb1d41c8583b0de56bf88d6d7"
+ },
+ "razvojne_oznake": {
+  "oznake/neovisno/neovisne_oznake_ppug_22_23.json": "b56057965c75f1434a4e9c7684eac1e86393994454787ab94b2f09681be660b5",
+  "oznake/neovisno_cl25_33/neovisne_oznake_ppug_25_33.json": "b47d15c3f8d8005e53f9d1f44414155658177c30e16cf64e29a4f626f03c452d",
+  "slijepo/ppug_krk/slijepi_v2/neovisne_oznake_upu1.json": "91d187e430c92fc74c8a9f8c8e655a04b3263108021ed5a38a32654150b30ee6",
+  "oznake/dodatak_22_23/oznake_dodatak_st2.json": "7e64ed66b56c9ba317efd0f41eb7035163a5070907092dee44adb6881cb6a170",
+  "oznake/dodatak_ppug_v22/oznake_ppug_20_38_39_50.json": "4955259790c4a8d146ad4887510fee735ca3b49873d7ea4eba6ffe11a340e883"
+ },
+ "testovi": "128/128 (test_citac, test_strukturiraj, test_v2, test_v22)",
+ "pravilo": "Faza E: odabir (slijepi_v22.py odaberi) → tekst → neovisne oznake → zamrzavanje oznaka → usporedba."
+}
