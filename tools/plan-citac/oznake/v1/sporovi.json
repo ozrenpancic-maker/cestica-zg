@@ -1766,6 +1766,1689 @@
   }
  },
  {
+  "id": "G3_ppug_20_38_39_50:A002~B002",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A002",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine i ne prelazi visinu od 4,0 metra",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": "visina osnovne građevine",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine stambene namjene; visina od najniže kote konačno zaravnatog terena",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: definirana je samo donja točka (najniža kota konačno zaravnatog terena), gornja točka mjerenja nije navedena; nije rečeno kako se mjeri visina osnovne građevine"
+   ]
+  },
+  "B": {
+   "id": "B002",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine i ne prelazi visinu od 4,0 metra",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": "visina osnovne građevine",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine stambene namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: zadana je samo donja točka (najniža kota konačno zaravnatog terena), gornja točka nije određena; nije određeno ni kako se mjeri visina osnovne građevine"
+   ]
+  },
+  "uzorak": "uvjet · A dodaje: visina od najniže kote konačno zaravnatog terena"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A003~B003",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A003",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine i ne prelazi visinu od 4,0 metra",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine stambene namjene; visina od najniže kote konačno zaravnatog terena",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: gornja točka mjerenja visine (vijenac, sljeme, gornji rub ravnog krova) nije navedena"
+   ]
+  },
+  "B": {
+   "id": "B003",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine i ne prelazi visinu od 4,0 metra",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine stambene namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: zadana je samo donja točka (najniža kota konačno zaravnatog terena), gornja točka mjerenja nije određena"
+   ]
+  },
+  "uzorak": "uvjet · A dodaje: visina od najniže kote konačno zaravnatog terena"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A017~B017",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A017",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Ako imaju otvore prema susjednoj građevnoj čestici, moraju biti udaljene od te čestice najmanje 3,0 metra",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine stambene namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako imaju otvore prema susjednoj građevnoj čestici",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B017",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina mogu se graditi do granice građevne čestice. Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici. Ako imaju otvore prema susjednoj građevnoj čestici, moraju biti udaljene od te čestice najmanje 3,0 metra.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine stambene namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako imaju otvore prema susjednoj građevnoj čestici",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "OBUHVAT: obuhvat povijesnih graditeljskih cjelina nije određen u tekstu",
+    "VEZNIK: »registriranih i evidentiranih« – kumulativno ili bilo koje"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A018~B018",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A018",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 4,0 metra",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine stambene namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B018",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina mogu se graditi do granice građevne čestice. Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici. Ako imaju otvore prema susjednoj građevnoj čestici, moraju biti udaljene od te čestice najmanje 3,0 metra. Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 4,0 metra.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine stambene namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "OBUHVAT: obuhvat povijesnih graditeljskih cjelina nije određen u tekstu",
+    "VEZNIK: »registriranih i evidentiranih« – kumulativno ili bilo koje"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A021~B022",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A021",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": "-",
+   "alineja_rb": 8,
+   "citat": "postojeće pomoćne građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana",
+   "vrsta_gradevine": "pomoćna građevina (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "u skladu s odredbama ovog Prostornog plana",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine stambene namjene; u skladu s odredbama ovog Prostornog plana",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: ovisi o odredbama Prostornog plana koje nisu u tekstu (npr. dopuštene namjene za prenamjenu)"
+   ]
+  },
+  "B": {
+   "id": "B022",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": "-",
+   "alineja_rb": 8,
+   "citat": "postojeće pomoćne građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana.",
+   "vrsta_gradevine": "pomoćna građevina (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "u skladu s odredbama ovog Prostornog plana",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine stambene namjene",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: ovisi o odredbama Prostornog plana koje nisu u tekstu"
+   ]
+  },
+  "uzorak": "uvjet · A dodaje: u skladu s odredbama ovog prostornog plana"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A026~B027",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "operator"
+  ],
+  "A": {
+   "id": "A026",
+   "clanak": 38,
+   "stavak": 6,
+   "tocka": "c)",
+   "alineja_rb": null,
+   "citat": "ukoliko se ispod građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi 2,0 od čega je 0,8 koeficijent iskoristivosti (kis) potpuno ukopane etaže",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "drugo: koeficijent iskoristivosti (kis) potpuno ukopane etaže",
+   "operator": "<=",
+   "vrijednost": 0.8,
+   "jedinica": "koeficijent",
+   "uvjet_primjene": "ukoliko se ispod građevine gradi podrum",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: »od čega je 0,8« ne kaže izričito je li 0,8 najveća vrijednost ili fiksni udio",
+    "NEDEFINIRAN_POJAM: »potpuno ukopana etaža« naspram »podrum« nije razgraničeno"
+   ]
+  },
+  "B": {
+   "id": "B027",
+   "clanak": 38,
+   "stavak": 6,
+   "tocka": "c)",
+   "alineja_rb": null,
+   "citat": "ukoliko se ispod građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi 2,0 od čega je 0,8 koeficijent iskoristivosti (kis) potpuno ukopane etaže",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "drugo: koeficijent iskoristivosti (kis) potpuno ukopane etaže",
+   "operator": "=",
+   "vrijednost": 0.8,
+   "jedinica": "koeficijent",
+   "uvjet_primjene": "ukoliko se ispod građevine gradi podrum",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: »od čega je 0,8« – nije jasno je li 0,8 najveća vrijednost ili fiksni udio",
+    "NEDEFINIRAN_POJAM: odnos »podrum« i »potpuno ukopana etaža« nije definiran u tekstu"
+   ]
+  },
+  "uzorak": "operator: A=<= | B=="
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A027~B028",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A027",
+   "clanak": 38,
+   "stavak": 6,
+   "tocka": "d)",
+   "alineja_rb": null,
+   "citat": "mogu se graditi kao podrum i dvije nadzemne etaže, najveće visine 12,0m",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": "podrum i dvije nadzemne etaže",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B028",
+   "clanak": 38,
+   "stavak": 6,
+   "tocka": "d)",
+   "alineja_rb": null,
+   "citat": "mogu se graditi kao podrum i dvije nadzemne etaže, najveće visine 12,0m",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": "podrum i dvije nadzemne etaže",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: »mogu se graditi kao« – tekst izričito ne kaže da je to najveći broj etaža"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A032~B033",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A032",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine i ne prelazi visinu od 4,0 metra",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": "visina osnovne građevine",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene; visina od najniže kote konačno zaravnatog terena",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: gornja točka mjerenja nije navedena; nije rečeno kako se mjeri visina osnovne građevine"
+   ]
+  },
+  "B": {
+   "id": "B033",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine i ne prelazi visinu od 4,0 metra",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": "visina osnovne građevine",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: zadana je samo donja točka (najniža kota konačno zaravnatog terena), gornja točka nije određena; nije određeno ni kako se mjeri visina osnovne građevine"
+   ]
+  },
+  "uzorak": "uvjet · A dodaje: visina od najniže kote konačno zaravnatog terena"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A033~B034",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A033",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine i ne prelazi visinu od 4,0 metra",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene; visina od najniže kote konačno zaravnatog terena",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: gornja točka mjerenja visine nije navedena"
+   ]
+  },
+  "B": {
+   "id": "B034",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine i ne prelazi visinu od 4,0 metra",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: zadana je samo donja točka (najniža kota konačno zaravnatog terena), gornja točka mjerenja nije određena"
+   ]
+  },
+  "uzorak": "uvjet · A dodaje: visina od najniže kote konačno zaravnatog terena"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A047~B048",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A047",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Ako imaju otvore prema susjednoj građevnoj čestici, moraju biti udaljene od te čestice najmanje 3,0 metra",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako imaju otvore prema susjednoj građevnoj čestici",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B048",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, mogu se graditi do granice građevne čestice. Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici. Ako imaju otvore prema susjednoj građevnoj čestici, moraju biti udaljene od te čestice najmanje 3,0 metra,",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako imaju otvore prema susjednoj građevnoj čestici",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "OBUHVAT: obuhvat povijesnih graditeljskih cjelina nije određen u tekstu",
+    "VEZNIK: »registriranih i evidentiranih« – kumulativno ili bilo koje"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A048~B049",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A048",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 4,0 metara",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B049",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, mogu se graditi do granice građevne čestice. Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici. Ako imaju otvore prema susjednoj građevnoj čestici, moraju biti udaljene od te čestice najmanje 3,0 metra, Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 4,0 metara.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "OBUHVAT: obuhvat povijesnih graditeljskih cjelina nije određen u tekstu",
+    "VEZNIK: »registriranih i evidentiranih« – kumulativno ili bilo koje"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A051~B053",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A051",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 8,
+   "citat": "postojeće pomoćne građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana",
+   "vrsta_gradevine": "pomoćna građevina (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "u skladu s odredbama ovog Prostornog plana",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene; u skladu s odredbama ovog Prostornog plana",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: ovisi o odredbama Plana koje nisu u tekstu"
+   ]
+  },
+  "B": {
+   "id": "B053",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 8,
+   "citat": "postojeće pomoćne građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana.",
+   "vrsta_gradevine": "pomoćna građevina (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "u skladu s odredbama ovog Prostornog plana",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: ovisi o odredbama Prostornog plana koje nisu u tekstu"
+   ]
+  },
+  "uzorak": "uvjet · A dodaje: u skladu s odredbama ovog prostornog plana"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A054~B056",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A054",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine i ne prelazi visinu od 4,0 metra",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": "visina osnovne građevine",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine gospodarske namjene; visina od najniže kote konačno zaravnatog terena",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: gornja točka mjerenja nije navedena; nije rečeno kako se mjeri visina osnovne građevine"
+   ]
+  },
+  "B": {
+   "id": "B056",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine i ne prelazi visinu od 4,0 metra",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": "visina osnovne građevine",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine gospodarske namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: zadana je samo donja točka (najniža kota konačno zaravnatog terena), gornja točka nije određena; nije određeno ni kako se mjeri visina osnovne građevine"
+   ]
+  },
+  "uzorak": "uvjet · A dodaje: visina od najniže kote konačno zaravnatog terena"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A055~B057",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A055",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine i ne prelazi visinu od 4,0 metra",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine gospodarske namjene; visina od najniže kote konačno zaravnatog terena",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: gornja točka mjerenja visine nije navedena"
+   ]
+  },
+  "B": {
+   "id": "B057",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine i ne prelazi visinu od 4,0 metra",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine gospodarske namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: zadana je samo donja točka (najniža kota konačno zaravnatog terena), gornja točka mjerenja nije određena"
+   ]
+  },
+  "uzorak": "uvjet · A dodaje: visina od najniže kote konačno zaravnatog terena"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A069~B071",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A069",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Ako imaju otvore prema susjednoj građevnoj čestici, moraju biti udaljene od te čestice najmanje 3,0 metra",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine gospodarske namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako imaju otvore prema susjednoj građevnoj čestici",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B071",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, mogu se graditi do granice građevne čestice. Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici. Ako imaju otvore prema susjednoj građevnoj čestici, moraju biti udaljene od te čestice najmanje 3,0 metra.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine gospodarske namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako imaju otvore prema susjednoj građevnoj čestici",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "OBUHVAT: obuhvat povijesnih graditeljskih cjelina nije određen u tekstu",
+    "VEZNIK: »registriranih i evidentiranih« – kumulativno ili bilo koje"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A070~B072",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A070",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 4,0 metra",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine gospodarske namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B072",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, mogu se graditi do granice građevne čestice. Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici. Ako imaju otvore prema susjednoj građevnoj čestici, moraju biti udaljene od te čestice najmanje 3,0 metra. Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 4,0 metra.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "uz građevine gospodarske namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "OBUHVAT: obuhvat povijesnih graditeljskih cjelina nije određen u tekstu",
+    "VEZNIK: »registriranih i evidentiranih« – kumulativno ili bilo koje"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A073~B076",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A073",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 8,
+   "citat": "postojeće pomoćne građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana",
+   "vrsta_gradevine": "pomoćna građevina (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "u skladu s odredbama ovog Prostornog plana",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine gospodarske namjene; u skladu s odredbama ovog Prostornog plana",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: ovisi o odredbama Plana koje nisu u tekstu"
+   ]
+  },
+  "B": {
+   "id": "B076",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 8,
+   "citat": "postojeće pomoćne građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana.",
+   "vrsta_gradevine": "pomoćna građevina (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "u skladu s odredbama ovog Prostornog plana",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine gospodarske namjene",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: ovisi o odredbama Prostornog plana koje nisu u tekstu"
+   ]
+  },
+  "uzorak": "uvjet · A dodaje: u skladu s odredbama ovog prostornog plana"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A001~B001",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrijednost"
+  ],
+  "A": {
+   "id": "A001",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Pomoćne građevine grade se kao jednoetažne uz građevine stambene namjene",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveći broj etaža",
+   "operator": "=",
+   "vrijednost": 1,
+   "jedinica": null,
+   "uvjet_primjene": "uz građevine stambene namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B001",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Pomoćne građevine grade se kao jednoetažne uz građevine stambene namjene uz uvjet da:",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveći broj etaža",
+   "operator": "=",
+   "vrijednost": "jednoetažne",
+   "jedinica": null,
+   "uvjet_primjene": "uz građevine stambene namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "vrijednost: A=1 | B=jednoetažne"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A015~B015",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A015",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "drugo: odvajanje od susjedne građevine vatrobranim zidom",
+   "operator": "opis",
+   "vrijednost": "vatrobrani zid",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine stambene namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako se grade na granici građevne čestice",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B015",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina mogu se graditi do granice građevne čestice. Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "drugo: odvajanje od susjedne građevine vatrobranim zidom",
+   "operator": "opis",
+   "vrijednost": "od susjedne građevine biti odijeljene vatrobranim zidom",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine stambene namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako se grade na granici građevne čestice",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "OBUHVAT: obuhvat povijesnih graditeljskih cjelina nije određen u tekstu",
+    "VEZNIK: »registriranih i evidentiranih« – kumulativno ili bilo koje"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A029~B030",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A029",
+   "clanak": 38,
+   "stavak": 6,
+   "tocka": "e)",
+   "alineja_rb": null,
+   "citat": "sportsko-rekreacijske građevine grade se unutar građevinskih područja naselja u skladu s veličinom naselja i standardima, na način da pridonose kvaliteti života u naselju",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "dopuštenost gradnje",
+   "operator": "opis",
+   "vrijednost": "unutar građevinskih područja naselja u skladu s veličinom naselja i standardima",
+   "jedinica": "opis",
+   "uvjet_primjene": "unutar građevinskih područja naselja",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: »standardi« i »pridonose kvaliteti života« nisu određeni",
+    "UPUCIVANJE: standardi nisu navedeni u tekstu"
+   ]
+  },
+  "B": {
+   "id": "B030",
+   "clanak": 38,
+   "stavak": 6,
+   "tocka": "e)",
+   "alineja_rb": null,
+   "citat": "sportsko-rekreacijske građevine grade se unutar građevinskih područja naselja u skladu s veličinom naselja i standardima, na način da pridonose kvaliteti života u naselju",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "dopuštenost gradnje",
+   "operator": "opis",
+   "vrijednost": "unutar građevinskih područja naselja u skladu s veličinom naselja i standardima, na način da pridonose kvaliteti života u naselju",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: »standardi«, »kvaliteta života u naselju«",
+    "UPUCIVANJE: standardi nisu navedeni u tekstu"
+   ]
+  },
+  "uzorak": "uvjet · A dodaje: unutar građevinskih područja naselja"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A030~B031",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene",
+   "vrsta_pravila"
+  ],
+  "A": {
+   "id": "A030",
+   "clanak": 38,
+   "stavak": 6,
+   "tocka": "f)",
+   "alineja_rb": null,
+   "citat": "unutar građevinskog područja naselja omogućuje se građenje zatvorenih sportsko-rekreacijskih građevina (dvorana) te bazena i otvorenih sportskih sadržaja prema standardima koji vrijede za pojedini sportski objekt",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "zatvorene sportsko-rekreacijske građevine (dvorane) te bazeni i otvoreni sportski sadržaji",
+   "jedinica": "opis",
+   "uvjet_primjene": "unutar građevinskog područja naselja; prema standardima koji vrijede za pojedini sportski objekt",
+   "modal": "moze",
+   "alternative": [
+    "zatvorene sportsko-rekreacijske građevine (dvorane)",
+    "bazeni",
+    "otvoreni sportski sadržaji"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: standardi za pojedini sportski objekt nisu u tekstu"
+   ]
+  },
+  "B": {
+   "id": "B031",
+   "clanak": 38,
+   "stavak": 6,
+   "tocka": "f)",
+   "alineja_rb": null,
+   "citat": "unutar građevinskog područja naselja omogućuje se građenje zatvorenih sportsko-rekreacijskih građevina (dvorana) te bazena i otvorenih sportskih sadržaja prema standardima koji vrijede za pojedini sportski objekt",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "zatvorenih sportsko-rekreacijskih građevina (dvorana) te bazena i otvorenih sportskih sadržaja prema standardima koji vrijede za pojedini sportski objekt",
+   "jedinica": "opis",
+   "uvjet_primjene": "unutar građevinskog područja naselja",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: »standardi koji vrijede za pojedini sportski objekt« nisu u tekstu"
+   ]
+  }
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A031~B032",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrijednost"
+  ],
+  "A": {
+   "id": "A031",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Pomoćne građevine grade se kao jednoetažne uz građevine društvene i sportsko-rekreacijske namjene",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveći broj etaža",
+   "operator": "=",
+   "vrijednost": 1,
+   "jedinica": null,
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B032",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Pomoćne građevine grade se kao jednoetažne uz građevine društvene i sportsko-rekreacijske namjene uz uvjet da:",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveći broj etaža",
+   "operator": "=",
+   "vrijednost": "jednoetažne",
+   "jedinica": null,
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "vrijednost: A=1 | B=jednoetažne"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A045~B046",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A045",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "drugo: odvajanje od susjedne građevine vatrobranim zidom",
+   "operator": "opis",
+   "vrijednost": "vatrobrani zid",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako se grade na granici građevne čestice",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B046",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, mogu se graditi do granice građevne čestice. Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "drugo: odvajanje od susjedne građevine vatrobranim zidom",
+   "operator": "opis",
+   "vrijednost": "od susjedne građevine biti odijeljene vatrobranim zidom",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako se grade na granici građevne čestice",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "OBUHVAT: obuhvat povijesnih graditeljskih cjelina nije određen u tekstu",
+    "VEZNIK: »registriranih i evidentiranih« – kumulativno ili bilo koje"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A053~B055",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrijednost"
+  ],
+  "A": {
+   "id": "A053",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveći broj etaža",
+   "operator": "=",
+   "vrijednost": 1,
+   "jedinica": null,
+   "uvjet_primjene": "uz građevine gospodarske namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B055",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene uz uvjet da:",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveći broj etaža",
+   "operator": "=",
+   "vrijednost": "jednoetažne",
+   "jedinica": null,
+   "uvjet_primjene": "uz građevine gospodarske namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "vrijednost: A=1 | B=jednoetažne"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A067~B069",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A067",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "drugo: odvajanje od susjedne građevine vatrobranim zidom",
+   "operator": "opis",
+   "vrijednost": "vatrobrani zid",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine gospodarske namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako se grade na granici građevne čestice",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B069",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, mogu se graditi do granice građevne čestice. Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "drugo: odvajanje od susjedne građevine vatrobranim zidom",
+   "operator": "opis",
+   "vrijednost": "od susjedne građevine biti odijeljene vatrobranim zidom",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine gospodarske namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako se grade na granici građevne čestice",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "OBUHVAT: obuhvat povijesnih graditeljskih cjelina nije određen u tekstu",
+    "VEZNIK: »registriranih i evidentiranih« – kumulativno ili bilo koje"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A019~B019",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "parametar",
+   "vrsta_pravila"
+  ],
+  "A": {
+   "id": "A019",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "na regulacijskom pravcu mogu se graditi samo garaže, kada je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno max do visine ogradnog zida 1,1m kada to dozvoljavaju lokalni uvjeti",
+   "vrsta_gradevine": "garaža",
+   "parametar": "drugo: gradnja na regulacijskom pravcu",
+   "operator": "dopustenje",
+   "vrijednost": "na regulacijskom pravcu",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine stambene namjene; kada je takav zahtjev uvjetovan konfiguracijom terena; kada je završna kota ravnog krova ista kao niveleta ulice; max do visine ogradnog zida 1,1m kada to dozvoljavaju lokalni uvjeti",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "VEZNIK: dvostruki »odnosno« – nejasno moraju li uvjeti biti ispunjeni kumulativno ili je dovoljan bilo koji",
+    "NEDEFINIRAN_POJAM: »lokalni uvjeti« i »konfiguracija terena« nisu definirani"
+   ]
+  },
+  "B": {
+   "id": "B019",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "na regulacijskom pravcu mogu se graditi samo garaže, kada je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno max do visine ogradnog zida 1,1m kada to dozvoljavaju lokalni uvjeti",
+   "vrsta_gradevine": "garaža",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "na regulacijskom pravcu",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine stambene namjene; kada je takav zahtjev uvjetovan konfiguracijom terena; kada je završna kota ravnog krova ista kao niveleta ulice; max do visine ogradnog zida 1,1m kada to dozvoljavaju lokalni uvjeti",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "VEZNIK: dvostruko »odnosno« – uvjeti mogu biti kumulativni ili alternativni",
+    "NEDEFINIRAN_POJAM: »konfiguracija terena«, »lokalni uvjeti«",
+    "ODNOS_ODREDBI: odnos prema najmanjoj udaljenosti od regulacijskog pravca 5,0 m (alineja 5) nije izričito određen"
+   ]
+  }
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A049~B050",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "parametar",
+   "vrsta_pravila"
+  ],
+  "A": {
+   "id": "A049",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "na regulacijskom pravcu mogu se graditi samo garaže, kada je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno max do visine ogradnog zida 1,1m kada to dozvoljavaju lokalni uvjeti",
+   "vrsta_gradevine": "garaža",
+   "parametar": "drugo: gradnja na regulacijskom pravcu",
+   "operator": "dopustenje",
+   "vrijednost": "na regulacijskom pravcu",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene; kada je takav zahtjev uvjetovan konfiguracijom terena; kada je završna kota ravnog krova ista kao niveleta ulice; max do visine ogradnog zida 1,1m kada to dozvoljavaju lokalni uvjeti",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "VEZNIK: dvostruki »odnosno« – kumulativni ili alternativni uvjeti",
+    "NEDEFINIRAN_POJAM: »lokalni uvjeti« i »konfiguracija terena«"
+   ]
+  },
+  "B": {
+   "id": "B050",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "na regulacijskom pravcu mogu se graditi samo garaže, kada je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno max do visine ogradnog zida 1,1m kada to dozvoljavaju lokalni uvjeti",
+   "vrsta_gradevine": "garaža",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "na regulacijskom pravcu",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene; kada je takav zahtjev uvjetovan konfiguracijom terena; kada je završna kota ravnog krova ista kao niveleta ulice; max do visine ogradnog zida 1,1m kada to dozvoljavaju lokalni uvjeti",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "VEZNIK: dvostruko »odnosno« – uvjeti mogu biti kumulativni ili alternativni",
+    "NEDEFINIRAN_POJAM: »konfiguracija terena«, »lokalni uvjeti«",
+    "ODNOS_ODREDBI: odnos prema najmanjoj udaljenosti od regulacijskog pravca 5,0 m (alineja 5) nije izričito određen"
+   ]
+  }
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A071~B073",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "parametar",
+   "vrsta_pravila"
+  ],
+  "A": {
+   "id": "A071",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "na regulacijskom pravcu mogu se graditi samo garaže, kada je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno max do visine ogradnog zida 1,1m kada to dozvoljavaju lokalni uvjeti",
+   "vrsta_gradevine": "garaža",
+   "parametar": "drugo: gradnja na regulacijskom pravcu",
+   "operator": "dopustenje",
+   "vrijednost": "na regulacijskom pravcu",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine gospodarske namjene; kada je takav zahtjev uvjetovan konfiguracijom terena; kada je završna kota ravnog krova ista kao niveleta ulice; max do visine ogradnog zida 1,1m kada to dozvoljavaju lokalni uvjeti",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "VEZNIK: dvostruki »odnosno« – kumulativni ili alternativni uvjeti",
+    "NEDEFINIRAN_POJAM: »lokalni uvjeti« i »konfiguracija terena«"
+   ]
+  },
+  "B": {
+   "id": "B073",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "na regulacijskom pravcu mogu se graditi samo garaže, kada je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno max do visine ogradnog zida 1,1m kada to dozvoljavaju lokalni uvjeti",
+   "vrsta_gradevine": "garaža",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "na regulacijskom pravcu",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine gospodarske namjene; kada je takav zahtjev uvjetovan konfiguracijom terena; kada je završna kota ravnog krova ista kao niveleta ulice; max do visine ogradnog zida 1,1m kada to dozvoljavaju lokalni uvjeti",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "VEZNIK: dvostruko »odnosno« – uvjeti mogu biti kumulativni ili alternativni",
+    "NEDEFINIRAN_POJAM: »konfiguracija terena«, »lokalni uvjeti«",
+    "ODNOS_ODREDBI: odnos prema najmanjoj udaljenosti od regulacijskog pravca 5,0 m (alineja 5) nije izričito određen"
+   ]
+  }
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A016~",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "SAMO_A",
+  "polja": [],
+  "A": {
+   "id": "A016",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "drugo: smjer nagiba krova",
+   "operator": "zabrana",
+   "vrijednost": "prema susjednoj građevnoj čestici",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine stambene namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako se grade na granici građevne čestice",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: nejasno je je li uvjet o nagibu krova preduvjet gradnje na granici ili dodatni zahtjev"
+   ]
+  },
+  "B": null
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A046~",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "SAMO_A",
+  "polja": [],
+  "A": {
+   "id": "A046",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "drugo: smjer nagiba krova",
+   "operator": "zabrana",
+   "vrijednost": "prema susjednoj građevnoj čestici",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako se grade na granici građevne čestice",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: nejasno je je li uvjet o nagibu krova preduvjet gradnje na granici ili dodatni zahtjev"
+   ]
+  },
+  "B": null
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:A068~",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "SAMO_A",
+  "polja": [],
+  "A": {
+   "id": "A068",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "drugo: smjer nagiba krova",
+   "operator": "zabrana",
+   "vrijednost": "prema susjednoj građevnoj čestici",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine gospodarske namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako se grade na granici građevne čestice",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: nejasno je je li uvjet o nagibu krova preduvjet gradnje na granici ili dodatni zahtjev"
+   ]
+  },
+  "B": null
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:~B016",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "SAMO_B",
+  "polja": [],
+  "A": null,
+  "B": {
+   "id": "B016",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina mogu se graditi do granice građevne čestice. Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "drugo: smjer nagiba krova pri gradnji na granici građevne čestice",
+   "operator": "zabrana",
+   "vrijednost": "nagib krova prema susjednoj građevnoj čestici",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine stambene namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako se grade na granici građevne čestice",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "OBUHVAT: obuhvat povijesnih graditeljskih cjelina nije određen u tekstu",
+    "VEZNIK: »registriranih i evidentiranih« – kumulativno ili bilo koje",
+    "ODNOS_ODREDBI: nije jasno je li »uz uvjet da« uvjet za gradnju na granici ili samo za vatrobrani zid",
+    "TUMACENJE: primjena na ravni krov nije određena"
+   ]
+  }
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:~B021",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "SAMO_B",
+  "polja": [],
+  "A": null,
+  "B": {
+   "id": "B021",
+   "clanak": 20,
+   "stavak": 3,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "na regulacijskom pravcu mogu se graditi samo garaže, kada je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno max do visine ogradnog zida 1,1m kada to dozvoljavaju lokalni uvjeti",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "dopuštenost gradnje",
+   "operator": "zabrana",
+   "vrijednost": "na regulacijskom pravcu, osim garaža",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine stambene namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "NEGATIVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: zabrana za ostale pomoćne građevine izvedena je iz riječi »samo«, nije izričito formulirana"
+   ]
+  }
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:~B047",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "SAMO_B",
+  "polja": [],
+  "A": null,
+  "B": {
+   "id": "B047",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, mogu se graditi do granice građevne čestice. Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "drugo: smjer nagiba krova pri gradnji na granici građevne čestice",
+   "operator": "zabrana",
+   "vrijednost": "nagib krova prema susjednoj građevnoj čestici",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako se grade na granici građevne čestice",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "OBUHVAT: obuhvat povijesnih graditeljskih cjelina nije određen u tekstu",
+    "VEZNIK: »registriranih i evidentiranih« – kumulativno ili bilo koje",
+    "ODNOS_ODREDBI: nije jasno je li »uz uvjet da« uvjet za gradnju na granici ili samo za vatrobrani zid",
+    "TUMACENJE: primjena na ravni krov nije određena"
+   ]
+  }
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:~B052",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "SAMO_B",
+  "polja": [],
+  "A": null,
+  "B": {
+   "id": "B052",
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "na regulacijskom pravcu mogu se graditi samo garaže, kada je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno max do visine ogradnog zida 1,1m kada to dozvoljavaju lokalni uvjeti",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "dopuštenost gradnje",
+   "operator": "zabrana",
+   "vrijednost": "na regulacijskom pravcu, osim garaža",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine društvene i sportsko-rekreacijske namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "NEGATIVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: zabrana za ostale pomoćne građevine izvedena je iz riječi »samo«, nije izričito formulirana"
+   ]
+  }
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:~B070",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "SAMO_B",
+  "polja": [],
+  "A": null,
+  "B": {
+   "id": "B070",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, mogu se graditi do granice građevne čestice. Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "drugo: smjer nagiba krova pri gradnji na granici građevne čestice",
+   "operator": "zabrana",
+   "vrijednost": "nagib krova prema susjednoj građevnoj čestici",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine gospodarske namjene; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ako se grade na granici građevne čestice",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "OBUHVAT: obuhvat povijesnih graditeljskih cjelina nije određen u tekstu",
+    "VEZNIK: »registriranih i evidentiranih« – kumulativno ili bilo koje",
+    "ODNOS_ODREDBI: nije jasno je li »uz uvjet da« uvjet za gradnju na granici ili samo za vatrobrani zid",
+    "TUMACENJE: primjena na ravni krov nije određena"
+   ]
+  }
+ },
+ {
+  "id": "G3_ppug_20_38_39_50:~B075",
+  "skupina": "G3_ppug_20_38_39_50",
+  "vrsta": "SAMO_B",
+  "polja": [],
+  "A": null,
+  "B": {
+   "id": "B075",
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "na regulacijskom pravcu mogu se graditi samo garaže, kada je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno max do visine ogradnog zida 1,1m kada to dozvoljavaju lokalni uvjeti",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "dopuštenost gradnje",
+   "operator": "zabrana",
+   "vrijednost": "na regulacijskom pravcu, osim garaža",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevine gospodarske namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "NEGATIVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: zabrana za ostale pomoćne građevine izvedena je iz riječi »samo«, nije izričito formulirana"
+   ]
+  }
+ },
+ {
   "id": "G4_upu1_14:A009~B011",
   "skupina": "G4_upu1_14",
   "vrsta": "RAZLIKA",
