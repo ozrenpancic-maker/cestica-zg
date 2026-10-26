@@ -1,0 +1,21 @@
+{
+ "verzija": "v1.2 – dopuna odlukama suca (v1 i v1.1 se ne mijenjaju)",
+ "sudac": "Ozren Pančić",
+ "datum": "2026-10-26",
+ "odluke": [
+  {"br": 1, "izjava_suca": "Udaljenosti od regulacijskog pravca koje ovise o vrsti ceste klasificiraju se kao UVJETNA pravila. To vrijedi jednako za članke 14. i 24. UPU-a 1 Krk. Svaka vrijednost mora zadržati odgovarajuću kategoriju ceste.",
+   "primjena": "Zapis s parametrom »najmanja udaljenost od regulacijskog pravca« čiji uvjet sadrži kategoriju ceste (»za … ceste/ulice«): vrsta_pravila UVJETNO, kategorija ostaje u uvjetu_primjene."},
+  {"br": 2, "izjava_suca": "Izraz „dopušteno je graditi” sam po sebi ne znači da se pravilo odnosi isključivo na novu građevinu. Oznaku `nova` dodijeli samo kada je izričito opravdana tekstom ili nedvosmislenim kontekstom.",
+   "primjena": {"pravilo": "»(nova)« ostaje kad citat sadrži »nova/nove/novih« ili je zapis alineja točke čiji uvod to izričito kaže (npr. PPUG čl. 22. t. c) »nove obiteljske kuće«); inače se uklanja.",
+    "ukloni_nova": [
+     {"skupina": "G4_upu1_14", "id": "R029", "razlog": "»za gradnju sportsko-rekreacijske građevine« ne kaže izričito da je građevina nova"},
+     {"skupina": "G4_upu1_14", "id": "R030", "razlog": "blok k.č. 3932/1: nova građevina nije izričito navedena"},
+     {"skupina": "G4_upu1_14", "id": "R031", "razlog": "blok k.č. 3932/1: nova građevina nije izričito navedena"},
+     {"skupina": "G4_upu1_14", "id": "R032", "razlog": "blok k.č. 3932/1: nova građevina nije izričito navedena"},
+     {"skupina": "G4_upu1_14", "id": "R033", "razlog": "blok k.č. 3932/1: nova građevina nije izričito navedena"},
+     {"skupina": "G4_upu1_14", "id": "R034", "razlog": "blok k.č. 3932/1: nova građevina nije izričito navedena"},
+     {"skupina": "G5_upu1_24", "id": "R008", "razlog": "»Dopušteno je graditi građevine pratećih sadržaja« – upravo slučaj iz odluke 2"}]}},
+  {"br": 3, "izjava_suca": "„Samostojeće” i „samostojeće građevine” tretiraj kao jednak način gradnje ako je subjekt isti. Sačuvaj značenje isključivosti izraza „samo kao samostojeće”.",
+   "primjena": "U usporedbi načina gradnje vrijednost »<oblik>« jednaka je »<oblik> građevine« kad su članak, stavak i vrsta građevine isti. Isključivost se čuva: operator »=« (obvezni oblik) i zasebno pravilo zabrane ostalih oblika."}
+ ]
+}
