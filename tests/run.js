@@ -2229,6 +2229,51 @@ async function geoTests(){
   ok(errs.length===0,"bez JS grešaka (geometrija): "+errs.join(" | "));
 }
 
+// v0.24.22: stvarna čestica 735/76 k.o. Kornić (DGU DKP i spremljeni odgovori PGŽ-a iz tests/pgz-odgovori/735-76-kornic-2026-10-22)
+async function k73576Tests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), T=w.turf, tick=(ms=30)=>new Promise(r=>setTimeout(r,ms));
+  const D="pgz-odgovori/735-76-kornic-2026-10-22/", rd=f=>JSON.parse(fs.readFileSync(path.join(__dirname,f),"utf8"));
+  const bez3=g=>JSON.parse(JSON.stringify(g,(k,v)=>Array.isArray(v)&&v.length===3&&v.every(x=>typeof x==="number")?v.slice(0,2):v));
+  const gj=rd("../docs/primjeri/kornic_cestica_735_76.geojson").features[0], parcel=w.JSON.parse(JSON.stringify({type:"Feature",geometry:bez3(gj.geometry),properties:{broj:"735/76",ko:"KORNIĆ",ref:"735/76@315907",cid:19311099}}));
+  const area=T.area(parcel), nam=rd(D+"namjena_cestica_app.geojson").features.map(f=>w.JSON.parse(JSON.stringify(bez3(f))));
+  const rows=nam.map(f=>{let sh=0; try{const i=T.intersect(parcel,f); sh=i?T.area(i)/area:0;}catch(e){} return {p:f.properties,share:sh,geom:f.geometry};}).filter(r=>r.share>0).sort((a,b)=>b.share-a.share);
+  const pl=w.JSON.parse(JSON.stringify(rd(D+"planovi_tocka_app.geojson").features));
+  const c=T.pointOnFeature(parcel).geometry.coordinates, d={region:"krk",ll:{lat:c[1],lng:c[0]},parcel,area,rows,ces:{v:[parcel]},nam:{v:nam},pl:{v:pl},slope:null,env:null};
+  ok(Math.abs(area-405.4)<2&&rows[0].p.OZNAKA_NAMJENE==="NA2"&&rows[0].share>0.99&&rows.length===2&&rows[1].p.OZNAKA_NAMJENE==="P3","735/76: DGU granica ≈ 405 m² ("+area.toFixed(1)+"), presjek namjene NA2 "+(rows[0].share*100).toFixed(2)+" % i P3 (kao u USPOREDBA.md)");
+  for(const k of Object.keys(w.localStorage)) if(/^krk(Zona|Zast|Tip|Kd)/.test(k)) w.localStorage.removeItem(k);
+  E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob"; E("OPEN").add("gp");
+  const R=()=>E("PZREG").items, tx=()=>txt(w,"sheet");
+  // A + B: NA2 i UPU 2 prepoznati; zona M11 i zaštita C se ne postavljaju sami; bez zone nema izračuna
+  E("renderKrk")(d); await tick();
+  ok(/NA2/.test(tx())&&/UPU 2 Kornić/.test(tx())&&E("krkZonaGet")()===""&&E("krkZastGet")()===""&&/Detaljna zona nije potvrđena/.test(tx())&&R().get("namjena")&&R().get("namjena").raz==="A","735/76 A: namjena NA2 (A) i UPU 2 Kornić prepoznati; zona M11 i zaštita C nisu automatski postavljene");
+  ok(E("window.__krkCalc")===null&&!R().get("calc-tlocrt")&&!R().get("calc-gbp")&&!/Najveći tlocrt \(kig/.test(tx())&&!R().get("zona-korisnik"),"735/76 B: bez odabira zone nema tlocrta, GBP-a ni razvrstaja građevine");
+  // C: korisnik bira M11 → scenarij odabrane zone (C), ne potvrda zone
+  E("krkZonaSet")("M11"); E("renderKrk")(d); await tick();
+  const zk=R().get("zona-korisnik"), ct=R().get("calc-tlocrt");
+  ok(zk&&zk.raz==="C"&&zk.korisnik===true&&ct&&ct.raz==="C"&&R().get("calc-gbp").raz==="C"&&/Izračun je za zonu koju si odabrao \(M11\)/.test(tx())&&/nije potvrđena službenim vektorskim slojem/.test(tx()),"735/76 C: odabrana M11 je korisnički scenarij (C); tlocrt i GBP su C, uz napomenu da zona nije potvrđena");
+  // šest scenarija samo po površini (405 m²), isti kao u neovisnom nalazu v0.24.22
+  const S=Object.fromEntries((E("window.__tipCmp")||[]).map(r=>[r.key,r.stanje])), ocek={"krk|obit|slob":"izn","krk|obit|dvoj":"ok","krk|obit|ugr":"ok","krk|visobit|slob":"mala","krk|visobit|dvoj":"ok","krk|stamb|slob":"mala"};
+  ok(Object.keys(ocek).every(k=>S[k]===ocek[k])&&Object.keys(S).length===6,"735/76: šest scenarija po površini (obiteljska slob. samo iznimno; dvojna i ugrađena da; višeobiteljska slob. ne, dvojna da; stambena ne): "+JSON.stringify(S));
+  ok((E("window.__tipCmp")||[]).every(r=>r.pz&&r.pz.raz==="C"),"735/76: svi scenariji usporedbe tipova su razine C (ovise o odabranoj zoni)");
+  // D: iznimni minimum 400 m² nije bezuvjetno ispunjen
+  const C1=E("window.__krkCalc");
+  ok(C1.minOk===false&&C1.minEx===true&&/Najmanja čestica 500 m² ?samo iznimno/.test(tx())&&/Iznimno 400 m², ako je čestica u okruženju već formiranih/.test(tx())&&/To potvrđuje lokacijska informacija/.test(tx())&&!/Najmanja čestica 500 m² ?ispunjeno/.test(tx()),"735/76 D: obiteljska slobodnostojeća (405 m² < 500 m²) je „samo iznimno” uz uvjet okruženja, a ne „ispunjeno”");
+  // E: zona zaštite C samo kao korisnički odabir s oznakom C i uvjetima čl. 85.
+  ok(/Zona zaštite nije odabrana/.test(tx())&&!R().get("zast-korisnik"),"735/76 E: bez odabira zone zaštite upozorenje, bez oznake zone");
+  E("krkZastSet")("C"); E("renderKrk")(d); await tick(); const L=E("window.__krkLim"), zs=R().get("zast-korisnik");
+  ok(zs&&zs.raz==="C"&&zs.korisnik===true&&/zona »C«/.test(zs.vrijednost)&&L.zast.v==="C"&&L.etMax===2&&/čl\. 85\. \(zona »C«\)/.test(L.etIz||"")&&/Zonu zaštite odabrao si sam prema karti 3A/.test(tx()),"735/76 E: zona zaštite C je korisnički odabir (C); simulator primjenjuje najviše 2 nadzemne etaže (čl. 85.)");
+  // F: dosje i pouzdanost: izvori, površina samo grafička, odabrane zone C, nijedan izračun nije A
+  {const Rp=E("buildReport")(), t2=Rp.textContent; const nA=[...R().values()].filter(x=>/^calc-/.test(x.id)&&x.raz==="A").length;
+   ok(/Službene novine PGŽ 19\/2016/.test(t2)&&/Grafička površina/.test(t2)&&!/Upisana u zemljišnoj knjizi ?\d/.test(t2)&&nA===0&&[...R().values()].some(x=>x.id==="zona-korisnik"&&x.raz==="C")&&[...R().values()].some(x=>x.id==="zast-korisnik"&&x.raz==="C"),"735/76 F: dosje navodi izvor (UPU 2, SN 19/2016), samo grafičku površinu (ZK nije upisana); odabrane zone su C, nijedan izračun nije A"); Rp.remove();}
+  // G: površina obrisa i uklapanje kuće su odvojeni pokazatelji
+  ok(/Gornja granica tlocrta po površini/.test(tx())&&/a ne dokaz da kuća zadanog oblika stane/.test(tx())&&w.document.querySelector('[data-teorijski-prostor="krk"]'),"735/76 G: teorijski obris (gornja granica po površini) odvojen od uklapanja kuće (simulator)");
+  // H: Zagreb ne nasljeđuje krčka upozorenja ni odabire
+  const dz=data(w,parcelRect(30,25),"2.2."); E("render")(dz); await tick();
+  ok(!w.document.querySelector("[data-pravna-provjera]")&&!w.document.querySelector("[data-teorijski-prostor]")&&!$(w,"krkKdRed")&&!$(w,"krkZona")&&!E("PZREG").items.get("zona-korisnik")&&!E("PZREG").items.get("zast-korisnik"),"735/76 H: Zagreb bez krčkih upozorenja, komunalnog doprinosa Krka i odabira zona");
+  for(const k of Object.keys(w.localStorage)) if(/^krk(Zona|Zast)/.test(k)) w.localStorage.removeItem(k);
+  ok(errs.length===0,"bez JS grešaka (735/76): "+errs.join(" | "));
+}
+
 // osunčanost dvorišta, vjetar i bura, pogled na more, promjene na spremljenoj čestici (čiste funkcije i prikaz)
 async function napTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -2422,7 +2467,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(napTests).then(izvTests).then(dosTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

@@ -1205,6 +1205,7 @@ function krkRulesHtml(d){
     const ZS=RS.simulator&&RS.simulator.zastita;
     if(ZS){const zv=krkZastGet();
       h+=`<div class="kd" style="margin:6px 0"><label for="krkZast">Zona zaštite (karta ${esc(ZS.karta)})</label>${sel("krkZast",ZS.opcije,zv)}</div>`;
+      if(zv) pzSet("zast-korisnik","Zona zaštite u UPU-u (tvoj odabir)",(ZS.opcije.find(x=>x[0]===zv)||[,zv])[1],pzUser({provjera:"karta "+ZS.karta+" plana, lokacijska informacija, konzervatorski uvjeti"})); else pzDel("zast-korisnik");
       h+=zv?`<p class="meta">Zonu zaštite odabrao si sam prema karti ${esc(ZS.karta)}; potvrđuje je lokacijska informacija.</p>`:`<p class="flag">Zona zaštite nije odabrana: pogledaj kartu ${esc(ZS.karta)} (granice zona »B« i »C«, čl. ${esc(ZS.clanak)}). Simulator do tada ne provjerava uvjete zaštite.</p>`;
       if(zv==="B"&&ZS.B){h+=`<div class="verdict v-warn">${esc(ZS.B.napomena)}</div>`; return h;}
     }
