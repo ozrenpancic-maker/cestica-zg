@@ -1026,7 +1026,7 @@ function gpHtml(G,tlKig,opisMeda,opisPravac,opts){
   if(A2&&G.st==="primijenjen") h+=`<tr><th>Drugi scenarij odmaka od ceste</th><td>${fmt(A2.area)} m²<small class="fx">uz odmak ${String(O.alt.d).replace(".",",")} m od regulacijskog pravca (${esc(O.alt.naziv||"veći odmak")}); kategorija ceste nije poznata, pa nijedan scenarij nije konačan</small></td></tr>`;
   if(G.kroz) h+=`<tr><th>Cesta i katastar</th><td><span class="chk-warn">!</span> ${esc(krozTekst(G.kroz))}</td></tr>`;
   h+=`<tr><th>Teorijski prostor za gradnju</th><td><b>${fmt(G.area)} m²</b> ${pzTag(pzG)}<small class="fx">zeleno na karti${A2&&G.st==="primijenjen"?"; uz odmak "+String(G.pravacD).replace(".",",")+" m":""}</small></td></tr>`;
-  if(tlKig!=null) h+=`<tr><th>Geometrijski moguć tlocrt</th><td><b>do ${fmt(geo)} m²</b> ${pzTag(pzCalc({},[pzG]))}<small class="fx">${ogr?`Oblik čestice ograničava tlocrt: kig dopušta ${fmt(tlKig)} m², a u obris stane najviše ${fmt(G.area)} m².`:`Kig dopušta ${fmt(tlKig)} m²; obris je veći, pa ograničenje dolazi od kig-a.`} Kuća mora stati u obris; provjeri u simulatoru.</small></td></tr>`;
+  if(tlKig!=null) h+=`<tr><th>Gornja granica tlocrta po površini</th><td><b>do ${fmt(geo)} m²</b> ${pzTag(pzCalc({},[pzG]))}<small class="fx">${ogr?`Kig dopušta ${fmt(tlKig)} m², a površina teorijskog obrisa je ${fmt(G.area)} m², pa tlocrt ne može biti veći od ${fmt(G.area)} m².`:`Kig dopušta ${fmt(tlKig)} m²; površina obrisa je veća, pa gornju granicu po površini određuje kig.`} To je usporedba površina, a ne dokaz da kuća zadanog oblika stane u obris: u uskom ili nepravilnom obrisu i manja kuća može ne stati. Stane li kuća, provjerava simulator kad postaviš tlocrt.</small></td></tr>`;
   h+=`</tbody></table><div class="kd"><button type="button" class="ib" id="gpTog">${GP.show?"Sakrij s karte":"Prikaži na karti"}</button></div>`;
   h+=`<div class="lgd-box">${legendaHtml({skica:true})}</div>`;
   h+=`<p class="meta">Teorijski prostor je geometrijska procjena: granica čestice uvučena za propisani odmak od međa i, gdje je cesta prepoznata, za odmak od regulacijskog pravca. Nije potvrđeno dopušteno područje gradnje. Strana čestice uz cestu procijenjena je iz OpenStreetMapa (cesta do 12 m od ruba čestice). Regulacijski pravac nije u javnim podacima, pa obris nije potvrđen: mjerodavna je lokacijska informacija. Obris nije dopuštenje za gradnju.</p>${O.napomena||""}</div></details>`;
@@ -1303,6 +1303,7 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   if(PP){const sh=A0/area, calcK=a=>({min:a>=P.minC?true:P.minCIznimno&&a>=P.minCIznimno?"izn":false,tl:Math.min(a*P.izg,P.tlMax||Infinity),gbp:Math.min(a*P.kis,T.gbpMax||Infinity)});
     window.__areaCmp={P:PP,area,share:sh,calc:calcK,rerender:()=>{if(KRK_CUR) renderKrk(KRK_CUR)}}; h+=areaCmpHtml(PP,area,sh,calcK);}
   if(Math.abs(A0-area)>1) h+=row(isUpu?"Dio čestice u GP-u naselja":"Izgrađeni dio GP-a naselja na čestici",`${fmt(A)} od ${fmt(Aall)} m²`);
+  if(AS&&Math.abs(AS.f-1)>0.001) h+=`<p class="meta" data-povrsina-izvor="1">Izračun koristi ${esc(AS.naziv||"odabranu")} površinu (${fmt(Aall)} m²)${Math.abs(A0-area)>1?`; udio dijela u građevinskom području (${Math.round(A0/area*100)} %) određen je iz grafičke granice i primijenjen na tu površinu, uz pretpostavku istog postotka`:""}. Teorijski obris na karti uvijek je iz grafičke granice čestice.</p>`;
   h+=row(`Najmanja čestica ${fmt(P.minC)} m²`,minOk?"ispunjeno":minEx?"samo iznimno":"premala",minOk?"good":minEx?"":"bad");
   if(minEx) h+=`<p class="meta">Iznimno ${fmt(P.minCIznimno)} m², ako je čestica u okruženju već formiranih (izgrađenih) građevnih čestica. To potvrđuje lokacijska informacija.</p>`;
   if(P.maxC){h+=row(`Najveća čestica ${fmt(P.maxC)} m²`,A>P.maxC?"veća od najveće":"ispunjeno",A>P.maxC?"":"good"); if(A>P.maxC) h+=`<p class="meta">Građevna čestica za kuću smije biti najviše ${fmt(P.maxC)} m²; veća čestica se dijeli ili se za kuću formira manja građevna čestica. Izračun ispod je za cijelu površinu, pa je potrebna dodatna provjera.</p>`;}
@@ -1320,7 +1321,7 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   if(T.etazeNapomena) h+=`<p class="meta">${esc(T.etazeNapomena)}</p>`;
   h+=row(`Od međe (čl. ${esc(RS.meda.clanak)})`,esc(RS.meda.opis))+(RS.meda.opisIznimka?`<p class="meta">${esc(RS.meda.opisIznimka)}</p>`:"");
   if(env) h+=row(`Teorijski prostor za kuću (samo odmak ${RS.meda.min} m od međa, zeleno na karti)`,fmt(env.area)+" m²",env.area<tl?"bad":"")+krkTeorijskiHtml(RS);
-  if(env&&env.area<tl) h+=`<p class="meta">Prostor unutar ${RS.meda.min} m od međa manji je od dopuštenog tlocrta, pa oblik čestice ograničava tlocrt na najviše ${fmt(env.area)} m².</p>`;
+  if(env&&env.area<tl) h+=`<p class="meta">Površina teorijskog obrisa (${RS.meda.min} m od međa) manja je od dopuštenog tlocrta, pa tlocrt po površini ne može biti veći od ${fmt(env.area)} m². Stane li kuća zadanog oblika, ovisi o širini i obliku obrisa (provjera u simulatoru).</p>`;
   h+=row(`Od regulacijskog pravca (čl. ${esc(RS.regulacija.clanak)})`,esc(RS.regulacija.opis));
   h+=row(`${esc(RS.zelenilo.opisNaziv||"Zelenilo")} (čl. ${esc(RS.zelenilo.clanak)})`,RS.zelenilo.min?`najmanje ${Math.round(RS.zelenilo.min*100)} % = ${fmt(Aall*RS.zelenilo.min)} m²`:"plan ne određuje");
   h+=`<p class="meta">${esc(RS.pristup.napomena)}</p></div></details>`;
@@ -4958,7 +4959,7 @@ function render(d){
         if(envelope&&envelope.area!=null){const tl=pp.izg?A*pp.izg:null, lim=tl&&envelope.area<tl;
           h+=`<div class="row"><span>Teorijski prostor za kuću (samo odmak ${String(envelope.d).replace(".",",")} m od međa, zeleno na karti)</span><span class="${lim?"bad":""}">${fmt(envelope.area)} m²</span></div><p class="meta">Teorijska geometrijska procjena, nije potvrđeno dopušteno područje gradnje.</p>`;
           if(envelope.est) h+=`<p class="meta">Udaljenost od međa je procjena (${esc(envelope.est)}); potrebna dodatna provjera.</p>`;
-          if(lim) h+=`<p class="meta">Prostor unutar udaljenosti od međa manji je od dopuštenog tlocrta, pa oblik čestice ograničava tlocrt kuće na najviše ${fmt(envelope.area)} m².</p>`;}
+          if(lim) h+=`<p class="meta">Površina teorijskog obrisa manja je od dopuštenog tlocrta, pa tlocrt kuće po površini ne može biti veći od ${fmt(envelope.area)} m². Stane li kuća zadanog oblika, ovisi o širini i obliku obrisa (provjera u simulatoru).</p>`;}
         if(pp.minC){const ok=A>=pp.minC, edge=!ok&&A>=pp.minC*0.95;
           h+=`<div class="row"><span>Min. čestica ${fmt(pp.minC)} m² (nova gradnja)</span><span class="${ok?"good":edge||smallX?"":"bad"}">${ok?"ispunjeno":edge?"na granici":smallX?"potrebna dodatna provjera":"premala"}</span></div>`;
           if(edge) h+=`<p class="meta">Čestica je do 5 % manja od propisane. To je dopušteno samo ako se dio čestice ustupa za ulicu ili pristupni put.</p>`;

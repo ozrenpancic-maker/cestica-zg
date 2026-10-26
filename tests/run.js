@@ -1834,7 +1834,7 @@ async function gpTests(){
   // prikaz u Zagrebu: s cestama iz OSM-a
   const d=data(w,A,"2.2."), envO={v:{roads:[],roadLines:road,stops:[]}}; d.env=envO; w.__env=d.envelope; E("OPEN").add("calc"); E("OPEN").add("gp"); E("render")(d);
   const t=txt(w,"sheet"), R=E("PZREG").items.get("gp-podrucje");
-  ok(/Teorijski prostor za gradnju/.test(t)&&/Teorijski prostor za kuću \(samo odmak/.test(t)&&/Teorijska geometrijska procjena, nije potvrđeno dopušteno područje gradnje/.test(t)&&/Teorijski prostor je geometrijska procjena/.test(t)&&!/Drugi scenarij odmaka/.test(t)&&!w.document.querySelector("[data-teorijski-prostor]")&&/Geometrijski moguć tlocrt/.test(t)&&R&&R.raz==="C"&&/OpenStreetMapa/.test(R.razlog)&&E("gpLayer").getLayers().length===2,"Zagreb: obris i pojas uz cestu na karti; područje C jer je strana uz cestu procjena");
+  ok(/Teorijski prostor za gradnju/.test(t)&&/Teorijski prostor za kuću \(samo odmak/.test(t)&&/Teorijska geometrijska procjena, nije potvrđeno dopušteno područje gradnje/.test(t)&&/Teorijski prostor je geometrijska procjena/.test(t)&&!/Drugi scenarij odmaka/.test(t)&&!w.document.querySelector("[data-teorijski-prostor]")&&/Gornja granica tlocrta po površini/.test(t)&&/nije dokaz|a ne dokaz da kuća zadanog oblika stane/.test(t)&&R&&R.raz==="C"&&/OpenStreetMapa/.test(R.razlog)&&E("gpLayer").getLayers().length===2,"Zagreb: obris i pojas uz cestu na karti; područje C jer je strana uz cestu procjena");
   {const d2=data(w,A,"2.2."); d2.env={v:{roads:[],roadLines:kroz,stops:[]}}; w.__env=d2.envelope; E("render")(d2); const t2=txt(w,"sheet");
    ok(/Os ceste iz OpenStreetMapa prolazi kroz česticu/.test(t2)&&/Cesta i katastar/.test(t2)&&/katastar i stvarno stanje/.test(E("PZREG").items.get("gp-podrucje").razlog)&&E("PZREG").items.get("gp-podrucje").raz==="C","Zagreb: cesta kroz česticu → upozorenje u „Prije svega provjeri” i u „Području za gradnju”, pouzdanost C");}
   $(w,"gpTog").dispatchEvent(new w.Event("click",{bubbles:true})); ok(E("gpLayer").getLayers().length===0,"Područje za gradnju: skrivanje s karte");
@@ -2180,6 +2180,55 @@ async function formulaTests(){
   ok(errs.length===0,"bez JS grešaka (formule v0.24.19): "+errs.join(" | "));
 }
 
+// v0.24.21: geometrija teorijskog prostora (stvarni jsdom i Turf): površina obrisa ≠ uklapanje kuće, odmak jednom, pojas uz cestu jednom,
+// presjek s namjenom, izvor površine, čestica s rupom i višedijelna, položaj i okret kuće
+async function geoTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), T=w.turf;
+  const o=[14.6,45.05], kx=111320*Math.cos(o[1]*Math.PI/180), ky=110540, P=(x,y)=>[o[0]+x/kx,o[1]+y/ky];
+  const ring=(x0,y0,x1,y1)=>[P(x0,y0),P(x1,y0),P(x1,y1),P(x0,y1),P(x0,y0)];
+  const pol=(r,props)=>({type:"Feature",properties:props||{},geometry:{type:"Polygon",coordinates:Array.isArray(r[0][0])?r:[r]}});
+  const kuca=(cx,cy,W,D,rot)=>{ const r=pol(ring(cx-W/2,cy-D/2,cx+W/2,cy+D/2)); return rot?T.transformRotate(r,rot,w.JSON.parse(JSON.stringify({pivot:P(cx,cy)}))):r; };
+  const buf=(f,m)=>T.buffer(f,-m/1000,{units:"kilometers"});
+  // 1. pravokutnik 20 × 30 m, odmak 4 m → 12 × 22 = 264 m²
+  const A1=pol(ring(0,0,20,30)), e1=buf(A1,4);
+  ok(Math.abs(T.area(e1)-264)<3,"Geometrija 1: 20 × 30 m, odmak 4 m → obris ≈ 264 m² ("+T.area(e1).toFixed(1)+")");
+  // 2. uska čestica 10 × 100 m: obris ≈ 2 × 92 = 184 m² (> 0), ali kuća 10 × 10 m ne stane; uska 1,8 × 20 m stane
+  const A2=pol(ring(0,0,10,100)), e2=buf(A2,4), W=E("withinEnv");
+  ok(Math.abs(T.area(e2)-184)<4&&!W(kuca(5,50,10,10),e2.geometry)&&W(kuca(5,50,1.8,20),e2.geometry),"Geometrija 2: 10 × 100 m → obris ≈ 184 m², kuća 10 × 10 m (100 m²) ne stane iako je površina obrisa veća; 1,8 × 20 m stane ("+T.area(e2).toFixed(1)+" m²)");
+  // prikaz: broj je „gornja granica po površini”, uz objašnjenje da to nije dokaz uklapanja
+  {const div=w.document.createElement("div"); div.innerHTML=E("gpHtml")(E("gradivo")(A2,e2.geometry,4,null,null),250,"4 m od međa",""); const tx=div.textContent;
+   ok(/Gornja granica tlocrta po površini/.test(tx)&&/do 18\d m²/.test(tx)&&/a ne dokaz da kuća zadanog oblika stane/.test(tx)&&/uskom ili nepravilnom obrisu/.test(tx)&&!/Geometrijski moguć/.test(tx),"Geometrija 2: prikaz kaže „gornja granica po površini” i da to nije dokaz uklapanja: "+tx.match(/Gornja granica[^.]*\./)[0]);}
+  // 3. bez prepoznate ceste: nema izmišljenog pojasa
+  const G3=E("gradivo")(A1,e1.geometry,4,4,null), G3b=E("gradivo")(A1,e1.geometry,4,4,[]);
+  ok(G3.st==="ceste nisu učitane"&&!G3.band&&Math.abs(G3.area-G3.baseArea)<1e-6&&G3b.st!=="primijenjen"&&Math.abs(G3b.area-G3b.baseArea)<1e-6,"Geometrija 3: bez ceste nema pojasa uz cestu, obris = obris nakon odmaka od međa ("+G3.st+")");
+  // 4. uz cestu: pojas se izrezuje jednom iz već umanjenog obrisa; površina ne raste
+  const road=[{ok:true,geom:[P(-50,-4),P(70,-4)]}], G4=E("gradivo")(A1,e1.geometry,4,6,road), band=E("streetBand")(A1,road,6), jed=T.area(T.difference(e1,band));
+  ok(G4.st==="primijenjen"&&G4.area<G4.baseArea&&Math.abs(G4.baseArea-T.area(e1))<1e-6&&Math.abs(G4.area-jed)<0.01&&Math.abs(G4.area-12*20)<4,"Geometrija 4: cesta uz južnu stranu, odmak 6 m → pojas izrezan jednom (12 × 20 = 240 m²; "+G4.area.toFixed(1)+"), obris nakon međa nepromijenjen");
+  const G4b=E("gradivo")(A1,G4.geom,4,6,road); ok(Math.abs(G4b.area-G4.area)<0.5,"Geometrija 4: ponovno izrezivanje istog pojasa ne smanjuje obris dalje (nema dvostrukog odbitka): "+G4b.area.toFixed(1));
+  // 5. Krk: namjena (izgrađeni dio GP-a) pokriva zapadnu polovicu → obris je presjek s tom polovicom, ne samo skaliranje broja
+  const red=(g,o2)=>({p:Object.assign({OPCINA_GRAD:"KRK",POLAZNA_NAMJENA:"građevinsko područje",PRIMARNA_NAMJENA:"naselje",IZGRADJENOST:"izgrađeni dio",NASELJE:"Kornić"},o2||{}),share:0.5,geom:g});
+  const A5=pol(ring(0,0,40,30)), Wp=pol(ring(0,0,20,30)).geometry, Ep=pol(ring(20,0,40,30)).geometry;
+  const d5={rows:[red(Wp),red(Ep,{POLAZNA_NAMJENA:"poljoprivredno tlo",PRIMARNA_NAMJENA:"ostalo"})],pl:{v:[]},area:T.area(A5),parcel:A5,ll:{lat:o[1],lng:o[0]}};
+  E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob"; w.__cur={key:"geo5"}; E("pzReset")("geo5"); E("krkRulesHtml")(d5);
+  const env5=E("window.__env"), ocek=T.area(T.intersect(buf(A5,4),T.feature(Wp)));
+  ok(env5&&Math.abs(env5.area-ocek)<1&&env5.area<T.area(buf(A5,4))*0.6&&Math.abs(E("window.__krkCalc").A-T.area(A5)/2)<1,"Geometrija 5: namjena na pola čestice → obris je presjek odmaka i dijela u GP-u ("+env5.area.toFixed(1)+" ≈ "+ocek.toFixed(1)+" m²), površina za kig/kis je pola čestice");
+  // 6. odabrana površina (ZK) ≠ grafička: koeficijenti se skaliraju, obris ostaje iz grafičke geometrije; to piše
+  w.__cur={key:"geo6"}; E("krkZkSet")("geo6",1500,"rucno"); E("eval")("AREA_SRC='zk'"); E("pzReset")("geo6");
+  const d6=Object.assign({},d5,{rows:[red(null)],parcel:A5}); d6.rows[0].share=1; const div6=w.document.createElement("div"); div6.innerHTML=E("krkRulesHtml")(d6);
+  const C6=E("window.__krkCalc"), env6=E("window.__env"); E("eval")("AREA_SRC='graf'");
+  ok(Math.abs(C6.A-1500)<1&&Math.abs(C6.tl-Math.min(1500*0.25,200))<1e-6&&Math.abs(env6.area-T.area(buf(A5,4)))<1&&/Teorijski obris na karti uvijek je iz grafičke granice/.test(div6.textContent),"Geometrija 6: ZK površina 1.500 m² (grafička "+Math.round(T.area(A5))+") → kig/kis s 1.500 m², obris iz grafičke granice; izvor naveden");
+  E("pzReset")("geo6b"); const div6b=w.document.createElement("div"); w.__cur={key:"geo6b"}; div6b.innerHTML=E("krkRulesHtml")(d6); ok(!div6b.querySelector("[data-povrsina-izvor]"),"Geometrija 6: s grafičkom površinom nema napomene o drugom izvoru");
+  // 7. čestica s rupom i višedijelna čestica
+  const A7=pol([ring(0,0,40,40),ring(15,15,25,25).reverse()]), e7=buf(A7,4), ocek7=32*32-(10*10+4*10*4+Math.PI*16); // rupa se širi za 4 m sa zaobljenim kutovima
+  ok(Math.abs(T.area(e7)-ocek7)<12&&!W(kuca(20,20,8,8),e7.geometry)&&W(kuca(8,8,6,6),e7.geometry),"Geometrija 7: čestica 40 × 40 m s rupom 10 × 10 m → obris ≈ "+Math.round(ocek7)+" m² ("+T.area(e7).toFixed(0)+"); kuća preko rupe ne stane, u kutu stane");
+  const A7b={type:"Feature",properties:{},geometry:{type:"MultiPolygon",coordinates:[[ring(0,0,20,20)],[ring(30,0,50,20)]]}}, e7b=buf(A7b,4);
+  ok(e7b.geometry.type==="MultiPolygon"&&Math.abs(T.area(e7b)-2*144)<4&&!W(kuca(25,10,12,6),e7b.geometry)&&W(kuca(10,10,8,8),e7b.geometry)&&W(kuca(40,10,8,8),e7b.geometry),"Geometrija 7: višedijelna čestica (2 × 20 × 20 m) → dva obrisa 2 × 144 m²; kuća preko razmaka ne stane, u svakom dijelu stane");
+  {const G=E("gradivo")(A7b,e7b.geometry,4,null,null); ok(Math.abs(G.area-T.area(e7b))<0.5&&Math.abs(G.parcelArea-800)<8,"Geometrija 7: gradivo za višedijelnu česticu zbraja oba dijela");}
+  // 8. položaj i okret kuće: provjera uklapanja za svaki položaj
+  ok(W(kuca(10,15,8,8),e1.geometry)&&W(kuca(10,15,8,8,45),e1.geometry)&&!W(kuca(10,15,13,8),e1.geometry)&&W(kuca(10,15,13,8,90),e1.geometry)&&!W(kuca(14,15,8,8),e1.geometry)&&W(kuca(10,15,10,18),e1.geometry)&&!W(kuca(10,15,10,18,90),e1.geometry),"Geometrija 8: kuća u obrisu 12 × 22 m stane u sredini i okrenuta 45°, 13 × 8 m stane tek okrenuta 90°; ne stane pomaknuta do ruba; 10 × 18 m stane uzdužno, poprijeko ne");
+  ok(errs.length===0,"bez JS grešaka (geometrija): "+errs.join(" | "));
+}
+
 // osunčanost dvorišta, vjetar i bura, pogled na more, promjene na spremljenoj čestici (čiste funkcije i prikaz)
 async function napTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -2373,7 +2422,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
