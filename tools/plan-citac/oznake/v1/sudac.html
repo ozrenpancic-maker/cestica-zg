@@ -1,0 +1,175 @@
+<title>Sudac oznaka v1</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Radni stol suca: sažetak i filtri gore, zatim jedan spor po kartici; citat serifom kao u službenom glasilu, polja u monospaceu. */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --fg:#1c2530; --muted:#5d6b7a; --line:#d5dce3;
+  --accent:#9a5b12; --accent-soft:#f6ead9; --a:#1f5f8b; --a-soft:#e3eef6; --b:#6b3f8f; --b-soft:#efe6f6;
+  --ok:#2f7a4b; --ok-soft:#e2f2e8;
+  --f-body:"Public Sans",system-ui,sans-serif; --f-cit:"Source Serif 4",Georgia,serif; --f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12171d; --surface:#1a2129; --fg:#e4e9ee; --muted:#93a1af; --line:#2c3743;
+  --accent:#e0a458; --accent-soft:#3a2b18; --a:#7db6de; --a-soft:#18303f; --b:#c39be3; --b-soft:#2d2238;
+  --ok:#6cc98f; --ok-soft:#173523; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12171d; --surface:#1a2129; --fg:#e4e9ee; --muted:#93a1af; --line:#2c3743;
+  --accent:#e0a458; --accent-soft:#3a2b18; --a:#7db6de; --a-soft:#18303f; --b:#c39be3; --b-soft:#2d2238;
+  --ok:#6cc98f; --ok-soft:#173523; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--f-body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1{font-size:1.6rem;margin:0;text-wrap:balance}
+.lead{color:var(--muted);margin:4px 0 0;max-width:68ch}
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.prog{flex:1 1 220px;min-width:0}
+.prog b{font-variant-numeric:tabular-nums}
+.meter{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:6px}
+.meter i{display:block;height:100%;background:var(--ok);width:0}
+select,input[type=text],textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+label.chk{display:flex;gap:6px;align-items:center;color:var(--muted)}
+.list{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card.done{border-left:4px solid var(--ok)}
+.head{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline;justify-content:space-between}
+.where{font-weight:700}
+.tag{font:600 11px/1 var(--f-body);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:4px;background:var(--accent-soft);color:var(--accent)}
+.tag.ok{background:var(--ok-soft);color:var(--ok)}
+.uz{font-size:13px;color:var(--muted)}
+blockquote{margin:0;font:17px/1.55 var(--f-cit);border-left:3px solid var(--line);padding:2px 0 2px 12px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;vertical-align:top;padding:6px 8px;border-bottom:1px solid var(--line)}
+th{font-weight:600;color:var(--muted);white-space:nowrap}
+td.va{background:var(--a-soft)} td.vb{background:var(--b-soft)}
+td code,.mono{font-family:var(--f-mono);font-size:12.5px;word-break:break-word}
+.hdA{color:var(--a)} .hdB{color:var(--b)}
+tr.diff th{color:var(--accent)}
+details summary{cursor:pointer;color:var(--muted);font-size:13px}
+.choice{display:flex;flex-wrap:wrap;gap:8px}
+.choice label{display:flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:6px;padding:6px 10px;cursor:pointer}
+.choice input:checked+span{font-weight:700}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+textarea{width:100%;min-height:56px;box-sizing:border-box;resize:vertical}
+button{font:600 14px var(--f-body);border-radius:6px;padding:7px 14px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--surface)}
+button.ghost{background:transparent;color:var(--accent)}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.msg{font-size:13px;color:var(--muted)}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:8px;padding:28px;color:var(--muted);text-align:center}
+.note{font-size:13px;color:var(--muted);max-width:75ch}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Sudac oznaka v1</h1>
+    <p class="lead">Dva neovisna označivača označila su iste odredbe PPUG-a Krk i UPU-a 1 Krk. Ovdje su samo mjesta gdje se razilaze. Za svako odaberite A, B, oba ili upišite ispravak, uz kratko obrazloženje. Odluka se sprema s datumom.</p>
+  </header>
+
+  <div class="bar">
+    <div class="prog"><span id="progTxt">Učitavanje sporova…</span><div class="meter"><i id="progBar"></i></div></div>
+    <select id="fSkup" aria-label="Skupina"><option value="">Sve skupine</option></select>
+    <select id="fUz" aria-label="Uzorak"><option value="">Svi uzorci</option></select>
+    <label class="chk"><input type="checkbox" id="fOpen" checked> samo neodlučeni</label>
+  </div>
+
+  <p class="note">A čita kao stručnjak za prostorno planiranje, B strogo doslovno kao upravni pravnik. Spor s istim uzorkom (isto polje, ista razlika) može se odlučiti jednom i primijeniti na sve iste. Ovo nije pravna potvrda: odluke određuju što tekst doslovno kaže za mjerenje čitača.</p>
+
+  <div id="list" class="list">
+    <div class="empty" id="empty">Sporovi se još učitavaju. Kad ih Claude unese, pojavit će se ovdje po skupinama članaka.</div>
+  </div>
+</div>
+
+<script>
+const POLJA=["citat","vrsta_gradevine","parametar","operator","vrijednost","jedinica","uvjet_primjene","modal","alternative","vrsta_pravila","jednoznacnost","razlozi_pregleda","tocka","alineja_rb"];
+const NAZ={citat:"citat",vrsta_gradevine:"vrsta građevine",parametar:"parametar",operator:"operator",vrijednost:"vrijednost",jedinica:"jedinica",uvjet_primjene:"uvjet primjene",modal:"modal",alternative:"alternative",vrsta_pravila:"vrsta pravila",jednoznacnost:"jednoznačnost",razlozi_pregleda:"razlozi pregleda",tocka:"točka",alineja_rb:"alineja"};
+const SK={"G1_ppug_22_23":"PPUG čl. 22. i 23.","G2_ppug_25_33":"PPUG čl. 25. i 33.","G3_ppug_20_38_39_50":"PPUG čl. 20., 38., 39., 50.","G4_upu1_14":"UPU 1 čl. 14.","G5_upu1_24":"UPU 1 čl. 24."};
+const VR={RAZLIKA:"razlika u poljima",SAMO_A:"samo A",SAMO_B:"samo B"};
+let sporovi=[],odluke={},db=null,mozePisati=false;
+const $=s=>document.querySelector(s);
+const esc=v=>{const d=document.createElement("div");d.textContent=v;return d.innerHTML};
+function fmt(v){if(v===null||v===undefined||v==="")return '<span class="msg">—</span>';if(Array.isArray(v))return v.length?esc(v.map(x=>typeof x==="object"?JSON.stringify(x):x).join("; ")):'<span class="msg">[]</span>';if(typeof v==="object")return esc(JSON.stringify(v));return esc(String(v))}
+function lokacija(z){if(!z)return"";let s="čl. "+z.clanak;if(z.stavak!=null)s+=" st. "+z.stavak;if(z.tocka&&z.tocka!=="-")s+=" t. "+z.tocka;if(z.alineja_rb!=null)s+=" al. "+z.alineja_rb;return s}
+
+function render(){
+  const fs=$("#fSkup").value,fu=$("#fUz").value,fo=$("#fOpen").checked;
+  const done=sporovi.filter(s=>odluke[s.id]).length;
+  $("#progTxt").innerHTML=sporovi.length?`<b>${done}</b> od <b>${sporovi.length}</b> sporova odlučeno`:"Sporovi još nisu uneseni.";
+  $("#progBar").style.width=sporovi.length?(100*done/sporovi.length)+"%":"0";
+  const L=$("#list");L.innerHTML="";
+  const vid=sporovi.filter(s=>(!fs||s.skupina===fs)&&(!fu||s.uzorak===fu)&&(!fo||!odluke[s.id]));
+  if(!vid.length){L.innerHTML=`<div class="empty">${sporovi.length?(fo?"Svi sporovi u ovom izboru su odlučeni.":"Nema sporova u ovom izboru."):"Sporovi se još učitavaju. Kad ih Claude unese, pojavit će se ovdje po skupinama članaka."}</div>`;return}
+  for(const s of vid)L.appendChild(kartica(s));
+}
+
+function kartica(s){
+  const z=s.A||s.B, o=odluke[s.id];
+  const c=document.createElement("article");c.className="card"+(o?" done":"");
+  const isti=s.uzorak?sporovi.filter(x=>x.uzorak===s.uzorak&&x.id!==s.id&&!odluke[x.id]).length:0;
+  const diff=new Set(s.polja||[]);
+  let rows="";
+  for(const p of POLJA){
+    const a=s.A?s.A[p]:undefined,b=s.B?s.B[p]:undefined;
+    if(p==="citat"&&s.A&&s.B&&a===b)continue;
+    const d=diff.has(p)||(p!=="citat"&&s.A&&s.B&&JSON.stringify(a)!==JSON.stringify(b));
+    if(s.vrsta==="RAZLIKA"&&!d&&p!=="citat")continue;
+    rows+=`<tr class="${d?"diff":""}"><th>${NAZ[p]}</th><td class="va">${s.A?fmt(a):'<span class="msg">nema zapisa</span>'}</td><td class="vb">${s.B?fmt(b):'<span class="msg">nema zapisa</span>'}</td></tr>`;
+  }
+  const full=(s.A&&s.B)?POLJA.map(p=>`<tr><th>${NAZ[p]}</th><td class="va">${fmt(s.A[p])}</td><td class="vb">${fmt(s.B[p])}</td></tr>`).join(""):"";
+  const nm="c_"+s.id.replace(/[^a-zA-Z0-9]/g,"_");
+  const opc=s.vrsta==="RAZLIKA"?[["A","A je točno"],["B","B je točno"],["oba","oba su prihvatljiva"],["ispravak","ispravak"]]:
+    s.vrsta==="SAMO_A"?[["A","zapis A ostaje"],["B","zapis se briše (B je točno)"],["ispravak","ispravak"]]:[["B","zapis B ostaje"],["A","zapis se briše (A je točno)"],["ispravak","ispravak"]];
+  c.innerHTML=`
+   <div class="head"><span class="where">${esc(SK[s.skupina]||s.skupina)} · ${esc(lokacija(z))} · ${esc(z.parametar||"")}</span>
+     <span class="tag ${o?"ok":""}">${o?"odlučeno":esc(VR[s.vrsta])}</span></div>
+   ${s.uzorak?`<div class="uz">Uzorak: <span class="mono">${esc(s.uzorak)}</span></div>`:""}
+   <blockquote>${esc(z.citat||"")}</blockquote>
+   <div class="tbl"><table><thead><tr><th></th><th class="hdA">A · planer</th><th class="hdB">B · pravnik</th></tr></thead><tbody>${rows}</tbody></table></div>
+   ${full?`<details><summary>Cijeli zapisi A i B</summary><div class="tbl"><table><tbody>${full}</tbody></table></div></details>`:""}
+   <div class="choice" role="radiogroup">${opc.map(([v,t])=>`<label><input type="radio" name="${nm}" value="${v}" ${o&&o.izbor===v?"checked":""}><span>${t}</span></label>`).join("")}</div>
+   <input type="text" class="isp" placeholder="Ispravak: npr. jednoznačnost = PREGLED, razlog TOCKA_MJERENJA" value="${o&&o.ispravak?esc(o.ispravak):""}" ${o&&o.izbor==="ispravak"?"":"hidden"}>
+   <textarea class="obr" placeholder="Kratko obrazloženje (obvezno)">${o?esc(o.obrazlozenje||""):""}</textarea>
+   <div class="row"><button class="spremi">Spremi odluku</button>
+     ${isti?`<button class="ghost svi">Spremi i primijeni na još ${isti} istog uzorka</button>`:""}
+     <span class="msg">${o?"Spremljeno "+esc(new Date(o.datum).toLocaleString("hr-HR")):""}</span></div>`;
+  const isp=c.querySelector(".isp");
+  c.querySelectorAll("input[type=radio]").forEach(r=>r.addEventListener("change",()=>{isp.hidden=r.value!=="ispravak"||!r.checked}));
+  const spremi=async(svi)=>{
+    const izbor=(c.querySelector("input[type=radio]:checked")||{}).value, obr=c.querySelector(".obr").value.trim(), msg=c.querySelector(".msg");
+    if(!izbor){msg.textContent="Odaberite A, B, oba ili ispravak.";return}
+    if(!obr){msg.textContent="Upišite kratko obrazloženje.";return}
+    if(izbor==="ispravak"&&!isp.value.trim()){msg.textContent="Upišite ispravak.";return}
+    if(!db||!mozePisati){msg.textContent="Odluke može spremati samo vlasnik stranice.";return}
+    const ids=[s.id].concat(svi?sporovi.filter(x=>x.uzorak===s.uzorak&&x.id!==s.id&&!odluke[x.id]).map(x=>x.id):[]);
+    c.querySelectorAll("button").forEach(b=>b.disabled=true);msg.textContent="Spremanje…";
+    try{
+      for(const id of ids){
+        await db.collection("odluke").doc(id).set({spor_id:id,izbor,ispravak:izbor==="ispravak"?isp.value.trim():null,obrazlozenje:obr,datum:new Date().toISOString(),preko_uzorka:id!==s.id?s.id:null});
+      }
+    }catch(e){msg.textContent="Spremanje nije uspjelo ("+(e&&e.code||"greška")+"). Pokušajte ponovno.";c.querySelectorAll("button").forEach(b=>b.disabled=false)}
+  };
+  c.querySelector(".spremi").addEventListener("click",()=>spremi(false));
+  const sv=c.querySelector(".svi");if(sv)sv.addEventListener("click",()=>spremi(true));
+  return c;
+}
+
+function filtri(){
+  const fs=$("#fSkup"),fu=$("#fUz"),vs=fs.value,vu=fu.value;
+  fs.innerHTML='<option value="">Sve skupine</option>'+[...new Set(sporovi.map(s=>s.skupina))].sort().map(g=>`<option value="${esc(g)}">${esc(SK[g]||g)}</option>`).join("");
+  const cnt={};sporovi.forEach(s=>{if(s.uzorak)cnt[s.uzorak]=(cnt[s.uzorak]||0)+1});
+  fu.innerHTML='<option value="">Svi uzorci</option>'+Object.entries(cnt).filter(([,n])=>n>1).sort((a,b)=>b[1]-a[1]).map(([u,n])=>`<option value="${esc(u)}">${esc(u.length>70?u.slice(0,70)+"…":u)} (${n})</option>`).join("");
+  fs.value=vs;fu.value=vu;
+}
+["#fSkup","#fUz","#fOpen"].forEach(s=>$(s).addEventListener("change",render));
+
+(async()=>{
+  db=await claude.use("db");
+  const user=await claude.use("user");
+  mozePisati=user?(user.isOwner()||user.can("data.write")!==false):true;
+  if(!db){$("#progTxt").textContent="Pohrana nije dostupna u ovom prikazu. Otvorite stranicu prijavljeni na claude.ai.";return}
+  db.collection("sporovi").onSnapshot(q=>{
+    sporovi=q.docs.map(d=>d.data()).sort((a,b)=>(a.red||0)-(b.red||0));filtri();render();
+  },e=>{$("#progTxt").textContent="Sporovi se ne mogu učitati ("+e.code+").";});
+  db.collection("odluke").onSnapshot(q=>{odluke={};q.docs.forEach(d=>{odluke[d.id]=d.data()});render();},()=>{});
+})();
+</script>
