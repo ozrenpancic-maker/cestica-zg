@@ -218,6 +218,38 @@ class Opreznost(unittest.TestCase):
         self.assertIsNone(podskup(V, "poslovne građevine"))
 
 
+class PrilagodnikTeksta(unittest.TestCase):
+    """HTML u Windows-1250 s dva akta u istom broju glasila (kao pročišćeni PPUG i UPU 1 u SN PGŽ 29/2020)."""
+    def setUp(self):
+        import tempfile
+        self.d = Path(tempfile.mkdtemp())
+
+    def napisi(self, ime, tekst, kod="windows-1250"):
+        p = self.d / ime
+        p.write_bytes(("<html><head><meta HTTP-EQUIV='Content-Type' CONTENT='text/html;' charset='Windows-1250'></head><body>" + tekst + "</body></html>").encode(kod))
+        return p
+
+    def test_kodna_stranica_i_vise_akata(self):
+        from citac_tekst import izdvoji_tekst
+        html = ("<p>Pročišćeni tekst Prostornog plana uređenja Grada Krka</p><p>Članak 1.</p><p>Opće odredbe građevina.</p>"
+                "<p>Članak 2.</p><p>Dvije etaže.</p><p>Članak 3.</p><p>Treći.</p>"
+                "<p>Pročišćeni tekst Urbanističkog plana uređenja UPU 1 – Krk</p><p>Članak 1.</p><p>Drugi akt.</p><p>Članak 2.</p><p>Kraj.</p>")
+        p = self.napisi("dva_akta.html", html)
+        r = izdvoji_tekst(p, [2])
+        self.assertEqual(r["status"], "ABSTAIN_VISE_AKATA")
+        self.assertEqual([(x["dio"], x["od_clanka"], x["do_clanka"]) for x in r["dijelovi"]], [(1, 1, 3), (2, 1, 2)])
+        self.assertIn("Grada Krka", r["dijelovi"][0]["naslov"]); self.assertIn("UPU 1", r["dijelovi"][1]["naslov"])
+        r1 = izdvoji_tekst(p, [2], dio=1); r2 = izdvoji_tekst(p, [2], dio=2)
+        self.assertEqual(r1["clanci"]["2"]["tekst"], "Dvije etaže."); self.assertEqual(r2["clanci"]["2"]["tekst"], "Kraj.")
+
+    def test_izgubljeni_dijakritici_odbija(self):
+        from citac_tekst import izdvoji_tekst
+        p = self.d / "pokvareno.html"
+        p.write_bytes(("<p>\ufffdlanak 22.</p><p>Utvr\ufffduju se grani\ufffdne vrijednosti za ku\ufffde</p>" * 20).encode("utf-8"))
+        r = izdvoji_tekst(p, [22])
+        self.assertEqual(r["status"], "ABSTAIN_KODIRANJE"); self.assertEqual(r["clanci"], {})
+
+
 class DvosmisleniNavodi(unittest.TestCase):
     def test_navod_vise_clanaka_sa_stavkom(self):
         for s in ("čl. 38. i 39. st. 2.", "čl. 38.–40. st. 1.", "38., 39. st. 2."):

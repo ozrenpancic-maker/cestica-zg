@@ -50,13 +50,15 @@ def ishodi(dokazi, clanci, plan):
 if __name__ == "__main__":
     a = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     a.add_argument("izvor"); a.add_argument("--clanci", type=int, nargs="+", required=True)
-    a.add_argument("--naslov"); a.add_argument("--plan", default="PPUG Krk"); a.add_argument("-o", "--izlaz", default="slijepo.json")
+    a.add_argument("--naslov"); a.add_argument("--dio", type=int); a.add_argument("--plan", default="PPUG Krk"); a.add_argument("-o", "--izlaz", default="slijepo.json")
     x = a.parse_args()
     if x.izvor.lower().endswith(".pdf"):
         from citac import izdvoji
         D = izdvoji(x.izvor, x.naslov)
     else:
-        D = izdvoji_tekst(x.izvor, x.clanci)
+        D = izdvoji_tekst(x.izvor, x.clanci, x.dio)
+    if D.get("status", "").startswith("ABSTAIN"):
+        print(json.dumps({k: D.get(k) for k in ("status", "razlog", "sha256", "dijelovi")}, ensure_ascii=False)); raise SystemExit(2)
     r = ishodi(D, x.clanci, x.plan)
     Path(x.izlaz).write_text(json.dumps(r, ensure_ascii=False, indent=1), encoding="utf-8")
     print(json.dumps({"sha256": r["sha256"], "ukupno": r["ukupno"], "problemi_izvora": D.get("problemi")}, ensure_ascii=False))
