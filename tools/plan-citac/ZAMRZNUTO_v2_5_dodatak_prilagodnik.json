@@ -1,0 +1,15 @@
+{
+ "datum": "2026-10-26",
+ "dodatak_za": "ZAMRZNUTO_v2_5.json",
+ "zamrznuto_v2_5": "7c884e382e847104e734168e884957ac19409656c9ed04d98596d88041a9ea82",
+ "opis": "Dodatak postupku slijepog testa v2.5 (odluka suca 26. 10. 2026.: »Prilagodnik formata«). Prilagodnik izvora nije dio čitača; zamrznuti kod v2.5 je nepromijenjen. Prilagodnik CR/LF izvan <pre>/<textarea> zamjenjuje razmakom (HTML-semantika razmaka). Provjereno prije označavanja: Novi Vinodolski – tekst članaka identičan; PPUG/UPU 1 Krk – sva postojeća pravila v2.5 ista, dodano 6 pravila, sva PREGLED.",
+ "kod": {
+  "prilagodi_izvor.py": "141829370af53d7602e16a47cabec7f40b7668f0c78ad8bf01190996536a447f",
+  "test_prilagodi.py": "6c4e795c66016647a06ff1933caa466da8ff329288a2e2785ce1810ceae9c069"
+ },
+ "izvor": {
+  "slijepo/crikvenica_centar_1/crikvenica_upu_centar_1.html": "7f08f8da7f8eaad6d3200b530d6b9def7e0aa0a9948424437cf39e0eec344b45",
+  "slijepo/crikvenica_centar_1/crikvenica_upu_centar_1.prilagodjeno.html": "7588f0c7af01304d2cf42bb95fda261a362e56826899d87c842fe0ec7c83db13"
+ },
+ "pravno_potvrdeno": 0
+}
