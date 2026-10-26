@@ -1,0 +1,29 @@
+{
+ "datum": "2026-10-26",
+ "opis": "Zamrznuta gramatika i pripadajuće datoteke (v1) prije usporedbe na čl. 25. i 33. PPUG-a Krk. Gramatika se ne prilagođava do završetka usporedbe.",
+ "kod": {
+  "citac.py": "8dc9d6499ac781df575f62a25fcf0bcf6a2ae1505a388b6295d768632741be33",
+  "citac_tekst.py": "9c42aab0d7167a5c963a8830e0b3b84165729c9181140540be7993f5ee64aab9",
+  "strukturiraj.py": "b21885c593fc0a0cf58df9049a4b4097e5c0f7025e3156ae08b7c980a78addfa",
+  "gramatika.py": "8c39cea4b959c67c18252956ce38ab5e2ec8789de734bc3fd35fd88757ec4574",
+  "slijepi_test.py": "8f660cbe69b90ce0990b1d662d1d45ad55c7bfec854b5860896c3849e4ed95b9",
+  "ocijeni.py": "b6196fe9340c958f48d4319608a5c65f93adae9b939740293bac68d83cc152ff",
+  "ocijeni_neovisno.py": "dca6ff2c723959ac0d8325f3cd0c25462827f3a140685f5beee629e23001fdef",
+  "oznake/neovisno/mapiranje.json": "904acf7348db37e81049730e2544c05329d3f5ffa86170cc7f47ed284606545b"
+ },
+ "izvor": {
+  "slijepo/ppug_krk/ppug_krk_sn_2020_29.html": "f67ac384d8f30d444cf19a10165f29b65ee93cf37281bb6e183abd981f5cf318"
+ },
+ "izlazi": {
+  "slijepo/ppug_krk/cl25_33/izlaz_modula_cl25_33_v1.json": "23b4c08138890d30d534ec90dcfbabbbb75fed5fce9cdca2f6dc17cb2e1a148e",
+  "izlaz/ppug_22_23_gramatika_v1.json": "d551c9303344e349225af8ba4883c5625d682b0d530bc834fcd861fdc373074c"
+ },
+ "referentne_oznake": {
+  "oznake/neovisno/neovisne_oznake_ppug_22_23.json": "b56057965c75f1434a4e9c7684eac1e86393994454787ab94b2f09681be660b5",
+  "oznake/upu2_cl38_40.json": "2864aaa85140de15267f887de0f912361ea432054b89314c420638f82d5bf95a"
+ },
+ "za_oznacavanje": {
+  "slijepo/ppug_krk/za_oznacavanje/ppug_cl25_33_izvorni_tekst.txt": "8e83c39c519db2bb52b7d355b0f70e417466ab731300d39be6f5e8426a028001"
+ },
+ "pravilo": "Kod i izlazi ne mijenjaju se do završetka usporedbe s neovisnim oznakama čl. 25. i 33.; test_strukturiraj.Zamrznuto provjerava kontrolne sume."
+}

@@ -329,6 +329,31 @@ class NeovisnoPpug(unittest.TestCase):
         self.assertEqual((s["tocno"], s["pogresno"], s["dvosmisleno"], s["propusteno"]), (92, 0, 7, 0))
 
 
+class Zamrznuto(unittest.TestCase):
+    """Gramatika v1 i izlazi za čl. 25. i 33. zamrznuti su do usporedbe s neovisnim oznakama (ZAMRZNUTO_v1.json)."""
+    def test_kontrolne_sume(self):
+        import hashlib
+        m = json.loads((MAPA / "ZAMRZNUTO_v1.json").read_text(encoding="utf-8"))
+        for grupa in ("kod", "izvor", "izlazi", "referentne_oznake", "za_oznacavanje"):
+            for p, sha in m[grupa].items():
+                self.assertEqual(hashlib.sha256((MAPA / p).read_bytes()).hexdigest(), sha, p)
+
+    def test_izlaz_ponovljiv(self):
+        """Zamrznuti kod ponovno daje isti rezultat strukturiranja za čl. 25. i 33."""
+        from citac_tekst import izdvoji_tekst
+        D = izdvoji_tekst(MAPA / "slijepo/ppug_krk/ppug_krk_sn_2020_29.html", [25, 33], dio=1)
+        R = strukturiraj(D, [25, 33], "PPUG Krk")
+        z = json.loads((MAPA / "slijepo/ppug_krk/cl25_33/izlaz_modula_cl25_33_v1.json").read_text(encoding="utf-8"))
+        self.assertEqual(json.loads(json.dumps(R, ensure_ascii=False)), z["strukturiranje"])
+        self.assertEqual(sum(len(c["pravila"]) for c in R["clanci"].values()), 0)
+
+    def test_tekst_za_oznacavanje_bez_izlaza(self):
+        t = (MAPA / "slijepo/ppug_krk/za_oznacavanje/ppug_cl25_33_izvorni_tekst.txt").read_text(encoding="utf-8")
+        for zabranjeno in ("PRIJEDLOG", "PREGLED", "minC", "kig_", "parametar", "gramatika", "ODBIJENO"):
+            self.assertNotIn(zabranjeno, t)
+        self.assertIn("Članak 25.", t); self.assertIn("Članak 33.", t); self.assertNotIn("2.2.2.4.", t)
+
+
 class DvosmisleniNavodi(unittest.TestCase):
     def test_navod_vise_clanaka_sa_stavkom(self):
         for s in ("čl. 38. i 39. st. 2.", "čl. 38.–40. st. 1.", "38., 39. st. 2."):
