@@ -65,6 +65,50 @@ Za neovisnu ocjenu drugi označivač, bez uvida u ove oznake i u kod obrazaca, i
 - `kisNadzemni` i `kisPodrum` su zasebni parametri. »Povijesne graditeljske cjeline« su preduvjet `ZONA_POVIJESNA_CJELINA`, a ne `ZONA_KPC`.
 - U ostatku PPUG-a (čl. 4.–173.) gramatika ne predlaže ništa izvan čl. 22. i 23. U UPU-u 2 se ne uključuje, pa je rezultat ondje i dalje 92 / 0 / 7 / 0.
 
+## v2.1 (grana `eksperiment-citac-v2`)
+
+    python3 strukturiraj_v2.py dokazi.json -o pravila_v2.json
+    python3 usporedi_v2.py
+    python3 -m unittest test_v2 test_citac test_strukturiraj
+
+- **Zamrznuta v1 se ne mijenja.** `gramatika_v2.py` i `strukturiraj_v2.py` su nove datoteke; v1 obrasci UPU-a 2 i dalje imaju prednost.
+- **Statusi** (polja prilagođena postojećoj shemi):
+  - `PRIJEDLOG` = ACCEPTED (automatski prihvaćen prijedlog, nije pravna potvrda);
+  - `PREGLED` = REVIEW;
+  - `ODBIJENO` = REJECTED (`nepokriveno`).
+- **Polja pravila:**
+  - `razlog_kod` (reason_code);
+  - `izvor_clanak`, `izvor_stavak`;
+  - `izvorni_citat` (source_quote, doslovno iz teksta članka);
+  - `vrsta_gradevine` (building_type: skupine, oblici, stanje, uz_podrum);
+  - `parametar`, `operator`, `vrijednost`, `jedinica`;
+  - `uvjeti` (conditions);
+  - `iznimke` / `iznimka_od` (exceptions);
+  - `nerijesene_ovisnosti` (unresolved_dependencies);
+  - `formula`, `interval`, `alternative`, `referenca`, `ogranicenje`.
+- **`NIJE_PROPISANO` ≠ `NEOGRANIČENO`.** »se ne propisuje« daje operator `nije_propisano`, vrijednost null i `za_izracun: false`. Neograničeno se zaključuje samo kad tako piše.
+- **Čl. 33. (udaljenosti):**
+  - `max(h/2, X)` nastaje samo kad h/2 i X imaju istu referentnu točku (granica čestice);
+  - h/2 od »granice susjedne građevine« i X od granice čestice ostaju dva pravila (`RAZLICITE_REFERENTNE_TOCKE`);
+  - sva pravila čl. 33. su PREGLED, s razlozima.
+- **Usporedba:** čl. 22./23. idu kroz zamrznuti `ocijeni_neovisno.py`; čl. 25./33. kroz zasebno, verzionirano `oznake/neovisno_cl25_33/mapiranje_v2.json`. Interval 17–23° je jedan zapis, a granice su zasebna pravila.
+
+### Jezični sloj (`jezik_hr.py`, `semantika_hr.py`)
+- **Pomoćni izvor:** Hrvatski pravopis IHJJ-a, radna inačica 2013. (SHA-256 `33cbbfa7…`, nije u repozitoriju).
+  - Korišteni su samo odjeljci o bjelini, točki, zarezu, kraticama, kosoj crti, crtici i ije/je; svako pravilo navodi stranicu.
+  - **Pravopis nije izvor pravila o padežima.** `MorfoloskiAnalizator` je sučelje za morfologiju. Zadana provedba vraća »nepoznato«; `PopisOblika` je ručni popis i tako je i označen.
+- **`normaliziraj()` radi samo pravopisne transformacije i transformacije zapisa jedinice:** m 2 → m², 4,0 metra → 4,0 m, bjelina.
+  - Svaka transformacija se bilježi s izvornim odlomkom, položajem i izvorom pravila.
+  - `izvorni_odlomak()` vraća doslovni izvor za bilo koji raspon normaliziranog teksta.
+- **`brojevi()`** razlikuje decimalni zarez, redne brojeve, tisućice (»10.000« je dvosmisleno), oznake (NA15.2), formule (h/2) i brojeve glasila. `istovrijedno()` povezuje »0,50« = »0,5« i »500 m 2« = »500m²«.
+- **Kratice i oznake:** kratice (čl., st., t., npr., k.č.) ne lome rečenicu, a granica iza rednog broja bilježi se kao dvosmislena. Oznake članaka, stavaka, točaka, alineja i hijerarhijske numeracije se prepoznaju.
+- **Pogreške u izvoru se ne ispravljaju**, samo se bilježe u `jezicne_napomene`:
+  - »rekonsrturirati«, »prenamjeniti«, »slijedeće«;
+  - kosa crta između riječi (»ili« ili »i«);
+  - spojnica između oznaka zona;
+  - »odnosno« bez zareza ili sa zarezom.
+- **Semantika je odvojena od pravopisa.** `semantika_hr.py` obrađuje »ne propisuje se«, »samo kao«, »najmanje«, »najviše«, »iznimno« i »može iznositi i«. `provjeri_pravilo()` šalje pravilo u PREGLED ako se operator ili vrsta pravila ne slažu s izrazom u citatu.
+
 ## Neriješeno (stanje: SN PGŽ 19/2016, UPU 2 Kornić)
 - **Strukturiranje pokriva samo čl. 38.–40. UPU-a 2.** Za PPUG Krk (čl. 22. i 23.) obrasci se tek trebaju napisati. Do tada će te alineje ići u `nepokriveno`.
 - **Prepoznavanje je provjereno samo na ovom PDF-u.** Sidra (naslov odluke, »Klasa:«), prag razmaka (1 pt), prepoznavanje zaglavlja i tablica treba provjeriti na drugim brojevima Službenih novina i na PPUG-u.
