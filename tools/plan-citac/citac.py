@@ -130,7 +130,7 @@ def _spoji(tekst, ln, slozenice, odluke):
     ista složenica s crticom (»Primorsko-goranske«) pojavljuje negdje u dokumentu unutar retka."""
     if not tekst:
         return ln
-    m = re.search(rf"([{SLOVO}]+)-$", tekst)
+    m = re.search(rf"([{SLOVO}]+)-$", tekst[-80:])
     n = re.match(rf"([{SLOVO}]+)", ln)
     if m and n and (n.group(1)[0].islower() or (m.group(1).isupper() and n.group(1).isupper())):
         par = (m.group(1) + "-" + n.group(1)).lower()

@@ -1,0 +1,1799 @@
+{
+ "shema": "plan-citac/pravila-0.1",
+ "izvor_sha256": "f67ac384d8f30d444cf19a10165f29b65ee93cf37281bb6e183abd981f5cf318",
+ "plan": "PPUG Krk",
+ "clanci": {
+  "22": {
+   "clanak": 22,
+   "vrste": [
+    "obit-dvoj",
+    "obit-slob",
+    "obit-ugr"
+   ],
+   "pravila": [
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 1,
+     "tocka": "a",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "minC",
+     "vrijednost": 500.0,
+     "jedinica": "m²",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najmanja dopuštena površina građevne čestice za izgradnju obiteljske kuće iznosi: - za slobodnostojeće građevine: 500 m 2 - za dvojne i ugrađene građevine: 300 m 2",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 80
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 1,
+     "tocka": "a",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "minC",
+     "vrijednost": 300.0,
+     "jedinica": "m²",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najmanja dopuštena površina građevne čestice za izgradnju obiteljske kuće iznosi: - za slobodnostojeće građevine: 500 m 2 - za dvojne i ugrađene građevine: 300 m 2",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 80
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 1,
+     "tocka": "b",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "minC",
+     "vrijednost": 400.0,
+     "jedinica": "m²",
+     "vrijednost_vrsta": "broj",
+     "vrste": [],
+     "vrsta_izraz": "samostojeca",
+     "oblik_izricit": true,
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "uz uvjet da se građevna čestica nalazi u okruženju već formiranih građevinskih čestica",
+     "uvjet_izvorni": "uz uvjet da se građevna čestica nalazi u okruženju već formiranih građevinskih čestica",
+     "preduvjeti": [
+      {
+       "kod": "OKRUZENJE_FORMIRANO",
+       "dokaz": "građevna čestica nalazi u okruženju već formiranih građevinskih čestica"
+      }
+     ],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "iznimno za izgradnju samostojeće obiteljske kuće najmanja dopuštena površina građevne čestice može iznositi 400m², uz uvjet da se građevna čestica nalazi u okruženju već formiranih građevinskih čestica.",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 247
+     },
+     "status": "PREGLED",
+     "razlozi": [
+      "»samostojeće« nije potvrđena istoznačnica za oblik građevine"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 1,
+     "tocka": "c",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "tlMin",
+     "vrijednost": 60.0,
+     "jedinica": "m²",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najmanja dopuštena površina tlocrtne projekcije nove obiteljske kuće iznosi: - za slobodnostojeće građevine: 60 m 2 - za dvojne i ugrađene građevine: 60 m 2",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 453
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 1,
+     "tocka": "c",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "tlMin",
+     "vrijednost": 60.0,
+     "jedinica": "m²",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najmanja dopuštena površina tlocrtne projekcije nove obiteljske kuće iznosi: - za slobodnostojeće građevine: 60 m 2 - za dvojne i ugrađene građevine: 60 m 2",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 453
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 1,
+     "tocka": "d",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "tlMax",
+     "vrijednost": 200.0,
+     "jedinica": "m²",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najveća dopuštena površina tlocrtne projekcije nove obiteljske kuće iznosi: - za slobodnostojeće građevine 200 m 2 - za dvojne i ugrađene građevine 100 m 2",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 613
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 1,
+     "tocka": "d",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "tlMax",
+     "vrijednost": 100.0,
+     "jedinica": "m²",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najveća dopuštena površina tlocrtne projekcije nove obiteljske kuće iznosi: - za slobodnostojeće građevine 200 m 2 - za dvojne i ugrađene građevine 100 m 2",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 613
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 1,
+     "tocka": "e",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "kig",
+     "vrijednost": 0.25,
+     "jedinica": null,
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najveći dopušteni koeficijent izgrađenosti (kig) iznosi: - za slobodnostojeće građevine: 0,25 - za dvojne i ugrađene građevine: 0,25",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 772
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 1,
+     "tocka": "e",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "kig",
+     "vrijednost": 0.25,
+     "jedinica": null,
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najveći dopušteni koeficijent izgrađenosti (kig) iznosi: - za slobodnostojeće građevine: 0,25 - za dvojne i ugrađene građevine: 0,25",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 772
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 1,
+     "tocka": "f",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "kisNadzemni",
+     "vrijednost": 0.5,
+     "jedinica": null,
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najveći dopušteni koeficijent iskoristivosti (kis) nadzemnih etaža iznosi: - za slobodnostojeće građevine: 0,5 - za dvojne i ugrađene građevine: 0,5",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 908
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 1,
+     "tocka": "f",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "kisNadzemni",
+     "vrijednost": 0.5,
+     "jedinica": null,
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najveći dopušteni koeficijent iskoristivosti (kis) nadzemnih etaža iznosi: - za slobodnostojeće građevine: 0,5 - za dvojne i ugrađene građevine: 0,5",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 908
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 1,
+     "tocka": "g",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "kisPodrum",
+     "vrijednost": 0.75,
+     "jedinica": null,
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ukoliko se ispod obiteljske građevine gradi podrum",
+     "uvjet_izvorni": "ukoliko se ispod obiteljske građevine gradi podrum",
+     "preduvjeti": [
+      {
+       "kod": "PODRUM",
+       "dokaz": "gradi podrum"
+      }
+     ],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "ukoliko se ispod obiteljske građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi: - za slobodnostojeće građevine 0,75 - dvojne i ugrađene građevine 0,75",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 1060
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 1,
+     "tocka": "g",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "kisPodrum",
+     "vrijednost": 0.75,
+     "jedinica": null,
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ukoliko se ispod obiteljske građevine gradi podrum",
+     "uvjet_izvorni": "ukoliko se ispod obiteljske građevine gradi podrum",
+     "preduvjeti": [
+      {
+       "kod": "PODRUM",
+       "dokaz": "gradi podrum"
+      }
+     ],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "ukoliko se ispod obiteljske građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi: - za slobodnostojeće građevine 0,75 - dvojne i ugrađene građevine 0,75",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 1060
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 1,
+     "tocka": "h",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "etazeMax",
+     "vrijednost": "podrum i 2 nadzemne etaže",
+     "jedinica": null,
+     "vrijednost_vrsta": "opis",
+     "vrste": [
+      "obit-dvoj",
+      "obit-slob",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najveći dopušteni broj etaža obiteljske kuće je podrum i 2 nadzemne etaže",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 1244
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": false,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 1,
+     "tocka": "i",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "visinaMax",
+     "vrijednost": 6.5,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-dvoj",
+      "obit-slob",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": "točka mjerenja visine nije navedena u ovoj odredbi",
+     "obrazac": "gramatika",
+     "dokaz": "najveća dopuštena visina obiteljske kuće iznosi 6,5m",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 1321
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 1,
+     "gradjevina": "poljoprivredna",
+     "parametar": "visinaMax",
+     "vrijednost": 4.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-dvoj",
+      "obit-slob",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": "mjereno od najniže kote konačno zaravnatog terena",
+     "obrazac": "gramatika",
+     "dokaz": "visina od najniže kote konačno zaravnatog terena iznosi najviše 4,0 m,",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 1505
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 2,
+     "gradjevina": "poljoprivredna",
+     "parametar": "gradjevniPravac",
+     "vrijednost": "iza građevnog pravca građevine osnovne namjene",
+     "jedinica": null,
+     "vrijednost_vrsta": "opis",
+     "vrste": [
+      "obit-dvoj",
+      "obit-slob",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "građevni pravac je iza građevnog pravca građevine osnovne namjene,",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 1578
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": false,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 3,
+     "gradjevina": "poljoprivredna",
+     "parametar": "udaljenostOdGraniceCestice",
+     "vrijednost": 4.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-dvoj",
+      "obit-slob",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najmanja udaljenost od granice građevne čestice iznosi 4,0 m,",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 1647
+     },
+     "status": "PREGLED",
+     "razlozi": [
+      "»granica građevne čestice« nije razgraničena od regulacijskog pravca"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 4,
+     "gradjevina": "poljoprivredna",
+     "parametar": "nagibKrovaMin",
+     "vrijednost": 17.0,
+     "jedinica": "°",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-dvoj",
+      "obit-slob",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ako se grade kao kosa",
+     "uvjet_izvorni": "ako se grade kao kosa",
+     "preduvjeti": [
+      {
+       "kod": "KOSI_KROV",
+       "dokaz": "grade kao kosa"
+      }
+     ],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 1711
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 4,
+     "gradjevina": "poljoprivredna",
+     "parametar": "nagibKrovaMax",
+     "vrijednost": 23.0,
+     "jedinica": "°",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-dvoj",
+      "obit-slob",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ako se grade kao kosa",
+     "uvjet_izvorni": "ako se grade kao kosa",
+     "preduvjeti": [
+      {
+       "kod": "KOSI_KROV",
+       "dokaz": "grade kao kosa"
+      }
+     ],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 1711
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 4,
+     "gradjevina": "poljoprivredna",
+     "parametar": "pokrovKosogKrova",
+     "vrijednost": "mediteran crijep ili kupa kanalica",
+     "jedinica": null,
+     "vrijednost_vrsta": "opis",
+     "vrste": [
+      "obit-dvoj",
+      "obit-slob",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ako se grade kao kosa",
+     "uvjet_izvorni": "ako se grade kao kosa",
+     "preduvjeti": [
+      {
+       "kod": "KOSI_KROV",
+       "dokaz": "grade kao kosa"
+      }
+     ],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 1711
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": false,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 5,
+     "gradjevina": "poljoprivredna",
+     "parametar": "regulacija",
+     "vrijednost": 6.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-dvoj",
+      "obit-slob",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "udaljenost poljoprivredne gospodarske građevine od regulacijskog pravca iznosi najmanje 6,0 m.",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 1932
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 6,
+     "gradjevina": "poljoprivredna",
+     "parametar": "udaljenostOdGraniceCestice",
+     "vrijednost": 3.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-dvoj",
+      "obit-slob",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "uvjet_izvorni": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "preduvjeti": [
+      {
+       "kod": "ZONA_POVIJESNA_CJELINA",
+       "dokaz": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+      }
+     ],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice iznosi 3,0 m, a udaljenost od regulacijskog pravca iznosi najmanje 5,0 m.",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 2029
+     },
+     "status": "PREGLED",
+     "razlozi": [
+      "»granica građevne čestice« nije razgraničena od regulacijskog pravca"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 6,
+     "gradjevina": "poljoprivredna",
+     "parametar": "regulacija",
+     "vrijednost": 5.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "obit-dvoj",
+      "obit-slob",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "uvjet_izvorni": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "preduvjeti": [
+      {
+       "kod": "ZONA_POVIJESNA_CJELINA",
+       "dokaz": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+      }
+     ],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice iznosi 3,0 m, a udaljenost od regulacijskog pravca iznosi najmanje 5,0 m.",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 2029
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 22,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 7,
+     "gradjevina": "poljoprivredna",
+     "parametar": "rekonstrukcijaAkoNisuIspunjeniUvjeti",
+     "vrijednost": "samo u postojećim tlocrtnim i visinskim gabaritima",
+     "jedinica": null,
+     "vrijednost_vrsta": "opis",
+     "vrste": [
+      "obit-dvoj",
+      "obit-slob",
+      "obit-ugr"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom",
+     "uvjet_izvorni": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom",
+     "preduvjeti": [
+      {
+       "kod": "NEISPUNJENI_UVJETI_PLANA",
+       "dokaz": "nisu ispunjeni uvjeti propisani ovim Prostornim planom"
+      }
+     ],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "postojeće poljoprivredne gospodarske građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana. Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom mogu se rekonstruirati samo u postojećim tlocrtnim i visinskim gabaritima.",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1003,
+      "pomak": 2270
+     },
+     "status": "PREGLED",
+     "razlozi": [
+      "opseg u odnosu na druge odredbe plana nije određen ovom odredbom"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false
+    }
+   ],
+   "upucivanja": [],
+   "nepokriveno": [],
+   "pregled": [],
+   "gramatika": true
+  },
+  "23": {
+   "clanak": 23,
+   "vrste": [
+    "visobit-dvoj",
+    "visobit-slob"
+   ],
+   "pravila": [
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 1,
+     "tocka": "a",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "minC",
+     "vrijednost": 500.0,
+     "jedinica": "m²",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najmanja dopuštena površina građevne čestice za izgradnju višeobiteljske kuće iznosi: - za slobodnostojeće građevine: 500 m 2 - za dvojne građevine: 400 m 2",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 84
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 1,
+     "tocka": "a",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "minC",
+     "vrijednost": 400.0,
+     "jedinica": "m²",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-dvoj"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najmanja dopuštena površina građevne čestice za izgradnju višeobiteljske kuće iznosi: - za slobodnostojeće građevine: 500 m 2 - za dvojne građevine: 400 m 2",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 84
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 1,
+     "tocka": "b",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "tlMin",
+     "vrijednost": 60.0,
+     "jedinica": "m²",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najmanja dopuštena površina tlocrtne projekcije nove višeobiteljske kuće iznosi: - za slobodnostojeće građevine: 60 m 2 - za dvojne građevine: 60 m 2",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 244
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 1,
+     "tocka": "b",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "tlMin",
+     "vrijednost": 60.0,
+     "jedinica": "m²",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-dvoj"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najmanja dopuštena površina tlocrtne projekcije nove višeobiteljske kuće iznosi: - za slobodnostojeće građevine: 60 m 2 - za dvojne građevine: 60 m 2",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 244
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 1,
+     "tocka": "c",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "tlMax",
+     "vrijednost": 200.0,
+     "jedinica": "m²",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najveća dopuštena površina tlocrtne projekcije nove višeobiteljske kuće iznosi: - za slobodnostojeće građevine 200 m 2 - za dvojne građevine 100 m 2",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 397
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 1,
+     "tocka": "c",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "tlMax",
+     "vrijednost": 100.0,
+     "jedinica": "m²",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-dvoj"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najveća dopuštena površina tlocrtne projekcije nove višeobiteljske kuće iznosi: - za slobodnostojeće građevine 200 m 2 - za dvojne građevine 100 m 2",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 397
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 1,
+     "tocka": "d",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "kig",
+     "vrijednost": 0.25,
+     "jedinica": null,
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najveći dopušteni koeficijent izgrađenosti (kig) iznosi: - za slobodnostojeće građevine: 0,25 - za dvojne građevine: 0,25",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 549
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 1,
+     "tocka": "d",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "kig",
+     "vrijednost": 0.25,
+     "jedinica": null,
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-dvoj"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najveći dopušteni koeficijent izgrađenosti (kig) iznosi: - za slobodnostojeće građevine: 0,25 - za dvojne građevine: 0,25",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 549
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 1,
+     "tocka": "e",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "kisNadzemni",
+     "vrijednost": 0.5,
+     "jedinica": null,
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najveći dopušteni koeficijent iskoristivosti (kis) nadzemnih etaža iznosi: - za slobodnostojeće građevine: 0,5 - za dvojne građevine: 0,5",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 674
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 1,
+     "tocka": "e",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "kisNadzemni",
+     "vrijednost": 0.5,
+     "jedinica": null,
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-dvoj"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najveći dopušteni koeficijent iskoristivosti (kis) nadzemnih etaža iznosi: - za slobodnostojeće građevine: 0,5 - za dvojne građevine: 0,5",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 674
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 1,
+     "tocka": "f",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "kisPodrum",
+     "vrijednost": 0.75,
+     "jedinica": null,
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ukoliko se ispod višeobiteljske građevine gradi podrum",
+     "uvjet_izvorni": "ukoliko se ispod višeobiteljske građevine gradi podrum",
+     "preduvjeti": [
+      {
+       "kod": "PODRUM",
+       "dokaz": "gradi podrum"
+      }
+     ],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "ukoliko se ispod višeobiteljske građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi: - za slobodnostojeće građevine 0,75 - dvojne građevine 0,75",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 815
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 1,
+     "tocka": "f",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "kisPodrum",
+     "vrijednost": 0.75,
+     "jedinica": null,
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-dvoj"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": true,
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ukoliko se ispod višeobiteljske građevine gradi podrum",
+     "uvjet_izvorni": "ukoliko se ispod višeobiteljske građevine gradi podrum",
+     "preduvjeti": [
+      {
+       "kod": "PODRUM",
+       "dokaz": "gradi podrum"
+      }
+     ],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "ukoliko se ispod višeobiteljske građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi: - za slobodnostojeće građevine 0,75 - dvojne građevine 0,75",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 815
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 1,
+     "tocka": "g",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "etazeMax",
+     "vrijednost": "podrum i 2 nadzemne etaže",
+     "jedinica": null,
+     "vrijednost_vrsta": "opis",
+     "vrste": [
+      "visobit-dvoj",
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najveći dopušteni broj etaža višeobiteljske kuće je podrum i 2 nadzemne etaže",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 992
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": false,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 1,
+     "tocka": "h",
+     "alineja": null,
+     "gradjevina": "osnovna",
+     "parametar": "visinaMax",
+     "vrijednost": 6.5,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-dvoj",
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": "točka mjerenja visine nije navedena u ovoj odredbi",
+     "obrazac": "gramatika",
+     "dokaz": "najveća dopuštena visina višeobiteljske kuće iznosi 6,5 m",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 1073
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 1,
+     "gradjevina": "poljoprivredna",
+     "parametar": "visinaMax",
+     "vrijednost": 4.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-dvoj",
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": "mjereno od najniže kote konačno zaravnatog terena",
+     "obrazac": "gramatika",
+     "dokaz": "visina od najniže kote konačno zaravnatog terena iznosi najviše 4,0 m,",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 1266
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 2,
+     "gradjevina": "poljoprivredna",
+     "parametar": "gradjevniPravac",
+     "vrijednost": "iza građevnog pravca građevine osnovne namjene",
+     "jedinica": null,
+     "vrijednost_vrsta": "opis",
+     "vrste": [
+      "visobit-dvoj",
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "građevni pravac je iza građevnog pravca građevine osnovne namjene,",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 1339
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": false,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 3,
+     "gradjevina": "poljoprivredna",
+     "parametar": "udaljenostOdGraniceCestice",
+     "vrijednost": 4.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-dvoj",
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "najmanja udaljenost od granice građevne čestice iznosi 4,0 m,",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 1408
+     },
+     "status": "PREGLED",
+     "razlozi": [
+      "»granica građevne čestice« nije razgraničena od regulacijskog pravca"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 4,
+     "gradjevina": "poljoprivredna",
+     "parametar": "nagibKrovaMin",
+     "vrijednost": 17.0,
+     "jedinica": "°",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-dvoj",
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ako se grade kao kosa",
+     "uvjet_izvorni": "ako se grade kao kosa",
+     "preduvjeti": [
+      {
+       "kod": "KOSI_KROV",
+       "dokaz": "grade kao kosa"
+      }
+     ],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 1472
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 4,
+     "gradjevina": "poljoprivredna",
+     "parametar": "nagibKrovaMax",
+     "vrijednost": 23.0,
+     "jedinica": "°",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-dvoj",
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ako se grade kao kosa",
+     "uvjet_izvorni": "ako se grade kao kosa",
+     "preduvjeti": [
+      {
+       "kod": "KOSI_KROV",
+       "dokaz": "grade kao kosa"
+      }
+     ],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 1472
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 4,
+     "gradjevina": "poljoprivredna",
+     "parametar": "pokrovKosogKrova",
+     "vrijednost": "mediteran crijep ili kupa kanalica",
+     "jedinica": null,
+     "vrijednost_vrsta": "opis",
+     "vrste": [
+      "visobit-dvoj",
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ako se grade kao kosa",
+     "uvjet_izvorni": "ako se grade kao kosa",
+     "preduvjeti": [
+      {
+       "kod": "KOSI_KROV",
+       "dokaz": "grade kao kosa"
+      }
+     ],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 1472
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": false,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 5,
+     "gradjevina": "poljoprivredna",
+     "parametar": "regulacija",
+     "vrijednost": 6.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-dvoj",
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "udaljenost poljoprivredne gospodarske građevine od regulacijskog pravca iznosi najmanje 6,0 m.",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 1693
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 6,
+     "gradjevina": "poljoprivredna",
+     "parametar": "udaljenostOdGraniceCestice",
+     "vrijednost": 3.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-dvoj",
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "uvjet_izvorni": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "preduvjeti": [
+      {
+       "kod": "ZONA_POVIJESNA_CJELINA",
+       "dokaz": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+      }
+     ],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice iznosi 3,0 m, a udaljenost od regulacijskog pravca iznosi najmanje 5,0 m.",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 1790
+     },
+     "status": "PREGLED",
+     "razlozi": [
+      "»granica građevne čestice« nije razgraničena od regulacijskog pravca"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 6,
+     "gradjevina": "poljoprivredna",
+     "parametar": "regulacija",
+     "vrijednost": 5.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "visobit-dvoj",
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "uvjet_izvorni": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "preduvjeti": [
+      {
+       "kod": "ZONA_POVIJESNA_CJELINA",
+       "dokaz": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+      }
+     ],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice iznosi 3,0 m, a udaljenost od regulacijskog pravca iznosi najmanje 5,0 m.",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 1790
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "PPUG Krk",
+     "clanak": 23,
+     "stavak": 2,
+     "tocka": "-",
+     "alineja": 7,
+     "gradjevina": "poljoprivredna",
+     "parametar": "rekonstrukcijaAkoNisuIspunjeniUvjeti",
+     "vrijednost": "samo u postojećim tlocrtnim i visinskim gabaritima",
+     "jedinica": null,
+     "vrijednost_vrsta": "opis",
+     "vrste": [
+      "visobit-dvoj",
+      "visobit-slob"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom",
+     "uvjet_izvorni": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom",
+     "preduvjeti": [
+      {
+       "kod": "NEISPUNJENI_UVJETI_PLANA",
+       "dokaz": "nisu ispunjeni uvjeti propisani ovim Prostornim planom"
+      }
+     ],
+     "napomena": null,
+     "obrazac": "gramatika",
+     "dokaz": "postojeće poljoprivredne gospodarske građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana. Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom mogu se rekonstruirati samo u postojećim tlocrtnim i visinskim gabaritima.",
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 1076,
+      "pomak": 2031
+     },
+     "status": "PREGLED",
+     "razlozi": [
+      "opseg u odnosu na druge odredbe plana nije određen ovom odredbom"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false
+    }
+   ],
+   "upucivanja": [],
+   "nepokriveno": [],
+   "pregled": [],
+   "gramatika": true
+  }
+ },
+ "automatska_potvrda": 0,
+ "pravno_potvrdeno": false,
+ "sazetak": {
+  "prijedlozi": 42,
+  "pregled": 7,
+  "za_izracun": 36,
+  "bez_vrijednosti": 0,
+  "nepokrivene_alineje": 0
+ }
+}

@@ -83,12 +83,17 @@ def izdvoji_tekst(putanja, clanci=None, dio=None):
         return {"shema": SHEMA, "izvor": p.name, "sha256": hashlib.sha256(raw).hexdigest(), "status": "ABSTAIN_VISE_AKATA",
                 "razlog": "dokument ima više dijelova s vlastitom numeracijom članaka; odaberi dio", "dijelovi": dijelovi,
                 "clanci": {}, "automatska_potvrda": 0, "pravno_potvrdeno": False}
+    kraj_dijela = len(linije)
     if dio is not None:
         g0 = granice[dio - 1]; g1 = granice[dio] if dio < len(granice) else len(poc)
+        if g1 < len(poc):
+            # dio završava ispred uvoda sljedećeg akta: zadnji potpis »Klasa:« ili naslov prije prvog članka sljedećeg dijela
+            sljedeci = poc[g1]
+            kraj_dijela = next((j for j in range(poc[g1 - 1] + 1, sljedeci) if re.match(r"^(?:Klasa:|Pročišćeni tekst|Glava [IVX]+\.)", linije[j])), sljedeci)
         poc = poc[g0:g1]
     out, problemi, viđeni = {}, [], {}
     for k, i in enumerate(poc):
-        kraj = poc[k + 1] if k + 1 < len(poc) else len(linije)
+        kraj = poc[k + 1] if k + 1 < len(poc) else kraj_dijela
         poglavlje = " ".join(linije[naslov_od[i]:i]) if i in naslov_od else None
         if k + 1 < len(poc) and poc[k + 1] in naslov_od:
             kraj = naslov_od[poc[k + 1]]

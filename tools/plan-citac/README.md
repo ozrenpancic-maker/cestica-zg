@@ -57,6 +57,14 @@ PyMuPDF je licenciran pod AGPL-3.0. Koristi se samo kao lokalni alat i ne ugrađ
 
 Za neovisnu ocjenu drugi označivač, bez uvida u ove oznake i u kod obrazaca, ispunjava isti oblik (`pravila_oznacavanja` u datoteci) i pokreće `ocijeni.py` sa svojom datotekom.
 
+### Opća gramatika (`gramatika.py`) i PPUG Krk
+- Gramatika radi na razinama stavak »(n)« → točka »x)« (samo redom a, b, c …) → alineja.
+- Oblik odredbe: [iznimno] [uvjet] PREDMET (rječnik) [subjekt] GLAGOL [usporedba] VRIJEDNOSTI (jedna ili »- za OBLIK: vrijednost«) [, a PREDMET …] [, uz uvjet da …].
+- Koristi se kad obrasci UPU-a 2 ne prepoznaju članak (`gramatika_ukljucena`).
+- PPUG Krk čl. 22. i 23. prema zamrznutim neovisnim oznakama (`oznake/neovisno`, 55 zapisa): 48 točno, 0 pogrešno, 7 za pregled (svih 7 odgovara oznakama), 0 propušteno. Gramatika je pisana nakon uvida u oznake (vidi `oznake/neovisno/ZAMRZNUTO.md`).
+- `kisNadzemni` i `kisPodrum` su zasebni parametri. »Povijesne graditeljske cjeline« su preduvjet `ZONA_POVIJESNA_CJELINA`, a ne `ZONA_KPC`.
+- U ostatku PPUG-a (čl. 4.–173.) gramatika ne predlaže ništa izvan čl. 22. i 23. U UPU-u 2 se ne uključuje, pa je rezultat ondje i dalje 92 / 0 / 7 / 0.
+
 ## Neriješeno (stanje: SN PGŽ 19/2016, UPU 2 Kornić)
 - **Strukturiranje pokriva samo čl. 38.–40. UPU-a 2.** Za PPUG Krk (čl. 22. i 23.) obrasci se tek trebaju napisati. Do tada će te alineje ići u `nepokriveno`.
 - **Prepoznavanje je provjereno samo na ovom PDF-u.** Sidra (naslov odluke, »Klasa:«), prag razmaka (1 pt), prepoznavanje zaglavlja i tablica treba provjeriti na drugim brojevima Službenih novina i na PPUG-u.

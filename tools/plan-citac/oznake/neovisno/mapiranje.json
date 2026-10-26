@@ -1,0 +1,22 @@
+{
+ "opis": "Dogovoreno mapiranje naziva iz izlaza modula u nazive neovisnih oznaka (ChatGPT, 26. 10. 2026.). Oznake se ne mijenjaju; mijenja se samo zapis izlaza modula prije usporedbe.",
+ "parametri": {
+  "minC": "povrsina_cestice_min", "tlMin": "povrsina_tlocrta_min", "tlMax": "povrsina_tlocrta_max", "kig": "kig_max",
+  "kisNadzemni": "kis_nadzemni_max", "kisPodrum": "kis_uz_podrum_max", "etazeMax": "etaze_max", "visinaMax": "visina_max",
+  "udaljenostOdGraniceCestice": "udaljenost_od_granice_cestice_min", "regulacija": "regulacijski_pravac_min",
+  "gradjevniPravac": "gradjevni_pravac", "nagibKrovaMin": "nagib_krova_min", "nagibKrovaMax": "nagib_krova_max",
+  "pokrovKosogKrova": "pokrov_kosog_krova", "rekonstrukcijaAkoNisuIspunjeniUvjeti": "rekonstrukcija_ako_neispunjava_uvjete"
+ },
+ "oblici": {"slob": "slobodnostojeca", "dvoj": "dvojna", "ugr": "ugradjena"},
+ "nepotvrdeni_oblici": {"samostojeca": "samostojeca"},
+ "gradjevina": {"osnovna": "osnovna", "poljoprivredna": "poljoprivredna_gospodarska", "pomocna": "pomocna"},
+ "granularnost": [
+  "Jedno pravilo modula s više oblika (npr. »dvojne i ugrađene«) daje po jedan zapis za svaki oblik, kao u oznakama.",
+  "Pravilo bez izričitog oblika u odredbi (vrijedi za sve vrste članka) zapisuje se kao vrsta »sve_navedene«.",
+  "Pravila stavka o poljoprivrednim gospodarskim građevinama zapisuju se s vrstom »poljoprivredna_gospodarska«.",
+  "Jedinica: brojčani koeficijent bez jedinice → »koeficijent«; opisna vrijednost → »opis«.",
+  "Stavak bez točaka: točka »-«; redni broj alineje nije dio ključa."
+ ],
+ "kljuc_usporedbe": ["clanak", "stavak", "tocka", "vrsta", "gradjevina", "parametar", "vrijednost", "jedinica", "vrsta_pravila"],
+ "uvjet": "Neprazan uvjet oznake mora biti doslovno sadržan u uvjetu modula; prazan uvjet oznake traži da modul nema uvjet."
+}

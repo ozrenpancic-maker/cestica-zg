@@ -268,9 +268,66 @@ class SlijepiPpug(unittest.TestCase):
         D = izdvoji_tekst(self.IZVOR, [22, 23], dio=1)
         self.assertTrue(D["clanci"]["22"]["tekst"].startswith("(1) Utvrđuju se slijedeće granične vrijednosti za izgradnju obiteljske kuće:"))
         self.assertTrue(D["clanci"]["23"]["tekst"].startswith("(1) Utvrđuju se slijedeće granične vrijednosti za izgradnju višeobiteljske kuće:"))
-        R = strukturiraj(D, [22, 23], "PPUG Krk")
+        R = strukturiraj(D, [22, 23], "PPUG Krk", gramatika_ukljucena=False)  # v0 = samo obrasci UPU-a 2
         self.assertEqual([p for c in R["clanci"].values() for p in c["pravila"]], [])
         self.assertTrue(all(c["pregled"] for c in R["clanci"].values()))
+
+
+class NeovisnoPpug(unittest.TestCase):
+    """PPUG Krk čl. 22. i 23.: opća gramatika (gramatika.py) prema zamrznutim neovisnim oznakama (ChatGPT, 55 zapisa).
+    Napomena: gramatika je napisana nakon što je autor vidio oznake, pa ni ovo nije slijepa ocjena."""
+    @classmethod
+    def setUpClass(cls):
+        from citac_tekst import izdvoji_tekst
+        cls.D = izdvoji_tekst(MAPA / "slijepo/ppug_krk/ppug_krk_sn_2020_29.html", list(range(4, 174)), dio=1)
+        cls.R = strukturiraj(cls.D, [22, 23], "PPUG Krk")
+        cls.P = [p for c in cls.R["clanci"].values() for p in c["pravila"]]
+
+    def test_zamrznute_oznake(self):
+        import ocijeni_neovisno
+        ocijeni_neovisno.provjeri_zamrznuto()
+
+    def test_usporedba(self):
+        import ocijeni_neovisno as O
+        oz = json.loads((MAPA / "oznake/neovisno/neovisne_oznake_ppug_22_23.json").read_text(encoding="utf-8"))
+        M = json.loads((MAPA / "oznake/neovisno/mapiranje.json").read_text(encoding="utf-8"))
+        s, r = O.ocijeni(self.R, oz, M)
+        self.assertEqual((s["oznaka"], s["tocno"], s["pogresno"], s["pregled"], s["pregled_odgovara_oznaci"], s["propusteno"]), (55, 48, 0, 7, 7, 0))
+        self.assertEqual(sorted(x["oznaka"] for x in r["pregled"]), ["G019", "G024", "G029", "G031", "G048", "G053", "G055"])
+        # neslaganje: visina 6,5 m (G021, G045) – oznaka traži pregled jer točka mjerenja nije navedena; modul predlaže uz napomenu
+        self.assertEqual(sorted(x["oznaka"] for x in r["tocno"] if x["ocjena_oznake"] == "PREGLED"), ["G021", "G045"])
+
+    def test_kis_nadzemni_i_uz_podrum(self):
+        kn = [p for p in self.P if p["parametar"] == "kisNadzemni"]; kp = [p for p in self.P if p["parametar"] == "kisPodrum"]
+        self.assertTrue(kn and all(p["vrijednost"] == 0.5 and p["vrsta_pravila"] == "OSNOVNO" and p["uvjet"] is None for p in kn))
+        self.assertTrue(kp and all(p["vrijednost"] == 0.75 and p["vrsta_pravila"] == "UVJETNO" and "gradi podrum" in p["uvjet"] for p in kp))
+        self.assertTrue(all([x["kod"] for x in p["preduvjeti"]] == ["PODRUM"] for p in kp))
+        self.assertFalse(any(p["parametar"] == "kis" for p in self.P))
+
+    def test_iznimke(self):
+        b = [p for p in self.P if (p["clanak"], p["tocka"]) == (22, "b")][0]
+        self.assertEqual((b["vrijednost"], b["vrsta_pravila"], b["status"], b["vrste"], b["vrsta_izraz"]), (400, "IZNIMKA", "PREGLED", [], "samostojeca"))
+        self.assertEqual(b["uvjet"], "uz uvjet da se građevna čestica nalazi u okruženju već formiranih građevinskih čestica")
+        z = [p for p in self.P if p["vrsta_pravila"] == "IZNIMKA" and p["clanak"] == 22 and p["stavak"] == 2]
+        self.assertEqual(sorted((p["parametar"], p["vrijednost"], p["status"]) for p in z),
+                         [("regulacija", 5.0, "PRIJEDLOG"), ("udaljenostOdGraniceCestice", 3.0, "PREGLED")])
+        for p in z:
+            self.assertEqual([x["kod"] for x in p["preduvjeti"]], ["ZONA_POVIJESNA_CJELINA"])  # nije ZONA_KPC iz UPU-a 2
+        self.assertTrue(all(not p["za_izracun"] for p in self.P if p["status"] == "PREGLED" or not isinstance(p["vrijednost"], (int, float))))
+
+    def test_ostatak_plana_bez_laznih_pravila(self):
+        R = strukturiraj(self.D, [int(k) for k in self.D["clanci"] if "#" not in k], "PPUG Krk")
+        self.assertEqual(sorted(k for k, c in R["clanci"].items() if c["pravila"]), ["22", "23"])
+        self.assertFalse(self.D["clanci"]["173"]["tekst"].endswith("Glava VI."))
+
+    def test_upu2_bez_promjene(self):
+        D = izdvoji(PDF, "UPU 2 - Kornić", 108) if IMA_PDF else None
+        if D is None:
+            self.skipTest("PyMuPDF")
+        R = strukturiraj(D, list(range(1, 109)), "UPU 2 Kornić")
+        self.assertFalse(any(c.get("gramatika") for c in R["clanci"].values()))
+        s, _ = ocijeni(strukturiraj(D, [38, 39, 40], "UPU 2 Kornić"), json.loads((MAPA / "oznake/upu2_cl38_40.json").read_text(encoding="utf-8")))
+        self.assertEqual((s["tocno"], s["pogresno"], s["dvosmisleno"], s["propusteno"]), (92, 0, 7, 0))
 
 
 class DvosmisleniNavodi(unittest.TestCase):

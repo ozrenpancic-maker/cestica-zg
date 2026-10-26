@@ -284,9 +284,14 @@ class Polozaji:
 
 
 # ---------------------------------------------------------------- glavni postupak
-def strukturiraj_clanak(br, c, plan):
+def strukturiraj_clanak(br, c, plan, gramatika_ukljucena=True):
     vrste = vrste_clanka(c["tekst"])
     rez = {"clanak": br, "vrste": vrste, "pravila": [], "upucivanja": [], "nepokriveno": [], "pregled": []}
+    if not vrste and gramatika_ukljucena:
+        import gramatika
+        g = gramatika.clanak(br, c, plan)
+        if g["vrste"]:
+            return g
     if not vrste:
         rez["pregled"].append({"razlog": "vrsta građevine iz uvodne rečenice članka nije prepoznata"})
         return rez
@@ -393,14 +398,14 @@ def strukturiraj_clanak(br, c, plan):
     return rez
 
 
-def strukturiraj(dokazi, clanci, plan):
+def strukturiraj(dokazi, clanci, plan, gramatika_ukljucena=True):
     out = {"shema": SHEMA, "izvor_sha256": dokazi.get("sha256"), "plan": plan, "clanci": {}, "automatska_potvrda": 0, "pravno_potvrdeno": False}
     for br in clanci:
         c = dokazi["clanci"].get(str(br))
         if not c:
             out["clanci"][str(br)] = {"pregled": [{"razlog": "članak nije izdvojen"}]}
             continue
-        out["clanci"][str(br)] = strukturiraj_clanak(br, c, plan)
+        out["clanci"][str(br)] = strukturiraj_clanak(br, c, plan, gramatika_ukljucena)
     sva = [p for c in out["clanci"].values() for p in c.get("pravila", [])]
     out["sazetak"] = {"prijedlozi": sum(p["status"] == "PRIJEDLOG" for p in sva), "pregled": sum(p["status"] == "PREGLED" for p in sva),
                       "za_izracun": sum(p["za_izracun"] for p in sva), "bez_vrijednosti": sum(p["vrijednost"] is None for p in sva),
