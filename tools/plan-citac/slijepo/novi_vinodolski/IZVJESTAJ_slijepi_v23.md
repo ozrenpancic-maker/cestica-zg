@@ -76,3 +76,34 @@ v2.3 na neviđenom planu **ne generalizira**:
 Na razvojnim skupovima preciznost je 0,95–1,00, a pokrivenost 48–51 %. Razlika pokazuje da je gramatika vezana uz oblik teksta PPUG-a Krk i UPU-a 1 Krk: uvodna rečenica s vrstom na početku, alineje »- «, oblici odredbi koji počinju s »najmanja / najveća«.
 
 Mjera sigurnosti je djelomično radila. Čitač nije prihvatio nijednu pogrešnu brojku, a sve što nije prepoznao je odbio. Ipak je prihvatio jedno pravilo s nepotpunom vrstom građevine.
+
+---
+## Dodatak (nakon zamrzavanja izvještaja v2.3): neizmijenjena razvojna v2.4
+**Ova usporedba nije slijepi test.** v2.4 (commit `1e6e522`) nije bila unaprijed zamrznuta za ovaj test. Pokrenuta je bez ikakve izmjene, nad istim zamrznutim oznakama, istim postupkom usporedbe. Rezultat je u `usporedba_v24_nezamrznuta.json`.
+
+| | v2.3 (zamrznuta) | v2.4 (razvojna, nezamrznuta) |
+|---|---|---|
+| pravila čitača | 3 | 3 |
+| točno | 0 | 0 |
+| pogrešno | 1 | 1 |
+| pregled bez oznake | 2 | 2 |
+| propušteno | 151 | 151 |
+
+**Pogreške koje bi postojeća v2.4 mogla riješiti: nijedna.**
+- v2.4 dodaje oblike odredbi o pomoćnim građevinama u alinejama »- «, s kontekstom iz uvoda stavka. Ovdje se ne primjenjuju:
+  - čl. 19., 23. i 24. odbijeni su prije raščlambe (SKUPINA_NEPOZNATA);
+  - odredba o pomoćnim građevinama u čl. 20. (al. 11) ima drukčiji oblik (»najviše kao dvoetažne …, visine 4,0 metra. Građevine moraju biti udaljene 4,0 metra … ukoliko imaju otvore, odnosno 3,0 metra …«).
+- Uzroci 1–6 iz izvještaja v2.3 nisu ni u v2.3 ni u v2.4.
+
+## Preporuka za sljedeću razvojnu verziju (v2.5)
+Redoslijed po učinku na ovom planu. Svaka stavka mora biti razvijena i provjerena na razvojnim skupovima, ne na ovom planu.
+1. **Vrsta građevine iz cijele uvodne rečenice**, ne samo s početka. Obrasci »… namijenjena je izgradnji X«, »uvjeti za izgradnju novih X i Y«, »grade se X« te zona kao prostorni obuhvat (»površina označena planskom oznakom (K11)«). To otključava čl. 19., 23. i 24.
+2. **Stanje »nova« iz uvoda stavka** (»uvjeti za novu izgradnju«), prema odluci suca v1.2 br. 2.
+3. **Alineja »•«** kao ravnopravna alineji »- «. **Kratice koje ne završavaju rečenicu:** »ul.«, »čl.«, »st.«, »br.«, »vis.«, »sl.«.
+4. **Oblici bez »najmanja / najveća«:**
+   - »površina građevne čestice ne može biti manja od N«;
+   - »do N nadzemne etaže«;
+   - »A za građevine visine do X, odnosno najmanje B za više građevine« (uvjet ovisan o visini, uvijek PREGLED);
+   - »iznimno za X N« unutar iste alineje.
+5. **Ograde, zelenilo u postotku i kaskade** imaju jasne brojke, ali su izvan zatvorenog popisa parametara. Prvo treba odlučiti (sudac) proširuje li se popis. Do tada se takva pravila izdvajaju samo kao PREGLED.
+6. **Sljedeći slijepi test** mora biti na trećem planu, koji ni v2.5 nije vidjela. Novi Vinodolski je od sada razvojni skup.
