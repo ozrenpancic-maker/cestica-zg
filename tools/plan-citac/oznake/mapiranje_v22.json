@@ -1,0 +1,53 @@
+{
+ "verzija": "mapiranje-v2.2",
+ "opis": "Dopuna mapiranja za v2.2 (nove vrste građevina i parametri). Za čl. 25./33. vrijedi zamrznuto mapiranje_v2.json uz ovu dopunu. Za UPU 1 čl. 14./24. (razvojni skup) dopuna je napisana NAKON uvida u oznake. Oznake se ne mijenjaju.",
+ "parametri": {
+  "zeleniloMin": [
+   "drugo: najmanji udio zelenila na čestici"
+  ],
+  "udaljenostIzmeduGradjevina": [
+   "drugo: najmanja udaljenost između građevina na istoj građevnoj čestici"
+  ],
+  "etazeMax": [
+   "drugo: najveća katnost"
+  ],
+  "visinaPodzidaMax": [
+   "drugo: najveća visina podzida"
+  ]
+ },
+ "skupine": {
+  "sportsko_rekreacijska": "sportsko-rekreacijska građevina",
+  "hotel": "hotel",
+  "pomocna": "pomoćna građevina",
+  "ugostiteljsko_turisticka": "ugostiteljsko-turistička građevina",
+  "gospodarska": "gospodarska građevina",
+  "poslovna": "poslovna građevina"
+ },
+ "vrsta_gradevine_istoznacnice": {
+  "hotel": [
+   "hotel s pratećim sadržajima",
+   "građevina osnovne namjene",
+   "građevina (osnovne namjene)",
+   "građevina (hotel s pratećim sadržajima)",
+   "hotel (građevina osnovne namjene)"
+  ],
+  "sportsko-rekreacijska građevina": [
+   "sportsko-rekreacijska građevina (jedriličarski klub)"
+  ]
+ },
+ "operatori": {
+  "max((h1+h2)/2, X)": "max((h1+h2)/2, X)"
+ },
+ "pravila_usporedbe": [
+  "Vrijednost: jednaka nakon normalizacije razmaka ili preko istoznačnice u bilo kojem smjeru (»ravna ili kosa« = »ravno ili koso«).",
+  "Vrsta građevine: oznaka bez dodatka »(s podrumom)« uspoređuje se s nazivom modula bez tog dodatka (oznake UPU 1 ne bilježe podrum u vrsti).",
+  "Interval nagiba: dvije granice iste alineje istog bloka → jedan zapis »izmedju«.",
+  "Parametar: naziv iz mapiranje_v2.json ili jedan od naziva iz ove dopune (oznake »drugo: …«)."
+ ],
+ "pravila_granularnosti": [
+  "GRANICA_ALINEJE: točka »-« (modul: rečenica unutar alineje) prema null (oznaka: rečenica iza alineje) – granica alineje u izvoru nije označena.",
+  "ALTERNATIVA_UZ_UVJET: ALTERNATIVA s nepraznim uvjetom = UVJETNO (oznake čl. 25. bilježe ALTERNATIVA, dodatak i UPU 1 UVJETNO za istu rečenicu).",
+  "OPISNA_JEDNAKOST_ILI_DOPUSTENJE: opisna vrijednost s alternativama (»pokrov mora biti A ili B«): »=« = »dopustenje« (oznake se razlikuju za istu rečenicu).",
+  "Zapisi koji se slažu samo uz ova pravila broje se zasebno (tocno_uz_pravilo_granularnosti), nisu ni točni ni pogrešni u strogom brojanju."
+ ]
+}

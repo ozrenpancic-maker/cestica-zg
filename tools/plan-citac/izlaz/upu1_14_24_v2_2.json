@@ -1,0 +1,3781 @@
+{
+ "shema": "plan-citac-pravila/2.2",
+ "gramatika": "gramatika-v2.2",
+ "izvor": "ppug_krk_sn_2020_29.html",
+ "sha256_izvora": "f67ac384d8f30d444cf19a10165f29b65ee93cf37281bb6e183abd981f5cf318",
+ "plan": "UPU 1 – Krk",
+ "clanci": {
+  "14": {
+   "clanak": 14,
+   "vrste": [
+    "sportsko_rekreacijska"
+   ],
+   "pravila": [
+    {
+     "id": "14.0.-.4.1.1",
+     "plan": "UPU 1 – Krk",
+     "clanak": 14,
+     "stavak": null,
+     "blok": null,
+     "tocka": "-",
+     "alineja": 4,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "minC",
+     "operator": ">=",
+     "vrijednost": 1000.0,
+     "jedinica": "m²",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "sportsko_rekreacijska"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "sportsko_rekreacijska"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "sportsko-rekreacijske namjene",
+       "oznaka": "R11",
+       "ime": "Lunta",
+       "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Najmanja dopuštena površina građevne čestice iznosi 1000 m 2 .",
+     "izvorni_citat": "Najmanja dopuštena površina građevne čestice iznosi 1000 m 2 .",
+     "normalizirani_citat": "Najmanja dopuštena površina građevne čestice iznosi 1000 m².",
+     "normalizacija": [
+      {
+       "pravilo": "JEDINICA_EKSPONENT",
+       "vrsta": "ZAPIS_JEDINICE",
+       "izvorno": " m 2",
+       "novo": " m²",
+       "od": 56,
+       "do": 60,
+       "izvor_pravila": "Bjelina: k) između broja i oznake mjerne jedinice: 3 kg, 2 m (str. 33)"
+      },
+      {
+       "pravilo": "BJELINA_ISPRED_ZNAKA",
+       "vrsta": "PRAVOPISNA",
+       "izvorno": " .",
+       "novo": ".",
+       "od": 60,
+       "do": 62,
+       "izvor_pravila": "Bjelina se ne nalazi: a) ispred rečeničnih znakova točke, zareza, točke sa zarezom, dvotočke (str. 34)"
+      }
+     ],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJMANJE",
+       "citat": "Najmanja",
+       "od": 0,
+       "znacenje": ">=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 14,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 7713,
+      "pomak": 1470
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 14. al. 4): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: nema. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    },
+    {
+     "id": "14.0.-.5.1.2",
+     "plan": "UPU 1 – Krk",
+     "clanak": 14,
+     "stavak": null,
+     "blok": null,
+     "tocka": "-",
+     "alineja": 5,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "kig",
+     "operator": "<=",
+     "vrijednost": 0.3,
+     "jedinica": null,
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "sportsko_rekreacijska"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "sportsko_rekreacijska"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "sportsko-rekreacijske namjene",
+       "oznaka": "R11",
+       "ime": "Lunta",
+       "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Najveći dopušteni koeficijent izgrađenosti (kig) iznosi 0,3.",
+     "izvorni_citat": "Najveći dopušteni koeficijent izgrađenosti (kig) iznosi 0,3.",
+     "normalizirani_citat": "Najveći dopušteni koeficijent izgrađenosti (kig) iznosi 0,3.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJVISE",
+       "citat": "Najveći",
+       "od": 0,
+       "znacenje": "<=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 14,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 7713,
+      "pomak": 1535
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 14. al. 5): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: nema. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    },
+    {
+     "id": "14.0.-.6.1.3",
+     "plan": "UPU 1 – Krk",
+     "clanak": 14,
+     "stavak": null,
+     "blok": null,
+     "tocka": "-",
+     "alineja": 6,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "kisNadzemni",
+     "operator": "<=",
+     "vrijednost": 0.6,
+     "jedinica": null,
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "sportsko_rekreacijska"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "sportsko_rekreacijska"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "sportsko-rekreacijske namjene",
+       "oznaka": "R11",
+       "ime": "Lunta",
+       "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Najveći dopušteni koeficijent iskorištenosti (kis) nadzemnih etaža iznosi 0,6, a ukoliko se ispod građevine gradi potpuno ukopani podrum najveći dopušteni (kis) iznosi 0,9.",
+     "izvorni_citat": "Najveći dopušteni koeficijent iskorištenosti (kis) nadzemnih etaža iznosi 0,6, a ukoliko se ispod građevine gradi potpuno ukopani podrum najveći dopušteni (kis) iznosi 0,9.",
+     "normalizirani_citat": "Najveći dopušteni koeficijent iskorištenosti (kis) nadzemnih etaža iznosi 0,6, a ukoliko se ispod građevine gradi potpuno ukopani podrum najveći dopušteni (kis) iznosi 0,9.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJVISE",
+       "citat": "Najveći",
+       "od": 0,
+       "znacenje": "<=",
+       "trazi_pregled": false
+      },
+      {
+       "kod": "NAJVISE",
+       "citat": "najveći",
+       "od": 137,
+       "znacenje": "<=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 14,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 7713,
+      "pomak": 1598
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 14. al. 6): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: nema. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    },
+    {
+     "id": "14.0.-.6.1.4",
+     "plan": "UPU 1 – Krk",
+     "clanak": 14,
+     "stavak": null,
+     "blok": null,
+     "tocka": "-",
+     "alineja": 6,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "kisPodrum",
+     "operator": "<=",
+     "vrijednost": 0.9,
+     "jedinica": null,
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "sportsko_rekreacijska"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "sportsko_rekreacijska"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": true
+     },
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ukoliko se ispod građevine gradi potpuno ukopani podrum",
+     "uvjet_izvorni": "ukoliko se ispod građevine gradi potpuno ukopani podrum",
+     "uvjeti": [
+      "ukoliko se ispod građevine gradi potpuno ukopani podrum"
+     ],
+     "uvjet_logika": {
+      "op": "UVJET",
+      "tekst": "ukoliko se ispod građevine gradi potpuno ukopani podrum"
+     },
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "sportsko-rekreacijske namjene",
+       "oznaka": "R11",
+       "ime": "Lunta",
+       "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Najveći dopušteni koeficijent iskorištenosti (kis) nadzemnih etaža iznosi 0,6, a ukoliko se ispod građevine gradi potpuno ukopani podrum najveći dopušteni (kis) iznosi 0,9.",
+     "izvorni_citat": "Najveći dopušteni koeficijent iskorištenosti (kis) nadzemnih etaža iznosi 0,6, a ukoliko se ispod građevine gradi potpuno ukopani podrum najveći dopušteni (kis) iznosi 0,9.",
+     "normalizirani_citat": "Najveći dopušteni koeficijent iskorištenosti (kis) nadzemnih etaža iznosi 0,6, a ukoliko se ispod građevine gradi potpuno ukopani podrum najveći dopušteni (kis) iznosi 0,9.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJVISE",
+       "citat": "Najveći",
+       "od": 0,
+       "znacenje": "<=",
+       "trazi_pregled": false
+      },
+      {
+       "kod": "NAJVISE",
+       "citat": "najveći",
+       "od": 137,
+       "znacenje": "<=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 14,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 7713,
+      "pomak": 1598
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 14. al. 6): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: ukoliko se ispod građevine gradi potpuno ukopani podrum. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    },
+    {
+     "id": "14.0.-.7.1.5",
+     "plan": "UPU 1 – Krk",
+     "clanak": 14,
+     "stavak": null,
+     "blok": null,
+     "tocka": "-",
+     "alineja": 7,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "visinaMax",
+     "operator": "<=",
+     "vrijednost": 8.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "sportsko_rekreacijska"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "sportsko_rekreacijska"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "sportsko-rekreacijske namjene",
+       "oznaka": "R11",
+       "ime": "Lunta",
+       "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [
+      "14.0.-.13.8.15"
+     ],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Najveća dopuštena visina građevine iznosi 8,0 m (potpuno ukopan podrum i 2 nadzemne etaže).",
+     "izvorni_citat": "Najveća dopuštena visina građevine iznosi 8,0 m (potpuno ukopan podrum i 2 nadzemne etaže).",
+     "normalizirani_citat": "Najveća dopuštena visina građevine iznosi 8,0 m (potpuno ukopan podrum i 2 nadzemne etaže).",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJVISE",
+       "citat": "Najveća",
+       "od": 0,
+       "znacenje": "<=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 14,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 7713,
+      "pomak": 1773
+     },
+     "status": "PREGLED",
+     "razlog_kod": [
+      "REFERENTNA_VISINA_NEPOZNATA"
+     ],
+     "razlozi": [
+      "referentna točka mjerenja visine nije navedena u ovoj odredbi"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PREGLED (čl. 14. al. 7): referentna točka mjerenja visine nije navedena u ovoj odredbi"
+    },
+    {
+     "id": "14.0.-.7.1.6",
+     "plan": "UPU 1 – Krk",
+     "clanak": 14,
+     "stavak": null,
+     "blok": null,
+     "tocka": "-",
+     "alineja": 7,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "etazeMax",
+     "operator": "<=",
+     "vrijednost": "potpuno ukopan podrum i 2 nadzemne etaže",
+     "jedinica": null,
+     "vrijednost_vrsta": "opis",
+     "vrste": [
+      "sportsko_rekreacijska"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "sportsko_rekreacijska"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "sportsko-rekreacijske namjene",
+       "oznaka": "R11",
+       "ime": "Lunta",
+       "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [
+      "14.0.-.13.8.16"
+     ],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Najveća dopuštena visina građevine iznosi 8,0 m (potpuno ukopan podrum i 2 nadzemne etaže).",
+     "izvorni_citat": "Najveća dopuštena visina građevine iznosi 8,0 m (potpuno ukopan podrum i 2 nadzemne etaže).",
+     "normalizirani_citat": "Najveća dopuštena visina građevine iznosi 8,0 m (potpuno ukopan podrum i 2 nadzemne etaže).",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJVISE",
+       "citat": "Najveća",
+       "od": 0,
+       "znacenje": "<=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 14,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 7713,
+      "pomak": 1773
+     },
+     "status": "PREGLED",
+     "razlog_kod": [
+      "ZAGRADA_OBJASNJENJE"
+     ],
+     "razlozi": [
+      "broj etaža u zagradi uz visinu: nije navedeno je li zasebno ograničenje ili objašnjenje visine"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PREGLED (čl. 14. al. 7): broj etaža u zagradi uz visinu: nije navedeno je li zasebno ograničenje ili objašnjenje visine"
+    },
+    {
+     "id": "14.0.-.8.1.7",
+     "plan": "UPU 1 – Krk",
+     "clanak": 14,
+     "stavak": null,
+     "blok": null,
+     "tocka": "-",
+     "alineja": 8,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "regulacija",
+     "operator": ">=",
+     "vrijednost": 6.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "sportsko_rekreacijska"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "sportsko_rekreacijska"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "za ostale (pristupne) ceste",
+     "uvjet_izvorni": "za ostale (pristupne) ceste",
+     "uvjeti": [
+      "za ostale (pristupne) ceste"
+     ],
+     "uvjet_logika": {
+      "op": "UVJET",
+      "tekst": "za ostale (pristupne) ceste"
+     },
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "sportsko-rekreacijske namjene",
+       "oznaka": "R11",
+       "ime": "Lunta",
+       "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+       "utvrdjeno_na_lokaciji": false
+      },
+      {
+       "vrsta": "KATEGORIJA_CESTE",
+       "dokaz": "za ostale (pristupne) ceste",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Najmanja dopuštena udaljenost građevine od regulacijskog pravca za ostale (pristupne) ceste iznosi 6,0 m.",
+     "izvorni_citat": "Najmanja dopuštena udaljenost građevine od regulacijskog pravca za ostale (pristupne) ceste iznosi 6,0 m.",
+     "normalizirani_citat": "Najmanja dopuštena udaljenost građevine od regulacijskog pravca za ostale (pristupne) ceste iznosi 6,0 m.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJMANJE",
+       "citat": "Najmanja",
+       "od": 0,
+       "znacenje": ">=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 14,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 7713,
+      "pomak": 1867
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 14. al. 8): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: za ostale (pristupne) ceste. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    },
+    {
+     "id": "14.0.-.9.1.8",
+     "plan": "UPU 1 – Krk",
+     "clanak": 14,
+     "stavak": null,
+     "blok": null,
+     "tocka": "-",
+     "alineja": 9,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "udaljenostOdGraniceCestice",
+     "operator": ">=",
+     "vrijednost": 6.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "sportsko_rekreacijska"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "sportsko_rekreacijska"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "sportsko-rekreacijske namjene",
+       "oznaka": "R11",
+       "ime": "Lunta",
+       "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Najmanja dopuštena udaljenost građevine od granice građevne čestice iznosi 6,0 m.",
+     "izvorni_citat": "Najmanja dopuštena udaljenost građevine od granice građevne čestice iznosi 6,0 m.",
+     "normalizirani_citat": "Najmanja dopuštena udaljenost građevine od granice građevne čestice iznosi 6,0 m.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJMANJE",
+       "citat": "Najmanja",
+       "od": 0,
+       "znacenje": ">=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 14,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 7713,
+      "pomak": 1975
+     },
+     "status": "PREGLED",
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA"
+     ],
+     "razlozi": [
+      "»granica građevne čestice« nije razgraničena od regulacijskog pravca"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PREGLED (čl. 14. al. 9): »granica građevne čestice« nije razgraničena od regulacijskog pravca"
+    },
+    {
+     "id": "14.0.-.10.1.9",
+     "plan": "UPU 1 – Krk",
+     "clanak": 14,
+     "stavak": null,
+     "blok": null,
+     "tocka": "-",
+     "alineja": 10,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "udaljenostIzmeduGradjevina",
+     "operator": "max((h1+h2)/2, X)",
+     "vrijednost": 6.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "sportsko_rekreacijska"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "sportsko_rekreacijska"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": "na istoj građevnoj čestici",
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": {
+      "izraz": "max((h1+h2)/2, 6,0 m)",
+      "h1_h2": "h1 i h2 su visine susjednih građevina",
+      "referenca": "između susjednih građevina na istoj čestici"
+     },
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "sportsko-rekreacijske namjene",
+       "oznaka": "R11",
+       "ime": "Lunta",
+       "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Najmanja dopuštena udaljenost između građevina na istoj građevnoj čestici iznosi (h1+h2)/2 (h1 i h2 su visine susjednih građevina), ali ne manje od 6,0 m.",
+     "izvorni_citat": "Najmanja dopuštena udaljenost između građevina na istoj građevnoj čestici iznosi (h1+h2)/2 (h1 i h2 su visine susjednih građevina), ali ne manje od 6,0 m.",
+     "normalizirani_citat": "Najmanja dopuštena udaljenost između građevina na istoj građevnoj čestici iznosi (h1+h2)/2 (h1 i h2 su visine susjednih građevina), ali ne manje od 6,0 m.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJMANJE",
+       "citat": "Najmanja",
+       "od": 0,
+       "znacenje": ">=",
+       "trazi_pregled": false
+      },
+      {
+       "kod": "NE_MANJE_OD",
+       "citat": "ne manje od",
+       "od": 136,
+       "znacenje": ">=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 14,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 7713,
+      "pomak": 2059
+     },
+     "status": "PREGLED",
+     "razlog_kod": [
+      "H_NIJE_DEFINIRAN"
+     ],
+     "razlozi": [
+      "h1 i h2 su »visine susjednih građevina«, ali točka mjerenja visine nije navedena"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PREGLED (čl. 14. al. 10): h1 i h2 su »visine susjednih građevina«, ali točka mjerenja visine nije navedena"
+    },
+    {
+     "id": "14.0.-.11.1.10",
+     "plan": "UPU 1 – Krk",
+     "clanak": 14,
+     "stavak": null,
+     "blok": null,
+     "tocka": "-",
+     "alineja": 11,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "zeleniloMin",
+     "operator": ">=",
+     "vrijednost": 60.0,
+     "jedinica": "%",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "sportsko_rekreacijska"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "sportsko_rekreacijska"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": "uređeno kao parkovni nasadi i prirodno zelenilo",
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "sportsko-rekreacijske namjene",
+       "oznaka": "R11",
+       "ime": "Lunta",
+       "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Najmanje 60% površine svake građevne čestice mora biti uređeno kao parkovni nasadi i prirodno zelenilo.",
+     "izvorni_citat": "Najmanje 60% površine svake građevne čestice mora biti uređeno kao parkovni nasadi i prirodno zelenilo.",
+     "normalizirani_citat": "Najmanje 60% površine svake građevne čestice mora biti uređeno kao parkovni nasadi i prirodno zelenilo.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJMANJE",
+       "citat": "Najmanje",
+       "od": 0,
+       "znacenje": ">=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 14,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 7713,
+      "pomak": 2216
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 14. al. 11): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: nema. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    },
+    {
+     "id": "14.0.-.13.1.11",
+     "plan": "UPU 1 – Krk",
+     "clanak": 14,
+     "stavak": null,
+     "blok": null,
+     "tocka": "-",
+     "alineja": 13,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "oblikKrovista",
+     "operator": "dopusteno",
+     "vrijednost": "ravno ili koso",
+     "jedinica": null,
+     "vrijednost_vrsta": "opis",
+     "vrste": [
+      "sportsko_rekreacijska"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "sportsko_rekreacijska"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "ALTERNATIVA",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": [
+      "ravno",
+      "koso"
+     ],
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "sportsko-rekreacijske namjene",
+       "oznaka": "R11",
+       "ime": "Lunta",
+       "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Krovište može biti ravno ili koso nagiba između 17° i 23°, a kojeg predviđa usvojena tehnologija građenja pojedine građevine. U pojasu najmanje 100 m od obalne crte ne može se planirati niti se može graditi nova pojedinačna ili više građevina osim građevina komunalne infrastrukture i podzemnih energetskih vodova, pratećih sadržaja ugostiteljsko-turističke namjene, građevina koje po svojoj prirodi zahtijevaju smještaj na obali (brodogradilišta, luke i sl.) te uređenje javnih površina. Građevine se mogu rekonstruirati u skladu s uvjetima iz ovog članka za nove građevine. Iznimno, od odredbi ovog članka na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad je dopušteno formirati građevnu česticu za gradnju sportsko-rekreacijske građevine (jedriličarski klub-građevina koja po svojoj prirodi zahtijeva smještaj na obali). Građevnu česticu je dopušteno povećati i na susjedne čestice. Građevinu je dopušteno graditi uz slijedeće granične uvjete: Najveća dopuštena tlocrtna projekcija građevine iznosi 400 m 2 . Najveća dopuštena visina građevine iznosi 8,0 m (dvije nadzemne etaže). Ostali uvjeti su istovjetni uvjetima određenim ovim člankom. Zona uređene plaže (R3 8 )",
+     "izvorni_citat": "Krovište može biti ravno ili koso nagiba između 17° i 23°, a kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+     "normalizirani_citat": "Krovište može biti ravno ili koso nagiba između 17° i 23°, a kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [],
+     "izvor_clanak": 14,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 7713,
+      "pomak": 2458
+     },
+     "status": "PREGLED",
+     "razlog_kod": [
+      "DIO_ODREDBE_NEPREPOZNAT"
+     ],
+     "razlozi": [
+      "nastavak odredbe nije raščlanjen: »a kojeg predviđa usvojena tehnologija građenja pojedine građ«"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PREGLED (čl. 14. al. 13): nastavak odredbe nije raščlanjen: »a kojeg predviđa usvojena tehnologija građenja pojedine građ«"
+    },
+    {
+     "id": "14.0.-.13.1.12",
+     "plan": "UPU 1 – Krk",
+     "clanak": 14,
+     "stavak": null,
+     "blok": null,
+     "tocka": "-",
+     "alineja": 13,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "nagibKrovaMin",
+     "operator": ">=",
+     "vrijednost": 17.0,
+     "jedinica": "°",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "sportsko_rekreacijska"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "sportsko_rekreacijska"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": "nagibKrova",
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "sportsko-rekreacijske namjene",
+       "oznaka": "R11",
+       "ime": "Lunta",
+       "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Krovište može biti ravno ili koso nagiba između 17° i 23°, a kojeg predviđa usvojena tehnologija građenja pojedine građevine. U pojasu najmanje 100 m od obalne crte ne može se planirati niti se može graditi nova pojedinačna ili više građevina osim građevina komunalne infrastrukture i podzemnih energetskih vodova, pratećih sadržaja ugostiteljsko-turističke namjene, građevina koje po svojoj prirodi zahtijevaju smještaj na obali (brodogradilišta, luke i sl.) te uređenje javnih površina. Građevine se mogu rekonstruirati u skladu s uvjetima iz ovog članka za nove građevine. Iznimno, od odredbi ovog članka na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad je dopušteno formirati građevnu česticu za gradnju sportsko-rekreacijske građevine (jedriličarski klub-građevina koja po svojoj prirodi zahtijeva smještaj na obali). Građevnu česticu je dopušteno povećati i na susjedne čestice. Građevinu je dopušteno graditi uz slijedeće granične uvjete: Najveća dopuštena tlocrtna projekcija građevine iznosi 400 m 2 . Najveća dopuštena visina građevine iznosi 8,0 m (dvije nadzemne etaže). Ostali uvjeti su istovjetni uvjetima određenim ovim člankom. Zona uređene plaže (R3 8 )",
+     "izvorni_citat": "Krovište može biti ravno ili koso nagiba između 17° i 23°, a kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+     "normalizirani_citat": "Krovište može biti ravno ili koso nagiba između 17° i 23°, a kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [],
+     "izvor_clanak": 14,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 7713,
+      "pomak": 2458
+     },
+     "status": "PREGLED",
+     "razlog_kod": [
+      "DIO_ODREDBE_NEPREPOZNAT",
+      "NAGIB_UZ_KOSO_TUMACENJE"
+     ],
+     "razlozi": [
+      "nastavak odredbe nije raščlanjen: »a kojeg predviđa usvojena tehnologija građenja pojedine građ«",
+      "nagib je naveden uz »ravno ili koso«; da vrijedi samo za koso krovište je tumačenje"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PREGLED (čl. 14. al. 13): nastavak odredbe nije raščlanjen: »a kojeg predviđa usvojena tehnologija građenja pojedine građ«; nagib je naveden uz »ravno ili koso«; da vrijedi samo za koso krovište je tumačenje"
+    },
+    {
+     "id": "14.0.-.13.1.13",
+     "plan": "UPU 1 – Krk",
+     "clanak": 14,
+     "stavak": null,
+     "blok": null,
+     "tocka": "-",
+     "alineja": 13,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "nagibKrovaMax",
+     "operator": "<=",
+     "vrijednost": 23.0,
+     "jedinica": "°",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "sportsko_rekreacijska"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "sportsko_rekreacijska"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": "nagibKrova",
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "sportsko-rekreacijske namjene",
+       "oznaka": "R11",
+       "ime": "Lunta",
+       "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Krovište može biti ravno ili koso nagiba između 17° i 23°, a kojeg predviđa usvojena tehnologija građenja pojedine građevine. U pojasu najmanje 100 m od obalne crte ne može se planirati niti se može graditi nova pojedinačna ili više građevina osim građevina komunalne infrastrukture i podzemnih energetskih vodova, pratećih sadržaja ugostiteljsko-turističke namjene, građevina koje po svojoj prirodi zahtijevaju smještaj na obali (brodogradilišta, luke i sl.) te uređenje javnih površina. Građevine se mogu rekonstruirati u skladu s uvjetima iz ovog članka za nove građevine. Iznimno, od odredbi ovog članka na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad je dopušteno formirati građevnu česticu za gradnju sportsko-rekreacijske građevine (jedriličarski klub-građevina koja po svojoj prirodi zahtijeva smještaj na obali). Građevnu česticu je dopušteno povećati i na susjedne čestice. Građevinu je dopušteno graditi uz slijedeće granične uvjete: Najveća dopuštena tlocrtna projekcija građevine iznosi 400 m 2 . Najveća dopuštena visina građevine iznosi 8,0 m (dvije nadzemne etaže). Ostali uvjeti su istovjetni uvjetima određenim ovim člankom. Zona uređene plaže (R3 8 )",
+     "izvorni_citat": "Krovište može biti ravno ili koso nagiba između 17° i 23°, a kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+     "normalizirani_citat": "Krovište može biti ravno ili koso nagiba između 17° i 23°, a kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [],
+     "izvor_clanak": 14,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 7713,
+      "pomak": 2458
+     },
+     "status": "PREGLED",
+     "razlog_kod": [
+      "DIO_ODREDBE_NEPREPOZNAT",
+      "NAGIB_UZ_KOSO_TUMACENJE"
+     ],
+     "razlozi": [
+      "nastavak odredbe nije raščlanjen: »a kojeg predviđa usvojena tehnologija građenja pojedine građ«",
+      "nagib je naveden uz »ravno ili koso«; da vrijedi samo za koso krovište je tumačenje"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PREGLED (čl. 14. al. 13): nastavak odredbe nije raščlanjen: »a kojeg predviđa usvojena tehnologija građenja pojedine građ«; nagib je naveden uz »ravno ili koso«; da vrijedi samo za koso krovište je tumačenje"
+    },
+    {
+     "id": "14.0.-.13.7.14",
+     "plan": "UPU 1 – Krk",
+     "clanak": 14,
+     "stavak": null,
+     "blok": null,
+     "tocka": "-",
+     "alineja": 13,
+     "recenica": 7,
+     "gradjevina": "osnovna",
+     "parametar": "tlMax",
+     "operator": "<=",
+     "vrijednost": 400.0,
+     "jedinica": "m²",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "sportsko_rekreacijska"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "sportsko_rekreacijska"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad",
+     "uvjet_izvorni": "na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad",
+     "uvjeti": [
+      "na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad"
+     ],
+     "uvjet_logika": {
+      "op": "ILI",
+      "args": [
+       "na dijelu",
+       "na čitavoj k.č 3932/1 k.o. Krk-grad"
+      ],
+      "tekst": "na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad"
+     },
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "sportsko-rekreacijske namjene",
+       "oznaka": "R11",
+       "ime": "Lunta",
+       "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+       "utvrdjeno_na_lokaciji": false
+      },
+      {
+       "vrsta": "KATASTARSKA_CESTICA",
+       "dokaz": "na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Krovište može biti ravno ili koso nagiba između 17° i 23°, a kojeg predviđa usvojena tehnologija građenja pojedine građevine. U pojasu najmanje 100 m od obalne crte ne može se planirati niti se može graditi nova pojedinačna ili više građevina osim građevina komunalne infrastrukture i podzemnih energetskih vodova, pratećih sadržaja ugostiteljsko-turističke namjene, građevina koje po svojoj prirodi zahtijevaju smještaj na obali (brodogradilišta, luke i sl.) te uređenje javnih površina. Građevine se mogu rekonstruirati u skladu s uvjetima iz ovog članka za nove građevine. Iznimno, od odredbi ovog članka na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad je dopušteno formirati građevnu česticu za gradnju sportsko-rekreacijske građevine (jedriličarski klub-građevina koja po svojoj prirodi zahtijeva smještaj na obali). Građevnu česticu je dopušteno povećati i na susjedne čestice. Građevinu je dopušteno graditi uz slijedeće granične uvjete: Najveća dopuštena tlocrtna projekcija građevine iznosi 400 m 2 . Najveća dopuštena visina građevine iznosi 8,0 m (dvije nadzemne etaže). Ostali uvjeti su istovjetni uvjetima određenim ovim člankom. Zona uređene plaže (R3 8 )",
+     "izvorni_citat": "Najveća dopuštena tlocrtna projekcija građevine iznosi 400 m 2 .",
+     "normalizirani_citat": "Najveća dopuštena tlocrtna projekcija građevine iznosi 400 m².",
+     "normalizacija": [
+      {
+       "pravilo": "JEDINICA_EKSPONENT",
+       "vrsta": "ZAPIS_JEDINICE",
+       "izvorno": " m 2",
+       "novo": " m²",
+       "od": 58,
+       "do": 62,
+       "izvor_pravila": "Bjelina: k) između broja i oznake mjerne jedinice: 3 kg, 2 m (str. 33)"
+      },
+      {
+       "pravilo": "BJELINA_ISPRED_ZNAKA",
+       "vrsta": "PRAVOPISNA",
+       "izvorno": " .",
+       "novo": ".",
+       "od": 62,
+       "do": 64,
+       "izvor_pravila": "Bjelina se ne nalazi: a) ispred rečeničnih znakova točke, zareza, točke sa zarezom, dvotočke (str. 34)"
+      }
+     ],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJVISE",
+       "citat": "Najveća",
+       "od": 0,
+       "znacenje": "<=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 14,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 7713,
+      "pomak": 3405
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 14. al. 13): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    },
+    {
+     "id": "14.0.-.13.8.15",
+     "plan": "UPU 1 – Krk",
+     "clanak": 14,
+     "stavak": null,
+     "blok": null,
+     "tocka": "-",
+     "alineja": 13,
+     "recenica": 8,
+     "gradjevina": "osnovna",
+     "parametar": "visinaMax",
+     "operator": "<=",
+     "vrijednost": 8.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "sportsko_rekreacijska"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "sportsko_rekreacijska"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad",
+     "uvjet_izvorni": "na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad",
+     "uvjeti": [
+      "na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad"
+     ],
+     "uvjet_logika": {
+      "op": "ILI",
+      "args": [
+       "na dijelu",
+       "na čitavoj k.č 3932/1 k.o. Krk-grad"
+      ],
+      "tekst": "na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad"
+     },
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "sportsko-rekreacijske namjene",
+       "oznaka": "R11",
+       "ime": "Lunta",
+       "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+       "utvrdjeno_na_lokaciji": false
+      },
+      {
+       "vrsta": "KATASTARSKA_CESTICA",
+       "dokaz": "na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": "14.0.-.7.1.5",
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Krovište može biti ravno ili koso nagiba između 17° i 23°, a kojeg predviđa usvojena tehnologija građenja pojedine građevine. U pojasu najmanje 100 m od obalne crte ne može se planirati niti se može graditi nova pojedinačna ili više građevina osim građevina komunalne infrastrukture i podzemnih energetskih vodova, pratećih sadržaja ugostiteljsko-turističke namjene, građevina koje po svojoj prirodi zahtijevaju smještaj na obali (brodogradilišta, luke i sl.) te uređenje javnih površina. Građevine se mogu rekonstruirati u skladu s uvjetima iz ovog članka za nove građevine. Iznimno, od odredbi ovog članka na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad je dopušteno formirati građevnu česticu za gradnju sportsko-rekreacijske građevine (jedriličarski klub-građevina koja po svojoj prirodi zahtijeva smještaj na obali). Građevnu česticu je dopušteno povećati i na susjedne čestice. Građevinu je dopušteno graditi uz slijedeće granične uvjete: Najveća dopuštena tlocrtna projekcija građevine iznosi 400 m 2 . Najveća dopuštena visina građevine iznosi 8,0 m (dvije nadzemne etaže). Ostali uvjeti su istovjetni uvjetima određenim ovim člankom. Zona uređene plaže (R3 8 )",
+     "izvorni_citat": "Najveća dopuštena visina građevine iznosi 8,0 m (dvije nadzemne etaže).",
+     "normalizirani_citat": "Najveća dopuštena visina građevine iznosi 8,0 m (dvije nadzemne etaže).",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJVISE",
+       "citat": "Najveća",
+       "od": 0,
+       "znacenje": "<=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 14,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 7713,
+      "pomak": 3470
+     },
+     "status": "PREGLED",
+     "razlog_kod": [
+      "REFERENTNA_VISINA_NEPOZNATA"
+     ],
+     "razlozi": [
+      "referentna točka mjerenja visine nije navedena u ovoj odredbi"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PREGLED (čl. 14. al. 13): referentna točka mjerenja visine nije navedena u ovoj odredbi"
+    },
+    {
+     "id": "14.0.-.13.8.16",
+     "plan": "UPU 1 – Krk",
+     "clanak": 14,
+     "stavak": null,
+     "blok": null,
+     "tocka": "-",
+     "alineja": 13,
+     "recenica": 8,
+     "gradjevina": "osnovna",
+     "parametar": "etazeMax",
+     "operator": "<=",
+     "vrijednost": "dvije nadzemne etaže",
+     "jedinica": null,
+     "vrijednost_vrsta": "opis",
+     "vrste": [
+      "sportsko_rekreacijska"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "sportsko_rekreacijska"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad",
+     "uvjet_izvorni": "na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad",
+     "uvjeti": [
+      "na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad"
+     ],
+     "uvjet_logika": {
+      "op": "ILI",
+      "args": [
+       "na dijelu",
+       "na čitavoj k.č 3932/1 k.o. Krk-grad"
+      ],
+      "tekst": "na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad"
+     },
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "sportsko-rekreacijske namjene",
+       "oznaka": "R11",
+       "ime": "Lunta",
+       "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+       "utvrdjeno_na_lokaciji": false
+      },
+      {
+       "vrsta": "KATASTARSKA_CESTICA",
+       "dokaz": "na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": "14.0.-.7.1.6",
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Krovište može biti ravno ili koso nagiba između 17° i 23°, a kojeg predviđa usvojena tehnologija građenja pojedine građevine. U pojasu najmanje 100 m od obalne crte ne može se planirati niti se može graditi nova pojedinačna ili više građevina osim građevina komunalne infrastrukture i podzemnih energetskih vodova, pratećih sadržaja ugostiteljsko-turističke namjene, građevina koje po svojoj prirodi zahtijevaju smještaj na obali (brodogradilišta, luke i sl.) te uređenje javnih površina. Građevine se mogu rekonstruirati u skladu s uvjetima iz ovog članka za nove građevine. Iznimno, od odredbi ovog članka na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad je dopušteno formirati građevnu česticu za gradnju sportsko-rekreacijske građevine (jedriličarski klub-građevina koja po svojoj prirodi zahtijeva smještaj na obali). Građevnu česticu je dopušteno povećati i na susjedne čestice. Građevinu je dopušteno graditi uz slijedeće granične uvjete: Najveća dopuštena tlocrtna projekcija građevine iznosi 400 m 2 . Najveća dopuštena visina građevine iznosi 8,0 m (dvije nadzemne etaže). Ostali uvjeti su istovjetni uvjetima određenim ovim člankom. Zona uređene plaže (R3 8 )",
+     "izvorni_citat": "Najveća dopuštena visina građevine iznosi 8,0 m (dvije nadzemne etaže).",
+     "normalizirani_citat": "Najveća dopuštena visina građevine iznosi 8,0 m (dvije nadzemne etaže).",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJVISE",
+       "citat": "Najveća",
+       "od": 0,
+       "znacenje": "<=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 14,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 7713,
+      "pomak": 3470
+     },
+     "status": "PREGLED",
+     "razlog_kod": [
+      "ZAGRADA_OBJASNJENJE"
+     ],
+     "razlozi": [
+      "broj etaža u zagradi uz visinu: nije navedeno je li zasebno ograničenje ili objašnjenje visine"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PREGLED (čl. 14. al. 13): broj etaža u zagradi uz visinu: nije navedeno je li zasebno ograničenje ili objašnjenje visine"
+    }
+   ],
+   "upucivanja": [],
+   "nepokriveno": [
+    {
+     "stavak": null,
+     "tocka": null,
+     "alineja": null,
+     "recenica": 1,
+     "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta moguća je izgradnja otvorenih i poluotvorenih igrališta, sportskih dvorana i ostalih pomoćnih građevina (svlačionice i sl.), bazena, te smještaj pratećih rekreacijskih, zabavnih i uslužnih (ugostiteljsko-trgovačkih) djelatnosti.",
+     "status": "ODBIJENO",
+     "razlog_kod": [
+      "PREDMET_NEPOZNAT"
+     ],
+     "razlozi": [
+      "predmet odredbe nije u rječniku: »U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta moguća je«"
+     ],
+     "brojevi": [
+      "1"
+     ]
+    },
+    {
+     "stavak": null,
+     "tocka": null,
+     "alineja": null,
+     "recenica": 5,
+     "dokaz": "Izdvojena građevinska područja izvan naselja sportske namjene planiraju se na način da najmanje 60% površine tog građevinskog područja bude uređeno kao parkovni nasadi i prirodno zelenilo, a ukupna tlocrtna bruto površina zatvorenih i natkrivenih građevina može iznositi najviše 10% površine sportskih terena i sadržaja (što znači 10% od preostalih 40% površine zone, što iznosi max 4% površine zone).",
+     "status": "ODBIJENO",
+     "razlog_kod": [
+      "PREDMET_NEPOZNAT"
+     ],
+     "razlozi": [
+      "predmet odredbe nije u rječniku: »Izdvojena građevinska područja izvan naselja sportske namjen«"
+     ],
+     "brojevi": [
+      "60",
+      "10",
+      "10",
+      "40",
+      "4"
+     ]
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 1,
+     "recenica": 1,
+     "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta dopušteno je graditi sportsko-rekreacijske građevine uz slijedeće granične uvjete:",
+     "status": "ODBIJENO",
+     "razlog_kod": [
+      "PREDMET_NEPOZNAT"
+     ],
+     "razlozi": [
+      "predmet odredbe nije u rječniku: »U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta dopušteno«"
+     ],
+     "brojevi": [
+      "1"
+     ]
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 13,
+     "recenica": 2,
+     "dokaz": "U pojasu najmanje 100 m od obalne crte ne može se planirati niti se može graditi nova pojedinačna ili više građevina osim građevina komunalne infrastrukture i podzemnih energetskih vodova, pratećih sadržaja ugostiteljsko-turističke namjene, građevina koje po svojoj prirodi zahtijevaju smještaj na obali (brodogradilišta, luke i sl.) te uređenje javnih površina.",
+     "status": "ODBIJENO",
+     "razlog_kod": [
+      "PREDMET_NEPOZNAT"
+     ],
+     "razlozi": [
+      "predmet odredbe nije u rječniku: »U pojasu najmanje 100 m od obalne crte ne može se planirati «"
+     ],
+     "brojevi": [
+      "100"
+     ]
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 13,
+     "recenica": 10,
+     "dokaz": "Zona uređene plaže (R3 8 )",
+     "status": "ODBIJENO",
+     "razlog_kod": [
+      "PREDMET_NEPOZNAT"
+     ],
+     "razlozi": [
+      "predmet odredbe nije u rječniku: »Zona uređene plaže (R3 8 )«"
+     ],
+     "brojevi": [
+      "8"
+     ]
+    }
+   ],
+   "bez_broja": [
+    {
+     "stavak": null,
+     "tocka": null,
+     "alineja": null,
+     "recenica": 2,
+     "dokaz": "Propisuje se obavezna II. kategorija uređenosti građevinskog zemljišta (pristupni put, odvodnja otpadnih voda, vodoopskrba i električna energija)."
+    },
+    {
+     "stavak": null,
+     "tocka": null,
+     "alineja": null,
+     "recenica": 3,
+     "dokaz": "Parkiranje ili garažiranje vozila rješava se unutar građevne čestice, u građevini i/ili na površini građevne čestice, u skladu s normativima iz točke 5.1."
+    },
+    {
+     "stavak": null,
+     "tocka": null,
+     "alineja": null,
+     "recenica": 4,
+     "dokaz": "Uvjeti gradnje prometne mreže - Promet u mirovanju, ovih Odredbi."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 2,
+     "recenica": 1,
+     "dokaz": "Namjena građevine je sportsko-rekreacijska, a dopušten je smještaj pratećih sadržaja (ugostiteljski, uslužni, trgovački i slični sadržaji u funkciji osnovne namjene)."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 3,
+     "recenica": 1,
+     "dokaz": "Na građevnoj čestici dopušteno je graditi jednu ili više građevina koje čine jedinstvenu funkcionalnu cjelinu."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 12,
+     "recenica": 1,
+     "dokaz": "Građevine moraju biti oblikovanjem sukladne s izvornim urbanim i arhitektonskim obilježjima uz upotrebu postojanih materijala i boja."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 13,
+     "recenica": 3,
+     "dokaz": "Građevine se mogu rekonstruirati u skladu s uvjetima iz ovog članka za nove građevine."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 13,
+     "recenica": 5,
+     "dokaz": "Građevnu česticu je dopušteno povećati i na susjedne čestice."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 13,
+     "recenica": 6,
+     "dokaz": "Građevinu je dopušteno graditi uz slijedeće granične uvjete:"
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 13,
+     "recenica": 9,
+     "dokaz": "Ostali uvjeti su istovjetni uvjetima određenim ovim člankom."
+    }
+   ],
+   "pregled": [],
+   "kontekst": [
+    {
+     "stavak": null,
+     "tocka": null,
+     "alineja": null,
+     "recenica": 1,
+     "postavlja": [
+      "zona"
+     ],
+     "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta moguća je izgradnja otvorenih i poluotvorenih igrališta, sportskih dvorana i ostalih pomoćnih građevina (svlačionice i sl.), bazena, te smještaj pratećih rekreacijskih, zabavnih i uslužnih (ugostiteljsko-trgovačkih) djelatnosti."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 1,
+     "recenica": 1,
+     "postavlja": [
+      "zona",
+      "vrsta"
+     ],
+     "dokaz": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta dopušteno je graditi sportsko-rekreacijske građevine uz slijedeće granične uvjete:"
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 13,
+     "recenica": 4,
+     "postavlja": [
+      "iznimka",
+      "vrsta"
+     ],
+     "dokaz": "Iznimno, od odredbi ovog članka na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad je dopušteno formirati građevnu česticu za gradnju sportsko-rekreacijske građevine (jedriličarski klub-građevina koja po svojoj prirodi zahtijeva smještaj na obali)."
+    }
+   ],
+   "gramatika": "gramatika-v2.2"
+  },
+  "24": {
+   "clanak": 24,
+   "vrste": [
+    "hotel",
+    "pomocna"
+   ],
+   "pravila": [
+    {
+     "id": "24.0.b3.-.1.1.1",
+     "plan": "UPU 1 – Krk",
+     "clanak": 24,
+     "stavak": null,
+     "blok": 3,
+     "tocka": "-",
+     "alineja": 1,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "kig",
+     "operator": "<=",
+     "vrijednost": 0.3,
+     "jedinica": null,
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "hotel"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "hotel"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "ugostiteljsko-turističke namjene",
+       "oznaka": "T12",
+       "ime": "dopušteno",
+       "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Najveći dopušteni koeficijent izgrađenosti (kig) iznosi 0,3.",
+     "izvorni_citat": "Najveći dopušteni koeficijent izgrađenosti (kig) iznosi 0,3.",
+     "normalizirani_citat": "Najveći dopušteni koeficijent izgrađenosti (kig) iznosi 0,3.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJVISE",
+       "citat": "Najveći",
+       "od": 0,
+       "znacenje": "<=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 24,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 8243,
+      "pomak": 1723
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 24. al. 1): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: nema. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    },
+    {
+     "id": "24.0.b3.-.2.1.2",
+     "plan": "UPU 1 – Krk",
+     "clanak": 24,
+     "stavak": null,
+     "blok": 3,
+     "tocka": "-",
+     "alineja": 2,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "kisNadzemni",
+     "operator": "<=",
+     "vrijednost": 1.0,
+     "jedinica": null,
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "hotel"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "hotel"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "ugostiteljsko-turističke namjene",
+       "oznaka": "T12",
+       "ime": "dopušteno",
+       "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Najveći dopušteni koeficijent iskorištenosti (kis) nadzemnih etaža iznosi 1,0, a ukoliko se ispod građevine gradi potpuno ukopani podrum 1,5, od čega je 0,5 koeficijent iskorištenosti potpuno ukopanog podruma.",
+     "izvorni_citat": "Najveći dopušteni koeficijent iskorištenosti (kis) nadzemnih etaža iznosi 1,0, a ukoliko se ispod građevine gradi potpuno ukopani podrum 1,5, od čega je 0,5 koeficijent iskorištenosti potpuno ukopanog podruma.",
+     "normalizirani_citat": "Najveći dopušteni koeficijent iskorištenosti (kis) nadzemnih etaža iznosi 1,0, a ukoliko se ispod građevine gradi potpuno ukopani podrum 1,5, od čega je 0,5 koeficijent iskorištenosti potpuno ukopanog podruma.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJVISE",
+       "citat": "Najveći",
+       "od": 0,
+       "znacenje": "<=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 24,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 8243,
+      "pomak": 1786
+     },
+     "status": "PREGLED",
+     "razlog_kod": [
+      "PREDMET_NEPOZNAT",
+      "NEISKORISTENI_BROJEVI"
+     ],
+     "razlozi": [
+      "predmet odredbe nije u rječniku: »ukoliko se ispod građevine gradi potpuno ukopani podrum 1,5,«",
+      "neiskorišteni brojevi u odredbi: 1,5, 0,5"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PREGLED (čl. 24. al. 2): predmet odredbe nije u rječniku: »ukoliko se ispod građevine gradi potpuno ukopani podrum 1,5,«; neiskorišteni brojevi u odredbi: 1,5, 0,5"
+    },
+    {
+     "id": "24.0.b3.-.4.1.3",
+     "plan": "UPU 1 – Krk",
+     "clanak": 24,
+     "stavak": null,
+     "blok": 3,
+     "tocka": "-",
+     "alineja": 4,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "regulacija",
+     "operator": ">=",
+     "vrijednost": 4.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "hotel"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "hotel"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "za ostale (pristupne) ceste i ulice",
+     "uvjet_izvorni": "za ostale (pristupne) ceste i ulice",
+     "uvjeti": [
+      "za ostale (pristupne) ceste i ulice"
+     ],
+     "uvjet_logika": {
+      "op": "UVJET",
+      "tekst": "za ostale (pristupne) ceste i ulice"
+     },
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "ugostiteljsko-turističke namjene",
+       "oznaka": "T12",
+       "ime": "dopušteno",
+       "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno",
+       "utvrdjeno_na_lokaciji": false
+      },
+      {
+       "vrsta": "KATEGORIJA_CESTE",
+       "dokaz": "za ostale (pristupne) ceste i ulice",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Udaljenost građevine osnovne namjene od regulacijskog pravca za ostale (pristupne) ceste i ulice ne može biti manja od 4,0 m, a za razvrstane ceste ne može biti manja od 6,0 m.",
+     "izvorni_citat": "Udaljenost građevine osnovne namjene od regulacijskog pravca za ostale (pristupne) ceste i ulice ne može biti manja od 4,0 m, a za razvrstane ceste ne može biti manja od 6,0 m.",
+     "normalizirani_citat": "Udaljenost građevine osnovne namjene od regulacijskog pravca za ostale (pristupne) ceste i ulice ne može biti manja od 4,0 m, a za razvrstane ceste ne može biti manja od 6,0 m.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [],
+     "izvor_clanak": 24,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 8243,
+      "pomak": 2752
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 24. al. 4): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: za ostale (pristupne) ceste i ulice. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    },
+    {
+     "id": "24.0.b3.-.4.1.4",
+     "plan": "UPU 1 – Krk",
+     "clanak": 24,
+     "stavak": null,
+     "blok": 3,
+     "tocka": "-",
+     "alineja": 4,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "regulacija",
+     "operator": ">=",
+     "vrijednost": 6.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "hotel"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "hotel"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "za razvrstane ceste",
+     "uvjet_izvorni": "za razvrstane ceste",
+     "uvjeti": [
+      "za razvrstane ceste"
+     ],
+     "uvjet_logika": {
+      "op": "UVJET",
+      "tekst": "za razvrstane ceste"
+     },
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": "predmet »Udaljenost građevine osnovne namjene od regulacijskog pravca« preuzet iz prethodnog dijela rečenice",
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "ugostiteljsko-turističke namjene",
+       "oznaka": "T12",
+       "ime": "dopušteno",
+       "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno",
+       "utvrdjeno_na_lokaciji": false
+      },
+      {
+       "vrsta": "KATEGORIJA_CESTE",
+       "dokaz": "za razvrstane ceste",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Udaljenost građevine osnovne namjene od regulacijskog pravca za ostale (pristupne) ceste i ulice ne može biti manja od 4,0 m, a za razvrstane ceste ne može biti manja od 6,0 m.",
+     "izvorni_citat": "Udaljenost građevine osnovne namjene od regulacijskog pravca za ostale (pristupne) ceste i ulice ne može biti manja od 4,0 m, a za razvrstane ceste ne može biti manja od 6,0 m.",
+     "normalizirani_citat": "Udaljenost građevine osnovne namjene od regulacijskog pravca za ostale (pristupne) ceste i ulice ne može biti manja od 4,0 m, a za razvrstane ceste ne može biti manja od 6,0 m.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [],
+     "izvor_clanak": 24,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 8243,
+      "pomak": 2752
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 24. al. 4): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: za razvrstane ceste. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    },
+    {
+     "id": "24.0.b3.-.5.3.5",
+     "plan": "UPU 1 – Krk",
+     "clanak": 24,
+     "stavak": null,
+     "blok": 3,
+     "tocka": "-",
+     "alineja": 5,
+     "recenica": 3,
+     "gradjevina": "osnovna",
+     "parametar": "udaljenostOdGraniceCestice",
+     "operator": "max(h/2, X)",
+     "vrijednost": 6.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "hotel"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "hotel"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": "vrsta građevine preuzeta iz konteksta bloka (subjekt rečenice je »građevina«)",
+     "formula": {
+      "izraz": "max(h/2, 6,0 m)",
+      "h": null,
+      "referenca": "od granice susjedne građevne čestice",
+      "uvjet_za_X": null
+     },
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "ugostiteljsko-turističke namjene",
+       "oznaka": "T12",
+       "ime": "dopušteno",
+       "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Postojeće građevine osnovne namjene - ugostiteljsko-turističke koje se nalaze na manjoj udaljenosti od regulacijskog pravca od onih iz prethodne alineje, mogu se rekonstruirati pod uvjetom da se ne smanjuje postojeća udaljenost, a dogradnja postojeće građevine mora zadovoljiti uvjete određene u prethodnoj alineji. Iznimno, kod interpolacija novih građevina (između dvije izgrađene) između postojećih susjednih građevina koje se nalaze na udaljenostima manjim od onih iz prethodne alineje, udaljenost može biti i manja, ali uz uvjet da se građevni pravac uskladi sa postojećim susjednim građevinama, a sve vodeći računa o lokalnim uvjetima. Građevina mora biti udaljena najmanje pola visine (h/2) od granice susjedne građevne čestice, ali ne manje od 6,0 m. Ukoliko ima više građevina na građevnoj čestici, najmanja dopuštena udaljenost između građevina iznosi (h1+h2)/2 (h1 i h2 su visine susjednih građevina) ali ne manje od 6,0 m.",
+     "izvorni_citat": "Građevina mora biti udaljena najmanje pola visine (h/2) od granice susjedne građevne čestice, ali ne manje od 6,0 m.",
+     "normalizirani_citat": "Građevina mora biti udaljena najmanje pola visine (h/2) od granice susjedne građevne čestice, ali ne manje od 6,0 m.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJMANJE",
+       "citat": "najmanje",
+       "od": 29,
+       "znacenje": ">=",
+       "trazi_pregled": false
+      },
+      {
+       "kod": "NE_MANJE_OD",
+       "citat": "ne manje od",
+       "od": 98,
+       "znacenje": ">=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 24,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 8243,
+      "pomak": 3573
+     },
+     "status": "PREGLED",
+     "razlog_kod": [
+      "H_NIJE_DEFINIRAN",
+      "GRANICA_CESTICE_NERAZGRANICENA"
+     ],
+     "razlozi": [
+      "visina h nije definirana u ovoj odredbi (točka mjerenja i teren)",
+      "»granica građevne čestice« nije razgraničena od regulacijskog pravca"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PREGLED (čl. 24. al. 5): visina h nije definirana u ovoj odredbi (točka mjerenja i teren); »granica građevne čestice« nije razgraničena od regulacijskog pravca"
+    },
+    {
+     "id": "24.0.b3.-.5.4.6",
+     "plan": "UPU 1 – Krk",
+     "clanak": 24,
+     "stavak": null,
+     "blok": 3,
+     "tocka": "-",
+     "alineja": 5,
+     "recenica": 4,
+     "gradjevina": "osnovna",
+     "parametar": "udaljenostIzmeduGradjevina",
+     "operator": "max((h1+h2)/2, X)",
+     "vrijednost": 6.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "hotel"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "hotel"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "Ukoliko ima više građevina na građevnoj čestici",
+     "uvjet_izvorni": "Ukoliko ima više građevina na građevnoj čestici",
+     "uvjeti": [
+      "Ukoliko ima više građevina na građevnoj čestici"
+     ],
+     "uvjet_logika": {
+      "op": "UVJET",
+      "tekst": "Ukoliko ima više građevina na građevnoj čestici"
+     },
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": {
+      "izraz": "max((h1+h2)/2, 6,0 m)",
+      "h1_h2": "h1 i h2 su visine susjednih građevina",
+      "referenca": "između susjednih građevina na istoj čestici"
+     },
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "ugostiteljsko-turističke namjene",
+       "oznaka": "T12",
+       "ime": "dopušteno",
+       "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Postojeće građevine osnovne namjene - ugostiteljsko-turističke koje se nalaze na manjoj udaljenosti od regulacijskog pravca od onih iz prethodne alineje, mogu se rekonstruirati pod uvjetom da se ne smanjuje postojeća udaljenost, a dogradnja postojeće građevine mora zadovoljiti uvjete određene u prethodnoj alineji. Iznimno, kod interpolacija novih građevina (između dvije izgrađene) između postojećih susjednih građevina koje se nalaze na udaljenostima manjim od onih iz prethodne alineje, udaljenost može biti i manja, ali uz uvjet da se građevni pravac uskladi sa postojećim susjednim građevinama, a sve vodeći računa o lokalnim uvjetima. Građevina mora biti udaljena najmanje pola visine (h/2) od granice susjedne građevne čestice, ali ne manje od 6,0 m. Ukoliko ima više građevina na građevnoj čestici, najmanja dopuštena udaljenost između građevina iznosi (h1+h2)/2 (h1 i h2 su visine susjednih građevina) ali ne manje od 6,0 m.",
+     "izvorni_citat": "Ukoliko ima više građevina na građevnoj čestici, najmanja dopuštena udaljenost između građevina iznosi (h1+h2)/2 (h1 i h2 su visine susjednih građevina) ali ne manje od 6,0 m.",
+     "normalizirani_citat": "Ukoliko ima više građevina na građevnoj čestici, najmanja dopuštena udaljenost između građevina iznosi (h1+h2)/2 (h1 i h2 su visine susjednih građevina) ali ne manje od 6,0 m.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJMANJE",
+       "citat": "najmanja",
+       "od": 49,
+       "znacenje": ">=",
+       "trazi_pregled": false
+      },
+      {
+       "kod": "NE_MANJE_OD",
+       "citat": "ne manje od",
+       "od": 157,
+       "znacenje": ">=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 24,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 8243,
+      "pomak": 3690
+     },
+     "status": "PREGLED",
+     "razlog_kod": [
+      "H_NIJE_DEFINIRAN"
+     ],
+     "razlozi": [
+      "h1 i h2 su »visine susjednih građevina«, ali točka mjerenja visine nije navedena"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PREGLED (čl. 24. al. 5): h1 i h2 su »visine susjednih građevina«, ali točka mjerenja visine nije navedena"
+    },
+    {
+     "id": "24.0.b4.-.1.1.7",
+     "plan": "UPU 1 – Krk",
+     "clanak": 24,
+     "stavak": null,
+     "blok": 4,
+     "tocka": "-",
+     "alineja": 1,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "oblikKrovista",
+     "operator": "dopusteno",
+     "vrijednost": "ravno ili koso",
+     "jedinica": null,
+     "vrijednost_vrsta": "opis",
+     "vrste": [
+      "hotel"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "hotel"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "ALTERNATIVA",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": [
+      "ravno",
+      "koso"
+     ],
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "ugostiteljsko-turističke namjene",
+       "oznaka": "T12",
+       "ime": "dopušteno",
+       "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Krovište može biti ravno ili koso nagiba između 17º i 23º, te pokrova kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+     "izvorni_citat": "Krovište može biti ravno ili koso nagiba između 17º i 23º, te pokrova kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+     "normalizirani_citat": "Krovište može biti ravno ili koso nagiba između 17° i 23°, te pokrova kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+     "normalizacija": [
+      {
+       "pravilo": "STUPANJ_ZNAK",
+       "vrsta": "ZAPIS_JEDINICE",
+       "izvorno": "º",
+       "novo": "°",
+       "od": 50,
+       "do": 51,
+       "izvor_pravila": "Bjelina se ne nalazi: l) između broja i oznake za kutni stupanj (str. 34)"
+      },
+      {
+       "pravilo": "STUPANJ_ZNAK",
+       "vrsta": "ZAPIS_JEDINICE",
+       "izvorno": "º",
+       "novo": "°",
+       "od": 56,
+       "do": 57,
+       "izvor_pravila": "Bjelina se ne nalazi: l) između broja i oznake za kutni stupanj (str. 34)"
+      }
+     ],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [],
+     "izvor_clanak": 24,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 8243,
+      "pomak": 4282
+     },
+     "status": "PREGLED",
+     "razlog_kod": [
+      "DIO_ODREDBE_NEPREPOZNAT"
+     ],
+     "razlozi": [
+      "nastavak odredbe nije raščlanjen: »te pokrova kojeg predviđa usvojena tehnologija građenja poje«"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PREGLED (čl. 24. al. 1): nastavak odredbe nije raščlanjen: »te pokrova kojeg predviđa usvojena tehnologija građenja poje«"
+    },
+    {
+     "id": "24.0.b4.-.1.1.8",
+     "plan": "UPU 1 – Krk",
+     "clanak": 24,
+     "stavak": null,
+     "blok": 4,
+     "tocka": "-",
+     "alineja": 1,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "nagibKrovaMin",
+     "operator": ">=",
+     "vrijednost": 17.0,
+     "jedinica": "°",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "hotel"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "hotel"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": "nagibKrova",
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "ugostiteljsko-turističke namjene",
+       "oznaka": "T12",
+       "ime": "dopušteno",
+       "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Krovište može biti ravno ili koso nagiba između 17º i 23º, te pokrova kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+     "izvorni_citat": "Krovište može biti ravno ili koso nagiba između 17º i 23º, te pokrova kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+     "normalizirani_citat": "Krovište može biti ravno ili koso nagiba između 17° i 23°, te pokrova kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+     "normalizacija": [
+      {
+       "pravilo": "STUPANJ_ZNAK",
+       "vrsta": "ZAPIS_JEDINICE",
+       "izvorno": "º",
+       "novo": "°",
+       "od": 50,
+       "do": 51,
+       "izvor_pravila": "Bjelina se ne nalazi: l) između broja i oznake za kutni stupanj (str. 34)"
+      },
+      {
+       "pravilo": "STUPANJ_ZNAK",
+       "vrsta": "ZAPIS_JEDINICE",
+       "izvorno": "º",
+       "novo": "°",
+       "od": 56,
+       "do": 57,
+       "izvor_pravila": "Bjelina se ne nalazi: l) između broja i oznake za kutni stupanj (str. 34)"
+      }
+     ],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [],
+     "izvor_clanak": 24,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 8243,
+      "pomak": 4282
+     },
+     "status": "PREGLED",
+     "razlog_kod": [
+      "DIO_ODREDBE_NEPREPOZNAT",
+      "NAGIB_UZ_KOSO_TUMACENJE"
+     ],
+     "razlozi": [
+      "nastavak odredbe nije raščlanjen: »te pokrova kojeg predviđa usvojena tehnologija građenja poje«",
+      "nagib je naveden uz »ravno ili koso«; da vrijedi samo za koso krovište je tumačenje"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PREGLED (čl. 24. al. 1): nastavak odredbe nije raščlanjen: »te pokrova kojeg predviđa usvojena tehnologija građenja poje«; nagib je naveden uz »ravno ili koso«; da vrijedi samo za koso krovište je tumačenje"
+    },
+    {
+     "id": "24.0.b4.-.1.1.9",
+     "plan": "UPU 1 – Krk",
+     "clanak": 24,
+     "stavak": null,
+     "blok": 4,
+     "tocka": "-",
+     "alineja": 1,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "nagibKrovaMax",
+     "operator": "<=",
+     "vrijednost": 23.0,
+     "jedinica": "°",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "hotel"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "hotel"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": "nagibKrova",
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "ugostiteljsko-turističke namjene",
+       "oznaka": "T12",
+       "ime": "dopušteno",
+       "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Krovište može biti ravno ili koso nagiba između 17º i 23º, te pokrova kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+     "izvorni_citat": "Krovište može biti ravno ili koso nagiba između 17º i 23º, te pokrova kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+     "normalizirani_citat": "Krovište može biti ravno ili koso nagiba između 17° i 23°, te pokrova kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+     "normalizacija": [
+      {
+       "pravilo": "STUPANJ_ZNAK",
+       "vrsta": "ZAPIS_JEDINICE",
+       "izvorno": "º",
+       "novo": "°",
+       "od": 50,
+       "do": 51,
+       "izvor_pravila": "Bjelina se ne nalazi: l) između broja i oznake za kutni stupanj (str. 34)"
+      },
+      {
+       "pravilo": "STUPANJ_ZNAK",
+       "vrsta": "ZAPIS_JEDINICE",
+       "izvorno": "º",
+       "novo": "°",
+       "od": 56,
+       "do": 57,
+       "izvor_pravila": "Bjelina se ne nalazi: l) između broja i oznake za kutni stupanj (str. 34)"
+      }
+     ],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [],
+     "izvor_clanak": 24,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 8243,
+      "pomak": 4282
+     },
+     "status": "PREGLED",
+     "razlog_kod": [
+      "DIO_ODREDBE_NEPREPOZNAT",
+      "NAGIB_UZ_KOSO_TUMACENJE"
+     ],
+     "razlozi": [
+      "nastavak odredbe nije raščlanjen: »te pokrova kojeg predviđa usvojena tehnologija građenja poje«",
+      "nagib je naveden uz »ravno ili koso«; da vrijedi samo za koso krovište je tumačenje"
+     ],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PREGLED (čl. 24. al. 1): nastavak odredbe nije raščlanjen: »te pokrova kojeg predviđa usvojena tehnologija građenja poje«; nagib je naveden uz »ravno ili koso«; da vrijedi samo za koso krovište je tumačenje"
+    },
+    {
+     "id": "24.0.b6.-.1.1.10",
+     "plan": "UPU 1 – Krk",
+     "clanak": 24,
+     "stavak": null,
+     "blok": 6,
+     "tocka": "-",
+     "alineja": 1,
+     "recenica": 1,
+     "gradjevina": "osnovna",
+     "parametar": "zeleniloMin",
+     "operator": ">=",
+     "vrijednost": 40.0,
+     "jedinica": "%",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "hotel"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "hotel"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": "uređeno kao parkovni nasadi i prirodno zelenilo",
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "ugostiteljsko-turističke namjene",
+       "oznaka": "T12",
+       "ime": "dopušteno",
+       "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Najmanje 40% površine građevne čestice mora se urediti kao parkovni nasadi i prirodno zelenilo.",
+     "izvorni_citat": "Najmanje 40% površine građevne čestice mora se urediti kao parkovni nasadi i prirodno zelenilo.",
+     "normalizirani_citat": "Najmanje 40% površine građevne čestice mora se urediti kao parkovni nasadi i prirodno zelenilo.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJMANJE",
+       "citat": "Najmanje",
+       "od": 0,
+       "znacenje": ">=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 24,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 8243,
+      "pomak": 4678
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 24. al. 1): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: nema. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    },
+    {
+     "id": "24.0.b7.-.2.1.11",
+     "plan": "UPU 1 – Krk",
+     "clanak": 24,
+     "stavak": null,
+     "blok": 7,
+     "tocka": "-",
+     "alineja": 2,
+     "recenica": 1,
+     "gradjevina": "pomocna",
+     "parametar": "tlMax",
+     "operator": "<=",
+     "vrijednost": 50.0,
+     "jedinica": "m²",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "pomocna"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "pomocna"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "ugostiteljsko-turističke namjene",
+       "oznaka": "T12",
+       "ime": "dopušteno",
+       "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Najveća tlocrtna projekcija iznosi 50 m 2 .",
+     "izvorni_citat": "Najveća tlocrtna projekcija iznosi 50 m 2 .",
+     "normalizirani_citat": "Najveća tlocrtna projekcija iznosi 50 m².",
+     "normalizacija": [
+      {
+       "pravilo": "JEDINICA_EKSPONENT",
+       "vrsta": "ZAPIS_JEDINICE",
+       "izvorno": " m 2",
+       "novo": " m²",
+       "od": 37,
+       "do": 41,
+       "izvor_pravila": "Bjelina: k) između broja i oznake mjerne jedinice: 3 kg, 2 m (str. 33)"
+      },
+      {
+       "pravilo": "BJELINA_ISPRED_ZNAKA",
+       "vrsta": "PRAVOPISNA",
+       "izvorno": " .",
+       "novo": ".",
+       "od": 41,
+       "do": 43,
+       "izvor_pravila": "Bjelina se ne nalazi: a) ispred rečeničnih znakova točke, zareza, točke sa zarezom, dvotočke (str. 34)"
+      }
+     ],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJVISE",
+       "citat": "Najveća",
+       "od": 0,
+       "znacenje": "<=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 24,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 8243,
+      "pomak": 5802
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 24. al. 2): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: nema. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    },
+    {
+     "id": "24.0.b7.-.3.1.12",
+     "plan": "UPU 1 – Krk",
+     "clanak": 24,
+     "stavak": null,
+     "blok": 7,
+     "tocka": "-",
+     "alineja": 3,
+     "recenica": 1,
+     "gradjevina": "pomocna",
+     "parametar": "oblikKrovista",
+     "operator": "dopusteno",
+     "vrijednost": "ravna ili kosa",
+     "jedinica": null,
+     "vrijednost_vrsta": "opis",
+     "vrste": [
+      "pomocna"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "pomocna"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "ALTERNATIVA",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": [
+      "ravna",
+      "kosa"
+     ],
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "ugostiteljsko-turističke namjene",
+       "oznaka": "T12",
+       "ime": "dopušteno",
+       "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "izvorni_citat": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "normalizirani_citat": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [],
+     "izvor_clanak": 24,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 8243,
+      "pomak": 5848
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 24. al. 3): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: nema. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    },
+    {
+     "id": "24.0.b7.-.3.1.13",
+     "plan": "UPU 1 – Krk",
+     "clanak": 24,
+     "stavak": null,
+     "blok": 7,
+     "tocka": "-",
+     "alineja": 3,
+     "recenica": 1,
+     "gradjevina": "pomocna",
+     "parametar": "vrstaKosogKrovista",
+     "operator": "dopusteno",
+     "vrijednost": "jednostrešna, dvostrešna ili višestrešna",
+     "jedinica": null,
+     "vrijednost_vrsta": "opis",
+     "vrste": [
+      "pomocna"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "pomocna"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "ALTERNATIVA",
+     "uvjet": "ako se grade kao kosa",
+     "uvjet_izvorni": "ako se grade kao kosa",
+     "uvjeti": [
+      "ako se grade kao kosa"
+     ],
+     "uvjet_logika": {
+      "op": "UVJET",
+      "tekst": "ako se grade kao kosa"
+     },
+     "opseg": null,
+     "preduvjeti": [
+      {
+       "kod": "KOSI_KROV",
+       "dokaz": "grade kao kosa"
+      }
+     ],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": [
+      "jednostrešna",
+      "dvostrešna",
+      "višestrešna"
+     ],
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "ugostiteljsko-turističke namjene",
+       "oznaka": "T12",
+       "ime": "dopušteno",
+       "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "izvorni_citat": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "normalizirani_citat": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [],
+     "izvor_clanak": 24,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 8243,
+      "pomak": 5848
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 24. al. 3): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: ako se grade kao kosa. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    },
+    {
+     "id": "24.0.b7.-.3.1.14",
+     "plan": "UPU 1 – Krk",
+     "clanak": 24,
+     "stavak": null,
+     "blok": 7,
+     "tocka": "-",
+     "alineja": 3,
+     "recenica": 1,
+     "gradjevina": "pomocna",
+     "parametar": "nagibKrovaMin",
+     "operator": ">=",
+     "vrijednost": 17.0,
+     "jedinica": "°",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "pomocna"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "pomocna"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ako se grade kao kosa",
+     "uvjet_izvorni": "ako se grade kao kosa",
+     "uvjeti": [
+      "ako se grade kao kosa"
+     ],
+     "uvjet_logika": {
+      "op": "UVJET",
+      "tekst": "ako se grade kao kosa"
+     },
+     "opseg": null,
+     "preduvjeti": [
+      {
+       "kod": "KOSI_KROV",
+       "dokaz": "grade kao kosa"
+      }
+     ],
+     "napomena": null,
+     "formula": null,
+     "interval": "nagibKrova",
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "ugostiteljsko-turističke namjene",
+       "oznaka": "T12",
+       "ime": "dopušteno",
+       "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "izvorni_citat": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "normalizirani_citat": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [],
+     "izvor_clanak": 24,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 8243,
+      "pomak": 5848
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 24. al. 3): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: ako se grade kao kosa. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    },
+    {
+     "id": "24.0.b7.-.3.1.15",
+     "plan": "UPU 1 – Krk",
+     "clanak": 24,
+     "stavak": null,
+     "blok": 7,
+     "tocka": "-",
+     "alineja": 3,
+     "recenica": 1,
+     "gradjevina": "pomocna",
+     "parametar": "nagibKrovaMax",
+     "operator": "<=",
+     "vrijednost": 23.0,
+     "jedinica": "°",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "pomocna"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "pomocna"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ako se grade kao kosa",
+     "uvjet_izvorni": "ako se grade kao kosa",
+     "uvjeti": [
+      "ako se grade kao kosa"
+     ],
+     "uvjet_logika": {
+      "op": "UVJET",
+      "tekst": "ako se grade kao kosa"
+     },
+     "opseg": null,
+     "preduvjeti": [
+      {
+       "kod": "KOSI_KROV",
+       "dokaz": "grade kao kosa"
+      }
+     ],
+     "napomena": null,
+     "formula": null,
+     "interval": "nagibKrova",
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "ugostiteljsko-turističke namjene",
+       "oznaka": "T12",
+       "ime": "dopušteno",
+       "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "izvorni_citat": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "normalizirani_citat": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [],
+     "izvor_clanak": 24,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 8243,
+      "pomak": 5848
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 24. al. 3): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: ako se grade kao kosa. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    },
+    {
+     "id": "24.0.b7.-.3.1.16",
+     "plan": "UPU 1 – Krk",
+     "clanak": 24,
+     "stavak": null,
+     "blok": 7,
+     "tocka": "-",
+     "alineja": 3,
+     "recenica": 1,
+     "gradjevina": "pomocna",
+     "parametar": "pokrovKosogKrova",
+     "operator": "=",
+     "vrijednost": "mediteran crijep ili kupa kanalica",
+     "jedinica": null,
+     "vrijednost_vrsta": "opis",
+     "vrste": [
+      "pomocna"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "pomocna"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ako se grade kao kosa",
+     "uvjet_izvorni": "ako se grade kao kosa",
+     "uvjeti": [
+      "ako se grade kao kosa"
+     ],
+     "uvjet_logika": {
+      "op": "UVJET",
+      "tekst": "ako se grade kao kosa"
+     },
+     "opseg": null,
+     "preduvjeti": [
+      {
+       "kod": "KOSI_KROV",
+       "dokaz": "grade kao kosa"
+      }
+     ],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": [
+      "mediteran crijep",
+      "kupa kanalica"
+     ],
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "ugostiteljsko-turističke namjene",
+       "oznaka": "T12",
+       "ime": "dopušteno",
+       "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "izvorni_citat": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "normalizirani_citat": "Krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [],
+     "izvor_clanak": 24,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 8243,
+      "pomak": 5848
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": false,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 24. al. 3): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: ako se grade kao kosa. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    },
+    {
+     "id": "24.0.b7.-.5.1.17",
+     "plan": "UPU 1 – Krk",
+     "clanak": 24,
+     "stavak": null,
+     "blok": 7,
+     "tocka": "-",
+     "alineja": 5,
+     "recenica": 1,
+     "gradjevina": "pomocna",
+     "parametar": "regulacija",
+     "operator": ">=",
+     "vrijednost": 5.0,
+     "jedinica": "m",
+     "vrijednost_vrsta": "broj",
+     "vrste": [
+      "pomocna"
+     ],
+     "vrsta_izraz": null,
+     "oblik_izricit": false,
+     "vrsta_gradevine": {
+      "skupine": [
+       "pomocna"
+      ],
+      "oblici": null,
+      "stanje": null,
+      "uz_podrum": false
+     },
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_izvorni": null,
+     "uvjeti": [],
+     "uvjet_logika": null,
+     "opseg": null,
+     "preduvjeti": [],
+     "napomena": null,
+     "formula": null,
+     "interval": null,
+     "referenca": null,
+     "alternative": null,
+     "ogranicenje": null,
+     "iskljucuje": null,
+     "zona_kod": null,
+     "prostorni_obuhvat": [
+      {
+       "vrsta": "ZONA_PLANA",
+       "naziv": "ugostiteljsko-turističke namjene",
+       "oznaka": "T12",
+       "ime": "dopušteno",
+       "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno",
+       "utvrdjeno_na_lokaciji": false
+      }
+     ],
+     "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+     "iznimke": [],
+     "iznimka_od": null,
+     "nerijesene_ovisnosti": [],
+     "obrazac": "gramatika-v2.2",
+     "dokaz": "Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 5,0 m.",
+     "izvorni_citat": "Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 5,0 m.",
+     "normalizirani_citat": "Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 5,0 m.",
+     "normalizacija": [],
+     "jezicne_napomene": [],
+     "semanticki_izrazi": [
+      {
+       "kod": "NAJMANJE",
+       "citat": "Najmanja",
+       "od": 0,
+       "znacenje": ">=",
+       "trazi_pregled": false
+      }
+     ],
+     "izvor_clanak": 24,
+     "izvor_stavak": null,
+     "izvor": {
+      "datoteka": "ppug_krk_sn_2020_29.html",
+      "redak": 8243,
+      "pomak": 6407
+     },
+     "status": "PRIJEDLOG",
+     "razlog_kod": [],
+     "razlozi": [],
+     "za_izracun": true,
+     "pravno_potvrdeno": false,
+     "obrazlozenje_statusa": "PRIJEDLOG (čl. 24. al. 5): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: nema. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda."
+    }
+   ],
+   "upucivanja": [],
+   "nepokriveno": [
+    {
+     "stavak": null,
+     "tocka": null,
+     "alineja": null,
+     "recenica": 1,
+     "dokaz": "Površina ugostiteljsko-turističke namjene (T1 2 ) određena je na kartografskim prikazima br. 1 „Korištenje i namjena površina“ i br. 4. „Uvjeti i način gradnje“.",
+     "status": "ODBIJENO",
+     "razlog_kod": [
+      "PREDMET_NEPOZNAT"
+     ],
+     "razlozi": [
+      "predmet odredbe nije u rječniku: »Površina ugostiteljsko-turističke namjene (T1 2 ) određena j«"
+     ],
+     "brojevi": [
+      "2"
+     ]
+    },
+    {
+     "stavak": null,
+     "tocka": null,
+     "alineja": null,
+     "recenica": 2,
+     "dokaz": "Površina ugostiteljsko-turističke namjene (T1 2 ) obuhvaća hotel s pratećim sadržajima.",
+     "status": "ODBIJENO",
+     "razlog_kod": [
+      "PREDMET_NEPOZNAT"
+     ],
+     "razlozi": [
+      "predmet odredbe nije u rječniku: »Površina ugostiteljsko-turističke namjene (T1 2 ) obuhvaća h«"
+     ],
+     "brojevi": [
+      "2"
+     ]
+    },
+    {
+     "stavak": null,
+     "tocka": null,
+     "alineja": null,
+     "recenica": 3,
+     "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno je rekonstruirati postojeći hotel s pratećim sadržajima uz slijedeće granične uvjete:",
+     "status": "ODBIJENO",
+     "razlog_kod": [
+      "PREDMET_NEPOZNAT"
+     ],
+     "razlozi": [
+      "predmet odredbe nije u rječniku: »Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušte«"
+     ],
+     "brojevi": [
+      "2"
+     ]
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 2,
+     "recenica": 1,
+     "dokaz": "Najveća dopuštena površina građevne čestice istovjetna je površini (T1 2 ) čiji su oblik i veličina definirani grafičkim dijelom plana.",
+     "status": "ODBIJENO",
+     "razlog_kod": [
+      "VRIJEDNOST_NEPREPOZNATA"
+     ],
+     "razlozi": [
+      "vrijednost nije prepoznata: »tna je površini (T1 2 ) čiji su oblik i veličina definirani «"
+     ],
+     "brojevi": [
+      "2"
+     ]
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 3,
+     "recenica": 1,
+     "dokaz": "Postojeće ugostiteljsko-turističke građevine mogu se rekonstruirati na način da se ne povećava postojeća gustoća korištenja ako je veća od 300 kreveta/ha, izgrađenost građevne čestice ako je veća od 30% i koeficijent iskorištenosti nadzemno ako je veći od 1,0.",
+     "status": "ODBIJENO",
+     "razlog_kod": [
+      "PREDMET_NEPOZNAT"
+     ],
+     "razlozi": [
+      "predmet odredbe nije u rječniku: »Postojeće ugostiteljsko-turističke građevine mogu se rekonst«"
+     ],
+     "brojevi": [
+      "300",
+      "30",
+      "1,0"
+     ]
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 3,
+     "recenica": 2,
+     "dokaz": "Ukoliko postojeće građevine imaju veću visinu od propisane ovim člankom dopušta se rekonstrukcija istih u postojećim visinskim gabaritima (do ukupne visine), a za dogradnje postojećih građevina dopušta se visina do 15,0 m (max. katnost Po+P+3; potpuno ukopani podrum i 4 nadzemne etaže).",
+     "status": "ODBIJENO",
+     "razlog_kod": [
+      "PREDMET_NEPOZNAT",
+      "PREDMET_NEPOZNAT"
+     ],
+     "razlozi": [
+      "predmet odredbe nije u rječniku: »Ukoliko postojeće građevine imaju veću visinu od propisane o«",
+      "predmet odredbe nije u rječniku: »za dogradnje postojećih građevina dopušta se visina do 15,0 «"
+     ],
+     "brojevi": [
+      "15,0",
+      "3",
+      "4"
+     ]
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 3,
+     "recenica": 3,
+     "dokaz": "Ukoliko postojeće građevine imaju veće tlocrtne gabarite od propisanih ovim člankom dopušta se rekonstrukcija u postojećim tlocrtnim gabaritima uz mogućnost nadogradnje koja ne može biti viša od 15,0 m.",
+     "status": "ODBIJENO",
+     "razlog_kod": [
+      "PREDMET_NEPOZNAT"
+     ],
+     "razlozi": [
+      "predmet odredbe nije u rječniku: »Ukoliko postojeće građevine imaju veće tlocrtne gabarite od «"
+     ],
+     "brojevi": [
+      "15,0"
+     ]
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 3,
+     "recenica": 1,
+     "dokaz": "Radi očuvanja izgleda padina na kosom terenu, najveća dopuštena visina podzida iznosi 1,5 m.",
+     "status": "ODBIJENO",
+     "razlog_kod": [
+      "PREDMET_NEPOZNAT"
+     ],
+     "razlozi": [
+      "predmet odredbe nije u rječniku: »Radi očuvanja izgleda padina na kosom terenu, najveća dopušt«"
+     ],
+     "brojevi": [
+      "1,5"
+     ]
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 1,
+     "recenica": 1,
+     "dokaz": "Visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine, ne prelazi visinu od 4,0 m i jednoetažna je.",
+     "status": "ODBIJENO",
+     "razlog_kod": [
+      "VRIJEDNOST_NEPREPOZNATA"
+     ],
+     "razlozi": [
+      "vrijednost nije prepoznata: »viša od visine osnovne građevine, ne prelazi visinu od 4,0 m«"
+     ],
+     "brojevi": [
+      "4,0"
+     ]
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 4,
+     "recenica": 3,
+     "dokaz": "Ako imaju otvore prema susjednoj građevnoj čestici, moraju biti udaljene od te čestice najmanje 4,0 m.",
+     "status": "ODBIJENO",
+     "razlog_kod": [
+      "PREDMET_NEPOZNAT"
+     ],
+     "razlozi": [
+      "predmet odredbe nije u rječniku: »Ako imaju otvore prema susjednoj građevnoj čestici, moraju b«"
+     ],
+     "brojevi": [
+      "4,0"
+     ]
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 6,
+     "recenica": 1,
+     "dokaz": "Na regulacijskom pravcu mogu se graditi samo garaže, kada je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice odnosno najviše do visine ogradnog zida 1,1 m kada to dozvoljavaju lokalni uvjeti.",
+     "status": "ODBIJENO",
+     "razlog_kod": [
+      "PREDMET_NEPOZNAT"
+     ],
+     "razlozi": [
+      "predmet odredbe nije u rječniku: »Na regulacijskom pravcu mogu se graditi samo garaže, kada je«"
+     ],
+     "brojevi": [
+      "1,1"
+     ]
+    }
+   ],
+   "bez_broja": [
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 1,
+     "recenica": 1,
+     "dokaz": "Površina postojeće građevne čestice hotela je formirana, a može se smanjivati u svrhu izgradnje i rekonstrukcije prometne i komunalne infrastrukture."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 2,
+     "recenica": 2,
+     "dokaz": "Oblik i veličina određeni su u skladu sa značenjem i mjerilom plana, te će se u postupku izdavanja odgovarajućeg akta kojim se odobrava gradnja precizno odrediti površina građevne čestice, prema geodetskoj izmjeri."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 1,
+     "recenica": 1,
+     "dokaz": "Postojeći hotel Koralj ne može promijeniti svoju osnovnu namjenu iz hotelske u drugi oblik turističke usluge (apartmanski) i ne može se prenamijeniti u građevinu stambene namjene."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 2,
+     "recenica": 1,
+     "dokaz": "Prenamjena postojećih građevina drugih namjena u građevine ugostiteljsko-turističke namjene moguća je pod istim uvjetima kao za nove građevine."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 3,
+     "recenica": 1,
+     "dokaz": "Dopušteno je graditi građevine pratećih sadržaja (ugostiteljski, sportsko-rekreacijski, društveni, zabavni, uslužni sadržaji i slični sadržaji koji upotpunjuju osnovnu namjenu)."
+    },
+    {
+     "stavak": null,
+     "tocka": null,
+     "alineja": null,
+     "recenica": 2,
+     "dokaz": "Na građevnoj čestici dopušten je smještaj jedne ili više građevina koje čine jedinstvenu funkcionalnu cjelinu."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 5,
+     "recenica": 1,
+     "dokaz": "Postojeće građevine osnovne namjene - ugostiteljsko-turističke koje se nalaze na manjoj udaljenosti od regulacijskog pravca od onih iz prethodne alineje, mogu se rekonstruirati pod uvjetom da se ne smanjuje postojeća udaljenost, a dogradnja postojeće građevine mora zadovoljiti uvjete određene u prethodnoj alineji."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 5,
+     "recenica": 2,
+     "dokaz": "Iznimno, kod interpolacija novih građevina (između dvije izgrađene) između postojećih susjednih građevina koje se nalaze na udaljenostima manjim od onih iz prethodne alineje, udaljenost može biti i manja, ali uz uvjet da se građevni pravac uskladi sa postojećim susjednim građevinama, a sve vodeći računa o lokalnim uvjetima."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 6,
+     "recenica": 1,
+     "dokaz": "Postojeće građevine koje se nalaze na udaljenostima manjim od onih iz prethodne dvije alineje, mogu se rekonstruirati pod uvjetom da se ne smanjuju postojeće udaljenosti, a dogradnja postojeće građevine mora zadovoljiti uvjete iz prethodne dvije alineje."
+    },
+    {
+     "stavak": null,
+     "tocka": null,
+     "alineja": null,
+     "recenica": 1,
+     "dokaz": "Građevina mora biti oblikovanjem sukladna s izvornim urbanim i arhitektonskim obilježjima uz upotrebu postojanih materijala i boja."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 1,
+     "recenica": 1,
+     "dokaz": "Postojeća građevna čestica je priključena na postojeću prometnicu."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 2,
+     "recenica": 1,
+     "dokaz": "Postojeća građevna čestica je priključena na postojeću komunalnu infrastrukturu."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 2,
+     "recenica": 1,
+     "dokaz": "U sklopu građevne čestice mogu se predvidjeti sportski tereni, vanjski bazeni i terase, te graditi i uređivati površine namijenjene internim prometnim komunikacijama i parkiralištima, rekreaciji, odmoru i sl."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 4,
+     "recenica": 1,
+     "dokaz": "Parkiranje ili garažiranje vozila rješava se unutar građevne čestice, u građevini i/ili na površini građevne čestice, u skladu s normativima iz točke 5.1."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 4,
+     "recenica": 2,
+     "dokaz": "Uvjeti gradnje prometne mreže - Promet u mirovanju, ovih Odredbi."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 4,
+     "recenica": 3,
+     "dokaz": "Kod novog zahvata pod kojim se podrazumijeva rekonstrukcija građevine u smislu dogradnje i nadogradnje, ili kod povećanja smještajnih kapaciteta potrebno je samo za novi zahvat poštivati uvjete za parkiranje koji su određeni za nove građevine."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 4,
+     "recenica": 1,
+     "dokaz": "Pomoćne građevine se mogu graditi do granice građevne čestice."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 4,
+     "recenica": 2,
+     "dokaz": "Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 7,
+     "recenica": 1,
+     "dokaz": "Postojeće pomoćne građevine mogu se rekonstruirati i prenamijeniti u skladu s uvjetima iz ovog članka."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 7,
+     "recenica": 2,
+     "dokaz": "Iznimno, ukoliko nisu ispunjeni uvjeti iz ovog članka mogu se rekonstruirati isključivo u postojećim tlocrtnim i visinskim gabaritima."
+    },
+    {
+     "stavak": null,
+     "tocka": "-",
+     "alineja": 1,
+     "recenica": 1,
+     "dokaz": "Tijekom izgradnje, odnosno rekonstrukcije i pri korištenju građevine nužno je osigurati mjere zaštite okoliša (zrak, tlo, voda, buka) sukladno posebnim propisima, na građevnoj čestici i susjednim česticama na koje građevina ima utjecaj."
+    }
+   ],
+   "pregled": [],
+   "kontekst": [
+    {
+     "stavak": null,
+     "tocka": null,
+     "alineja": null,
+     "recenica": 1,
+     "postavlja": [
+      "zona"
+     ],
+     "dokaz": "Površina ugostiteljsko-turističke namjene (T1 2 ) određena je na kartografskim prikazima br. 1 „Korištenje i namjena površina“ i br. 4. „Uvjeti i način gradnje“."
+    },
+    {
+     "stavak": null,
+     "tocka": null,
+     "alineja": null,
+     "recenica": 2,
+     "postavlja": [
+      "zona"
+     ],
+     "dokaz": "Površina ugostiteljsko-turističke namjene (T1 2 ) obuhvaća hotel s pratećim sadržajima."
+    },
+    {
+     "stavak": null,
+     "tocka": null,
+     "alineja": null,
+     "recenica": 3,
+     "postavlja": [
+      "zona",
+      "vrsta"
+     ],
+     "dokaz": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno je rekonstruirati postojeći hotel s pratećim sadržajima uz slijedeće granične uvjete:"
+    },
+    {
+     "blok": 1,
+     "podnaslov": "oblik i veličina građevne čestice",
+     "postavlja": []
+    },
+    {
+     "blok": 2,
+     "podnaslov": "namjena građevine",
+     "postavlja": []
+    },
+    {
+     "blok": 3,
+     "podnaslov": "veličina i smještaj građevina na građevnoj čestici",
+     "postavlja": []
+    },
+    {
+     "stavak": null,
+     "tocka": null,
+     "alineja": null,
+     "recenica": 1,
+     "postavlja": [
+      "vrsta"
+     ],
+     "dokaz": "Na građevnoj čestici dopuštena je rekonstrukcija hotela uz slijedeće granične uvjete:"
+    },
+    {
+     "blok": 4,
+     "podnaslov": "oblikovanje građevina",
+     "postavlja": []
+    },
+    {
+     "blok": 5,
+     "podnaslov": "način priključenja građevne čestice na prometnu i komunalnu infrastrukturu",
+     "postavlja": []
+    },
+    {
+     "blok": 6,
+     "podnaslov": "uređenje građevne čestice",
+     "postavlja": []
+    },
+    {
+     "blok": 7,
+     "podnaslov": "pomoćne građevine mogu se graditi odnosno rekonstruirati uz građevinu osnovne namjene uz sljedeće granične uvjete:",
+     "postavlja": [
+      "vrsta"
+     ]
+    },
+    {
+     "blok": 8,
+     "podnaslov": "mjere zaštite okoliša, zaštite prirode, sprečavanje nepovoljna utjecaja na okoliš",
+     "postavlja": []
+    }
+   ],
+   "gramatika": "gramatika-v2.2"
+  }
+ },
+ "automatska_potvrda": 0,
+ "pravno_potvrdeno": false,
+ "statusi": {
+  "PRIJEDLOG": "ACCEPTED – automatski prihvaćen prijedlog (nije pravna potvrda)",
+  "PREGLED": "REVIEW",
+  "ODBIJENO": "REJECTED"
+ },
+ "sazetak": {
+  "pravila": 33,
+  "prijedlog": 18,
+  "pregled": 15,
+  "odbijeno": 16
+ }
+}

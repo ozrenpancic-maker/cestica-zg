@@ -1,0 +1,2260 @@
+{
+ "verzija": "v2.2",
+ "integritet": {
+  "ZAMRZNUTO_v1.json": "ispravno",
+  "ZAMRZNUTO_v2.json": "ispravno (kod, mapiranje, tekst za označavanje)",
+  "oznake": {
+   "oznake/neovisno/neovisne_oznake_ppug_22_23.json": "b56057965c75f1434a4e9c7684eac1e86393994454787ab94b2f09681be660b5",
+   "oznake/neovisno_cl25_33/neovisne_oznake_ppug_25_33.json": "b47d15c3f8d8005e53f9d1f44414155658177c30e16cf64e29a4f626f03c452d",
+   "slijepo/ppug_krk/slijepi_v2/neovisne_oznake_upu1.json": "91d187e430c92fc74c8a9f8c8e655a04b3263108021ed5a38a32654150b30ee6",
+   "oznake/dodatak_22_23/oznake_dodatak_st2.json": "7e64ed66b56c9ba317efd0f41eb7035163a5070907092dee44adb6881cb6a170"
+  }
+ },
+ "determinizam": {
+  "ppug": [
+   "742582b4a6bded225f6e144cfa89f25f4691129f3871cc3cc797ab761250149a",
+   "742582b4a6bded225f6e144cfa89f25f4691129f3871cc3cc797ab761250149a"
+  ],
+  "upu1": [
+   "8fb546a42c0b863d6b497987ab5bad16114aba7366ce7384ef75e24ba3a62105",
+   "8fb546a42c0b863d6b497987ab5bad16114aba7366ce7384ef75e24ba3a62105"
+  ],
+  "isto": true
+ },
+ "izlazi": {
+  "izlaz/ppug_v2_2.json": "a73bbe0f56bd6d1ac14a6ecedf2c982fbbdbcbb06dc9da2baf71ab46b166f230",
+  "izlaz/upu1_14_24_v2_2.json": "6e9c2aca2978972fa33431596ac2fdd176fb27dd572a18da58ae5841c6a9552b"
+ },
+ "cl22_23": {
+  "v1": {
+   "oznaka": 55,
+   "zapisa_modula": 55,
+   "tocno": 46,
+   "pogresno": 0,
+   "pregled": 9,
+   "pregled_odgovara_oznaci": 9,
+   "propusteno": 0,
+   "tocno_a_oznaka_trazi_pregled": 0,
+   "pregled_a_oznaka_jasna": 0
+  },
+  "v2_1": {
+   "oznaka": 55,
+   "zapisa_modula": 55,
+   "tocno": 44,
+   "pogresno": 0,
+   "pregled": 11,
+   "pregled_odgovara_oznaci": 11,
+   "propusteno": 0,
+   "tocno_a_oznaka_trazi_pregled": 0,
+   "pregled_a_oznaka_jasna": 2
+  },
+  "promjene_po_oznaci": [
+   {
+    "oznaka": "G022",
+    "v1": "TOČNO",
+    "v2_1": "PREGLED",
+    "razlozi_v2_1": [
+     "navedena je samo donja točka mjerenja; gornja točka mjerenja visine nije navedena"
+    ]
+   },
+   {
+    "oznaka": "G046",
+    "v1": "TOČNO",
+    "v2_1": "PREGLED",
+    "razlozi_v2_1": [
+     "navedena je samo donja točka mjerenja; gornja točka mjerenja visine nije navedena"
+    ]
+   }
+  ],
+  "pogresno": [],
+  "izvan_opsega_oznaka": [
+   {
+    "clanak": 22,
+    "stavak": 2,
+    "tocka": null,
+    "alineja": null,
+    "parametar": "dopustenaGradnja",
+    "operator": "dopusteno",
+    "vrijednost": null,
+    "status": "PREGLED",
+    "razlog_kod": [
+     "OVISI_O_UVJETIMA_ZA_PREGLED"
+    ]
+   },
+   {
+    "clanak": 22,
+    "stavak": 2,
+    "tocka": "-",
+    "alineja": 4,
+    "parametar": "oblikKrovista",
+    "operator": "dopusteno",
+    "vrijednost": "ravna ili kosa",
+    "status": "PRIJEDLOG",
+    "razlog_kod": []
+   },
+   {
+    "clanak": 22,
+    "stavak": 2,
+    "tocka": "-",
+    "alineja": 4,
+    "parametar": "vrstaKosogKrovista",
+    "operator": "dopusteno",
+    "vrijednost": "jednostrešna, dvostrešna ili višestrešna",
+    "status": "PRIJEDLOG",
+    "razlog_kod": []
+   },
+   {
+    "clanak": 22,
+    "stavak": 2,
+    "tocka": "-",
+    "alineja": 7,
+    "parametar": "rekonstrukcijaIPrenamjena",
+    "operator": "dopusteno",
+    "vrijednost": null,
+    "status": "PREGLED",
+    "razlog_kod": [
+     "UPUCIVANJE_OPCE",
+     "TIPOGRAFSKA_POGRESKA"
+    ]
+   },
+   {
+    "clanak": 23,
+    "stavak": 2,
+    "tocka": null,
+    "alineja": null,
+    "parametar": "dopustenaGradnja",
+    "operator": "dopusteno",
+    "vrijednost": null,
+    "status": "PREGLED",
+    "razlog_kod": [
+     "OVISI_O_UVJETIMA_ZA_PREGLED"
+    ]
+   },
+   {
+    "clanak": 23,
+    "stavak": 2,
+    "tocka": "-",
+    "alineja": 4,
+    "parametar": "oblikKrovista",
+    "operator": "dopusteno",
+    "vrijednost": "ravna ili kosa",
+    "status": "PRIJEDLOG",
+    "razlog_kod": []
+   },
+   {
+    "clanak": 23,
+    "stavak": 2,
+    "tocka": "-",
+    "alineja": 4,
+    "parametar": "vrstaKosogKrovista",
+    "operator": "dopusteno",
+    "vrijednost": "jednostrešna, dvostrešna ili višestrešna",
+    "status": "PRIJEDLOG",
+    "razlog_kod": []
+   },
+   {
+    "clanak": 23,
+    "stavak": 2,
+    "tocka": "-",
+    "alineja": 7,
+    "parametar": "rekonstrukcijaIPrenamjena",
+    "operator": "dopusteno",
+    "vrijednost": null,
+    "status": "PREGLED",
+    "razlog_kod": [
+     "UPUCIVANJE_OPCE",
+     "TIPOGRAFSKA_POGRESKA"
+    ]
+   }
+  ],
+  "napomena_izvan_opsega": "Oznake 22./23. izričito ne pokrivaju sve opisne obveze (metapodaci.limitations); ova pravila nisu ocijenjena."
+ },
+ "cl25_33": {
+  "po_clanku": {
+   "25": {
+    "oznaka": 22,
+    "zapisa_modula": 22,
+    "tocno_prihvaceno": 13,
+    "tocno_uz_pravilo_granularnosti": 0,
+    "pogresno_prihvaceno": 0,
+    "pravilno_na_pregled": 5,
+    "nepotrebno_na_pregled": 4,
+    "pregled_bez_oznake": 0,
+    "propusteno": 0,
+    "preciznost_prihvacenih_strogo": 1.0,
+    "preciznost_prihvacenih": 1.0,
+    "pokrivenost_izdvajanja": 1.0,
+    "pokrivenost_prihvacanja": 0.591,
+    "udio_pregleda": 0.409
+   },
+   "33": {
+    "oznaka": 12,
+    "zapisa_modula": 12,
+    "tocno_prihvaceno": 0,
+    "tocno_uz_pravilo_granularnosti": 0,
+    "pogresno_prihvaceno": 0,
+    "pravilno_na_pregled": 12,
+    "nepotrebno_na_pregled": 0,
+    "pregled_bez_oznake": 0,
+    "propusteno": 0,
+    "preciznost_prihvacenih_strogo": null,
+    "preciznost_prihvacenih": null,
+    "pokrivenost_izdvajanja": 1.0,
+    "pokrivenost_prihvacanja": 0.0,
+    "udio_pregleda": 1.0
+   }
+  },
+  "ukupno": {
+   "oznaka": 34,
+   "zapisa_modula": 34,
+   "tocno_prihvaceno": 13,
+   "tocno_uz_pravilo_granularnosti": 0,
+   "pogresno_prihvaceno": 0,
+   "pravilno_na_pregled": 17,
+   "nepotrebno_na_pregled": 4,
+   "pregled_bez_oznake": 0,
+   "propusteno": 0,
+   "preciznost_prihvacenih_strogo": 1.0,
+   "preciznost_prihvacenih": 1.0,
+   "pokrivenost_izdvajanja": 1.0,
+   "pokrivenost_prihvacanja": 0.382,
+   "udio_pregleda": 0.618
+  },
+  "detalji": {
+   "tocno": [
+    {
+     "id": "25.1.a.0.1.1",
+     "oznaka": "N001",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "25.1.b.0.1.2",
+     "oznaka": "N002",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "25.1.c.0.1.3",
+     "oznaka": "N003",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "25.1.d.0.1.4",
+     "oznaka": "N004",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "25.1.e.0.1.5",
+     "oznaka": "N005",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "25.1.h.0.1.8",
+     "oznaka": "N008",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "25.2.-.2.1.12",
+     "oznaka": "N012",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "25.2.-.4.1.15",
+     "oznaka": "N015",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "25.2.-.5.1.16",
+     "oznaka": "N016",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "25.2.-.5.1.17",
+     "oznaka": "N017",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "25.2.-.5.1.20",
+     "oznaka": "N019",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "25.2.-.6.1.21",
+     "oznaka": "N020",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "25.2.-.5.1.18",
+     "oznaka": "N018",
+     "jednoznacnost_oznake": "JASAN"
+    }
+   ],
+   "pogresno": [],
+   "pregled": [
+    {
+     "id": "25.1.f.0.1.6",
+     "oznaka": "N006",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "ZONA_NIJE_DEFINIRANA"
+     ]
+    },
+    {
+     "id": "25.1.g.0.1.7",
+     "oznaka": "N007",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "OVISI_O_NERIJESENOJ_ODREDBI"
+     ]
+    },
+    {
+     "id": "25.1.h.0.1.9",
+     "oznaka": "N009",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "MOGUC_SUKOB_ODREDBI",
+      "ZABRANA_IZVEDENA"
+     ]
+    },
+    {
+     "id": "25.2.0.0.1.10",
+     "oznaka": "N010",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "OVISI_O_UVJETIMA_ZA_PREGLED"
+     ]
+    },
+    {
+     "id": "25.2.-.1.1.11",
+     "oznaka": "N011",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "REFERENTNA_VISINA_NEPOTPUNA"
+     ]
+    },
+    {
+     "id": "25.2.-.3.1.13",
+     "oznaka": "N013",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA"
+     ]
+    },
+    {
+     "id": "25.2.-.4.1.14",
+     "oznaka": "N014",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA"
+     ]
+    },
+    {
+     "id": "25.2.-.7.1.22",
+     "oznaka": "N021",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "TIPOGRAFSKA_POGRESKA",
+      "UPUCIVANJE_OPCE"
+     ]
+    },
+    {
+     "id": "25.2.-.7.2.23",
+     "oznaka": "N022",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "OPSEG_NEODREDEN"
+     ]
+    },
+    {
+     "id": "33.1.0.0.1.1",
+     "oznaka": "N023",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA",
+      "H_NIJE_DEFINIRAN",
+      "POJAM_VARIJANTA",
+      "UVJET_SAMO_ZA_X",
+      "VEZNIK_DVOSMISLEN"
+     ]
+    },
+    {
+     "id": "33.1.0.0.2.2",
+     "oznaka": "N024",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA",
+      "NEGATIVNI_UVJET_NEPOTPUN",
+      "ODNOS_PREMA_FORMULI_NEJASAN",
+      "OPSEG_PROCELJA"
+     ]
+    },
+    {
+     "id": "33.2.0.0.1.3",
+     "oznaka": "N025",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "MOGUC_SUKOB_ODREDBI",
+      "TUMACENJE_ZAGRADE"
+     ]
+    },
+    {
+     "id": "33.2.0.0.1.4",
+     "oznaka": "N026",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "H_NIJE_DEFINIRAN",
+      "POJAM_NIJE_DEFINIRAN",
+      "RAZLICITE_REFERENTNE_TOCKE"
+     ]
+    },
+    {
+     "id": "33.2.0.0.1.5",
+     "oznaka": "N027",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA",
+      "RAZLICITE_REFERENTNE_TOCKE",
+      "VEZNIK_DVOSMISLEN"
+     ]
+    },
+    {
+     "id": "33.2.0.0.2.6",
+     "oznaka": "N028",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA",
+      "NEGATIVNI_UVJET_NEPOTPUN",
+      "ODNOS_PREMA_FORMULI_NEJASAN",
+      "OPSEG_PROCELJA"
+     ]
+    },
+    {
+     "id": "33.3.0.0.1.7",
+     "oznaka": "N029",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA",
+      "H_NIJE_DEFINIRAN",
+      "POJAM_VARIJANTA",
+      "UVJET_SAMO_ZA_X",
+      "VEZNIK_DVOSMISLEN"
+     ]
+    },
+    {
+     "id": "33.3.0.0.2.8",
+     "oznaka": "N030",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA",
+      "NEGATIVNI_UVJET_NEPOTPUN",
+      "ODNOS_PREMA_FORMULI_NEJASAN",
+      "OPSEG_PROCELJA"
+     ]
+    },
+    {
+     "id": "33.4.0.0.1.9",
+     "oznaka": "N031",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "MOGUC_SUKOB_ODREDBI",
+      "TUMACENJE_ZAGRADE"
+     ]
+    },
+    {
+     "id": "33.4.0.0.1.10",
+     "oznaka": "N032",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "H_NIJE_DEFINIRAN",
+      "POJAM_NIJE_DEFINIRAN",
+      "RAZLICITE_REFERENTNE_TOCKE"
+     ]
+    },
+    {
+     "id": "33.4.0.0.1.11",
+     "oznaka": "N033",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA",
+      "RAZLICITE_REFERENTNE_TOCKE",
+      "VEZNIK_DVOSMISLEN"
+     ]
+    },
+    {
+     "id": "33.4.0.0.2.12",
+     "oznaka": "N034",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA",
+      "NEGATIVNI_UVJET_NEPOTPUN",
+      "ODNOS_PREMA_FORMULI_NEJASAN",
+      "OPSEG_PROCELJA"
+     ]
+    }
+   ],
+   "tocno_uz_granularnost": [],
+   "propusteno": []
+  }
+ },
+ "upu1_14_24": {
+  "po_clanku": {
+   "14": {
+    "oznaka": 36,
+    "zapisa_modula": 15,
+    "tocno_prihvaceno": 6,
+    "tocno_uz_pravilo_granularnosti": 1,
+    "pogresno_prihvaceno": 0,
+    "pravilno_na_pregled": 1,
+    "nepotrebno_na_pregled": 6,
+    "pregled_bez_oznake": 1,
+    "propusteno": 22,
+    "preciznost_prihvacenih_strogo": 0.857,
+    "preciznost_prihvacenih": 1.0,
+    "pokrivenost_izdvajanja": 0.389,
+    "pokrivenost_prihvacanja": 0.194,
+    "udio_pregleda": 0.533
+   },
+   "24": {
+    "oznaka": 65,
+    "zapisa_modula": 15,
+    "tocno_prihvaceno": 9,
+    "tocno_uz_pravilo_granularnosti": 1,
+    "pogresno_prihvaceno": 0,
+    "pravilno_na_pregled": 0,
+    "nepotrebno_na_pregled": 4,
+    "pregled_bez_oznake": 1,
+    "propusteno": 51,
+    "preciznost_prihvacenih_strogo": 0.9,
+    "preciznost_prihvacenih": 1.0,
+    "pokrivenost_izdvajanja": 0.215,
+    "pokrivenost_prihvacanja": 0.154,
+    "udio_pregleda": 0.333
+   }
+  },
+  "ukupno": {
+   "oznaka": 101,
+   "zapisa_modula": 30,
+   "tocno_prihvaceno": 15,
+   "tocno_uz_pravilo_granularnosti": 2,
+   "pogresno_prihvaceno": 0,
+   "pravilno_na_pregled": 1,
+   "nepotrebno_na_pregled": 10,
+   "pregled_bez_oznake": 2,
+   "propusteno": 73,
+   "preciznost_prihvacenih_strogo": 0.882,
+   "preciznost_prihvacenih": 1.0,
+   "pokrivenost_izdvajanja": 0.277,
+   "pokrivenost_prihvacanja": 0.168,
+   "udio_pregleda": 0.433
+  },
+  "detalji": {
+   "tocno": [
+    {
+     "id": "14.0.-.4.1.1",
+     "oznaka": "B011",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "14.0.-.5.1.2",
+     "oznaka": "B012",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "14.0.-.6.1.3",
+     "oznaka": "B013",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "14.0.-.6.1.4",
+     "oznaka": "B014",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "14.0.-.8.1.7",
+     "oznaka": "B017",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "14.0.-.11.1.10",
+     "oznaka": "B020",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "24.0.b3.-.1.1.1",
+     "oznaka": "B047",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "24.0.b3.-.4.1.3",
+     "oznaka": "B061",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "24.0.b3.-.4.1.4",
+     "oznaka": "B062",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "24.0.b6.-.1.1.10",
+     "oznaka": "B077",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "24.0.b7.-.2.1.11",
+     "oznaka": "B086",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "24.0.b7.-.3.1.12",
+     "oznaka": "B087",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "24.0.b7.-.3.1.16",
+     "oznaka": "B090",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "24.0.b7.-.5.1.17",
+     "oznaka": "B095",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "24.0.b7.-.3.1.14",
+     "oznaka": "B089",
+     "jednoznacnost_oznake": "JASAN"
+    }
+   ],
+   "pogresno": [],
+   "pregled": [
+    {
+     "id": "14.0.-.7.1.5",
+     "oznaka": "B015",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "REFERENTNA_VISINA_NEPOZNATA"
+     ]
+    },
+    {
+     "id": "14.0.-.7.1.6",
+     "oznaka": "B016",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "ZAGRADA_OBJASNJENJE"
+     ]
+    },
+    {
+     "id": "14.0.-.9.1.8",
+     "oznaka": "B018",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA"
+     ]
+    },
+    {
+     "id": "14.0.-.10.1.9",
+     "oznaka": "B019",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "H_NIJE_DEFINIRAN"
+     ]
+    },
+    {
+     "id": "14.0.-.13.1.11",
+     "oznaka": "B022",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "DIO_ODREDBE_NEPREPOZNAT"
+     ]
+    },
+    {
+     "id": "14.0.-.13.8.15",
+     "oznaka": "B034",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "REFERENTNA_VISINA_NEPOZNATA"
+     ]
+    },
+    {
+     "id": "14.0.-.13.8.16",
+     "oznaka": "B035",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "ZAGRADA_OBJASNJENJE"
+     ]
+    },
+    {
+     "id": "24.0.b3.-.2.1.2",
+     "oznaka": "B048",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "NEISKORISTENI_BROJEVI",
+      "PREDMET_NEPOZNAT"
+     ]
+    },
+    {
+     "id": "24.0.b3.-.5.3.5",
+     "oznaka": "B067",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA",
+      "H_NIJE_DEFINIRAN"
+     ]
+    },
+    {
+     "id": "24.0.b3.-.5.4.6",
+     "oznaka": "B068",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "H_NIJE_DEFINIRAN"
+     ]
+    },
+    {
+     "id": "24.0.b4.-.1.1.7",
+     "oznaka": "B072",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "DIO_ODREDBE_NEPREPOZNAT"
+     ]
+    },
+    {
+     "id": "14.0.-.13.1.12",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "DIO_ODREDBE_NEPREPOZNAT",
+      "NAGIB_UZ_KOSO_TUMACENJE"
+     ]
+    },
+    {
+     "id": "24.0.b4.-.1.1.8",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "DIO_ODREDBE_NEPREPOZNAT",
+      "NAGIB_UZ_KOSO_TUMACENJE"
+     ]
+    }
+   ],
+   "tocno_uz_granularnost": [
+    {
+     "id": "14.0.-.13.7.14",
+     "oznaka": "B033",
+     "pravila": [
+      "GRANICA_ALINEJE"
+     ]
+    },
+    {
+     "id": "24.0.b7.-.3.1.13",
+     "oznaka": "B088",
+     "pravila": [
+      "ALTERNATIVA_UZ_UVJET"
+     ]
+    }
+   ],
+   "propusteno": [
+    {
+     "oznaka": "B001",
+     "parametar": "drugo: dopuštene vrste građevina i sadržaja u zoni",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "14.0.-.13.1.11",
+      [
+       "tocka",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B002",
+     "parametar": "drugo: kategorija uređenosti građevinskog zemljišta",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "14.0.-.7.1.6",
+      [
+       "tocka",
+       "operator",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B003",
+     "parametar": "drugo: smještaj parkiranja/garažiranja vozila",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "14.0.-.7.1.6",
+      [
+       "tocka",
+       "operator",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B004",
+     "parametar": "drugo: najmanji udio parkovnih nasada i prirodnog zelenila u građevinskom području (zoni)",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "14.0.-.11.1.10",
+      [
+       "tocka",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B005",
+     "parametar": "drugo: najveća ukupna tlocrtna bruto površina zatvorenih i natkrivenih građevina u odnosu na površinu sportskih terena i sadržaja",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "14.0.-.6.1.4",
+      [
+       "tocka",
+       "jedinica",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B006",
+     "parametar": "drugo: najveća ukupna tlocrtna bruto površina zatvorenih i natkrivenih građevina u odnosu na površinu zone",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "14.0.-.6.1.4",
+      [
+       "tocka",
+       "jedinica",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B007",
+     "parametar": "drugo: dopuštenost gradnje",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "14.0.-.13.1.11",
+      [
+       "vrsta_pravila",
+       "parametar",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B008",
+     "parametar": "drugo: namjena građevine",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "14.0.-.7.1.6",
+      [
+       "operator",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B009",
+     "parametar": "drugo: dopušteni prateći sadržaji",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "14.0.-.13.1.11",
+      [
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B010",
+     "parametar": "drugo: broj građevina na građevnoj čestici",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "14.0.-.13.1.11",
+      [
+       "vrsta_pravila",
+       "parametar",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B021",
+     "parametar": "drugo: oblikovanje građevine",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "14.0.-.7.1.6",
+      [
+       "operator",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B023",
+     "parametar": "nagib krovnih ploha",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "14.0.-.13.1.12",
+      [
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B024",
+     "parametar": "drugo: krovište/pokrov prema usvojenoj tehnologiji građenja",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "14.0.-.7.1.6",
+      [
+       "operator",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B025",
+     "parametar": "drugo: zabrana gradnje u pojasu od obalne crte",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "14.0.-.10.1.9",
+      [
+       "tocka",
+       "operator",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B026",
+     "parametar": "drugo: iznimka od zabrane gradnje u pojasu od obalne crte",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "14.0.-.13.1.11",
+      [
+       "tocka",
+       "jedinica",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B027",
+     "parametar": "drugo: iznimka od zabrane gradnje u pojasu od obalne crte",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "14.0.-.13.1.11",
+      [
+       "tocka",
+       "jedinica",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B028",
+     "parametar": "drugo: iznimka od zabrane gradnje u pojasu od obalne crte",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "14.0.-.13.1.11",
+      [
+       "tocka",
+       "jedinica",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B029",
+     "parametar": "drugo: iznimka od zabrane gradnje u pojasu od obalne crte",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "14.0.-.13.1.11",
+      [
+       "tocka",
+       "jedinica",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B030",
+     "parametar": "rekonstrukcija i prenamjena",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "14.0.-.13.1.11",
+      [
+       "tocka",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B031",
+     "parametar": "drugo: formiranje građevne čestice na k.č. 3932/1 k.o. Krk-grad",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "14.0.-.13.1.11",
+      [
+       "tocka",
+       "vrsta_pravila",
+       "parametar",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B032",
+     "parametar": "drugo: povećanje građevne čestice na susjedne čestice",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "14.0.-.13.8.16",
+      [
+       "tocka",
+       "operator",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B036",
+     "parametar": "drugo: primjena ostalih uvjeta članka",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "14.0.-.13.8.16",
+      [
+       "tocka",
+       "operator",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B037",
+     "parametar": "drugo: namjena površine",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "tocka",
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B038",
+     "parametar": "rekonstrukcija i prenamjena",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b4.-.1.1.7",
+      [
+       "tocka",
+       "vrsta_pravila",
+       "parametar",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B039",
+     "parametar": "drugo: smanjenje površine građevne čestice",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b4.-.1.1.7",
+      [
+       "vrsta_pravila",
+       "parametar",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B040",
+     "parametar": "najveća površina građevne čestice",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "jedinica",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B041",
+     "parametar": "drugo: način određivanja površine građevne čestice",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "tocka",
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B042",
+     "parametar": "rekonstrukcija i prenamjena",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b4.-.1.1.7",
+      [
+       "operator",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B043",
+     "parametar": "rekonstrukcija i prenamjena",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b4.-.1.1.7",
+      [
+       "operator",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B044",
+     "parametar": "rekonstrukcija i prenamjena",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b4.-.1.1.7",
+      [
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B045",
+     "parametar": "drugo: dopušteni prateći sadržaji",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b4.-.1.1.7",
+      [
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B046",
+     "parametar": "drugo: broj građevina na građevnoj čestici",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b4.-.1.1.7",
+      [
+       "tocka",
+       "vrsta_pravila",
+       "parametar",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B049",
+     "parametar": "najveći koeficijent iskoristivosti (kis)",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "vrsta_pravila",
+       "parametar",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B050",
+     "parametar": "drugo: koeficijent iskorištenosti potpuno ukopanog podruma",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "operator",
+       "vrsta_pravila",
+       "parametar",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B051",
+     "parametar": "drugo: gustoća korištenja pri rekonstrukciji",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "operator",
+       "jedinica",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B052",
+     "parametar": "gabariti pri rekonstrukciji",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b6.-.1.1.10",
+      [
+       "operator",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B053",
+     "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b3.-.2.1.2",
+      [
+       "operator",
+       "vrsta_pravila",
+       "vrsta_gradevine",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B054",
+     "parametar": "gabariti pri rekonstrukciji",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "tocka",
+       "jedinica",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B055",
+     "parametar": "najveća visina građevine",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b3.-.4.1.3",
+      [
+       "tocka",
+       "operator",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B056",
+     "parametar": "drugo: najveća katnost",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b7.-.3.1.16",
+      [
+       "tocka",
+       "operator",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B057",
+     "parametar": "gabariti pri rekonstrukciji",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "tocka",
+       "jedinica",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B058",
+     "parametar": "najveća visina građevine",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b3.-.4.1.3",
+      [
+       "tocka",
+       "operator",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B059",
+     "parametar": "najveća visina građevine",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "tocka",
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B060",
+     "parametar": "najveća površina tlocrtne projekcije građevine",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "tocka",
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B063",
+     "parametar": "najmanja udaljenost od regulacijskog pravca",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b3.-.4.1.3",
+      [
+       "jedinica",
+       "vrsta_pravila",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B064",
+     "parametar": "najmanja udaljenost od regulacijskog pravca",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b3.-.4.1.3",
+      [
+       "operator",
+       "jedinica",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B065",
+     "parametar": "najmanja udaljenost od regulacijskog pravca",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b4.-.1.1.7",
+      [
+       "tocka",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B066",
+     "parametar": "položaj građevnog pravca",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b7.-.3.1.16",
+      [
+       "tocka",
+       "operator",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B069",
+     "parametar": "drugo: najmanje udaljenosti (od granice čestice i između građevina) pri rekonstrukciji",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b3.-.4.1.3",
+      [
+       "jedinica",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B070",
+     "parametar": "drugo: najmanje udaljenosti (od granice čestice i između građevina) pri dogradnji",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b7.-.3.1.16",
+      [
+       "operator",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B071",
+     "parametar": "drugo: oblikovanje građevine",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "tocka",
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B073",
+     "parametar": "nagib krovnih ploha",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b4.-.1.1.8",
+      [
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B074",
+     "parametar": "vrsta pokrova",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B075",
+     "parametar": "drugo: priključenje na prometnu infrastrukturu",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B076",
+     "parametar": "drugo: priključenje na komunalnu infrastrukturu",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B078",
+     "parametar": "drugo: dopušteni sadržaji uređenja građevne čestice",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b4.-.1.1.7",
+      [
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B079",
+     "parametar": "drugo: najveća visina podzida",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "jedinica",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B080",
+     "parametar": "drugo: smještaj parkiranja/garažiranja vozila",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B081",
+     "parametar": "drugo: obveza parkiranja pri rekonstrukciji",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b4.-.1.1.7",
+      [
+       "tocka",
+       "operator",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B082",
+     "parametar": "drugo: dopuštenost gradnje i rekonstrukcije",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b7.-.3.1.12",
+      [
+       "tocka",
+       "vrsta_pravila",
+       "parametar",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B083",
+     "parametar": "najveća visina građevine",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b7.-.2.1.11",
+      [
+       "jedinica",
+       "parametar",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B084",
+     "parametar": "najveća visina građevine",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b7.-.2.1.11",
+      [
+       "jedinica",
+       "parametar",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B085",
+     "parametar": "drugo: najveća katnost",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b7.-.2.1.11",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B091",
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b7.-.5.1.17",
+      [
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B092",
+     "parametar": "drugo: vatrobrani zid prema susjednoj građevini",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b7.-.3.1.16",
+      [
+       "operator",
+       "parametar",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B093",
+     "parametar": "drugo: smjer nagiba krova",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b7.-.3.1.12",
+      [
+       "operator",
+       "vrsta_pravila",
+       "parametar",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B094",
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b3.-.4.1.3",
+      [
+       "parametar",
+       "vrsta_gradevine",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B096",
+     "parametar": "najmanja udaljenost od regulacijskog pravca",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b4.-.1.1.7",
+      [
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B097",
+     "parametar": "drugo: visina garaže na regulacijskom pravcu (završna kota ravnog krova)",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b7.-.3.1.16",
+      [
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B098",
+     "parametar": "drugo: visina garaže na regulacijskom pravcu (završna kota ravnog krova)",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "jedinica",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B099",
+     "parametar": "rekonstrukcija i prenamjena",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.b4.-.1.1.7",
+      [
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B100",
+     "parametar": "gabariti pri rekonstrukciji",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "tocka",
+       "jedinica",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "B101",
+     "parametar": "drugo: mjere zaštite okoliša",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.b3.-.1.1.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    }
+   ]
+  },
+  "oznake_izvan_rjecnika_parametara": 50
+ },
+ "dodatak_22_23": {
+  "sazetak": {
+   "oznaka": 26,
+   "zapisa_modula": 26,
+   "tocno_prihvaceno": 10,
+   "tocno_uz_pravilo_granularnosti": 4,
+   "pogresno_prihvaceno": 0,
+   "pravilno_na_pregled": 4,
+   "nepotrebno_na_pregled": 2,
+   "pregled_bez_oznake": 6,
+   "propusteno": 6,
+   "preciznost_prihvacenih_strogo": 0.714,
+   "preciznost_prihvacenih": 1.0,
+   "pokrivenost_izdvajanja": 0.769,
+   "pokrivenost_prihvacanja": 0.538,
+   "udio_pregleda": 0.462
+  },
+  "detalji": {
+   "tocno": [
+    {
+     "id": "22.2.-.2.1.18",
+     "oznaka": "D003",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "22.2.-.4.1.20",
+     "oznaka": "D005",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "22.2.-.5.1.25",
+     "oznaka": "D009",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "22.2.-.6.1.27",
+     "oznaka": "D011",
+     "jednoznacnost_oznake": "PREGLED"
+    },
+    {
+     "id": "23.2.-.2.1.17",
+     "oznaka": "D016",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "23.2.-.4.1.19",
+     "oznaka": "D018",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "23.2.-.5.1.24",
+     "oznaka": "D022",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "23.2.-.6.1.26",
+     "oznaka": "D024",
+     "jednoznacnost_oznake": "PREGLED"
+    },
+    {
+     "id": "22.2.-.4.1.22",
+     "oznaka": "D007",
+     "jednoznacnost_oznake": "JASAN"
+    },
+    {
+     "id": "23.2.-.4.1.21",
+     "oznaka": "D020",
+     "jednoznacnost_oznake": "JASAN"
+    }
+   ],
+   "pogresno": [],
+   "pregled": [
+    {
+     "id": "22.2.0.0.1.16",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "OVISI_O_UVJETIMA_ZA_PREGLED"
+     ]
+    },
+    {
+     "id": "22.2.-.1.1.17",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "REFERENTNA_VISINA_NEPOTPUNA"
+     ]
+    },
+    {
+     "id": "22.2.-.3.1.19",
+     "oznaka": "D004",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA"
+     ]
+    },
+    {
+     "id": "22.2.-.6.1.26",
+     "oznaka": "D010",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA"
+     ]
+    },
+    {
+     "id": "22.2.-.7.1.28",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "TIPOGRAFSKA_POGRESKA",
+      "UPUCIVANJE_OPCE"
+     ]
+    },
+    {
+     "id": "22.2.-.7.2.29",
+     "oznaka": "D013",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "OPSEG_NEODREDEN"
+     ]
+    },
+    {
+     "id": "23.2.0.0.1.15",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "OVISI_O_UVJETIMA_ZA_PREGLED"
+     ]
+    },
+    {
+     "id": "23.2.-.1.1.16",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "REFERENTNA_VISINA_NEPOTPUNA"
+     ]
+    },
+    {
+     "id": "23.2.-.3.1.18",
+     "oznaka": "D017",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA"
+     ]
+    },
+    {
+     "id": "23.2.-.6.1.25",
+     "oznaka": "D023",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA"
+     ]
+    },
+    {
+     "id": "23.2.-.7.1.27",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "TIPOGRAFSKA_POGRESKA",
+      "UPUCIVANJE_OPCE"
+     ]
+    },
+    {
+     "id": "23.2.-.7.2.28",
+     "oznaka": "D026",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "OPSEG_NEODREDEN"
+     ]
+    }
+   ],
+   "tocno_uz_granularnost": [
+    {
+     "id": "22.2.-.4.1.21",
+     "oznaka": "D006",
+     "pravila": [
+      "ALTERNATIVA_UZ_UVJET"
+     ]
+    },
+    {
+     "id": "22.2.-.4.1.24",
+     "oznaka": "D008",
+     "pravila": [
+      "OPISNA_JEDNAKOST_ILI_DOPUSTENJE"
+     ]
+    },
+    {
+     "id": "23.2.-.4.1.20",
+     "oznaka": "D019",
+     "pravila": [
+      "ALTERNATIVA_UZ_UVJET"
+     ]
+    },
+    {
+     "id": "23.2.-.4.1.23",
+     "oznaka": "D021",
+     "pravila": [
+      "OPISNA_JEDNAKOST_ILI_DOPUSTENJE"
+     ]
+    }
+   ],
+   "propusteno": [
+    {
+     "oznaka": "D001",
+     "parametar": "dopuštenost gradnje uz osnovnu građevinu",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "22.2.0.0.1.16",
+      [
+       "jedinica",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "D002",
+     "parametar": "najveća visina građevine",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "22.2.-.1.1.17",
+      [
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "D012",
+     "parametar": "rekonstrukcija i prenamjena",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "22.2.-.7.1.28",
+      [
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "D014",
+     "parametar": "dopuštenost gradnje uz osnovnu građevinu",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "23.2.0.0.1.15",
+      [
+       "jedinica",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "D015",
+     "parametar": "najveća visina građevine",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "23.2.-.1.1.16",
+      [
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "D025",
+     "parametar": "rekonstrukcija i prenamjena",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "23.2.-.7.1.27",
+      [
+       "vrijednost"
+      ]
+     ]
+    }
+   ]
+  },
+  "napomena": "dodatak oznaka bilježi vrijednost dopuštenja gradnje drukčije (vrijednost/uvjet); vidi oznake/dodatak_22_23/IZVJESTAJ_dodatak.md"
+ },
+ "ostali_clanci_ppug": {
+  "prijedlog": 7,
+  "pravila": [
+   {
+    "clanak": 20,
+    "stavak": 3,
+    "blok": null,
+    "tocka": "-",
+    "alineja": 5,
+    "parametar": "regulacija",
+    "operator": ">=",
+    "vrijednost": 5.0,
+    "uvjet": null,
+    "skupine": [
+     "pomocna"
+    ],
+    "izvorni_citat": "najmanja dopuštena udaljenost od regulacijskog pravca iznosi 5,0 metara.",
+    "gramatika": "gramatika-v2.2"
+   },
+   {
+    "clanak": 20,
+    "stavak": 3,
+    "blok": null,
+    "tocka": "-",
+    "alineja": 6,
+    "parametar": "regulacija",
+    "operator": ">=",
+    "vrijednost": 4.0,
+    "uvjet": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+    "skupine": [
+     "pomocna"
+    ],
+    "izvorni_citat": "Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 4,0 metra.",
+    "gramatika": "gramatika-v2.2"
+   },
+   {
+    "clanak": 38,
+    "stavak": 6,
+    "blok": null,
+    "tocka": "a",
+    "alineja": null,
+    "parametar": "kig",
+    "operator": "<=",
+    "vrijednost": 0.6,
+    "uvjet": null,
+    "skupine": [
+     "sportsko_rekreacijska"
+    ],
+    "izvorni_citat": "najveći dopušteni koeficijent izgrađenosti (kig) iznosi 0,6;",
+    "gramatika": "gramatika-v2.2"
+   },
+   {
+    "clanak": 38,
+    "stavak": 6,
+    "blok": null,
+    "tocka": "b",
+    "alineja": null,
+    "parametar": "kisNadzemni",
+    "operator": "<=",
+    "vrijednost": 1.2,
+    "uvjet": null,
+    "skupine": [
+     "sportsko_rekreacijska"
+    ],
+    "izvorni_citat": "najveći dopušteni koeficijent iskoristivosti (kis) nadzemnih etaža iznosi 1,2;",
+    "gramatika": "gramatika-v2.2"
+   },
+   {
+    "clanak": 39,
+    "stavak": 2,
+    "blok": null,
+    "tocka": "-",
+    "alineja": 5,
+    "parametar": "regulacija",
+    "operator": ">=",
+    "vrijednost": 5.0,
+    "uvjet": null,
+    "skupine": [
+     "pomocna"
+    ],
+    "izvorni_citat": "najmanja dopuštena udaljenost od regulacijskog pravca iznosi 5,0 metara.",
+    "gramatika": "gramatika-v2.2"
+   },
+   {
+    "clanak": 50,
+    "stavak": 4,
+    "blok": null,
+    "tocka": "-",
+    "alineja": 5,
+    "parametar": "regulacija",
+    "operator": ">=",
+    "vrijednost": 5.0,
+    "uvjet": null,
+    "skupine": [
+     "pomocna"
+    ],
+    "izvorni_citat": "najmanja dopuštena udaljenost od regulacijskog pravca iznosi 5,0 metara.",
+    "gramatika": "gramatika-v2.2"
+   },
+   {
+    "clanak": 50,
+    "stavak": 4,
+    "blok": null,
+    "tocka": "-",
+    "alineja": 6,
+    "parametar": "regulacija",
+    "operator": ">=",
+    "vrijednost": 4.0,
+    "uvjet": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+    "skupine": [
+     "pomocna"
+    ],
+    "izvorni_citat": "Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 4,0 metra.",
+    "gramatika": "gramatika-v2.2"
+   }
+  ],
+  "napomena": "Prihvaćeni prijedlozi u neoznačenim člancima: nisu ocijenjeni; traže neovisno označavanje prije bilo kakve tvrdnje o točnosti."
+ },
+ "upu2": {
+  "cl38_40_vlastite_oznake": {
+   "oznaceno": 99,
+   "predlozeno": 99,
+   "tocno": 92,
+   "pogresno": 0,
+   "dvosmisleno": 7,
+   "dvosmisleno_odgovara_oznaci": 7,
+   "propusteno": 0,
+   "upucivanja_tocno": 2,
+   "upucivanja_pogresno": 0,
+   "upucivanja_propusteno": 0,
+   "oznake_neovisne": false
+  },
+  "prijedlozi_gramatike_v22_drugdje": 0
+ },
+ "pravno_potvrdeno": 0,
+ "napomena": "Svi skupovi su razvojni za v2.2; generalizacija se mjeri tek slijepim testom na drugom planu."
+}
