@@ -1,0 +1,3685 @@
+{
+ "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+ "clanci": [
+  23,
+  24,
+  25,
+  26
+ ],
+ "citac": "v2.6",
+ "strogo": {
+  "ukupno": {
+   "oznaka": 44,
+   "zapisa_modula": 22,
+   "tocno_prihvaceno": 0,
+   "tocno_uz_pravilo_granularnosti": 0,
+   "pogresno_prihvaceno": 0,
+   "pravilno_na_pregled": 0,
+   "nepotrebno_na_pregled": 0,
+   "pregled_bez_oznake": 22,
+   "propusteno": 44,
+   "preciznost_prihvacenih_strogo": null,
+   "preciznost_prihvacenih": null,
+   "pokrivenost_izdvajanja": 0.0,
+   "pokrivenost_prihvacanja": 0.0,
+   "udio_pregleda": 1.0
+  },
+  "pogresno": []
+ },
+ "semanticki": {
+  "ukupno": {
+   "oznaka": 44,
+   "oznaka_JASAN": 25,
+   "zapisa_modula": 22,
+   "tocno_prihvaceno": 0,
+   "tocno_uz_pravilo_granularnosti": 0,
+   "pogresno_prihvaceno": 0,
+   "pravilno_na_pregled": 2,
+   "nepotrebno_na_pregled": 3,
+   "pregled_bez_oznake": 17,
+   "propusteno": 39,
+   "preciznost_prihvacenih_strogo": null,
+   "preciznost_prihvacenih": null,
+   "pokrivenost_izdvajanja": 0.114,
+   "pokrivenost_prihvacanja": 0.0,
+   "pokrivenost_prihvacanja_od_JASAN": 0.0,
+   "udio_pregleda": 1.0
+  },
+  "po_clanku": {
+   "23": {
+    "oznaka": 13,
+    "oznaka_JASAN": 10,
+    "zapisa_modula": 6,
+    "tocno_prihvaceno": 0,
+    "tocno_uz_pravilo_granularnosti": 0,
+    "pogresno_prihvaceno": 0,
+    "pravilno_na_pregled": 0,
+    "nepotrebno_na_pregled": 0,
+    "pregled_bez_oznake": 6,
+    "propusteno": 13,
+    "preciznost_prihvacenih_strogo": null,
+    "preciznost_prihvacenih": null,
+    "pokrivenost_izdvajanja": 0.0,
+    "pokrivenost_prihvacanja": 0.0,
+    "pokrivenost_prihvacanja_od_JASAN": 0.0,
+    "udio_pregleda": 1.0
+   },
+   "24": {
+    "oznaka": 12,
+    "oznaka_JASAN": 6,
+    "zapisa_modula": 7,
+    "tocno_prihvaceno": 0,
+    "tocno_uz_pravilo_granularnosti": 0,
+    "pogresno_prihvaceno": 0,
+    "pravilno_na_pregled": 2,
+    "nepotrebno_na_pregled": 3,
+    "pregled_bez_oznake": 2,
+    "propusteno": 7,
+    "preciznost_prihvacenih_strogo": null,
+    "preciznost_prihvacenih": null,
+    "pokrivenost_izdvajanja": 0.417,
+    "pokrivenost_prihvacanja": 0.0,
+    "pokrivenost_prihvacanja_od_JASAN": 0.0,
+    "udio_pregleda": 1.0
+   },
+   "25": {
+    "oznaka": 9,
+    "oznaka_JASAN": 4,
+    "zapisa_modula": 6,
+    "tocno_prihvaceno": 0,
+    "tocno_uz_pravilo_granularnosti": 0,
+    "pogresno_prihvaceno": 0,
+    "pravilno_na_pregled": 0,
+    "nepotrebno_na_pregled": 0,
+    "pregled_bez_oznake": 6,
+    "propusteno": 9,
+    "preciznost_prihvacenih_strogo": null,
+    "preciznost_prihvacenih": null,
+    "pokrivenost_izdvajanja": 0.0,
+    "pokrivenost_prihvacanja": 0.0,
+    "pokrivenost_prihvacanja_od_JASAN": 0.0,
+    "udio_pregleda": 1.0
+   },
+   "26": {
+    "oznaka": 10,
+    "oznaka_JASAN": 5,
+    "zapisa_modula": 3,
+    "tocno_prihvaceno": 0,
+    "tocno_uz_pravilo_granularnosti": 0,
+    "pogresno_prihvaceno": 0,
+    "pravilno_na_pregled": 0,
+    "nepotrebno_na_pregled": 0,
+    "pregled_bez_oznake": 3,
+    "propusteno": 10,
+    "preciznost_prihvacenih_strogo": null,
+    "preciznost_prihvacenih": null,
+    "pokrivenost_izdvajanja": 0.0,
+    "pokrivenost_prihvacanja": 0.0,
+    "pokrivenost_prihvacanja_od_JASAN": 0.0,
+    "udio_pregleda": 1.0
+   }
+  },
+  "pogresno": [],
+  "detalji": {
+   "tocno": [],
+   "pogresno": [],
+   "pregled": [
+    {
+     "id": "23.0.0.0.1.1",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KONTEKST_IZGUBLJEN",
+      "SKUPINA_NEPOZNATA",
+      "SUBJEKT_NEPREPOZNAT"
+     ],
+     "parametar": "položaj građevnog pravca",
+     "vrijednost": "se grade unutar područja obuhvata detaljnog plana uređenja i urbanističko-arhitektonskog natječaja odredit će se navedenim detaljnim planom, odnosno natječajem"
+    },
+    {
+     "id": "v26.23.0.0.0.3.1",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KONTEKST_IZGUBLJEN",
+      "SKUPINA_NEPOZNATA"
+     ],
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "vrijednost": 4.0
+    },
+    {
+     "id": "v26.23.0.0.0.3.2",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KONTEKST_IZGUBLJEN",
+      "SKUPINA_NEPOZNATA"
+     ],
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "vrijednost": 3.0
+    },
+    {
+     "id": "v26.23.0.0.0.5.3",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "ALTERNATIVA_U_VRIJEDNOSTI",
+      "KONTEKST_IZGUBLJEN",
+      "SKUPINA_NEPOZNATA"
+     ],
+     "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+     "vrijednost": "jednom stranom uz susjednu građevinu ili granicu građevne čestice"
+    },
+    {
+     "id": "v26.23.0.0.0.5.4",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KONTEKST_IZGUBLJEN",
+      "SKUPINA_NEPOZNATA"
+     ],
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "vrijednost": 4.0
+    },
+    {
+     "id": "v26.23.0.0.0.5.5",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KONTEKST_IZGUBLJEN",
+      "SKUPINA_NEPOZNATA"
+     ],
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "vrijednost": 3.0
+    },
+    {
+     "id": "24.0.0.0.5.1",
+     "oznaka": "Z019",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "VRSTA_IZ_UVODA_V26"
+     ],
+     "parametar": "najveća površina građevne čestice",
+     "vrijednost": 1500.0
+    },
+    {
+     "id": "24.0.0.0.6.2",
+     "oznaka": "Z020",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "VRSTA_IZ_UVODA_V26"
+     ],
+     "parametar": "najveći koeficijent izgrađenosti (kig)",
+     "vrijednost": 0.5
+    },
+    {
+     "id": "24.0.0.0.7.3",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KIS_BEZ_OZNAKE",
+      "VRSTA_IZ_UVODA_V26"
+     ],
+     "parametar": "?kis",
+     "vrijednost": 1.5
+    },
+    {
+     "id": "v26.24.0.0.0.8.1",
+     "oznaka": "Z022",
+     "jednoznacnost_oznake": "JASAN",
+     "razlog_kod": [
+      "VRSTA_IZ_UVODA_V26"
+     ],
+     "parametar": "najveći broj etaža",
+     "vrijednost": 4
+    },
+    {
+     "id": "v26.24.0.0.0.8.2",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "PARAMETAR_IZVAN_POPISA",
+      "VRSTA_IZ_UVODA_V26"
+     ],
+     "parametar": "drugo: najveći broj nadzemnih etaža",
+     "vrijednost": 2
+    },
+    {
+     "id": "v26.24.0.0.0.9.3",
+     "oznaka": "Z024",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "REFERENTNA_VISINA_NEPOZNATA",
+      "VRSTA_IZ_UVODA_V26"
+     ],
+     "parametar": "najveća visina građevine",
+     "vrijednost": 10.0
+    },
+    {
+     "id": "v26.24.0.0.0.9.4",
+     "oznaka": "Z025",
+     "jednoznacnost_oznake": "PREGLED",
+     "razlog_kod": [
+      "PARAMETAR_IZVAN_POPISA",
+      "REFERENTNA_VISINA_NEPOZNATA",
+      "VRSTA_IZ_UVODA_V26"
+     ],
+     "parametar": "drugo: najveća ukupna visina građevine",
+     "vrijednost": 13.0
+    },
+    {
+     "id": "25.0.0.0.3.1",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KONTEKST_IZGUBLJEN",
+      "SKUPINA_NEPOZNATA"
+     ],
+     "parametar": "najveći koeficijent izgrađenosti (kig)",
+     "vrijednost": 0.5
+    },
+    {
+     "id": "25.0.0.0.4.2",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KIS_BEZ_OZNAKE",
+      "KONTEKST_IZGUBLJEN",
+      "SKUPINA_NEPOZNATA"
+     ],
+     "parametar": "?kis",
+     "vrijednost": 1.5
+    },
+    {
+     "id": "v26.25.0.0.0.5.1",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KONTEKST_IZGUBLJEN",
+      "SKUPINA_NEPOZNATA"
+     ],
+     "parametar": "najveći broj etaža",
+     "vrijednost": 4
+    },
+    {
+     "id": "v26.25.0.0.0.5.2",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KONTEKST_IZGUBLJEN",
+      "PARAMETAR_IZVAN_POPISA",
+      "SKUPINA_NEPOZNATA"
+     ],
+     "parametar": "drugo: najveći broj nadzemnih etaža",
+     "vrijednost": 2
+    },
+    {
+     "id": "v26.25.0.0.0.6.3",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KONTEKST_IZGUBLJEN",
+      "REFERENTNA_VISINA_NEPOZNATA",
+      "SKUPINA_NEPOZNATA"
+     ],
+     "parametar": "najveća visina građevine",
+     "vrijednost": 10.0
+    },
+    {
+     "id": "v26.25.0.0.0.6.4",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KONTEKST_IZGUBLJEN",
+      "PARAMETAR_IZVAN_POPISA",
+      "REFERENTNA_VISINA_NEPOZNATA",
+      "SKUPINA_NEPOZNATA"
+     ],
+     "parametar": "drugo: najveća ukupna visina građevine",
+     "vrijednost": 13.0
+    },
+    {
+     "id": "26.0.0.0.7.1",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KONTEKST_IZGUBLJEN",
+      "SKUPINA_NEPOZNATA"
+     ],
+     "parametar": "najveći koeficijent izgrađenosti (kig)",
+     "vrijednost": 1.0
+    },
+    {
+     "id": "26.0.0.0.8.2",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KIS_BEZ_OZNAKE",
+      "KONTEKST_IZGUBLJEN",
+      "SKUPINA_NEPOZNATA"
+     ],
+     "parametar": "?kis",
+     "vrijednost": 3.5
+    },
+    {
+     "id": "v26.26.0.0.0.9.1",
+     "oznaka": null,
+     "jednoznacnost_oznake": null,
+     "razlog_kod": [
+      "KONTEKST_IZGUBLJEN",
+      "PARAMETAR_IZVAN_POPISA",
+      "SKUPINA_NEPOZNATA"
+     ],
+     "parametar": "drugo: najveći broj nadzemnih etaža",
+     "vrijednost": 6
+    }
+   ],
+   "tocno_uz_granularnost": [],
+   "propusteno": [
+    {
+     "oznaka": "Z001",
+     "parametar": "položaj građevnog pravca",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "23.0.0.0.1.1",
+      [
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z002",
+     "parametar": "položaj građevnog pravca",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "23.0.0.0.1.1",
+      [
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z003",
+     "parametar": "položaj građevnog pravca",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "23.0.0.0.1.1",
+      [
+       "vrsta_pravila",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z004",
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "v26.23.0.0.0.3.1",
+      [
+       "vrsta_gradevine"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z005",
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "v26.23.0.0.0.3.2",
+      [
+       "vrsta_gradevine"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z006",
+     "parametar": "način gradnje",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "23.0.0.0.1.1",
+      [
+       "operator",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z007",
+     "parametar": "način gradnje",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "23.0.0.0.1.1",
+      [
+       "operator",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z008",
+     "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "v26.23.0.0.0.5.3",
+      [
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z009",
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "v26.23.0.0.0.3.1",
+      [
+       "vrsta_gradevine",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z010",
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "v26.23.0.0.0.5.5",
+      [
+       "vrsta_gradevine"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z011",
+     "parametar": "način gradnje",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "23.0.0.0.1.1",
+      [
+       "operator",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z012",
+     "parametar": "rekonstrukcija i prenamjena",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "23.0.0.0.1.1",
+      [
+       "operator",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z013",
+     "parametar": "gabariti pri rekonstrukciji",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "23.0.0.0.1.1",
+      [
+       "operator",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z014",
+     "parametar": "dopuštenost gradnje",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.0.0.5.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z015",
+     "parametar": "drugo: smještaj građevina",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.0.0.5.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z016",
+     "parametar": "drugo: broj parkirališno-garažnih mjesta",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.0.0.5.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z017",
+     "parametar": "rekonstrukcija i prenamjena",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "24.0.0.0.5.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z018",
+     "parametar": "drugo: oblik i veličina građevne čestice",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.0.0.5.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z021",
+     "parametar": "najveći koeficijent iskoristivosti (kis) (uz podrum ili ukupni)",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "24.0.0.0.7.3",
+      [
+       "parametar"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z023",
+     "parametar": "drugo: najveći broj nadzemnih etaža",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "v26.24.0.0.0.8.2",
+      [
+       "jedinica"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z026",
+     "parametar": "dopuštenost gradnje",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "25.0.0.0.3.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z027",
+     "parametar": "drugo: oblik i veličina građevne čestice",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "25.0.0.0.3.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z028",
+     "parametar": "najveći koeficijent izgrađenosti (kig)",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "25.0.0.0.3.1",
+      [
+       "vrsta_gradevine"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z029",
+     "parametar": "najveći koeficijent iskoristivosti (kis) (uz podrum ili ukupni)",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "25.0.0.0.4.2",
+      [
+       "parametar",
+       "vrsta_gradevine"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z030",
+     "parametar": "najveći broj etaža",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "v26.25.0.0.0.5.1",
+      [
+       "vrsta_gradevine"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z031",
+     "parametar": "drugo: najveći broj nadzemnih etaža",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "v26.25.0.0.0.5.2",
+      [
+       "jedinica",
+       "vrsta_gradevine"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z032",
+     "parametar": "najveća visina građevine",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "v26.25.0.0.0.6.3",
+      [
+       "vrsta_gradevine"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z033",
+     "parametar": "drugo: najveća ukupna visina građevine",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "v26.25.0.0.0.6.4",
+      [
+       "vrsta_gradevine"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z034",
+     "parametar": "drugo: detaljni uvjeti uređenja i gradnje",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "25.0.0.0.3.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z035",
+     "parametar": "drugo: oblik i veličina građevne čestice",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "26.0.0.0.7.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z036",
+     "parametar": "drugo: najmanja kategorija hotela",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "26.0.0.0.7.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z037",
+     "parametar": "drugo: način provedbe",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "26.0.0.0.7.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z038",
+     "parametar": "rekonstrukcija i prenamjena",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "26.0.0.0.7.1",
+      [
+       "operator",
+       "jedinica",
+       "vrsta_pravila",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost",
+       "uvjet"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z039",
+     "parametar": "najveći koeficijent izgrađenosti (kig)",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "26.0.0.0.7.1",
+      [
+       "vrsta_gradevine"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z040",
+     "parametar": "najveći koeficijent iskoristivosti (kis) (uz podrum ili ukupni)",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "26.0.0.0.8.2",
+      [
+       "parametar",
+       "vrsta_gradevine"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z041",
+     "parametar": "drugo: najveći broj nadzemnih etaža",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "v26.26.0.0.0.9.1",
+      [
+       "jedinica",
+       "vrsta_gradevine"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z042",
+     "parametar": "najveća visina građevine",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "26.0.0.0.7.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z043",
+     "parametar": "drugo: najveća ukupna visina građevine",
+     "jednoznacnost": "PREGLED",
+     "najblizi_zapis": [
+      "26.0.0.0.7.1",
+      [
+       "operator",
+       "jedinica",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    },
+    {
+     "oznaka": "Z044",
+     "parametar": "drugo: najveći kapacitet hotela (postelje)",
+     "jednoznacnost": "JASAN",
+     "najblizi_zapis": [
+      "26.0.0.0.7.1",
+      [
+       "jedinica",
+       "parametar",
+       "vrsta_gradevine",
+       "vrijednost"
+      ]
+     ]
+    }
+   ]
+  }
+ },
+ "kontekst": {
+  "pravila": 22,
+  "s_gubitkom_konteksta": 22,
+  "zadrzano_samo_zbog_konteksta": 3,
+  "po_razlogu": {
+   "KONTEKST_IZGUBLJEN": 15,
+   "KONTEKST_NADREDJENE_ALINEJE": 0,
+   "VRSTA_VISEZNACNA": 0,
+   "UVJET_MOGUCE_IZGUBLJEN": 0,
+   "VRSTA_IZ_UVODA_V25": 0,
+   "VRSTA_IZ_UVODA_V26": 7
+  }
+ },
+ "odbijeno": 8,
+ "izlaz_modula": {
+  "shema": "plan-citac-pravila/2.6",
+  "gramatika": "gramatika-v2.2",
+  "gramatika_v25": "gramatika-v2.5",
+  "izvor": "crikvenica_upu_centar_1.prilagodjeno.html",
+  "sha256_izvora": "7588f0c7af01304d2cf42bb95fda261a362e56826899d87c842fe0ec7c83db13",
+  "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+  "clanci": {
+   "23": {
+    "clanak": 23,
+    "vrste": null,
+    "pravila": [
+     {
+      "id": "23.0.0.0.1.1",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 23,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 1,
+      "gradjevina": "osnovna",
+      "parametar": "gradjevniPravac",
+      "operator": "opis",
+      "vrijednost": "se grade unutar područja obuhvata detaljnog plana uređenja i urbanističko-arhitektonskog natječaja odredit će se navedenim detaljnim planom, odnosno natječajem",
+      "jedinica": null,
+      "vrijednost_vrsta": "opis",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "NIJE_NAVEDEN_U_ODREDBI",
+        "dokaz": null,
+        "utvrdjeno_na_lokaciji": false
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.2",
+      "dokaz": "Građevni pravac građevina koje se grade unutar područja obuhvata detaljnog plana uređenja i urbanističko-arhitektonskog natječaja odredit će se navedenim detaljnim planom, odnosno natječajem. Na ostalim površinama postojeće građevine zadržavaju postojeći građevni pravac, a kod interpolacija novih građevina građevni pravac usklađuje se sa građevnim pravcima postojećih susjednih građevina. Građevine koje će se graditi na slobodnostojeći način moraju biti udaljene najmanje 4,0 metra od granice građevne čestice, odnosno 3,0 m ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta. Iznimno je dopuštena gradnja građevina koje će se graditi kao dvojne i to isključivo aneksa osnovnim građevinama ili pomoćnih građevina. Građevine koje će se graditi kao dvojne jednom će se stranom prislanjati uz susjednu građevinu ili granicu građevne čestice, a na ostalim stranama moraju biti udaljene najmanje 4,0 metra od granice građevne čestice, odnosno 3,0 m ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta. Izgradnja ugrađenih građevina (u nizu) nije dopuštena. Postojeće građevine na udaljenostima manjima od propisanih smiju se rekonstruirati, ali da se ne smanjuje udaljenost od granice građevne čestice.",
+      "izvorni_citat": "Građevni pravac građevina koje se grade unutar područja obuhvata detaljnog plana uređenja i urbanističko-arhitektonskog natječaja odredit će se navedenim detaljnim planom, odnosno natječajem.",
+      "normalizirani_citat": "Građevni pravac građevina koje se grade unutar područja obuhvata detaljnog plana uređenja i urbanističko-arhitektonskog natječaja odredit će se navedenim detaljnim planom, odnosno natječajem.",
+      "normalizacija": [],
+      "jezicne_napomene": [
+       {
+        "kod": "ODNOSNO_OBJASNJENJE",
+        "izvorno": ", odnosno",
+        "od": 170,
+        "ispravljeno": false,
+        "izvor_pravila": "Zarez: »odnosno« s rastavnom ulogu (= ili) bez zareza; sa zarezom kad uvodi objašnjenje (= to jest) (str. 37)"
+       }
+      ],
+      "semanticki_izrazi": [],
+      "izvor_clanak": 23,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 197,
+       "pomak": 0
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "SUBJEKT_NEPREPOZNAT",
+       "SKUPINA_NEPOZNATA",
+       "KONTEKST_IZGUBLJEN"
+      ],
+      "razlozi": [
+       "dio odredbe između predmeta i glagola nije prepoznat: »građevina ko«",
+       "vrsta građevine nije određena ni u odredbi ni u kontekstu",
+       "vrsta građevine nije određena ni u odredbi ni u uvodu"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 23.): dio odredbe između predmeta i glagola nije prepoznat: »građevina ko«; vrsta građevine nije određena ni u odredbi ni u kontekstu; vrsta građevine nije određena ni u odredbi ni u uvodu",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": []
+     },
+     {
+      "id": "v26.23.0.0.0.3.1",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 23,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 3,
+      "gradjevina": "osnovna",
+      "parametar": "udaljenostOdGraniceCestice",
+      "operator": ">=",
+      "vrijednost": 4.0,
+      "jedinica": "m",
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": true,
+      "vrsta_gradevine": {
+       "skupine": [],
+       "oblici": [
+        "slob"
+       ],
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "NIJE_NAVEDEN_U_ODREDBI",
+        "dokaz": null,
+        "utvrdjeno_na_lokaciji": false
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.6",
+      "dokaz": "Građevine koje će se graditi na slobodnostojeći način moraju biti udaljene najmanje 4,0 metra od granice građevne čestice, odnosno 3,0 m ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta.",
+      "izvorni_citat": "Građevine koje će se graditi na slobodnostojeći način moraju biti udaljene najmanje 4,0 metra od granice građevne čestice, odnosno 3,0 m ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta.",
+      "normalizirani_citat": "Građevine koje će se graditi na slobodnostojeći način moraju biti udaljene najmanje 4,0 m od granice građevne čestice, odnosno 3,0 m ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta.",
+      "normalizacija": [
+       {
+        "pravilo": "JEDINICA_RIJEC",
+        "vrsta": "ZAPIS_JEDINICE",
+        "izvorno": " metra",
+        "novo": " m",
+        "od": 87,
+        "do": 93,
+        "izvor_pravila": "Bjelina: k) između broja i oznake mjerne jedinice: 3 kg, 2 m (str. 33)"
+       }
+      ],
+      "jezicne_napomene": [
+       {
+        "kod": "ODNOSNO_OBJASNJENJE",
+        "izvorno": ", odnosno",
+        "od": 121,
+        "ispravljeno": false,
+        "izvor_pravila": "Zarez: »odnosno« s rastavnom ulogu (= ili) bez zareza; sa zarezom kad uvodi objašnjenje (= to jest) (str. 37)"
+       }
+      ],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJMANJE",
+        "citat": "najmanje",
+        "od": 75,
+        "znacenje": ">=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 23,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 197,
+       "pomak": 391
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "SKUPINA_NEPOZNATA",
+       "KONTEKST_IZGUBLJEN"
+      ],
+      "razlozi": [
+       "vrsta građevine nije određena ni u odredbi ni u kontekstu",
+       "vrsta građevine nije određena ni u odredbi ni u uvodu"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 23.): vrsta građevine nije određena ni u odredbi ni u kontekstu; vrsta građevine nije određena ni u odredbi ni u uvodu",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": []
+     },
+     {
+      "id": "v26.23.0.0.0.3.2",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 23,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 3,
+      "gradjevina": "osnovna",
+      "parametar": "udaljenostOdGraniceCestice",
+      "operator": ">=",
+      "vrijednost": 3.0,
+      "jedinica": "m",
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": true,
+      "vrsta_gradevine": {
+       "skupine": [],
+       "oblici": [
+        "slob"
+       ],
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "UVJETNO",
+      "uvjet": "ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta",
+      "uvjet_izvorni": "ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta",
+      "uvjeti": [
+       "ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta"
+      ],
+      "uvjet_logika": {
+       "op": "NE",
+       "arg": {
+        "op": "ILI",
+        "args": [
+         "otvori",
+         "prohodne terase",
+         "otvorena stubišta"
+        ]
+       },
+       "tekst": "ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta"
+      },
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": "»najmanje« iz prvog dijela rečenice vrijedi i za vrijednost iza »odnosno« (odluka suca v1.3/2: naslijeđeni minimum)",
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "NIJE_NAVEDEN_U_ODREDBI",
+        "dokaz": null,
+        "utvrdjeno_na_lokaciji": false
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.6",
+      "dokaz": "Građevine koje će se graditi na slobodnostojeći način moraju biti udaljene najmanje 4,0 metra od granice građevne čestice, odnosno 3,0 m ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta.",
+      "izvorni_citat": "Građevine koje će se graditi na slobodnostojeći način moraju biti udaljene najmanje 4,0 metra od granice građevne čestice, odnosno 3,0 m ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta.",
+      "normalizirani_citat": "Građevine koje će se graditi na slobodnostojeći način moraju biti udaljene najmanje 4,0 m od granice građevne čestice, odnosno 3,0 m ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta.",
+      "normalizacija": [
+       {
+        "pravilo": "JEDINICA_RIJEC",
+        "vrsta": "ZAPIS_JEDINICE",
+        "izvorno": " metra",
+        "novo": " m",
+        "od": 87,
+        "do": 93,
+        "izvor_pravila": "Bjelina: k) između broja i oznake mjerne jedinice: 3 kg, 2 m (str. 33)"
+       }
+      ],
+      "jezicne_napomene": [
+       {
+        "kod": "ODNOSNO_OBJASNJENJE",
+        "izvorno": ", odnosno",
+        "od": 121,
+        "ispravljeno": false,
+        "izvor_pravila": "Zarez: »odnosno« s rastavnom ulogu (= ili) bez zareza; sa zarezom kad uvodi objašnjenje (= to jest) (str. 37)"
+       }
+      ],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJMANJE",
+        "citat": "najmanje",
+        "od": 75,
+        "znacenje": ">=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 23,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 197,
+       "pomak": 391
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "SKUPINA_NEPOZNATA",
+       "KONTEKST_IZGUBLJEN"
+      ],
+      "razlozi": [
+       "vrsta građevine nije određena ni u odredbi ni u kontekstu",
+       "vrsta građevine nije određena ni u odredbi ni u uvodu"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 23.): vrsta građevine nije određena ni u odredbi ni u kontekstu; vrsta građevine nije određena ni u odredbi ni u uvodu",
+      "dodatni_uvjeti": [
+       "ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta"
+      ],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": []
+     },
+     {
+      "id": "v26.23.0.0.0.5.3",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 23,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 5,
+      "gradjevina": "osnovna",
+      "parametar": "nacinPrislanjanja",
+      "operator": "=",
+      "vrijednost": "jednom stranom uz susjednu građevinu ili granicu građevne čestice",
+      "jedinica": null,
+      "vrijednost_vrsta": "opis",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": true,
+      "vrsta_gradevine": {
+       "skupine": [],
+       "oblici": [
+        "dvoj"
+       ],
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "NIJE_NAVEDEN_U_ODREDBI",
+        "dokaz": null,
+        "utvrdjeno_na_lokaciji": false
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.6",
+      "dokaz": "Građevine koje će se graditi kao dvojne jednom će se stranom prislanjati uz susjednu građevinu ili granicu građevne čestice, a na ostalim stranama moraju biti udaljene najmanje 4,0 metra od granice građevne čestice, odnosno 3,0 m ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta.",
+      "izvorni_citat": "Građevine koje će se graditi kao dvojne jednom će se stranom prislanjati uz susjednu građevinu ili granicu građevne čestice, a na ostalim stranama moraju biti udaljene najmanje 4,0 metra od granice građevne čestice, odnosno 3,0 m ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta.",
+      "normalizirani_citat": "Građevine koje će se graditi kao dvojne jednom će se stranom prislanjati uz susjednu građevinu ili granicu građevne čestice, a na ostalim stranama moraju biti udaljene najmanje 4,0 m od granice građevne čestice, odnosno 3,0 m ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta.",
+      "normalizacija": [
+       {
+        "pravilo": "JEDINICA_RIJEC",
+        "vrsta": "ZAPIS_JEDINICE",
+        "izvorno": " metra",
+        "novo": " m",
+        "od": 180,
+        "do": 186,
+        "izvor_pravila": "Bjelina: k) između broja i oznake mjerne jedinice: 3 kg, 2 m (str. 33)"
+       }
+      ],
+      "jezicne_napomene": [
+       {
+        "kod": "ODNOSNO_OBJASNJENJE",
+        "izvorno": ", odnosno",
+        "od": 214,
+        "ispravljeno": false,
+        "izvor_pravila": "Zarez: »odnosno« s rastavnom ulogu (= ili) bez zareza; sa zarezom kad uvodi objašnjenje (= to jest) (str. 37)"
+       }
+      ],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJMANJE",
+        "citat": "najmanje",
+        "od": 168,
+        "znacenje": ">=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 23,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 197,
+       "pomak": 751
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "ALTERNATIVA_U_VRIJEDNOSTI",
+       "SKUPINA_NEPOZNATA",
+       "KONTEKST_IZGUBLJEN"
+      ],
+      "razlozi": [
+       "»uz susjednu građevinu ili granicu građevne čestice« – dvije mogućnosti",
+       "vrsta građevine nije određena ni u odredbi ni u kontekstu",
+       "vrsta građevine nije određena ni u odredbi ni u uvodu"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 23.): »uz susjednu građevinu ili granicu građevne čestice« – dvije mogućnosti; vrsta građevine nije određena ni u odredbi ni u kontekstu; vrsta građevine nije određena ni u odredbi ni u uvodu",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": []
+     },
+     {
+      "id": "v26.23.0.0.0.5.4",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 23,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 5,
+      "gradjevina": "osnovna",
+      "parametar": "udaljenostOdGraniceCestice",
+      "operator": ">=",
+      "vrijednost": 4.0,
+      "jedinica": "m",
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": true,
+      "vrsta_gradevine": {
+       "skupine": [],
+       "oblici": [
+        "dvoj"
+       ],
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "UVJETNO",
+      "uvjet": "na ostalim stranama",
+      "uvjet_izvorni": "na ostalim stranama",
+      "uvjeti": [
+       "na ostalim stranama"
+      ],
+      "uvjet_logika": {
+       "op": "UVJET",
+       "tekst": "na ostalim stranama"
+      },
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "NIJE_NAVEDEN_U_ODREDBI",
+        "dokaz": null,
+        "utvrdjeno_na_lokaciji": false
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.6",
+      "dokaz": "Građevine koje će se graditi kao dvojne jednom će se stranom prislanjati uz susjednu građevinu ili granicu građevne čestice, a na ostalim stranama moraju biti udaljene najmanje 4,0 metra od granice građevne čestice, odnosno 3,0 m ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta.",
+      "izvorni_citat": "Građevine koje će se graditi kao dvojne jednom će se stranom prislanjati uz susjednu građevinu ili granicu građevne čestice, a na ostalim stranama moraju biti udaljene najmanje 4,0 metra od granice građevne čestice, odnosno 3,0 m ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta.",
+      "normalizirani_citat": "Građevine koje će se graditi kao dvojne jednom će se stranom prislanjati uz susjednu građevinu ili granicu građevne čestice, a na ostalim stranama moraju biti udaljene najmanje 4,0 m od granice građevne čestice, odnosno 3,0 m ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta.",
+      "normalizacija": [
+       {
+        "pravilo": "JEDINICA_RIJEC",
+        "vrsta": "ZAPIS_JEDINICE",
+        "izvorno": " metra",
+        "novo": " m",
+        "od": 180,
+        "do": 186,
+        "izvor_pravila": "Bjelina: k) između broja i oznake mjerne jedinice: 3 kg, 2 m (str. 33)"
+       }
+      ],
+      "jezicne_napomene": [
+       {
+        "kod": "ODNOSNO_OBJASNJENJE",
+        "izvorno": ", odnosno",
+        "od": 214,
+        "ispravljeno": false,
+        "izvor_pravila": "Zarez: »odnosno« s rastavnom ulogu (= ili) bez zareza; sa zarezom kad uvodi objašnjenje (= to jest) (str. 37)"
+       }
+      ],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJMANJE",
+        "citat": "najmanje",
+        "od": 168,
+        "znacenje": ">=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 23,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 197,
+       "pomak": 751
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "SKUPINA_NEPOZNATA",
+       "KONTEKST_IZGUBLJEN"
+      ],
+      "razlozi": [
+       "vrsta građevine nije određena ni u odredbi ni u kontekstu",
+       "vrsta građevine nije određena ni u odredbi ni u uvodu"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 23.): vrsta građevine nije određena ni u odredbi ni u kontekstu; vrsta građevine nije određena ni u odredbi ni u uvodu",
+      "dodatni_uvjeti": [
+       "na ostalim stranama"
+      ],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": []
+     },
+     {
+      "id": "v26.23.0.0.0.5.5",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 23,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 5,
+      "gradjevina": "osnovna",
+      "parametar": "udaljenostOdGraniceCestice",
+      "operator": ">=",
+      "vrijednost": 3.0,
+      "jedinica": "m",
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": true,
+      "vrsta_gradevine": {
+       "skupine": [],
+       "oblici": [
+        "dvoj"
+       ],
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "UVJETNO",
+      "uvjet": "na ostalim stranama; ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta",
+      "uvjet_izvorni": "na ostalim stranama; ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta",
+      "uvjeti": [
+       "na ostalim stranama",
+       "ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta"
+      ],
+      "uvjet_logika": {
+       "op": "I",
+       "args": [
+        {
+         "op": "UVJET",
+         "tekst": "na ostalim stranama"
+        },
+        {
+         "op": "NE",
+         "arg": {
+          "op": "ILI",
+          "args": [
+           "otvori",
+           "prohodne terase",
+           "otvorena stubišta"
+          ]
+         },
+         "tekst": "ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta"
+        }
+       ]
+      },
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": "»najmanje« iz prvog dijela rečenice vrijedi i za vrijednost iza »odnosno« (odluka suca v1.3/2: naslijeđeni minimum)",
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "NIJE_NAVEDEN_U_ODREDBI",
+        "dokaz": null,
+        "utvrdjeno_na_lokaciji": false
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.6",
+      "dokaz": "Građevine koje će se graditi kao dvojne jednom će se stranom prislanjati uz susjednu građevinu ili granicu građevne čestice, a na ostalim stranama moraju biti udaljene najmanje 4,0 metra od granice građevne čestice, odnosno 3,0 m ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta.",
+      "izvorni_citat": "Građevine koje će se graditi kao dvojne jednom će se stranom prislanjati uz susjednu građevinu ili granicu građevne čestice, a na ostalim stranama moraju biti udaljene najmanje 4,0 metra od granice građevne čestice, odnosno 3,0 m ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta.",
+      "normalizirani_citat": "Građevine koje će se graditi kao dvojne jednom će se stranom prislanjati uz susjednu građevinu ili granicu građevne čestice, a na ostalim stranama moraju biti udaljene najmanje 4,0 m od granice građevne čestice, odnosno 3,0 m ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta.",
+      "normalizacija": [
+       {
+        "pravilo": "JEDINICA_RIJEC",
+        "vrsta": "ZAPIS_JEDINICE",
+        "izvorno": " metra",
+        "novo": " m",
+        "od": 180,
+        "do": 186,
+        "izvor_pravila": "Bjelina: k) između broja i oznake mjerne jedinice: 3 kg, 2 m (str. 33)"
+       }
+      ],
+      "jezicne_napomene": [
+       {
+        "kod": "ODNOSNO_OBJASNJENJE",
+        "izvorno": ", odnosno",
+        "od": 214,
+        "ispravljeno": false,
+        "izvor_pravila": "Zarez: »odnosno« s rastavnom ulogu (= ili) bez zareza; sa zarezom kad uvodi objašnjenje (= to jest) (str. 37)"
+       }
+      ],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJMANJE",
+        "citat": "najmanje",
+        "od": 168,
+        "znacenje": ">=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 23,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 197,
+       "pomak": 751
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "SKUPINA_NEPOZNATA",
+       "KONTEKST_IZGUBLJEN"
+      ],
+      "razlozi": [
+       "vrsta građevine nije određena ni u odredbi ni u kontekstu",
+       "vrsta građevine nije određena ni u odredbi ni u uvodu"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 23.): vrsta građevine nije određena ni u odredbi ni u kontekstu; vrsta građevine nije određena ni u odredbi ni u uvodu",
+      "dodatni_uvjeti": [
+       "na ostalim stranama",
+       "ukoliko na toj strani nisu predviđeni otvori, prohodne terase niti otvorena stubišta"
+      ],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": []
+     }
+    ],
+    "upucivanja": [],
+    "nepokriveno": [],
+    "bez_broja": [
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 2,
+      "dokaz": "Na ostalim površinama postojeće građevine zadržavaju postojeći građevni pravac, a kod interpolacija novih građevina građevni pravac usklađuje se sa građevnim pravcima postojećih susjednih građevina."
+     },
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 4,
+      "dokaz": "Iznimno je dopuštena gradnja građevina koje će se graditi kao dvojne i to isključivo aneksa osnovnim građevinama ili pomoćnih građevina."
+     },
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 6,
+      "dokaz": "Izgradnja ugrađenih građevina (u nizu) nije dopuštena."
+     },
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 7,
+      "dokaz": "Postojeće građevine na udaljenostima manjima od propisanih smiju se rekonstruirati, ali da se ne smanjuje udaljenost od granice građevne čestice."
+     }
+    ],
+    "pregled": [],
+    "kontekst": [],
+    "gramatika": "gramatika-v2.2"
+   },
+   "24": {
+    "clanak": 24,
+    "vrste": null,
+    "pravila": [
+     {
+      "id": "24.0.0.0.5.1",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 24,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 5,
+      "gradjevina": "osnovna",
+      "parametar": "maxC",
+      "operator": "<=",
+      "vrijednost": 1500.0,
+      "jedinica": "m²",
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [
+        "poslovna"
+       ],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K1 1",
+        "dokaz": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       },
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K1 2",
+        "dokaz": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.2",
+      "dokaz": "Unutar zona poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 ) planiran je smještaj građevina poslovne namjene (trgovački, uslužni i ugostiteljski sadržaji, poslovni hotel i sl.), na jednoj ili više građevnih čestica. Urbanističko - arhitektonskim natječajem iz članka 110. ovih odredbi za provođenje potrebno je preispitati i odrediti smještaj građevina unutar zona gradnje K1 1 i K1 2 te osigurati potreban broj parkirališno-garažnih mjesta i za potrebe luke nautičkog turizma - marine. Postojeće komunalno-servisne građevine unutar zone K1 1 (benzinsku postaju i crpnu stanicu) moguće je zadržati ili redefinirati (oblikovno, sadržajno i pozicijski). Oblik i veličina građevne čestice utvrdit će se urbanističko - arhitektonskim natječajem. Najveća dopuštena površina građevne čestice iznosi 1.500 m 2 . Najveći dopušteni koeficijent izgrađenosti (k ig ) iznosi 0,5. Najveći dopušteni koeficijent iskorištenosti (k is ) iznosi 1,5. Najveći dopušteni broj etaža je 4, ali dozvoljene su najviše 2 nadzemne etaže. Visina građevine iznosi najviše 10,0 m, a ukupna visina građevine iznosi najviše 13,0 m.",
+      "izvorni_citat": "Najveća dopuštena površina građevne čestice iznosi 1.500 m 2 .",
+      "normalizirani_citat": "Najveća dopuštena površina građevne čestice iznosi 01500 m².",
+      "normalizacija": [
+       {
+        "pravilo": "JEDINICA_EKSPONENT",
+        "vrsta": "ZAPIS_JEDINICE",
+        "izvorno": " m 2",
+        "novo": " m²",
+        "od": 56,
+        "do": 60,
+        "izvor_pravila": "Bjelina: k) između broja i oznake mjerne jedinice: 3 kg, 2 m (str. 33)"
+       },
+       {
+        "pravilo": "BJELINA_ISPRED_ZNAKA",
+        "vrsta": "PRAVOPISNA",
+        "izvorno": " .",
+        "novo": ".",
+        "od": 60,
+        "do": 62,
+        "izvor_pravila": "Bjelina se ne nalazi: a) ispred rečeničnih znakova točke, zareza, točke sa zarezom, dvotočke (str. 34)"
+       }
+      ],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "Najveća",
+        "od": 0,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 24,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 204,
+       "pomak": 751
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "VRSTA_IZ_UVODA_V26"
+      ],
+      "razlozi": [
+       "vrsta »građevina poslovne namjene« preuzeta iz uvoda (prva rečenica članka) novim putem v2.6; prihvaća se tek nakon provjere"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 24.): vrsta »građevina poslovne namjene« preuzeta iz uvoda (prva rečenica članka) novim putem v2.6; prihvaća se tek nakon provjere",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": [
+       "K1 1",
+       "K1 2"
+      ],
+      "izvor_vrste": {
+       "izraz": "građevina poslovne namjene",
+       "izvor": "prva rečenica članka",
+       "uvod": "Unutar zona poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 ) planiran je smještaj građevina poslovne namjene (trgovački, uslužni i ugostiteljski sadržaji, poslovni hotel i sl.), na jednoj ili više građevnih čestica.",
+       "verzija": "gramatika-v2.6"
+      },
+      "naslov_clanka": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )"
+     },
+     {
+      "id": "24.0.0.0.6.2",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 24,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 6,
+      "gradjevina": "osnovna",
+      "parametar": "kig",
+      "operator": "<=",
+      "vrijednost": 0.5,
+      "jedinica": null,
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [
+        "poslovna"
+       ],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K1 1",
+        "dokaz": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       },
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K1 2",
+        "dokaz": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.2",
+      "dokaz": "Unutar zona poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 ) planiran je smještaj građevina poslovne namjene (trgovački, uslužni i ugostiteljski sadržaji, poslovni hotel i sl.), na jednoj ili više građevnih čestica. Urbanističko - arhitektonskim natječajem iz članka 110. ovih odredbi za provođenje potrebno je preispitati i odrediti smještaj građevina unutar zona gradnje K1 1 i K1 2 te osigurati potreban broj parkirališno-garažnih mjesta i za potrebe luke nautičkog turizma - marine. Postojeće komunalno-servisne građevine unutar zone K1 1 (benzinsku postaju i crpnu stanicu) moguće je zadržati ili redefinirati (oblikovno, sadržajno i pozicijski). Oblik i veličina građevne čestice utvrdit će se urbanističko - arhitektonskim natječajem. Najveća dopuštena površina građevne čestice iznosi 1.500 m 2 . Najveći dopušteni koeficijent izgrađenosti (k ig ) iznosi 0,5. Najveći dopušteni koeficijent iskorištenosti (k is ) iznosi 1,5. Najveći dopušteni broj etaža je 4, ali dozvoljene su najviše 2 nadzemne etaže. Visina građevine iznosi najviše 10,0 m, a ukupna visina građevine iznosi najviše 13,0 m.",
+      "izvorni_citat": "Najveći dopušteni koeficijent izgrađenosti (k ig ) iznosi 0,5.",
+      "normalizirani_citat": "Najveći dopušteni koeficijent izgrađenosti (kig) iznosi 0,5.",
+      "normalizacija": [
+       {
+        "pravilo": "BJELINA_VISESTRUKA",
+        "vrsta": "PRAVOPISNA",
+        "izvorno": "   ",
+        "novo": " ",
+        "od": 48,
+        "do": 51,
+        "izvor_pravila": "Pravopisni znakovi – Bjelina, a) između riječi (str. 33)"
+       }
+      ],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "Najveći",
+        "od": 0,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 24,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 204,
+       "pomak": 814
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "VRSTA_IZ_UVODA_V26"
+      ],
+      "razlozi": [
+       "vrsta »građevina poslovne namjene« preuzeta iz uvoda (prva rečenica članka) novim putem v2.6; prihvaća se tek nakon provjere"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 24.): vrsta »građevina poslovne namjene« preuzeta iz uvoda (prva rečenica članka) novim putem v2.6; prihvaća se tek nakon provjere",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": [
+       "K1 1",
+       "K1 2"
+      ],
+      "izvor_vrste": {
+       "izraz": "građevina poslovne namjene",
+       "izvor": "prva rečenica članka",
+       "uvod": "Unutar zona poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 ) planiran je smještaj građevina poslovne namjene (trgovački, uslužni i ugostiteljski sadržaji, poslovni hotel i sl.), na jednoj ili više građevnih čestica.",
+       "verzija": "gramatika-v2.6"
+      },
+      "naslov_clanka": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )"
+     },
+     {
+      "id": "24.0.0.0.7.3",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 24,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 7,
+      "gradjevina": "osnovna",
+      "parametar": "kis",
+      "operator": "<=",
+      "vrijednost": 1.5,
+      "jedinica": null,
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [
+        "poslovna"
+       ],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K1 1",
+        "dokaz": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       },
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K1 2",
+        "dokaz": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.2",
+      "dokaz": "Unutar zona poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 ) planiran je smještaj građevina poslovne namjene (trgovački, uslužni i ugostiteljski sadržaji, poslovni hotel i sl.), na jednoj ili više građevnih čestica. Urbanističko - arhitektonskim natječajem iz članka 110. ovih odredbi za provođenje potrebno je preispitati i odrediti smještaj građevina unutar zona gradnje K1 1 i K1 2 te osigurati potreban broj parkirališno-garažnih mjesta i za potrebe luke nautičkog turizma - marine. Postojeće komunalno-servisne građevine unutar zone K1 1 (benzinsku postaju i crpnu stanicu) moguće je zadržati ili redefinirati (oblikovno, sadržajno i pozicijski). Oblik i veličina građevne čestice utvrdit će se urbanističko - arhitektonskim natječajem. Najveća dopuštena površina građevne čestice iznosi 1.500 m 2 . Najveći dopušteni koeficijent izgrađenosti (k ig ) iznosi 0,5. Najveći dopušteni koeficijent iskorištenosti (k is ) iznosi 1,5. Najveći dopušteni broj etaža je 4, ali dozvoljene su najviše 2 nadzemne etaže. Visina građevine iznosi najviše 10,0 m, a ukupna visina građevine iznosi najviše 13,0 m.",
+      "izvorni_citat": "Najveći dopušteni koeficijent iskorištenosti (k is ) iznosi 1,5.",
+      "normalizirani_citat": "Najveći dopušteni koeficijent iskorištenosti (kis) iznosi 1,5.",
+      "normalizacija": [
+       {
+        "pravilo": "BJELINA_VISESTRUKA",
+        "vrsta": "PRAVOPISNA",
+        "izvorno": "   ",
+        "novo": " ",
+        "od": 50,
+        "do": 53,
+        "izvor_pravila": "Pravopisni znakovi – Bjelina, a) između riječi (str. 33)"
+       }
+      ],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "Najveći",
+        "od": 0,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 24,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 204,
+       "pomak": 877
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "KIS_BEZ_OZNAKE",
+       "VRSTA_IZ_UVODA_V26"
+      ],
+      "razlozi": [
+       "koeficijent iskoristivosti bez oznake nadzemno/podrum",
+       "vrsta »građevina poslovne namjene« preuzeta iz uvoda (prva rečenica članka) novim putem v2.6; prihvaća se tek nakon provjere"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 24.): koeficijent iskoristivosti bez oznake nadzemno/podrum; vrsta »građevina poslovne namjene« preuzeta iz uvoda (prva rečenica članka) novim putem v2.6; prihvaća se tek nakon provjere",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": [
+       "K1 1",
+       "K1 2"
+      ],
+      "izvor_vrste": {
+       "izraz": "građevina poslovne namjene",
+       "izvor": "prva rečenica članka",
+       "uvod": "Unutar zona poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 ) planiran je smještaj građevina poslovne namjene (trgovački, uslužni i ugostiteljski sadržaji, poslovni hotel i sl.), na jednoj ili više građevnih čestica.",
+       "verzija": "gramatika-v2.6"
+      },
+      "naslov_clanka": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )"
+     },
+     {
+      "id": "v26.24.0.0.0.8.1",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 24,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 8,
+      "gradjevina": "osnovna",
+      "parametar": "etazeMax",
+      "operator": "<=",
+      "vrijednost": 4,
+      "jedinica": null,
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [
+        "poslovna"
+       ],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K1 1",
+        "dokaz": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       },
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K1 2",
+        "dokaz": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.6",
+      "dokaz": "Najveći dopušteni broj etaža je 4, ali dozvoljene su najviše 2 nadzemne etaže.",
+      "izvorni_citat": "Najveći dopušteni broj etaža je 4, ali dozvoljene su najviše 2 nadzemne etaže.",
+      "normalizirani_citat": "Najveći dopušteni broj etaža je 4, ali dozvoljene su najviše 2 nadzemne etaže.",
+      "normalizacija": [],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "Najveći",
+        "od": 0,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       },
+       {
+        "kod": "NAJVISE",
+        "citat": "najviše",
+        "od": 53,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 24,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 204,
+       "pomak": 942
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "VRSTA_IZ_UVODA_V26"
+      ],
+      "razlozi": [
+       "vrsta »građevina poslovne namjene« preuzeta iz uvoda (prva rečenica članka) novim putem v2.6; prihvaća se tek nakon provjere"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 24.): vrsta »građevina poslovne namjene« preuzeta iz uvoda (prva rečenica članka) novim putem v2.6; prihvaća se tek nakon provjere",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": [
+       "K1 1",
+       "K1 2"
+      ],
+      "izvor_vrste": {
+       "izraz": "građevina poslovne namjene",
+       "izvor": "prva rečenica članka",
+       "uvod": "Unutar zona poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 ) planiran je smještaj građevina poslovne namjene (trgovački, uslužni i ugostiteljski sadržaji, poslovni hotel i sl.), na jednoj ili više građevnih čestica.",
+       "verzija": "gramatika-v2.6"
+      },
+      "naslov_clanka": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )"
+     },
+     {
+      "id": "v26.24.0.0.0.8.2",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 24,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 8,
+      "gradjevina": "osnovna",
+      "parametar": "etazeNadzemneMax",
+      "operator": "<=",
+      "vrijednost": 2,
+      "jedinica": null,
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [
+        "poslovna"
+       ],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": "»ali dozvoljene su najviše N nadzemne etaže« – ograničenje nadzemnih etaža unutar ukupnog broja",
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K1 1",
+        "dokaz": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       },
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K1 2",
+        "dokaz": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.6",
+      "dokaz": "Najveći dopušteni broj etaža je 4, ali dozvoljene su najviše 2 nadzemne etaže.",
+      "izvorni_citat": "Najveći dopušteni broj etaža je 4, ali dozvoljene su najviše 2 nadzemne etaže.",
+      "normalizirani_citat": "Najveći dopušteni broj etaža je 4, ali dozvoljene su najviše 2 nadzemne etaže.",
+      "normalizacija": [],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "Najveći",
+        "od": 0,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       },
+       {
+        "kod": "NAJVISE",
+        "citat": "najviše",
+        "od": 53,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 24,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 204,
+       "pomak": 942
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "PARAMETAR_IZVAN_POPISA",
+       "VRSTA_IZ_UVODA_V26"
+      ],
+      "razlozi": [
+       "parametar nije u zatvorenom popisu uputa za označavanje; prihvaća se tek uz pregled",
+       "vrsta »građevina poslovne namjene« preuzeta iz uvoda (prva rečenica članka) novim putem v2.6; prihvaća se tek nakon provjere"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 24.): parametar nije u zatvorenom popisu uputa za označavanje; prihvaća se tek uz pregled; vrsta »građevina poslovne namjene« preuzeta iz uvoda (prva rečenica članka) novim putem v2.6; prihvaća se tek nakon provjere",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": [
+       "K1 1",
+       "K1 2"
+      ],
+      "izvor_vrste": {
+       "izraz": "građevina poslovne namjene",
+       "izvor": "prva rečenica članka",
+       "uvod": "Unutar zona poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 ) planiran je smještaj građevina poslovne namjene (trgovački, uslužni i ugostiteljski sadržaji, poslovni hotel i sl.), na jednoj ili više građevnih čestica.",
+       "verzija": "gramatika-v2.6"
+      },
+      "naslov_clanka": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )"
+     },
+     {
+      "id": "v26.24.0.0.0.9.3",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 24,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 9,
+      "gradjevina": "osnovna",
+      "parametar": "visinaMax",
+      "operator": "<=",
+      "vrijednost": 10.0,
+      "jedinica": "m",
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [
+        "poslovna"
+       ],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K1 1",
+        "dokaz": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       },
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K1 2",
+        "dokaz": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.6",
+      "dokaz": "Visina građevine iznosi najviše 10,0 m, a ukupna visina građevine iznosi najviše 13,0 m.",
+      "izvorni_citat": "Visina građevine iznosi najviše 10,0 m, a ukupna visina građevine iznosi najviše 13,0 m.",
+      "normalizirani_citat": "Visina građevine iznosi najviše 10,0 m, a ukupna visina građevine iznosi najviše 13,0 m.",
+      "normalizacija": [],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "najviše",
+        "od": 24,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       },
+       {
+        "kod": "NAJVISE",
+        "citat": "najviše",
+        "od": 73,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 24,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 204,
+       "pomak": 1021
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "REFERENTNA_VISINA_NEPOZNATA",
+       "VRSTA_IZ_UVODA_V26"
+      ],
+      "razlozi": [
+       "nije navedeno od koje do koje točke se mjeri visina",
+       "vrsta »građevina poslovne namjene« preuzeta iz uvoda (prva rečenica članka) novim putem v2.6; prihvaća se tek nakon provjere"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 24.): nije navedeno od koje do koje točke se mjeri visina; vrsta »građevina poslovne namjene« preuzeta iz uvoda (prva rečenica članka) novim putem v2.6; prihvaća se tek nakon provjere",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": [
+       "K1 1",
+       "K1 2"
+      ],
+      "izvor_vrste": {
+       "izraz": "građevina poslovne namjene",
+       "izvor": "prva rečenica članka",
+       "uvod": "Unutar zona poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 ) planiran je smještaj građevina poslovne namjene (trgovački, uslužni i ugostiteljski sadržaji, poslovni hotel i sl.), na jednoj ili više građevnih čestica.",
+       "verzija": "gramatika-v2.6"
+      },
+      "naslov_clanka": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )"
+     },
+     {
+      "id": "v26.24.0.0.0.9.4",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 24,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 9,
+      "gradjevina": "osnovna",
+      "parametar": "ukupnaVisinaMax",
+      "operator": "<=",
+      "vrijednost": 13.0,
+      "jedinica": "m",
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [
+        "poslovna"
+       ],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K1 1",
+        "dokaz": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       },
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K1 2",
+        "dokaz": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.6",
+      "dokaz": "Visina građevine iznosi najviše 10,0 m, a ukupna visina građevine iznosi najviše 13,0 m.",
+      "izvorni_citat": "Visina građevine iznosi najviše 10,0 m, a ukupna visina građevine iznosi najviše 13,0 m.",
+      "normalizirani_citat": "Visina građevine iznosi najviše 10,0 m, a ukupna visina građevine iznosi najviše 13,0 m.",
+      "normalizacija": [],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "najviše",
+        "od": 24,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       },
+       {
+        "kod": "NAJVISE",
+        "citat": "najviše",
+        "od": 73,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 24,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 204,
+       "pomak": 1021
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "REFERENTNA_VISINA_NEPOZNATA",
+       "PARAMETAR_IZVAN_POPISA",
+       "VRSTA_IZ_UVODA_V26"
+      ],
+      "razlozi": [
+       "nije navedeno od koje do koje točke se mjeri visina",
+       "parametar nije u zatvorenom popisu uputa za označavanje; prihvaća se tek uz pregled",
+       "vrsta »građevina poslovne namjene« preuzeta iz uvoda (prva rečenica članka) novim putem v2.6; prihvaća se tek nakon provjere"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 24.): nije navedeno od koje do koje točke se mjeri visina; parametar nije u zatvorenom popisu uputa za označavanje; prihvaća se tek uz pregled; vrsta »građevina poslovne namjene« preuzeta iz uvoda (prva rečenica članka) novim putem v2.6; prihvaća se tek nakon provjere",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": [
+       "K1 1",
+       "K1 2"
+      ],
+      "izvor_vrste": {
+       "izraz": "građevina poslovne namjene",
+       "izvor": "prva rečenica članka",
+       "uvod": "Unutar zona poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 ) planiran je smještaj građevina poslovne namjene (trgovački, uslužni i ugostiteljski sadržaji, poslovni hotel i sl.), na jednoj ili više građevnih čestica.",
+       "verzija": "gramatika-v2.6"
+      },
+      "naslov_clanka": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )"
+     }
+    ],
+    "upucivanja": [],
+    "nepokriveno": [
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 1,
+      "dokaz": "Unutar zona poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 ) planiran je smještaj građevina poslovne namjene (trgovački, uslužni i ugostiteljski sadržaji, poslovni hotel i sl.), na jednoj ili više građevnih čestica.",
+      "status": "ODBIJENO",
+      "razlog_kod": [
+       "PREDMET_NEPOZNAT"
+      ],
+      "razlozi": [
+       "predmet odredbe nije u rječniku: »Unutar zona poslovne gradnje uz luku nautičkog turizma (K1 1«"
+      ],
+      "brojevi": [
+       "1",
+       "2"
+      ]
+     },
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 2,
+      "dokaz": "Urbanističko - arhitektonskim natječajem iz članka 110. ovih odredbi za provođenje potrebno je preispitati i odrediti smještaj građevina unutar zona gradnje K1 1 i K1 2 te osigurati potreban broj parkirališno-garažnih mjesta i za potrebe luke nautičkog turizma - marine.",
+      "status": "ODBIJENO",
+      "razlog_kod": [
+       "PREDMET_NEPOZNAT"
+      ],
+      "razlozi": [
+       "predmet odredbe nije u rječniku: »Urbanističko - arhitektonskim natječajem iz članka 110. ovih«"
+      ],
+      "brojevi": [
+       "1",
+       "2"
+      ]
+     },
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 3,
+      "dokaz": "Postojeće komunalno-servisne građevine unutar zone K1 1 (benzinsku postaju i crpnu stanicu) moguće je zadržati ili redefinirati (oblikovno, sadržajno i pozicijski).",
+      "status": "ODBIJENO",
+      "razlog_kod": [
+       "PREDMET_NEPOZNAT"
+      ],
+      "razlozi": [
+       "predmet odredbe nije u rječniku: »Postojeće komunalno-servisne građevine unutar zone K1 1 (ben«"
+      ],
+      "brojevi": [
+       "1"
+      ]
+     }
+    ],
+    "bez_broja": [
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 4,
+      "dokaz": "Oblik i veličina građevne čestice utvrdit će se urbanističko - arhitektonskim natječajem."
+     }
+    ],
+    "pregled": [],
+    "kontekst": [],
+    "gramatika": "gramatika-v2.2",
+    "naslov_clanka": "Zone poslovne gradnje uz luku nautičkog turizma (K1 1 i K1 2 )"
+   },
+   "25": {
+    "clanak": 25,
+    "vrste": null,
+    "pravila": [
+     {
+      "id": "25.0.0.0.3.1",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 25,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 3,
+      "gradjevina": "osnovna",
+      "parametar": "kig",
+      "operator": "<=",
+      "vrijednost": 0.5,
+      "jedinica": null,
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K2",
+        "dokaz": "Zona poslovne gradnje uz komunalnu luku (K2)",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.2",
+      "dokaz": "Unutar zone poslovne gradnje uz komunalnu luku (K2) planiran je smještaj sadržaja komunalno - servisne namjene. Oblik i veličina građevne čestice utvrdit će se detaljnim planom uređenja (DPU2). Najveći dopušteni koeficijent izgrađenosti (k ig ) iznosi 0,5. Najveći dopušteni koeficijent iskorištenosti (k is ) iznosi 1,5. Najveći dopušteni broj etaža je 4, ali dozvoljene su najviše 2 nadzemne etaže. Visina građevine iznosi najviše 10,0 m, a ukupna visina građevine iznosi najviše 13,0 m. Detaljni uvjeti uređenja i gradnje unutar zone K2 odredit će se detaljnim planom uređenja (DPU 2).",
+      "izvorni_citat": "Najveći dopušteni koeficijent izgrađenosti (k ig ) iznosi 0,5.",
+      "normalizirani_citat": "Najveći dopušteni koeficijent izgrađenosti (kig) iznosi 0,5.",
+      "normalizacija": [
+       {
+        "pravilo": "BJELINA_VISESTRUKA",
+        "vrsta": "PRAVOPISNA",
+        "izvorno": "   ",
+        "novo": " ",
+        "od": 48,
+        "do": 51,
+        "izvor_pravila": "Pravopisni znakovi – Bjelina, a) između riječi (str. 33)"
+       }
+      ],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "Najveći",
+        "od": 0,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 25,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 215,
+       "pomak": 194
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "SKUPINA_NEPOZNATA",
+       "KONTEKST_IZGUBLJEN"
+      ],
+      "razlozi": [
+       "vrsta građevine nije određena ni u odredbi ni u kontekstu",
+       "vrsta građevine nije određena ni u odredbi ni u uvodu"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 25.): vrsta građevine nije određena ni u odredbi ni u kontekstu; vrsta građevine nije određena ni u odredbi ni u uvodu",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": [
+       "K2"
+      ],
+      "naslov_clanka": "Zona poslovne gradnje uz komunalnu luku (K2)"
+     },
+     {
+      "id": "25.0.0.0.4.2",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 25,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 4,
+      "gradjevina": "osnovna",
+      "parametar": "kis",
+      "operator": "<=",
+      "vrijednost": 1.5,
+      "jedinica": null,
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K2",
+        "dokaz": "Zona poslovne gradnje uz komunalnu luku (K2)",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.2",
+      "dokaz": "Unutar zone poslovne gradnje uz komunalnu luku (K2) planiran je smještaj sadržaja komunalno - servisne namjene. Oblik i veličina građevne čestice utvrdit će se detaljnim planom uređenja (DPU2). Najveći dopušteni koeficijent izgrađenosti (k ig ) iznosi 0,5. Najveći dopušteni koeficijent iskorištenosti (k is ) iznosi 1,5. Najveći dopušteni broj etaža je 4, ali dozvoljene su najviše 2 nadzemne etaže. Visina građevine iznosi najviše 10,0 m, a ukupna visina građevine iznosi najviše 13,0 m. Detaljni uvjeti uređenja i gradnje unutar zone K2 odredit će se detaljnim planom uređenja (DPU 2).",
+      "izvorni_citat": "Najveći dopušteni koeficijent iskorištenosti (k is ) iznosi 1,5.",
+      "normalizirani_citat": "Najveći dopušteni koeficijent iskorištenosti (kis) iznosi 1,5.",
+      "normalizacija": [
+       {
+        "pravilo": "BJELINA_VISESTRUKA",
+        "vrsta": "PRAVOPISNA",
+        "izvorno": "   ",
+        "novo": " ",
+        "od": 50,
+        "do": 53,
+        "izvor_pravila": "Pravopisni znakovi – Bjelina, a) između riječi (str. 33)"
+       }
+      ],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "Najveći",
+        "od": 0,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 25,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 215,
+       "pomak": 257
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "KIS_BEZ_OZNAKE",
+       "SKUPINA_NEPOZNATA",
+       "KONTEKST_IZGUBLJEN"
+      ],
+      "razlozi": [
+       "koeficijent iskoristivosti bez oznake nadzemno/podrum",
+       "vrsta građevine nije određena ni u odredbi ni u kontekstu",
+       "vrsta građevine nije određena ni u odredbi ni u uvodu"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 25.): koeficijent iskoristivosti bez oznake nadzemno/podrum; vrsta građevine nije određena ni u odredbi ni u kontekstu; vrsta građevine nije određena ni u odredbi ni u uvodu",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": [
+       "K2"
+      ],
+      "naslov_clanka": "Zona poslovne gradnje uz komunalnu luku (K2)"
+     },
+     {
+      "id": "v26.25.0.0.0.5.1",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 25,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 5,
+      "gradjevina": "osnovna",
+      "parametar": "etazeMax",
+      "operator": "<=",
+      "vrijednost": 4,
+      "jedinica": null,
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K2",
+        "dokaz": "Zona poslovne gradnje uz komunalnu luku (K2)",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.6",
+      "dokaz": "Najveći dopušteni broj etaža je 4, ali dozvoljene su najviše 2 nadzemne etaže.",
+      "izvorni_citat": "Najveći dopušteni broj etaža je 4, ali dozvoljene su najviše 2 nadzemne etaže.",
+      "normalizirani_citat": "Najveći dopušteni broj etaža je 4, ali dozvoljene su najviše 2 nadzemne etaže.",
+      "normalizacija": [],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "Najveći",
+        "od": 0,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       },
+       {
+        "kod": "NAJVISE",
+        "citat": "najviše",
+        "od": 53,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 25,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 215,
+       "pomak": 322
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "SKUPINA_NEPOZNATA",
+       "KONTEKST_IZGUBLJEN"
+      ],
+      "razlozi": [
+       "vrsta građevine nije određena ni u odredbi ni u kontekstu",
+       "vrsta građevine nije određena ni u odredbi ni u uvodu"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 25.): vrsta građevine nije određena ni u odredbi ni u kontekstu; vrsta građevine nije određena ni u odredbi ni u uvodu",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": [
+       "K2"
+      ],
+      "naslov_clanka": "Zona poslovne gradnje uz komunalnu luku (K2)"
+     },
+     {
+      "id": "v26.25.0.0.0.5.2",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 25,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 5,
+      "gradjevina": "osnovna",
+      "parametar": "etazeNadzemneMax",
+      "operator": "<=",
+      "vrijednost": 2,
+      "jedinica": null,
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": "»ali dozvoljene su najviše N nadzemne etaže« – ograničenje nadzemnih etaža unutar ukupnog broja",
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K2",
+        "dokaz": "Zona poslovne gradnje uz komunalnu luku (K2)",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.6",
+      "dokaz": "Najveći dopušteni broj etaža je 4, ali dozvoljene su najviše 2 nadzemne etaže.",
+      "izvorni_citat": "Najveći dopušteni broj etaža je 4, ali dozvoljene su najviše 2 nadzemne etaže.",
+      "normalizirani_citat": "Najveći dopušteni broj etaža je 4, ali dozvoljene su najviše 2 nadzemne etaže.",
+      "normalizacija": [],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "Najveći",
+        "od": 0,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       },
+       {
+        "kod": "NAJVISE",
+        "citat": "najviše",
+        "od": 53,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 25,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 215,
+       "pomak": 322
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "PARAMETAR_IZVAN_POPISA",
+       "SKUPINA_NEPOZNATA",
+       "KONTEKST_IZGUBLJEN"
+      ],
+      "razlozi": [
+       "parametar nije u zatvorenom popisu uputa za označavanje; prihvaća se tek uz pregled",
+       "vrsta građevine nije određena ni u odredbi ni u kontekstu",
+       "vrsta građevine nije određena ni u odredbi ni u uvodu"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 25.): parametar nije u zatvorenom popisu uputa za označavanje; prihvaća se tek uz pregled; vrsta građevine nije određena ni u odredbi ni u kontekstu; vrsta građevine nije određena ni u odredbi ni u uvodu",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": [
+       "K2"
+      ],
+      "naslov_clanka": "Zona poslovne gradnje uz komunalnu luku (K2)"
+     },
+     {
+      "id": "v26.25.0.0.0.6.3",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 25,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 6,
+      "gradjevina": "osnovna",
+      "parametar": "visinaMax",
+      "operator": "<=",
+      "vrijednost": 10.0,
+      "jedinica": "m",
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K2",
+        "dokaz": "Zona poslovne gradnje uz komunalnu luku (K2)",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.6",
+      "dokaz": "Visina građevine iznosi najviše 10,0 m, a ukupna visina građevine iznosi najviše 13,0 m.",
+      "izvorni_citat": "Visina građevine iznosi najviše 10,0 m, a ukupna visina građevine iznosi najviše 13,0 m.",
+      "normalizirani_citat": "Visina građevine iznosi najviše 10,0 m, a ukupna visina građevine iznosi najviše 13,0 m.",
+      "normalizacija": [],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "najviše",
+        "od": 24,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       },
+       {
+        "kod": "NAJVISE",
+        "citat": "najviše",
+        "od": 73,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 25,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 215,
+       "pomak": 401
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "REFERENTNA_VISINA_NEPOZNATA",
+       "SKUPINA_NEPOZNATA",
+       "KONTEKST_IZGUBLJEN"
+      ],
+      "razlozi": [
+       "nije navedeno od koje do koje točke se mjeri visina",
+       "vrsta građevine nije određena ni u odredbi ni u kontekstu",
+       "vrsta građevine nije određena ni u odredbi ni u uvodu"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 25.): nije navedeno od koje do koje točke se mjeri visina; vrsta građevine nije određena ni u odredbi ni u kontekstu; vrsta građevine nije određena ni u odredbi ni u uvodu",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": [
+       "K2"
+      ],
+      "naslov_clanka": "Zona poslovne gradnje uz komunalnu luku (K2)"
+     },
+     {
+      "id": "v26.25.0.0.0.6.4",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 25,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 6,
+      "gradjevina": "osnovna",
+      "parametar": "ukupnaVisinaMax",
+      "operator": "<=",
+      "vrijednost": 13.0,
+      "jedinica": "m",
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "K2",
+        "dokaz": "Zona poslovne gradnje uz komunalnu luku (K2)",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.6",
+      "dokaz": "Visina građevine iznosi najviše 10,0 m, a ukupna visina građevine iznosi najviše 13,0 m.",
+      "izvorni_citat": "Visina građevine iznosi najviše 10,0 m, a ukupna visina građevine iznosi najviše 13,0 m.",
+      "normalizirani_citat": "Visina građevine iznosi najviše 10,0 m, a ukupna visina građevine iznosi najviše 13,0 m.",
+      "normalizacija": [],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "najviše",
+        "od": 24,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       },
+       {
+        "kod": "NAJVISE",
+        "citat": "najviše",
+        "od": 73,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 25,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 215,
+       "pomak": 401
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "REFERENTNA_VISINA_NEPOZNATA",
+       "PARAMETAR_IZVAN_POPISA",
+       "SKUPINA_NEPOZNATA",
+       "KONTEKST_IZGUBLJEN"
+      ],
+      "razlozi": [
+       "nije navedeno od koje do koje točke se mjeri visina",
+       "parametar nije u zatvorenom popisu uputa za označavanje; prihvaća se tek uz pregled",
+       "vrsta građevine nije određena ni u odredbi ni u kontekstu",
+       "vrsta građevine nije određena ni u odredbi ni u uvodu"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 25.): nije navedeno od koje do koje točke se mjeri visina; parametar nije u zatvorenom popisu uputa za označavanje; prihvaća se tek uz pregled; vrsta građevine nije određena ni u odredbi ni u kontekstu; vrsta građevine nije određena ni u odredbi ni u uvodu",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": [
+       "K2"
+      ],
+      "naslov_clanka": "Zona poslovne gradnje uz komunalnu luku (K2)"
+     }
+    ],
+    "upucivanja": [],
+    "nepokriveno": [],
+    "bez_broja": [
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 1,
+      "dokaz": "Unutar zone poslovne gradnje uz komunalnu luku (K2) planiran je smještaj sadržaja komunalno - servisne namjene."
+     },
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 2,
+      "dokaz": "Oblik i veličina građevne čestice utvrdit će se detaljnim planom uređenja (DPU2)."
+     },
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 7,
+      "dokaz": "Detaljni uvjeti uređenja i gradnje unutar zone K2 odredit će se detaljnim planom uređenja (DPU 2)."
+     }
+    ],
+    "pregled": [],
+    "kontekst": [],
+    "gramatika": "gramatika-v2.2",
+    "naslov_clanka": "Zona poslovne gradnje uz komunalnu luku (K2)"
+   },
+   "26": {
+    "clanak": 26,
+    "vrste": null,
+    "pravila": [
+     {
+      "id": "26.0.0.0.7.1",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 26,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 7,
+      "gradjevina": "osnovna",
+      "parametar": "kig",
+      "operator": "<=",
+      "vrijednost": 1.0,
+      "jedinica": null,
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "T1 1",
+        "dokaz": "Zona T1 1 - hotel",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.2",
+      "dokaz": "Zona T1 1 predstavlja jednu građevnu česticu na kojoj se nalazi postojeća zgrada hotela. Oblik i veličina građevne čestice određeni su u kartografskom prikazu 4. NAČIN I UVJETI GRADNJE. Predviđena minimalna kategorija hotela je 4 zvjezdice. Unutar zone T1 1 gradi se neposrednom provedbom ovog Plana. Moguća je rekonstrukcija postojeće građevine s ciljem podizanja kategorije, prema smjernicama nadležnog tijela zaštite. Najveći dopušteni koeficijent izgrađenosti (k ig ) iznosi 1,0. Najveći dopušteni koeficijent iskorištenosti (k is ) iznosi 3,5. Najveći dopušteni broj nadzemnih etaža je 6 (postojeći broj nadzemnih etaža). Visina i ukupna visina građevine uskladit će se s uličnim nizom i odrediti prema smjernicama nadležnog tijela zaštite. Maksimalni kapacitet hotela je 150 postelja.",
+      "izvorni_citat": "Najveći dopušteni koeficijent izgrađenosti (k ig ) iznosi 1,0.",
+      "normalizirani_citat": "Najveći dopušteni koeficijent izgrađenosti (kig) iznosi 1,0.",
+      "normalizacija": [
+       {
+        "pravilo": "BJELINA_VISESTRUKA",
+        "vrsta": "PRAVOPISNA",
+        "izvorno": "   ",
+        "novo": " ",
+        "od": 48,
+        "do": 51,
+        "izvor_pravila": "Pravopisni znakovi – Bjelina, a) između riječi (str. 33)"
+       }
+      ],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "Najveći",
+        "od": 0,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 26,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 225,
+       "pomak": 421
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "SKUPINA_NEPOZNATA",
+       "KONTEKST_IZGUBLJEN"
+      ],
+      "razlozi": [
+       "vrsta građevine nije određena ni u odredbi ni u kontekstu",
+       "vrsta građevine nije određena ni u odredbi ni u uvodu"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 26.): vrsta građevine nije određena ni u odredbi ni u kontekstu; vrsta građevine nije određena ni u odredbi ni u uvodu",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": [
+       "T1 1"
+      ],
+      "naslov_clanka": "Zona T1 1 - hotel"
+     },
+     {
+      "id": "26.0.0.0.8.2",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 26,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 8,
+      "gradjevina": "osnovna",
+      "parametar": "kis",
+      "operator": "<=",
+      "vrijednost": 3.5,
+      "jedinica": null,
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "T1 1",
+        "dokaz": "Zona T1 1 - hotel",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.2",
+      "dokaz": "Zona T1 1 predstavlja jednu građevnu česticu na kojoj se nalazi postojeća zgrada hotela. Oblik i veličina građevne čestice određeni su u kartografskom prikazu 4. NAČIN I UVJETI GRADNJE. Predviđena minimalna kategorija hotela je 4 zvjezdice. Unutar zone T1 1 gradi se neposrednom provedbom ovog Plana. Moguća je rekonstrukcija postojeće građevine s ciljem podizanja kategorije, prema smjernicama nadležnog tijela zaštite. Najveći dopušteni koeficijent izgrađenosti (k ig ) iznosi 1,0. Najveći dopušteni koeficijent iskorištenosti (k is ) iznosi 3,5. Najveći dopušteni broj nadzemnih etaža je 6 (postojeći broj nadzemnih etaža). Visina i ukupna visina građevine uskladit će se s uličnim nizom i odrediti prema smjernicama nadležnog tijela zaštite. Maksimalni kapacitet hotela je 150 postelja.",
+      "izvorni_citat": "Najveći dopušteni koeficijent iskorištenosti (k is ) iznosi 3,5.",
+      "normalizirani_citat": "Najveći dopušteni koeficijent iskorištenosti (kis) iznosi 3,5.",
+      "normalizacija": [
+       {
+        "pravilo": "BJELINA_VISESTRUKA",
+        "vrsta": "PRAVOPISNA",
+        "izvorno": "   ",
+        "novo": " ",
+        "od": 50,
+        "do": 53,
+        "izvor_pravila": "Pravopisni znakovi – Bjelina, a) između riječi (str. 33)"
+       }
+      ],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "Najveći",
+        "od": 0,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 26,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 225,
+       "pomak": 484
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "KIS_BEZ_OZNAKE",
+       "SKUPINA_NEPOZNATA",
+       "KONTEKST_IZGUBLJEN"
+      ],
+      "razlozi": [
+       "koeficijent iskoristivosti bez oznake nadzemno/podrum",
+       "vrsta građevine nije određena ni u odredbi ni u kontekstu",
+       "vrsta građevine nije određena ni u odredbi ni u uvodu"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 26.): koeficijent iskoristivosti bez oznake nadzemno/podrum; vrsta građevine nije određena ni u odredbi ni u kontekstu; vrsta građevine nije određena ni u odredbi ni u uvodu",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": [
+       "T1 1"
+      ],
+      "naslov_clanka": "Zona T1 1 - hotel"
+     },
+     {
+      "id": "v26.26.0.0.0.9.1",
+      "plan": "UPU Crikvenica centar I (SN PGŽ 18/2008)",
+      "clanak": 26,
+      "stavak": null,
+      "blok": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 9,
+      "gradjevina": "osnovna",
+      "parametar": "etazeNadzemneMax",
+      "operator": "<=",
+      "vrijednost": 6,
+      "jedinica": null,
+      "vrijednost_vrsta": "broj",
+      "vrste": [],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": "postojeći broj nadzemnih etaža",
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "ZONA_PLANA",
+        "oznaka": "T1 1",
+        "dokaz": "Zona T1 1 - hotel",
+        "utvrdjeno_na_lokaciji": false,
+        "izvor": "naslov članka (v2.6)"
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.6",
+      "dokaz": "Najveći dopušteni broj nadzemnih etaža je 6 (postojeći broj nadzemnih etaža).",
+      "izvorni_citat": "Najveći dopušteni broj nadzemnih etaža je 6 (postojeći broj nadzemnih etaža).",
+      "normalizirani_citat": "Najveći dopušteni broj nadzemnih etaža je 6 (postojeći broj nadzemnih etaža).",
+      "normalizacija": [],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "Najveći",
+        "od": 0,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 26,
+      "izvor_stavak": null,
+      "izvor": {
+       "datoteka": "crikvenica_upu_centar_1.prilagodjeno.html",
+       "redak": 225,
+       "pomak": 549
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "PARAMETAR_IZVAN_POPISA",
+       "SKUPINA_NEPOZNATA",
+       "KONTEKST_IZGUBLJEN"
+      ],
+      "razlozi": [
+       "parametar nije u zatvorenom popisu uputa za označavanje; prihvaća se tek uz pregled",
+       "vrsta građevine nije određena ni u odredbi ni u kontekstu",
+       "vrsta građevine nije određena ni u odredbi ni u uvodu"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 26.): parametar nije u zatvorenom popisu uputa za označavanje; prihvaća se tek uz pregled; vrsta građevine nije određena ni u odredbi ni u kontekstu; vrsta građevine nije određena ni u odredbi ni u uvodu",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3",
+      "zone_konteksta": [
+       "T1 1"
+      ],
+      "naslov_clanka": "Zona T1 1 - hotel"
+     }
+    ],
+    "upucivanja": [],
+    "nepokriveno": [
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 1,
+      "dokaz": "Zona T1 1 predstavlja jednu građevnu česticu na kojoj se nalazi postojeća zgrada hotela.",
+      "status": "ODBIJENO",
+      "razlog_kod": [
+       "PREDMET_NEPOZNAT"
+      ],
+      "razlozi": [
+       "predmet odredbe nije u rječniku: »Zona T1 1 predstavlja jednu građevnu česticu na kojoj se nal«"
+      ],
+      "brojevi": [
+       "1"
+      ]
+     },
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 2,
+      "dokaz": "Oblik i veličina građevne čestice određeni su u kartografskom prikazu 4.",
+      "status": "ODBIJENO",
+      "razlog_kod": [
+       "PREDMET_NEPOZNAT"
+      ],
+      "razlozi": [
+       "predmet odredbe nije u rječniku: »Oblik i veličina građevne čestice određeni su u kartografsko«"
+      ],
+      "brojevi": [
+       "4"
+      ]
+     },
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 4,
+      "dokaz": "Predviđena minimalna kategorija hotela je 4 zvjezdice.",
+      "status": "ODBIJENO",
+      "razlog_kod": [
+       "PREDMET_NEPOZNAT"
+      ],
+      "razlozi": [
+       "predmet odredbe nije u rječniku: »Predviđena minimalna kategorija hotela je 4 zvjezdice.«"
+      ],
+      "brojevi": [
+       "4"
+      ]
+     },
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 5,
+      "dokaz": "Unutar zone T1 1 gradi se neposrednom provedbom ovog Plana.",
+      "status": "ODBIJENO",
+      "razlog_kod": [
+       "PREDMET_NEPOZNAT"
+      ],
+      "razlozi": [
+       "predmet odredbe nije u rječniku: »Unutar zone T1 1 gradi se neposrednom provedbom ovog Plana.«"
+      ],
+      "brojevi": [
+       "1"
+      ]
+     },
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 11,
+      "dokaz": "Maksimalni kapacitet hotela je 150 postelja.",
+      "status": "ODBIJENO",
+      "razlog_kod": [
+       "PREDMET_NEPOZNAT"
+      ],
+      "razlozi": [
+       "predmet odredbe nije u rječniku: »Maksimalni kapacitet hotela je 150 postelja.«"
+      ],
+      "brojevi": [
+       "150"
+      ]
+     }
+    ],
+    "bez_broja": [
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 3,
+      "dokaz": "NAČIN I UVJETI GRADNJE."
+     },
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 6,
+      "dokaz": "Moguća je rekonstrukcija postojeće građevine s ciljem podizanja kategorije, prema smjernicama nadležnog tijela zaštite."
+     },
+     {
+      "stavak": null,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 10,
+      "dokaz": "Visina i ukupna visina građevine uskladit će se s uličnim nizom i odrediti prema smjernicama nadležnog tijela zaštite."
+     }
+    ],
+    "pregled": [],
+    "kontekst": [],
+    "gramatika": "gramatika-v2.2",
+    "naslov_clanka": "Zona T1 1 - hotel"
+   }
+  },
+  "automatska_potvrda": 0,
+  "pravno_potvrdeno": false,
+  "statusi": {
+   "PRIJEDLOG": "ACCEPTED – automatski prihvaćen prijedlog (nije pravna potvrda)",
+   "PREGLED": "REVIEW",
+   "ODBIJENO": "REJECTED"
+  },
+  "sazetak": {
+   "clanaka": 4,
+   "prepoznatih_clanaka": 4,
+   "odbijenih_clanaka_skupina": 0,
+   "pravila": 22,
+   "prijedlog": 0,
+   "pregled": 22,
+   "odbijeno": 8
+  },
+  "gramatika_v26": "gramatika-v2.6"
+ },
+ "pravno_potvrdeno": 0
+}
