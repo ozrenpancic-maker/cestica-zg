@@ -1180,7 +1180,14 @@ async function krkTests(){
    ok(v1===480&&/Obujam iz modela kuće/.test(txt(w,"krkKdVolNote"))&&+$(w,"krkKdVol").value===555,"Krk: obujam za komunalni doprinos iz modela kuće (2 × 80 m² × 3 m = 480 m³); ručni upis ostaje"); setv(w,"krkKdVol","600");}
   ok(/9\.558 €/.test(txt(w,"krkKdOut"))&&/43\/2018/.test(txt(w,"sheet"))&&/18,32 €\/m³/.test(txt(w,"sheet")),"Krk: 600 m³ × 15,93 € = 9.558 €; tablica zona (I. zona 18,32 €/m³)");
   setv(w,"krkKdRate","10"); ok(/6\.000 €/.test(txt(w,"krkKdOut")),"Krk: 600 m³ × 10 €/m³ = 6.000 €");
-  setv(w,"krkKdRed","0.3","change"); ok(/2\.500 €/.test(txt(w,"krkKdOut"))&&/prvih 500 m³/.test(txt(w,"krkKdOut")),"Krk, čl. 10.: 30 % samo za prvih 500 m³ (500 × 10 × 0,3 + 100 × 10 = 2.500 €)");
+  // povlašteni obračun (čl. 10.): bez potvrde obaju uvjeta ostaje puni obračun; uz potvrdu 30 % osnovnog iznosa za prvih 500 m³, samoprijava (C)
+  setv(w,"krkKdRed","0.3","change"); ok(/6\.000 €/.test(txt(w,"krkKdOut"))&&/puni obračun/.test(txt(w,"krkKdOut"))&&/nije primijenjen: potvrdi oba uvjeta/.test(txt(w,"krkKdNap"))&&!$(w,"krkKdUvjeti").hidden,"Krk, čl. 10.: izbor povlastice bez potvrde uvjeta → puni obračun 6.000 € i poruka");
+  $(w,"krkKdUv1").checked=true; $(w,"krkKdUv1").dispatchEvent(new w.Event("change",{bubbles:true})); ok(/6\.000 €/.test(txt(w,"krkKdOut")),"Krk, čl. 10.: samo jedan potvrđen uvjet → puni obračun");
+  $(w,"krkKdUv2").checked=true; $(w,"krkKdUv2").dispatchEvent(new w.Event("change",{bubbles:true}));
+  ok(/2\.500 €/.test(txt(w,"krkKdOut"))&&/samoprijava/.test(txt(w,"krkKdOut"))&&/30 % osnovnog iznosa \(to nije popust od 30 %\)/.test(txt(w,"krkKdNap"))&&/Grad Krk/.test(txt(w,"krkKdNap"))&&E("PZREG").items.get("kd-krk").raz==="C","Krk, čl. 10.: oba uvjeta potvrđena → 500 × 10 × 0,3 + 100 × 10 = 2.500 €, samoprijava, razina C");
+  ok(/plaća se 30 % osnovnog iznosa za prvih 500 m³/.test($(w,"krkKdRed").options[1].textContent),"Krk: naziv povlastice: plaća se 30 % osnovnog iznosa za prvih 500 m³");
+  $(w,"krkKdUv1").checked=false; $(w,"krkKdUv2").checked=false; $(w,"krkKdUv1").dispatchEvent(new w.Event("change",{bubbles:true}));
+  ok(/6\.000 €/.test(txt(w,"krkKdOut"))&&E("PZREG").items.get("kd-krk").raz==="B","Krk: poništena potvrda → opet puni obračun (B)");
   ok(E("krkKdTotal")(400,10,0.3)===1200,"Krk, čl. 10.: 400 m³ × 10 × 0,3 = 1.200 €");
   setv(w,"krkKdRed","1","change");
   // mala čestica: 20 × 18 m = 360 m² < 400
@@ -1827,7 +1834,7 @@ async function gpTests(){
   // prikaz u Zagrebu: s cestama iz OSM-a
   const d=data(w,A,"2.2."), envO={v:{roads:[],roadLines:road,stops:[]}}; d.env=envO; w.__env=d.envelope; E("OPEN").add("calc"); E("OPEN").add("gp"); E("render")(d);
   const t=txt(w,"sheet"), R=E("PZREG").items.get("gp-podrucje");
-  ok(/Područje za gradnju/.test(t)&&/Geometrijski moguć tlocrt/.test(t)&&R&&R.raz==="C"&&/OpenStreetMapa/.test(R.razlog)&&E("gpLayer").getLayers().length===2,"Zagreb: obris i pojas uz cestu na karti; područje C jer je strana uz cestu procjena");
+  ok(/Teorijski prostor za gradnju/.test(t)&&/Teorijski prostor za kuću \(samo odmak/.test(t)&&/Teorijska geometrijska procjena, nije potvrđeno dopušteno područje gradnje/.test(t)&&/Teorijski prostor je geometrijska procjena/.test(t)&&!/Drugi scenarij odmaka/.test(t)&&!w.document.querySelector("[data-teorijski-prostor]")&&/Geometrijski moguć tlocrt/.test(t)&&R&&R.raz==="C"&&/OpenStreetMapa/.test(R.razlog)&&E("gpLayer").getLayers().length===2,"Zagreb: obris i pojas uz cestu na karti; područje C jer je strana uz cestu procjena");
   {const d2=data(w,A,"2.2."); d2.env={v:{roads:[],roadLines:kroz,stops:[]}}; w.__env=d2.envelope; E("render")(d2); const t2=txt(w,"sheet");
    ok(/Os ceste iz OpenStreetMapa prolazi kroz česticu/.test(t2)&&/Cesta i katastar/.test(t2)&&/katastar i stvarno stanje/.test(E("PZREG").items.get("gp-podrucje").razlog)&&E("PZREG").items.get("gp-podrucje").raz==="C","Zagreb: cesta kroz česticu → upozorenje u „Prije svega provjeri” i u „Području za gradnju”, pouzdanost C");}
   $(w,"gpTog").dispatchEvent(new w.Event("click",{bubbles:true})); ok(E("gpLayer").getLayers().length===0,"Područje za gradnju: skrivanje s karte");
@@ -2123,6 +2130,56 @@ async function pravnaTests(){
   ok(errs.length===0,"bez JS grešaka (pravna provjera): "+errs.join(" | "));
 }
 
+// v0.24.19: formule (bez promjene vrijednosti), teorijski prostor za gradnju na Krku, scenariji odmaka od ceste, povlastica komunalnog doprinosa
+async function formulaTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), R=E("RULES_KRK"), T=w.turf, fs=require("fs"), crypto=require("crypto");
+  // očuvanje pravila: rules_krk.json se u ovoj verziji ne mijenja (promjena tek nakon neovisne provjere)
+  const sha=crypto.createHash("sha256").update(fs.readFileSync(path.join(__dirname,"..","src","rules_krk.json"))).digest("hex");
+  ok(sha==="25276bb035ce0dd582a4020deb52b1add142170d696615fceb5cce688da1580d","Pravila: src/rules_krk.json nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
+  const t0=R.tipovi.obit, u2=R.upu["UPU 2"];
+  ok(t0.slob.minC===500&&t0.slob.minCIznimno===400&&t0.slob.izg===0.25&&t0.slob.kis===0.5&&t0.slob.kisPodrum===0.75&&t0.slob.tlMax===200&&t0.gbpMax===200&&t0.visina===6.5&&R.meda.min===4&&R.regulacija.ostale===4&&R.regulacija.razvrstane===6&&u2.tipovi.obit.slob.kis===0.75&&u2.kisUkupni===true&&R.komunalniDoprinos.tecaj===7.5345,"Pravila: učitane vrijednosti PPUG-a i UPU-a 2 jednake su dosadašnjima");
+  // komunalni doprinos: 9 slučajeva iz neovisnog audita v0.24.18 (krkKdTotal)
+  const KD=E("krkKdTotal"), C9=[[0,10,1,null],[1,10,1,10],[500,10,1,5000],[500,10,0.3,1500],[501,10,0.3,1510],[800,10,0.3,4500],[1000,10,1,10000],[400,2.5,0.3,300],[100,-1,1,null]];
+  const los=C9.filter(([v,r,k,e])=>{const g=KD(v,r,k); return e===null?g!==null:Math.abs(g-e)>1e-9;});
+  ok(los.length===0,"Komunalni doprinos: 9/9 rubnih slučajeva (0, 1, 500, 501, 800, 1000 m³, negativna stopa): "+JSON.stringify(los));
+  ok(Math.abs(KD(499.5,10,0.3)-1498.5)<1e-9&&Math.abs(KD(500.5,10,0.3)-1505)<1e-9,"Komunalni doprinos: granica 500 m³ (499,5 i 500,5 m³)");
+  const F=E("krkKdFaktor"); ok(F("0.3",true,true)===0.3&&F("0.3",true,false)===1&&F("0.3",false,true)===1&&F("0.3",undefined,undefined)===1&&F("1",true,true)===1&&F(0.3,true,true)===0.3&&F("0.3","true",true)===1,"Komunalni doprinos: povlastica samo uz izričitu potvrdu obaju uvjeta; inače puni obračun");
+  // formule kalkulatora (bez promjene): tlocrt i GBP = min(površina × koeficijent, najveća vrijednost); UPU 2 (kis ukupni) nema posebnog GBP-a s podrumom
+  const red=(o)=>({p:Object.assign({OPCINA_GRAD:"KRK",POLAZNA_NAMJENA:"građevinsko područje",PRIMARNA_NAMJENA:"naselje",IZGRADJENOST:"izgrađeni dio",NASELJE:"Kornić"},o||{}),share:1});
+  const d=(P,o)=>Object.assign({rows:[red()],pl:{v:[]},area:T.area(P),parcel:P,ll:{lat:45.05,lng:14.6}},o||{});
+  const prikaz=dd=>{ const div=w.document.createElement("div"); div.innerHTML=E("krkRulesHtml")(dd).replace("%%PREK%%",""); return div; };
+  E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
+  const P1=parcelRect(30,20); E("pzReset")("f1"); let el=prikaz(d(P1)); let Cc=E("window.__krkCalc"), A=Cc.A;
+  ok(Math.abs(Cc.tl-Math.min(A*0.25,200))<1e-6&&Math.abs(Cc.gbpN-Math.min(A*0.5,200))<1e-6&&Math.abs(Cc.gbpP-Math.min(A*0.75,200))<1e-6,"Formule PPUG (600 m²): tlocrt = min(A × 0,25; 200), GBP = min(A × 0,5; 200), s podrumom min(A × 0,75; 200): "+[Cc.tl,Cc.gbpN,Cc.gbpP].map(x=>x.toFixed(1)).join(" / "));
+  const P2=parcelRect(40,40); E("pzReset")("f2"); prikaz(d(P2)); Cc=E("window.__krkCalc");
+  ok(Cc.tl===200&&Cc.gbpN===200&&Cc.gbpP===200,"Formule PPUG (1.600 m²): gornje granice tlocrta i GBP-a (200 m²) ograničavaju izračun");
+  const RS=u2, TT=RS.tipovi.obit, dd=d(P1); dd.rows=[red()]; E("pzReset")("f3");
+  E("krkCalcHtml")(dd,{izgr:dd.rows,st:"upu",notes:[]},RS,TT,TT.slob,"slob",true); Cc=E("window.__krkCalc");
+  ok(Cc.gbpP===null&&Math.abs(Cc.gbpN-Math.min(Cc.A*0.75,200))<1e-6,"Formule UPU 2: kis je ukupni (kisUkupni) → nema posebnog GBP-a s podrumom; GBP = min(A × 0,75; 200)");
+  // teorijski prostor: upozorenje, h/2 samo objašnjeno, regulacijski pravac nije os ceste
+  E("pzReset")("f4"); el=prikaz(d(P1)); const tx=el.textContent.replace(/\s+/g," ");
+  const v=el.querySelector('[data-teorijski-prostor="krk"]');
+  ok(v&&v.classList.contains("v-warn")&&/Teorijska geometrijska procjena, nije potvrđeno dopušteno područje gradnje/.test(v.textContent)&&/samo odmak 4 m od svih međa/.test(v.textContent)&&/pravilo h\/2/.test(v.textContent)&&/Teorijski prostor za kuću \(samo odmak 4 m od međa/.test(tx),"Krk: teorijski prostor jasno označen kao geometrijska procjena (v-warn), s popisom neuračunatih uvjeta");
+  const h2=el.querySelector('[data-krk-h2]'), rg=el.querySelector('[data-krk-regulacija]');
+  ok(h2&&/ne izračunava/.test(h2.textContent)&&/visinu h/.test(h2.textContent)&&rg&&/To nije os ceste/.test(rg.textContent)&&/oba scenarija, 4 m i 6 m/.test(rg.textContent)&&/Nijedan nije konačan/.test(rg.textContent),"Krk: h/2 objašnjen bez izračuna; regulacijski pravac razlikovan od osi ceste; oba scenarija (4 m i 6 m) nisu konačni");
+  ok(Math.abs(E("window.__env").area-T.area(T.buffer(P1,-4/1000,{units:"kilometers"})))<0.5,"Krk: teorijski prostor i dalje je odmak 4 m od međa (izračun nepromijenjen)");
+  // scenariji odmaka od ceste: cesta uz južnu stranu, 4 m i 6 m od regulacijskog pravca
+  const c=P1.geometry.coordinates[0], dy=4/110540, road=[{ok:true,geom:[[c[0][0]-0.001,c[0][1]-dy],[c[1][0]+0.001,c[1][1]-dy]]}];
+  E("pzReset")("f5"); el=prikaz(d(P1,{env:{v:{roads:[],roadLines:road,stops:[]}}})); const G1=E("window.__gp");
+  const gtx=el.textContent.replace(/\s+/g," "), m=gtx.match(/Drugi scenarij odmaka od ceste ?([\d.]+) m²/);
+  const env=T.buffer(P1,-4/1000,{units:"kilometers"}).geometry, G4=E("gradivo")(P1,env,4,4,road), G6=E("gradivo")(P1,env,4,6,road);
+  ok(G1&&G1.st==="primijenjen"&&G1.pravacD===4&&Math.abs(G1.area-G4.area)<0.01&&G6.area<G4.area&&m&&Math.abs(+m[1].replace(/\./g,"")-Math.round(G6.area))<=1&&/nijedan scenarij nije konačan/.test(gtx)&&/Teorijski prostor za gradnju/.test(gtx),"Krk: ceste uz česticu → prvi scenarij 4 m ("+Math.round(G4.area)+" m²), drugi 6 m ("+Math.round(G6.area)+" m²), oba označena kao nekonačna");
+  E("pzReset")("f6"); el=prikaz(d(P1)); ok(!/Drugi scenarij odmaka/.test(el.textContent)&&/oba scenarija, 4 m i 6 m/.test(el.textContent),"Krk: bez učitanih cesta nema površine drugog scenarija, ali ograničenje je navedeno");
+  // UPU 2: udaljenost od osi ceste navedena, ne računa se; h/2 iz posebnog područja
+  const nap=E("krkProstorNapomena")(u2,E("krkRegDist")(u2),null,null);
+  ok(/najmanju udaljenost od osi ceste/.test(nap)&&/ne računa/.test(nap)&&/6 m/.test(nap)&&/data-krk-h2/.test(nap),"UPU 2: udaljenost od osi ceste (9 m / 7 m) navedena i ne računa se; h/2 iz zone »B« objašnjen");
+  {const kh=E("krkCostHtml")(d(P1),true,"Krk"); ok(/Prijedlog obujma \(samo informativna procjena aplikacije, nije propis\)/.test(kh)&&/puni obračun \(bez povlastice\)/.test(kh)&&/id="krkKdUvjeti" hidden/.test(kh)&&!/checked/.test(kh),"Komunalni doprinos: zadano puni obračun, uvjeti skriveni i nepotvrđeni; obujam GBP × 3 m samo informativno");}
+  // ostale općine: bez promjene izračuna, isto upozorenje o teorijskom prostoru
+  const J=R.ostaleJls["MALINSKA-DUBAŠNICA"]; E("pzReset")("f7"); el=prikaz(d(P1,{rows:[red({OPCINA_GRAD:"MALINSKA-DUBAŠNICA",NASELJE:"Malinska",OZNAKA_NAMJENE:((J.grupe||[])[0]&&(J.grupe[0].oznake||[])[0])||""})]}));
+  ok(el.querySelector(".rule-title")&&el.querySelector('[data-teorijski-prostor="krk"]')&&!el.querySelector("[data-pravna-provjera]"),"Malinska-Dubašnica: isti prikaz teorijskog prostora, bez upozorenja o pravnoj provjeri PPUG-a Krk");
+  ok(errs.length===0,"bez JS grešaka (formule v0.24.19): "+errs.join(" | "));
+}
+
 // osunčanost dvorišta, vjetar i bura, pogled na more, promjene na spremljenoj čestici (čiste funkcije i prikaz)
 async function napTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -2316,7 +2373,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
