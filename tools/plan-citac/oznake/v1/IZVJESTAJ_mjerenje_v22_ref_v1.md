@@ -57,26 +57,31 @@ Preciznost = (točno + granularnost) / (točno + granularnost + pogrešno).
 | ZAMRZNUTO_v2_2.json (ulaz) | `5c8b834528cbb55833b2ea034817c0f7433e38af48e9d56dc5603569d807b733` |
 
 ## Dopuna v1.1: odluka suca o kontekstu članka (26. 10. 2026.)
-Sudac je za 12 pogrešaka zbog uvjeta iz uvoda stavka odlučio: »Za ovih 12 više obiteljska kuća ili građevina stambene namjene ima isto značenje«. Zapis je u `odluke_suca_v1_1.json`.
-- Uvjet iz uvoda koji ponavlja predmet članka ne mora biti u uvjetu pravila iz tog članka i stavka. Popis je zatvoren: čl. 22. st. 2., 23. st. 2., 20. st. 3., 39. st. 2. i 50. st. 4.
+Zapis je u `odluke_suca_v1_1.json`.
+- **Izjava suca:** »Za ovih 12 više obiteljska kuća ili građevina stambene namjene ima isto značenje«.
+- **Pojašnjenje za čl. 39. i 50.:** »ne, uvjet mora biti upisan«.
+- **Primjena:**
+  - uvjet iz uvoda stavka ne mora biti u uvjetu pravila samo za čl. 22. st. 2., 23. st. 2. i 20. st. 3. (obiteljska i višeobiteljska kuća, građevine stambene namjene);
+  - za čl. 39. st. 2. (društvene i sportsko-rekreacijske namjene) i 50. st. 4. (gospodarske namjene) uvjet mora biti upisan.
 - Takvi se slučajevi broje zasebno, kao pravilo KONTEKST_CLANKA_v1_1.
 - Referentni skup v1 i mjerenje v1 ne mijenjaju se. Novo mjerenje je u `mjerenje_v22_ref_v1_1.json`.
 
 | | v1 | v1.1 |
 |---|---|---|
 | točno | 31 | 31 |
-| točno uz pravilo granularnosti | 30 | 42 |
-| pogrešno prihvaćeno | 16 | 4 |
-| pravilno na pregled | 14 | 15 |
-| propušteno | 189 | 175 |
-| preciznost prihvaćenih | 0,792 | 0,948 |
-| prihvaćeno od JASAN | 0,401 | 0,480 |
+| točno uz pravilo granularnosti | 30 | 39 |
+| pogrešno prihvaćeno | 16 | 7 |
+| propušteno | 189 | 178 |
+| preciznost prihvaćenih | 0,792 | 0,909 |
+| prihvaćeno od JASAN | 0,401 | 0,461 |
 
-Preostale 4 pogreške su razlike u klasifikaciji. Nijedna nije pogrešna brojka:
-- UVJETNO ili OSNOVNO (UPU 1 čl. 24., dva slučaja);
-- jednakost ili dopuštenje (PPUG čl. 25.);
-- nedostaje »(nova)« (UPU 1 čl. 14.).
+**Preostalih 7 pogrešaka; nijedna nije pogrešna brojka:**
+- **3 slučaja (čl. 39. i 50.):** nedostaje uvjet »uz građevine … namjene«. Po odluci suca to je stvarna pogreška čitača.
+- **2 slučaja (UPU 1 čl. 24.):** UVJETNO ili OSNOVNO.
+- **1 slučaj (PPUG čl. 25.):** jednakost ili dopuštenje.
+- **1 slučaj (UPU 1 čl. 14.):** nedostaje »(nova)«.
 
 | Datoteka | SHA-256 |
 |---|---|
-| mjerenje_v22_ref_v1_1.json | `78595bc0a60a4b1e9c33b7c8206e80860194e17e42fc662df13bea242274129c` |
+| odluke_suca_v1_1.json | `492b3e8de4ba32a0795e58124ae6161ba246d42c51821f54b8676f82714ac0d7` |
+| mjerenje_v22_ref_v1_1.json | `8f35a36e0248f9abf3f8f6da637274d64798f64e7998eade10621d0920235c14` |

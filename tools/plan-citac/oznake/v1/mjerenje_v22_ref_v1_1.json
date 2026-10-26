@@ -1113,17 +1113,17 @@
     "oznaka_JASAN": 42,
     "zapisa_modula": 12,
     "tocno_prihvaceno": 2,
-    "tocno_uz_pravilo_granularnosti": 5,
-    "pogresno_prihvaceno": 0,
+    "tocno_uz_pravilo_granularnosti": 2,
+    "pogresno_prihvaceno": 3,
     "pravilno_na_pregled": 0,
     "nepotrebno_na_pregled": 0,
     "pregled_bez_oznake": 5,
-    "propusteno": 70,
+    "propusteno": 73,
     "preciznost_prihvacenih_strogo": 0.286,
-    "preciznost_prihvacenih": 1.0,
-    "pokrivenost_izdvajanja": 0.091,
-    "pokrivenost_prihvacanja": 0.091,
-    "pokrivenost_prihvacanja_od_JASAN": 0.167,
+    "preciznost_prihvacenih": 0.571,
+    "pokrivenost_izdvajanja": 0.052,
+    "pokrivenost_prihvacanja": 0.052,
+    "pokrivenost_prihvacanja_od_JASAN": 0.095,
     "udio_pregleda": 0.417
    },
    "detalji": {
@@ -1139,7 +1139,62 @@
       "jednoznacnost_oznake": "JASAN"
      }
     ],
-    "pogresno": [],
+    "pogresno": [
+     {
+      "id": "39.2.-.5.1.1",
+      "clanak": 39,
+      "stavak": 2,
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "vrsta_gradevine": "pomoćna građevina",
+      "operator": ">=",
+      "vrijednost": 5.0,
+      "uvjet": "",
+      "vrsta_pravila": "OSNOVNO",
+      "citat": "najmanja dopuštena udaljenost od regulacijskog pravca iznosi 5,0 metara.",
+      "najbliza_oznaka": [
+       "R044",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "id": "50.4.-.5.1.1",
+      "clanak": 50,
+      "stavak": 4,
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "vrsta_gradevine": "pomoćna građevina",
+      "operator": ">=",
+      "vrijednost": 5.0,
+      "uvjet": "",
+      "vrsta_pravila": "OSNOVNO",
+      "citat": "najmanja dopuštena udaljenost od regulacijskog pravca iznosi 5,0 metara.",
+      "najbliza_oznaka": [
+       "R067",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "id": "50.4.-.6.4.2",
+      "clanak": 50,
+      "stavak": 4,
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "vrsta_gradevine": "pomoćna građevina",
+      "operator": ">=",
+      "vrijednost": 4.0,
+      "uvjet": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+      "vrsta_pravila": "IZNIMKA",
+      "citat": "Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 4,0 metra.",
+      "najbliza_oznaka": [
+       "R072",
+       [
+        "uvjet"
+       ]
+      ]
+     }
+    ],
     "pregled": [
      {
       "id": "20.3.-.8.1.3",
@@ -1206,27 +1261,6 @@
      {
       "id": "20.3.-.6.4.2",
       "oznaka": "R018",
-      "pravila": [
-       "KONTEKST_CLANKA_v1_1"
-      ]
-     },
-     {
-      "id": "39.2.-.5.1.1",
-      "oznaka": "R044",
-      "pravila": [
-       "KONTEKST_CLANKA_v1_1"
-      ]
-     },
-     {
-      "id": "50.4.-.5.1.1",
-      "oznaka": "R067",
-      "pravila": [
-       "KONTEKST_CLANKA_v1_1"
-      ]
-     },
-     {
-      "id": "50.4.-.6.4.2",
-      "oznaka": "R072",
       "pravila": [
        "KONTEKST_CLANKA_v1_1"
       ]
@@ -1816,6 +1850,17 @@
       ]
      },
      {
+      "oznaka": "R044",
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "39.2.-.5.1.1",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
       "oznaka": "R045",
       "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
       "jednoznacnost": "PREGLED",
@@ -2140,6 +2185,17 @@
       ]
      },
      {
+      "oznaka": "R067",
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "50.4.-.5.1.1",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
       "oznaka": "R068",
       "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
       "jednoznacnost": "PREGLED",
@@ -2193,6 +2249,17 @@
        [
         "parametar",
         "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R072",
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "50.4.-.6.4.2",
+       [
         "uvjet"
        ]
       ]
@@ -3741,21 +3808,21 @@
   "oznaka_JASAN": 152,
   "zapisa_modula": 131,
   "tocno_prihvaceno": 31,
-  "tocno_uz_pravilo_granularnosti": 42,
-  "pogresno_prihvaceno": 4,
+  "tocno_uz_pravilo_granularnosti": 39,
+  "pogresno_prihvaceno": 7,
   "pravilno_na_pregled": 15,
   "nepotrebno_na_pregled": 5,
   "pregled_bez_oznake": 34,
-  "propusteno": 175,
+  "propusteno": 178,
   "preciznost_prihvacenih_strogo": 0.403,
-  "preciznost_prihvacenih": 0.948,
-  "pokrivenost_izdvajanja": 0.347,
-  "pokrivenost_prihvacanja": 0.272,
-  "pokrivenost_prihvacanja_od_JASAN": 0.48,
+  "preciznost_prihvacenih": 0.909,
+  "pokrivenost_izdvajanja": 0.336,
+  "pokrivenost_prihvacanja": 0.261,
+  "pokrivenost_prihvacanja_od_JASAN": 0.461,
   "udio_pregleda": 0.412
  },
  "dopuna_odluka": {
   "datoteka": "oznake/v1/odluke_suca_v1_1.json",
-  "sha256": "c266a04de984b7bf99e364967f7352e444062b04bbb6a29bb6ccf371b44f528c"
+  "sha256": "492b3e8de4ba32a0795e58124ae6161ba246d42c51821f54b8676f82714ac0d7"
  }
 }

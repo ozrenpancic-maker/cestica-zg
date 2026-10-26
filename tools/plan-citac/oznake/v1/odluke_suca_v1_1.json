@@ -6,10 +6,26 @@
  "povod": "IZVJESTAJ_mjerenje_v22_ref_v1.md: 12 »pogrešno prihvaćenih« pravila kojima nedostaje uvjet iz uvoda stavka.",
  "primjena": "Uvjet iz uvoda stavka koji ponavlja predmet članka (građevinu uz koju se gradi) ne mora biti upisan u uvjet pravila ako je pravilo iz tog članka i stavka. Zatvoren popis ispod; broji se zasebno kao KONTEKST_CLANKA_v1_1.",
  "kontekst_clanka": [
-  {"clanak": 22, "stavak": 2, "uvjet": "na građevnoj čestici uz obiteljsku kuću"},
-  {"clanak": 23, "stavak": 2, "uvjet": "na građevnoj čestici uz višeobiteljsku kuću"},
-  {"clanak": 20, "stavak": 3, "uvjet": "uz građevine stambene namjene"},
-  {"clanak": 39, "stavak": 2, "uvjet": "uz građevine društvene i sportsko-rekreacijske namjene"},
-  {"clanak": 50, "stavak": 4, "uvjet": "uz građevine gospodarske namjene"}
- ]
+  {
+   "clanak": 22,
+   "stavak": 2,
+   "uvjet": "na građevnoj čestici uz obiteljsku kuću"
+  },
+  {
+   "clanak": 23,
+   "stavak": 2,
+   "uvjet": "na građevnoj čestici uz višeobiteljsku kuću"
+  },
+  {
+   "clanak": 20,
+   "stavak": 3,
+   "uvjet": "uz građevine stambene namjene"
+  }
+ ],
+ "pojasnjenje_suca": {
+  "datum": "2026-10-26",
+  "pitanje": "Vrijedi li za čl. 39. i 50. isto kao za čl. 23. (pravilo vezano uz svoj stavak, bez ponavljanja izraza u uvjetu)?",
+  "odgovor": "ne, uvijet mora biti upisan",
+  "primjena": "čl. 39. st. 2. i čl. 50. st. 4. uklonjeni s popisa; za njih uvjet iz uvoda mora biti u uvjetu pravila."
+ }
 }
