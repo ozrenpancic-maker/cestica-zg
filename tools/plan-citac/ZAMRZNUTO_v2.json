@@ -1,0 +1,36 @@
+{
+ "datum": "2026-10-26",
+ "verzija": "v2.1",
+ "opis": "Zamrznut čitač v2.1 (gramatika_v2 + jezični sloj) prije neovisnog označavanja i slijepog testa na UPU 1 – Krk. Kod se ne mijenja nakon uvida u rezultat bez nove razvojne verzije.",
+ "kod": {
+  "citac.py": "8dc9d6499ac781df575f62a25fcf0bcf6a2ae1505a388b6295d768632741be33",
+  "citac_tekst.py": "9c42aab0d7167a5c963a8830e0b3b84165729c9181140540be7993f5ee64aab9",
+  "gramatika.py": "8c39cea4b959c67c18252956ce38ab5e2ec8789de734bc3fd35fd88757ec4574",
+  "strukturiraj.py": "b21885c593fc0a0cf58df9049a4b4097e5c0f7025e3156ae08b7c980a78addfa",
+  "ocijeni.py": "b6196fe9340c958f48d4319608a5c65f93adae9b939740293bac68d83cc152ff",
+  "ocijeni_neovisno.py": "dca6ff2c723959ac0d8325f3cd0c25462827f3a140685f5beee629e23001fdef",
+  "gramatika_v2.py": "c215de66e3cb27973961355f2c1d91763ac4e52b74b37cfa60a01bfc91ff4190",
+  "strukturiraj_v2.py": "2914f53f5d389861f4ba602df2d1226a21a65d6990f6f092176f26c695153a23",
+  "jezik_hr.py": "84196e5ae57c484438acaef2fecc1ca5bf584f9b07d6d039bbf682db8f3581cf",
+  "semantika_hr.py": "e1f336b37824690af19c63197f632b3d4acaf0050c85ee99dc674c517cbafa15",
+  "usporedi_v2.py": "90945101f1e8c11b67564250a66ab34cd8fc969e72d33d9245e3166a843ef6df",
+  "slijepi_v2.py": "329787255a1910e43e1c981f3d0d03cafe782f9feef3962aefc03fc5564c0125",
+  "test_v2.py": "1bfcd9551039cd5af6950e6a0dd4ec26ceae7bf6f99f029ebf8ce7cc6476d4fd"
+ },
+ "mapiranje": {
+  "oznake/neovisno_cl25_33/mapiranje_v2.json": "d8b5a6b3df42bd3ef74b877e32128a5ff496807350639a2764bdba6c191d1a4c",
+  "oznake/neovisno/mapiranje.json": "904acf7348db37e81049730e2544c05329d3f5ffa86170cc7f47ed284606545b"
+ },
+ "izlazi": {
+  "izlaz/ppug_v2_1.json": "acd989da30b9f03c25e8fb487bf51edefda6a0bc7c5d5e8499ab6e9fa103d321",
+  "izlaz/usporedba_v2_1.json": "650e432ea8734d16aa58ac4313c9b526866bd86d4e8ad3c3e61625c2ce3a1df8"
+ },
+ "za_oznacavanje": {
+  "slijepo/ppug_krk/slijepi_v2/za_oznacavanje_upu1.txt": "e3a0dcc6a2039f03eaf9254117c4ea0b57d2e70508a3a30660643afff6918566",
+  "slijepo/ppug_krk/slijepi_v2/odabir.json": "502c2debcee660fcdaaebd8c675dcdc0119fcd6a6334a716e008c054ae42f0d0"
+ },
+ "pomocni_izvor": {
+  "Hrvatski pravopis IHJJ, radna inačica 2013. (nije u repozitoriju)": "33cbbfa705f8603929d0f358c9d820385ec9de7b0e7ba4e4e780ec959a79f87c"
+ },
+ "pravilo": "Nakon zamrzavanja: neovisne oznake → zamrzavanje oznaka → usporedba. Izmjena koda nakon uvida u rezultat otvara novu razvojnu verziju (v2.2)."
+}
