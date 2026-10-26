@@ -1,0 +1,56 @@
+{
+ "verzija": "mapiranje-cl25_33/v2.1",
+ "opis": "Mapiranje naziva iz izlaza modula (gramatika v2.1) u nazive zamrznutih neovisnih oznaka čl. 25. i 33. (SHA-256 b47d15c3…). Oznake se ne mijenjaju: preslikava se samo zapis izlaza modula prije usporedbe. Mapiranje je napisano NAKON uvida u oznake (razvojni skup).",
+ "oznake_sha256": "b47d15c3f8d8005e53f9d1f44414155658177c30e16cf64e29a4f626f03c452d",
+ "parametri": {
+  "minC": "najmanja površina građevne čestice",
+  "maxC": "najveća površina građevne čestice",
+  "tlMin": "najmanja površina tlocrtne projekcije građevine",
+  "tlMax": "najveća površina tlocrtne projekcije građevine",
+  "kig": "najveći koeficijent izgrađenosti (kig)",
+  "kisNadzemni": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+  "kisPodrum": "najveći koeficijent iskoristivosti (kis)",
+  "nacinGradnje": "način gradnje",
+  "dopustenaGradnja": "dopuštenost gradnje na čestici stambene građevine",
+  "visinaMax": "najveća visina građevine",
+  "gradjevniPravac": "položaj građevnog pravca",
+  "udaljenostOdGraniceCestice": "najmanja udaljenost od granice građevne čestice",
+  "regulacija": "najmanja udaljenost od regulacijskog pravca",
+  "oblikKrovista": "oblik krovišta",
+  "vrstaKosogKrovista": "vrsta kosog krovišta",
+  "nagibKrova": "nagib krovnih ploha",
+  "pokrovKosogKrova": "vrsta pokrova",
+  "rekonstrukcijaIPrenamjena": "rekonstrukcija i prenamjena",
+  "rekonstrukcijaAkoNisuIspunjeniUvjeti": "gabariti pri rekonstrukciji",
+  "nacinPrislanjanja": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+  "udaljenostIstakaOdGraniceSusjedneGradjevine": "najmanja udaljenost istaka od granice susjedne građevine",
+  "udaljenostIstakaOdGraniceCestice": "najmanja udaljenost istaka od granice građevne čestice"
+ },
+ "operatori": {">=": ">=", "<=": "<=", "=": "=", "izmedju": "izmedju", "max(h/2, X)": "max(h/2, X)", "dopusteno": "dopustenje", "zabranjeno": "zabrana", "opis": "opis", "nije_propisano": "nije_propisano"},
+ "skupine": {"stamb": "stambena građevina", "poljoprivredna": "poljoprivredna gospodarska građevina", "obit+visobit": "obiteljska/višeobiteljska kuća", "obit": "obiteljska kuća", "visobit": "višeobiteljska kuća"},
+ "oblici": {"slob": "slobodnostojeća", "dvoj+ugr": "dvojna/ugrađena", "ostali": "ostali oblici"},
+ "stanje": {"nova": " (nova)", "postojeca": " (postojeća)"},
+ "uz_podrum": " (s podrumom)",
+ "vrsta_gradevine_istoznacnice": {
+  "stambena građevina – ostali oblici": "stambena građevina – dvojna/ugrađena (poluugrađena, u nizu)",
+  "stambena građevina": ["stambena građevina – samostojeća"]
+ },
+ "vrsta_gradevine_istoznacnice_napomena": "Zapis dopuštenja »samo kao samostojeće« modul vodi uz skupinu bez oblika (oblik je vrijednost pravila), a oznaka N008 ima oblik u nazivu građevine; zabrana ostalih oblika (N009) u oznaci nabraja ostale oblike, a modul ih ne nabraja.",
+ "vrijednosti": {
+  "samostojeće": "samostojeća",
+  "ravna ili kosa": "ravno ili koso",
+  "jednostrešna, dvostrešna ili višestrešna": "jednostrešno, dvostrešno ili višestrešno",
+  "samo u postojećim tlocrtnim i visinskim gabaritima": "postojeći tlocrtni i visinski gabariti",
+  "svi načini gradnje osim: samostojeće": "svi načini gradnje osim samostojećeg"
+ },
+ "jedinica": "Brojčani koeficijent bez jedinice → »koeficijent«; opisna vrijednost → »opis«; NIJE_PROPISANO → null.",
+ "granularnost": [
+  "Interval: nagibKrovaMin i nagibKrovaMax iste odredbe (isto polje »interval«) uspoređuju se kao JEDAN zapis s operatorom »izmedju« i vrijednošću »min–max«, jer oznaka N018 ima jedan zapis. Obje granice ostaju zasebna pravila u izlazu i svaka je pojedinačno provjerljiva (polje »komponente«); zapis je PREGLED ako je bilo koja granica PREGLED. Jedno izvorno ograničenje broji se jednom.",
+  "Alternative (»ravna ili kosa«) ostaju jedan zapis vezan uz izvornu odredbu; pojedine mogućnosti su u polju »alternative«.",
+  "Točka: slovo točke; alineja »-«; uvod stavka i stavak bez točaka i alineja: null."
+ ],
+ "kljuc_usporedbe": ["clanak", "stavak", "tocka", "vrsta_gradevine", "parametar", "operator", "vrijednost", "jedinica", "vrsta_pravila"],
+ "uvjet_iznimno": "Uvodna riječ »iznimno« na početku oznake uvjeta odgovara vrsti pravila IZNIMKA (polje vrsta_pravila) i ne traži se u tekstu uvjeta modula.",
+ "uvjet_referenca": "Referentna točka mjerenja (polje »referenca«, npr. »od najniže kote konačno zaravnatog terena«) usporeduje se zajedno s uvjetima, jer je oznaka N011 bilježi kao uvjet primjene.",
+ "uvjet": "Svaki dio neprazne oznake uvjeta (razdvojeno sa »; «) mora biti doslovno sadržan (bez razlike velikih i malih slova) u uvjetima ili opsegu modula; prazna oznaka uvjeta traži da modul nema ni uvjet ni opseg."
+}

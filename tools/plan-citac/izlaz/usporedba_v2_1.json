@@ -1,0 +1,1682 @@
+{
+ "verzija": "v2.1",
+ "integritet": {
+  "ZAMRZNUTO_v1.json": "sve kontrolne sume odgovaraju",
+  "oznake/neovisno_cl25_33/neovisne_oznake_ppug_25_33.json": "b47d15c3f8d8005e53f9d1f44414155658177c30e16cf64e29a4f626f03c452d"
+ },
+ "determinizam": {
+  "prolaz_1": "d128bc0aeb10711812a2c6e566e4aeb3be0f296ce51b9a8de72a7e866d42f83a",
+  "prolaz_2": "d128bc0aeb10711812a2c6e566e4aeb3be0f296ce51b9a8de72a7e866d42f83a",
+  "isto": true
+ },
+ "izlaz": {
+  "izlaz/ppug_v2_1.json": "acd989da30b9f03c25e8fb487bf51edefda6a0bc7c5d5e8499ab6e9fa103d321"
+ },
+ "cl22_23": {
+  "v1": {
+   "oznaka": 55,
+   "zapisa_modula": 55,
+   "tocno": 46,
+   "pogresno": 0,
+   "pregled": 9,
+   "pregled_odgovara_oznaci": 9,
+   "propusteno": 0,
+   "tocno_a_oznaka_trazi_pregled": 0,
+   "pregled_a_oznaka_jasna": 0
+  },
+  "v2_1": {
+   "oznaka": 55,
+   "zapisa_modula": 55,
+   "tocno": 44,
+   "pogresno": 0,
+   "pregled": 11,
+   "pregled_odgovara_oznaci": 11,
+   "propusteno": 0,
+   "tocno_a_oznaka_trazi_pregled": 0,
+   "pregled_a_oznaka_jasna": 2
+  },
+  "promjene_po_oznaci": [
+   {
+    "oznaka": "G022",
+    "v1": "TOČNO",
+    "v2_1": "PREGLED",
+    "razlozi_v2_1": [
+     "navedena je samo donja točka mjerenja; gornja točka mjerenja visine nije navedena"
+    ]
+   },
+   {
+    "oznaka": "G046",
+    "v1": "TOČNO",
+    "v2_1": "PREGLED",
+    "razlozi_v2_1": [
+     "navedena je samo donja točka mjerenja; gornja točka mjerenja visine nije navedena"
+    ]
+   }
+  ],
+  "pogresno": [],
+  "izvan_opsega_oznaka": [
+   {
+    "clanak": 22,
+    "stavak": 2,
+    "tocka": null,
+    "alineja": null,
+    "parametar": "dopustenaGradnja",
+    "operator": "dopusteno",
+    "vrijednost": null,
+    "status": "PRIJEDLOG",
+    "razlog_kod": []
+   },
+   {
+    "clanak": 22,
+    "stavak": 2,
+    "tocka": "-",
+    "alineja": 4,
+    "parametar": "oblikKrovista",
+    "operator": "dopusteno",
+    "vrijednost": "ravna ili kosa",
+    "status": "PRIJEDLOG",
+    "razlog_kod": []
+   },
+   {
+    "clanak": 22,
+    "stavak": 2,
+    "tocka": "-",
+    "alineja": 4,
+    "parametar": "vrstaKosogKrovista",
+    "operator": "dopusteno",
+    "vrijednost": "jednostrešna, dvostrešna ili višestrešna",
+    "status": "PRIJEDLOG",
+    "razlog_kod": []
+   },
+   {
+    "clanak": 22,
+    "stavak": 2,
+    "tocka": "-",
+    "alineja": 7,
+    "parametar": "rekonstrukcijaIPrenamjena",
+    "operator": "dopusteno",
+    "vrijednost": null,
+    "status": "PREGLED",
+    "razlog_kod": [
+     "UPUCIVANJE_OPCE",
+     "TIPOGRAFSKA_POGRESKA"
+    ]
+   },
+   {
+    "clanak": 23,
+    "stavak": 2,
+    "tocka": null,
+    "alineja": null,
+    "parametar": "dopustenaGradnja",
+    "operator": "dopusteno",
+    "vrijednost": null,
+    "status": "PRIJEDLOG",
+    "razlog_kod": []
+   },
+   {
+    "clanak": 23,
+    "stavak": 2,
+    "tocka": "-",
+    "alineja": 4,
+    "parametar": "oblikKrovista",
+    "operator": "dopusteno",
+    "vrijednost": "ravna ili kosa",
+    "status": "PRIJEDLOG",
+    "razlog_kod": []
+   },
+   {
+    "clanak": 23,
+    "stavak": 2,
+    "tocka": "-",
+    "alineja": 4,
+    "parametar": "vrstaKosogKrovista",
+    "operator": "dopusteno",
+    "vrijednost": "jednostrešna, dvostrešna ili višestrešna",
+    "status": "PRIJEDLOG",
+    "razlog_kod": []
+   },
+   {
+    "clanak": 23,
+    "stavak": 2,
+    "tocka": "-",
+    "alineja": 7,
+    "parametar": "rekonstrukcijaIPrenamjena",
+    "operator": "dopusteno",
+    "vrijednost": null,
+    "status": "PREGLED",
+    "razlog_kod": [
+     "UPUCIVANJE_OPCE",
+     "TIPOGRAFSKA_POGRESKA"
+    ]
+   }
+  ],
+  "napomena_izvan_opsega": "Oznake 22./23. izričito ne pokrivaju sve opisne obveze (metapodaci.limitations); ova pravila nisu ocijenjena."
+ },
+ "cl25_33": {
+  "sazetak": {
+   "25": {
+    "oznaka": 22,
+    "zapisa_modula": 22,
+    "tocno": 14,
+    "pogresno": 0,
+    "pregled": 8,
+    "pregled_odgovara_oznaci": 8,
+    "pregled_bez_oznake": 0,
+    "propusteno": 0,
+    "po_jednoznacnosti_oznake": {
+     "JASAN": {
+      "TOČNO": 14,
+      "PREGLED": 3,
+      "PROPUŠTENO": 0
+     },
+     "PREGLED": {
+      "TOČNO": 0,
+      "PREGLED": 5,
+      "PROPUŠTENO": 0
+     }
+    },
+    "po_vrsti_pravila_oznake": {
+     "ALTERNATIVA": {
+      "TOČNO": 2,
+      "PREGLED": 0,
+      "PROPUŠTENO": 0
+     },
+     "IZNIMKA": {
+      "TOČNO": 1,
+      "PREGLED": 1,
+      "PROPUŠTENO": 0
+     },
+     "NEGATIVNO": {
+      "TOČNO": 0,
+      "PREGLED": 1,
+      "PROPUŠTENO": 0
+     },
+     "OSNOVNO": {
+      "TOČNO": 8,
+      "PREGLED": 2,
+      "PROPUŠTENO": 0
+     },
+     "UVJETNO": {
+      "TOČNO": 3,
+      "PREGLED": 4,
+      "PROPUŠTENO": 0
+     }
+    }
+   },
+   "33": {
+    "oznaka": 12,
+    "zapisa_modula": 12,
+    "tocno": 0,
+    "pogresno": 0,
+    "pregled": 12,
+    "pregled_odgovara_oznaci": 12,
+    "pregled_bez_oznake": 0,
+    "propusteno": 0,
+    "po_jednoznacnosti_oznake": {
+     "JASAN": {
+      "TOČNO": 0,
+      "PREGLED": 0,
+      "PROPUŠTENO": 0
+     },
+     "PREGLED": {
+      "TOČNO": 0,
+      "PREGLED": 12,
+      "PROPUŠTENO": 0
+     }
+    },
+    "po_vrsti_pravila_oznake": {
+     "ALTERNATIVA": {
+      "TOČNO": 0,
+      "PREGLED": 2,
+      "PROPUŠTENO": 0
+     },
+     "IZNIMKA": {
+      "TOČNO": 0,
+      "PREGLED": 7,
+      "PROPUŠTENO": 0
+     },
+     "OSNOVNO": {
+      "TOČNO": 0,
+      "PREGLED": 2,
+      "PROPUŠTENO": 0
+     },
+     "UVJETNO": {
+      "TOČNO": 0,
+      "PREGLED": 1,
+      "PROPUŠTENO": 0
+     }
+    }
+   }
+  },
+  "jasne_oznake_koje_nisu_tocne": [
+   {
+    "oznaka": "N013",
+    "razred": "PREGLED",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "vrijednost": 4.0,
+    "razlog_modula": [
+     "GRANICA_CESTICE_NERAZGRANICENA"
+    ]
+   },
+   {
+    "oznaka": "N014",
+    "razred": "PREGLED",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "vrijednost": 3.0,
+    "razlog_modula": [
+     "GRANICA_CESTICE_NERAZGRANICENA"
+    ]
+   },
+   {
+    "oznaka": "N022",
+    "razred": "PREGLED",
+    "parametar": "gabariti pri rekonstrukciji",
+    "vrijednost": "postojeći tlocrtni i visinski gabariti",
+    "razlog_modula": [
+     "OPSEG_NEODREDEN"
+    ]
+   }
+  ],
+  "povezanost_iznimaka": [
+   {
+    "oznaka": "N006",
+    "iznimke_oznaka": [
+     "N007"
+    ],
+    "iznimke_modula": [],
+    "isto": false
+   },
+   {
+    "oznaka": "N013",
+    "iznimke_oznaka": [
+     "N014"
+    ],
+    "iznimke_modula": [
+     "N014"
+    ],
+    "isto": true
+   },
+   {
+    "oznaka": "N020",
+    "iznimke_oznaka": [
+     "N015"
+    ],
+    "iznimke_modula": [
+     "N015"
+    ],
+    "isto": true
+   },
+   {
+    "oznaka": "N021",
+    "iznimke_oznaka": [
+     "N022"
+    ],
+    "iznimke_modula": [],
+    "isto": false
+   },
+   {
+    "oznaka": "N023",
+    "iznimke_oznaka": [
+     "N024",
+     "N029"
+    ],
+    "iznimke_modula": [
+     "N024",
+     "N029",
+     "N030"
+    ],
+    "isto": false
+   },
+   {
+    "oznaka": "N024",
+    "iznimke_oznaka": [
+     "N030"
+    ],
+    "iznimke_modula": [],
+    "isto": false
+   },
+   {
+    "oznaka": "N026",
+    "iznimke_oznaka": [
+     "N032"
+    ],
+    "iznimke_modula": [
+     "N032"
+    ],
+    "isto": true
+   },
+   {
+    "oznaka": "N027",
+    "iznimke_oznaka": [
+     "N028",
+     "N033"
+    ],
+    "iznimke_modula": [
+     "N033"
+    ],
+    "isto": false
+   },
+   {
+    "oznaka": "N028",
+    "iznimke_oznaka": [
+     "N034"
+    ],
+    "iznimke_modula": [],
+    "isto": false
+   },
+   {
+    "oznaka": "N029",
+    "iznimke_oznaka": [
+     "N030"
+    ],
+    "iznimke_modula": [],
+    "isto": false
+   },
+   {
+    "oznaka": "N033",
+    "iznimke_oznaka": [
+     "N034"
+    ],
+    "iznimke_modula": [],
+    "isto": false
+   }
+  ],
+  "detalji": {
+   "tocno": [
+    {
+     "oznaka": "N001",
+     "id": "25.1.a.0.1.1"
+    },
+    {
+     "oznaka": "N002",
+     "id": "25.1.b.0.1.2"
+    },
+    {
+     "oznaka": "N003",
+     "id": "25.1.c.0.1.3"
+    },
+    {
+     "oznaka": "N004",
+     "id": "25.1.d.0.1.4"
+    },
+    {
+     "oznaka": "N005",
+     "id": "25.1.e.0.1.5"
+    },
+    {
+     "oznaka": "N008",
+     "id": "25.1.h.0.1.8"
+    },
+    {
+     "oznaka": "N010",
+     "id": "25.2.0.0.1.10"
+    },
+    {
+     "oznaka": "N012",
+     "id": "25.2.-.2.1.12"
+    },
+    {
+     "oznaka": "N015",
+     "id": "25.2.-.4.1.15"
+    },
+    {
+     "oznaka": "N016",
+     "id": "25.2.-.5.1.16"
+    },
+    {
+     "oznaka": "N017",
+     "id": "25.2.-.5.1.17"
+    },
+    {
+     "oznaka": "N019",
+     "id": "25.2.-.5.1.20"
+    },
+    {
+     "oznaka": "N020",
+     "id": "25.2.-.6.1.21"
+    },
+    {
+     "oznaka": "N018",
+     "id": "25.2.-.5.1.18"
+    }
+   ],
+   "pregled": [
+    {
+     "oznaka": "N006",
+     "id": "25.1.f.0.1.6",
+     "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+     "vrijednost": 0.5,
+     "razlog_kod": [
+      "ZONA_NIJE_DEFINIRANA"
+     ]
+    },
+    {
+     "oznaka": "N007",
+     "id": "25.1.g.0.1.7",
+     "parametar": "najveći koeficijent iskoristivosti (kis)",
+     "vrijednost": 0.75,
+     "razlog_kod": [
+      "OVISI_O_NERIJESENOJ_ODREDBI"
+     ]
+    },
+    {
+     "oznaka": "N009",
+     "id": "25.1.h.0.1.9",
+     "parametar": "način gradnje",
+     "vrijednost": "svi načini gradnje osim samostojećeg",
+     "razlog_kod": [
+      "MOGUC_SUKOB_ODREDBI",
+      "ZABRANA_IZVEDENA"
+     ]
+    },
+    {
+     "oznaka": "N011",
+     "id": "25.2.-.1.1.11",
+     "parametar": "najveća visina građevine",
+     "vrijednost": 4.0,
+     "razlog_kod": [
+      "REFERENTNA_VISINA_NEPOTPUNA"
+     ]
+    },
+    {
+     "oznaka": "N013",
+     "id": "25.2.-.3.1.13",
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "vrijednost": 4.0,
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA"
+     ]
+    },
+    {
+     "oznaka": "N014",
+     "id": "25.2.-.4.1.14",
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "vrijednost": 3.0,
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA"
+     ]
+    },
+    {
+     "oznaka": "N021",
+     "id": "25.2.-.7.1.22",
+     "parametar": "rekonstrukcija i prenamjena",
+     "vrijednost": null,
+     "razlog_kod": [
+      "TIPOGRAFSKA_POGRESKA",
+      "UPUCIVANJE_OPCE"
+     ]
+    },
+    {
+     "oznaka": "N022",
+     "id": "25.2.-.7.2.23",
+     "parametar": "gabariti pri rekonstrukciji",
+     "vrijednost": "postojeći tlocrtni i visinski gabariti",
+     "razlog_kod": [
+      "OPSEG_NEODREDEN"
+     ]
+    },
+    {
+     "oznaka": "N023",
+     "id": "33.1.0.0.1.1",
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "vrijednost": 4.0,
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA",
+      "H_NIJE_DEFINIRAN",
+      "POJAM_VARIJANTA",
+      "UVJET_SAMO_ZA_X",
+      "VEZNIK_DVOSMISLEN"
+     ]
+    },
+    {
+     "oznaka": "N024",
+     "id": "33.1.0.0.2.2",
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "vrijednost": 3.0,
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA",
+      "NEGATIVNI_UVJET_NEPOTPUN",
+      "ODNOS_PREMA_FORMULI_NEJASAN",
+      "OPSEG_PROCELJA"
+     ]
+    },
+    {
+     "oznaka": "N025",
+     "id": "33.2.0.0.1.3",
+     "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+     "vrijednost": "dvojna: jednom stranom; ugrađena: s dvije ili tri strane",
+     "razlog_kod": [
+      "MOGUC_SUKOB_ODREDBI",
+      "TUMACENJE_ZAGRADE"
+     ]
+    },
+    {
+     "oznaka": "N026",
+     "id": "33.2.0.0.1.4",
+     "parametar": "najmanja udaljenost istaka od granice susjedne građevine",
+     "vrijednost": "h/2",
+     "razlog_kod": [
+      "H_NIJE_DEFINIRAN",
+      "POJAM_NIJE_DEFINIRAN",
+      "RAZLICITE_REFERENTNE_TOCKE"
+     ]
+    },
+    {
+     "oznaka": "N027",
+     "id": "33.2.0.0.1.5",
+     "parametar": "najmanja udaljenost istaka od granice građevne čestice",
+     "vrijednost": 4.0,
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA",
+      "RAZLICITE_REFERENTNE_TOCKE",
+      "VEZNIK_DVOSMISLEN"
+     ]
+    },
+    {
+     "oznaka": "N028",
+     "id": "33.2.0.0.2.6",
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "vrijednost": 3.0,
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA",
+      "NEGATIVNI_UVJET_NEPOTPUN",
+      "ODNOS_PREMA_FORMULI_NEJASAN",
+      "OPSEG_PROCELJA"
+     ]
+    },
+    {
+     "oznaka": "N029",
+     "id": "33.3.0.0.1.7",
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "vrijednost": 3.0,
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA",
+      "H_NIJE_DEFINIRAN",
+      "POJAM_VARIJANTA",
+      "UVJET_SAMO_ZA_X",
+      "VEZNIK_DVOSMISLEN"
+     ]
+    },
+    {
+     "oznaka": "N030",
+     "id": "33.3.0.0.2.8",
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "vrijednost": 2.0,
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA",
+      "NEGATIVNI_UVJET_NEPOTPUN",
+      "ODNOS_PREMA_FORMULI_NEJASAN",
+      "OPSEG_PROCELJA"
+     ]
+    },
+    {
+     "oznaka": "N031",
+     "id": "33.4.0.0.1.9",
+     "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+     "vrijednost": "dvojna: jednom stranom; ugrađena: s dvije ili tri strane",
+     "razlog_kod": [
+      "MOGUC_SUKOB_ODREDBI",
+      "TUMACENJE_ZAGRADE"
+     ]
+    },
+    {
+     "oznaka": "N032",
+     "id": "33.4.0.0.1.10",
+     "parametar": "najmanja udaljenost istaka od granice susjedne građevine",
+     "vrijednost": "h/2",
+     "razlog_kod": [
+      "H_NIJE_DEFINIRAN",
+      "POJAM_NIJE_DEFINIRAN",
+      "RAZLICITE_REFERENTNE_TOCKE"
+     ]
+    },
+    {
+     "oznaka": "N033",
+     "id": "33.4.0.0.1.11",
+     "parametar": "najmanja udaljenost istaka od granice građevne čestice",
+     "vrijednost": 3.0,
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA",
+      "RAZLICITE_REFERENTNE_TOCKE",
+      "VEZNIK_DVOSMISLEN"
+     ]
+    },
+    {
+     "oznaka": "N034",
+     "id": "33.4.0.0.2.12",
+     "parametar": "najmanja udaljenost od granice građevne čestice",
+     "vrijednost": 2.0,
+     "razlog_kod": [
+      "GRANICA_CESTICE_NERAZGRANICENA",
+      "NEGATIVNI_UVJET_NEPOTPUN",
+      "ODNOS_PREMA_FORMULI_NEJASAN",
+      "OPSEG_PROCELJA"
+     ]
+    }
+   ],
+   "pogresno": [],
+   "propusteno": []
+  },
+  "zapisi_modula": [
+   {
+    "clanak": 25,
+    "stavak": 1,
+    "tocka": "a",
+    "vrsta_gradevine": "stambena građevina",
+    "parametar": "najmanja površina građevne čestice",
+    "operator": ">=",
+    "vrijednost": 500.0,
+    "jedinica": "m²",
+    "vrsta_pravila": "OSNOVNO",
+    "uvjet_tekst": "",
+    "status": "PRIJEDLOG",
+    "razlog_kod": [],
+    "komponente": [
+     {
+      "id": "25.1.a.0.1.1",
+      "parametar": "minC",
+      "operator": ">=",
+      "vrijednost": 500.0,
+      "status": "PRIJEDLOG"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.1.a.0.1.1",
+    "izvorni_citat": "najmanja dopuštena površina građevne čestice za izgradnju stambene građevine iznosi 500 m 2 ;"
+   },
+   {
+    "clanak": 25,
+    "stavak": 1,
+    "tocka": "b",
+    "vrsta_gradevine": "stambena građevina",
+    "parametar": "najveća površina građevne čestice",
+    "operator": "nije_propisano",
+    "vrijednost": null,
+    "jedinica": null,
+    "vrsta_pravila": "OSNOVNO",
+    "uvjet_tekst": "",
+    "status": "PRIJEDLOG",
+    "razlog_kod": [],
+    "komponente": [
+     {
+      "id": "25.1.b.0.1.2",
+      "parametar": "maxC",
+      "operator": "nije_propisano",
+      "vrijednost": null,
+      "status": "PRIJEDLOG"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.1.b.0.1.2",
+    "izvorni_citat": "ovim prostornim planom se ne propisuje najveća dopuštena površina građevne čestice za izgradnju stambene građevine;"
+   },
+   {
+    "clanak": 25,
+    "stavak": 1,
+    "tocka": "c",
+    "vrsta_gradevine": "stambena građevina (nova)",
+    "parametar": "najmanja površina tlocrtne projekcije građevine",
+    "operator": ">=",
+    "vrijednost": 100.0,
+    "jedinica": "m²",
+    "vrsta_pravila": "OSNOVNO",
+    "uvjet_tekst": "za sve tipove gradnje",
+    "status": "PRIJEDLOG",
+    "razlog_kod": [],
+    "komponente": [
+     {
+      "id": "25.1.c.0.1.3",
+      "parametar": "tlMin",
+      "operator": ">=",
+      "vrijednost": 100.0,
+      "status": "PRIJEDLOG"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.1.c.0.1.3",
+    "izvorni_citat": "najmanja dopuštena površina tlocrtne projekcije nove stambene građevine iznosi 100 m 2 za sve tipove gradnje;"
+   },
+   {
+    "clanak": 25,
+    "stavak": 1,
+    "tocka": "d",
+    "vrsta_gradevine": "stambena građevina (nova)",
+    "parametar": "najveća površina tlocrtne projekcije građevine",
+    "operator": "<=",
+    "vrijednost": 200.0,
+    "jedinica": "m²",
+    "vrsta_pravila": "OSNOVNO",
+    "uvjet_tekst": "",
+    "status": "PRIJEDLOG",
+    "razlog_kod": [],
+    "komponente": [
+     {
+      "id": "25.1.d.0.1.4",
+      "parametar": "tlMax",
+      "operator": "<=",
+      "vrijednost": 200.0,
+      "status": "PRIJEDLOG"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.1.d.0.1.4",
+    "izvorni_citat": "najveća dopuštena površina tlocrtne projekcije nove stambene građevine iznosi 200 m 2 ;"
+   },
+   {
+    "clanak": 25,
+    "stavak": 1,
+    "tocka": "e",
+    "vrsta_gradevine": "stambena građevina",
+    "parametar": "najveći koeficijent izgrađenosti (kig)",
+    "operator": "<=",
+    "vrijednost": 0.25,
+    "jedinica": "koeficijent",
+    "vrsta_pravila": "OSNOVNO",
+    "uvjet_tekst": "",
+    "status": "PRIJEDLOG",
+    "razlog_kod": [],
+    "komponente": [
+     {
+      "id": "25.1.e.0.1.5",
+      "parametar": "kig",
+      "operator": "<=",
+      "vrijednost": 0.25,
+      "status": "PRIJEDLOG"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.1.e.0.1.5",
+    "izvorni_citat": "najveći dopušteni koeficijent izgrađenosti (kig) određuje se 0,25"
+   },
+   {
+    "clanak": 25,
+    "stavak": 1,
+    "tocka": "f",
+    "vrsta_gradevine": "stambena građevina",
+    "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+    "operator": "<=",
+    "vrijednost": 0.5,
+    "jedinica": "koeficijent",
+    "vrsta_pravila": "UVJETNO",
+    "uvjet_tekst": "u NA2-NA15.2",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "ZONA_NIJE_DEFINIRANA"
+    ],
+    "komponente": [
+     {
+      "id": "25.1.f.0.1.6",
+      "parametar": "kisNadzemni",
+      "operator": "<=",
+      "vrijednost": 0.5,
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.1.f.0.1.6",
+    "izvorni_citat": "najveći dopušteni koeficijent iskoristivosti (kis) nadzemnih etaža u NA2-NA15.2 iznosi 0,50;"
+   },
+   {
+    "clanak": 25,
+    "stavak": 1,
+    "tocka": "g",
+    "vrsta_gradevine": "stambena građevina (s podrumom)",
+    "parametar": "najveći koeficijent iskoristivosti (kis)",
+    "operator": "<=",
+    "vrijednost": 0.75,
+    "jedinica": "koeficijent",
+    "vrsta_pravila": "UVJETNO",
+    "uvjet_tekst": "ukoliko se ispod stambene građevine gradi podrum",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "OVISI_O_NERIJESENOJ_ODREDBI"
+    ],
+    "komponente": [
+     {
+      "id": "25.1.g.0.1.7",
+      "parametar": "kisPodrum",
+      "operator": "<=",
+      "vrijednost": 0.75,
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.1.g.0.1.7",
+    "izvorni_citat": "ukoliko se ispod stambene građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi 0,75;"
+   },
+   {
+    "clanak": 25,
+    "stavak": 1,
+    "tocka": "h",
+    "vrsta_gradevine": "stambena građevina",
+    "parametar": "način gradnje",
+    "operator": "dopustenje",
+    "vrijednost": "samostojeća",
+    "jedinica": "opis",
+    "vrsta_pravila": "OSNOVNO",
+    "uvjet_tekst": "",
+    "status": "PRIJEDLOG",
+    "razlog_kod": [],
+    "komponente": [
+     {
+      "id": "25.1.h.0.1.8",
+      "parametar": "nacinGradnje",
+      "operator": "dopusteno",
+      "vrijednost": "samostojeće",
+      "status": "PRIJEDLOG"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.1.h.0.1.8",
+    "izvorni_citat": "stambene građevine mogu se graditi samo kao samostojeće građevine."
+   },
+   {
+    "clanak": 25,
+    "stavak": 1,
+    "tocka": "h",
+    "vrsta_gradevine": "stambena građevina – ostali oblici",
+    "parametar": "način gradnje",
+    "operator": "zabrana",
+    "vrijednost": "svi načini gradnje osim samostojećeg",
+    "jedinica": "opis",
+    "vrsta_pravila": "NEGATIVNO",
+    "uvjet_tekst": "",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "MOGUC_SUKOB_ODREDBI",
+     "ZABRANA_IZVEDENA"
+    ],
+    "komponente": [
+     {
+      "id": "25.1.h.0.1.9",
+      "parametar": "nacinGradnje",
+      "operator": "zabranjeno",
+      "vrijednost": "svi načini gradnje osim: samostojeće",
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.1.h.0.1.9",
+    "izvorni_citat": "stambene građevine mogu se graditi samo kao samostojeće građevine."
+   },
+   {
+    "clanak": 25,
+    "stavak": 2,
+    "tocka": null,
+    "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+    "parametar": "dopuštenost gradnje na čestici stambene građevine",
+    "operator": "dopustenje",
+    "vrijednost": null,
+    "jedinica": "opis",
+    "vrsta_pravila": "UVJETNO",
+    "uvjet_tekst": "na građevnoj čestici uz stambenu građevinu uz poštivanje sljedećih uvjeta",
+    "status": "PRIJEDLOG",
+    "razlog_kod": [],
+    "komponente": [
+     {
+      "id": "25.2.0.0.1.10",
+      "parametar": "dopustenaGradnja",
+      "operator": "dopusteno",
+      "vrijednost": null,
+      "status": "PRIJEDLOG"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.2.0.0.1.10",
+    "izvorni_citat": "Poljoprivredne gospodarske građevine mogu se graditi na građevnoj čestici uz stambenu građevinu uz poštivanje sljedećih uvjeta:"
+   },
+   {
+    "clanak": 25,
+    "stavak": 2,
+    "tocka": "-",
+    "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+    "parametar": "najveća visina građevine",
+    "operator": "<=",
+    "vrijednost": 4.0,
+    "jedinica": "m",
+    "vrsta_pravila": "OSNOVNO",
+    "uvjet_tekst": "od najniže kote konačno zaravnatog terena",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "REFERENTNA_VISINA_NEPOTPUNA"
+    ],
+    "komponente": [
+     {
+      "id": "25.2.-.1.1.11",
+      "parametar": "visinaMax",
+      "operator": "<=",
+      "vrijednost": 4.0,
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.2.-.1.1.11",
+    "izvorni_citat": "visina od najniže kote konačno zaravnatog terena iznosi najviše 4,0 m,"
+   },
+   {
+    "clanak": 25,
+    "stavak": 2,
+    "tocka": "-",
+    "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+    "parametar": "položaj građevnog pravca",
+    "operator": "opis",
+    "vrijednost": "iza građevnog pravca građevine osnovne namjene",
+    "jedinica": "opis",
+    "vrsta_pravila": "OSNOVNO",
+    "uvjet_tekst": "",
+    "status": "PRIJEDLOG",
+    "razlog_kod": [],
+    "komponente": [
+     {
+      "id": "25.2.-.2.1.12",
+      "parametar": "gradjevniPravac",
+      "operator": "opis",
+      "vrijednost": "iza građevnog pravca građevine osnovne namjene",
+      "status": "PRIJEDLOG"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.2.-.2.1.12",
+    "izvorni_citat": "građevni pravac je iza građevnog pravca građevine osnovne namjene,"
+   },
+   {
+    "clanak": 25,
+    "stavak": 2,
+    "tocka": "-",
+    "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "operator": ">=",
+    "vrijednost": 4.0,
+    "jedinica": "m",
+    "vrsta_pravila": "OSNOVNO",
+    "uvjet_tekst": "",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "GRANICA_CESTICE_NERAZGRANICENA"
+    ],
+    "komponente": [
+     {
+      "id": "25.2.-.3.1.13",
+      "parametar": "udaljenostOdGraniceCestice",
+      "operator": ">=",
+      "vrijednost": 4.0,
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [
+     "25.2.-.4.1.14"
+    ],
+    "id": "25.2.-.3.1.13",
+    "izvorni_citat": "najmanja udaljenost od granice građevne čestice iznosi 4,0 m,"
+   },
+   {
+    "clanak": 25,
+    "stavak": 2,
+    "tocka": "-",
+    "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "operator": ">=",
+    "vrijednost": 3.0,
+    "jedinica": "m",
+    "vrsta_pravila": "IZNIMKA",
+    "uvjet_tekst": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "GRANICA_CESTICE_NERAZGRANICENA"
+    ],
+    "komponente": [
+     {
+      "id": "25.2.-.4.1.14",
+      "parametar": "udaljenostOdGraniceCestice",
+      "operator": ">=",
+      "vrijednost": 3.0,
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.2.-.4.1.14",
+    "izvorni_citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice iznosi 3,0 m, a udaljenost od regulacijskog pravca iznosi najmanje 5,0 m."
+   },
+   {
+    "clanak": 25,
+    "stavak": 2,
+    "tocka": "-",
+    "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "operator": ">=",
+    "vrijednost": 5.0,
+    "jedinica": "m",
+    "vrsta_pravila": "IZNIMKA",
+    "uvjet_tekst": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+    "status": "PRIJEDLOG",
+    "razlog_kod": [],
+    "komponente": [
+     {
+      "id": "25.2.-.4.1.15",
+      "parametar": "regulacija",
+      "operator": ">=",
+      "vrijednost": 5.0,
+      "status": "PRIJEDLOG"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.2.-.4.1.15",
+    "izvorni_citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice iznosi 3,0 m, a udaljenost od regulacijskog pravca iznosi najmanje 5,0 m."
+   },
+   {
+    "clanak": 25,
+    "stavak": 2,
+    "tocka": "-",
+    "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+    "parametar": "oblik krovišta",
+    "operator": "dopustenje",
+    "vrijednost": "ravno ili koso",
+    "jedinica": "opis",
+    "vrsta_pravila": "ALTERNATIVA",
+    "uvjet_tekst": "",
+    "status": "PRIJEDLOG",
+    "razlog_kod": [],
+    "komponente": [
+     {
+      "id": "25.2.-.5.1.16",
+      "parametar": "oblikKrovista",
+      "operator": "dopusteno",
+      "vrijednost": "ravna ili kosa",
+      "status": "PRIJEDLOG"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.2.-.5.1.16",
+    "izvorni_citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica)."
+   },
+   {
+    "clanak": 25,
+    "stavak": 2,
+    "tocka": "-",
+    "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+    "parametar": "vrsta kosog krovišta",
+    "operator": "dopustenje",
+    "vrijednost": "jednostrešno, dvostrešno ili višestrešno",
+    "jedinica": "opis",
+    "vrsta_pravila": "ALTERNATIVA",
+    "uvjet_tekst": "ako se grade kao kosa",
+    "status": "PRIJEDLOG",
+    "razlog_kod": [],
+    "komponente": [
+     {
+      "id": "25.2.-.5.1.17",
+      "parametar": "vrstaKosogKrovista",
+      "operator": "dopusteno",
+      "vrijednost": "jednostrešna, dvostrešna ili višestrešna",
+      "status": "PRIJEDLOG"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.2.-.5.1.17",
+    "izvorni_citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica)."
+   },
+   {
+    "clanak": 25,
+    "stavak": 2,
+    "tocka": "-",
+    "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+    "parametar": "vrsta pokrova",
+    "operator": "=",
+    "vrijednost": "mediteran crijep ili kupa kanalica",
+    "jedinica": "opis",
+    "vrsta_pravila": "UVJETNO",
+    "uvjet_tekst": "ako se grade kao kosa",
+    "status": "PRIJEDLOG",
+    "razlog_kod": [],
+    "komponente": [
+     {
+      "id": "25.2.-.5.1.20",
+      "parametar": "pokrovKosogKrova",
+      "operator": "=",
+      "vrijednost": "mediteran crijep ili kupa kanalica",
+      "status": "PRIJEDLOG"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.2.-.5.1.20",
+    "izvorni_citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica)."
+   },
+   {
+    "clanak": 25,
+    "stavak": 2,
+    "tocka": "-",
+    "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "operator": ">=",
+    "vrijednost": 6.0,
+    "jedinica": "m",
+    "vrsta_pravila": "OSNOVNO",
+    "uvjet_tekst": "",
+    "status": "PRIJEDLOG",
+    "razlog_kod": [],
+    "komponente": [
+     {
+      "id": "25.2.-.6.1.21",
+      "parametar": "regulacija",
+      "operator": ">=",
+      "vrijednost": 6.0,
+      "status": "PRIJEDLOG"
+     }
+    ],
+    "iznimke": [
+     "25.2.-.4.1.15"
+    ],
+    "id": "25.2.-.6.1.21",
+    "izvorni_citat": "udaljenost poljoprivredne gospodarske građevine od regulacijskog pravca iznosi najmanje 6,0 m."
+   },
+   {
+    "clanak": 25,
+    "stavak": 2,
+    "tocka": "-",
+    "vrsta_gradevine": "poljoprivredna gospodarska građevina (postojeća)",
+    "parametar": "rekonstrukcija i prenamjena",
+    "operator": "dopustenje",
+    "vrijednost": null,
+    "jedinica": "opis",
+    "vrsta_pravila": "UVJETNO",
+    "uvjet_tekst": "u skladu s odredbama ovog Prostornog plana",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "TIPOGRAFSKA_POGRESKA",
+     "UPUCIVANJE_OPCE"
+    ],
+    "komponente": [
+     {
+      "id": "25.2.-.7.1.22",
+      "parametar": "rekonstrukcijaIPrenamjena",
+      "operator": "dopusteno",
+      "vrijednost": null,
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.2.-.7.1.22",
+    "izvorni_citat": "postojeće poljoprivredne gospodarske građevine mogu se rekonsrturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana."
+   },
+   {
+    "clanak": 25,
+    "stavak": 2,
+    "tocka": "-",
+    "vrsta_gradevine": "poljoprivredna gospodarska građevina (postojeća)",
+    "parametar": "gabariti pri rekonstrukciji",
+    "operator": "<=",
+    "vrijednost": "postojeći tlocrtni i visinski gabariti",
+    "jedinica": "opis",
+    "vrsta_pravila": "UVJETNO",
+    "uvjet_tekst": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "OPSEG_NEODREDEN"
+    ],
+    "komponente": [
+     {
+      "id": "25.2.-.7.2.23",
+      "parametar": "rekonstrukcijaAkoNisuIspunjeniUvjeti",
+      "operator": "<=",
+      "vrijednost": "samo u postojećim tlocrtnim i visinskim gabaritima",
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.2.-.7.2.23",
+    "izvorni_citat": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom mogu se rekonstruirati samo u postojećim tlocrtnim i visinskim gabaritima."
+   },
+   {
+    "clanak": 33,
+    "stavak": 1,
+    "tocka": null,
+    "vrsta_gradevine": "stambena građevina – slobodnostojeća",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "operator": "max(h/2, X)",
+    "vrijednost": 4.0,
+    "jedinica": "m",
+    "vrsta_pravila": "OSNOVNO",
+    "uvjet_tekst": "ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "GRANICA_CESTICE_NERAZGRANICENA",
+     "H_NIJE_DEFINIRAN",
+     "POJAM_VARIJANTA",
+     "UVJET_SAMO_ZA_X",
+     "VEZNIK_DVOSMISLEN"
+    ],
+    "komponente": [
+     {
+      "id": "33.1.0.0.1.1",
+      "parametar": "udaljenostOdGraniceCestice",
+      "operator": "max(h/2, X)",
+      "vrijednost": 4.0,
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [
+     "33.1.0.0.2.2",
+     "33.3.0.0.1.7",
+     "33.3.0.0.2.8"
+    ],
+    "id": "33.1.0.0.1.1",
+    "izvorni_citat": "Građevine stambene namjene koje će se graditi na slobodnostojeći način moraju biti udaljene najmanje pola visine (h/2) od granice građevinske čestice, ali ne manje od 4,0 metra ukoliko građevina ima otvore, prohodne terase i otvorena stubišta."
+   },
+   {
+    "clanak": 33,
+    "stavak": 1,
+    "tocka": null,
+    "vrsta_gradevine": "stambena građevina – slobodnostojeća",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "operator": ">=",
+    "vrijednost": 3.0,
+    "jedinica": "m",
+    "vrsta_pravila": "IZNIMKA",
+    "uvjet_tekst": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "GRANICA_CESTICE_NERAZGRANICENA",
+     "NEGATIVNI_UVJET_NEPOTPUN",
+     "ODNOS_PREMA_FORMULI_NEJASAN",
+     "OPSEG_PROCELJA"
+    ],
+    "komponente": [
+     {
+      "id": "33.1.0.0.2.2",
+      "parametar": "udaljenostOdGraniceCestice",
+      "operator": ">=",
+      "vrijednost": 3.0,
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [],
+    "id": "33.1.0.0.2.2",
+    "izvorni_citat": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta, udaljenost građevine od granice građevne čestice može iznositi i 3,0 m."
+   },
+   {
+    "clanak": 33,
+    "stavak": 2,
+    "tocka": null,
+    "vrsta_gradevine": "obiteljska/višeobiteljska kuća – dvojna/ugrađena",
+    "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+    "operator": "dopustenje",
+    "vrijednost": "dvojna: jednom stranom; ugrađena: s dvije ili tri strane",
+    "jedinica": "opis",
+    "vrsta_pravila": "ALTERNATIVA",
+    "uvjet_tekst": "",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "MOGUC_SUKOB_ODREDBI",
+     "TUMACENJE_ZAGRADE"
+    ],
+    "komponente": [
+     {
+      "id": "33.2.0.0.1.3",
+      "parametar": "nacinPrislanjanja",
+      "operator": "dopusteno",
+      "vrijednost": "dvojna: jednom stranom; ugrađena: s dvije ili tri strane",
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [],
+    "id": "33.2.0.0.1.3",
+    "izvorni_citat": "Obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene, tako da će se jednom stranom (ugrađene s dvije ili tri strane) prislanjati uz susjednu građevinu ili granicu građevne čestice, moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2, ali ne manje od 4,0 metra od granice građevne čestice, ukoliko građevina ima otvore, prohodne terase i otvorena stubišta."
+   },
+   {
+    "clanak": 33,
+    "stavak": 2,
+    "tocka": null,
+    "vrsta_gradevine": "obiteljska/višeobiteljska kuća – dvojna/ugrađena",
+    "parametar": "najmanja udaljenost istaka od granice susjedne građevine",
+    "operator": ">=",
+    "vrijednost": "h/2",
+    "jedinica": "m",
+    "vrsta_pravila": "OSNOVNO",
+    "uvjet_tekst": "s drugim dijelovima građevine (istakom)",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "H_NIJE_DEFINIRAN",
+     "POJAM_NIJE_DEFINIRAN",
+     "RAZLICITE_REFERENTNE_TOCKE"
+    ],
+    "komponente": [
+     {
+      "id": "33.2.0.0.1.4",
+      "parametar": "udaljenostIstakaOdGraniceSusjedneGradjevine",
+      "operator": ">=",
+      "vrijednost": "h/2",
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [
+     "33.4.0.0.1.10"
+    ],
+    "id": "33.2.0.0.1.4",
+    "izvorni_citat": "Obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene, tako da će se jednom stranom (ugrađene s dvije ili tri strane) prislanjati uz susjednu građevinu ili granicu građevne čestice, moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2, ali ne manje od 4,0 metra od granice građevne čestice, ukoliko građevina ima otvore, prohodne terase i otvorena stubišta."
+   },
+   {
+    "clanak": 33,
+    "stavak": 2,
+    "tocka": null,
+    "vrsta_gradevine": "obiteljska/višeobiteljska kuća – dvojna/ugrađena",
+    "parametar": "najmanja udaljenost istaka od granice građevne čestice",
+    "operator": ">=",
+    "vrijednost": 4.0,
+    "jedinica": "m",
+    "vrsta_pravila": "UVJETNO",
+    "uvjet_tekst": "ukoliko građevina ima otvore, prohodne terase i otvorena stubišta | s drugim dijelovima građevine (istakom)",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "GRANICA_CESTICE_NERAZGRANICENA",
+     "RAZLICITE_REFERENTNE_TOCKE",
+     "VEZNIK_DVOSMISLEN"
+    ],
+    "komponente": [
+     {
+      "id": "33.2.0.0.1.5",
+      "parametar": "udaljenostIstakaOdGraniceCestice",
+      "operator": ">=",
+      "vrijednost": 4.0,
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [
+     "33.4.0.0.1.11"
+    ],
+    "id": "33.2.0.0.1.5",
+    "izvorni_citat": "Obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene, tako da će se jednom stranom (ugrađene s dvije ili tri strane) prislanjati uz susjednu građevinu ili granicu građevne čestice, moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2, ali ne manje od 4,0 metra od granice građevne čestice, ukoliko građevina ima otvore, prohodne terase i otvorena stubišta."
+   },
+   {
+    "clanak": 33,
+    "stavak": 2,
+    "tocka": null,
+    "vrsta_gradevine": "obiteljska/višeobiteljska kuća – dvojna/ugrađena",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "operator": ">=",
+    "vrijednost": 3.0,
+    "jedinica": "m",
+    "vrsta_pravila": "IZNIMKA",
+    "uvjet_tekst": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "GRANICA_CESTICE_NERAZGRANICENA",
+     "NEGATIVNI_UVJET_NEPOTPUN",
+     "ODNOS_PREMA_FORMULI_NEJASAN",
+     "OPSEG_PROCELJA"
+    ],
+    "komponente": [
+     {
+      "id": "33.2.0.0.2.6",
+      "parametar": "udaljenostOdGraniceCestice",
+      "operator": ">=",
+      "vrijednost": 3.0,
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [],
+    "id": "33.2.0.0.2.6",
+    "izvorni_citat": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta, udaljenost građevine od granice građevne čestice može iznositi i 3,0 m."
+   },
+   {
+    "clanak": 33,
+    "stavak": 3,
+    "tocka": null,
+    "vrsta_gradevine": "stambena građevina – slobodnostojeća",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "operator": "max(h/2, X)",
+    "vrijednost": 3.0,
+    "jedinica": "m",
+    "vrsta_pravila": "IZNIMKA",
+    "uvjet_tekst": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina | ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "GRANICA_CESTICE_NERAZGRANICENA",
+     "H_NIJE_DEFINIRAN",
+     "POJAM_VARIJANTA",
+     "UVJET_SAMO_ZA_X",
+     "VEZNIK_DVOSMISLEN"
+    ],
+    "komponente": [
+     {
+      "id": "33.3.0.0.1.7",
+      "parametar": "udaljenostOdGraniceCestice",
+      "operator": "max(h/2, X)",
+      "vrijednost": 3.0,
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [],
+    "id": "33.3.0.0.1.7",
+    "izvorni_citat": "Iznimno, građevine stambene namjene koje će se graditi na slobodnostojeći način unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, moraju biti udaljene najmanje pola visine (h/2) od granice građevinske čestice, ali ne manje od 3,0 m ukoliko građevina ima otvore, prohodne terase i otvorena stubišta."
+   },
+   {
+    "clanak": 33,
+    "stavak": 3,
+    "tocka": null,
+    "vrsta_gradevine": "stambena građevina – slobodnostojeća",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "operator": ">=",
+    "vrijednost": 2.0,
+    "jedinica": "m",
+    "vrsta_pravila": "IZNIMKA",
+    "uvjet_tekst": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina | Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "GRANICA_CESTICE_NERAZGRANICENA",
+     "NEGATIVNI_UVJET_NEPOTPUN",
+     "ODNOS_PREMA_FORMULI_NEJASAN",
+     "OPSEG_PROCELJA"
+    ],
+    "komponente": [
+     {
+      "id": "33.3.0.0.2.8",
+      "parametar": "udaljenostOdGraniceCestice",
+      "operator": ">=",
+      "vrijednost": 2.0,
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [],
+    "id": "33.3.0.0.2.8",
+    "izvorni_citat": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta, udaljenost građevine od granice građevne čestice može iznositi i 2,0 m."
+   },
+   {
+    "clanak": 33,
+    "stavak": 4,
+    "tocka": null,
+    "vrsta_gradevine": "obiteljska/višeobiteljska kuća – dvojna/ugrađena",
+    "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+    "operator": "dopustenje",
+    "vrijednost": "dvojna: jednom stranom; ugrađena: s dvije ili tri strane",
+    "jedinica": "opis",
+    "vrsta_pravila": "ALTERNATIVA",
+    "uvjet_tekst": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "MOGUC_SUKOB_ODREDBI",
+     "TUMACENJE_ZAGRADE"
+    ],
+    "komponente": [
+     {
+      "id": "33.4.0.0.1.9",
+      "parametar": "nacinPrislanjanja",
+      "operator": "dopusteno",
+      "vrijednost": "dvojna: jednom stranom; ugrađena: s dvije ili tri strane",
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [],
+    "id": "33.4.0.0.1.9",
+    "izvorni_citat": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene, tako da će se jednom stranom (ugrađene s dvije ili tri strane) prislanjati uz susjednu građevinu ili granicu građevne čestice, moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2, ali ne manje od 3,0 m od granice građevne čestice, ukoliko građevina ima otvore, prohodne terase i otvorena stubišta."
+   },
+   {
+    "clanak": 33,
+    "stavak": 4,
+    "tocka": null,
+    "vrsta_gradevine": "obiteljska/višeobiteljska kuća – dvojna/ugrađena",
+    "parametar": "najmanja udaljenost istaka od granice susjedne građevine",
+    "operator": ">=",
+    "vrijednost": "h/2",
+    "jedinica": "m",
+    "vrsta_pravila": "IZNIMKA",
+    "uvjet_tekst": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina | s drugim dijelovima građevine (istakom)",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "H_NIJE_DEFINIRAN",
+     "POJAM_NIJE_DEFINIRAN",
+     "RAZLICITE_REFERENTNE_TOCKE"
+    ],
+    "komponente": [
+     {
+      "id": "33.4.0.0.1.10",
+      "parametar": "udaljenostIstakaOdGraniceSusjedneGradjevine",
+      "operator": ">=",
+      "vrijednost": "h/2",
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [],
+    "id": "33.4.0.0.1.10",
+    "izvorni_citat": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene, tako da će se jednom stranom (ugrađene s dvije ili tri strane) prislanjati uz susjednu građevinu ili granicu građevne čestice, moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2, ali ne manje od 3,0 m od granice građevne čestice, ukoliko građevina ima otvore, prohodne terase i otvorena stubišta."
+   },
+   {
+    "clanak": 33,
+    "stavak": 4,
+    "tocka": null,
+    "vrsta_gradevine": "obiteljska/višeobiteljska kuća – dvojna/ugrađena",
+    "parametar": "najmanja udaljenost istaka od granice građevne čestice",
+    "operator": ">=",
+    "vrijednost": 3.0,
+    "jedinica": "m",
+    "vrsta_pravila": "IZNIMKA",
+    "uvjet_tekst": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina | ukoliko građevina ima otvore, prohodne terase i otvorena stubišta | s drugim dijelovima građevine (istakom)",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "GRANICA_CESTICE_NERAZGRANICENA",
+     "RAZLICITE_REFERENTNE_TOCKE",
+     "VEZNIK_DVOSMISLEN"
+    ],
+    "komponente": [
+     {
+      "id": "33.4.0.0.1.11",
+      "parametar": "udaljenostIstakaOdGraniceCestice",
+      "operator": ">=",
+      "vrijednost": 3.0,
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [],
+    "id": "33.4.0.0.1.11",
+    "izvorni_citat": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene, tako da će se jednom stranom (ugrađene s dvije ili tri strane) prislanjati uz susjednu građevinu ili granicu građevne čestice, moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2, ali ne manje od 3,0 m od granice građevne čestice, ukoliko građevina ima otvore, prohodne terase i otvorena stubišta."
+   },
+   {
+    "clanak": 33,
+    "stavak": 4,
+    "tocka": null,
+    "vrsta_gradevine": "obiteljska/višeobiteljska kuća – dvojna/ugrađena",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "operator": ">=",
+    "vrijednost": 2.0,
+    "jedinica": "m",
+    "vrsta_pravila": "IZNIMKA",
+    "uvjet_tekst": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina | Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta",
+    "status": "PREGLED",
+    "razlog_kod": [
+     "GRANICA_CESTICE_NERAZGRANICENA",
+     "NEGATIVNI_UVJET_NEPOTPUN",
+     "ODNOS_PREMA_FORMULI_NEJASAN",
+     "OPSEG_PROCELJA"
+    ],
+    "komponente": [
+     {
+      "id": "33.4.0.0.2.12",
+      "parametar": "udaljenostOdGraniceCestice",
+      "operator": ">=",
+      "vrijednost": 2.0,
+      "status": "PREGLED"
+     }
+    ],
+    "iznimke": [],
+    "id": "33.4.0.0.2.12",
+    "izvorni_citat": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta, udaljenost građevine od granice građevne čestice može iznositi i 2,0 m."
+   },
+   {
+    "clanak": 25,
+    "stavak": 2,
+    "tocka": "-",
+    "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+    "parametar": "nagib krovnih ploha",
+    "operator": "izmedju",
+    "vrijednost": "17–23",
+    "jedinica": "°",
+    "vrsta_pravila": "UVJETNO",
+    "uvjet_tekst": "ako se grade kao kosa",
+    "status": "PRIJEDLOG",
+    "razlog_kod": [],
+    "komponente": [
+     {
+      "id": "25.2.-.5.1.18",
+      "parametar": "nagibKrovaMin",
+      "operator": ">=",
+      "vrijednost": 17.0,
+      "status": "PRIJEDLOG"
+     },
+     {
+      "id": "25.2.-.5.1.19",
+      "parametar": "nagibKrovaMax",
+      "operator": "<=",
+      "vrijednost": 23.0,
+      "status": "PRIJEDLOG"
+     }
+    ],
+    "iznimke": [],
+    "id": "25.2.-.5.1.18",
+    "izvorni_citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica)."
+   }
+  ]
+ },
+ "ostali_clanci_ppug": {
+  "clanci_s_pravilima": [
+   20
+  ],
+  "prijedlog": 0,
+  "pregled": 1,
+  "pravila": [
+   {
+    "clanak": 20,
+    "stavak": 3,
+    "tocka": "-",
+    "alineja": 8,
+    "parametar": "rekonstrukcijaIPrenamjena",
+    "operator": "dopusteno",
+    "vrijednost": null,
+    "jedinica": null,
+    "status": "PREGLED",
+    "razlog_kod": [
+     "UPUCIVANJE_OPCE",
+     "TIPOGRAFSKA_POGRESKA"
+    ],
+    "izvorni_citat": "postojeće pomoćne građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana."
+   }
+  ],
+  "napomena": "Ovi članci nisu neovisno označeni; prijedlozi se ne smiju smatrati točnima bez neovisnog pregleda."
+ },
+ "upu2": {
+  "cl38_40_vlastite_oznake": {
+   "oznaceno": 99,
+   "predlozeno": 99,
+   "tocno": 92,
+   "pogresno": 0,
+   "dvosmisleno": 7,
+   "dvosmisleno_odgovara_oznaci": 7,
+   "propusteno": 0,
+   "upucivanja_tocno": 2,
+   "upucivanja_pogresno": 0,
+   "upucivanja_propusteno": 0,
+   "oznake_neovisne": false
+  },
+  "clanci_gdje_je_v2_dala_pravila": []
+ },
+ "pravno_potvrdeno": 0,
+ "napomena": "Čl. 25. i 33. su razvojni skup (poznati razvoju v2.1): rezultat nije dokaz generalizacije."
+}
