@@ -1,0 +1,16 @@
+{
+ "verzija": "v1.3 – odluke suca nakon zamrzavanja čitača v2.5 (v1, v1.1 i v1.2 se ne mijenjaju)",
+ "sudac": "Ozren Pančić",
+ "datum": "2026-10-26",
+ "vrijedi_za": "buduću verziju uputa za označavanje (v1.3) i buduću verziju čitača (v2.6+). Ne mijenja zamrznutu v2.5, njezina pravila usporedbe ni postojeće referentne skupove (referenca_v1, referenca_v1_2, neovisne oznake Novog Vinodolskog). Slijepi test v2.5 provodi se po zamrznutom postupku (upute v1.2).",
+ "odluke": [
+  {"br": 1, "izjava_suca": "Visine ograda normaliziraj u metre za usporedbu, uz očuvanje izvorne vrijednosti i jedinice. `150 cm = 1,5 m`. Predmet pravila i mjerena veličina moraju biti zasebna polja.",
+   "primjena": {"usporedba": "za visine ograda, punog dijela ograde, podzida i kaskada vrijednost se za usporedbu pretvara u metre (cm / 100); izvorna vrijednost i jedinica ostaju zapisane uz pravilo",
+                "zapis": "predmet pravila (npr. ograda između građevnih čestica, ulična ograda, podzid, kaskada) i mjerena veličina (npr. visina, visina punog dijela, odmak) zasebna su polja; predmet nije vrsta građevine"}},
+  {"br": 2, "izjava_suca": "Izraz „udaljene 4,0 m” bez izričitog minimuma ne pretvaraj automatski u `≥ 4 m`. Zadrži doslovno značenje i status PREGLED. Operator `≥` dopušten je samo kada ga opravdava izvorni ili naslijeđeni kontekst.",
+   "primjena": "»moraju biti udaljene N m« bez »najmanje / najmanja / ne manje od« u odredbi ili u uvodu stavka/bloka: operator doslovno (»=«), PREGLED (OPERATOR_NEIZRICIT). »≥« samo uz izričit minimum u citatu ili naslijeđenom uvodu."},
+  {"br": 3, "izjava_suca": "Potvrđujem nove kategorije: ograde, zelenilo, kaskade, podzidi, krovne kućice, podzemne etaže i pomoćne građevine. Sve zasad ostaju na PREGLED.",
+   "primjena": "kategorije su potvrđene kao predmet izdvajanja; automatsko prihvaćanje ostaje isključeno (status PREGLED) do posebne odluke"}
+ ],
+ "pravno_potvrdeno": 0
+}
