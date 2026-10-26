@@ -1,0 +1,274 @@
+[
+ {
+  "id": "22.2.0.0.1.16",
+  "clanak": 22,
+  "stavak": 2,
+  "tocka": null,
+  "alineja": null,
+  "izvorni_citat": "Poljoprivredne gospodarske građevine mogu se graditi na građevnoj čestici uz obiteljsku kuću uz poštivanje sljedećih uvjeta:",
+  "pravilo": {
+   "parametar": "dopustenaGradnja",
+   "operator": "dopusteno",
+   "vrijednost": null,
+   "vrsta_pravila": "UVJETNO",
+   "uvjeti": [
+    "na građevnoj čestici uz obiteljsku kuću uz poštivanje sljedećih uvjeta"
+   ],
+   "alternative": null
+  },
+  "status_modula": "PRIJEDLOG",
+  "razlog_kod": [],
+  "oznaka": "D001",
+  "jednoznacnost_oznake": "JASAN",
+  "obrazlozenje_oznake": "",
+  "moguci_sukobi_oznaka": "Dopuštenje vrijedi samo uz kumulativno ispunjenje uvjeta D002–D009, odnosno D010–D011 unutar povijesnih cjelina.",
+  "polja_ista": {
+   "operator": true,
+   "vrijednost": false,
+   "vrsta_pravila": true,
+   "uvjet": true
+  },
+  "isti_sadrzaj_vrijednost_i_uvjet": true,
+  "ocjena": "TOČNO_SADRŽAJNO_DRUGA_GRANULARNOST"
+ },
+ {
+  "id": "22.2.-.4.1.20",
+  "clanak": 22,
+  "stavak": 2,
+  "tocka": "-",
+  "alineja": 4,
+  "izvorni_citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+  "pravilo": {
+   "parametar": "oblikKrovista",
+   "operator": "dopusteno",
+   "vrijednost": "ravna ili kosa",
+   "vrsta_pravila": "ALTERNATIVA",
+   "uvjeti": [],
+   "alternative": [
+    "ravna",
+    "kosa"
+   ]
+  },
+  "status_modula": "PRIJEDLOG",
+  "razlog_kod": [],
+  "oznaka": "D005",
+  "jednoznacnost_oznake": "JASAN",
+  "obrazlozenje_oznake": "",
+  "moguci_sukobi_oznaka": "",
+  "polja_ista": {
+   "operator": true,
+   "vrijednost": true,
+   "vrsta_pravila": true,
+   "uvjet": true
+  },
+  "isti_sadrzaj_vrijednost_i_uvjet": true,
+  "ocjena": "TOČNO"
+ },
+ {
+  "id": "22.2.-.4.1.21",
+  "clanak": 22,
+  "stavak": 2,
+  "tocka": "-",
+  "alineja": 4,
+  "izvorni_citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+  "pravilo": {
+   "parametar": "vrstaKosogKrovista",
+   "operator": "dopusteno",
+   "vrijednost": "jednostrešna, dvostrešna ili višestrešna",
+   "vrsta_pravila": "ALTERNATIVA",
+   "uvjeti": [
+    "ako se grade kao kosa"
+   ],
+   "alternative": [
+    "jednostrešna",
+    "dvostrešna",
+    "višestrešna"
+   ]
+  },
+  "status_modula": "PRIJEDLOG",
+  "razlog_kod": [],
+  "oznaka": "D006",
+  "jednoznacnost_oznake": "JASAN",
+  "obrazlozenje_oznake": "",
+  "moguci_sukobi_oznaka": "",
+  "polja_ista": {
+   "operator": true,
+   "vrijednost": true,
+   "vrsta_pravila": false,
+   "uvjet": true
+  },
+  "isti_sadrzaj_vrijednost_i_uvjet": true,
+  "ocjena": "RAZLIKA_SAMO_U_VRSTI_PRAVILA"
+ },
+ {
+  "id": "22.2.-.7.1.28",
+  "clanak": 22,
+  "stavak": 2,
+  "tocka": "-",
+  "alineja": 7,
+  "izvorni_citat": "postojeće poljoprivredne gospodarske građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana.",
+  "pravilo": {
+   "parametar": "rekonstrukcijaIPrenamjena",
+   "operator": "dopusteno",
+   "vrijednost": null,
+   "vrsta_pravila": "UVJETNO",
+   "uvjeti": [
+    "u skladu s odredbama ovog Prostornog plana"
+   ],
+   "alternative": null
+  },
+  "status_modula": "PREGLED",
+  "razlog_kod": [
+   "UPUCIVANJE_OPCE",
+   "TIPOGRAFSKA_POGRESKA"
+  ],
+  "oznaka": "D012",
+  "jednoznacnost_oznake": "PREGLED",
+  "obrazlozenje_oznake": "Uvjet upućuje na odredbe cijelog Prostornog plana, koje nisu priložene. Nije navedeno u koje se namjene smije prenamijeniti ni što se smatra »postojećom« građevinom (legalnost, datum). Ova odredba ne može se primijeniti samostalno.",
+  "moguci_sukobi_oznaka": "Nadovezuje se na D013.",
+  "polja_ista": {
+   "operator": true,
+   "vrijednost": false,
+   "vrsta_pravila": true,
+   "uvjet": true
+  },
+  "isti_sadrzaj_vrijednost_i_uvjet": false,
+  "ocjena": "PREGLED_ODGOVARA"
+ },
+ {
+  "id": "23.2.0.0.1.15",
+  "clanak": 23,
+  "stavak": 2,
+  "tocka": null,
+  "alineja": null,
+  "izvorni_citat": "Poljoprivredne gospodarske građevine mogu se graditi na građevnoj čestici uz višeobiteljsku kuću uz poštivanje sljedećih uvjeta:",
+  "pravilo": {
+   "parametar": "dopustenaGradnja",
+   "operator": "dopusteno",
+   "vrijednost": null,
+   "vrsta_pravila": "UVJETNO",
+   "uvjeti": [
+    "na građevnoj čestici uz višeobiteljsku kuću uz poštivanje sljedećih uvjeta"
+   ],
+   "alternative": null
+  },
+  "status_modula": "PRIJEDLOG",
+  "razlog_kod": [],
+  "oznaka": "D014",
+  "jednoznacnost_oznake": "JASAN",
+  "obrazlozenje_oznake": "",
+  "moguci_sukobi_oznaka": "Dopuštenje vrijedi samo uz kumulativno ispunjenje uvjeta D015–D022, odnosno D023–D024 unutar povijesnih cjelina.",
+  "polja_ista": {
+   "operator": true,
+   "vrijednost": false,
+   "vrsta_pravila": true,
+   "uvjet": true
+  },
+  "isti_sadrzaj_vrijednost_i_uvjet": true,
+  "ocjena": "TOČNO_SADRŽAJNO_DRUGA_GRANULARNOST"
+ },
+ {
+  "id": "23.2.-.4.1.19",
+  "clanak": 23,
+  "stavak": 2,
+  "tocka": "-",
+  "alineja": 4,
+  "izvorni_citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+  "pravilo": {
+   "parametar": "oblikKrovista",
+   "operator": "dopusteno",
+   "vrijednost": "ravna ili kosa",
+   "vrsta_pravila": "ALTERNATIVA",
+   "uvjeti": [],
+   "alternative": [
+    "ravna",
+    "kosa"
+   ]
+  },
+  "status_modula": "PRIJEDLOG",
+  "razlog_kod": [],
+  "oznaka": "D018",
+  "jednoznacnost_oznake": "JASAN",
+  "obrazlozenje_oznake": "",
+  "moguci_sukobi_oznaka": "",
+  "polja_ista": {
+   "operator": true,
+   "vrijednost": true,
+   "vrsta_pravila": true,
+   "uvjet": true
+  },
+  "isti_sadrzaj_vrijednost_i_uvjet": true,
+  "ocjena": "TOČNO"
+ },
+ {
+  "id": "23.2.-.4.1.20",
+  "clanak": 23,
+  "stavak": 2,
+  "tocka": "-",
+  "alineja": 4,
+  "izvorni_citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+  "pravilo": {
+   "parametar": "vrstaKosogKrovista",
+   "operator": "dopusteno",
+   "vrijednost": "jednostrešna, dvostrešna ili višestrešna",
+   "vrsta_pravila": "ALTERNATIVA",
+   "uvjeti": [
+    "ako se grade kao kosa"
+   ],
+   "alternative": [
+    "jednostrešna",
+    "dvostrešna",
+    "višestrešna"
+   ]
+  },
+  "status_modula": "PRIJEDLOG",
+  "razlog_kod": [],
+  "oznaka": "D019",
+  "jednoznacnost_oznake": "JASAN",
+  "obrazlozenje_oznake": "",
+  "moguci_sukobi_oznaka": "",
+  "polja_ista": {
+   "operator": true,
+   "vrijednost": true,
+   "vrsta_pravila": false,
+   "uvjet": true
+  },
+  "isti_sadrzaj_vrijednost_i_uvjet": true,
+  "ocjena": "RAZLIKA_SAMO_U_VRSTI_PRAVILA"
+ },
+ {
+  "id": "23.2.-.7.1.27",
+  "clanak": 23,
+  "stavak": 2,
+  "tocka": "-",
+  "alineja": 7,
+  "izvorni_citat": "postojeće poljoprivredne gospodarske građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana.",
+  "pravilo": {
+   "parametar": "rekonstrukcijaIPrenamjena",
+   "operator": "dopusteno",
+   "vrijednost": null,
+   "vrsta_pravila": "UVJETNO",
+   "uvjeti": [
+    "u skladu s odredbama ovog Prostornog plana"
+   ],
+   "alternative": null
+  },
+  "status_modula": "PREGLED",
+  "razlog_kod": [
+   "UPUCIVANJE_OPCE",
+   "TIPOGRAFSKA_POGRESKA"
+  ],
+  "oznaka": "D025",
+  "jednoznacnost_oznake": "PREGLED",
+  "obrazlozenje_oznake": "Uvjet upućuje na cijeli Prostorni plan, koji nije priložen. Nisu navedene dopuštene nove namjene ni definicija »postojeće« građevine. Odredba se ne može primijeniti samostalno.",
+  "moguci_sukobi_oznaka": "Nadovezuje se na D026.",
+  "polja_ista": {
+   "operator": true,
+   "vrijednost": false,
+   "vrsta_pravila": true,
+   "uvjet": true
+  },
+  "isti_sadrzaj_vrijednost_i_uvjet": false,
+  "ocjena": "PREGLED_ODGOVARA"
+ }
+]
