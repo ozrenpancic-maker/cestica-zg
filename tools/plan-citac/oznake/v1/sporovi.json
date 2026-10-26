@@ -1,0 +1,4649 @@
+[
+ {
+  "id": "G1_ppug_22_23:A017~B017",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A017",
+   "clanak": 22,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 11,
+   "citat": "g) ukoliko se ispod obiteljske građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi: - za slobodnostojeće građevine 0,75",
+   "vrsta_gradevine": "obiteljska kuća – slobodnostojeća",
+   "parametar": "najveći koeficijent iskoristivosti (kis)",
+   "operator": "<=",
+   "vrijednost": 0.75,
+   "jedinica": "koeficijent",
+   "uvjet_primjene": "ukoliko se ispod obiteljske građevine gradi podrum",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B017",
+   "clanak": 22,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 11,
+   "citat": "ukoliko se ispod obiteljske građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi: - za slobodnostojeće građevine 0,75 - dvojne i ugrađene građevine 0,75",
+   "vrsta_gradevine": "obiteljska kuća – slobodnostojeća",
+   "parametar": "najveći koeficijent iskoristivosti (kis)",
+   "operator": "<=",
+   "vrijednost": 0.75,
+   "jedinica": "koeficijent",
+   "uvjet_primjene": "ukoliko se ispod obiteljske građevine gradi podrum",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: tekst govori o 'obiteljskoj građevini', a ne o 'obiteljskoj kući'; istovjetnost slijedi samo iz konteksta",
+    "ODNOS_ODREDBI: nije izričito rečeno vrijedi li uz podrum i dalje kis nadzemnih etaža 0,5 iz točke f) ili ga 0,75 zamjenjuje"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G1_ppug_22_23:A018~B018",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A018",
+   "clanak": 22,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 12,
+   "citat": "g) ukoliko se ispod obiteljske građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi: - za slobodnostojeće građevine 0,75 - dvojne i ugrađene građevine 0,75",
+   "vrsta_gradevine": "obiteljska kuća – dvojna",
+   "parametar": "najveći koeficijent iskoristivosti (kis)",
+   "operator": "<=",
+   "vrijednost": 0.75,
+   "jedinica": "koeficijent",
+   "uvjet_primjene": "ukoliko se ispod obiteljske građevine gradi podrum",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B018",
+   "clanak": 22,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 12,
+   "citat": "ukoliko se ispod obiteljske građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi: - za slobodnostojeće građevine 0,75 - dvojne i ugrađene građevine 0,75",
+   "vrsta_gradevine": "obiteljska kuća – dvojna",
+   "parametar": "najveći koeficijent iskoristivosti (kis)",
+   "operator": "<=",
+   "vrijednost": 0.75,
+   "jedinica": "koeficijent",
+   "uvjet_primjene": "ukoliko se ispod obiteljske građevine gradi podrum",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: tekst govori o 'obiteljskoj građevini', a ne o 'obiteljskoj kući'; istovjetnost slijedi samo iz konteksta",
+    "ODNOS_ODREDBI: nije izričito rečeno vrijedi li uz podrum i dalje kis nadzemnih etaža 0,5 iz točke f) ili ga 0,75 zamjenjuje"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G1_ppug_22_23:A019~B019",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A019",
+   "clanak": 22,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 12,
+   "citat": "g) ukoliko se ispod obiteljske građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi: - za slobodnostojeće građevine 0,75 - dvojne i ugrađene građevine 0,75",
+   "vrsta_gradevine": "obiteljska kuća – ugrađena",
+   "parametar": "najveći koeficijent iskoristivosti (kis)",
+   "operator": "<=",
+   "vrijednost": 0.75,
+   "jedinica": "koeficijent",
+   "uvjet_primjene": "ukoliko se ispod obiteljske građevine gradi podrum",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B019",
+   "clanak": 22,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 12,
+   "citat": "ukoliko se ispod obiteljske građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi: - za slobodnostojeće građevine 0,75 - dvojne i ugrađene građevine 0,75",
+   "vrsta_gradevine": "obiteljska kuća – ugrađena",
+   "parametar": "najveći koeficijent iskoristivosti (kis)",
+   "operator": "<=",
+   "vrijednost": 0.75,
+   "jedinica": "koeficijent",
+   "uvjet_primjene": "ukoliko se ispod obiteljske građevine gradi podrum",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: tekst govori o 'obiteljskoj građevini', a ne o 'obiteljskoj kući'; istovjetnost slijedi samo iz konteksta",
+    "ODNOS_ODREDBI: nije izričito rečeno vrijedi li uz podrum i dalje kis nadzemnih etaža 0,5 iz točke f) ili ga 0,75 zamjenjuje"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G1_ppug_22_23:A023~B023",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A023",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "- visina od najniže kote konačno zaravnatog terena iznosi najviše 4,0 m,",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: zadana je donja točka (najniža kota konačno zaravnatog terena), gornja nije (vijenac, sljeme?)"
+   ]
+  },
+  "B": {
+   "id": "B023",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena iznosi najviše 4,0 m,",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "na građevnoj čestici uz obiteljsku kuću",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: navedena je samo donja točka (najniža kota konačno zaravnatog terena), a gornja točka mjerenja nije"
+   ]
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz obiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A024~B024",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A024",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "- građevni pravac je iza građevnog pravca građevine osnovne namjene,",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "položaj građevnog pravca",
+   "operator": "opis",
+   "vrijednost": "iza građevnog pravca građevine osnovne namjene",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B024",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "građevni pravac je iza građevnog pravca građevine osnovne namjene,",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "položaj građevnog pravca",
+   "operator": "opis",
+   "vrijednost": "iza građevnog pravca građevine osnovne namjene",
+   "jedinica": "opis",
+   "uvjet_primjene": "na građevnoj čestici uz obiteljsku kuću",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz obiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A025~B025",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A025",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "- najmanja udaljenost od granice građevne čestice iznosi 4,0 m,",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B025",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "najmanja udaljenost od granice građevne čestice iznosi 4,0 m,",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "na građevnoj čestici uz obiteljsku kuću",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz obiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A026~B026",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A026",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "- krovišta mogu biti ravna ili kosa",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "oblik krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "ravna ili kosa",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "moze",
+   "alternative": [
+    "ravna",
+    "kosa"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B026",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "oblik krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "ravna ili kosa",
+   "jedinica": "opis",
+   "uvjet_primjene": "na građevnoj čestici uz obiteljsku kuću",
+   "modal": "moze",
+   "alternative": [
+    "ravna",
+    "kosa"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz obiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A027~B027",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A027",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "(ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "vrsta kosog krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "jednostrešna, dvostrešna ili višestrešna",
+   "jedinica": "opis",
+   "uvjet_primjene": "ako se grade kao kosa",
+   "modal": "moze",
+   "alternative": [
+    "jednostrešna",
+    "dvostrešna",
+    "višestrešna"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B027",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "vrsta kosog krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "jednostrešna, dvostrešna ili višestrešna",
+   "jedinica": "opis",
+   "uvjet_primjene": "na građevnoj čestici uz obiteljsku kuću; ako se grade kao kosa",
+   "modal": "moze",
+   "alternative": [
+    "jednostrešna",
+    "dvostrešna",
+    "višestrešna"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz obiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A028~B028",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A028",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "(ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23°",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "nagib krovnih ploha",
+   "operator": "izmedju",
+   "vrijednost": "17–23",
+   "jedinica": "°",
+   "uvjet_primjene": "ako se grade kao kosa",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B028",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "nagib krovnih ploha",
+   "operator": "izmedju",
+   "vrijednost": "17–23",
+   "jedinica": "°",
+   "uvjet_primjene": "na građevnoj čestici uz obiteljsku kuću; ako se grade kao kosa",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz obiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A029~B029",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A029",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "(ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica)",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "vrsta pokrova",
+   "operator": "=",
+   "vrijednost": "mediteran crijep ili kupa kanalica",
+   "jedinica": "opis",
+   "uvjet_primjene": "ako se grade kao kosa",
+   "modal": "mora",
+   "alternative": [
+    "mediteran crijep",
+    "kupa kanalica"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B029",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "vrsta pokrova",
+   "operator": "=",
+   "vrijednost": "mediteran crijep ili kupa kanalica",
+   "jedinica": "opis",
+   "uvjet_primjene": "na građevnoj čestici uz obiteljsku kuću; ako se grade kao kosa",
+   "modal": "mora",
+   "alternative": [
+    "mediteran crijep",
+    "kupa kanalica"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz obiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A030~B030",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A030",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "- udaljenost poljoprivredne gospodarske građevine od regulacijskog pravca iznosi najmanje 6,0 m.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 6.0,
+   "jedinica": "m",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B030",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "udaljenost poljoprivredne gospodarske građevine od regulacijskog pravca iznosi najmanje 6,0 m.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 6.0,
+   "jedinica": "m",
+   "uvjet_primjene": "na građevnoj čestici uz obiteljsku kuću",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz obiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A031~B031",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A031",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "- iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice iznosi 3,0 m",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "uvjet_primjene": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "VEZNIK: »registriranih i evidentiranih« može značiti cjeline koje su i jedno i drugo ili bilo koje od toga",
+    "OBUHVAT: granice povijesnih graditeljskih cjelina nisu dane u tekstu"
+   ]
+  },
+  "B": {
+   "id": "B031",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice iznosi 3,0 m, a udaljenost od regulacijskog pravca iznosi najmanje 5,0 m.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "uvjet_primjene": "na građevnoj čestici uz obiteljsku kuću; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "VEZNIK: iz 'registriranih i evidentiranih' nije jasno mora li cjelina biti i registrirana i evidentirana ili je dovoljno jedno",
+    "OBUHVAT: obuhvat povijesnih graditeljskih cjelina nije određen u tekstu"
+   ]
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz obiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A032~B032",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A032",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "- iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice iznosi 3,0 m, a udaljenost od regulacijskog pravca iznosi najmanje 5,0 m.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 5.0,
+   "jedinica": "m",
+   "uvjet_primjene": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "VEZNIK: »registriranih i evidentiranih« može značiti cjeline koje su i jedno i drugo ili bilo koje od toga",
+    "OBUHVAT: granice povijesnih graditeljskih cjelina nisu dane u tekstu"
+   ]
+  },
+  "B": {
+   "id": "B032",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice iznosi 3,0 m, a udaljenost od regulacijskog pravca iznosi najmanje 5,0 m.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 5.0,
+   "jedinica": "m",
+   "uvjet_primjene": "na građevnoj čestici uz obiteljsku kuću; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "VEZNIK: iz 'registriranih i evidentiranih' nije jasno mora li cjelina biti i registrirana i evidentirana ili je dovoljno jedno",
+    "OBUHVAT: obuhvat povijesnih graditeljskih cjelina nije određen u tekstu"
+   ]
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz obiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A033~B033",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene",
+   "vrsta_pravila"
+  ],
+  "A": {
+   "id": "A033",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "- postojeće poljoprivredne gospodarske građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "u skladu s odredbama ovog Prostornog plana",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: upućuje na ostale odredbe Prostornog plana kojih nema u tekstu"
+   ]
+  },
+  "B": {
+   "id": "B033",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "postojeće poljoprivredne gospodarske građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana. Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom mogu se rekonstruirati samo u postojećim tlocrtnim i visinskim gabaritima.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "u skladu s odredbama ovog Prostornog plana",
+   "jedinica": "opis",
+   "uvjet_primjene": "na građevnoj čestici uz obiteljsku kuću; u skladu s odredbama ovog Prostornog plana",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: ovisi o drugim odredbama Prostornog plana koje nisu u tekstu"
+   ]
+  }
+ },
+ {
+  "id": "G1_ppug_22_23:A034~B034",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A034",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom mogu se rekonstruirati samo u postojećim tlocrtnim i visinskim gabaritima.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina (postojeća)",
+   "parametar": "gabariti pri rekonstrukciji",
+   "operator": "opis",
+   "vrijednost": "samo u postojećim tlocrtnim i visinskim gabaritima",
+   "jedinica": "opis",
+   "uvjet_primjene": "ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: uvjeti »propisani ovim Prostornim planom« nisu svi u tekstu"
+   ]
+  },
+  "B": {
+   "id": "B034",
+   "clanak": 22,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "postojeće poljoprivredne gospodarske građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana. Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom mogu se rekonstruirati samo u postojećim tlocrtnim i visinskim gabaritima.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina (postojeća)",
+   "parametar": "gabariti pri rekonstrukciji",
+   "operator": "opis",
+   "vrijednost": "samo u postojećim tlocrtnim i visinskim gabaritima",
+   "jedinica": "opis",
+   "uvjet_primjene": "na građevnoj čestici uz obiteljsku kuću; ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: koji su 'uvjeti propisani ovim Prostornim planom' određuju odredbe izvan teksta"
+   ]
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz obiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A045~B045",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A045",
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 11,
+   "citat": "f) ukoliko se ispod višeobiteljske građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi: - za slobodnostojeće građevine 0,75",
+   "vrsta_gradevine": "višeobiteljska kuća – slobodnostojeća",
+   "parametar": "najveći koeficijent iskoristivosti (kis)",
+   "operator": "<=",
+   "vrijednost": 0.75,
+   "jedinica": "koeficijent",
+   "uvjet_primjene": "ukoliko se ispod višeobiteljske građevine gradi podrum",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B045",
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 11,
+   "citat": "ukoliko se ispod višeobiteljske građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi: - za slobodnostojeće građevine 0,75 - dvojne građevine 0,75",
+   "vrsta_gradevine": "višeobiteljska kuća – slobodnostojeća",
+   "parametar": "najveći koeficijent iskoristivosti (kis)",
+   "operator": "<=",
+   "vrijednost": 0.75,
+   "jedinica": "koeficijent",
+   "uvjet_primjene": "ukoliko se ispod višeobiteljske građevine gradi podrum",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: tekst govori o 'višeobiteljskoj građevini', a ne o 'višeobiteljskoj kući'; istovjetnost slijedi samo iz konteksta",
+    "ODNOS_ODREDBI: nije izričito rečeno vrijedi li uz podrum i dalje kis nadzemnih etaža 0,5 iz točke e) ili ga 0,75 zamjenjuje"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G1_ppug_22_23:A046~B046",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A046",
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 12,
+   "citat": "f) ukoliko se ispod višeobiteljske građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi: - za slobodnostojeće građevine 0,75 - dvojne građevine 0,75",
+   "vrsta_gradevine": "višeobiteljska kuća – dvojna",
+   "parametar": "najveći koeficijent iskoristivosti (kis)",
+   "operator": "<=",
+   "vrijednost": 0.75,
+   "jedinica": "koeficijent",
+   "uvjet_primjene": "ukoliko se ispod višeobiteljske građevine gradi podrum",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B046",
+   "clanak": 23,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 12,
+   "citat": "ukoliko se ispod višeobiteljske građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi: - za slobodnostojeće građevine 0,75 - dvojne građevine 0,75",
+   "vrsta_gradevine": "višeobiteljska kuća – dvojna",
+   "parametar": "najveći koeficijent iskoristivosti (kis)",
+   "operator": "<=",
+   "vrijednost": 0.75,
+   "jedinica": "koeficijent",
+   "uvjet_primjene": "ukoliko se ispod višeobiteljske građevine gradi podrum",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: tekst govori o 'višeobiteljskoj građevini', a ne o 'višeobiteljskoj kući'; istovjetnost slijedi samo iz konteksta",
+    "ODNOS_ODREDBI: nije izričito rečeno vrijedi li uz podrum i dalje kis nadzemnih etaža 0,5 iz točke e) ili ga 0,75 zamjenjuje"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G1_ppug_22_23:A050~B050",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A050",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "- visina od najniže kote konačno zaravnatog terena iznosi najviše 4,0 m,",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: zadana je donja točka (najniža kota konačno zaravnatog terena), gornja nije (vijenac, sljeme?)"
+   ]
+  },
+  "B": {
+   "id": "B050",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena iznosi najviše 4,0 m,",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "na građevnoj čestici uz višeobiteljsku kuću",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: navedena je samo donja točka (najniža kota konačno zaravnatog terena), a gornja točka mjerenja nije"
+   ]
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz višeobiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A051~B051",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A051",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "- građevni pravac je iza građevnog pravca građevine osnovne namjene,",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "položaj građevnog pravca",
+   "operator": "opis",
+   "vrijednost": "iza građevnog pravca građevine osnovne namjene",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B051",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "građevni pravac je iza građevnog pravca građevine osnovne namjene,",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "položaj građevnog pravca",
+   "operator": "opis",
+   "vrijednost": "iza građevnog pravca građevine osnovne namjene",
+   "jedinica": "opis",
+   "uvjet_primjene": "na građevnoj čestici uz višeobiteljsku kuću",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz višeobiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A052~B052",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A052",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "- najmanja udaljenost od granice građevne čestice iznosi 4,0 m,",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B052",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "najmanja udaljenost od granice građevne čestice iznosi 4,0 m,",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "na građevnoj čestici uz višeobiteljsku kuću",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz višeobiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A053~B053",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A053",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "- krovišta mogu biti ravna ili kosa",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "oblik krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "ravna ili kosa",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "moze",
+   "alternative": [
+    "ravna",
+    "kosa"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B053",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "oblik krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "ravna ili kosa",
+   "jedinica": "opis",
+   "uvjet_primjene": "na građevnoj čestici uz višeobiteljsku kuću",
+   "modal": "moze",
+   "alternative": [
+    "ravna",
+    "kosa"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz višeobiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A054~B054",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A054",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "(ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "vrsta kosog krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "jednostrešna, dvostrešna ili višestrešna",
+   "jedinica": "opis",
+   "uvjet_primjene": "ako se grade kao kosa",
+   "modal": "moze",
+   "alternative": [
+    "jednostrešna",
+    "dvostrešna",
+    "višestrešna"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B054",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "vrsta kosog krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "jednostrešna, dvostrešna ili višestrešna",
+   "jedinica": "opis",
+   "uvjet_primjene": "na građevnoj čestici uz višeobiteljsku kuću; ako se grade kao kosa",
+   "modal": "moze",
+   "alternative": [
+    "jednostrešna",
+    "dvostrešna",
+    "višestrešna"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz višeobiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A055~B055",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A055",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "(ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23°",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "nagib krovnih ploha",
+   "operator": "izmedju",
+   "vrijednost": "17–23",
+   "jedinica": "°",
+   "uvjet_primjene": "ako se grade kao kosa",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B055",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "nagib krovnih ploha",
+   "operator": "izmedju",
+   "vrijednost": "17–23",
+   "jedinica": "°",
+   "uvjet_primjene": "na građevnoj čestici uz višeobiteljsku kuću; ako se grade kao kosa",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz višeobiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A056~B056",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A056",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "(ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica)",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "vrsta pokrova",
+   "operator": "=",
+   "vrijednost": "mediteran crijep ili kupa kanalica",
+   "jedinica": "opis",
+   "uvjet_primjene": "ako se grade kao kosa",
+   "modal": "mora",
+   "alternative": [
+    "mediteran crijep",
+    "kupa kanalica"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B056",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "vrsta pokrova",
+   "operator": "=",
+   "vrijednost": "mediteran crijep ili kupa kanalica",
+   "jedinica": "opis",
+   "uvjet_primjene": "na građevnoj čestici uz višeobiteljsku kuću; ako se grade kao kosa",
+   "modal": "mora",
+   "alternative": [
+    "mediteran crijep",
+    "kupa kanalica"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz višeobiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A057~B057",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A057",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "- udaljenost poljoprivredne gospodarske građevine od regulacijskog pravca iznosi najmanje 6,0 m.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 6.0,
+   "jedinica": "m",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B057",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "udaljenost poljoprivredne gospodarske građevine od regulacijskog pravca iznosi najmanje 6,0 m.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 6.0,
+   "jedinica": "m",
+   "uvjet_primjene": "na građevnoj čestici uz višeobiteljsku kuću",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz višeobiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A058~B058",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A058",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "- iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice iznosi 3,0 m",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "uvjet_primjene": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "VEZNIK: »registriranih i evidentiranih« može značiti cjeline koje su i jedno i drugo ili bilo koje od toga",
+    "OBUHVAT: granice povijesnih graditeljskih cjelina nisu dane u tekstu"
+   ]
+  },
+  "B": {
+   "id": "B058",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice iznosi 3,0 m, a udaljenost od regulacijskog pravca iznosi najmanje 5,0 m.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "uvjet_primjene": "na građevnoj čestici uz višeobiteljsku kuću; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "VEZNIK: iz 'registriranih i evidentiranih' nije jasno mora li cjelina biti i registrirana i evidentirana ili je dovoljno jedno",
+    "OBUHVAT: obuhvat povijesnih graditeljskih cjelina nije određen u tekstu"
+   ]
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz višeobiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A059~B059",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A059",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "- iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice iznosi 3,0 m, a udaljenost od regulacijskog pravca iznosi najmanje 5,0 m.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 5.0,
+   "jedinica": "m",
+   "uvjet_primjene": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "VEZNIK: »registriranih i evidentiranih« može značiti cjeline koje su i jedno i drugo ili bilo koje od toga",
+    "OBUHVAT: granice povijesnih graditeljskih cjelina nisu dane u tekstu"
+   ]
+  },
+  "B": {
+   "id": "B059",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice iznosi 3,0 m, a udaljenost od regulacijskog pravca iznosi najmanje 5,0 m.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 5.0,
+   "jedinica": "m",
+   "uvjet_primjene": "na građevnoj čestici uz višeobiteljsku kuću; unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "VEZNIK: iz 'registriranih i evidentiranih' nije jasno mora li cjelina biti i registrirana i evidentirana ili je dovoljno jedno",
+    "OBUHVAT: obuhvat povijesnih graditeljskih cjelina nije određen u tekstu"
+   ]
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz višeobiteljsku kuću"
+ },
+ {
+  "id": "G1_ppug_22_23:A060~B060",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene",
+   "vrsta_pravila"
+  ],
+  "A": {
+   "id": "A060",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "- postojeće poljoprivredne gospodarske građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "u skladu s odredbama ovog Prostornog plana",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: upućuje na ostale odredbe Prostornog plana kojih nema u tekstu"
+   ]
+  },
+  "B": {
+   "id": "B060",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "postojeće poljoprivredne gospodarske građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana. Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom mogu se rekonstruirati samo u postojećim tlocrtnim i visinskim gabaritima.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "u skladu s odredbama ovog Prostornog plana",
+   "jedinica": "opis",
+   "uvjet_primjene": "na građevnoj čestici uz višeobiteljsku kuću; u skladu s odredbama ovog Prostornog plana",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: ovisi o drugim odredbama Prostornog plana koje nisu u tekstu"
+   ]
+  }
+ },
+ {
+  "id": "G1_ppug_22_23:A061~B061",
+  "skupina": "G1_ppug_22_23",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A061",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom mogu se rekonstruirati samo u postojećim tlocrtnim i visinskim gabaritima.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina (postojeća)",
+   "parametar": "gabariti pri rekonstrukciji",
+   "operator": "opis",
+   "vrijednost": "samo u postojećim tlocrtnim i visinskim gabaritima",
+   "jedinica": "opis",
+   "uvjet_primjene": "ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: uvjeti »propisani ovim Prostornim planom« nisu svi u tekstu"
+   ]
+  },
+  "B": {
+   "id": "B061",
+   "clanak": 23,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "postojeće poljoprivredne gospodarske građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana. Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom mogu se rekonstruirati samo u postojećim tlocrtnim i visinskim gabaritima.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina (postojeća)",
+   "parametar": "gabariti pri rekonstrukciji",
+   "operator": "opis",
+   "vrijednost": "samo u postojećim tlocrtnim i visinskim gabaritima",
+   "jedinica": "opis",
+   "uvjet_primjene": "na građevnoj čestici uz višeobiteljsku kuću; ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: koji su 'uvjeti propisani ovim Prostornim planom' određuju odredbe izvan teksta"
+   ]
+  },
+  "uzorak": "uvjet · B dodaje: na građevnoj čestici uz višeobiteljsku kuću"
+ },
+ {
+  "id": "G2_ppug_25_33:A010~B010",
+  "skupina": "G2_ppug_25_33",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A010",
+   "clanak": 25,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena iznosi najviše 4,0 m",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: zadana je samo donja točka mjerenja (najniža kota konačno zaravnatog terena), a gornja (vijenac, sljeme ili gornji rub stropa) nije"
+   ]
+  },
+  "B": {
+   "id": "B010",
+   "clanak": 25,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena iznosi najviše 4,0 m",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "od najniže kote konačno zaravnatog terena",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: navedena je samo donja točka (najniža kota konačno zaravnatog terena); gornja točka mjerenja (vijenac, sljeme, gornji rub) nije određena"
+   ]
+  },
+  "uzorak": "uvjet · B dodaje: od najniže kote konačno zaravnatog terena"
+ },
+ {
+  "id": "G2_ppug_25_33:A021~B021",
+  "skupina": "G2_ppug_25_33",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "modal"
+  ],
+  "A": {
+   "id": "A021",
+   "clanak": 25,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom mogu se rekonstruirati samo u postojećim tlocrtnim i visinskim gabaritima.",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina (postojeća)",
+   "parametar": "gabariti pri rekonstrukciji",
+   "operator": "opis",
+   "vrijednost": "samo u postojećim tlocrtnim i visinskim gabaritima",
+   "jedinica": "opis",
+   "uvjet_primjene": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: ovisi o uvjetima plana koji nisu u ovom tekstu",
+    "TUMACENJE: »mogu se ... samo« pročitano je kao obvezno ograničenje (modal mora)"
+   ]
+  },
+  "B": {
+   "id": "B021",
+   "clanak": 25,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom mogu se rekonstruirati samo u postojećim tlocrtnim i visinskim gabaritima",
+   "vrsta_gradevine": "poljoprivredna gospodarska građevina (postojeća)",
+   "parametar": "gabariti pri rekonstrukciji",
+   "operator": "opis",
+   "vrijednost": "samo u postojećim tlocrtnim i visinskim gabaritima",
+   "jedinica": "opis",
+   "uvjet_primjene": "ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: »uvjeti propisani ovim Prostornim planom« nisu navedeni u tekstu",
+    "TUMACENJE: rečenica se ne odnosi izričito i na prenamjenu, samo na rekonstrukciju"
+   ]
+  },
+  "uzorak": "modal: A=mora | B=moze"
+ },
+ {
+  "id": "G2_ppug_25_33:A025~B025",
+  "skupina": "G2_ppug_25_33",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene",
+   "vrsta_pravila"
+  ],
+  "A": {
+   "id": "A025",
+   "clanak": 33,
+   "stavak": 2,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2",
+   "vrsta_gradevine": "obiteljska/višeobiteljska kuća – dvojna/ugrađena",
+   "parametar": "najmanja udaljenost istaka od granice susjedne građevine",
+   "operator": ">=",
+   "vrijednost": "h/2",
+   "jedinica": "m",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: h nije definiran (visina cijele građevine ili istaka)",
+    "NEDEFINIRAN_POJAM: pojmovi »granica susjedne građevine« i »istak« nisu definirani",
+    "ODNOS_ODREDBI: nije jasno odnosi li se i ovdje uvjet o otvorima, prohodnim terasama i stubištima"
+   ]
+  },
+  "B": {
+   "id": "B025",
+   "clanak": 33,
+   "stavak": 2,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2, ali ne manje od 4,0 metra od granice građevne čestice, ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+   "vrsta_gradevine": "obiteljska/višeobiteljska kuća – dvojna/ugrađena",
+   "parametar": "najmanja udaljenost istaka od granice susjedne građevine",
+   "operator": ">=",
+   "vrijednost": "h/2",
+   "jedinica": "m",
+   "uvjet_primjene": "ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: h nije definiran; »granica susjedne građevine« nije određena kao točka mjerenja",
+    "TUMACENJE: h/2 i 4,0 m odnose se na različite referentne linije pa se ne mogu sigurno spojiti u max(h/2, 4,0)",
+    "VEZNIK: »otvore, prohodne terase i otvorena stubišta« – kumulativno ili alternativno",
+    "SUKOB: čl. 25. st. 1. t. h)"
+   ]
+  }
+ },
+ {
+  "id": "G2_ppug_25_33:A030~B031",
+  "skupina": "G2_ppug_25_33",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A030",
+   "clanak": 33,
+   "stavak": 4,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene, tako da će se jednom stranom (ugrađene s dvije ili tri strane) prislanjati uz susjednu građevinu ili granicu građevne čestice, moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2",
+   "vrsta_gradevine": "obiteljska/višeobiteljska kuća – dvojna/ugrađena",
+   "parametar": "najmanja udaljenost istaka od granice susjedne građevine",
+   "operator": ">=",
+   "vrijednost": "h/2",
+   "jedinica": "m",
+   "uvjet_primjene": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: h nije definiran",
+    "NEDEFINIRAN_POJAM: pojmovi »granica susjedne građevine« i »istak« nisu definirani",
+    "VEZNIK: »registriranih i evidentiranih« može značiti oboje ili bilo koje",
+    "OBUHVAT: obuhvat povijesnih graditeljskih cjelina nije određen u tekstu"
+   ]
+  },
+  "B": {
+   "id": "B031",
+   "clanak": 33,
+   "stavak": 4,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene, tako da će se jednom stranom (ugrađene s dvije ili tri strane) prislanjati uz susjednu građevinu ili granicu građevne čestice, moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2, ali ne manje od 3,0 m od granice građevne čestice, ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+   "vrsta_gradevine": "obiteljska/višeobiteljska kuća – dvojna/ugrađena",
+   "parametar": "najmanja udaljenost istaka od granice susjedne građevine",
+   "operator": ">=",
+   "vrijednost": "h/2",
+   "jedinica": "m",
+   "uvjet_primjene": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina; ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: h nije definiran; »granica susjedne građevine« nije određena",
+    "TUMACENJE: h/2 i 3,0 m odnose se na različite referentne linije",
+    "VEZNIK: »registriranih i evidentiranih« te »otvore, prohodne terase i otvorena stubišta«",
+    "OBUHVAT: granice povijesnih graditeljskih cjelina nisu određene",
+    "SUKOB: čl. 25. st. 1. t. h)"
+   ]
+  },
+  "uzorak": "uvjet · B dodaje: ukoliko građevina ima otvore, prohodne terase i otvorena stubišta"
+ },
+ {
+  "id": "G2_ppug_25_33:A008~B008",
+  "skupina": "G2_ppug_25_33",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "modal"
+  ],
+  "A": {
+   "id": "A008",
+   "clanak": 25,
+   "stavak": 1,
+   "tocka": "h",
+   "alineja_rb": null,
+   "citat": "stambene građevine mogu se graditi samo kao samostojeće građevine",
+   "vrsta_gradevine": "stambena građevina",
+   "parametar": "način gradnje",
+   "operator": "=",
+   "vrijednost": "samostojeće",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: »mogu se graditi samo kao« pročitano je kao obveza (zabrana drugih načina gradnje)",
+    "SUKOB: čl. 33. st. (2) i (4) propisuju udaljenosti za obiteljske/višeobiteljske kuće koje se grade kao dvojne/ugrađene, što se kosi s dopuštanjem samo samostojeće gradnje"
+   ]
+  },
+  "B": {
+   "id": "B008",
+   "clanak": 25,
+   "stavak": 1,
+   "tocka": "h",
+   "alineja_rb": null,
+   "citat": "stambene građevine mogu se graditi samo kao samostojeće građevine",
+   "vrsta_gradevine": "stambena građevina",
+   "parametar": "način gradnje",
+   "operator": "=",
+   "vrijednost": "samostojeće građevine",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: »mogu se graditi samo« – riječ »mogu« uz »samo« zapravo isključuje druge načine gradnje; isključenje nije izrečeno kao zabrana",
+    "SUKOB: čl. 33. st. 2. i 4. uređuju udaljenosti obiteljskih/višeobiteljskih kuća koje se grade kao dvojne/ugrađene, što je u suprotnosti s dopuštanjem samo samostojeće gradnje"
+   ]
+  },
+  "uzorak": "modal: A=mora | B=moze"
+ },
+ {
+  "id": "G2_ppug_25_33:~B030",
+  "skupina": "G2_ppug_25_33",
+  "vrsta": "SAMO_B",
+  "polja": [],
+  "A": null,
+  "B": {
+   "id": "B030",
+   "clanak": 33,
+   "stavak": 4,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene, tako da će se jednom stranom (ugrađene s dvije ili tri strane) prislanjati uz susjednu građevinu ili granicu građevne čestice",
+   "vrsta_gradevine": "obiteljska/višeobiteljska kuća – dvojna/ugrađena",
+   "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+   "operator": "opis",
+   "vrijednost": "jednom stranom (ugrađene s dvije ili tri strane) uz susjednu građevinu ili granicu građevne čestice",
+   "jedinica": "opis",
+   "uvjet_primjene": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "SUKOB: čl. 25. st. 1. t. h) dopušta stambene građevine samo kao samostojeće",
+    "OBUHVAT: granice povijesnih graditeljskih cjelina nisu određene u tekstu"
+   ]
+  }
+ },
+ {
+  "id": "G4_upu1_14:A009~B011",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A009",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "Namjena građevine je sportsko-rekreacijska, a dopušten je smještaj pratećih sadržaja (ugostiteljski, uslužni, trgovački i slični sadržaji u funkciji osnovne namjene).",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "drugo: namjena građevine",
+   "operator": "=",
+   "vrijednost": "sportsko-rekreacijska",
+   "jedinica": "opis",
+   "uvjet_primjene": "u zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B011",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "Namjena građevine je sportsko-rekreacijska, a dopušten je smještaj pratećih sadržaja (ugostiteljski, uslužni, trgovački i slični sadržaji u funkciji osnovne namjene).",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "drugo: namjena građevine",
+   "operator": "=",
+   "vrijednost": "sportsko-rekreacijska",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "uvjet · A dodaje: u zoni sportsko-rekreacijske namjene (r1 1 ) lunta"
+ },
+ {
+  "id": "G4_upu1_14:A020~B022",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A020",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 10,
+   "citat": "Najmanja dopuštena udaljenost između građevina na istoj građevnoj čestici iznosi (h1+h2)/2 (h1 i h2 su visine susjednih građevina), ali ne manje od 6,0 m.",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "najmanja udaljenost između građevina na istoj čestici",
+   "operator": "max((h1+h2)/2, X)",
+   "vrijednost": 6.0,
+   "jedinica": "m",
+   "uvjet_primjene": "h1 i h2 su visine susjednih građevina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B022",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 10,
+   "citat": "Najmanja dopuštena udaljenost između građevina na istoj građevnoj čestici iznosi (h1+h2)/2 (h1 i h2 su visine susjednih građevina), ali ne manje od 6,0 m.",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "najmanja udaljenost između građevina na istoj čestici",
+   "operator": "max((h1+h2)/2, X)",
+   "vrijednost": 6.0,
+   "jedinica": "m",
+   "uvjet_primjene": "h1 i h2 su visine susjednih građevina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: h1 i h2 su »visine« bez određenja točaka mjerenja visine"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G4_upu1_14:A023~B025",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A023",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Krovište može biti ravno ili koso nagiba između 17° i 23°, a kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "oblik krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "ravno ili koso",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "moze",
+   "alternative": [
+    "ravno",
+    "koso"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: dodatak »a kojeg predviđa usvojena tehnologija građenja pojedine građevine« – nejasno odnosi li se na izbor oblika krovišta ili samo na nagib"
+   ]
+  },
+  "B": {
+   "id": "B025",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Krovište može biti ravno ili koso nagiba između 17° i 23°, a kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "oblik krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "ravno ili koso",
+   "jedinica": "opis",
+   "uvjet_primjene": "kojeg predviđa usvojena tehnologija građenja pojedine građevine",
+   "modal": "moze",
+   "alternative": [
+    "ravno",
+    "koso"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: odnosi li se »a kojeg predviđa usvojena tehnologija građenja« na krovište općenito ili samo na koso krovište/nagib"
+   ]
+  },
+  "uzorak": "uvjet · B dodaje: kojeg predviđa usvojena tehnologija građenja pojedine građevine"
+ },
+ {
+  "id": "G4_upu1_14:A024~B026",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A024",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Krovište može biti ravno ili koso nagiba između 17° i 23°, a kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "nagib krovnih ploha",
+   "operator": "izmedju",
+   "vrijednost": "17–23",
+   "jedinica": "°",
+   "uvjet_primjene": "koso krovište",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: »a kojeg predviđa usvojena tehnologija građenja« može značiti da tehnologija građenja određuje nagib unutar raspona ili izvan njega"
+   ]
+  },
+  "B": {
+   "id": "B026",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Krovište može biti ravno ili koso nagiba između 17° i 23°, a kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "nagib krovnih ploha",
+   "operator": "izmedju",
+   "vrijednost": "17–23",
+   "jedinica": "°",
+   "uvjet_primjene": "koso",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: modal »može« odnosi se na izbor oblika; da je raspon nagiba obvezan za koso krovište zaključak je, nije izričito",
+    "TUMACENJE: odnos raspona prema »tehnologiji građenja« (ograničava li tehnologija raspon ili ga može izmijeniti)"
+   ]
+  },
+  "uzorak": "uvjet · B dodaje: koso · A dodaje: koso krovište"
+ },
+ {
+  "id": "G4_upu1_14:A027~B029",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A027",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Iznimno, od odredbi ovog članka na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad je dopušteno formirati građevnu česticu za gradnju sportsko-rekreacijske građevine (jedriličarski klub-građevina koja po svojoj prirodi zahtijeva smještaj na obali).",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina (nova)",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "jedriličarski klub-građevina koja po svojoj prirodi zahtijeva smještaj na obali",
+   "jedinica": "opis",
+   "uvjet_primjene": "od odredbi ovog članka na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad",
+   "modal": "moze",
+   "alternative": [
+    "na dijelu k.č 3932/1",
+    "na čitavoj k.č 3932/1"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "ODNOS_ODREDBI: nije određeno od kojih se točno odredbi članka odstupa (npr. najmanja površina čestice, pojas 100 m)"
+   ]
+  },
+  "B": {
+   "id": "B029",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Iznimno, od odredbi ovog članka na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad je dopušteno formirati građevnu česticu za gradnju sportsko-rekreacijske građevine (jedriličarski klub-građevina koja po svojoj prirodi zahtijeva smještaj na obali).",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina (nova)",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "jedriličarski klub-građevina koja po svojoj prirodi zahtijeva smještaj na obali",
+   "jedinica": "opis",
+   "uvjet_primjene": "od odredbi ovog članka; na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "ODNOS_ODREDBI: »iznimno od odredbi ovog članka« uz kasnije »ostali uvjeti su istovjetni« – nije jasno od kojih se odredbi odstupa (npr. pojas 100 m, najmanja površina čestice 1000 m²)"
+   ]
+  },
+  "uzorak": "uvjet · B dodaje: na dijelu ili na čitavoj k.č 3932/1 k.o. krk-grad; od odredbi ovog članka · A dodaje: od odredbi ovog članka na dijelu ili na čitavoj k.č 3932/1 k.o. krk-grad"
+ },
+ {
+  "id": "G4_upu1_14:A029~B031",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene",
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A029",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Najveća dopuštena tlocrtna projekcija građevine iznosi 400 m 2 .",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina (nova)",
+   "parametar": "najveća površina tlocrtne projekcije građevine",
+   "operator": "<=",
+   "vrijednost": 400,
+   "jedinica": "m²",
+   "uvjet_primjene": "k.č 3932/1 k.o. Krk-grad",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B031",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Građevinu je dopušteno graditi uz slijedeće granične uvjete: Najveća dopuštena tlocrtna projekcija građevine iznosi 400 m 2 .",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina (nova)",
+   "parametar": "najveća površina tlocrtne projekcije građevine",
+   "operator": "<=",
+   "vrijednost": 400,
+   "jedinica": "m²",
+   "uvjet_primjene": "k.č 3932/1 k.o. Krk-grad; jedriličarski klub",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "ODNOS_ODREDBI: zamjenjuje li ograničenje od 400 m² kig 0,3 ili vrijedi uz njega (»ostali uvjeti su istovjetni«)"
+   ]
+  }
+ },
+ {
+  "id": "G4_upu1_14:A030~B032",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A030",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Najveća dopuštena visina građevine iznosi 8,0 m (dvije nadzemne etaže).",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina (nova)",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 8.0,
+   "jedinica": "m",
+   "uvjet_primjene": "k.č 3932/1 k.o. Krk-grad",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: nisu navedene točke od kojih i do kojih se visina mjeri"
+   ]
+  },
+  "B": {
+   "id": "B032",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Najveća dopuštena visina građevine iznosi 8,0 m (dvije nadzemne etaže).",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina (nova)",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 8.0,
+   "jedinica": "m",
+   "uvjet_primjene": "k.č 3932/1 k.o. Krk-grad; jedriličarski klub",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: tekst ne određuje točke mjerenja visine"
+   ]
+  },
+  "uzorak": "uvjet · B dodaje: jedriličarski klub"
+ },
+ {
+  "id": "G4_upu1_14:A031~B033",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A031",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Najveća dopuštena visina građevine iznosi 8,0 m (dvije nadzemne etaže).",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina (nova)",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": "dvije nadzemne etaže",
+   "jedinica": "opis",
+   "uvjet_primjene": "k.č 3932/1 k.o. Krk-grad",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: broj etaža naveden samo u zagradi; nije jasno je li podrum dopušten (u općem pravilu se navodi, ovdje ne)"
+   ]
+  },
+  "B": {
+   "id": "B033",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Najveća dopuštena visina građevine iznosi 8,0 m (dvije nadzemne etaže).",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina (nova)",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": "dvije nadzemne etaže",
+   "jedinica": "opis",
+   "uvjet_primjene": "k.č 3932/1 k.o. Krk-grad; jedriličarski klub",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: broj etaža naveden samo u zagradi uz visinu",
+    "ODNOS_ODREDBI: za razliku od opće odredbe (potpuno ukopan podrum i 2 nadzemne etaže) podrum se ne spominje – je li podrum isključen ili se primjenjuje opće pravilo kroz »ostali uvjeti su istovjetni«"
+   ]
+  },
+  "uzorak": "uvjet · B dodaje: jedriličarski klub"
+ },
+ {
+  "id": "G4_upu1_14:A005~B006",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrsta_gradevine",
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A005",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Propisuje se obavezna II. kategorija uređenosti građevinskog zemljišta (pristupni put, odvodnja otpadnih voda, vodoopskrba i električna energija).",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "drugo: kategorija uređenosti građevinskog zemljišta",
+   "operator": "=",
+   "vrijednost": "II. kategorija (pristupni put, odvodnja otpadnih voda, vodoopskrba i električna energija)",
+   "jedinica": "opis",
+   "uvjet_primjene": "u zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: odredba se odnosi na građevinsko zemljište zone, a ne izravno na određenu vrstu građevine; vrsta građevine izvedena iz konteksta"
+   ]
+  },
+  "B": {
+   "id": "B006",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Propisuje se obavezna II. kategorija uređenosti građevinskog zemljišta (pristupni put, odvodnja otpadnih voda, vodoopskrba i električna energija).",
+   "vrsta_gradevine": null,
+   "parametar": "drugo: kategorija uređenosti građevinskog zemljišta",
+   "operator": "=",
+   "vrijednost": "II. kategorija (pristupni put, odvodnja otpadnih voda, vodoopskrba i električna energija)",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: rečenica ne navodi vrstu građevine; vrijedi za građevinsko zemljište u zoni, vezivanje uz vrstu građevine nije izravno u tekstu"
+   ]
+  }
+ },
+ {
+  "id": "G4_upu1_14:A006~B007",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrsta_gradevine"
+  ],
+  "A": {
+   "id": "A006",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Parkiranje ili garažiranje vozila rješava se unutar građevne čestice, u građevini i/ili na površini građevne čestice, u skladu s normativima iz točke 5.1. Uvjeti gradnje prometne mreže - Promet u mirovanju, ovih Odredbi.",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "drugo: smještaj parkirališnih/garažnih mjesta",
+   "operator": "opis",
+   "vrijednost": "unutar građevne čestice, u građevini i/ili na površini građevne čestice",
+   "jedinica": "opis",
+   "uvjet_primjene": "u skladu s normativima iz točke 5.1. Uvjeti gradnje prometne mreže - Promet u mirovanju, ovih Odredbi",
+   "modal": "mora",
+   "alternative": [
+    "u građevini",
+    "na površini građevne čestice"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: broj mjesta ovisi o normativima iz točke 5.1. koji nisu u tekstu",
+    "TUMACENJE: vrsta građevine izvedena iz konteksta zone"
+   ]
+  },
+  "B": {
+   "id": "B007",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Parkiranje ili garažiranje vozila rješava se unutar građevne čestice, u građevini i/ili na površini građevne čestice, u skladu s normativima iz točke 5.1. Uvjeti gradnje prometne mreže - Promet u mirovanju, ovih Odredbi.",
+   "vrsta_gradevine": null,
+   "parametar": "drugo: smještaj parkirališnih/garažnih mjesta",
+   "operator": "opis",
+   "vrijednost": "unutar građevne čestice, u građevini i/ili na površini građevne čestice",
+   "jedinica": "opis",
+   "uvjet_primjene": "u skladu s normativima iz točke 5.1. Uvjeti gradnje prometne mreže - Promet u mirovanju, ovih Odredbi",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: broj mjesta ovisi o normativima iz točke 5.1. koji nisu u tekstu",
+    "TUMACENJE: vrsta građevine nije navedena u rečenici"
+   ]
+  },
+  "uzorak": "vrsta_gradevine: A=sportsko-rekreacijska građevina | B="
+ },
+ {
+  "id": "G4_upu1_14:A002~B003",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrijednost"
+  ],
+  "A": {
+   "id": "A002",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta moguća je izgradnja otvorenih i poluotvorenih igrališta, sportskih dvorana i ostalih pomoćnih građevina (svlačionice i sl.), bazena, te smještaj pratećih rekreacijskih, zabavnih i uslužnih (ugostiteljsko-trgovačkih) djelatnosti.",
+   "vrsta_gradevine": "sportska dvorana",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "sportske dvorane",
+   "jedinica": null,
+   "uvjet_primjene": "u zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B003",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta moguća je izgradnja otvorenih i poluotvorenih igrališta, sportskih dvorana i ostalih pomoćnih građevina (svlačionice i sl.), bazena",
+   "vrsta_gradevine": "sportska dvorana",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": null,
+   "jedinica": null,
+   "uvjet_primjene": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "vrijednost: A=sportske dvorane | B="
+ },
+ {
+  "id": "G4_upu1_14:A003~B004",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrijednost"
+  ],
+  "A": {
+   "id": "A003",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta moguća je izgradnja otvorenih i poluotvorenih igrališta, sportskih dvorana i ostalih pomoćnih građevina (svlačionice i sl.), bazena, te smještaj pratećih rekreacijskih, zabavnih i uslužnih (ugostiteljsko-trgovačkih) djelatnosti.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "ostale pomoćne građevine (svlačionice i sl.)",
+   "jedinica": null,
+   "uvjet_primjene": "u zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: »i sl.« ostavlja otvoren krug pomoćnih građevina"
+   ]
+  },
+  "B": {
+   "id": "B004",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta moguća je izgradnja otvorenih i poluotvorenih igrališta, sportskih dvorana i ostalih pomoćnih građevina (svlačionice i sl.), bazena",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": null,
+   "jedinica": null,
+   "uvjet_primjene": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: »ostale pomoćne građevine (svlačionice i sl.)« – otvoren popis, opseg pojma neodređen"
+   ]
+  },
+  "uzorak": "vrijednost: A=ostale pomoćne građevine (svlačionice i sl.) | B="
+ },
+ {
+  "id": "G4_upu1_14:A004~B005",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrijednost"
+  ],
+  "A": {
+   "id": "A004",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta moguća je izgradnja otvorenih i poluotvorenih igrališta, sportskih dvorana i ostalih pomoćnih građevina (svlačionice i sl.), bazena, te smještaj pratećih rekreacijskih, zabavnih i uslužnih (ugostiteljsko-trgovačkih) djelatnosti.",
+   "vrsta_gradevine": "bazen",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "bazeni",
+   "jedinica": null,
+   "uvjet_primjene": "u zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B005",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta moguća je izgradnja otvorenih i poluotvorenih igrališta, sportskih dvorana i ostalih pomoćnih građevina (svlačionice i sl.), bazena",
+   "vrsta_gradevine": "bazen",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": null,
+   "jedinica": null,
+   "uvjet_primjene": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "vrijednost: A=bazeni | B="
+ },
+ {
+  "id": "G4_upu1_14:A008~B009",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrijednost",
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A008",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Izdvojena građevinska područja izvan naselja sportske namjene planiraju se na način da najmanje 60% površine tog građevinskog područja bude uređeno kao parkovni nasadi i prirodno zelenilo, a ukupna tlocrtna bruto površina zatvorenih i natkrivenih građevina može iznositi najviše 10% površine sportskih terena i sadržaja (što znači 10% od preostalih 40% površine zone, što iznosi max 4% površine zone).",
+   "vrsta_gradevine": "zatvorena i natkrivena građevina",
+   "parametar": "drugo: najveća ukupna tlocrtna bruto površina zatvorenih i natkrivenih građevina",
+   "operator": "<=",
+   "vrijednost": 10,
+   "jedinica": "%",
+   "uvjet_primjene": "izdvojena građevinska područja izvan naselja sportske namjene; od površine sportskih terena i sadržaja (max 4% površine zone)",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: osnovica 10% izjednačena je s »preostalih 40% površine zone«, što daje 4% zone – moguće neslaganje ako sportski tereni ne zauzimaju točno 40%",
+    "OBUHVAT: ukupna površina na razini građevinskog područja, ne čestice",
+    "ODNOS_ODREDBI: odnos prema kig 0,3 na razini čestice nije određen"
+   ]
+  },
+  "B": {
+   "id": "B009",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "a ukupna tlocrtna bruto površina zatvorenih i natkrivenih građevina može iznositi najviše 10% površine sportskih terena i sadržaja (što znači 10% od preostalih 40% površine zone, što iznosi max 4% površine zone).",
+   "vrsta_gradevine": "zatvorena i natkrivena građevina",
+   "parametar": "drugo: najveća ukupna tlocrtna bruto površina zatvorenih i natkrivenih građevina",
+   "operator": "<=",
+   "vrijednost": "10% površine sportskih terena i sadržaja (max 4% površine zone)",
+   "jedinica": "%",
+   "uvjet_primjene": "Izdvojena građevinska područja izvan naselja sportske namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "OBUHVAT: nije izričito da je Lunta izdvojeno građevinsko područje izvan naselja",
+    "TUMACENJE: tekst izjednačava »površinu sportskih terena i sadržaja« s preostalih 40% zone, što nije nužno isto",
+    "SUKOB: ograničenje na razini zone (max 4%) u odnosu na kig 0,3 po građevnoj čestici (5. alineja)",
+    "NEDEFINIRAN_POJAM: »natkrivena građevina«, »tlocrtna bruto površina«"
+   ]
+  }
+ },
+ {
+  "id": "G4_upu1_14:A025~B027",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrijednost",
+   "jedinica"
+  ],
+  "A": {
+   "id": "A025",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "U pojasu najmanje 100 m od obalne crte ne može se planirati niti se može graditi nova pojedinačna ili više građevina osim građevina komunalne infrastrukture i podzemnih energetskih vodova, pratećih sadržaja ugostiteljsko-turističke namjene, građevina koje po svojoj prirodi zahtijevaju smještaj na obali (brodogradilišta, luke i sl.) te uređenje javnih površina.",
+   "vrsta_gradevine": "građevina (nova)",
+   "parametar": "dopuštenost gradnje",
+   "operator": "zabrana",
+   "vrijednost": 100,
+   "jedinica": "m",
+   "uvjet_primjene": "u pojasu najmanje 100 m od obalne crte; osim građevina komunalne infrastrukture i podzemnih energetskih vodova, pratećih sadržaja ugostiteljsko-turističke namjene, građevina koje po svojoj prirodi zahtijevaju smještaj na obali (brodogradilišta, luke i sl.) te uređenje javnih površina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "NEGATIVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: »pojas najmanje 100 m« – nejasno je li širina pojasa točno 100 m ili veća",
+    "ODNOS_ODREDBI: odnos prema dopuštenoj gradnji sportsko-rekreacijskih građevina u zoni Lunta nije određen",
+    "TUMACENJE: rečenica pripisana 13. alineji samo po pravilu prijeloma; sadržajno je opća odredba članka"
+   ]
+  },
+  "B": {
+   "id": "B027",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "U pojasu najmanje 100 m od obalne crte ne može se planirati niti se može graditi nova pojedinačna ili više građevina osim građevina komunalne infrastrukture i podzemnih energetskih vodova, pratećih sadržaja ugostiteljsko-turističke namjene, građevina koje po svojoj prirodi zahtijevaju smještaj na obali (brodogradilišta, luke i sl.) te uređenje javnih površina.",
+   "vrsta_gradevine": "građevina (nova)",
+   "parametar": "dopuštenost gradnje",
+   "operator": "zabrana",
+   "vrijednost": null,
+   "jedinica": null,
+   "uvjet_primjene": "U pojasu najmanje 100 m od obalne crte; osim građevina komunalne infrastrukture i podzemnih energetskih vodova, pratećih sadržaja ugostiteljsko-turističke namjene, građevina koje po svojoj prirodi zahtijevaju smještaj na obali (brodogradilišta, luke i sl.) te uređenje javnih površina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "NEGATIVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: »u pojasu najmanje 100 m« – izraz »najmanje« uz širinu zabranjenog pojasa ostavlja vanjsku granicu pojasa neodređenom",
+    "OBUHVAT: koji dio zone R1 1 Lunta pada u pojas; prema pravilu v1 rečenica pripisana 13. alineji iako sadržajno djeluje kao opća odredba članka",
+    "ODNOS_ODREDBI: sportsko-rekreacijske građevine nisu među izuzecima – zabrana prevladava nad dopuštenjima iz alineja unutar pojasa",
+    "NEDEFINIRAN_POJAM: »građevine koje po svojoj prirodi zahtijevaju smještaj na obali« (otvoren popis »i sl.«)"
+   ]
+  }
+ },
+ {
+  "id": "G4_upu1_14:A026~B028",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrijednost",
+   "jedinica",
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A026",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Građevine se mogu rekonstruirati u skladu s uvjetima iz ovog članka za nove građevine.",
+   "vrsta_gradevine": "građevina (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "u skladu s uvjetima iz ovog članka za nove građevine",
+   "jedinica": "opis",
+   "uvjet_primjene": "u skladu s uvjetima iz ovog članka za nove građevine",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B028",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Građevine se mogu rekonstruirati u skladu s uvjetima iz ovog članka za nove građevine.",
+   "vrsta_gradevine": "građevina (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": null,
+   "jedinica": null,
+   "uvjet_primjene": "u skladu s uvjetima iz ovog članka za nove građevine",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: nije određeno kako se postupa s postojećim građevinama koje već prekoračuju uvjete za nove građevine",
+    "OBUHVAT: prema pravilu v1 pripisano 13. alineji iako sadržajno djeluje kao opća odredba"
+   ]
+  }
+ },
+ {
+  "id": "G4_upu1_14:A028~B030",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrijednost",
+   "jedinica"
+  ],
+  "A": {
+   "id": "A028",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Građevnu česticu je dopušteno povećati i na susjedne čestice.",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina (nova)",
+   "parametar": "drugo: proširenje građevne čestice na susjedne čestice",
+   "operator": "dopustenje",
+   "vrijednost": "povećanje na susjedne čestice",
+   "jedinica": "opis",
+   "uvjet_primjene": "k.č 3932/1 k.o. Krk-grad",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "OBUHVAT: nije određeno koje susjedne čestice niti do koje površine"
+   ]
+  },
+  "B": {
+   "id": "B030",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Građevnu česticu je dopušteno povećati i na susjedne čestice.",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina (nova)",
+   "parametar": "drugo: proširenje građevne čestice na susjedne čestice",
+   "operator": "dopustenje",
+   "vrijednost": null,
+   "jedinica": null,
+   "uvjet_primjene": "k.č 3932/1 k.o. Krk-grad",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "OBUHVAT: »susjedne čestice« nisu određene (koje, koliko, do koje površine)"
+   ]
+  }
+ },
+ {
+  "id": "G4_upu1_14:A001~B001",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrijednost",
+   "vrsta_gradevine"
+  ],
+  "A": {
+   "id": "A001",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta moguća je izgradnja otvorenih i poluotvorenih igrališta, sportskih dvorana i ostalih pomoćnih građevina (svlačionice i sl.), bazena, te smještaj pratećih rekreacijskih, zabavnih i uslužnih (ugostiteljsko-trgovačkih) djelatnosti.",
+   "vrsta_gradevine": "igralište",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "otvorena i poluotvorena igrališta",
+   "jedinica": null,
+   "uvjet_primjene": "u zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+   "modal": "moze",
+   "alternative": [
+    "otvoreno",
+    "poluotvoreno"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B001",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta moguća je izgradnja otvorenih i poluotvorenih igrališta, sportskih dvorana i ostalih pomoćnih građevina (svlačionice i sl.), bazena",
+   "vrsta_gradevine": "otvoreno igralište",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": null,
+   "jedinica": null,
+   "uvjet_primjene": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  }
+ },
+ {
+  "id": "G4_upu1_14:A007~B008",
+  "skupina": "G4_upu1_14",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrsta_gradevine"
+  ],
+  "A": {
+   "id": "A007",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Izdvojena građevinska područja izvan naselja sportske namjene planiraju se na način da najmanje 60% površine tog građevinskog područja bude uređeno kao parkovni nasadi i prirodno zelenilo, a ukupna tlocrtna bruto površina zatvorenih i natkrivenih građevina može iznositi najviše 10% površine sportskih terena i sadržaja (što znači 10% od preostalih 40% površine zone, što iznosi max 4% površine zone).",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "drugo: najmanji udio parkovnih nasada i prirodnog zelenila u izdvojenom građevinskom području",
+   "operator": ">=",
+   "vrijednost": 60,
+   "jedinica": "%",
+   "uvjet_primjene": "izdvojena građevinska područja izvan naselja sportske namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "OBUHVAT: odnosi se na cijelo izdvojeno građevinsko područje, ne na građevnu česticu; nije izričito navedeno da je zona Lunta takvo područje",
+    "TUMACENJE: planska odredba (»planiraju se«) primijenjena na građevinu"
+   ]
+  },
+  "B": {
+   "id": "B008",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Izdvojena građevinska područja izvan naselja sportske namjene planiraju se na način da najmanje 60% površine tog građevinskog područja bude uređeno kao parkovni nasadi i prirodno zelenilo",
+   "vrsta_gradevine": null,
+   "parametar": "drugo: najmanji udio zelenila u izdvojenom građevinskom području",
+   "operator": ">=",
+   "vrijednost": 60,
+   "jedinica": "%",
+   "uvjet_primjene": "Izdvojena građevinska područja izvan naselja sportske namjene",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "OBUHVAT: tekst ne kaže izričito je li zona R1 1 Lunta izdvojeno građevinsko područje izvan naselja",
+    "ODNOS_ODREDBI: odnos prema zahtjevu od 60% zelenila na svakoj građevnoj čestici (11. alineja) – dodaje li se ili se preklapa"
+   ]
+  },
+  "uzorak": "vrsta_gradevine: A=sportsko-rekreacijska građevina | B="
+ },
+ {
+  "id": "G4_upu1_14:A032~",
+  "skupina": "G4_upu1_14",
+  "vrsta": "SAMO_A",
+  "polja": [],
+  "A": {
+   "id": "A032",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 13,
+   "citat": "Ostali uvjeti su istovjetni uvjetima određenim ovim člankom.",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina (nova)",
+   "parametar": "drugo: ostali uvjeti gradnje",
+   "operator": "opis",
+   "vrijednost": "istovjetni uvjetima određenim ovim člankom",
+   "jedinica": "opis",
+   "uvjet_primjene": "k.č 3932/1 k.o. Krk-grad",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "ODNOS_ODREDBI: nejasno vrijede li i najmanja površina čestice 1000 m², kig/kis i pojas 100 m, s obzirom na uvodno »Iznimno, od odredbi ovog članka«"
+   ]
+  },
+  "B": null
+ },
+ {
+  "id": "G4_upu1_14:~B002",
+  "skupina": "G4_upu1_14",
+  "vrsta": "SAMO_B",
+  "polja": [],
+  "A": null,
+  "B": {
+   "id": "B002",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta moguća je izgradnja otvorenih i poluotvorenih igrališta, sportskih dvorana i ostalih pomoćnih građevina (svlačionice i sl.), bazena",
+   "vrsta_gradevine": "poluotvoreno igralište",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": null,
+   "jedinica": null,
+   "uvjet_primjene": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: pojam »poluotvoreno igralište« nije definiran u tekstu"
+   ]
+  }
+ },
+ {
+  "id": "G4_upu1_14:~B010",
+  "skupina": "G4_upu1_14",
+  "vrsta": "SAMO_B",
+  "polja": [],
+  "A": null,
+  "B": {
+   "id": "B010",
+   "clanak": 14,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta dopušteno je graditi sportsko-rekreacijske građevine uz slijedeće granične uvjete:",
+   "vrsta_gradevine": "sportsko-rekreacijska građevina",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": null,
+   "jedinica": null,
+   "uvjet_primjene": "U zoni sportsko-rekreacijske namjene (R1 1 ) Lunta; uz slijedeće granične uvjete",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "ODNOS_ODREDBI: nije jasno vrijede li granični uvjeti iz alineja i za igrališta, dvorane, pomoćne građevine i bazene iz prve rečenice"
+   ]
+  }
+ },
+ {
+  "id": "G5_upu1_24:A008~B007",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A008",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 2,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Dopušteno je graditi građevine pratećih sadržaja (ugostiteljski, sportsko-rekreacijski, društveni, zabavni, uslužni sadržaji i slični sadržaji koji upotpunjuju osnovnu namjenu).",
+   "vrsta_gradevine": "građevina pratećih sadržaja (nova)",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "ugostiteljski, sportsko-rekreacijski, društveni, zabavni, uslužni sadržaji i slični sadržaji koji upotpunjuju osnovnu namjenu",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B007",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 2,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Dopušteno je graditi građevine pratećih sadržaja (ugostiteljski, sportsko-rekreacijski, društveni, zabavni, uslužni sadržaji i slični sadržaji koji upotpunjuju osnovnu namjenu).",
+   "vrsta_gradevine": "građevina pratećih sadržaja (nova)",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "ugostiteljski, sportsko-rekreacijski, društveni, zabavni, uslužni sadržaji i slični sadržaji koji upotpunjuju osnovnu namjenu",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: »slični sadržaji koji upotpunjuju osnovnu namjenu«",
+    "ODNOS_ODREDBI: nova gradnja nasuprot uvodnoj odredbi koja dopušta rekonstrukciju"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G5_upu1_24:A013~B011",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A013",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "Najveći dopušteni koeficijent iskorištenosti (kis) nadzemnih etaža iznosi 1,0, a ukoliko se ispod građevine gradi potpuno ukopani podrum 1,5, od čega je 0,5 koeficijent iskorištenosti potpuno ukopanog podruma.",
+   "vrsta_gradevine": "hotel",
+   "parametar": "najveći koeficijent iskoristivosti (kis)",
+   "operator": "<=",
+   "vrijednost": 1.5,
+   "jedinica": "koeficijent",
+   "uvjet_primjene": "ukoliko se ispod građevine gradi potpuno ukopani podrum",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B011",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "Najveći dopušteni koeficijent iskorištenosti (kis) nadzemnih etaža iznosi 1,0, a ukoliko se ispod građevine gradi potpuno ukopani podrum 1,5, od čega je 0,5 koeficijent iskorištenosti potpuno ukopanog podruma.",
+   "vrsta_gradevine": "hotel",
+   "parametar": "najveći koeficijent iskoristivosti (kis)",
+   "operator": "<=",
+   "vrijednost": 1.5,
+   "jedinica": "koeficijent",
+   "uvjet_primjene": "ukoliko se ispod građevine gradi potpuno ukopani podrum",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: gramatički se »1,5« veže uz kis nadzemnih etaža; tek iz »od čega je 0,5 ... podruma« proizlazi da je 1,5 ukupni kis"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G5_upu1_24:A016~B014",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrsta_pravila",
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A016",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Postojeće ugostiteljsko-turističke građevine mogu se rekonstruirati na način da se ne povećava postojeća gustoća korištenja ako je veća od 300 kreveta/ha, izgrađenost građevne čestice ako je veća od 30% i koeficijent iskorištenosti nadzemno ako je veći od 1,0.",
+   "vrsta_gradevine": "ugostiteljsko-turistička građevina (postojeća)",
+   "parametar": "najveći koeficijent izgrađenosti (kig)",
+   "operator": "<=",
+   "vrijednost": "postojeća izgrađenost građevne čestice",
+   "jedinica": "opis",
+   "uvjet_primjene": "ako je veća od 30%",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B014",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Postojeće ugostiteljsko-turističke građevine mogu se rekonstruirati na način da se ne povećava postojeća gustoća korištenja ako je veća od 300 kreveta/ha, izgrađenost građevne čestice ako je veća od 30% i koeficijent iskorištenosti nadzemno ako je veći od 1,0.",
+   "vrsta_gradevine": "ugostiteljsko-turistička građevina (postojeća)",
+   "parametar": "najveći koeficijent izgrađenosti (kig)",
+   "operator": "<=",
+   "vrijednost": "postojeća izgrađenost građevne čestice",
+   "jedinica": "opis",
+   "uvjet_primjene": "ako je veća od 30%",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: izjednačavanje »izgrađenosti građevne čestice« (u %) s kig nije izravno u tekstu"
+   ]
+  }
+ },
+ {
+  "id": "G5_upu1_24:A017~B015",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrsta_pravila"
+  ],
+  "A": {
+   "id": "A017",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Postojeće ugostiteljsko-turističke građevine mogu se rekonstruirati na način da se ne povećava postojeća gustoća korištenja ako je veća od 300 kreveta/ha, izgrađenost građevne čestice ako je veća od 30% i koeficijent iskorištenosti nadzemno ako je veći od 1,0.",
+   "vrsta_gradevine": "ugostiteljsko-turistička građevina (postojeća)",
+   "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+   "operator": "<=",
+   "vrijednost": "postojeći koeficijent iskorištenosti nadzemno",
+   "jedinica": "opis",
+   "uvjet_primjene": "ako je veći od 1,0",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B015",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Postojeće ugostiteljsko-turističke građevine mogu se rekonstruirati na način da se ne povećava postojeća gustoća korištenja ako je veća od 300 kreveta/ha, izgrađenost građevne čestice ako je veća od 30% i koeficijent iskorištenosti nadzemno ako je veći od 1,0.",
+   "vrsta_gradevine": "ugostiteljsko-turistička građevina (postojeća)",
+   "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+   "operator": "<=",
+   "vrijednost": "postojeći koeficijent iskorištenosti nadzemno",
+   "jedinica": "opis",
+   "uvjet_primjene": "ako je veći od 1,0",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "uzorak": "vrsta_pravila: A=iznimka | B=uvjetno"
+ },
+ {
+  "id": "G5_upu1_24:A037~B034",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "modal"
+  ],
+  "A": {
+   "id": "A037",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 4,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "Krovište može biti ravno ili koso nagiba između 17º i 23º, te pokrova kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+   "vrsta_gradevine": "građevina",
+   "parametar": "vrsta pokrova",
+   "operator": "opis",
+   "vrijednost": "pokrov kojeg predviđa usvojena tehnologija građenja pojedine građevine",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: 'usvojena tehnologija građenja' ne određuje vrstu pokrova"
+   ]
+  },
+  "B": {
+   "id": "B034",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 4,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "Krovište može biti ravno ili koso nagiba između 17º i 23º, te pokrova kojeg predviđa usvojena tehnologija građenja pojedine građevine.",
+   "vrsta_gradevine": "građevina",
+   "parametar": "vrsta pokrova",
+   "operator": "opis",
+   "vrijednost": "pokrov kojeg predviđa usvojena tehnologija građenja pojedine građevine",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: »usvojena tehnologija građenja«",
+    "TUMACENJE: nije jasno odnosi li se pokrov samo na koso ili i na ravno krovište"
+   ]
+  },
+  "uzorak": "modal: A=moze | B=mora"
+ },
+ {
+  "id": "G5_upu1_24:A038~B035",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A038",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 5,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "Postojeća građevna čestica je priključena na postojeću prometnicu.",
+   "vrsta_gradevine": "hotel (postojeća)",
+   "parametar": "drugo: priključenje na prometnu infrastrukturu",
+   "operator": "opis",
+   "vrijednost": "priključena na postojeću prometnicu",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B035",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 5,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "Postojeća građevna čestica je priključena na postojeću prometnicu.",
+   "vrsta_gradevine": "hotel (postojeća)",
+   "parametar": "drugo: priključenje na prometnu infrastrukturu",
+   "operator": "opis",
+   "vrijednost": "priključena na postojeću prometnicu",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: tekst je konstatacija postojećeg stanja, a ne izričito ograničenje"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G5_upu1_24:A039~B036",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A039",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 5,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "Postojeća građevna čestica je priključena na postojeću komunalnu infrastrukturu.",
+   "vrsta_gradevine": "hotel (postojeća)",
+   "parametar": "drugo: priključenje na komunalnu infrastrukturu",
+   "operator": "opis",
+   "vrijednost": "priključena na postojeću komunalnu infrastrukturu",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B036",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 5,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "Postojeća građevna čestica je priključena na postojeću komunalnu infrastrukturu.",
+   "vrsta_gradevine": "hotel (postojeća)",
+   "parametar": "drugo: priključenje na komunalnu infrastrukturu",
+   "operator": "opis",
+   "vrijednost": "priključena na postojeću komunalnu infrastrukturu",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: tekst je konstatacija postojećeg stanja, a ne izričito ograničenje"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G5_upu1_24:A042~B039",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A042",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 6,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Radi očuvanja izgleda padina na kosom terenu, najveća dopuštena visina podzida iznosi 1,5 m.",
+   "vrsta_gradevine": "podzid",
+   "parametar": "drugo: najveća visina podzida",
+   "operator": "<=",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "uvjet_primjene": "na kosom terenu",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B039",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 6,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Radi očuvanja izgleda padina na kosom terenu, najveća dopuštena visina podzida iznosi 1,5 m.",
+   "vrsta_gradevine": "podzid",
+   "parametar": "drugo: najveća visina podzida",
+   "operator": "<=",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "uvjet_primjene": "na kosom terenu",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: točke mjerenja visine podzida nisu navedene",
+    "NEDEFINIRAN_POJAM: »kosi teren«"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G5_upu1_24:A046~B044",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A046",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 7,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "Visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine, ne prelazi visinu od 4,0 m i jednoetažna je.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: zadana je samo donja točka (najniža kota konačno zaravnatog terena), gornja točka mjerenja nije navedena"
+   ]
+  },
+  "B": {
+   "id": "B044",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 7,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "Visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine, ne prelazi visinu od 4,0 m i jednoetažna je.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "uvjet_primjene": "od najniže kote konačno zaravnatog terena",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: gornja točka mjerenja visine nije određena"
+   ]
+  },
+  "uzorak": "uvjet · B dodaje: od najniže kote konačno zaravnatog terena"
+ },
+ {
+  "id": "G5_upu1_24:A047~B043",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A047",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 7,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "Visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine, ne prelazi visinu od 4,0 m i jednoetažna je.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": "visina osnovne građevine",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: gornja točka mjerenja nije navedena; nije navedeno mjeri li se visina osnovne građevine na isti način"
+   ]
+  },
+  "B": {
+   "id": "B043",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 7,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "Visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine, ne prelazi visinu od 4,0 m i jednoetažna je.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": "visina osnovne građevine",
+   "jedinica": "opis",
+   "uvjet_primjene": "od najniže kote konačno zaravnatog terena",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: navedena je samo donja točka (najniža kota konačno zaravnatog terena), gornja točka mjerenja nije određena; nije određeno kako se mjeri visina osnovne građevine"
+   ]
+  },
+  "uzorak": "uvjet · B dodaje: od najniže kote konačno zaravnatog terena"
+ },
+ {
+  "id": "G5_upu1_24:A054~B051",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A054",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 7,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "Pomoćne građevine se mogu graditi do granice građevne čestice.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+   "operator": "dopustenje",
+   "vrijednost": "do granice građevne čestice",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B051",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 7,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "Pomoćne građevine se mogu graditi do granice građevne čestice.",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+   "operator": "dopustenje",
+   "vrijednost": "do granice građevne čestice",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "SUKOB: s blokom 3 al. 5 (građevina najmanje h/2, ne manje od 6,0 m od granice susjedne čestice) ako se ta odredba odnosi i na pomoćne građevine"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G5_upu1_24:A003~B003",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrsta_gradevine"
+  ],
+  "A": {
+   "id": "A003",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 1,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "Najveća dopuštena površina građevne čestice istovjetna je površini (T1 2 ) čiji su oblik i veličina definirani grafičkim dijelom plana.",
+   "vrsta_gradevine": "hotel (postojeća)",
+   "parametar": "najveća površina građevne čestice",
+   "operator": "=",
+   "vrijednost": "površina (T1 2 ) čiji su oblik i veličina definirani grafičkim dijelom plana",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: brojčana vrijednost ovisi o grafičkom dijelu plana koji nije u tekstu"
+   ]
+  },
+  "B": {
+   "id": "B003",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 1,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "Najveća dopuštena površina građevne čestice istovjetna je površini (T1 2 ) čiji su oblik i veličina definirani grafičkim dijelom plana.",
+   "vrsta_gradevine": "hotel",
+   "parametar": "najveća površina građevne čestice",
+   "operator": "=",
+   "vrijednost": "površina (T1 2 ) čiji su oblik i veličina definirani grafičkim dijelom plana",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: vrijednost ovisi o grafičkom dijelu plana koji nije u tekstu",
+    "TUMACENJE: druga rečenica alineje određuje da se površina precizno utvrđuje geodetskom izmjerom u postupku izdavanja akta, pa brojčana vrijednost nije izravno u tekstu"
+   ]
+  },
+  "uzorak": "vrsta_gradevine: A=hotel (postojeća) | B=hotel"
+ },
+ {
+  "id": "G5_upu1_24:A019~B017",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrsta_gradevine"
+  ],
+  "A": {
+   "id": "A019",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Ukoliko postojeće građevine imaju veću visinu od propisane ovim člankom dopušta se rekonstrukcija istih u postojećim visinskim gabaritima (do ukupne visine), a za dogradnje postojećih građevina dopušta se visina do 15,0 m (max. katnost Po+P+3; potpuno ukopani podrum i 4 nadzemne etaže).",
+   "vrsta_gradevine": "građevina (postojeća)",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 15.0,
+   "jedinica": "m",
+   "uvjet_primjene": "za dogradnje postojećih građevina",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: nisu navedene točke mjerenja visine",
+    "ODNOS_ODREDBI: nejasno vrijedi li 15,0 m za sve dogradnje ili samo kad postojeća građevina premašuje propisanu visinu (uvodni uvjet rečenice)"
+   ]
+  },
+  "B": {
+   "id": "B017",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Ukoliko postojeće građevine imaju veću visinu od propisane ovim člankom dopušta se rekonstrukcija istih u postojećim visinskim gabaritima (do ukupne visine), a za dogradnje postojećih građevina dopušta se visina do 15,0 m (max. katnost Po+P+3; potpuno ukopani podrum i 4 nadzemne etaže).",
+   "vrsta_gradevine": "ugostiteljsko-turistička građevina (postojeća)",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 15.0,
+   "jedinica": "m",
+   "uvjet_primjene": "za dogradnje postojećih građevina",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: točke mjerenja visine nisu navedene"
+   ]
+  },
+  "uzorak": "vrsta_gradevine: A=građevina (postojeća) | B=ugostiteljsko-turistička građevina (postojeća)"
+ },
+ {
+  "id": "G5_upu1_24:A022~B020",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrsta_gradevine"
+  ],
+  "A": {
+   "id": "A022",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Ukoliko postojeće građevine imaju veće tlocrtne gabarite od propisanih ovim člankom dopušta se rekonstrukcija u postojećim tlocrtnim gabaritima uz mogućnost nadogradnje koja ne može biti viša od 15,0 m.",
+   "vrsta_gradevine": "građevina (postojeća)",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 15.0,
+   "jedinica": "m",
+   "uvjet_primjene": "ukoliko postojeće građevine imaju veće tlocrtne gabarite od propisanih ovim člankom; nadogradnja",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: nisu navedene točke mjerenja visine"
+   ]
+  },
+  "B": {
+   "id": "B020",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Ukoliko postojeće građevine imaju veće tlocrtne gabarite od propisanih ovim člankom dopušta se rekonstrukcija u postojećim tlocrtnim gabaritima uz mogućnost nadogradnje koja ne može biti viša od 15,0 m.",
+   "vrsta_gradevine": "ugostiteljsko-turistička građevina (postojeća)",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 15.0,
+   "jedinica": "m",
+   "uvjet_primjene": "nadogradnja; ukoliko postojeće građevine imaju veće tlocrtne gabarite od propisanih ovim člankom",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: nije određeno odnosi li se 15,0 m na ukupnu visinu građevine ili samo na nadogradnju, ni od koje točke se mjeri"
+   ]
+  },
+  "uzorak": "vrsta_gradevine: A=građevina (postojeća) | B=ugostiteljsko-turistička građevina (postojeća)"
+ },
+ {
+  "id": "G5_upu1_24:A025~B023",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrsta_gradevine",
+   "vrsta_pravila"
+  ],
+  "A": {
+   "id": "A025",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "Postojeće građevine osnovne namjene - ugostiteljsko-turističke koje se nalaze na manjoj udaljenosti od regulacijskog pravca od onih iz prethodne alineje, mogu se rekonstruirati pod uvjetom da se ne smanjuje postojeća udaljenost, a dogradnja postojeće građevine mora zadovoljiti uvjete određene u prethodnoj alineji.",
+   "vrsta_gradevine": "ugostiteljsko-turistička građevina osnovne namjene (postojeća)",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": "postojeća udaljenost",
+   "jedinica": "opis",
+   "uvjet_primjene": "koje se nalaze na manjoj udaljenosti od regulacijskog pravca od onih iz prethodne alineje",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B023",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "Postojeće građevine osnovne namjene - ugostiteljsko-turističke koje se nalaze na manjoj udaljenosti od regulacijskog pravca od onih iz prethodne alineje, mogu se rekonstruirati pod uvjetom da se ne smanjuje postojeća udaljenost, a dogradnja postojeće građevine mora zadovoljiti uvjete određene u prethodnoj alineji.",
+   "vrsta_gradevine": "građevina osnovne namjene (postojeća)",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": "postojeća udaljenost",
+   "jedinica": "opis",
+   "uvjet_primjene": "koje se nalaze na manjoj udaljenosti od regulacijskog pravca od onih iz prethodne alineje",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  }
+ },
+ {
+  "id": "G5_upu1_24:A026~B024",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrsta_gradevine",
+   "operator"
+  ],
+  "A": {
+   "id": "A026",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "Postojeće građevine osnovne namjene - ugostiteljsko-turističke koje se nalaze na manjoj udaljenosti od regulacijskog pravca od onih iz prethodne alineje, mogu se rekonstruirati pod uvjetom da se ne smanjuje postojeća udaljenost, a dogradnja postojeće građevine mora zadovoljiti uvjete određene u prethodnoj alineji.",
+   "vrsta_gradevine": "ugostiteljsko-turistička građevina osnovne namjene (postojeća)",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": "uvjeti određeni u prethodnoj alineji",
+   "jedinica": "opis",
+   "uvjet_primjene": "dogradnja postojeće građevine",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B024",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "Postojeće građevine osnovne namjene - ugostiteljsko-turističke koje se nalaze na manjoj udaljenosti od regulacijskog pravca od onih iz prethodne alineje, mogu se rekonstruirati pod uvjetom da se ne smanjuje postojeća udaljenost, a dogradnja postojeće građevine mora zadovoljiti uvjete određene u prethodnoj alineji.",
+   "vrsta_gradevine": "građevina osnovne namjene (postojeća)",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": "opis",
+   "vrijednost": "uvjeti određeni u prethodnoj alineji",
+   "jedinica": "opis",
+   "uvjet_primjene": "dogradnja postojeće građevine",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  }
+ },
+ {
+  "id": "G5_upu1_24:A001~B001",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene",
+   "vrsta_pravila",
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A001",
+   "clanak": 24,
+   "stavak": null,
+   "blok": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno je rekonstruirati postojeći hotel s pratećim sadržajima uz slijedeće granične uvjete:",
+   "vrsta_gradevine": "hotel (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "rekonstrukcija postojećeg hotela s pratećim sadržajima",
+   "jedinica": "opis",
+   "uvjet_primjene": "na površini ugostiteljsko-turističke namjene (T1 2 )",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B001",
+   "clanak": 24,
+   "stavak": null,
+   "blok": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Na površini ugostiteljsko-turističke namjene (T1 2 ) dopušteno je rekonstruirati postojeći hotel s pratećim sadržajima uz slijedeće granične uvjete:",
+   "vrsta_gradevine": "hotel (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "rekonstruirati postojeći hotel s pratećim sadržajima",
+   "jedinica": "opis",
+   "uvjet_primjene": "na površini ugostiteljsko-turističke namjene (T1 2 ); uz slijedeće granične uvjete",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "ODNOS_ODREDBI: uvodna odredba dopušta samo rekonstrukciju postojećeg hotela, a blok 2 al. 3, blok 3 al. 5 (interpolacije novih građevina) i blok 7 dopuštaju i gradnju; nije jasno je li nova gradnja isključena"
+   ]
+  }
+ },
+ {
+  "id": "G5_upu1_24:A005~B004",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A005",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "Postojeći hotel Koralj ne može promijeniti svoju osnovnu namjenu iz hotelske u drugi oblik turističke usluge (apartmanski) i ne može se prenamijeniti u građevinu stambene namjene.",
+   "vrsta_gradevine": "hotel (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "zabrana",
+   "vrijednost": "promjena osnovne namjene iz hotelske u drugi oblik turističke usluge (apartmanski)",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "NEGATIVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B004",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "Postojeći hotel Koralj ne može promijeniti svoju osnovnu namjenu iz hotelske u drugi oblik turističke usluge (apartmanski) i ne može se prenamijeniti u građevinu stambene namjene.",
+   "vrsta_gradevine": "hotel (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "zabrana",
+   "vrijednost": "drugi oblik turističke usluge (apartmanski)",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "NEGATIVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: nije jasno je li »(apartmanski)« primjer (zabranjen svaki drugi oblik turističke usluge) ili jedini zabranjeni oblik"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G5_upu1_24:A010~B008",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A010",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Na građevnoj čestici dopušten je smještaj jedne ili više građevina koje čine jedinstvenu funkcionalnu cjelinu.",
+   "vrsta_gradevine": "hotel",
+   "parametar": "drugo: broj građevina na građevnoj čestici",
+   "operator": "dopustenje",
+   "vrijednost": "jedna ili više građevina",
+   "jedinica": "opis",
+   "uvjet_primjene": "koje čine jedinstvenu funkcionalnu cjelinu",
+   "modal": "moze",
+   "alternative": [
+    "jedna građevina",
+    "više građevina"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B008",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Na građevnoj čestici dopušten je smještaj jedne ili više građevina koje čine jedinstvenu funkcionalnu cjelinu.",
+   "vrsta_gradevine": "hotel",
+   "parametar": "drugo: broj građevina na građevnoj čestici",
+   "operator": "dopustenje",
+   "vrijednost": "jedne ili više građevina",
+   "jedinica": "opis",
+   "uvjet_primjene": "koje čine jedinstvenu funkcionalnu cjelinu",
+   "modal": "moze",
+   "alternative": [
+    "jedna",
+    "više"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: »jedinstvena funkcionalna cjelina«"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G5_upu1_24:A028~B026",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "operator",
+   "uvjet_primjene",
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A028",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "Iznimno, kod interpolacija novih građevina (između dvije izgrađene) između postojećih susjednih građevina koje se nalaze na udaljenostima manjim od onih iz prethodne alineje, udaljenost može biti i manja, ali uz uvjet da se građevni pravac uskladi sa postojećim susjednim građevinama, a sve vodeći računa o lokalnim uvjetima.",
+   "vrsta_gradevine": "građevina (nova)",
+   "parametar": "položaj građevnog pravca",
+   "operator": "=",
+   "vrijednost": "usklađen sa postojećim susjednim građevinama",
+   "jedinica": "opis",
+   "uvjet_primjene": "kod interpolacija novih građevina (između dvije izgrađene) između postojećih susjednih građevina koje se nalaze na udaljenostima manjim od onih iz prethodne alineje; udaljenost manja od one iz prethodne alineje",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B026",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "Iznimno, kod interpolacija novih građevina (između dvije izgrađene) između postojećih susjednih građevina koje se nalaze na udaljenostima manjim od onih iz prethodne alineje, udaljenost može biti i manja, ali uz uvjet da se građevni pravac uskladi sa postojećim susjednim građevinama, a sve vodeći računa o lokalnim uvjetima.",
+   "vrsta_gradevine": "građevina (nova)",
+   "parametar": "položaj građevnog pravca",
+   "operator": "opis",
+   "vrijednost": "uskladi sa postojećim susjednim građevinama",
+   "jedinica": "opis",
+   "uvjet_primjene": "kod interpolacija novih građevina (između dvije izgrađene) između postojećih susjednih građevina koje se nalaze na udaljenostima manjim od onih iz prethodne alineje",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: »uskladi« ne određuje način usklađenja kad susjedne građevine imaju različite građevne pravce"
+   ]
+  }
+ },
+ {
+  "id": "G5_upu1_24:A045~B042",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "uvjet_primjene",
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A045",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 7,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "pomoćne građevine mogu se graditi odnosno rekonstruirati uz građevinu osnovne namjene uz sljedeće granične uvjete:",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "gradnja odnosno rekonstrukcija",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevinu osnovne namjene",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B042",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 7,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "pomoćne građevine mogu se graditi odnosno rekonstruirati uz građevinu osnovne namjene uz sljedeće granične uvjete:",
+   "vrsta_gradevine": "pomoćna građevina",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "graditi odnosno rekonstruirati",
+   "jedinica": "opis",
+   "uvjet_primjene": "uz građevinu osnovne namjene; uz sljedeće granične uvjete",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: odredba je sadržana u numeriranom podnaslovu 7.",
+    "VEZNIK: »odnosno« (gradnja i/ili rekonstrukcija)",
+    "ODNOS_ODREDBI: nova gradnja nasuprot uvodnoj odredbi koja dopušta samo rekonstrukciju"
+   ]
+  }
+ },
+ {
+  "id": "G5_upu1_24:A061~B058",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A061",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 7,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "Postojeće pomoćne građevine mogu se rekonstruirati i prenamijeniti u skladu s uvjetima iz ovog članka.",
+   "vrsta_gradevine": "pomoćna građevina (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "rekonstrukcija i prenamjena",
+   "jedinica": "opis",
+   "uvjet_primjene": "u skladu s uvjetima iz ovog članka",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B058",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 7,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "Postojeće pomoćne građevine mogu se rekonstruirati i prenamijeniti u skladu s uvjetima iz ovog članka.",
+   "vrsta_gradevine": "pomoćna građevina (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "rekonstruirati i prenamijeniti",
+   "jedinica": "opis",
+   "uvjet_primjene": "u skladu s uvjetima iz ovog članka",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: nije određeno u koju se namjenu pomoćne građevine mogu prenamijeniti"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G5_upu1_24:A007~B006",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrsta_gradevine"
+  ],
+  "A": {
+   "id": "A007",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 2,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "Prenamjena postojećih građevina drugih namjena u građevine ugostiteljsko-turističke namjene moguća je pod istim uvjetima kao za nove građevine.",
+   "vrsta_gradevine": "građevina druge namjene (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "prenamjena u građevinu ugostiteljsko-turističke namjene",
+   "jedinica": "opis",
+   "uvjet_primjene": "pod istim uvjetima kao za nove građevine",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: uvjeti za nove građevine nisu određeni u ovom članku (članak uređuje rekonstrukciju postojećeg hotela)",
+    "OBUHVAT: nejasno postoje li u zoni T1 2 građevine drugih namjena"
+   ]
+  },
+  "B": {
+   "id": "B006",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 2,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "Prenamjena postojećih građevina drugih namjena u građevine ugostiteljsko-turističke namjene moguća je pod istim uvjetima kao za nove građevine.",
+   "vrsta_gradevine": "građevina drugih namjena (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "prenamjena u građevine ugostiteljsko-turističke namjene",
+   "jedinica": "opis",
+   "uvjet_primjene": "pod istim uvjetima kao za nove građevine",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: »uvjeti kao za nove građevine« nisu određeni u ovom članku, koji uređuje rekonstrukciju postojećeg hotela"
+   ]
+  },
+  "uzorak": "vrsta_gradevine: A=građevina druge namjene (postojeća) | B=građevina drugih namjena (postojeća)"
+ },
+ {
+  "id": "G5_upu1_24:A018~B016",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrsta_gradevine",
+   "operator",
+   "vrsta_pravila"
+  ],
+  "A": {
+   "id": "A018",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Ukoliko postojeće građevine imaju veću visinu od propisane ovim člankom dopušta se rekonstrukcija istih u postojećim visinskim gabaritima (do ukupne visine), a za dogradnje postojećih građevina dopušta se visina do 15,0 m (max. katnost Po+P+3; potpuno ukopani podrum i 4 nadzemne etaže).",
+   "vrsta_gradevine": "građevina (postojeća)",
+   "parametar": "gabariti pri rekonstrukciji",
+   "operator": "dopustenje",
+   "vrijednost": "u postojećim visinskim gabaritima (do ukupne visine)",
+   "jedinica": "opis",
+   "uvjet_primjene": "ukoliko postojeće građevine imaju veću visinu od propisane ovim člankom",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "SUKOB: članak ne propisuje opću visinu građevine osnovne namjene, pa uvjet 'veća visina od propisane ovim člankom' nema referentnu vrijednost",
+    "NEDEFINIRAN_POJAM: 'ukupna visina' nije definirana u tekstu"
+   ]
+  },
+  "B": {
+   "id": "B016",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Ukoliko postojeće građevine imaju veću visinu od propisane ovim člankom dopušta se rekonstrukcija istih u postojećim visinskim gabaritima (do ukupne visine), a za dogradnje postojećih građevina dopušta se visina do 15,0 m (max. katnost Po+P+3; potpuno ukopani podrum i 4 nadzemne etaže).",
+   "vrsta_gradevine": "ugostiteljsko-turistička građevina (postojeća)",
+   "parametar": "gabariti pri rekonstrukciji",
+   "operator": "<=",
+   "vrijednost": "postojeći visinski gabariti (do ukupne visine)",
+   "jedinica": "opis",
+   "uvjet_primjene": "ukoliko postojeće građevine imaju veću visinu od propisane ovim člankom",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: članak ne propisuje opću visinu građevine osnovne namjene (samo 15,0 m za dogradnje i nadogradnje), pa uvjet »veća visina od propisane« nema jasnu osnovu",
+    "TOCKA_MJERENJA: »ukupna visina« nije definirana"
+   ]
+  }
+ },
+ {
+  "id": "G5_upu1_24:A020~B018",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrsta_gradevine",
+   "modal",
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A020",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Ukoliko postojeće građevine imaju veću visinu od propisane ovim člankom dopušta se rekonstrukcija istih u postojećim visinskim gabaritima (do ukupne visine), a za dogradnje postojećih građevina dopušta se visina do 15,0 m (max. katnost Po+P+3; potpuno ukopani podrum i 4 nadzemne etaže).",
+   "vrsta_gradevine": "građevina (postojeća)",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": "Po+P+3 (potpuno ukopani podrum i 4 nadzemne etaže)",
+   "jedinica": "opis",
+   "uvjet_primjene": "za dogradnje postojećih građevina",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "ODNOS_ODREDBI: nejasno vrijedi li katnost za sve dogradnje ili samo kad postojeća građevina premašuje propisanu visinu"
+   ]
+  },
+  "B": {
+   "id": "B018",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Ukoliko postojeće građevine imaju veću visinu od propisane ovim člankom dopušta se rekonstrukcija istih u postojećim visinskim gabaritima (do ukupne visine), a za dogradnje postojećih građevina dopušta se visina do 15,0 m (max. katnost Po+P+3; potpuno ukopani podrum i 4 nadzemne etaže).",
+   "vrsta_gradevine": "ugostiteljsko-turistička građevina (postojeća)",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": "Po+P+3; potpuno ukopani podrum i 4 nadzemne etaže",
+   "jedinica": "opis",
+   "uvjet_primjene": "za dogradnje postojećih građevina",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  }
+ },
+ {
+  "id": "G5_upu1_24:A021~B019",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrsta_gradevine",
+   "operator",
+   "vrsta_pravila"
+  ],
+  "A": {
+   "id": "A021",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Ukoliko postojeće građevine imaju veće tlocrtne gabarite od propisanih ovim člankom dopušta se rekonstrukcija u postojećim tlocrtnim gabaritima uz mogućnost nadogradnje koja ne može biti viša od 15,0 m.",
+   "vrsta_gradevine": "građevina (postojeća)",
+   "parametar": "gabariti pri rekonstrukciji",
+   "operator": "dopustenje",
+   "vrijednost": "u postojećim tlocrtnim gabaritima",
+   "jedinica": "opis",
+   "uvjet_primjene": "ukoliko postojeće građevine imaju veće tlocrtne gabarite od propisanih ovim člankom",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: članak ne propisuje tlocrtne gabarite izravno (samo kig), pa je referenca 'propisanih ovim člankom' neizravna"
+   ]
+  },
+  "B": {
+   "id": "B019",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Ukoliko postojeće građevine imaju veće tlocrtne gabarite od propisanih ovim člankom dopušta se rekonstrukcija u postojećim tlocrtnim gabaritima uz mogućnost nadogradnje koja ne može biti viša od 15,0 m.",
+   "vrsta_gradevine": "ugostiteljsko-turistička građevina (postojeća)",
+   "parametar": "gabariti pri rekonstrukciji",
+   "operator": "<=",
+   "vrijednost": "postojeći tlocrtni gabariti",
+   "jedinica": "opis",
+   "uvjet_primjene": "ukoliko postojeće građevine imaju veće tlocrtne gabarite od propisanih ovim člankom",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: članak izravno ne propisuje tlocrtne gabarite osnovne građevine (samo kig), pa uvjet nema jasnu osnovu"
+   ]
+  }
+ },
+ {
+  "id": "G5_upu1_24:A014~B012",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "operator",
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A014",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "Najveći dopušteni koeficijent iskorištenosti (kis) nadzemnih etaža iznosi 1,0, a ukoliko se ispod građevine gradi potpuno ukopani podrum 1,5, od čega je 0,5 koeficijent iskorištenosti potpuno ukopanog podruma.",
+   "vrsta_gradevine": "hotel",
+   "parametar": "drugo: najveći koeficijent iskoristivosti (kis) potpuno ukopanog podruma",
+   "operator": "<=",
+   "vrijednost": 0.5,
+   "jedinica": "koeficijent",
+   "uvjet_primjene": "ukoliko se ispod građevine gradi potpuno ukopani podrum",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B012",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "Najveći dopušteni koeficijent iskorištenosti (kis) nadzemnih etaža iznosi 1,0, a ukoliko se ispod građevine gradi potpuno ukopani podrum 1,5, od čega je 0,5 koeficijent iskorištenosti potpuno ukopanog podruma.",
+   "vrsta_gradevine": "hotel",
+   "parametar": "drugo: koeficijent iskorištenosti potpuno ukopanog podruma",
+   "operator": "=",
+   "vrijednost": 0.5,
+   "jedinica": "koeficijent",
+   "uvjet_primjene": "ukoliko se ispod građevine gradi potpuno ukopani podrum",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: nije jasno je li 0,5 najveća dopuštena vrijednost za podrum ili udio unutar 1,5"
+   ]
+  }
+ },
+ {
+  "id": "G5_upu1_24:A015~B013",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrsta_pravila"
+  ],
+  "A": {
+   "id": "A015",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Postojeće ugostiteljsko-turističke građevine mogu se rekonstruirati na način da se ne povećava postojeća gustoća korištenja ako je veća od 300 kreveta/ha, izgrađenost građevne čestice ako je veća od 30% i koeficijent iskorištenosti nadzemno ako je veći od 1,0.",
+   "vrsta_gradevine": "ugostiteljsko-turistička građevina (postojeća)",
+   "parametar": "drugo: najveća gustoća korištenja pri rekonstrukciji",
+   "operator": "<=",
+   "vrijednost": "postojeća gustoća korištenja",
+   "jedinica": "opis",
+   "uvjet_primjene": "ako je veća od 300 kreveta/ha",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: gustoća korištenja (kreveti/ha) nije definirana niti je propisana opća granica u članku"
+   ]
+  },
+  "B": {
+   "id": "B013",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Postojeće ugostiteljsko-turističke građevine mogu se rekonstruirati na način da se ne povećava postojeća gustoća korištenja ako je veća od 300 kreveta/ha, izgrađenost građevne čestice ako je veća od 30% i koeficijent iskorištenosti nadzemno ako je veći od 1,0.",
+   "vrsta_gradevine": "ugostiteljsko-turistička građevina (postojeća)",
+   "parametar": "drugo: gustoća korištenja",
+   "operator": "<=",
+   "vrijednost": "postojeća gustoća korištenja",
+   "jedinica": "opis",
+   "uvjet_primjene": "ako je veća od 300 kreveta/ha",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: »gustoća korištenja« nije definirana niti je u članku propisana osnovna vrijednost"
+   ]
+  },
+  "uzorak": "vrsta_pravila: A=iznimka | B=uvjetno"
+ },
+ {
+  "id": "G5_upu1_24:A031~B029",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "parametar",
+   "vrsta_pravila"
+  ],
+  "A": {
+   "id": "A031",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Postojeće građevine koje se nalaze na udaljenostima manjim od onih iz prethodne dvije alineje, mogu se rekonstruirati pod uvjetom da se ne smanjuju postojeće udaljenosti, a dogradnja postojeće građevine mora zadovoljiti uvjete iz prethodne dvije alineje.",
+   "vrsta_gradevine": "građevina (postojeća)",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": "postojeće udaljenosti",
+   "jedinica": "opis",
+   "uvjet_primjene": "koje se nalaze na udaljenostima manjim od onih iz prethodne dvije alineje",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: 'prethodne dvije alineje' – prema oznakama to su alineje 4 i 5 (regulacijski pravac), a sadržajno pravila h/2 i (h1+h2)/2 koja su u alineji 5"
+   ]
+  },
+  "B": {
+   "id": "B029",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Postojeće građevine koje se nalaze na udaljenostima manjim od onih iz prethodne dvije alineje, mogu se rekonstruirati pod uvjetom da se ne smanjuju postojeće udaljenosti, a dogradnja postojeće građevine mora zadovoljiti uvjete iz prethodne dvije alineje.",
+   "vrsta_gradevine": "građevina (postojeća)",
+   "parametar": "drugo: udaljenosti postojeće građevine pri rekonstrukciji",
+   "operator": ">=",
+   "vrijednost": "postojeće udaljenosti",
+   "jedinica": "opis",
+   "uvjet_primjene": "koje se nalaze na udaljenostima manjim od onih iz prethodne dvije alineje",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TUMACENJE: »prethodne dvije alineje« formalno su alineje 4 i 5, a odredbe o h/2 i (h1+h2)/2 nalaze se kao rečenice unutar alineje 5; nije jasno koje se udaljenosti obuhvaćaju"
+   ]
+  }
+ },
+ {
+  "id": "G5_upu1_24:A044~B041",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "vrsta_gradevine"
+  ],
+  "A": {
+   "id": "A044",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 6,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "Kod novog zahvata pod kojim se podrazumijeva rekonstrukcija građevine u smislu dogradnje i nadogradnje, ili kod povećanja smještajnih kapaciteta potrebno je samo za novi zahvat poštivati uvjete za parkiranje koji su određeni za nove građevine.",
+   "vrsta_gradevine": "hotel (postojeća)",
+   "parametar": "drugo: uvjeti parkiranja pri rekonstrukciji",
+   "operator": "opis",
+   "vrijednost": "samo za novi zahvat poštivati uvjete za parkiranje koji su određeni za nove građevine",
+   "jedinica": "opis",
+   "uvjet_primjene": "kod novog zahvata pod kojim se podrazumijeva rekonstrukcija građevine u smislu dogradnje i nadogradnje; kod povećanja smještajnih kapaciteta",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: uvjeti za parkiranje novih građevina nisu u tekstu",
+    "VEZNIK: 'dogradnje i nadogradnje' – vjerojatno bilo koja od njih"
+   ]
+  },
+  "B": {
+   "id": "B041",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 6,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "Kod novog zahvata pod kojim se podrazumijeva rekonstrukcija građevine u smislu dogradnje i nadogradnje, ili kod povećanja smještajnih kapaciteta potrebno je samo za novi zahvat poštivati uvjete za parkiranje koji su određeni za nove građevine.",
+   "vrsta_gradevine": "građevina (postojeća)",
+   "parametar": "drugo: uvjeti parkiranja kod rekonstrukcije",
+   "operator": "opis",
+   "vrijednost": "samo za novi zahvat poštivati uvjete za parkiranje koji su određeni za nove građevine",
+   "jedinica": "opis",
+   "uvjet_primjene": "kod novog zahvata pod kojim se podrazumijeva rekonstrukcija građevine u smislu dogradnje i nadogradnje; kod povećanja smještajnih kapaciteta",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "UVJETNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: uvjeti za parkiranje za nove građevine nisu u tekstu",
+    "VEZNIK: »dogradnje i nadogradnje« može značiti obje kumulativno ili bilo koju"
+   ]
+  },
+  "uzorak": "vrsta_gradevine: A=hotel (postojeća) | B=građevina (postojeća)"
+ },
+ {
+  "id": "G5_upu1_24:A059~B056",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "parametar",
+   "uvjet_primjene"
+  ],
+  "A": {
+   "id": "A059",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 7,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Na regulacijskom pravcu mogu se graditi samo garaže, kada je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice odnosno najviše do visine ogradnog zida 1,1 m kada to dozvoljavaju lokalni uvjeti.",
+   "vrsta_gradevine": "garaža",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "na regulacijskom pravcu",
+   "jedinica": "opis",
+   "uvjet_primjene": "kada je takav zahtjev uvjetovan konfiguracijom terena; kada je završna kota ravnog krova ista kao niveleta ulice odnosno najviše do visine ogradnog zida 1,1 m; kada to dozvoljavaju lokalni uvjeti",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "VEZNIK: 'odnosno' – nejasno moraju li uvjeti biti ispunjeni kumulativno ili alternativno",
+    "NEDEFINIRAN_POJAM: 'konfiguracija terena', 'lokalni uvjeti'"
+   ]
+  },
+  "B": {
+   "id": "B056",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 7,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Na regulacijskom pravcu mogu se graditi samo garaže, kada je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice odnosno najviše do visine ogradnog zida 1,1 m kada to dozvoljavaju lokalni uvjeti.",
+   "vrsta_gradevine": "garaža",
+   "parametar": "drugo: gradnja na regulacijskom pravcu",
+   "operator": "dopustenje",
+   "vrijednost": "na regulacijskom pravcu",
+   "jedinica": "opis",
+   "uvjet_primjene": "kada je takav zahtjev uvjetovan konfiguracijom terena; kada je završna kota ravnog krova ista kao niveleta ulice; kada to dozvoljavaju lokalni uvjeti",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "VEZNIK: dvostruko »odnosno« – nije jasno jesu li uvjeti kumulativni ili alternativni",
+    "NEDEFINIRAN_POJAM: »konfiguracija terena«, »lokalni uvjeti«",
+    "ODNOS_ODREDBI: odstupa od opće udaljenosti 5,0 m (al. 5); »samo garaže« isključuje ostale pomoćne građevine na regulacijskom pravcu"
+   ]
+  }
+ },
+ {
+  "id": "G5_upu1_24:A060~B057",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "parametar",
+   "modal"
+  ],
+  "A": {
+   "id": "A060",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 7,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Na regulacijskom pravcu mogu se graditi samo garaže, kada je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice odnosno najviše do visine ogradnog zida 1,1 m kada to dozvoljavaju lokalni uvjeti.",
+   "vrsta_gradevine": "garaža",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 1.1,
+   "jedinica": "m",
+   "uvjet_primjene": "na regulacijskom pravcu; kada to dozvoljavaju lokalni uvjeti",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: nije navedeno od koje se kote mjeri 1,1 m (vjerojatno od nivelete ulice do završne kote ravnog krova)",
+    "VEZNIK: 'odnosno' između 'ista kao niveleta ulice' i 'najviše do visine ogradnog zida 1,1 m'"
+   ]
+  },
+  "B": {
+   "id": "B057",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 7,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Na regulacijskom pravcu mogu se graditi samo garaže, kada je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice odnosno najviše do visine ogradnog zida 1,1 m kada to dozvoljavaju lokalni uvjeti.",
+   "vrsta_gradevine": "garaža",
+   "parametar": "drugo: završna kota ravnog krova iznad nivelete ulice",
+   "operator": "<=",
+   "vrijednost": 1.1,
+   "jedinica": "m",
+   "uvjet_primjene": "na regulacijskom pravcu; kada to dozvoljavaju lokalni uvjeti",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "TOCKA_MJERENJA: nije određeno od koje se točke mjeri 1,1 m (niveleta ulice ili teren)",
+    "VEZNIK: »odnosno« – alternativa ili kumulacija s uvjetom kote jednake niveleti ulice"
+   ]
+  }
+ },
+ {
+  "id": "G5_upu1_24:A041~B038",
+  "skupina": "G5_upu1_24",
+  "vrsta": "RAZLIKA",
+  "polja": [
+   "jednoznacnost"
+  ],
+  "A": {
+   "id": "A041",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 6,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "U sklopu građevne čestice mogu se predvidjeti sportski tereni, vanjski bazeni i terase, te graditi i uređivati površine namijenjene internim prometnim komunikacijama i parkiralištima, rekreaciji, odmoru i sl.",
+   "vrsta_gradevine": "hotel",
+   "parametar": "drugo: sadržaji uređenja građevne čestice",
+   "operator": "dopustenje",
+   "vrijednost": "sportski tereni, vanjski bazeni i terase, površine namijenjene internim prometnim komunikacijama i parkiralištima, rekreaciji, odmoru i sl.",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": {
+   "id": "B038",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 6,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "U sklopu građevne čestice mogu se predvidjeti sportski tereni, vanjski bazeni i terase, te graditi i uređivati površine namijenjene internim prometnim komunikacijama i parkiralištima, rekreaciji, odmoru i sl.",
+   "vrsta_gradevine": "hotel",
+   "parametar": "drugo: sadržaji i površine na građevnoj čestici",
+   "operator": "dopustenje",
+   "vrijednost": "sportski tereni, vanjski bazeni i terase, te površine namijenjene internim prometnim komunikacijama i parkiralištima, rekreaciji, odmoru i sl.",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "NEDEFINIRAN_POJAM: »i sl.« ostavlja popis otvorenim"
+   ]
+  },
+  "uzorak": "jednoznacnost: A=jasan | B=pregled"
+ },
+ {
+  "id": "G5_upu1_24:A004~",
+  "skupina": "G5_upu1_24",
+  "vrsta": "SAMO_A",
+  "polja": [],
+  "A": {
+   "id": "A004",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 1,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "Oblik i veličina određeni su u skladu sa značenjem i mjerilom plana, te će se u postupku izdavanja odgovarajućeg akta kojim se odobrava gradnja precizno odrediti površina građevne čestice, prema geodetskoj izmjeri.",
+   "vrsta_gradevine": "hotel (postojeća)",
+   "parametar": "drugo: način određivanja površine građevne čestice",
+   "operator": "opis",
+   "vrijednost": "precizno određivanje površine građevne čestice u postupku izdavanja akta kojim se odobrava gradnja, prema geodetskoj izmjeri",
+   "jedinica": "opis",
+   "uvjet_primjene": "u postupku izdavanja odgovarajućeg akta kojim se odobrava gradnja",
+   "modal": "mora",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": null
+ },
+ {
+  "id": "G5_upu1_24:A009~",
+  "skupina": "G5_upu1_24",
+  "vrsta": "SAMO_A",
+  "polja": [],
+  "A": {
+   "id": "A009",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Na građevnoj čestici dopuštena je rekonstrukcija hotela uz slijedeće granične uvjete:",
+   "vrsta_gradevine": "hotel (postojeća)",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "rekonstrukcija hotela",
+   "jedinica": "opis",
+   "uvjet_primjene": "",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "OSNOVNO",
+   "jednoznacnost": "JASAN",
+   "razlozi_pregleda": []
+  },
+  "B": null
+ },
+ {
+  "id": "G5_upu1_24:A032~",
+  "skupina": "G5_upu1_24",
+  "vrsta": "SAMO_A",
+  "polja": [],
+  "A": {
+   "id": "A032",
+   "clanak": 24,
+   "stavak": null,
+   "blok": 3,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Postojeće građevine koje se nalaze na udaljenostima manjim od onih iz prethodne dvije alineje, mogu se rekonstruirati pod uvjetom da se ne smanjuju postojeće udaljenosti, a dogradnja postojeće građevine mora zadovoljiti uvjete iz prethodne dvije alineje.",
+   "vrsta_gradevine": "građevina (postojeća)",
+   "parametar": "najmanja udaljenost između građevina na istoj čestici",
+   "operator": ">=",
+   "vrijednost": "postojeće udaljenosti",
+   "jedinica": "opis",
+   "uvjet_primjene": "koje se nalaze na udaljenostima manjim od onih iz prethodne dvije alineje",
+   "modal": "moze",
+   "alternative": [],
+   "vrsta_pravila": "IZNIMKA",
+   "jednoznacnost": "PREGLED",
+   "razlozi_pregleda": [
+    "UPUCIVANJE: 'prethodne dvije alineje' nije jednoznačno određeno",
+    "TUMACENJE: primjena na udaljenost između građevina izvedena iz množine 'postojeće udaljenosti'"
+   ]
+  },
+  "B": null
+ }
+]
