@@ -1,0 +1,35 @@
+{
+ "opis": "Dopuna nazivima zatvorenog popisa parametara iz UPUTE_OZNACAVANJA_v1.md (§ 5) za mjerenje v2.2 na referenca_v1.json. Samo nazivi; vrijednosti, operatori i uvjeti se ne mapiraju.",
+ "parametri": {
+  "dopustenaGradnja": [
+   "dopuštenost gradnje"
+  ],
+  "etazeMax": [
+   "najveći broj etaža"
+  ],
+  "udaljenostIzmeduGradjevina": [
+   "najmanja udaljenost između građevina na istoj čestici"
+  ],
+  "zeleniloMin": [
+   "najmanji udio zelenila na građevnoj čestici"
+  ]
+ },
+ "vrsta_gradevine_istoznacnice": {
+  "obiteljska kuća – dvojna/ugrađena": [
+   "obiteljska kuća – dvojna",
+   "obiteljska kuća – ugrađena"
+  ],
+  "obiteljska kuća – dvojna/ugrađena (nova)": [
+   "obiteljska kuća – dvojna (nova)",
+   "obiteljska kuća – ugrađena (nova)"
+  ],
+  "obiteljska kuća – dvojna/ugrađena (s podrumom)": [
+   "obiteljska kuća – dvojna",
+   "obiteljska kuća – ugrađena"
+  ]
+ },
+ "oblici": {
+  "dvoj": "dvojna"
+ },
+ "napomena_tocka": "Upute v1 bilježe odredbu u alineji kao tocka \"-\"; čitač bilježi slovo točke unutar koje je alineja. Razlika slova i \"-\" broji se kao pravilo granularnosti TOCKA_ILI_ALINEJA_v1. Oznaka \"a)\" jednaka je \"a\"."
+}

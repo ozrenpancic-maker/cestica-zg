@@ -1,0 +1,4046 @@
+{
+ "verzija_citaca": "v2.2 (zamrznuta, 5c8b8345…)",
+ "referenca": "oznake/v1/referenca_v1.json",
+ "sha256_reference": "e6b2f7a5282d99694ad8cd0cd5939e5db350fa28c8736ffd6e1eddd44a7f85cc",
+ "determinizam": true,
+ "skupine": {
+  "G1_ppug_22_23": {
+   "sazetak": {
+    "oznaka": 61,
+    "oznaka_JASAN": 48,
+    "zapisa_modula": 55,
+    "tocno_prihvaceno": 7,
+    "tocno_uz_pravilo_granularnosti": 26,
+    "pogresno_prihvaceno": 7,
+    "pravilno_na_pregled": 3,
+    "nepotrebno_na_pregled": 1,
+    "pregled_bez_oznake": 11,
+    "propusteno": 24,
+    "preciznost_prihvacenih_strogo": 0.175,
+    "preciznost_prihvacenih": 0.825,
+    "pokrivenost_izdvajanja": 0.607,
+    "pokrivenost_prihvacanja": 0.541,
+    "pokrivenost_prihvacanja_od_JASAN": 0.688,
+    "udio_pregleda": 0.273
+   },
+   "detalji": {
+    "tocno": [
+     {
+      "id": "22.1.h.0.1.14",
+      "oznaka": "R002",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "22.2.-.2.1.18",
+      "oznaka": "R024",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "22.2.-.4.1.24",
+      "oznaka": "R029",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "22.2.-.5.1.25",
+      "oznaka": "R030",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "22.2.-.6.1.27",
+      "oznaka": "R032",
+      "jednoznacnost_oznake": "PREGLED"
+     },
+     {
+      "id": "23.1.g.0.1.13",
+      "oznaka": "R035",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "22.2.-.4.1.22",
+      "oznaka": "R028",
+      "jednoznacnost_oznake": "JASAN"
+     }
+    ],
+    "pogresno": [
+     {
+      "id": "23.2.-.2.1.17",
+      "clanak": 23,
+      "stavak": 2,
+      "parametar": "položaj građevnog pravca",
+      "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+      "operator": "opis",
+      "vrijednost": "iza građevnog pravca građevine osnovne namjene",
+      "uvjet": "",
+      "vrsta_pravila": "OSNOVNO",
+      "citat": "građevni pravac je iza građevnog pravca građevine osnovne namjene,",
+      "najbliza_oznaka": [
+       "R051",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "id": "23.2.-.4.1.19",
+      "clanak": 23,
+      "stavak": 2,
+      "parametar": "oblik krovišta",
+      "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+      "operator": "dopustenje",
+      "vrijednost": "ravna ili kosa",
+      "uvjet": "",
+      "vrsta_pravila": "ALTERNATIVA",
+      "citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+      "najbliza_oznaka": [
+       "R053",
+       [
+        "vrsta_pravila",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "id": "23.2.-.4.1.20",
+      "clanak": 23,
+      "stavak": 2,
+      "parametar": "vrsta kosog krovišta",
+      "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+      "operator": "dopustenje",
+      "vrijednost": "jednostrešna, dvostrešna ili višestrešna",
+      "uvjet": "ako se grade kao kosa",
+      "vrsta_pravila": "ALTERNATIVA",
+      "citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+      "najbliza_oznaka": [
+       "R054",
+       [
+        "vrsta_pravila",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "id": "23.2.-.4.1.23",
+      "clanak": 23,
+      "stavak": 2,
+      "parametar": "vrsta pokrova",
+      "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+      "operator": "=",
+      "vrijednost": "mediteran crijep ili kupa kanalica",
+      "uvjet": "ako se grade kao kosa",
+      "vrsta_pravila": "UVJETNO",
+      "citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+      "najbliza_oznaka": [
+       "R056",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "id": "23.2.-.5.1.24",
+      "clanak": 23,
+      "stavak": 2,
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+      "operator": ">=",
+      "vrijednost": 6.0,
+      "uvjet": "",
+      "vrsta_pravila": "OSNOVNO",
+      "citat": "udaljenost poljoprivredne gospodarske građevine od regulacijskog pravca iznosi najmanje 6,0 m.",
+      "najbliza_oznaka": [
+       "R057",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "id": "23.2.-.6.1.26",
+      "clanak": 23,
+      "stavak": 2,
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+      "operator": ">=",
+      "vrijednost": 5.0,
+      "uvjet": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+      "vrsta_pravila": "IZNIMKA",
+      "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice iznosi 3,0 m, a udaljenost od regulacijskog pravca iznosi najmanje 5,0 m.",
+      "najbliza_oznaka": [
+       "R059",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "id": "23.2.-.4.1.21",
+      "clanak": 23,
+      "stavak": 2,
+      "parametar": "nagib krovnih ploha",
+      "vrsta_gradevine": "poljoprivredna gospodarska građevina",
+      "operator": "izmedju",
+      "vrijednost": "17–23",
+      "uvjet": "ako se grade kao kosa",
+      "vrsta_pravila": "UVJETNO",
+      "citat": "krovišta mogu biti ravna ili kosa (ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23° i pokrov mora biti mediteran crijep ili kupa kanalica).",
+      "najbliza_oznaka": [
+       "R055",
+       [
+        "uvjet"
+       ]
+      ]
+     }
+    ],
+    "pregled": [
+     {
+      "id": "22.1.b.0.1.3",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "OBLIK_NEPOTVRDEN"
+      ],
+      "parametar": "najmanja površina građevne čestice",
+      "vrijednost": 400.0
+     },
+     {
+      "id": "22.1.i.0.1.15",
+      "oznaka": "R003",
+      "jednoznacnost_oznake": "PREGLED",
+      "razlog_kod": [
+       "REFERENTNA_VISINA_NEPOZNATA"
+      ],
+      "parametar": "najveća visina građevine",
+      "vrijednost": 6.5
+     },
+     {
+      "id": "22.2.0.0.1.16",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "OVISI_O_UVJETIMA_ZA_PREGLED"
+      ],
+      "parametar": "dopuštenost gradnje na čestici stambene građevine",
+      "vrijednost": null
+     },
+     {
+      "id": "22.2.-.1.1.17",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "REFERENTNA_VISINA_NEPOTPUNA"
+      ],
+      "parametar": "najveća visina građevine",
+      "vrijednost": 4.0
+     },
+     {
+      "id": "22.2.-.3.1.19",
+      "oznaka": "R025",
+      "jednoznacnost_oznake": "JASAN",
+      "razlog_kod": [
+       "GRANICA_CESTICE_NERAZGRANICENA"
+      ],
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "vrijednost": 4.0
+     },
+     {
+      "id": "22.2.-.6.1.26",
+      "oznaka": "R031",
+      "jednoznacnost_oznake": "PREGLED",
+      "razlog_kod": [
+       "GRANICA_CESTICE_NERAZGRANICENA"
+      ],
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "vrijednost": 3.0
+     },
+     {
+      "id": "22.2.-.7.1.28",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "TIPOGRAFSKA_POGRESKA",
+       "UPUCIVANJE_OPCE"
+      ],
+      "parametar": "rekonstrukcija i prenamjena",
+      "vrijednost": null
+     },
+     {
+      "id": "22.2.-.7.2.29",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "OPSEG_NEODREDEN"
+      ],
+      "parametar": "gabariti pri rekonstrukciji",
+      "vrijednost": "samo u postojećim tlocrtnim i visinskim gabaritima"
+     },
+     {
+      "id": "23.1.h.0.1.14",
+      "oznaka": "R036",
+      "jednoznacnost_oznake": "PREGLED",
+      "razlog_kod": [
+       "REFERENTNA_VISINA_NEPOZNATA"
+      ],
+      "parametar": "najveća visina građevine",
+      "vrijednost": 6.5
+     },
+     {
+      "id": "23.2.0.0.1.15",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "OVISI_O_UVJETIMA_ZA_PREGLED"
+      ],
+      "parametar": "dopuštenost gradnje na čestici stambene građevine",
+      "vrijednost": null
+     },
+     {
+      "id": "23.2.-.1.1.16",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "REFERENTNA_VISINA_NEPOTPUNA"
+      ],
+      "parametar": "najveća visina građevine",
+      "vrijednost": 4.0
+     },
+     {
+      "id": "23.2.-.3.1.18",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "GRANICA_CESTICE_NERAZGRANICENA"
+      ],
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "vrijednost": 4.0
+     },
+     {
+      "id": "23.2.-.6.1.25",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "GRANICA_CESTICE_NERAZGRANICENA"
+      ],
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "vrijednost": 3.0
+     },
+     {
+      "id": "23.2.-.7.1.27",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "TIPOGRAFSKA_POGRESKA",
+       "UPUCIVANJE_OPCE"
+      ],
+      "parametar": "rekonstrukcija i prenamjena",
+      "vrijednost": null
+     },
+     {
+      "id": "23.2.-.7.2.28",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "OPSEG_NEODREDEN"
+      ],
+      "parametar": "gabariti pri rekonstrukciji",
+      "vrijednost": "samo u postojećim tlocrtnim i visinskim gabaritima"
+     }
+    ],
+    "tocno_uz_granularnost": [
+     {
+      "id": "22.1.a.0.1.1",
+      "oznaka": "R004",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "22.1.a.0.1.2",
+      "oznaka": "R005",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "22.1.c.0.1.4",
+      "oznaka": "R007",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "22.1.c.0.1.5",
+      "oznaka": "R008",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "22.1.d.0.1.6",
+      "oznaka": "R010",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "22.1.d.0.1.7",
+      "oznaka": "R011",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "22.1.e.0.1.8",
+      "oznaka": "R013",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "22.1.e.0.1.9",
+      "oznaka": "R014",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "22.1.f.0.1.10",
+      "oznaka": "R016",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "22.1.f.0.1.11",
+      "oznaka": "R017",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "22.1.g.0.1.12",
+      "oznaka": "R019",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "22.1.g.0.1.13",
+      "oznaka": "R020",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "22.2.-.4.1.20",
+      "oznaka": "R026",
+      "pravila": [
+       "ALTERNATIVA_NIJE_VRSTA_v1"
+      ]
+     },
+     {
+      "id": "22.2.-.4.1.21",
+      "oznaka": "R027",
+      "pravila": [
+       "ALTERNATIVA_UZ_UVJET"
+      ]
+     },
+     {
+      "id": "23.1.a.0.1.1",
+      "oznaka": "R037",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "23.1.a.0.1.2",
+      "oznaka": "R038",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "23.1.b.0.1.3",
+      "oznaka": "R039",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "23.1.b.0.1.4",
+      "oznaka": "R040",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "23.1.c.0.1.5",
+      "oznaka": "R041",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "23.1.c.0.1.6",
+      "oznaka": "R042",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "23.1.d.0.1.7",
+      "oznaka": "R043",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "23.1.d.0.1.8",
+      "oznaka": "R044",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "23.1.e.0.1.9",
+      "oznaka": "R045",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "23.1.e.0.1.10",
+      "oznaka": "R046",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "23.1.f.0.1.11",
+      "oznaka": "R047",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     },
+     {
+      "id": "23.1.f.0.1.12",
+      "oznaka": "R048",
+      "pravila": [
+       "TOCKA_ILI_ALINEJA_v1"
+      ]
+     }
+    ],
+    "propusteno": [
+     {
+      "oznaka": "R001",
+      "parametar": "najmanja površina građevne čestice",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "22.1.b.0.1.3",
+       [
+        "vrsta_gradevine"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R006",
+      "parametar": "najmanja površina građevne čestice",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "22.1.a.0.1.2",
+       [
+        "tocka"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R009",
+      "parametar": "najmanja površina tlocrtne projekcije građevine",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "22.1.c.0.1.5",
+       [
+        "tocka"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R012",
+      "parametar": "najveća površina tlocrtne projekcije građevine",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "22.1.d.0.1.7",
+       [
+        "tocka"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R015",
+      "parametar": "najveći koeficijent izgrađenosti (kig)",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "22.1.e.0.1.9",
+       [
+        "tocka"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R018",
+      "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "22.1.f.0.1.11",
+       [
+        "tocka"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R021",
+      "parametar": "najveći koeficijent iskoristivosti (kis)",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "22.1.g.0.1.13",
+       [
+        "tocka"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R022",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "22.2.0.0.1.16",
+       [
+        "jedinica"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R023",
+      "parametar": "najveća visina građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "22.2.-.1.1.17",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R033",
+      "parametar": "rekonstrukcija i prenamjena",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "22.2.-.7.1.28",
+       [
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R034",
+      "parametar": "gabariti pri rekonstrukciji",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "22.2.-.7.2.29",
+       [
+        "operator"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R049",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "23.2.0.0.1.15",
+       [
+        "jedinica"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R050",
+      "parametar": "najveća visina građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "23.2.-.1.1.16",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R051",
+      "parametar": "položaj građevnog pravca",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "23.2.-.2.1.17",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R052",
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "23.2.-.3.1.18",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R053",
+      "parametar": "oblik krovišta",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "23.2.-.4.1.19",
+       [
+        "vrsta_pravila",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R054",
+      "parametar": "vrsta kosog krovišta",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "23.2.-.4.1.20",
+       [
+        "vrsta_pravila",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R055",
+      "parametar": "nagib krovnih ploha",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "23.2.-.4.1.21",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R056",
+      "parametar": "vrsta pokrova",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "23.2.-.4.1.23",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R057",
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "23.2.-.5.1.24",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R058",
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "23.2.-.6.1.25",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R059",
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "23.2.-.6.1.26",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R060",
+      "parametar": "rekonstrukcija i prenamjena",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "23.2.-.7.1.27",
+       [
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R061",
+      "parametar": "gabariti pri rekonstrukciji",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "23.2.-.7.2.28",
+       [
+        "operator",
+        "uvjet"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "G2_ppug_25_33": {
+   "sazetak": {
+    "oznaka": 33,
+    "oznaka_JASAN": 13,
+    "zapisa_modula": 34,
+    "tocno_prihvaceno": 10,
+    "tocno_uz_pravilo_granularnosti": 2,
+    "pogresno_prihvaceno": 1,
+    "pravilno_na_pregled": 9,
+    "nepotrebno_na_pregled": 1,
+    "pregled_bez_oznake": 11,
+    "propusteno": 11,
+    "preciznost_prihvacenih_strogo": 0.769,
+    "preciznost_prihvacenih": 0.923,
+    "pokrivenost_izdvajanja": 0.667,
+    "pokrivenost_prihvacanja": 0.364,
+    "pokrivenost_prihvacanja_od_JASAN": 0.923,
+    "udio_pregleda": 0.618
+   },
+   "detalji": {
+    "tocno": [
+     {
+      "id": "25.1.a.0.1.1",
+      "oznaka": "R001",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "25.1.b.0.1.2",
+      "oznaka": "R002",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "25.1.c.0.1.3",
+      "oznaka": "R003",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "25.1.d.0.1.4",
+      "oznaka": "R004",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "25.1.e.0.1.5",
+      "oznaka": "R005",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "25.2.-.2.1.12",
+      "oznaka": "R011",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "25.2.-.4.1.15",
+      "oznaka": "R014",
+      "jednoznacnost_oznake": "PREGLED"
+     },
+     {
+      "id": "25.2.-.5.1.20",
+      "oznaka": "R018",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "25.2.-.6.1.21",
+      "oznaka": "R019",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "25.2.-.5.1.18",
+      "oznaka": "R017",
+      "jednoznacnost_oznake": "JASAN"
+     }
+    ],
+    "pogresno": [
+     {
+      "id": "25.1.h.0.1.8",
+      "clanak": 25,
+      "stavak": 1,
+      "parametar": "način gradnje",
+      "vrsta_gradevine": "stambena građevina",
+      "operator": "dopustenje",
+      "vrijednost": "samostojeće",
+      "uvjet": "",
+      "vrsta_pravila": "OSNOVNO",
+      "citat": "stambene građevine mogu se graditi samo kao samostojeće građevine.",
+      "najbliza_oznaka": [
+       "R008",
+       [
+        "operator",
+        "vrijednost"
+       ]
+      ]
+     }
+    ],
+    "pregled": [
+     {
+      "id": "25.1.f.0.1.6",
+      "oznaka": "R006",
+      "jednoznacnost_oznake": "PREGLED",
+      "razlog_kod": [
+       "ZONA_NIJE_DEFINIRANA"
+      ],
+      "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+      "vrijednost": 0.5
+     },
+     {
+      "id": "25.1.g.0.1.7",
+      "oznaka": "R007",
+      "jednoznacnost_oznake": "PREGLED",
+      "razlog_kod": [
+       "OVISI_O_NERIJESENOJ_ODREDBI"
+      ],
+      "parametar": "najveći koeficijent iskoristivosti (kis)",
+      "vrijednost": 0.75
+     },
+     {
+      "id": "25.1.h.0.1.9",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "MOGUC_SUKOB_ODREDBI",
+       "ZABRANA_IZVEDENA"
+      ],
+      "parametar": "način gradnje",
+      "vrijednost": "svi načini gradnje osim: samostojeće"
+     },
+     {
+      "id": "25.2.0.0.1.10",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "OVISI_O_UVJETIMA_ZA_PREGLED"
+      ],
+      "parametar": "dopuštenost gradnje na čestici stambene građevine",
+      "vrijednost": null
+     },
+     {
+      "id": "25.2.-.1.1.11",
+      "oznaka": "R010",
+      "jednoznacnost_oznake": "PREGLED",
+      "razlog_kod": [
+       "REFERENTNA_VISINA_NEPOTPUNA"
+      ],
+      "parametar": "najveća visina građevine",
+      "vrijednost": 4.0
+     },
+     {
+      "id": "25.2.-.3.1.13",
+      "oznaka": "R012",
+      "jednoznacnost_oznake": "JASAN",
+      "razlog_kod": [
+       "GRANICA_CESTICE_NERAZGRANICENA"
+      ],
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "vrijednost": 4.0
+     },
+     {
+      "id": "25.2.-.4.1.14",
+      "oznaka": "R013",
+      "jednoznacnost_oznake": "PREGLED",
+      "razlog_kod": [
+       "GRANICA_CESTICE_NERAZGRANICENA"
+      ],
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "vrijednost": 3.0
+     },
+     {
+      "id": "25.2.-.7.1.22",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "TIPOGRAFSKA_POGRESKA",
+       "UPUCIVANJE_OPCE"
+      ],
+      "parametar": "rekonstrukcija i prenamjena",
+      "vrijednost": null
+     },
+     {
+      "id": "25.2.-.7.2.23",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "OPSEG_NEODREDEN"
+      ],
+      "parametar": "gabariti pri rekonstrukciji",
+      "vrijednost": "samo u postojećim tlocrtnim i visinskim gabaritima"
+     },
+     {
+      "id": "33.1.0.0.1.1",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "GRANICA_CESTICE_NERAZGRANICENA",
+       "H_NIJE_DEFINIRAN",
+       "POJAM_VARIJANTA",
+       "UVJET_SAMO_ZA_X",
+       "VEZNIK_DVOSMISLEN"
+      ],
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "vrijednost": 4.0
+     },
+     {
+      "id": "33.1.0.0.2.2",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "GRANICA_CESTICE_NERAZGRANICENA",
+       "NEGATIVNI_UVJET_NEPOTPUN",
+       "ODNOS_PREMA_FORMULI_NEJASAN",
+       "OPSEG_PROCELJA"
+      ],
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "vrijednost": 3.0
+     },
+     {
+      "id": "33.2.0.0.1.3",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "MOGUC_SUKOB_ODREDBI",
+       "TUMACENJE_ZAGRADE"
+      ],
+      "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+      "vrijednost": "dvojna: jednom stranom; ugrađena: s dvije ili tri strane"
+     },
+     {
+      "id": "33.2.0.0.1.4",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "H_NIJE_DEFINIRAN",
+       "POJAM_NIJE_DEFINIRAN",
+       "RAZLICITE_REFERENTNE_TOCKE"
+      ],
+      "parametar": "najmanja udaljenost istaka od granice susjedne građevine",
+      "vrijednost": "h/2"
+     },
+     {
+      "id": "33.2.0.0.1.5",
+      "oznaka": "R026",
+      "jednoznacnost_oznake": "PREGLED",
+      "razlog_kod": [
+       "GRANICA_CESTICE_NERAZGRANICENA",
+       "RAZLICITE_REFERENTNE_TOCKE",
+       "VEZNIK_DVOSMISLEN"
+      ],
+      "parametar": "najmanja udaljenost istaka od granice građevne čestice",
+      "vrijednost": 4.0
+     },
+     {
+      "id": "33.2.0.0.2.6",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "GRANICA_CESTICE_NERAZGRANICENA",
+       "NEGATIVNI_UVJET_NEPOTPUN",
+       "ODNOS_PREMA_FORMULI_NEJASAN",
+       "OPSEG_PROCELJA"
+      ],
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "vrijednost": 3.0
+     },
+     {
+      "id": "33.3.0.0.1.7",
+      "oznaka": "R028",
+      "jednoznacnost_oznake": "PREGLED",
+      "razlog_kod": [
+       "GRANICA_CESTICE_NERAZGRANICENA",
+       "H_NIJE_DEFINIRAN",
+       "POJAM_VARIJANTA",
+       "UVJET_SAMO_ZA_X",
+       "VEZNIK_DVOSMISLEN"
+      ],
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "vrijednost": 3.0
+     },
+     {
+      "id": "33.3.0.0.2.8",
+      "oznaka": "R029",
+      "jednoznacnost_oznake": "PREGLED",
+      "razlog_kod": [
+       "GRANICA_CESTICE_NERAZGRANICENA",
+       "NEGATIVNI_UVJET_NEPOTPUN",
+       "ODNOS_PREMA_FORMULI_NEJASAN",
+       "OPSEG_PROCELJA"
+      ],
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "vrijednost": 2.0
+     },
+     {
+      "id": "33.4.0.0.1.9",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "MOGUC_SUKOB_ODREDBI",
+       "TUMACENJE_ZAGRADE"
+      ],
+      "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+      "vrijednost": "dvojna: jednom stranom; ugrađena: s dvije ili tri strane"
+     },
+     {
+      "id": "33.4.0.0.1.10",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "H_NIJE_DEFINIRAN",
+       "POJAM_NIJE_DEFINIRAN",
+       "RAZLICITE_REFERENTNE_TOCKE"
+      ],
+      "parametar": "najmanja udaljenost istaka od granice susjedne građevine",
+      "vrijednost": "h/2"
+     },
+     {
+      "id": "33.4.0.0.1.11",
+      "oznaka": "R031",
+      "jednoznacnost_oznake": "PREGLED",
+      "razlog_kod": [
+       "GRANICA_CESTICE_NERAZGRANICENA",
+       "RAZLICITE_REFERENTNE_TOCKE",
+       "VEZNIK_DVOSMISLEN"
+      ],
+      "parametar": "najmanja udaljenost istaka od granice građevne čestice",
+      "vrijednost": 3.0
+     },
+     {
+      "id": "33.4.0.0.2.12",
+      "oznaka": "R032",
+      "jednoznacnost_oznake": "PREGLED",
+      "razlog_kod": [
+       "GRANICA_CESTICE_NERAZGRANICENA",
+       "NEGATIVNI_UVJET_NEPOTPUN",
+       "ODNOS_PREMA_FORMULI_NEJASAN",
+       "OPSEG_PROCELJA"
+      ],
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "vrijednost": 2.0
+     }
+    ],
+    "tocno_uz_granularnost": [
+     {
+      "id": "25.2.-.5.1.16",
+      "oznaka": "R015",
+      "pravila": [
+       "ALTERNATIVA_NIJE_VRSTA_v1"
+      ]
+     },
+     {
+      "id": "25.2.-.5.1.17",
+      "oznaka": "R016",
+      "pravila": [
+       "ALTERNATIVA_UZ_UVJET"
+      ]
+     }
+    ],
+    "propusteno": [
+     {
+      "oznaka": "R008",
+      "parametar": "način gradnje",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "25.1.h.0.1.8",
+       [
+        "operator",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R009",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "25.2.0.0.1.10",
+       [
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R020",
+      "parametar": "rekonstrukcija i prenamjena",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "25.2.-.7.1.22",
+       [
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R021",
+      "parametar": "gabariti pri rekonstrukciji",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "25.2.-.7.2.23",
+       [
+        "operator"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R022",
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "33.1.0.0.1.1",
+       [
+        "vrsta_pravila"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R023",
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "33.1.0.0.2.2",
+       [
+        "vrsta_pravila"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R024",
+      "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "33.2.0.0.1.3",
+       [
+        "operator",
+        "vrsta_pravila",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R025",
+      "parametar": "najmanja udaljenost istaka od granice susjedne građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "33.2.0.0.1.5",
+       [
+        "operator",
+        "parametar"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R027",
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "33.2.0.0.2.6",
+       [
+        "vrsta_pravila"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R030",
+      "parametar": "najmanja udaljenost istaka od granice susjedne građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "33.4.0.0.1.10",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R033",
+      "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "33.4.0.0.1.9",
+       [
+        "operator",
+        "vrsta_pravila",
+        "vrijednost"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "G3_ppug_20_38_39_50": {
+   "sazetak": {
+    "oznaka": 77,
+    "oznaka_JASAN": 42,
+    "zapisa_modula": 12,
+    "tocno_prihvaceno": 2,
+    "tocno_uz_pravilo_granularnosti": 0,
+    "pogresno_prihvaceno": 5,
+    "pravilno_na_pregled": 0,
+    "nepotrebno_na_pregled": 0,
+    "pregled_bez_oznake": 5,
+    "propusteno": 75,
+    "preciznost_prihvacenih_strogo": 0.286,
+    "preciznost_prihvacenih": 0.286,
+    "pokrivenost_izdvajanja": 0.026,
+    "pokrivenost_prihvacanja": 0.026,
+    "pokrivenost_prihvacanja_od_JASAN": 0.048,
+    "udio_pregleda": 0.417
+   },
+   "detalji": {
+    "tocno": [
+     {
+      "id": "38.6.a.0.1.11",
+      "oznaka": "R024",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "38.6.b.0.1.12",
+      "oznaka": "R025",
+      "jednoznacnost_oznake": "JASAN"
+     }
+    ],
+    "pogresno": [
+     {
+      "id": "20.3.-.5.1.1",
+      "clanak": 20,
+      "stavak": 3,
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "vrsta_gradevine": "pomoćna građevina",
+      "operator": ">=",
+      "vrijednost": 5.0,
+      "uvjet": "",
+      "vrsta_pravila": "OSNOVNO",
+      "citat": "najmanja dopuštena udaljenost od regulacijskog pravca iznosi 5,0 metara.",
+      "najbliza_oznaka": [
+       "R013",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "id": "20.3.-.6.4.2",
+      "clanak": 20,
+      "stavak": 3,
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "vrsta_gradevine": "pomoćna građevina",
+      "operator": ">=",
+      "vrijednost": 4.0,
+      "uvjet": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+      "vrsta_pravila": "IZNIMKA",
+      "citat": "Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 4,0 metra.",
+      "najbliza_oznaka": [
+       "R018",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "id": "39.2.-.5.1.1",
+      "clanak": 39,
+      "stavak": 2,
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "vrsta_gradevine": "pomoćna građevina",
+      "operator": ">=",
+      "vrijednost": 5.0,
+      "uvjet": "",
+      "vrsta_pravila": "OSNOVNO",
+      "citat": "najmanja dopuštena udaljenost od regulacijskog pravca iznosi 5,0 metara.",
+      "najbliza_oznaka": [
+       "R044",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "id": "50.4.-.5.1.1",
+      "clanak": 50,
+      "stavak": 4,
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "vrsta_gradevine": "pomoćna građevina",
+      "operator": ">=",
+      "vrijednost": 5.0,
+      "uvjet": "",
+      "vrsta_pravila": "OSNOVNO",
+      "citat": "najmanja dopuštena udaljenost od regulacijskog pravca iznosi 5,0 metara.",
+      "najbliza_oznaka": [
+       "R067",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "id": "50.4.-.6.4.2",
+      "clanak": 50,
+      "stavak": 4,
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "vrsta_gradevine": "pomoćna građevina",
+      "operator": ">=",
+      "vrijednost": 4.0,
+      "uvjet": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+      "vrsta_pravila": "IZNIMKA",
+      "citat": "Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 4,0 metra.",
+      "najbliza_oznaka": [
+       "R072",
+       [
+        "uvjet"
+       ]
+      ]
+     }
+    ],
+    "pregled": [
+     {
+      "id": "20.3.-.8.1.3",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "TIPOGRAFSKA_POGRESKA",
+       "UPUCIVANJE_OPCE"
+      ],
+      "parametar": "rekonstrukcija i prenamjena",
+      "vrijednost": null
+     },
+     {
+      "id": "39.2.-.8.1.2",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "TIPOGRAFSKA_POGRESKA",
+       "UPUCIVANJE_OPCE"
+      ],
+      "parametar": "rekonstrukcija i prenamjena",
+      "vrijednost": null
+     },
+     {
+      "id": "39.2.-.8.2.3",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "OPSEG_NEODREDEN"
+      ],
+      "parametar": "gabariti pri rekonstrukciji",
+      "vrijednost": "samo u postojećim tlocrtnim i visinskim gabaritima"
+     },
+     {
+      "id": "50.4.-.8.1.3",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "TIPOGRAFSKA_POGRESKA",
+       "UPUCIVANJE_OPCE"
+      ],
+      "parametar": "rekonstrukcija i prenamjena",
+      "vrijednost": null
+     },
+     {
+      "id": "50.4.-.8.2.4",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "OPSEG_NEODREDEN"
+      ],
+      "parametar": "gabariti pri rekonstrukciji",
+      "vrijednost": "samo u postojećim tlocrtnim i visinskim gabaritima"
+     }
+    ],
+    "tocno_uz_granularnost": [],
+    "propusteno": [
+     {
+      "oznaka": "R001",
+      "parametar": "najveći broj etaža",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "20.3.-.5.1.1",
+       [
+        "tocka",
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R002",
+      "parametar": "najveća visina građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "20.3.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R003",
+      "parametar": "najveća visina građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "20.3.-.5.1.1",
+       [
+        "operator",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R004",
+      "parametar": "najveća površina tlocrtne projekcije građevine",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "20.3.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R005",
+      "parametar": "oblik krovišta",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "20.3.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R006",
+      "parametar": "vrsta kosog krovišta",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "20.3.-.8.1.3",
+       [
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R007",
+      "parametar": "nagib krovnih ploha",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "20.3.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R008",
+      "parametar": "vrsta pokrova",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "20.3.-.8.1.3",
+       [
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R009",
+      "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "20.3.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R010",
+      "parametar": "drugo: odvajanje od susjedne građevine vatrobranim zidom",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "20.3.-.8.1.3",
+       [
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R011",
+      "parametar": "drugo: smjer nagiba krova",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "20.3.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R012",
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "20.3.-.6.4.2",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R013",
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "20.3.-.5.1.1",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R014",
+      "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "20.3.-.6.4.2",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R015",
+      "parametar": "drugo: odvajanje od susjedne građevine vatrobranim zidom",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "20.3.-.6.4.2",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R016",
+      "parametar": "drugo: smjer nagiba krova",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "20.3.-.6.4.2",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R017",
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "20.3.-.6.4.2",
+       [
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R018",
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "20.3.-.6.4.2",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R019",
+      "parametar": "drugo: gradnja na regulacijskom pravcu",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "20.3.-.8.1.3",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R020",
+      "parametar": "najveća visina građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "20.3.-.5.1.1",
+       [
+        "operator",
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R021",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "20.3.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R022",
+      "parametar": "rekonstrukcija i prenamjena",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "20.3.-.8.1.3",
+       [
+        "vrsta_pravila",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R023",
+      "parametar": "gabariti pri rekonstrukciji",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "20.3.-.8.1.3",
+       [
+        "operator",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R026",
+      "parametar": "najveći koeficijent iskoristivosti (kis)",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "38.6.a.0.1.11",
+       [
+        "tocka",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R027",
+      "parametar": "drugo: koeficijent iskoristivosti (kis) potpuno ukopane etaže",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "38.6.a.0.1.11",
+       [
+        "tocka",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R028",
+      "parametar": "najveći broj etaža",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "38.6.a.0.1.11",
+       [
+        "tocka",
+        "jedinica",
+        "parametar",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R029",
+      "parametar": "najveća visina građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "38.6.a.0.1.11",
+       [
+        "tocka",
+        "jedinica",
+        "parametar",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R030",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "38.6.a.0.1.11",
+       [
+        "tocka",
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R031",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "38.6.a.0.1.11",
+       [
+        "tocka",
+        "operator",
+        "jedinica",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R032",
+      "parametar": "najveći broj etaža",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "39.2.-.5.1.1",
+       [
+        "tocka",
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R033",
+      "parametar": "najveća visina građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "39.2.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R034",
+      "parametar": "najveća visina građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "39.2.-.5.1.1",
+       [
+        "operator",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R035",
+      "parametar": "najveća površina tlocrtne projekcije građevine",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "39.2.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R036",
+      "parametar": "oblik krovišta",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "39.2.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R037",
+      "parametar": "vrsta kosog krovišta",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "39.2.-.8.1.2",
+       [
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R038",
+      "parametar": "nagib krovnih ploha",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "39.2.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R039",
+      "parametar": "vrsta pokrova",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "39.2.-.8.1.2",
+       [
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R040",
+      "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "39.2.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R041",
+      "parametar": "drugo: odvajanje od susjedne građevine vatrobranim zidom",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "39.2.-.8.1.2",
+       [
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R042",
+      "parametar": "drugo: smjer nagiba krova",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "39.2.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R043",
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "39.2.-.5.1.1",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R044",
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "39.2.-.5.1.1",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R045",
+      "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "39.2.-.8.1.2",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R046",
+      "parametar": "drugo: odvajanje od susjedne građevine vatrobranim zidom",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "39.2.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R047",
+      "parametar": "drugo: smjer nagiba krova",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "39.2.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R048",
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "39.2.-.5.1.1",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R049",
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "39.2.-.5.1.1",
+       [
+        "vrsta_pravila",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R050",
+      "parametar": "drugo: gradnja na regulacijskom pravcu",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "39.2.-.8.1.2",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R051",
+      "parametar": "najveća visina građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "39.2.-.8.2.3",
+       [
+        "jedinica",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R052",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "39.2.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R053",
+      "parametar": "rekonstrukcija i prenamjena",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "39.2.-.8.1.2",
+       [
+        "vrsta_pravila",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R054",
+      "parametar": "gabariti pri rekonstrukciji",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "39.2.-.8.2.3",
+       [
+        "operator",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R055",
+      "parametar": "najveći broj etaža",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "50.4.-.5.1.1",
+       [
+        "tocka",
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R056",
+      "parametar": "najveća visina građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "50.4.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R057",
+      "parametar": "najveća visina građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "50.4.-.5.1.1",
+       [
+        "operator",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R058",
+      "parametar": "najveća površina tlocrtne projekcije građevine",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "50.4.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R059",
+      "parametar": "oblik krovišta",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "50.4.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R060",
+      "parametar": "vrsta kosog krovišta",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "50.4.-.8.1.3",
+       [
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R061",
+      "parametar": "nagib krovnih ploha",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "50.4.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R062",
+      "parametar": "vrsta pokrova",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "50.4.-.8.1.3",
+       [
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R063",
+      "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "50.4.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R064",
+      "parametar": "drugo: odvajanje od susjedne građevine vatrobranim zidom",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "50.4.-.8.1.3",
+       [
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R065",
+      "parametar": "drugo: smjer nagiba krova",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "50.4.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R066",
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "50.4.-.6.4.2",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R067",
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "50.4.-.5.1.1",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R068",
+      "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "50.4.-.6.4.2",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R069",
+      "parametar": "drugo: odvajanje od susjedne građevine vatrobranim zidom",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "50.4.-.6.4.2",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R070",
+      "parametar": "drugo: smjer nagiba krova",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "50.4.-.6.4.2",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R071",
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "50.4.-.6.4.2",
+       [
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R072",
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "50.4.-.6.4.2",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R073",
+      "parametar": "drugo: gradnja na regulacijskom pravcu",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "50.4.-.8.1.3",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R074",
+      "parametar": "najveća visina građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "50.4.-.8.2.4",
+       [
+        "jedinica",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R075",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "50.4.-.5.1.1",
+       [
+        "operator",
+        "jedinica",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R076",
+      "parametar": "rekonstrukcija i prenamjena",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "50.4.-.8.1.3",
+       [
+        "vrsta_pravila",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R077",
+      "parametar": "gabariti pri rekonstrukciji",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "50.4.-.8.2.4",
+       [
+        "operator",
+        "uvjet"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "G4_upu1_14": {
+   "sazetak": {
+    "oznaka": 34,
+    "oznaka_JASAN": 13,
+    "zapisa_modula": 15,
+    "tocno_prihvaceno": 6,
+    "tocno_uz_pravilo_granularnosti": 0,
+    "pogresno_prihvaceno": 1,
+    "pravilno_na_pregled": 2,
+    "nepotrebno_na_pregled": 1,
+    "pregled_bez_oznake": 5,
+    "propusteno": 25,
+    "preciznost_prihvacenih_strogo": 0.857,
+    "preciznost_prihvacenih": 0.857,
+    "pokrivenost_izdvajanja": 0.265,
+    "pokrivenost_prihvacanja": 0.176,
+    "pokrivenost_prihvacanja_od_JASAN": 0.462,
+    "udio_pregleda": 0.533
+   },
+   "detalji": {
+    "tocno": [
+     {
+      "id": "14.0.-.4.1.1",
+      "oznaka": "R014",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "14.0.-.5.1.2",
+      "oznaka": "R015",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "14.0.-.6.1.3",
+      "oznaka": "R016",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "14.0.-.6.1.4",
+      "oznaka": "R017",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "14.0.-.8.1.7",
+      "oznaka": "R020",
+      "jednoznacnost_oznake": "PREGLED"
+     },
+     {
+      "id": "14.0.-.11.1.10",
+      "oznaka": "R023",
+      "jednoznacnost_oznake": "JASAN"
+     }
+    ],
+    "pogresno": [
+     {
+      "id": "14.0.-.13.7.14",
+      "clanak": 14,
+      "stavak": null,
+      "parametar": "najveća površina tlocrtne projekcije građevine",
+      "vrsta_gradevine": "sportsko-rekreacijska građevina",
+      "operator": "<=",
+      "vrijednost": 400.0,
+      "uvjet": "na dijelu ili na čitavoj k.č 3932/1 k.o. Krk-grad",
+      "vrsta_pravila": "IZNIMKA",
+      "citat": "Najveća dopuštena tlocrtna projekcija građevine iznosi 400 m 2 .",
+      "najbliza_oznaka": [
+       "R031",
+       [
+        "vrsta_gradevine"
+       ]
+      ]
+     }
+    ],
+    "pregled": [
+     {
+      "id": "14.0.-.7.1.5",
+      "oznaka": "R018",
+      "jednoznacnost_oznake": "PREGLED",
+      "razlog_kod": [
+       "REFERENTNA_VISINA_NEPOZNATA"
+      ],
+      "parametar": "najveća visina građevine",
+      "vrijednost": 8.0
+     },
+     {
+      "id": "14.0.-.7.1.6",
+      "oznaka": "R019",
+      "jednoznacnost_oznake": "PREGLED",
+      "razlog_kod": [
+       "ZAGRADA_OBJASNJENJE"
+      ],
+      "parametar": "najveći broj etaža",
+      "vrijednost": "potpuno ukopan podrum i 2 nadzemne etaže"
+     },
+     {
+      "id": "14.0.-.9.1.8",
+      "oznaka": "R021",
+      "jednoznacnost_oznake": "JASAN",
+      "razlog_kod": [
+       "GRANICA_CESTICE_NERAZGRANICENA"
+      ],
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "vrijednost": 6.0
+     },
+     {
+      "id": "14.0.-.10.1.9",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "H_NIJE_DEFINIRAN"
+      ],
+      "parametar": "najmanja udaljenost između građevina na istoj čestici",
+      "vrijednost": 6.0
+     },
+     {
+      "id": "14.0.-.13.1.11",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "DIO_ODREDBE_NEPREPOZNAT"
+      ],
+      "parametar": "oblik krovišta",
+      "vrijednost": "ravno ili koso"
+     },
+     {
+      "id": "14.0.-.13.8.15",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "REFERENTNA_VISINA_NEPOZNATA"
+      ],
+      "parametar": "najveća visina građevine",
+      "vrijednost": 8.0
+     },
+     {
+      "id": "14.0.-.13.8.16",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "ZAGRADA_OBJASNJENJE"
+      ],
+      "parametar": "najveći broj etaža",
+      "vrijednost": "dvije nadzemne etaže"
+     },
+     {
+      "id": "14.0.-.13.1.12",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "DIO_ODREDBE_NEPREPOZNAT",
+       "NAGIB_UZ_KOSO_TUMACENJE"
+      ],
+      "parametar": "nagib krovnih ploha",
+      "vrijednost": "17–23"
+     }
+    ],
+    "tocno_uz_granularnost": [],
+    "propusteno": [
+     {
+      "oznaka": "R001",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "14.0.-.10.1.9",
+       [
+        "tocka",
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R002",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "14.0.-.10.1.9",
+       [
+        "tocka",
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R003",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.10.1.9",
+       [
+        "tocka",
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R004",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "14.0.-.10.1.9",
+       [
+        "tocka",
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R005",
+      "parametar": "drugo: kategorija uređenosti građevinskog zemljišta",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.7.1.6",
+       [
+        "tocka",
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R006",
+      "parametar": "drugo: smještaj parkirališnih/garažnih mjesta",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.7.1.6",
+       [
+        "tocka",
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R007",
+      "parametar": "drugo: najmanji udio zelenila u izdvojenom građevinskom području",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.11.1.10",
+       [
+        "tocka",
+        "parametar",
+        "vrsta_gradevine",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R008",
+      "parametar": "drugo: najveća ukupna tlocrtna bruto površina zatvorenih i natkrivenih građevina",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.11.1.10",
+       [
+        "tocka",
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R009",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.10.1.9",
+       [
+        "tocka",
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R010",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.13.1.11",
+       [
+        "jedinica",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R011",
+      "parametar": "drugo: namjena građevine",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "14.0.-.7.1.6",
+       [
+        "operator",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R012",
+      "parametar": "drugo: smještaj pratećih sadržaja",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.13.1.11",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R013",
+      "parametar": "drugo: broj građevina na građevnoj čestici",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.13.1.11",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R022",
+      "parametar": "najmanja udaljenost između građevina na istoj čestici",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "14.0.-.10.1.9",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R024",
+      "parametar": "drugo: oblikovanje građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.7.1.6",
+       [
+        "operator",
+        "parametar",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R025",
+      "parametar": "oblik krovišta",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.13.1.11",
+       [
+        "vrsta_pravila",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R026",
+      "parametar": "nagib krovnih ploha",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.13.1.12",
+       [
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R027",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.10.1.9",
+       [
+        "operator",
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R028",
+      "parametar": "rekonstrukcija i prenamjena",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "14.0.-.13.1.11",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R029",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.13.1.11",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R030",
+      "parametar": "drugo: proširenje građevne čestice na susjedne čestice",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.13.8.16",
+       [
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R031",
+      "parametar": "najveća površina tlocrtne projekcije građevine",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "14.0.-.13.7.14",
+       [
+        "vrsta_gradevine"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R032",
+      "parametar": "najveća visina građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.13.8.15",
+       [
+        "vrsta_gradevine"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R033",
+      "parametar": "najveći broj etaža",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.13.8.16",
+       [
+        "vrsta_gradevine"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R034",
+      "parametar": "drugo: ostali uvjeti gradnje",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "14.0.-.13.8.16",
+       [
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "G5_upu1_24": {
+   "sazetak": {
+    "oznaka": 63,
+    "oznaka_JASAN": 36,
+    "zapisa_modula": 15,
+    "tocno_prihvaceno": 6,
+    "tocno_uz_pravilo_granularnosti": 2,
+    "pogresno_prihvaceno": 2,
+    "pravilno_na_pregled": 0,
+    "nepotrebno_na_pregled": 1,
+    "pregled_bez_oznake": 4,
+    "propusteno": 54,
+    "preciznost_prihvacenih_strogo": 0.6,
+    "preciznost_prihvacenih": 0.8,
+    "pokrivenost_izdvajanja": 0.143,
+    "pokrivenost_prihvacanja": 0.127,
+    "pokrivenost_prihvacanja_od_JASAN": 0.222,
+    "udio_pregleda": 0.333
+   },
+   "detalji": {
+    "tocno": [
+     {
+      "id": "24.0.b3.-.1.1.1",
+      "oznaka": "R011",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "24.0.b6.-.1.1.10",
+      "oznaka": "R040",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "24.0.b7.-.2.1.11",
+      "oznaka": "R049",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "24.0.b7.-.3.1.16",
+      "oznaka": "R053",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "24.0.b7.-.5.1.17",
+      "oznaka": "R058",
+      "jednoznacnost_oznake": "JASAN"
+     },
+     {
+      "id": "24.0.b7.-.3.1.14",
+      "oznaka": "R052",
+      "jednoznacnost_oznake": "JASAN"
+     }
+    ],
+    "pogresno": [
+     {
+      "id": "24.0.b3.-.4.1.3",
+      "clanak": 24,
+      "stavak": null,
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "vrsta_gradevine": "hotel",
+      "operator": ">=",
+      "vrijednost": 4.0,
+      "uvjet": "za ostale (pristupne) ceste i ulice",
+      "vrsta_pravila": "UVJETNO",
+      "citat": "Udaljenost građevine osnovne namjene od regulacijskog pravca za ostale (pristupne) ceste i ulice ne može biti manja od 4,0 m, a za razvrstane ceste ne može biti manja od 6,0 m.",
+      "najbliza_oznaka": [
+       "R023",
+       [
+        "vrsta_pravila"
+       ]
+      ]
+     },
+     {
+      "id": "24.0.b3.-.4.1.4",
+      "clanak": 24,
+      "stavak": null,
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "vrsta_gradevine": "hotel",
+      "operator": ">=",
+      "vrijednost": 6.0,
+      "uvjet": "za razvrstane ceste",
+      "vrsta_pravila": "UVJETNO",
+      "citat": "Udaljenost građevine osnovne namjene od regulacijskog pravca za ostale (pristupne) ceste i ulice ne može biti manja od 4,0 m, a za razvrstane ceste ne može biti manja od 6,0 m.",
+      "najbliza_oznaka": [
+       "R024",
+       [
+        "vrsta_pravila"
+       ]
+      ]
+     }
+    ],
+    "pregled": [
+     {
+      "id": "24.0.b3.-.2.1.2",
+      "oznaka": "R012",
+      "jednoznacnost_oznake": "JASAN",
+      "razlog_kod": [
+       "NEISKORISTENI_BROJEVI",
+       "PREDMET_NEPOZNAT"
+      ],
+      "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+      "vrijednost": 1.0
+     },
+     {
+      "id": "24.0.b3.-.5.3.5",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "GRANICA_CESTICE_NERAZGRANICENA",
+       "H_NIJE_DEFINIRAN"
+      ],
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "vrijednost": 6.0
+     },
+     {
+      "id": "24.0.b3.-.5.4.6",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "H_NIJE_DEFINIRAN"
+      ],
+      "parametar": "najmanja udaljenost između građevina na istoj čestici",
+      "vrijednost": 6.0
+     },
+     {
+      "id": "24.0.b4.-.1.1.7",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "DIO_ODREDBE_NEPREPOZNAT"
+      ],
+      "parametar": "oblik krovišta",
+      "vrijednost": "ravno ili koso"
+     },
+     {
+      "id": "24.0.b4.-.1.1.8",
+      "oznaka": null,
+      "jednoznacnost_oznake": null,
+      "razlog_kod": [
+       "DIO_ODREDBE_NEPREPOZNAT",
+       "NAGIB_UZ_KOSO_TUMACENJE"
+      ],
+      "parametar": "nagib krovnih ploha",
+      "vrijednost": "17–23"
+     }
+    ],
+    "tocno_uz_granularnost": [
+     {
+      "id": "24.0.b7.-.3.1.12",
+      "oznaka": "R050",
+      "pravila": [
+       "ALTERNATIVA_NIJE_VRSTA_v1"
+      ]
+     },
+     {
+      "id": "24.0.b7.-.3.1.13",
+      "oznaka": "R051",
+      "pravila": [
+       "ALTERNATIVA_UZ_UVJET"
+      ]
+     }
+    ],
+    "propusteno": [
+     {
+      "oznaka": "R001",
+      "parametar": "rekonstrukcija i prenamjena",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b4.-.1.1.7",
+       [
+        "tocka",
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R002",
+      "parametar": "drugo: smanjenje površine građevne čestice",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b4.-.1.1.7",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R003",
+      "parametar": "najveća površina građevne čestice",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b3.-.1.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R004",
+      "parametar": "drugo: način određivanja površine građevne čestice",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b3.-.1.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R005",
+      "parametar": "rekonstrukcija i prenamjena",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b4.-.1.1.7",
+       [
+        "operator",
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R006",
+      "parametar": "rekonstrukcija i prenamjena",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b4.-.1.1.7",
+       [
+        "operator",
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R007",
+      "parametar": "rekonstrukcija i prenamjena",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b4.-.1.1.7",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R008",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b4.-.1.1.7",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R009",
+      "parametar": "rekonstrukcija i prenamjena",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b4.-.1.1.7",
+       [
+        "tocka",
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R010",
+      "parametar": "drugo: broj građevina na građevnoj čestici",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b4.-.1.1.7",
+       [
+        "tocka",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R013",
+      "parametar": "najveći koeficijent iskoristivosti (kis)",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b3.-.1.1.1",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R014",
+      "parametar": "drugo: najveći koeficijent iskoristivosti (kis) potpuno ukopanog podruma",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b3.-.1.1.1",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R015",
+      "parametar": "drugo: gustoća korištenja",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b7.-.3.1.16",
+       [
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R016",
+      "parametar": "najveći koeficijent izgrađenosti (kig)",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b3.-.1.1.1",
+       [
+        "jedinica",
+        "vrsta_pravila",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R017",
+      "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b3.-.2.1.2",
+       [
+        "jedinica",
+        "vrsta_pravila",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R018",
+      "parametar": "gabariti pri rekonstrukciji",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b4.-.1.1.7",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R019",
+      "parametar": "najveća visina građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b3.-.4.1.3",
+       [
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R020",
+      "parametar": "najveći broj etaža",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b7.-.3.1.16",
+       [
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R021",
+      "parametar": "gabariti pri rekonstrukciji",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b4.-.1.1.7",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R022",
+      "parametar": "najveća visina građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b3.-.4.1.3",
+       [
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R023",
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b3.-.4.1.3",
+       [
+        "vrsta_pravila"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R024",
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b3.-.4.1.4",
+       [
+        "vrsta_pravila"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R025",
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b3.-.4.1.3",
+       [
+        "jedinica",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R026",
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b3.-.4.1.3",
+       [
+        "jedinica",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R027",
+      "parametar": "najmanja udaljenost od regulacijskog pravca",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b3.-.4.1.3",
+       [
+        "operator",
+        "jedinica",
+        "vrsta_pravila",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R028",
+      "parametar": "položaj građevnog pravca",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b7.-.3.1.16",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R029",
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b3.-.5.3.5",
+       [
+        "vrsta_gradevine"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R030",
+      "parametar": "najmanja udaljenost između građevina na istoj čestici",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b3.-.5.4.6",
+       [
+        "vrsta_gradevine"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R031",
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b3.-.4.1.3",
+       [
+        "jedinica",
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R032",
+      "parametar": "najmanja udaljenost između građevina na istoj čestici",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b3.-.4.1.3",
+       [
+        "jedinica",
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R033",
+      "parametar": "drugo: udaljenosti pri dogradnji",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b7.-.3.1.16",
+       [
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R034",
+      "parametar": "drugo: oblikovanje građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b3.-.1.1.1",
+       [
+        "tocka",
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R035",
+      "parametar": "oblik krovišta",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b4.-.1.1.7",
+       [
+        "vrsta_pravila",
+        "vrsta_gradevine"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R036",
+      "parametar": "nagib krovnih ploha",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b4.-.1.1.8",
+       [
+        "vrsta_gradevine",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R037",
+      "parametar": "vrsta pokrova",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b3.-.1.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R038",
+      "parametar": "drugo: priključenje na prometnu infrastrukturu",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b3.-.1.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R039",
+      "parametar": "drugo: priključenje na komunalnu infrastrukturu",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b3.-.1.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R041",
+      "parametar": "drugo: sadržaji uređenja građevne čestice",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b4.-.1.1.7",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R042",
+      "parametar": "drugo: najveća visina podzida",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b3.-.4.1.3",
+       [
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R043",
+      "parametar": "drugo: smještaj parkirališnih mjesta",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b3.-.1.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R044",
+      "parametar": "drugo: uvjeti parkiranja kod rekonstrukcije",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b7.-.3.1.16",
+       [
+        "operator",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R045",
+      "parametar": "dopuštenost gradnje",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b7.-.3.1.12",
+       [
+        "tocka",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R046",
+      "parametar": "najveća visina građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b7.-.2.1.11",
+       [
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R047",
+      "parametar": "najveća visina građevine",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b7.-.2.1.11",
+       [
+        "jedinica",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R048",
+      "parametar": "najveći broj etaža",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b3.-.2.1.2",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrsta_gradevine"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R054",
+      "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b7.-.3.1.12",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R055",
+      "parametar": "drugo: odvajanje vatrobranim zidom",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b7.-.3.1.16",
+       [
+        "operator",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R056",
+      "parametar": "drugo: smjer nagiba krova",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b7.-.3.1.12",
+       [
+        "operator",
+        "vrsta_pravila",
+        "parametar",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R057",
+      "parametar": "najmanja udaljenost od granice građevne čestice",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b3.-.4.1.3",
+       [
+        "parametar",
+        "vrsta_gradevine",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R059",
+      "parametar": "drugo: gradnja na regulacijskom pravcu",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b4.-.1.1.7",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R060",
+      "parametar": "drugo: završna kota ravnog krova iznad nivelete ulice",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b3.-.1.1.1",
+       [
+        "jedinica",
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R061",
+      "parametar": "rekonstrukcija i prenamjena",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b4.-.1.1.7",
+       [
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R062",
+      "parametar": "gabariti pri rekonstrukciji",
+      "jednoznacnost": "JASAN",
+      "najblizi_zapis": [
+       "24.0.b3.-.1.1.1",
+       [
+        "jedinica",
+        "vrsta_pravila",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     },
+     {
+      "oznaka": "R063",
+      "parametar": "drugo: mjere zaštite okoliša",
+      "jednoznacnost": "PREGLED",
+      "najblizi_zapis": [
+       "24.0.b3.-.1.1.1",
+       [
+        "operator",
+        "jedinica",
+        "parametar",
+        "vrsta_gradevine",
+        "vrijednost",
+        "uvjet"
+       ]
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "pravno_potvrdeno": 0,
+ "ukupno": {
+  "oznaka": 268,
+  "oznaka_JASAN": 152,
+  "zapisa_modula": 131,
+  "tocno_prihvaceno": 31,
+  "tocno_uz_pravilo_granularnosti": 30,
+  "pogresno_prihvaceno": 16,
+  "pravilno_na_pregled": 14,
+  "nepotrebno_na_pregled": 4,
+  "pregled_bez_oznake": 36,
+  "propusteno": 189,
+  "preciznost_prihvacenih_strogo": 0.403,
+  "preciznost_prihvacenih": 0.792,
+  "pokrivenost_izdvajanja": 0.295,
+  "pokrivenost_prihvacanja": 0.228,
+  "pokrivenost_prihvacanja_od_JASAN": 0.401,
+  "udio_pregleda": 0.412
+ }
+}
