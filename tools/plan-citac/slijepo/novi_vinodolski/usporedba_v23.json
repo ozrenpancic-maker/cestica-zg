@@ -1,0 +1,2010 @@
+{
+ "plan": "UPU naselja Novi Vinodolski (SN PGŽ 32/2026, pročišćeni tekst odredbi)",
+ "clanci": [
+  19,
+  20,
+  23,
+  24
+ ],
+ "ukupno": {
+  "oznaka": 151,
+  "zapisa_modula": 3,
+  "tocno_prihvaceno": 0,
+  "tocno_uz_pravilo_granularnosti": 0,
+  "pogresno_prihvaceno": 1,
+  "pravilno_na_pregled": 0,
+  "nepotrebno_na_pregled": 0,
+  "pregled_bez_oznake": 2,
+  "propusteno": 151,
+  "preciznost_prihvacenih_strogo": 0.0,
+  "preciznost_prihvacenih": 0.0,
+  "pokrivenost_izdvajanja": 0.0,
+  "pokrivenost_prihvacanja": 0.0,
+  "udio_pregleda": 0.667
+ },
+ "po_clanku": {
+  "19": {
+   "oznaka": 63,
+   "zapisa_modula": 0,
+   "tocno_prihvaceno": 0,
+   "tocno_uz_pravilo_granularnosti": 0,
+   "pogresno_prihvaceno": 0,
+   "pravilno_na_pregled": 0,
+   "nepotrebno_na_pregled": 0,
+   "pregled_bez_oznake": 0,
+   "propusteno": 63,
+   "preciznost_prihvacenih_strogo": null,
+   "preciznost_prihvacenih": null,
+   "pokrivenost_izdvajanja": 0.0,
+   "pokrivenost_prihvacanja": 0.0,
+   "udio_pregleda": null
+  },
+  "20": {
+   "oznaka": 34,
+   "zapisa_modula": 3,
+   "tocno_prihvaceno": 0,
+   "tocno_uz_pravilo_granularnosti": 0,
+   "pogresno_prihvaceno": 1,
+   "pravilno_na_pregled": 0,
+   "nepotrebno_na_pregled": 0,
+   "pregled_bez_oznake": 2,
+   "propusteno": 34,
+   "preciznost_prihvacenih_strogo": 0.0,
+   "preciznost_prihvacenih": 0.0,
+   "pokrivenost_izdvajanja": 0.0,
+   "pokrivenost_prihvacanja": 0.0,
+   "udio_pregleda": 0.667
+  },
+  "23": {
+   "oznaka": 20,
+   "zapisa_modula": 0,
+   "tocno_prihvaceno": 0,
+   "tocno_uz_pravilo_granularnosti": 0,
+   "pogresno_prihvaceno": 0,
+   "pravilno_na_pregled": 0,
+   "nepotrebno_na_pregled": 0,
+   "pregled_bez_oznake": 0,
+   "propusteno": 20,
+   "preciznost_prihvacenih_strogo": null,
+   "preciznost_prihvacenih": null,
+   "pokrivenost_izdvajanja": 0.0,
+   "pokrivenost_prihvacanja": 0.0,
+   "udio_pregleda": null
+  },
+  "24": {
+   "oznaka": 34,
+   "zapisa_modula": 0,
+   "tocno_prihvaceno": 0,
+   "tocno_uz_pravilo_granularnosti": 0,
+   "pogresno_prihvaceno": 0,
+   "pravilno_na_pregled": 0,
+   "nepotrebno_na_pregled": 0,
+   "pregled_bez_oznake": 0,
+   "propusteno": 34,
+   "preciznost_prihvacenih_strogo": null,
+   "preciznost_prihvacenih": null,
+   "pokrivenost_izdvajanja": 0.0,
+   "pokrivenost_prihvacanja": 0.0,
+   "udio_pregleda": null
+  }
+ },
+ "detalji": {
+  "tocno": [],
+  "pogresno": [
+   {
+    "id": "20.2.-.4.1.1",
+    "parametar": "najveći koeficijent izgrađenosti (kig)",
+    "vrijednost": 0.4,
+    "citat": "najveći dopušteni koeficijent izgrađenosti (Kig) iznosi 0,4;",
+    "najbliza_oznaka": [
+     "Z074",
+     [
+      "vrsta_gradevine"
+     ]
+    ]
+   }
+  ],
+  "pregled": [
+   {
+    "id": "20.2.-.5.1.2",
+    "oznaka": null,
+    "jednoznacnost_oznake": null,
+    "razlog_kod": [
+     "KIS_BEZ_OZNAKE"
+    ]
+   },
+   {
+    "id": "20.2.-.7.2.3",
+    "oznaka": null,
+    "jednoznacnost_oznake": null,
+    "razlog_kod": [
+     "REFERENTNA_VISINA_NEPOZNATA"
+    ]
+   }
+  ],
+  "tocno_uz_granularnost": [],
+  "propusteno": [
+   {
+    "oznaka": "Z001",
+    "parametar": "drugo: najmanja širina javne prometne površine za pristup",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z002",
+    "parametar": "drugo: najmanja širina javne prometne površine za pristup",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z003",
+    "parametar": "drugo: najmanja širina javne prometne površine za pristup",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z004",
+    "parametar": "drugo: najmanja širina postojećeg pješačkog prolaza ili stubišta za pristup",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z005",
+    "parametar": "drugo: priključenje na sustav javne odvodnje",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z006",
+    "parametar": "drugo: vlastiti zatvoreni kanalizacijski sustav",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z007",
+    "parametar": "drugo: priključenje na komunalnu infrastrukturu",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z008",
+    "parametar": "drugo: smještaj parkirališnih ili garažnih mjesta",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z009",
+    "parametar": "drugo: broj parkirališnih mjesta",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z010",
+    "parametar": "drugo: najveća udaljenost parkirališnih mjesta na drugoj čestici od građevne čestice",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z011",
+    "parametar": "drugo: najveća površina podzemnih etaža u odnosu na gradivi dio građevne čestice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z012",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z013",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z014",
+    "parametar": "drugo: uračunavanje podzemnih etaža u izgrađenost građevne čestice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z015",
+    "parametar": "dopuštenost gradnje",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z016",
+    "parametar": "drugo: namjena podzemnih etaža za javne garaže",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z017",
+    "parametar": "najmanji udio zelenila na građevnoj čestici",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z018",
+    "parametar": "drugo: uređenje ostalog dijela građevne čestice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z019",
+    "parametar": "najmanji udio zelenila na građevnoj čestici",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z020",
+    "parametar": "najmanji udio zelenila na građevnoj čestici",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z021",
+    "parametar": "drugo: zaštita zatečenog zelenila",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z022",
+    "parametar": "drugo: uređenje dijela čestice prema javno-prometnoj površini",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z023",
+    "parametar": "drugo: pojas zaštitnog zelenila prema susjednim česticama",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z024",
+    "parametar": "drugo: položaj ograde",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z025",
+    "parametar": "drugo: položaj ograde",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z026",
+    "parametar": "drugo: položaj ograde u odnosu na među",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z027",
+    "parametar": "drugo: materijal ograde",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z028",
+    "parametar": "drugo: najveća visina ograde",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z029",
+    "parametar": "drugo: materijal ograde",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z030",
+    "parametar": "drugo: najveća visina ograde",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z031",
+    "parametar": "drugo: najveća visina punog (čvrstog) dijela ograde",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z032",
+    "parametar": "drugo: izvedba ograde iznad punog dijela",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z033",
+    "parametar": "drugo: izvedba ograde",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z034",
+    "parametar": "drugo: najveća visina ograde",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z035",
+    "parametar": "drugo: oblikovanje terasa i potpornih zidova",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z036",
+    "parametar": "drugo: najveća visina podzida",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z037",
+    "parametar": "drugo: kaskadni način izgradnje",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z038",
+    "parametar": "drugo: najveća visina kaskade",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z039",
+    "parametar": "drugo: odmak kaskada (horizontalne terase)",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z040",
+    "parametar": "drugo: ozelenjavanje horizontalne terase",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z041",
+    "parametar": "drugo: podjela kaskada po visini",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z042",
+    "parametar": "drugo: najveći broj kaskada",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z043",
+    "parametar": "drugo: pokos umjesto kaskada",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z044",
+    "parametar": "drugo: kota prilaza građevnoj čestici",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z045",
+    "parametar": "drugo: prilaz vatrogasnih vozila",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z046",
+    "parametar": "dopuštenost gradnje",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z047",
+    "parametar": "drugo: uračunavanje u izgrađenost građevne čestice",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z048",
+    "parametar": "drugo: visinski položaj u odnosu na teren",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z049",
+    "parametar": "drugo: najveća visina iznad kote prirodnog terena",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z050",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z051",
+    "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z052",
+    "parametar": "drugo: prilagodba okolnom ambijentu",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z053",
+    "parametar": "drugo: oblikovanje pročelja",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z054",
+    "parametar": "oblik krovišta",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z055",
+    "parametar": "nagib krovnih ploha",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z056",
+    "parametar": "drugo: krovni prozori i krovne kućice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z057",
+    "parametar": "drugo: najveća površina pojedine krovne kućice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z058",
+    "parametar": "drugo: sunčani kolektori",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z059",
+    "parametar": "drugo: položaj sunčanih kolektora",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z060",
+    "parametar": "najmanja udaljenost između građevina na istoj čestici",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z061",
+    "parametar": "drugo: zaštita kulturnih dobara i prirodnih vrijednosti",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z062",
+    "parametar": "drugo: mjere zaštite okoliša",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z063",
+    "parametar": "drugo: uvjeti za izgradnju hostela",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z064",
+    "parametar": "dopuštenost gradnje",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "stavak",
+      "tocka",
+      "operator",
+      "jedinica",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z065",
+    "parametar": "dopuštenost gradnje",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "stavak",
+      "tocka",
+      "operator",
+      "jedinica",
+      "vrsta_pravila",
+      "parametar",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z066",
+    "parametar": "dopuštenost gradnje",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "stavak",
+      "tocka",
+      "operator",
+      "jedinica",
+      "parametar",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z067",
+    "parametar": "drugo: broj građevina osnovne namjene na građevnoj čestici",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "operator",
+      "jedinica",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z068",
+    "parametar": "dopuštenost gradnje",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "operator",
+      "jedinica",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z069",
+    "parametar": "drugo: položaj ostalih građevina na čestici",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "operator",
+      "jedinica",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z070",
+    "parametar": "drugo: položaj ostalih građevina na čestici",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "operator",
+      "jedinica",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z071",
+    "parametar": "najmanja površina građevne čestice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "operator",
+      "jedinica",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z072",
+    "parametar": "najmanja površina građevne čestice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "operator",
+      "jedinica",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z073",
+    "parametar": "najveća površina građevne čestice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "operator",
+      "jedinica",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z074",
+    "parametar": "najveći koeficijent izgrađenosti (kig)",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "vrsta_gradevine"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z075",
+    "parametar": "najveći koeficijent iskoristivosti (kis)",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.5.1.2",
+     [
+      "parametar",
+      "vrsta_gradevine"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z076",
+    "parametar": "najveći broj etaža",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "jedinica",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z077",
+    "parametar": "najveći broj etaža",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": [
+     "20.2.-.5.1.2",
+     [
+      "jedinica",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z078",
+    "parametar": "drugo: usklađenost visine s namjenom, funkcijom i tehnološkim procesom",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "operator",
+      "jedinica",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z079",
+    "parametar": "najveća visina građevine",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": [
+     "20.2.-.7.2.3",
+     [
+      "vrsta_gradevine"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z080",
+    "parametar": "drugo: najveći udio tlocrtne površine građevine veće visine",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "jedinica",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z081",
+    "parametar": "najveća visina građevine",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.7.2.3",
+     [
+      "operator",
+      "jedinica",
+      "vrsta_pravila",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z082",
+    "parametar": "drugo: neposredni pristup na prometnicu",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "operator",
+      "jedinica",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z083",
+    "parametar": "drugo: neposredni pristup na prometnicu",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "operator",
+      "jedinica",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z084",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.7.2.3",
+     [
+      "operator",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z085",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.7.2.3",
+     [
+      "operator",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z086",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": [
+     "20.2.-.7.2.3",
+     [
+      "operator",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z087",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": [
+     "20.2.-.7.2.3",
+     [
+      "operator",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z088",
+    "parametar": "dopuštenost gradnje",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "operator",
+      "jedinica",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z089",
+    "parametar": "najveći broj etaža",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.5.1.2",
+     [
+      "jedinica",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z090",
+    "parametar": "najveća površina tlocrtne projekcije građevine",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "operator",
+      "jedinica",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z091",
+    "parametar": "najveća visina građevine",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": [
+     "20.2.-.7.2.3",
+     [
+      "operator",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z092",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": [
+     "20.2.-.7.2.3",
+     [
+      "operator",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z093",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": [
+     "20.2.-.7.2.3",
+     [
+      "operator",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z094",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.7.2.3",
+     [
+      "operator",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z095",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.7.2.3",
+     [
+      "operator",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z096",
+    "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "operator",
+      "jedinica",
+      "vrsta_pravila",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost",
+      "uvjet"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z097",
+    "parametar": "drugo: primjena općih uvjeta iz članka 19.",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": [
+     "20.2.-.4.1.1",
+     [
+      "stavak",
+      "tocka",
+      "operator",
+      "jedinica",
+      "parametar",
+      "vrsta_gradevine",
+      "vrijednost"
+     ]
+    ]
+   },
+   {
+    "oznaka": "Z098",
+    "parametar": "dopuštenost gradnje",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z099",
+    "parametar": "drugo: dioba površine na manje cjeline",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z100",
+    "parametar": "drugo: broj građevina osnovne namjene",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z101",
+    "parametar": "drugo: broj etaža uređenih kao javna garaža",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z102",
+    "parametar": "drugo: najveća izgrađenost građevne čestice podzemnim etažama",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z103",
+    "parametar": "dopuštenost gradnje",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z104",
+    "parametar": "najveći koeficijent izgrađenosti (kig)",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z105",
+    "parametar": "najveći koeficijent iskoristivosti (kis)",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z106",
+    "parametar": "najveći broj etaža",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z107",
+    "parametar": "najveći broj etaža",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z108",
+    "parametar": "drugo: usklađenost visine s namjenom, funkcijom i tehnološkim procesom",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z109",
+    "parametar": "najveća visina građevine",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z110",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z111",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z112",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z113",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z114",
+    "parametar": "drugo: neposredni pristup na prometnicu",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z115",
+    "parametar": "drugo: primjena općih uvjeta iz članka 19.",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z116",
+    "parametar": "drugo: uklanjanje postojećih građevina",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z117",
+    "parametar": "drugo: zadržavanje i održavanje postojećih građevina",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z118",
+    "parametar": "dopuštenost gradnje",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z119",
+    "parametar": "drugo: dopušteni sadržaj unutar građevine",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z120",
+    "parametar": "drugo: dioba površine na manje cjeline",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z121",
+    "parametar": "drugo: broj građevina osnovne namjene",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z122",
+    "parametar": "drugo: broj građevina osnovne namjene",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z123",
+    "parametar": "najveći koeficijent izgrađenosti (kig)",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z124",
+    "parametar": "najveći koeficijent iskoristivosti (kis)",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z125",
+    "parametar": "dopuštenost gradnje",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z126",
+    "parametar": "najveći broj etaža",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z127",
+    "parametar": "najveći broj etaža",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z128",
+    "parametar": "drugo: usklađenost visine s namjenom, funkcijom i tehnološkim procesom",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z129",
+    "parametar": "najveća visina građevine",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z130",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z131",
+    "parametar": "najmanja udaljenost od regulacijskog pravca",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z132",
+    "parametar": "najmanja udaljenost od granice građevne čestice",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z133",
+    "parametar": "drugo: pristup na prometnicu",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z134",
+    "parametar": "drugo: pristup na prometnicu",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z135",
+    "parametar": "dopuštenost gradnje",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z136",
+    "parametar": "drugo: način izgradnje (čvrsta građevina)",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z137",
+    "parametar": "drugo: obrada fasade",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z138",
+    "parametar": "drugo: boja fasade",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z139",
+    "parametar": "drugo: proporcije otvora na fasadama",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z140",
+    "parametar": "oblik krovišta",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z141",
+    "parametar": "nagib krovnih ploha",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z142",
+    "parametar": "drugo: najveći udio ravnog krova",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z143",
+    "parametar": "vrsta pokrova",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z144",
+    "parametar": "drugo: uklapanje u vizuru povijesne jezgre",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z145",
+    "parametar": "drugo: primjena općih uvjeta iz članka 19.",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z146",
+    "parametar": "drugo: usklađenost visine s namjenom, funkcijom i tehnološkim procesom",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z147",
+    "parametar": "najveća visina građevine",
+    "jednoznacnost": "PREGLED",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z148",
+    "parametar": "najveći broj etaža",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z149",
+    "parametar": "najveći broj etaža",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z150",
+    "parametar": "drugo: vlastiti zatvoreni kanalizacijski sustav",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   },
+   {
+    "oznaka": "Z151",
+    "parametar": "drugo: primjena preostalih uvjeta iz stavaka 2. i 3.",
+    "jednoznacnost": "JASAN",
+    "najblizi_zapis": null
+   }
+  ]
+ },
+ "odbijeno": 9,
+ "izlaz_modula": {
+  "shema": "plan-citac-pravila/2.3",
+  "gramatika": "gramatika-v2.2",
+  "izvor": "nv_upu_sn_32_2026.html",
+  "sha256_izvora": "829aac2b45f1c0ab14b66d098cd5e5b3c06941e8b92ec28e5592508cd8f2e2f1",
+  "plan": "UPU naselja Novi Vinodolski (SN PGŽ 32/2026, pročišćeni tekst odredbi)",
+  "clanci": {
+   "19": {
+    "clanak": 19,
+    "vrste": null,
+    "pravila": [],
+    "upucivanja": [],
+    "nepokriveno": [],
+    "pregled": [
+     {
+      "razlog": "vrsta građevine iz uvodne rečenice članka nije prepoznata"
+     },
+     {
+      "razlog": "vrsta građevine iz uvoda članka nije prepoznata",
+      "razlog_kod": "SKUPINA_NEPOZNATA"
+     }
+    ]
+   },
+   "20": {
+    "clanak": 20,
+    "vrste": [
+     "poslovna"
+    ],
+    "pravila": [
+     {
+      "id": "20.2.-.4.1.1",
+      "plan": "UPU naselja Novi Vinodolski (SN PGŽ 32/2026, pročišćeni tekst odredbi)",
+      "clanak": 20,
+      "stavak": 2,
+      "blok": null,
+      "tocka": "-",
+      "alineja": 4,
+      "recenica": 1,
+      "gradjevina": "osnovna",
+      "parametar": "kig",
+      "operator": "<=",
+      "vrijednost": 0.4,
+      "jedinica": null,
+      "vrijednost_vrsta": "broj",
+      "vrste": [
+       "poslovna"
+      ],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [
+        "poslovna"
+       ],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "NIJE_NAVEDEN_U_ODREDBI",
+        "dokaz": null,
+        "utvrdjeno_na_lokaciji": false
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.2",
+      "dokaz": "najveći dopušteni koeficijent izgrađenosti (Kig) iznosi 0,4;",
+      "izvorni_citat": "najveći dopušteni koeficijent izgrađenosti (Kig) iznosi 0,4;",
+      "normalizirani_citat": "najveći dopušteni koeficijent izgrađenosti (Kig) iznosi 0,4;",
+      "normalizacija": [],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "najveći",
+        "od": 0,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 20,
+      "izvor_stavak": 2,
+      "izvor": {
+       "datoteka": "nv_upu_sn_32_2026.html",
+       "redak": 239,
+       "pomak": 1689
+      },
+      "status": "PRIJEDLOG",
+      "razlog_kod": [],
+      "razlozi": [],
+      "za_izracun": true,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PRIJEDLOG (čl. 20. st. 2. al. 4): odredba je u cijelosti raščlanjena, svi brojevi su iskorišteni i nema razloga za pregled. Uvjet primjene: nema. Primjenjivost na lokaciju nije utvrđena (potrebna kartografska podloga). Nije pravna potvrda.",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3"
+     },
+     {
+      "id": "20.2.-.5.1.2",
+      "plan": "UPU naselja Novi Vinodolski (SN PGŽ 32/2026, pročišćeni tekst odredbi)",
+      "clanak": 20,
+      "stavak": 2,
+      "blok": null,
+      "tocka": "-",
+      "alineja": 5,
+      "recenica": 1,
+      "gradjevina": "osnovna",
+      "parametar": "kis",
+      "operator": "<=",
+      "vrijednost": 2.0,
+      "jedinica": null,
+      "vrijednost_vrsta": "broj",
+      "vrste": [
+       "poslovna"
+      ],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [
+        "poslovna"
+       ],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "NIJE_NAVEDEN_U_ODREDBI",
+        "dokaz": null,
+        "utvrdjeno_na_lokaciji": false
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.2",
+      "dokaz": "najveći dopušteni koeficijent iskorištenosti (Kis) iznosi 2,0;",
+      "izvorni_citat": "najveći dopušteni koeficijent iskorištenosti (Kis) iznosi 2,0;",
+      "normalizirani_citat": "najveći dopušteni koeficijent iskorištenosti (Kis) iznosi 2,0;",
+      "normalizacija": [],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "najveći",
+        "od": 0,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 20,
+      "izvor_stavak": 2,
+      "izvor": {
+       "datoteka": "nv_upu_sn_32_2026.html",
+       "redak": 239,
+       "pomak": 1752
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "KIS_BEZ_OZNAKE"
+      ],
+      "razlozi": [
+       "koeficijent iskoristivosti bez oznake nadzemno/podrum"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 20. st. 2. al. 5): koeficijent iskoristivosti bez oznake nadzemno/podrum",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3"
+     },
+     {
+      "id": "20.2.-.7.2.3",
+      "plan": "UPU naselja Novi Vinodolski (SN PGŽ 32/2026, pročišćeni tekst odredbi)",
+      "clanak": 20,
+      "stavak": 2,
+      "blok": null,
+      "tocka": "-",
+      "alineja": 7,
+      "recenica": 2,
+      "gradjevina": "osnovna",
+      "parametar": "visinaMax",
+      "operator": "<=",
+      "vrijednost": 11.0,
+      "jedinica": "m",
+      "vrijednost_vrsta": "broj",
+      "vrste": [
+       "poslovna"
+      ],
+      "vrsta_izraz": null,
+      "oblik_izricit": false,
+      "vrsta_gradevine": {
+       "skupine": [
+        "poslovna"
+       ],
+       "oblici": null,
+       "stanje": null,
+       "uz_podrum": false
+      },
+      "vrsta_pravila": "OSNOVNO",
+      "uvjet": null,
+      "uvjet_izvorni": null,
+      "uvjeti": [],
+      "uvjet_logika": null,
+      "opseg": null,
+      "preduvjeti": [],
+      "napomena": null,
+      "formula": null,
+      "interval": null,
+      "referenca": null,
+      "alternative": null,
+      "ogranicenje": null,
+      "iskljucuje": null,
+      "zona_kod": null,
+      "prostorni_obuhvat": [
+       {
+        "vrsta": "NIJE_NAVEDEN_U_ODREDBI",
+        "dokaz": null,
+        "utvrdjeno_na_lokaciji": false
+       }
+      ],
+      "primjenjivost_na_lokaciju": "NIJE_UTVRĐENA",
+      "iznimke": [],
+      "iznimka_od": null,
+      "nerijesene_ovisnosti": [],
+      "obrazac": "gramatika-v2.2",
+      "dokaz": "visina građevina mora biti u skladu s namjenom i funkcijom građevina, te tehnološkim procesom. Najveća dopuštena visina građevine iznosi 11,0 metara. Iznimno, 10% tlocrtne površine građevine može biti i veće visine, bez ograničenja, u skladu s tehnološkim procesom građevine;",
+      "izvorni_citat": "Najveća dopuštena visina građevine iznosi 11,0 metara.",
+      "normalizirani_citat": "Najveća dopuštena visina građevine iznosi 11,0 m.",
+      "normalizacija": [
+       {
+        "pravilo": "JEDINICA_RIJEC",
+        "vrsta": "ZAPIS_JEDINICE",
+        "izvorno": " metara",
+        "novo": " m",
+        "od": 46,
+        "do": 53,
+        "izvor_pravila": "Bjelina: k) između broja i oznake mjerne jedinice: 3 kg, 2 m (str. 33)"
+       }
+      ],
+      "jezicne_napomene": [],
+      "semanticki_izrazi": [
+       {
+        "kod": "NAJVISE",
+        "citat": "Najveća",
+        "od": 0,
+        "znacenje": "<=",
+        "trazi_pregled": false
+       }
+      ],
+      "izvor_clanak": 20,
+      "izvor_stavak": 2,
+      "izvor": {
+       "datoteka": "nv_upu_sn_32_2026.html",
+       "redak": 239,
+       "pomak": 2162
+      },
+      "status": "PREGLED",
+      "razlog_kod": [
+       "REFERENTNA_VISINA_NEPOZNATA"
+      ],
+      "razlozi": [
+       "referentna točka mjerenja visine nije navedena u ovoj odredbi"
+      ],
+      "za_izracun": false,
+      "pravno_potvrdeno": false,
+      "obrazlozenje_statusa": "PREGLED (čl. 20. st. 2. al. 7): referentna točka mjerenja visine nije navedena u ovoj odredbi",
+      "dodatni_uvjeti": [],
+      "kontekst_primjene": [],
+      "izvor_konteksta": null,
+      "obrazac_v23": "gramatika-v2.3"
+     }
+    ],
+    "upucivanja": [],
+    "nepokriveno": [
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 2,
+      "recenica": 1,
+      "dokaz": "površina građevne čestice ne može biti manja od 600 m 2 , iznimno za benzinske stanice 500 m 2 ;",
+      "status": "ODBIJENO",
+      "razlog_kod": [
+       "PREDMET_NEPOZNAT"
+      ],
+      "razlozi": [
+       "predmet odredbe nije u rječniku: »površina građevne čestice ne može biti manja od 600 m², izni«"
+      ],
+      "brojevi": [
+       "600",
+       "500"
+      ]
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 6,
+      "recenica": 1,
+      "dokaz": "građevine mogu imati do 4 nadzemne etaže uz uvjet da je 4. nadzemna etaža potkrovlje bez nadozida.",
+      "status": "ODBIJENO",
+      "razlog_kod": [
+       "PREDMET_NEPOZNAT"
+      ],
+      "razlozi": [
+       "predmet odredbe nije u rječniku: »građevine mogu imati do 4 nadzemne etaže uz uvjet da je 4. n«"
+      ],
+      "brojevi": [
+       "4",
+       "4"
+      ]
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 6,
+      "recenica": 2,
+      "dokaz": "Moguća je izgradnja 2 podzemne etaže, ukoliko geotehnički uvjeti to dopuštaju u funkciji osnovne namjene, pomoćnih i tehničkih prostorija te garaža;",
+      "status": "ODBIJENO",
+      "razlog_kod": [
+       "PREDMET_NEPOZNAT"
+      ],
+      "razlozi": [
+       "predmet odredbe nije u rječniku: »Moguća je izgradnja 2 podzemne etaže, ukoliko geotehnički uv«"
+      ],
+      "brojevi": [
+       "2"
+      ]
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 7,
+      "recenica": 3,
+      "dokaz": "Iznimno, 10% tlocrtne površine građevine može biti i veće visine, bez ograničenja, u skladu s tehnološkim procesom građevine;",
+      "status": "ODBIJENO",
+      "razlog_kod": [
+       "PREDMET_NEPOZNAT"
+      ],
+      "razlozi": [
+       "predmet odredbe nije u rječniku: »10% tlocrtne površine građevine može biti i veće visine, bez«"
+      ],
+      "brojevi": [
+       "10"
+      ]
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 9,
+      "recenica": 2,
+      "dokaz": "Antuna Mataije iznosi 10 metara, odnosno 4 metra od ostalih ulica te ostalih javnih površina;",
+      "status": "ODBIJENO",
+      "razlog_kod": [
+       "PREDMET_NEPOZNAT"
+      ],
+      "razlozi": [
+       "predmet odredbe nije u rječniku: »Antuna Mataije iznosi 10 m, odnosno 4 m od ostalih ulica te «"
+      ],
+      "brojevi": [
+       "10",
+       "4"
+      ]
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 10,
+      "recenica": 1,
+      "dokaz": "najmanja udaljenost od granice susjedne građevne čestice iznosi 5,0 m za građevine visine do 10,0 m, odnosno najmanje 6,0 m za više građevine, uz uvjet da udaljenost do građevine na susjednoj građevnoj čestici ne iznosi manje od udaljenosti propisanih važećim Pravilnikom o mjerama zaštite od elementarnih nepogoda i ratnih opasnosti u prostornom planiranju i uređenju prostora;",
+      "status": "ODBIJENO",
+      "razlog_kod": [
+       "PREDMET_NEPOZNAT"
+      ],
+      "razlozi": [
+       "predmet odredbe nije u rječniku: »najmanja udaljenost od granice susjedne građevne čestice izn«"
+      ],
+      "brojevi": [
+       "5,0",
+       "10,0",
+       "6,0"
+      ]
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 11,
+      "recenica": 1,
+      "dokaz": "uz građevine osnovne namjene, unutar dopuštenih graničnih vrijednosti propisanih ovim Planom (Kig i Kis), mogu se graditi i pomoćne građevine (garaže, spremišta i sl.) najviše kao dvoetažne od kojih je druga etaža obavezno potkrovlje bez nadozida, tlocrtno manje od građevina osnovne namjene, visine 4,0 metra.",
+      "status": "ODBIJENO",
+      "razlog_kod": [
+       "PREDMET_NEPOZNAT"
+      ],
+      "razlozi": [
+       "predmet odredbe nije u rječniku: »uz građevine osnovne namjene, unutar dopuštenih graničnih vr«"
+      ],
+      "brojevi": [
+       "4,0"
+      ]
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 11,
+      "recenica": 2,
+      "dokaz": "Građevine moraju biti udaljene 4,0 metra od susjedne građevinske čestice ukoliko imaju otvore, odnosno 3,0 metra kada nemaju otvore.",
+      "status": "ODBIJENO",
+      "razlog_kod": [
+       "PREDMET_NEPOZNAT"
+      ],
+      "razlozi": [
+       "predmet odredbe nije u rječniku: »Građevine moraju biti udaljene 4,0 m od susjedne građevinske«"
+      ],
+      "brojevi": [
+       "4,0",
+       "3,0"
+      ]
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 11,
+      "recenica": 4,
+      "dokaz": "Antuna Mataije iznosi 10,0 metara, odnosno 4,0 metra od ostalih javnih površina;",
+      "status": "ODBIJENO",
+      "razlog_kod": [
+       "PREDMET_NEPOZNAT"
+      ],
+      "razlozi": [
+       "predmet odredbe nije u rječniku: »Antuna Mataije iznosi 10,0 m, odnosno 4,0 m od ostalih javni«"
+      ],
+      "brojevi": [
+       "10,0",
+       "4,0"
+      ]
+     }
+    ],
+    "bez_broja": [
+     {
+      "stavak": 1,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 1,
+      "dokaz": "Unutar površina označenih planskom oznakom (K1) na kartografskom prikazu br. 4. 'Uvjeti i način gradnje' smještavaju se manji proizvodni pogoni bez negativnog utjecaja na okoliš."
+     },
+     {
+      "stavak": 1,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 3,
+      "dokaz": "Moguć je smještaj i poslovnog sadržaja za potrebe nautičkog turizma odnosno servisi, trgovine, skladišta, otvoreni i zatvoreni prostori za smještaj brodica i dr.)."
+     },
+     {
+      "stavak": 2,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 1,
+      "dokaz": "Na površinama iz stavka (1) ovog članka grade se poslovne građevine i uređuju površine prema slijedećim uvjetima za novu izgradnju:"
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 1,
+      "recenica": 1,
+      "dokaz": "ukoliko to zahtjeva tehnološki proces građevine na građevnoj čestici se može graditi jedna ili više građevina osnovne namjene unutar dopuštenih graničnih vrijednosti propisanih ovim Planom."
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 1,
+      "recenica": 2,
+      "dokaz": "Uz građevine osnovne namjene mogu se graditi i ostale građevine kao što su: pomoćne građevine (garaže, spremišta i sl.) nadstrešnice i trijemovi, parkirališta, potporni zidovi, komunalne građevine i uređaji, prometne građevine i uređaji te druge građevine prema zahtjevima tehnološkog procesa."
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 1,
+      "recenica": 3,
+      "dokaz": "Ostale građevine grade se, u pravilu, unutar gradivog dijela građevne čestice."
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 1,
+      "recenica": 4,
+      "dokaz": "Iznimno, izvan gradivog dijela građevne čestice mogu se graditi i uređivati potporni zidovi, parkirališta, komunalne građevine i uređaji, prometne građevine i uređaji;"
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 3,
+      "recenica": 1,
+      "dokaz": "najveća dopuštena veličina građevne čestice nije određena;"
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 7,
+      "recenica": 1,
+      "dokaz": "visina građevina mora biti u skladu s namjenom i funkcijom građevina, te tehnološkim procesom."
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 8,
+      "recenica": 1,
+      "dokaz": "građevine mogu imati neposredan pristup na ostale prometnice planirane ovim Planom."
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 8,
+      "recenica": 2,
+      "dokaz": "Iznimno, ukoliko to nije u mogućnosti (dio površine između planiranih ostalih prometnica) može imati neposredan pristup i na postojeću ulicu Antuna Mataije (glavnu mjesnu) uz suglasnost nadležnih pravnih osoba koje upravljaju prometnicom;"
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 9,
+      "recenica": 1,
+      "dokaz": "najmanja udaljenost građevina od regulacijskog pravca ul."
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 11,
+      "recenica": 3,
+      "dokaz": "Najmanja udaljenost građevina od regulacijskog pravca ul."
+     },
+     {
+      "stavak": 2,
+      "tocka": "-",
+      "alineja": 12,
+      "recenica": 1,
+      "dokaz": "nadstrešnice (otvorene najmanje sa dvije strane) mogu se graditi i na granici sa susjednom građevnom česticom."
+     },
+     {
+      "stavak": 3,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 1,
+      "dokaz": "Osim uvjeta navedenih u stavku (1) ovog članka treba osigurati i druge opće uvjete utvrđene u članku 19. ovih Odredbi, a koji nisu navedeni u ovom članku."
+     }
+    ],
+    "pregled": [],
+    "kontekst": [
+     {
+      "stavak": 1,
+      "tocka": null,
+      "alineja": null,
+      "recenica": 2,
+      "postavlja": [
+       "vrsta"
+      ],
+      "dokaz": "Na površini se mogu graditi poslovne građevine određene ovim Planom s višenamjenskim poslovnim sadržajem (uslužnim, trgovačkim, komunalno servisnim), ali i manjim industrijskim, obrtničkim, zanatskim i sličnim sadržajem u kojima se odvija proces proizvodnje, prerade i dorade bez negativnog utjecaja na okoliš."
+     }
+    ],
+    "gramatika": "gramatika-v2.2"
+   },
+   "23": {
+    "clanak": 23,
+    "vrste": null,
+    "pravila": [],
+    "upucivanja": [],
+    "nepokriveno": [],
+    "pregled": [
+     {
+      "razlog": "vrsta građevine iz uvodne rečenice članka nije prepoznata"
+     },
+     {
+      "razlog": "vrsta građevine iz uvoda članka nije prepoznata",
+      "razlog_kod": "SKUPINA_NEPOZNATA"
+     }
+    ]
+   },
+   "24": {
+    "clanak": 24,
+    "vrste": null,
+    "pravila": [],
+    "upucivanja": [],
+    "nepokriveno": [],
+    "pregled": [
+     {
+      "razlog": "vrsta građevine iz uvodne rečenice članka nije prepoznata"
+     },
+     {
+      "razlog": "vrsta građevine iz uvoda članka nije prepoznata",
+      "razlog_kod": "SKUPINA_NEPOZNATA"
+     }
+    ]
+   }
+  },
+  "automatska_potvrda": 0,
+  "pravno_potvrdeno": false,
+  "statusi": {
+   "PRIJEDLOG": "ACCEPTED – automatski prihvaćen prijedlog (nije pravna potvrda)",
+   "PREGLED": "REVIEW",
+   "ODBIJENO": "REJECTED"
+  },
+  "sazetak": {
+   "pravila": 3,
+   "prijedlog": 1,
+   "pregled": 2,
+   "odbijeno": 9
+  },
+  "gramatika_v23": "gramatika-v2.3"
+ },
+ "pravno_potvrdeno": 0,
+ "citac": "v2.3"
+}
