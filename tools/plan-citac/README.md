@@ -37,6 +37,21 @@ PyMuPDF je licenciran pod AGPL-3.0. Koristi se samo kao lokalni alat i ne ugrađ
 - **Položaj u PDF-u:** blok u kojem alineja počinje (stranica, stupac, okvir).
 - **Dvosmislen navod** (»čl. 38. i 39. st. 2.«) u `citac.navod()` dobiva `dvosmisleno: true`, a stavak se ne pripisuje nijednom članku.
 
+### Uvjet, preduvjeti i izračun
+- `uvjet_izvorni` je doslovni odlomak alineje.
+- `preduvjeti` je popis: kod (npr. `ZONA_KPC`, `BEZ_OTVORA`, `KOSI_TEREN`, `GRADNJA_NA_MEDJI`), doslovni dokaz, položaj u PDF-u i parametri (npr. `nagib_veci_od_posto: 12`). Upućivanje na alineju razrješava se u preduvjete te alineje, s njihovim dokazom i položajem.
+- `preduvjeti_logika`:
+  - SVI;
+  - NEJASNO, kad je u uvjetu »odnosno« (onda je status PREGLED).
+- Dio uvjeta koji nije razvrstan u preduvjete također daje PREGLED.
+- `za_izracun` je `true` samo za brojčanu vrijednost sa statusom PRIJEDLOG. Pravila s `vrijednost: null`, opisnom vrijednošću (npr. »pola visine …«, uz `vrijednost_struktura`) ili za pregled nikad nisu za izračun.
+- `ne_primjenjuje_se_uz: ["ZONA_KPC"]`: osnovna vrijednost (i opća iznimka koja u zoni KPC ima izravan parnjak) kad ista alineja ima posebnu odredbu za zonu Kulturno-povijesne cjeline. Označeno kao tumačenje.
+
+### Generalizacija
+- `citac_tekst.py` izdvaja članke iz HTML-a ili običnog teksta. Uklanja zaglavlja glasila, odvaja naslove poglavlja, piše »m2« kao »m²« i spaja složenice.
+- `slijepi_test.py` pokreće strukturiranje na novom izvoru bez izmjena i za svaku alineju bilježi ishod: PRAVILO, PREGLED, NEPOKRIVENO, BEZ_BROJA ili UPUCIVANJE.
+- Ista odluka UPU-a 2 izdvojena drugim alatom (pdftotext): 89 točno, 5 za pregled, 5 propušteno, 0 pogrešno. Propuštena je jedna alineja, jer je pdftotext spojio »Kulturno-povijesne« u »Kulturnopovijesne«; modul ju je odbio umjesto da pogađa.
+
 ### Ručne oznake i neovisnost
 `oznake/upu2_cl38_40.json` sadrži 97 pravila i 2 upućivanja, ručno iz teksta čl. 38.–40. **Oznake je napisao isti autor koji je napisao obrasce, pa rezultat 97/97 nije neovisna ocjena.** Obrasci su pisani za upravo te rečenice.
 

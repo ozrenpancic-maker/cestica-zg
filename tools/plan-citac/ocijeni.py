@@ -41,15 +41,17 @@ def ocijeni(prijedlozi, oznake):
     iskoristeno = [False] * len(Z)
     rez = {"tocno": [], "pogresno": [], "dvosmisleno": [], "propusteno": []}
     for p in P:
-        if p["status"] == "PREGLED":
-            rez["dvosmisleno"].append({"pravilo": p, "razlozi": p.get("razlozi")})
-            continue
         nadjen = None
         for i, z in enumerate(Z):
             if iskoristeno[i] or kljuc(z) != kljuc(p):
                 continue
             if ista_vrijednost(z["vrijednost"], p["vrijednost"]) and z["jedinica"] == p["jedinica"] and isti_uvjet(z["uvjet"], p["uvjet"], p["dokaz"]):
                 nadjen = i; break
+        if p["status"] == "PREGLED":
+            if nadjen is not None:
+                iskoristeno[nadjen] = True
+            rez["dvosmisleno"].append({"pravilo": p, "razlozi": p.get("razlozi"), "odgovara_oznaci": nadjen is not None})
+            continue
         if nadjen is None:
             slicni = [z for z in Z if (z["clanak"], z["tocka"], z["alineja"], z["parametar"]) == (p["clanak"], p["tocka"], p["alineja"], p["parametar"])]
             rez["pogresno"].append({"pravilo": p, "najblize_oznake": slicni})
@@ -60,7 +62,7 @@ def ocijeni(prijedlozi, oznake):
     zu = {(u["clanak"], u["tocka"], u["upucuje_na"]["clanak"], tuple(u["upucuje_na"]["tocke"])) for u in oznake.get("upucivanja", [])}
     pu = {(c["clanak"], u["tocka"], u["upucuje_na"]["clanak"], tuple(u["upucuje_na"]["tocke"])) for c in prijedlozi["clanci"].values() for u in c.get("upucivanja", [])}
     sazetak = {"oznaceno": len(Z), "predlozeno": len(P), "tocno": len(rez["tocno"]), "pogresno": len(rez["pogresno"]),
-               "dvosmisleno": len(rez["dvosmisleno"]), "propusteno": len(rez["propusteno"]),
+               "dvosmisleno": len(rez["dvosmisleno"]), "dvosmisleno_odgovara_oznaci": sum(x["odgovara_oznaci"] for x in rez["dvosmisleno"]), "propusteno": len(rez["propusteno"]),
                "upucivanja_tocno": len(zu & pu), "upucivanja_pogresno": len(pu - zu), "upucivanja_propusteno": len(zu - pu),
                "oznake_neovisne": "NIJE" not in oznake.get("neovisnost", "NIJE")}
     return sazetak, rez

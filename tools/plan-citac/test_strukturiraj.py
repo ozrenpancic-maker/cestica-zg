@@ -38,7 +38,7 @@ class Clanci38do40(unittest.TestCase):
 
     def test_usporedba_s_rucnim_oznakama(self):
         s, r = ocijeni(self.R, self.oznake)
-        self.assertEqual((s["oznaceno"], s["tocno"], s["pogresno"], s["dvosmisleno"], s["propusteno"]), (97, 97, 0, 0, 0), r["pogresno"][:2])
+        self.assertEqual((s["oznaceno"], s["tocno"], s["pogresno"], s["dvosmisleno"], s["dvosmisleno_odgovara_oznaci"], s["propusteno"]), (99, 92, 0, 7, 7, 0), r["pogresno"][:2])
         self.assertEqual((s["upucivanja_tocno"], s["upucivanja_pogresno"]), (2, 0))
         self.assertFalse(s["oznake_neovisne"])  # oznake su iz iste ruke: ovo nije neovisna ocjena
 
@@ -93,6 +93,76 @@ class Clanci38do40(unittest.TestCase):
         b6 = [p for p in self.P if (p["clanak"], p["tocka"], p["alineja"], p["parametar"]) == (39, "b", 6, "gbpMax")][0]["izvor"]
         self.assertEqual(b6["stranica"], 14)
 
+    def test_preduvjeti_imaju_dokaz(self):
+        for p in self.P:
+            if p["uvjet"]:
+                self.assertEqual(p["uvjet_izvorni"], p["uvjet"]); self.assertIn(p["uvjet_izvorni"], p["dokaz"])
+                self.assertTrue(p["preduvjeti"], (p["clanak"], p["tocka"], p["alineja"], p["parametar"]))
+            for x in p["preduvjeti"] + [y for x in p["preduvjeti"] for y in (x.get("razrijeseno") or [])]:
+                self.assertIsNotNone(x["izvor"])
+        kis = [p for p in self.P if p["clanak"] == 38 and p["parametar"] == "kis" and p["vrsta_pravila"] == "IZNIMKA"][0]
+        kody = [x["kod"] for x in kis["preduvjeti"]]
+        self.assertEqual(kody, ["VRSTA_GRADJEVINE", "UPUCIVANJE_ALINEJA"])
+        r = kis["preduvjeti"][1]["razrijeseno"]
+        self.assertEqual([(x["kod"], x.get("parametri")) for x in r], [("KOSI_TEREN", {"nagib_veci_od_posto": 12.0}), ("VRSTA_GRADJEVINE", None)])
+        self.assertEqual(r[0]["dokaz"], "na kosom terenu gdje je nagib prirodnog terena veći od 12%")
+        self.assertEqual(r[0]["alineja"], {"tocka": "b", "alineja": 5})
+
+    def test_null_nije_za_izracun(self):
+        for p in self.P:
+            if p["vrijednost"] is None or isinstance(p["vrijednost"], str):
+                self.assertFalse(p["za_izracun"], (p["clanak"], p["tocka"], p["alineja"], p["parametar"]))
+        self.assertEqual(sum(p["vrijednost"] is None for p in self.P), 6)
+
+    def test_meda_c4_kombinirane_iznimke(self):
+        for cl in (38, 39):
+            m = {(p["vrijednost"] if not isinstance(p["vrijednost"], float) else p["vrijednost"]): p for p in self.P
+                 if (p["clanak"], p["tocka"], p["alineja"], p["parametar"]) == (cl, "c", 4, "medaMin")}
+            self.assertEqual(m[4]["status"], "PRIJEDLOG"); self.assertEqual(m[4]["ne_primjenjuje_se_uz"], ["ZONA_KPC"])
+            self.assertEqual([x["kod"] for x in m[3]["preduvjeti"]], ["BEZ_OTVORA"]); self.assertEqual(m[3]["ne_primjenjuje_se_uz"], ["ZONA_KPC"])
+            h = m["pola visine građevine, ali ne manje od 3 m"]
+            self.assertEqual(h["vrijednost_struktura"], {"formula": "h/2", "najmanje": 3.0, "jedinica": "m"})
+            self.assertEqual([x["kod"] for x in h["preduvjeti"]], ["ZONA_KPC"]); self.assertFalse(h["za_izracun"])
+            self.assertEqual(m[2]["status"], "PREGLED"); self.assertEqual(sorted(x["kod"] for x in m[2]["preduvjeti"]), ["BEZ_OTVORA", "ZONA_KPC"])
+            self.assertTrue(m[2]["uvjet"].startswith("na građevnim česticama smještenim unutar zone") and m[2]["uvjet"].endswith("prema tim međama"))
+            self.assertEqual(m[None]["status"], "PREGLED"); self.assertFalse(m[None]["za_izracun"])
+            self.assertIn("UPUCIVANJE_ALINEJA", [x["kod"] for x in m[None]["preduvjeti"]])
+            self.assertNotIn("ne_primjenjuje_se_uz", m[None])  # iznimka za kosi teren odnosi se baš na KPC odredbu
+
+    def test_pomocna_e5(self):
+        e5 = [p for p in self.P if (p["clanak"], p["tocka"], p["alineja"]) == (38, "e", 5)]
+        t = {(p["parametar"], p["vrijednost"]): p for p in e5}
+        self.assertEqual(t[("medaMin", 4.0)]["status"], "PRIJEDLOG")
+        self.assertEqual([x["kod"] for x in t[("medaMin", 3.0)]["preduvjeti"]], ["ZONA_KPC"])
+        manja = t[("medaMin", None)]
+        self.assertEqual((manja["status"], manja["za_izracun"]), ("PREGLED", False))
+        self.assertIn("»odnosno« ne određuje", manja["razlozi"][0])
+        for par, v, odr in (("vatrobraniZid", "obavezan", "mora biti odijeljena vatrobranim zidom od susjedne građevine"),
+                            ("nagibKrovaPremaSusjednojCestici", "nije dopušten", "nagib krova pomoćne građevine ne smije biti prema susjednoj građevnoj čestici")):
+            x = t[(par, v)]
+            self.assertEqual((x["vrsta_pravila"], x["uvjet"], x["odredba"], x["za_izracun"]), ("UVJETNO", "ako se gradi na međi", odr, False))
+            self.assertEqual([y["kod"] for y in x["preduvjeti"]], ["GRADNJA_NA_MEDJI"])
+
+    def test_garaza_logika_nejasna(self):
+        g = [p for p in self.P if (p["clanak"], p["tocka"], p["alineja"]) == (38, "e", 4) and p["vrsta_pravila"] == "IZNIMKA" and "garaže" in p["uvjet"]]
+        self.assertEqual(len(g), 2)
+        for p in g:
+            self.assertEqual((p["status"], p["preduvjeti_logika"], p["za_izracun"]), ("PREGLED", "NEJASNO", False))
+            self.assertEqual([x["kod"] for x in p["preduvjeti"]], ["GARAZA", "KONFIGURACIJA_TERENA", "KOTA_KROVA_NIVELETA", "VISINA_OGRADNOG_ZIDA", "GARAZA_OS_CESTE"])
+
+    def test_isti_tekst_drugi_alat(self):
+        """Generalizacija: isti propis iz izdvajanja drugim alatom (pdftotext, drugi prijelomi, »m2«, zaglavlja u retcima).
+        Obrasci nisu mijenjani za taj izvor; pogrešnih pravila ne smije biti."""
+        from citac_tekst import izdvoji_tekst
+        D = izdvoji_tekst(MAPA.parents[1] / "tests/pgz-odgovori/735-76-kornic-2026-10-22/sn-19-16/odluka_34138_pdf_tekst.txt", [38, 39, 40])
+        R = strukturiraj(D, [38, 39, 40], "UPU 2 Kornić")
+        s, r = ocijeni(R, self.oznake)
+        self.assertEqual(s["pogresno"], 0)
+        self.assertEqual((s["tocno"], s["dvosmisleno"], s["propusteno"]), (89, 5, 5))
+        # jedina odbijena alineja: pdftotext je spojio »Kulturno-povijesne« u »Kulturnopovijesne«
+        nep = R["clanci"]["39"]["nepokriveno"]
+        self.assertEqual([(n["tocka"], n["alineja"]) for n in nep], [("c", 4)]); self.assertIn("Kulturnopovijesne", nep[0]["dokaz"])
+
     def test_bez_pravne_potvrde(self):
         self.assertTrue(all(p["pravno_potvrdeno"] is False for p in self.P))
         self.assertEqual((self.R["automatska_potvrda"], self.R["pravno_potvrdeno"]), (0, False))
@@ -133,6 +203,12 @@ class Opreznost(unittest.TestCase):
         naslov, al = alineje("Uvjeti - prva, - smjer se definira prema kriterijima: - usporedno s A, - usporedno s B, - treća.")
         self.assertEqual(al, ["prva,", "smjer se definira prema kriterijima: - usporedno s A, - usporedno s B,", "treća."])
         self.assertEqual([t["slovo"] for t in tocke("x: a) Prvo - a. b) Drugo - b, prema točki c) ovog članka.")], ["a", "b"])
+
+    def test_izgubljena_granica_alineje(self):
+        """Zaglavlje stranice između dviju alineja briše »,« ispred »- «: brojevi alineja više nisu sigurni → PREGLED."""
+        r = self.pravila("a) Veličina - najmanji koeficijent izgrađenosti građevne čestice iznosi 0,1, Stranica 99 - najveći koeficijent izgrađenosti građevne čestice iznosi 0,25, - najveći koeficijent iskorištenosti iznosi 0,75.")
+        self.assertTrue(r["pregled"])
+        self.assertTrue(all(p["status"] == "PREGLED" for p in r["pravila"]))
 
     def test_podskup_vrsta(self):
         V = ["obit-dvoj", "obit-ugr", "visobit-dvoj"]

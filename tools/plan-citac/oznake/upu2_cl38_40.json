@@ -1470,6 +1470,36 @@
    ],
    "vrsta_pravila": "IZNIMKA",
    "uvjet": "ako se građevina gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%"
+  },
+  {
+   "clanak": 38,
+   "tocka": "e",
+   "alineja": 5,
+   "gradjevina": "pomocna",
+   "parametar": "vatrobraniZid",
+   "vrijednost": "obavezan",
+   "jedinica": null,
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "uvjet": "ako se gradi na međi"
+  },
+  {
+   "clanak": 38,
+   "tocka": "e",
+   "alineja": 5,
+   "gradjevina": "pomocna",
+   "parametar": "nagibKrovaPremaSusjednojCestici",
+   "vrijednost": "nije dopušten",
+   "jedinica": null,
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "uvjet": "ako se gradi na međi"
   }
  ],
  "upucivanja": [
@@ -1505,5 +1535,8 @@
    }
   }
  ],
- "pravno_potvrdeno": false
+ "pravno_potvrdeno": false,
+ "izmjene": [
+  "2026-10-26: nakon posebne provjere čl. 38. e) al. 5 dodana dva obvezna zahtjeva za gradnju pomoćne građevine na međi (vatrobrani zid, nagib krova). Isti autor."
+ ]
 }
