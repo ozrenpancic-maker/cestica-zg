@@ -55,3 +55,28 @@ Preciznost = (točno + granularnost) / (točno + granularnost + pogrešno).
 | mjerenje_v22_ref_v1.json | `e78aba1f9c77b06efa27d5d8def8de892ebf4c7fce6d5144e9b6946be11ffc9c` |
 | referenca_v1.json (ulaz) | `e6b2f7a5282d99694ad8cd0cd5939e5db350fa28c8736ffd6e1eddd44a7f85cc` |
 | ZAMRZNUTO_v2_2.json (ulaz) | `5c8b834528cbb55833b2ea034817c0f7433e38af48e9d56dc5603569d807b733` |
+
+## Dopuna v1.1: odluka suca o kontekstu članka (26. 10. 2026.)
+Sudac je za 12 pogrešaka zbog uvjeta iz uvoda stavka odlučio: »Za ovih 12 više obiteljska kuća ili građevina stambene namjene ima isto značenje«. Zapis je u `odluke_suca_v1_1.json`.
+- Uvjet iz uvoda koji ponavlja predmet članka ne mora biti u uvjetu pravila iz tog članka i stavka. Popis je zatvoren: čl. 22. st. 2., 23. st. 2., 20. st. 3., 39. st. 2. i 50. st. 4.
+- Takvi se slučajevi broje zasebno, kao pravilo KONTEKST_CLANKA_v1_1.
+- Referentni skup v1 i mjerenje v1 ne mijenjaju se. Novo mjerenje je u `mjerenje_v22_ref_v1_1.json`.
+
+| | v1 | v1.1 |
+|---|---|---|
+| točno | 31 | 31 |
+| točno uz pravilo granularnosti | 30 | 42 |
+| pogrešno prihvaćeno | 16 | 4 |
+| pravilno na pregled | 14 | 15 |
+| propušteno | 189 | 175 |
+| preciznost prihvaćenih | 0,792 | 0,948 |
+| prihvaćeno od JASAN | 0,401 | 0,480 |
+
+Preostale 4 pogreške su razlike u klasifikaciji. Nijedna nije pogrešna brojka:
+- UVJETNO ili OSNOVNO (UPU 1 čl. 24., dva slučaja);
+- jednakost ili dopuštenje (PPUG čl. 25.);
+- nedostaje »(nova)« (UPU 1 čl. 14.).
+
+| Datoteka | SHA-256 |
+|---|---|
+| mjerenje_v22_ref_v1_1.json | `78595bc0a60a4b1e9c33b7c8206e80860194e17e42fc662df13bea242274129c` |

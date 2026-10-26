@@ -68,7 +68,33 @@ def razlike(z, o, MP):
     return min((U22.razlike(z, x, MP) for x in inacice(o)), key=len)
 
 
+KONTEKST = []  # puni se iz odluke_suca_v1_1.json kad se pokrene s --v1.1
+
+
+def bez_konteksta(x):
+    dij = [d for d in (x.get("uvjet_primjene") or "").split("; ") if d.strip()]
+    kon = {k["uvjet"].lower() for k in KONTEKST if k["clanak"] == x["clanak"] and k["stavak"] == x.get("stavak")}
+    ost = [d for d in dij if d.strip().lower() not in kon]
+    return dict(x, uvjet_primjene="; ".join(ost)) if len(ost) != len(dij) else None
+
+
 def granularnost(z, o, MP):
+    g = _granularnost(z, o, MP)
+    if g is not None or not KONTEKST:
+        return g
+    for x in inacice(o):
+        y = bez_konteksta(x)
+        if y is None:
+            continue
+        if not U22.razlike(z, y, MP):
+            return ["KONTEKST_CLANKA_v1_1"]
+        g2 = _granularnost(z, dict(y, prihvatljivo=None), MP)
+        if g2 is not None:
+            return g2 + ["KONTEKST_CLANKA_v1_1"]
+    return None
+
+
+def _granularnost(z, o, MP):
     for x in inacice(o):
         r = U22.razlike(z, x, MP)
         if not r:
@@ -139,8 +165,10 @@ def usporedi(pravila, Z, MP):
     return s, dict(R, propusteno=prop)
 
 
-def main():
+def main(v11=False):
     integritet()
+    if v11:
+        KONTEKST[:] = json.loads((D / "odluke_suca_v1_1.json").read_text(encoding="utf-8"))["kontekst_clanka"]
     MP = mapa()
     ref = json.loads((D / "referenca_v1.json").read_text(encoding="utf-8"))
     izlaz = {"ppug": U22.pokreni_ppug(), "upu1": U22.pokreni_upu1()}
@@ -158,13 +186,15 @@ def main():
         uk_P += P; uk_Z += [dict(o, id=f"{g}:{o['id']}") for o in Z]  # brojevi članaka se ne preklapaju među skupinama
     out["ukupno"] = usporedi(uk_P, uk_Z, MP)[0]
     integritet()
-    p = D / "mjerenje_v22_ref_v1.json"
+    if v11:
+        out["dopuna_odluka"] = {"datoteka": "oznake/v1/odluke_suca_v1_1.json", "sha256": sha(D / "odluke_suca_v1_1.json")}
+    p = D / ("mjerenje_v22_ref_v1_1.json" if v11 else "mjerenje_v22_ref_v1.json")
     p.write_text(json.dumps(out, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
     return out, sha(p)
 
 
 if __name__ == "__main__":
-    o, s = main()
+    o, s = main("--v1.1" in sys.argv)
     K = ["oznaka", "oznaka_JASAN", "zapisa_modula", "tocno_prihvaceno", "tocno_uz_pravilo_granularnosti", "pogresno_prihvaceno", "pravilno_na_pregled",
          "nepotrebno_na_pregled", "pregled_bez_oznake", "propusteno", "preciznost_prihvacenih", "pokrivenost_prihvacanja_od_JASAN", "pokrivenost_izdvajanja"]
     for g, v in list(o["skupine"].items()) + [("UKUPNO", {"sazetak": o["ukupno"]})]:
