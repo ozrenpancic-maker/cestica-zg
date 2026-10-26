@@ -354,6 +354,14 @@ class Zamrznuto(unittest.TestCase):
         self.assertIn("Članak 25.", t); self.assertIn("Članak 33.", t); self.assertNotIn("2.2.2.4.", t)
 
 
+class SlijepoCl25i33(unittest.TestCase):
+    def test_usporedba_zamrznutog_izlaza(self):
+        import usporedi_cl25_33 as U
+        r = U.usporedi()
+        self.assertEqual([(r[c]["oznaka"], r[c]["tocno"], r[c]["pogresno"], r[c]["pregled"], r[c]["propusteno"], r[c]["clanak_odbijen"]) for c in ("25", "33")],
+                         [(22, 0, 0, 0, 22, True), (12, 0, 0, 0, 12, True)])
+
+
 class DvosmisleniNavodi(unittest.TestCase):
     def test_navod_vise_clanaka_sa_stavkom(self):
         for s in ("čl. 38. i 39. st. 2.", "čl. 38.–40. st. 1.", "38., 39. st. 2."):
