@@ -1185,7 +1185,7 @@ async function krkTests(){
   $(w,"krkKdUv1").checked=true; $(w,"krkKdUv1").dispatchEvent(new w.Event("change",{bubbles:true})); ok(/6\.000 €/.test(txt(w,"krkKdOut")),"Krk, čl. 10.: samo jedan potvrđen uvjet → puni obračun");
   $(w,"krkKdUv2").checked=true; $(w,"krkKdUv2").dispatchEvent(new w.Event("change",{bubbles:true}));
   ok(/2\.500 €/.test(txt(w,"krkKdOut"))&&/samoprijava/.test(txt(w,"krkKdOut"))&&/30 % osnovnog iznosa \(to nije popust od 30 %\)/.test(txt(w,"krkKdNap"))&&/Grad Krk/.test(txt(w,"krkKdNap"))&&E("PZREG").items.get("kd-krk").raz==="C","Krk, čl. 10.: oba uvjeta potvrđena → 500 × 10 × 0,3 + 100 × 10 = 2.500 €, samoprijava, razina C");
-  ok(/plaća se 30 % osnovnog iznosa za prvih 500 m³/.test($(w,"krkKdRed").options[1].textContent),"Krk: naziv povlastice: plaća se 30 % osnovnog iznosa za prvih 500 m³");
+  ok(/povlašteni obračun \(čl\. 10\.\)/.test($(w,"krkKdRed").options[1].textContent)&&/za prvih 500 m³ plaća se 30 % osnovnog iznosa/.test(txt(w,"krkKdUvjeti"))&&/nemam u vlasništvu stambeni prostor/.test(txt(w,"krkKdUvjeti"))&&$(w,"krkKdNap").querySelector(".verdict.v-warn"),"Krk: povlastica opisana kao plaćanje 30 % osnovnog iznosa za prvih 500 m³; uvjeti prema tekstu odluke; samoprijava vidljiva (v-warn)");
   $(w,"krkKdUv1").checked=false; $(w,"krkKdUv2").checked=false; $(w,"krkKdUv1").dispatchEvent(new w.Event("change",{bubbles:true}));
   ok(/6\.000 €/.test(txt(w,"krkKdOut"))&&E("PZREG").items.get("kd-krk").raz==="B","Krk: poništena potvrda → opet puni obračun (B)");
   ok(E("krkKdTotal")(400,10,0.3)===1200,"Krk, čl. 10.: 400 m³ × 10 × 0,3 = 1.200 €");

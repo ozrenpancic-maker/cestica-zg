@@ -1355,12 +1355,12 @@ function krkCostHtml(d,inPilot,jlsName){
   h+=`<div class="kd"><label for="krkKdVol">Obujam građevine</label><input id="krkKdVol" type="number" inputmode="decimal" min="0" step="1" value="${esc(vol0)}"><span>m³</span></div>`;
   h+=`<p class="meta" id="krkKdVolNote">${c?`Prijedlog obujma (samo informativna procjena aplikacije, nije propis): najveći nadzemni GBP (${fmt(c.gbpN)} m²) × 3 m. `:""}Kad postaviš kuću u simulatoru, obujam se računa iz njezina modela. Službeno se obračunava obujam iz projekta (čl. 4.).</p>`;
   h+=`<div class="kd"><label for="krkKdRate">Iznos</label><input id="krkKdRate" type="number" inputmode="decimal" min="0" step="0.01" placeholder="€/m³" value="${esc(eur!=null?eur:"")}"><span>€/m³</span></div>`;
-  h+=`<div class="kd"><label for="krkKdRed">Umanjenje</label><select id="krkKdRed" class="bsel">${[["1","puni obračun (bez povlastice)"],["0.3","povlašteni obračun, čl. 10.: plaća se 30 % osnovnog iznosa za prvih 500 m³"]].map(o=>`<option value="${o[0]}"${String(st.red||"1")===o[0]?" selected":""}>${o[1]}</option>`).join("")}</select></div>`;
-  h+=`<div id="krkKdUvjeti"${String(st.red||"1")==="0.3"?"":" hidden"}><p class="meta" style="margin:4px 0">Povlašteni obračun vrijedi samo ako ispunjavaš uvjete iz čl. 10. odluke. Potvrdi ih (samoprijava; uvjete utvrđuje Grad Krk):</p>`+
-    `<label class="kd"><input type="checkbox" id="krkKdUv1"${st.uv1?" checked":""}> imam prebivalište u Gradu Krku 10 i više godina</label>`+
-    `<label class="kd"><input type="checkbox" id="krkKdUv2"${st.uv2?" checked":""}> nemam stambeni prostor</label>`+
-    `<p class="meta" style="margin:4px 0">Ako već imaš stambeni prostor manji od 500 m³, povlastica vrijedi samo za razliku obujma; taj slučaj aplikacija ne računa, pa ga ne potvrđuj ovdje i obrati se Gradu Krku.</p></div>`;
-  h+=`<div class="kd"><span>Ukupno:</span><output id="krkKdOut"></output></div><p class="meta" id="krkKdNap"></p>`;
+  h+=`<div class="kd"><label for="krkKdRed">Umanjenje</label><select id="krkKdRed" class="bsel">${[["1","puni obračun (bez povlastice)"],["0.3","povlašteni obračun (čl. 10.)"]].map(o=>`<option value="${o[0]}"${String(st.red||"1")===o[0]?" selected":""}>${o[1]}</option>`).join("")}</select></div>`;
+  const chk=(id,on,t)=>`<label style="display:flex;gap:10px;align-items:center;margin:6px 0"><input type="checkbox" id="${id}"${on?" checked":""} style="flex:0 0 auto"><span>${t}</span></label>`;
+  h+=`<div id="krkKdUvjeti"${String(st.red||"1")==="0.3"?"":" hidden"}><p style="margin:6px 0">Povlašteni obračun (čl. 10.): za prvih 500 m³ plaća se 30 % osnovnog iznosa, za zgradu ili dio zgrade namijenjen stanovanju. Vrijedi samo ako ispunjavaš oba uvjeta; potvrdi ih (samoprijava, pravo utvrđuje Grad Krk):</p>`+
+    chk("krkKdUv1",st.uv1,"imam prebivalište na području Grada Krka 10 i više godina")+chk("krkKdUv2",st.uv2,"nemam u vlasništvu stambeni prostor")+
+    `<p style="margin:6px 0;font-size:13px">Ako imaš u vlasništvu stambeni prostor manji od 500 m³, pravo vrijedi samo za razliku kubature do 500 m³; taj slučaj aplikacija ne računa, pa ga ne potvrđuj ovdje i obrati se Gradu Krku.</p></div>`;
+  h+=`<div class="kd"><span>Ukupno:</span><output id="krkKdOut"></output></div><div id="krkKdNap"></div>`;
   h+=`<details><summary>Zone i iznosi (čl. 6.)</summary><table class="rp"><tbody>${K.zone.map(z=>`<tr><th>${esc(z[0])}. zona</th><td>${esc(z[1])}<small class="fx">${dec(z[2].toFixed(2))} kn/m³ = ${dec((z[2]/K.tecaj).toFixed(2))} €/m³</small></td></tr>`).join("")}</tbody></table></details>`;
   h+=`<details><summary>Umanjenja i oslobođenja iz odluke</summary><ol>${K.umanjenja.map(t=>`<li>${esc(t)}</li>`).join("")}</ol></details>`;
   h+=`</div></details>`+pr;
@@ -1380,7 +1380,7 @@ function krkKdUpdate(){
   if(t!=null){o.textContent=fmt(t)+" €"+(potvrdeno?" (povlašteni obračun, samoprijava)":" (puni obračun)"); if(s){s.textContent=fmt(t)+" €"; s.className="";}
     pzSet("kd-krk","Komunalni doprinos (Grad Krk)",fmt(t)+" €",potvrdeno?pz("C",{izvor:"Odluka o komunalnom doprinosu Grada Krka",razlog:"povlašteni obračun prema samoprijavi korisnika; uvjete iz čl. 10. utvrđuje Grad Krk",provjera:"Grad Krk, rješenje o komunalnom doprinosu"}):pz("B",{izvor:"Odluka o komunalnom doprinosu Grada Krka",razlog:"obujam je prijedlog ili unos, a ne obujam iz projekta",provjera:"rješenje o komunalnom doprinosu"}));}
   else{o.textContent="upiši obujam i iznos"; if(s){s.textContent="upiši iznos"; s.className="";} pzDel("kd-krk");}
-  if(nap) nap.innerHTML=!trazi?"":potvrdeno?`<b>Samoprijavljeni scenarij:</b> za prvih ${fmt(500)} m³ plaća se 30 % osnovnog iznosa (to nije popust od 30 %), a za ostatak obujma puni iznos. Pravo na povlašteni obračun mora potvrditi Grad Krk ${pzTag(PZREG.items.get("kd-krk"))}.`:`Povlašteni obračun nije primijenjen: potvrdi oba uvjeta. Do tada se prikazuje puni obračun.`;
+  if(nap) nap.innerHTML=!trazi?"":potvrdeno?`<div class="verdict v-warn" style="margin:6px 0"><b>Samoprijavljeni scenarij</b> ${pzTag(PZREG.items.get("kd-krk"))}: za prvih ${fmt(500)} m³ plaća se 30 % osnovnog iznosa (to nije popust od 30 %), a za ostatak obujma puni iznos. Pravo na povlašteni obračun mora utvrditi Grad Krk.</div>`:`<p class="flag" style="margin:6px 0">Povlašteni obračun nije primijenjen: potvrdi oba uvjeta. Do tada se prikazuje puni obračun.</p>`;
 }
 sheet.addEventListener("input",e=>{ if(/^krkKd/.test(e.target.id||"")) krkKdUpdate(); });
 sheet.addEventListener("change",e=>{ if(/^krkKd/.test(e.target.id||"")) krkKdUpdate(); });
