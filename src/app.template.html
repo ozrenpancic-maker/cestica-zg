@@ -1170,7 +1170,7 @@ function krkRuleStateJls(d,jls){
 // pravna provjera izvora pravila (rules_krk.json → izvor.pravna_provjera): status plana („na snazi”) nije isto što i neovisna
 // provjera lanca objava. Dok provjera nije POTVRDENO, pravilo nema razinu A, a uz prikazane uvjete gradnje stoji upozorenje.
 const pravnaNepotvrdena=I=>!!(I&&I.pravna_provjera&&I.pravna_provjera.status!=="POTVRDENO");
-function krkPravnaHtml(I){ return pravnaNepotvrdena(I)?`<div class="verdict v-warn" data-pravna-provjera="nepotvrdeno"><strong>Pravna aktualnost nije neovisno potvrđena.</strong> ${esc(I.pravna_provjera.napomena||"")}</div>`:""; }
+function krkPravnaHtml(I){ return pravnaNepotvrdena(I)?`<div class="verdict v-warn" data-pravna-provjera="nepotvrdeno" data-plan="${esc(I.sn||"")}"><strong>Pravna aktualnost nije neovisno potvrđena.</strong> ${esc(I.pravna_provjera.napomena||"")}</div>`:""; }
 function krkRulesHtml(d){
   const R=RULES_KRK, S=krkRuleState(d); let h=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>%%PREK%%`; window.__krkS=S; krkEnvLayer.clearLayers(); gpLayer.clearLayers(); window.__gp=null; pzDel("gp-podrucje");
   window.__krkCalc=null; window.__env=null; window.__krkLim=null;
@@ -1200,7 +1200,7 @@ function krkRulesHtml(d){
   for(const n of S.notes||[]) h+=`<p class="flag">${esc(n)}</p>`;
   const sel=(id,opts,v)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===v?" selected":""}>${esc(o[1])}</option>`).join("")}</select>`;
   if(isUpu){
-    h+=`<div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label>${sel("krkZona",[["","— odaberi zonu —"],...RS.zone],zona)}</div><p class="flag">Izračun je za zonu koju si odabrao (${esc(zona)}). Detaljna zona nije potvrđena službenim vektorskim slojem ni lokacijskom informacijom.</p><p class="meta">${esc(RS.zonaNapomena)}</p>`+(RS.upozorenja||[]).map(n=>`<p class="flag">${esc(n)}</p>`).join("");
+    h+=`<div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label>${sel("krkZona",[["","— odaberi zonu —"],...RS.zone],zona)}</div><p class="flag" data-zona-nepotvrdena="1"><b>Zona čestice nije automatski potvrđena.</b> Izračun je za zonu koju si odabrao (${esc(zona)}). Detaljna zona nije potvrđena službenim vektorskim slojem ni lokacijskom informacijom (to je odvojeno od pravne aktualnosti plana).</p><p class="meta">${esc(RS.zonaNapomena)}</p>`+(RS.upozorenja||[]).map(n=>`<p class="flag">${esc(n)}</p>`).join("");
     if(zona==="druga"){h+=`<p class="hint">${esc(RS.drugaZona||"Za ovu zonu uvjeti za obiteljske i višeobiteljske kuće nisu obrađeni.")}</p>`; return h;}
     const ZS=RS.simulator&&RS.simulator.zastita;
     if(ZS){const zv=krkZastGet();
