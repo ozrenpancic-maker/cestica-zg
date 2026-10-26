@@ -345,17 +345,21 @@ def brojevi(tekst):
             for naziv, rx in JEDINICE:
                 if re.match(rx, ost):
                     jed = naziv; break  # raspon »2-5 m«
+        om = re.search(r"(?<![\w])([A-ZČĆĐŠŽ]{1,3}[0-9₀-₉]*)\s*[-–:=]\s*$", prije)
         v = float(lit.replace(",", "."))
-        out.append({"literal": lit, "vrijednost": v / 100 if jed == "%" else v, "jedinica": jed,
+        out.append({"literal": lit, "vrijednost": v / 100 if jed == "%" else v, "jedinica": jed, "oznaka": om.group(1) if om else None,
                     "kontekst": t[max(0, s - 60):s] + "⟦" + lit + "⟧" + t[e:e + 40]})
     return out
 
 
-def ima_broj(tekst, vrijednost, jedinica=None):
-    """Postoji li vrijednost (u jedinici, ako je zadana) u tekstu. Udio 0,4 odgovara zapisu »40 %«."""
+def ima_broj(tekst, vrijednost, jedinica=None, oznaka=None):
+    """Postoji li vrijednost (u jedinici, ako je zadana) u tekstu. Udio 0,4 odgovara zapisu »40 %«.
+    Vrijednost pridružena oznaci (»P₁ - 15«: 15 mjesta na parkiralištu P₁) broji se samo kad se ta oznaka traži."""
     if isinstance(vrijednost, bool) or not isinstance(vrijednost, (int, float)):
         return False
     for b in brojevi(tekst):
+        if b["oznaka"] != oznaka:
+            continue
         if jedinica in ("%", "udio"):
             ok = (b["jedinica"] == "%" and abs(b["vrijednost"] - vrijednost) < 1e-9) or (b["jedinica"] is None and abs(b["vrijednost"] - vrijednost) < 1e-9 and "," in b["literal"])
         else:
@@ -366,9 +370,45 @@ def ima_broj(tekst, vrijednost, jedinica=None):
 
 
 # ---------------------------------------------------------------- navodi
+KONTEKST = [("clanak", r"(?:čl\.|članak|članka|članku|članci|članaka|člancima)"),
+            ("stavak", r"(?:st\.|stavak|stavka|stavku|stavci|stavaka|stavcima)"),
+            ("tocka", r"(?:t\.|točka|točke|točki|točaka|točkama)"),
+            ("alineja", r"(?:al\.|alineja|alineje|alineji|alineja)")]
+
+
+def _dio_navoda(dio):
+    """Jedan dio navoda (bez »;«), slijeva nadesno: riječ »čl./st./t./al.« mijenja vrstu sljedećih brojeva;
+    broj bez riječi je članak dok se ne navede stavak. »2. i 3.«, »1.–3.« i »1.–3. i 5.« ostaju u istoj vrsti."""
+    tok = re.findall(r"čl\.|članak\w*|članci\w*|članc\w*|st\.|stav\w*|t\.|točk\w*|al\.|aline\w*|\d{1,3}|[–-]|\bdo\b|\bi\b|\bili\b|,|[a-z]\)", dio, re.I)
+    vrsta, out, zadnji, raspon, par = "clanak", {"clanak": [], "stavak": [], "tocka": [], "alineja": [], "slovo": []}, None, False, []
+    for t in tok:
+        tl = t.lower()
+        k = next((v for v, rx in KONTEKST if re.fullmatch(rx, tl) or (v == "clanak" and tl.startswith("član")) or (v == "stavak" and tl.startswith("stav")) or (v == "tocka" and tl.startswith("točk")) or (v == "alineja" and tl.startswith("aline"))), None)
+        if k:
+            vrsta, zadnji, raspon = k, None, False; continue
+        if re.fullmatch(r"[a-z]\)", tl):
+            out["slovo"].append(tl[0]); continue
+        if t in ("–", "-") or tl == "do":
+            raspon = zadnji is not None; continue
+        if tl in ("i", "ili", ","):
+            raspon = False; continue
+        n = int(t)
+        if raspon and zadnji is not None and 0 <= n - zadnji <= 50:
+            novi = list(range(zadnji + 1, n + 1))
+        else:
+            novi = [n]
+        out[vrsta] += novi
+        if vrsta == "clanak":
+            par += [{"clanak": x, "stavci": []} for x in novi]
+        elif vrsta == "stavak" and par:
+            par[-1]["stavci"] += novi
+        zadnji, raspon = n, False
+    return out, par
+
+
 def navod(s):
-    """Navod iz tablice pravila → {vrsta, plan, clanci, stavci, tocke}. Raspon stavaka ne postaje raspon članaka;
-    točka pojmovnika nije članak."""
+    """Navod iz tablice pravila → {vrsta, plan, clanci, stavci, tocke, alineje, slova, parovi}.
+    Stavci (»st. 2. i 3.«, »st. 1.–3. i 5.«) nikad ne postaju članci; točka pojmovnika nije članak."""
     raw = str(s or "")
     t = re.sub(r"\s+", " ", raw).strip()
     plan = None
@@ -376,24 +416,17 @@ def navod(s):
     if pm:
         plan, t = pm.group(1), t[pm.end():]
     if re.search(r"pojmovnik", t, re.I):
-        return {"vrsta": "POJMOVNIK", "plan": plan, "clanci": [], "stavci": [], "tocke": [int(x) for x in re.findall(r"točk\w*\s*(\d+)", t, re.I)], "izvorno": raw}
-    clanci, stavci = [], []
-    for dio in re.split(r";", t):
-        dio = dio.strip()
-        sm = re.search(r"\b(?:st|stav\w*)\.?\s*(\d+)\.?(?:\s*[–-]\s*(\d+)\.?)?", dio, re.I)
-        if sm:
-            a = int(sm.group(1)); b = int(sm.group(2) or a)
-            stavci += list(range(a, b + 1)) if 0 <= b - a <= 20 else [a]
-            dio = dio[:sm.start()] + dio[sm.end():]
-        dio = re.sub(r"\bčl\.?\s*", "", dio, flags=re.I)
-        for a, b in re.findall(r"(\d{1,3})\.?\s*[–-]\s*(\d{1,3})\.?", dio):
-            a, b = int(a), int(b)
-            clanci += list(range(a, b + 1)) if 0 <= b - a <= 50 else [a, b]
-        dio = re.sub(r"(\d{1,3})\.?\s*[–-]\s*(\d{1,3})\.?", " ", dio)
-        clanci += [int(x) for x in re.findall(r"(?<![\d,])(\d{1,3})(?![\d,])\.?", dio)]
-    vrsta = "CLANAK" if clanci else "NEPOZNATO"
-    tocke = re.findall(r"(?<![\w])([a-z])\)", t)
-    return {"vrsta": vrsta, "plan": plan, "clanci": sorted(set(clanci)), "stavci": sorted(set(stavci)), "tocke": tocke, "izvorno": raw}
+        return {"vrsta": "POJMOVNIK", "plan": plan, "clanci": [], "stavci": [], "tocke": [int(x) for x in re.findall(r"točk\w*\s*(\d+)", t, re.I)],
+                "alineje": [], "slova": [], "parovi": [], "izvorno": raw}
+    sve = {"clanak": [], "stavak": [], "tocka": [], "alineja": [], "slovo": []}; parovi = []
+    for dio in t.split(";"):
+        o, p = _dio_navoda(dio)
+        for k in sve:
+            sve[k] += o[k]
+        parovi += p
+    return {"vrsta": "CLANAK" if sve["clanak"] else "NEPOZNATO", "plan": plan, "clanci": sorted(set(sve["clanak"])),
+            "stavci": sorted(set(sve["stavak"])), "tocke": sorted(set(sve["tocka"])) + sve["slovo"], "alineje": sorted(set(sve["alineja"])),
+            "slova": sve["slovo"], "parovi": parovi, "izvorno": raw}
 
 
 def main(argv=None):

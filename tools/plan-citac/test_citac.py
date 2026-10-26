@@ -148,6 +148,25 @@ class StvarniPdf(unittest.TestCase):
         self.assertEqual(brojevi(z), [])
         self.assertEqual(brojevi(self.C["83"]["tekst"][:400])[:1], [])  # »(1)«, »Z-5332« i k.č. nisu vrijednosti
 
+    def test_oznake_parkiralista_nisu_uvjet(self):
+        """Čl. 52. st. 6.: »- P₁ - 15 - P₂ - 5 …« su broj mjesta po parkiralištu; vrijednost se veže uz oznaku."""
+        t = self.C["52"]["tekst"]
+        self.assertIn("- P₁ - 15 - P₂ - 5 - P₃ - 5 - P₄ - 5 - P₅ - 3 - P₆ - 10 - P₇ - 15", t)
+        ozn = [(b["oznaka"], b["literal"]) for b in brojevi(t) if b["oznaka"]]
+        self.assertEqual(ozn, [("P₁", "15"), ("P₂", "5"), ("P₃", "5"), ("P₄", "5"), ("P₅", "3"), ("P₆", "10"), ("P₇", "15")])
+        self.assertFalse(ima_broj(t, 15)); self.assertFalse(ima_broj(t, 10)); self.assertFalse(ima_broj(t, 1))
+        self.assertTrue(ima_broj(t, 15, oznaka="P₁")); self.assertFalse(ima_broj(t, 10, oznaka="P₁"))
+        self.assertFalse(any(b["literal"] in ("1", "2", "7") for b in brojevi(t) if b["oznaka"]))  # indeks oznake nije broj
+        svi = [(n, b["oznaka"]) for n, c in self.C.items() for b in brojevi(c["tekst"]) if b["oznaka"]]
+        self.assertEqual({n for n, _ in svi}, {"52"})  # nigdje drugdje broj nije vezan uz oznaku
+        self.assertFalse(ima_broj("parkirališta P₁ i P₇", 1)); self.assertFalse(ima_broj("parkirališta P1 i P7", 7))
+
+    def test_tablica_ne_daje_brojeve(self):
+        """Ćelije tablice čl. 53 ne ulaze u tekst članka, pa iz nje ne može nastati brojčani dokaz."""
+        t = self.C["53"]["tekst"]
+        self.assertFalse(ima_broj(t, 2)); self.assertFalse(ima_broj(t, 30)); self.assertFalse(ima_broj(t, 1000, "m²"))
+        self.assertTrue(all(c["status_tablica"] is None for n, c in self.C.items() if n != "53"))
+
     def test_bez_pravne_potvrde(self):
         self.assertEqual(self.r["automatska_potvrda"], 0)
         self.assertFalse(self.r["pravno_potvrdeno"])
@@ -188,6 +207,26 @@ class Navodi(unittest.TestCase):
         n = navod("UPU2 čl. 83.")
         self.assertEqual((n["plan"], n["clanci"]), ("UPU2", [83]))
         self.assertEqual(navod("")["vrsta"], "NEPOZNATO")
+
+    def test_nabrojeni_stavci_nisu_clanci(self):
+        """Neovisna provjera: »čl. 38. st. 2. i 3.« vraćao je članke [3, 38] i stavke [2]."""
+        for s, cl, st in (("čl. 38. st. 2. i 3.", [38], [2, 3]), ("čl. 38. st. 1. i 2.", [38], [1, 2]),
+                          ("čl. 38. st. 1., 2. i 4.", [38], [1, 2, 4]), ("čl. 38. stavak 2. ili 3.", [38], [2, 3]),
+                          ("čl. 38. st. 1.–3. i 5.", [38], [1, 2, 3, 5]), ("čl. 38. st. 1. i 3.–4.", [38], [1, 3, 4]),
+                          ("čl. 38. st. 2. do 4.", [38], [2, 3, 4]), ("UPU2 čl. 38. st. 2. i 3.", [38], [2, 3])):
+            n = navod(s)
+            self.assertEqual((n["clanci"], n["stavci"]), (cl, st), s)
+            self.assertEqual(n["parovi"], [{"clanak": 38, "stavci": st}], s)
+
+    def test_vise_clanaka_sa_stavcima(self):
+        n = navod("čl. 38. st. 2. i 3.; čl. 39. st. 1.")
+        self.assertEqual(n["parovi"], [{"clanak": 38, "stavci": [2, 3]}, {"clanak": 39, "stavci": [1]}])
+        n = navod("čl. 38., 39. i 41.")
+        self.assertEqual((n["clanci"], n["stavci"]), ([38, 39, 41], []))
+        n = navod("čl. 38.–40.")
+        self.assertEqual([p["clanak"] for p in n["parovi"]], [38, 39, 40])
+        n = navod("čl. 85. st. 2. t. 3.")
+        self.assertEqual((n["clanci"], n["stavci"], n["tocke"]), ([85], [2], [3]))
 
 
 if __name__ == "__main__":

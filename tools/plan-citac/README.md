@@ -20,13 +20,14 @@ PyMuPDF je licenciran pod AGPL-3.0. Koristi se samo kao lokalni alat i ne ugrađ
    - prepoznaju »0,25,«, »0,75, a iznimno 1,0« i »40 %« kao udio 0,4;
    - ne nalaze »1,0« u »1,5«;
    - preskaču oznake stavaka »(1)«, pozive na članke, stavke i točke, k.č., broj glasila, mjerilo, oznake prikaza i cesta, godine i nabrajanja.
-9. **`navod(s)`:** članak, raspon članaka, stavci odvojeno od članaka, točka pojmovnika, točka slovom »d)« i oznaka plana.
+9. **`navod(s)`:** čita navod slijeva nadesno; riječ »čl./st./t./al.« mijenja vrstu brojeva koji slijede. Nabrajanja i rasponi (»st. 2. i 3.«, »st. 1.–3. i 5.«, »st. 2. do 4.«) ostaju stavci. Vraća i parove članak → stavci, točku pojmovnika, točku slovom »d)« i oznaku plana.
+10. **Vrijednost uz oznaku** (»P₁ - 15«: broj mjesta na parkiralištu P₁) dobiva polje `oznaka`. `ima_broj()` je broji samo kad se ta oznaka izričito traži.
 
 ## Neriješeno (stanje: SN PGŽ 19/2016, UPU 2 Kornić)
 - **Prepoznavanje je provjereno samo na ovom PDF-u.** Sidra (naslov odluke, »Klasa:«), prag razmaka (1 pt), prepoznavanje zaglavlja i tablica treba provjeriti na drugim brojevima Službenih novina i na PPUG-u.
 - **Tablica u čl. 53 (normativi parkiranja)** nije rekonstruirana; vrijednosti se moraju ručno prepisati i provjeriti.
 - **Podstavci, alineje i iznimke** (osnovna vrijednost ili iznimka, vrsta građevine, uvjet) nisu razdvojeni. To je sljedeća faza.
-- **`brojevi()` je heuristika.** Nabrajanja s malim slovom (»2. križ«), popisi k.č. bez kose crte i oznake poput »P₁ - 15« mogu proći kao vrijednosti. Za dokaz treba broj uz jedinicu i kontekst.
+- **`brojevi()` je heuristika.** Nabrajanja s malim slovom (»2. križ«) i popisi k.č. bez kose crte mogu proći kao vrijednosti. Za dokaz treba broj uz jedinicu i kontekst.
 - **Greške u izvornom tekstu ostaju kako jesu:** »broj32/08«, »trgovačko- uslužne« i slično (8 crtica s razmakom unutar retka).
 - **HTML iste odluke nema članke 54–107**; izvor je PDF.
 - Pravna aktualnost UPU-a 2 i dalje nije potvrđena (`pravna_provjera: NIJE_POTVRDENO`).
