@@ -518,7 +518,7 @@
      "uvjet": null,
      "uvjet_izvorni": null,
      "preduvjeti": [],
-     "napomena": "točka mjerenja visine nije navedena u ovoj odredbi",
+     "napomena": null,
      "obrazac": "gramatika",
      "dokaz": "najveća dopuštena visina obiteljske kuće iznosi 6,5m",
      "izvor": {
@@ -526,9 +526,11 @@
       "redak": 1003,
       "pomak": 1321
      },
-     "status": "PRIJEDLOG",
-     "razlozi": [],
-     "za_izracun": true,
+     "status": "PREGLED",
+     "razlozi": [
+      "referentna točka mjerenja visine nije navedena u ovoj odredbi"
+     ],
+     "za_izracun": false,
      "pravno_potvrdeno": false
     },
     {
@@ -1391,7 +1393,7 @@
      "uvjet": null,
      "uvjet_izvorni": null,
      "preduvjeti": [],
-     "napomena": "točka mjerenja visine nije navedena u ovoj odredbi",
+     "napomena": null,
      "obrazac": "gramatika",
      "dokaz": "najveća dopuštena visina višeobiteljske kuće iznosi 6,5 m",
      "izvor": {
@@ -1399,9 +1401,11 @@
       "redak": 1076,
       "pomak": 1073
      },
-     "status": "PRIJEDLOG",
-     "razlozi": [],
-     "za_izracun": true,
+     "status": "PREGLED",
+     "razlozi": [
+      "referentna točka mjerenja visine nije navedena u ovoj odredbi"
+     ],
+     "za_izracun": false,
      "pravno_potvrdeno": false
     },
     {
@@ -1790,9 +1794,9 @@
  "automatska_potvrda": 0,
  "pravno_potvrdeno": false,
  "sazetak": {
-  "prijedlozi": 42,
-  "pregled": 7,
-  "za_izracun": 36,
+  "prijedlozi": 40,
+  "pregled": 9,
+  "za_izracun": 34,
   "bez_vrijednosti": 0,
   "nepokrivene_alineje": 0
  }

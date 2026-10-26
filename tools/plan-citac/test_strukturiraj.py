@@ -292,10 +292,9 @@ class NeovisnoPpug(unittest.TestCase):
         oz = json.loads((MAPA / "oznake/neovisno/neovisne_oznake_ppug_22_23.json").read_text(encoding="utf-8"))
         M = json.loads((MAPA / "oznake/neovisno/mapiranje.json").read_text(encoding="utf-8"))
         s, r = O.ocijeni(self.R, oz, M)
-        self.assertEqual((s["oznaka"], s["tocno"], s["pogresno"], s["pregled"], s["pregled_odgovara_oznaci"], s["propusteno"]), (55, 48, 0, 7, 7, 0))
-        self.assertEqual(sorted(x["oznaka"] for x in r["pregled"]), ["G019", "G024", "G029", "G031", "G048", "G053", "G055"])
-        # neslaganje: visina 6,5 m (G021, G045) – oznaka traži pregled jer točka mjerenja nije navedena; modul predlaže uz napomenu
-        self.assertEqual(sorted(x["oznaka"] for x in r["tocno"] if x["ocjena_oznake"] == "PREGLED"), ["G021", "G045"])
+        self.assertEqual((s["oznaka"], s["tocno"], s["pogresno"], s["pregled"], s["pregled_odgovara_oznaci"], s["propusteno"]), (55, 46, 0, 9, 9, 0))
+        self.assertEqual(sorted(x["oznaka"] for x in r["pregled"]), ["G019", "G021", "G024", "G029", "G031", "G045", "G048", "G053", "G055"])
+        self.assertEqual((s["tocno_a_oznaka_trazi_pregled"], s["pregled_a_oznaka_jasna"]), (0, 0))
 
     def test_kis_nadzemni_i_uz_podrum(self):
         kn = [p for p in self.P if p["parametar"] == "kisNadzemni"]; kp = [p for p in self.P if p["parametar"] == "kisPodrum"]

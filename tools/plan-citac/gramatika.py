@@ -38,7 +38,7 @@ PREDMETI = [
     (r"najveći dopušteni koeficijent iskoristivosti(?: \(kis\))?(?! nadzemnih)",
      lambda m, k: ("kisPodrum", None, None) if k.get("podrum") else ("kis", None, "koeficijent iskoristivosti bez oznake nadzemno/podrum")),
     (r"najveći dopušteni broj etaža", lambda m, k: ("etazeMax", None, None)),
-    (r"najveća dopuštena visina", lambda m, k: ("visinaMax", "točka mjerenja visine nije navedena u ovoj odredbi", None)),
+    (r"najveća dopuštena visina", lambda m, k: ("visinaMax", None, "referentna točka mjerenja visine nije navedena u ovoj odredbi")),
     (r"visina od (?P<ref>najniže kote konačno zaravnatog terena)", lambda m, k: ("visinaMax", "mjereno od " + m["ref"], None)),
     (r"(?:najmanja )?udaljenost(?: [a-zčćđšž ]+?)? od regulacijskog pravca", lambda m, k: ("regulacija", None, None)),
     (r"(?:najmanja )?udaljenost(?: [a-zčćđšž ]+?)? od granice građevne čestice",
