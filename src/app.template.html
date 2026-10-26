@@ -1011,23 +1011,25 @@ function gradivo(parcel,baseGeom,medaD,pravacD,roads){
 function gpDraw(G){ gpLayer.clearLayers(); if(!G||!GP.show) return;
   if(G.band) L.geoJSON(G.band,{style:{color:"#c77700",weight:1,dashArray:"3 3",fillColor:"#f0a020",fillOpacity:.35},interactive:false}).addTo(gpLayer);
   if(G.geom) L.geoJSON(G.geom,{style:{color:"#14532d",weight:2.5,fillColor:"#22a35a",fillOpacity:.30},interactive:false}).addTo(gpLayer); }
-function gpHtml(G,tlKig,opisMeda,opisPravac){
+function gpHtml(G,tlKig,opisMeda,opisPravac,opts){
   if(!G) return "";
   window.__gp=G; gpDraw(G); try{legendaMapUpdate()}catch(e){}
   const geo=tlKig!=null?Math.min(tlKig,G.area):null, ogr=tlKig!=null&&G.area<tlKig, md=String(G.medaD).replace(".",",");
-  const pzG=pzSet("gp-podrucje","Područje za gradnju (obris na karti)",fmt(G.area)+" m²",G.kroz?pz("C",{metoda:"odmak "+md+" m od međa"+(G.st==="primijenjen"?" i "+String(G.pravacD).replace(".",",")+" m od strane uz cestu":""),razlog:"cesta u naravi prolazi kroz česticu; katastar i stvarno stanje se možda ne poklapaju",provjera:"lokacijska informacija, geodet"}):G.st==="primijenjen"?pz("C",{metoda:"odmak "+md+" m od međa i "+String(G.pravacD).replace(".",",")+" m od strane uz cestu",razlog:"strana uz cestu procijenjena iz OpenStreetMapa; regulacijski pravac nije potvrđen",provjera:"lokacijska informacija"})
+  const pzG=pzSet("gp-podrucje","Teorijski prostor za gradnju (obris na karti)",fmt(G.area)+" m²",G.kroz?pz("C",{metoda:"odmak "+md+" m od međa"+(G.st==="primijenjen"?" i "+String(G.pravacD).replace(".",",")+" m od strane uz cestu":""),razlog:"cesta u naravi prolazi kroz česticu; katastar i stvarno stanje se možda ne poklapaju",provjera:"lokacijska informacija, geodet"}):G.st==="primijenjen"?pz("C",{metoda:"odmak "+md+" m od međa i "+String(G.pravacD).replace(".",",")+" m od strane uz cestu",razlog:"strana uz cestu procijenjena iz OpenStreetMapa; regulacijski pravac nije potvrđen",provjera:"lokacijska informacija"})
     :G.st==="nema"?pz("B",{metoda:"odmak "+md+" m od međa"}):pz("C",{metoda:"odmak "+md+" m od međa",razlog:G.st==="ceste nisu učitane"?"ceste iz OpenStreetMapa nisu učitane; odmak od ceste nije primijenjen":"uz česticu nije prepoznata cesta; odmak od ceste nije primijenjen",provjera:"lokacijska informacija"}));
   const open=OPEN.has("gp")?" open":"";
-  let h=`<details class="acc" data-k="gp"${open}><summary><span>Područje za gradnju</span><b>${fmt(G.area)} m² ${pzTag(pzG)}</b></summary><div class="acc-body"><table class="rp"><tbody>`;
+  let h=`<details class="acc" data-k="gp"${open}><summary><span>Teorijski prostor za gradnju</span><b>${fmt(G.area)} m² ${pzTag(pzG)}</b></summary><div class="acc-body"><table class="rp"><tbody>`;
   h+=`<tr><th>Čestica</th><td>${fmt(G.parcelArea)} m²<small class="fx">grafička površina</small></td></tr>`;
   h+=`<tr><th>Nakon odmaka od međa</th><td>${fmt(G.baseArea)} m²<small class="fx">${esc(opisMeda)}; samo dio čestice u građevinskoj namjeni</small></td></tr>`;
   h+=`<tr><th>Odmak od ceste</th><td>${G.st==="primijenjen"?`${String(G.pravacD).replace(".",",")} m od ruba čestice uz cestu (narančasto)`:G.st==="nema"?"pravilo ne navodi udaljenost od regulacijskog pravca":G.st==="nije uz cestu"?"uz česticu nije prepoznata cesta; nije primijenjen":"ceste još nisu učitane; nije primijenjen"}<small class="fx">${esc(opisPravac||"")}</small></td></tr>`;
+  const O=opts||{}, A2=O.alt&&O.alt.G;
+  if(A2&&G.st==="primijenjen") h+=`<tr><th>Drugi scenarij odmaka od ceste</th><td>${fmt(A2.area)} m²<small class="fx">uz odmak ${String(O.alt.d).replace(".",",")} m od regulacijskog pravca (${esc(O.alt.naziv||"veći odmak")}); kategorija ceste nije poznata, pa nijedan scenarij nije konačan</small></td></tr>`;
   if(G.kroz) h+=`<tr><th>Cesta i katastar</th><td><span class="chk-warn">!</span> ${esc(krozTekst(G.kroz))}</td></tr>`;
-  h+=`<tr><th>Područje za gradnju</th><td><b>${fmt(G.area)} m²</b> ${pzTag(pzG)}<small class="fx">zeleno na karti</small></td></tr>`;
+  h+=`<tr><th>Teorijski prostor za gradnju</th><td><b>${fmt(G.area)} m²</b> ${pzTag(pzG)}<small class="fx">zeleno na karti${A2&&G.st==="primijenjen"?"; uz odmak "+String(G.pravacD).replace(".",",")+" m":""}</small></td></tr>`;
   if(tlKig!=null) h+=`<tr><th>Geometrijski moguć tlocrt</th><td><b>do ${fmt(geo)} m²</b> ${pzTag(pzCalc({},[pzG]))}<small class="fx">${ogr?`Oblik čestice ograničava tlocrt: kig dopušta ${fmt(tlKig)} m², a u obris stane najviše ${fmt(G.area)} m².`:`Kig dopušta ${fmt(tlKig)} m²; obris je veći, pa ograničenje dolazi od kig-a.`} Kuća mora stati u obris; provjeri u simulatoru.</small></td></tr>`;
   h+=`</tbody></table><div class="kd"><button type="button" class="ib" id="gpTog">${GP.show?"Sakrij s karte":"Prikaži na karti"}</button></div>`;
   h+=`<div class="lgd-box">${legendaHtml({skica:true})}</div>`;
-  h+=`<p class="meta">Strana čestice uz cestu procijenjena je iz OpenStreetMapa (cesta do 12 m od ruba čestice). Regulacijski pravac nije u javnim podacima, pa obris nije potvrđen: mjerodavna je lokacijska informacija. Obris nije dopuštenje za gradnju.</p></div></details>`;
+  h+=`<p class="meta">Teorijski prostor je geometrijska procjena: granica čestice uvučena za propisani odmak od međa i, gdje je cesta prepoznata, za odmak od regulacijskog pravca. Nije potvrđeno dopušteno područje gradnje. Strana čestice uz cestu procijenjena je iz OpenStreetMapa (cesta do 12 m od ruba čestice). Regulacijski pravac nije u javnim podacima, pa obris nije potvrđen: mjerodavna je lokacijska informacija. Obris nije dopuštenje za gradnju.</p>${O.napomena||""}</div></details>`;
   return h;
 }
 sheet.addEventListener("click",e=>{ if(e.target.id!=="gpTog") return; GP.show=!GP.show; gpDraw(window.__gp); e.target.textContent=GP.show?"Sakrij s karte":"Prikaži na karti"; });
@@ -1247,6 +1249,20 @@ function krkPrekHtml(d){
 function krkRegDist(RS){const r=RS&&RS.regulacija; if(!r) return null; if(r.ostale) return {d:r.ostale,max:r.razvrstane||null};
   const n=String(r.opis||""), a=n.match(/nerazvrstan\w*\s+(\d+(?:,\d+)?)\s*m/i), b=n.match(/javn\w*\s+cest\w*\s+(\d+(?:,\d+)?)\s*m/i);
   return a?{d:parseFloat(a[1].replace(",",".")),max:b?parseFloat(b[1].replace(",",".")):null}:null;}
+// teorijski prostor za gradnju na Krku: što je uračunato, a što nije (bez novog izračuna)
+const krkH2=RS=>/h\s*\/\s*2|pola visine/i.test([RS.meda&&RS.meda.opis,RS.meda&&RS.meda.txt,RS.meda&&RS.meda.opisIznimka].join(" "));
+function krkTeorijskiHtml(RS){
+  const ne=["regulacijski pravac i kategorija ceste (vidi „Teorijski prostor za gradnju”)"];
+  if(krkH2(RS)) ne.unshift("pravilo h/2");
+  ne.push("posebni uvjeti zaštite i lokalni uvjeti");
+  return `<div class="verdict v-warn" data-teorijski-prostor="krk" style="margin:4px 0">Teorijska geometrijska procjena, nije potvrđeno dopušteno područje gradnje. Uračunat je samo odmak ${RS.meda.min} m od svih međa; nisu uračunati: ${esc(ne.join(", "))}. Mjerodavna je lokacijska informacija.</div>`; }
+function krkProstorNapomena(RS,RD,G1,G2){
+  let h=`<p class="meta" data-krk-regulacija="1"><b>Regulacijski pravac i os ceste.</b> Odmak od ceste mjeri se od regulacijskog pravca, tj. granice čestice prema prometnoj površini. Aplikacija tu granicu procjenjuje kao rub čestice uz cestu iz OpenStreetMapa. To nije os ceste.`;
+  if(/\bosi\b/i.test(String(RS.regulacija&&RS.regulacija.opis||""))) h+=` Plan propisuje i najmanju udaljenost od osi ceste (${esc(RS.regulacija.opis)}, čl. ${esc(RS.regulacija.clanak)}); aplikacija je ne računa jer položaj osi iz OpenStreetMapa nije dovoljno točan.`;
+  if(RD&&RD.max) h+=` Kategorija ceste (razvrstana ili javna, odnosno ostala ili nerazvrstana) nije poznata, pa se prikazuju oba scenarija, ${RD.d} m i ${RD.max} m. Nijedan nije konačan pravni rezultat.`;
+  h+=`</p>`;
+  if(krkH2(RS)) h+=`<p class="meta" data-krk-h2="1"><b>Pravilo h/2.</b> Plan uz udaljenost od međe navodi h/2 (pola visine građevine), uz najmanju udaljenost od ${RS.meda.min} m${RS.meda.opisIznimka&&/h\s*\/\s*2/i.test(RS.meda.opisIznimka)?" ili u posebnim područjima ("+esc(RS.meda.opisIznimka)+")":""}. Aplikacija h/2 ne izračunava dok se ne potvrdi kako plan određuje visinu h i gdje se pravilo primjenjuje. Prikazani prostor koristi samo najmanju udaljenost, pa uz višu građevinu stvarni odmak može biti veći.</p>`;
+  return h; }
 function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   const R=RULES_KRK, area=d.area, I=RS.izvor||R.izvor; let h="";
   const base=isUpu?S.izgr:S.izgr;
@@ -1278,8 +1294,8 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
        const stanje=zab.includes(o)?"zabr":!mOk&&!mEx?"mala":P2.tlMin&&t2<P2.tlMin?"tl":P2.maxC&&A>P2.maxC?"vel":mEx?"izn":"ok";
        rows.push({key:"krk|"+k+"|"+o,naziv:T2.naziv,oblik:ON[o]||o,minC:P2.minC,minCIzn:P2.minCIznimno,tl:t2,gbp:g2,visina:T2.visina,etaze:T2.etaze,stanje,odabran:T2===T&&o===oblSel,pz:pzCalc({},[pzA,pzR,pzZ,pzS])});}}
    window.__tipCmp=rows; h+=tipCmpHtml(rows,A,AS&&AS.naziv?AS.naziv+" površina":null);}
-  if(env){const RD=krkRegDist(RS);
-    h+=gpHtml(gradivo(d.parcel,env.geom,RS.meda.min,RD?RD.d:null,d.env&&d.env.v?d.env.v.roadLines:null),tl,`${RS.meda.min} m od međa (${RS.meda.opis||""}, čl. ${RS.meda.clanak})`,RD?`primijenjeno ${RD.d} m; plan: ${RS.regulacija.opis} (čl. ${RS.regulacija.clanak})${RD.max?". Ako je cesta razvrstana ili javna, odmak je veći.":""}`:"");}
+  if(env){const RD=krkRegDist(RS), roads=d.env&&d.env.v?d.env.v.roadLines:null, G1=gradivo(d.parcel,env.geom,RS.meda.min,RD?RD.d:null,roads), G2=RD&&RD.max?gradivo(d.parcel,env.geom,RS.meda.min,RD.max,roads):null;
+    h+=gpHtml(G1,tl,`${RS.meda.min} m od međa (${RS.meda.opis||""}, čl. ${RS.meda.clanak})`,RD?`prvi scenarij ${RD.d} m${RD.max?", drugi "+RD.max+" m":""}; plan: ${RS.regulacija.opis} (čl. ${RS.regulacija.clanak})`:"",{alt:G2?{G:G2,d:RD.max,naziv:"razvrstana ili javna cesta"}:null,napomena:krkProstorNapomena(RS,RD,G1,G2)});}
   const chips=[(minOk?"čestica dovoljna":minEx?"čestica: samo iznimno":"čestica premala"),"tlocrt do "+fmt(tl)+" m²","GBP do "+fmt(gbpN)+" m²","visina "+dec(T.visina)+" m"];
   h+=`<div class="chips">${chips.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`;
   const row=(l,v,cls="")=>`<div class="row"><span>${l}</span><span class="${cls}">${v}</span></div>`;
@@ -1303,7 +1319,7 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   if(T.kosi) h+=`<p class="${kosi?"flag":"meta"}">Na kosom terenu (nagib veći od ${T.kosi.nagib} %): ${esc(T.kosi.etaze)}, visina do ${dec(T.kosi.visina)} m.${slope!=null?` Model visina procjenjuje nagib okoline na oko ${Math.round(slope)} %${kosi?", pa iznimka možda vrijedi":""}; stvarni nagib potvrđuje geodetska snimka.`:""}</p>`;
   if(T.etazeNapomena) h+=`<p class="meta">${esc(T.etazeNapomena)}</p>`;
   h+=row(`Od međe (čl. ${esc(RS.meda.clanak)})`,esc(RS.meda.opis))+(RS.meda.opisIznimka?`<p class="meta">${esc(RS.meda.opisIznimka)}</p>`:"");
-  if(env) h+=row(`Prostor za kuću (${RS.meda.min} m od međa, zeleno na karti)`,fmt(env.area)+" m²",env.area<tl?"bad":"");
+  if(env) h+=row(`Teorijski prostor za kuću (samo odmak ${RS.meda.min} m od međa, zeleno na karti)`,fmt(env.area)+" m²",env.area<tl?"bad":"")+krkTeorijskiHtml(RS);
   if(env&&env.area<tl) h+=`<p class="meta">Prostor unutar ${RS.meda.min} m od međa manji je od dopuštenog tlocrta, pa oblik čestice ograničava tlocrt na najviše ${fmt(env.area)} m².</p>`;
   h+=row(`Od regulacijskog pravca (čl. ${esc(RS.regulacija.clanak)})`,esc(RS.regulacija.opis));
   h+=row(`${esc(RS.zelenilo.opisNaziv||"Zelenilo")} (čl. ${esc(RS.zelenilo.clanak)})`,RS.zelenilo.min?`najmanje ${Math.round(RS.zelenilo.min*100)} % = ${fmt(Aall*RS.zelenilo.min)} m²`:"plan ne određuje");
@@ -1337,24 +1353,34 @@ function krkCostHtml(d,inPilot,jlsName){
   if(Z) h+=`<p class="meta"><b>${esc(Z.z[0])}. zona</b> (${esc(Z.why)}): ${dec(Z.z[2].toFixed(2))} kn/m³ = <b>${dec(eur.toFixed(2))} €/m³</b>.</p>`;
   else h+=`<p class="meta">Zona nije prepoznata iz naselja; izaberi je u tablici ispod i upiši iznos.</p>`;
   h+=`<div class="kd"><label for="krkKdVol">Obujam građevine</label><input id="krkKdVol" type="number" inputmode="decimal" min="0" step="1" value="${esc(vol0)}"><span>m³</span></div>`;
-  h+=`<p class="meta" id="krkKdVolNote">${c?`Prijedlog obujma: najveći nadzemni GBP (${fmt(c.gbpN)} m²) × 3 m. `:""}Kad postaviš kuću u simulatoru, obujam se računa iz njezina modela. Službeno se obračunava obujam iz projekta (čl. 4.).</p>`;
+  h+=`<p class="meta" id="krkKdVolNote">${c?`Prijedlog obujma (samo informativna procjena aplikacije, nije propis): najveći nadzemni GBP (${fmt(c.gbpN)} m²) × 3 m. `:""}Kad postaviš kuću u simulatoru, obujam se računa iz njezina modela. Službeno se obračunava obujam iz projekta (čl. 4.).</p>`;
   h+=`<div class="kd"><label for="krkKdRate">Iznos</label><input id="krkKdRate" type="number" inputmode="decimal" min="0" step="0.01" placeholder="€/m³" value="${esc(eur!=null?eur:"")}"><span>€/m³</span></div>`;
-  h+=`<div class="kd"><label for="krkKdRed">Umanjenje</label><select id="krkKdRed" class="bsel">${[["1","bez umanjenja"],["0.3","30 % za stanovanje do 500 m³ (čl. 10., uvjeti ispod)"]].map(o=>`<option value="${o[0]}"${String(st.red||"1")===o[0]?" selected":""}>${o[1]}</option>`).join("")}</select></div>`;
-  h+=`<div class="kd"><span>Ukupno:</span><output id="krkKdOut"></output></div>`;
+  h+=`<div class="kd"><label for="krkKdRed">Umanjenje</label><select id="krkKdRed" class="bsel">${[["1","puni obračun (bez povlastice)"],["0.3","povlašteni obračun (čl. 10.)"]].map(o=>`<option value="${o[0]}"${String(st.red||"1")===o[0]?" selected":""}>${o[1]}</option>`).join("")}</select></div>`;
+  const chk=(id,on,t)=>`<label style="display:flex;gap:10px;align-items:center;margin:6px 0"><input type="checkbox" id="${id}"${on?" checked":""} style="flex:0 0 auto"><span>${t}</span></label>`;
+  h+=`<div id="krkKdUvjeti"${String(st.red||"1")==="0.3"?"":" hidden"}><p style="margin:6px 0">Povlašteni obračun (čl. 10.): za prvih 500 m³ plaća se 30 % osnovnog iznosa, za zgradu ili dio zgrade namijenjen stanovanju. Vrijedi samo ako ispunjavaš oba uvjeta; potvrdi ih (samoprijava, pravo utvrđuje Grad Krk):</p>`+
+    chk("krkKdUv1",st.uv1,"imam prebivalište na području Grada Krka 10 i više godina")+chk("krkKdUv2",st.uv2,"nemam u vlasništvu stambeni prostor")+
+    `<p style="margin:6px 0;font-size:13px">Ako imaš u vlasništvu stambeni prostor manji od 500 m³, pravo vrijedi samo za razliku kubature do 500 m³; taj slučaj aplikacija ne računa, pa ga ne potvrđuj ovdje i obrati se Gradu Krku.</p></div>`;
+  h+=`<div class="kd"><span>Ukupno:</span><output id="krkKdOut"></output></div><div id="krkKdNap"></div>`;
   h+=`<details><summary>Zone i iznosi (čl. 6.)</summary><table class="rp"><tbody>${K.zone.map(z=>`<tr><th>${esc(z[0])}. zona</th><td>${esc(z[1])}<small class="fx">${dec(z[2].toFixed(2))} kn/m³ = ${dec((z[2]/K.tecaj).toFixed(2))} €/m³</small></td></tr>`).join("")}</tbody></table></details>`;
   h+=`<details><summary>Umanjenja i oslobođenja iz odluke</summary><ol>${K.umanjenja.map(t=>`<li>${esc(t)}</li>`).join("")}</ol></details>`;
   h+=`</div></details>`+pr;
   return h;
 }
-// čl. 10.: umanjenje na 30 % vrijedi samo za obujam do 500 m³; ostatak po punom iznosu
+// čl. 10.: povlašteni obračun (plaća se 30 % iznosa) vrijedi samo za obujam do 500 m³; ostatak po punom iznosu
+// faktor obračuna: povlastica samo uz izričitu potvrdu obaju uvjeta (prebivalište 10+ godina, bez stambenog prostora); inače puni obračun
+function krkKdFaktor(izbor,uv1,uv2){ return String(izbor)==="0.3"&&uv1===true&&uv2===true?0.3:1; }
 function krkKdTotal(vol,rate,k){ if(!(vol>0&&rate>0)) return null; if(k>=1) return vol*rate; const v1=Math.min(vol,500); return v1*rate*k+(vol-v1)*rate; }
 function krkKdUpdate(){
   const v=document.getElementById("krkKdVol"), r=document.getElementById("krkKdRate"), red=document.getElementById("krkKdRed"), o=document.getElementById("krkKdOut"), s=document.getElementById("krkKdSum");
-  if(!v||!o) return; const vol=parseFloat(String(v.value).replace(",",".")), rate=parseFloat(String(r.value).replace(",",".")), k=parseFloat(red.value)||1;
-  try{localStorage.setItem("krkKd",JSON.stringify({red:red.value}))}catch(e){}
+  if(!v||!o) return; const vol=parseFloat(String(v.value).replace(",",".")), rate=parseFloat(String(r.value).replace(",",".")), trazi=red.value==="0.3";
+  const u1=document.getElementById("krkKdUv1"), u2=document.getElementById("krkKdUv2"), uv=document.getElementById("krkKdUvjeti"), nap=document.getElementById("krkKdNap");
+  if(uv) uv.hidden=!trazi; const potvrdeno=trazi&&!!(u1&&u1.checked)&&!!(u2&&u2.checked), k=krkKdFaktor(red.value,u1&&u1.checked,u2&&u2.checked);
+  try{localStorage.setItem("krkKd",JSON.stringify({red:red.value,uv1:!!(u1&&u1.checked),uv2:!!(u2&&u2.checked)}))}catch(e){}
   const t=krkKdTotal(vol,rate,k);
-  if(t!=null){o.textContent=fmt(t)+" €"+(k<1?(vol>500?" (umanjenje za prvih 500 m³)":" (s umanjenjem)"):""); if(s){s.textContent=fmt(t)+" €"; s.className="";}}
-  else{o.textContent="upiši obujam i iznos"; if(s){s.textContent="upiši iznos"; s.className="";}}
+  if(t!=null){o.textContent=fmt(t)+" €"+(potvrdeno?" (povlašteni obračun, samoprijava)":" (puni obračun)"); if(s){s.textContent=fmt(t)+" €"; s.className="";}
+    pzSet("kd-krk","Komunalni doprinos (Grad Krk)",fmt(t)+" €",potvrdeno?pz("C",{izvor:"Odluka o komunalnom doprinosu Grada Krka",razlog:"povlašteni obračun prema samoprijavi korisnika; uvjete iz čl. 10. utvrđuje Grad Krk",provjera:"Grad Krk, rješenje o komunalnom doprinosu"}):pz("B",{izvor:"Odluka o komunalnom doprinosu Grada Krka",razlog:"obujam je prijedlog ili unos, a ne obujam iz projekta",provjera:"rješenje o komunalnom doprinosu"}));}
+  else{o.textContent="upiši obujam i iznos"; if(s){s.textContent="upiši iznos"; s.className="";} pzDel("kd-krk");}
+  if(nap) nap.innerHTML=!trazi?"":potvrdeno?`<div class="verdict v-warn" style="margin:6px 0"><b>Samoprijavljeni scenarij</b> ${pzTag(PZREG.items.get("kd-krk"))}: za prvih ${fmt(500)} m³ plaća se 30 % osnovnog iznosa (to nije popust od 30 %), a za ostatak obujma puni iznos. Pravo na povlašteni obračun mora utvrditi Grad Krk.</div>`:`<p class="flag" style="margin:6px 0">Povlašteni obračun nije primijenjen: potvrdi oba uvjeta. Do tada se prikazuje puni obračun.</p>`;
 }
 sheet.addEventListener("input",e=>{ if(/^krkKd/.test(e.target.id||"")) krkKdUpdate(); });
 sheet.addEventListener("change",e=>{ if(/^krkKd/.test(e.target.id||"")) krkKdUpdate(); });
@@ -4930,7 +4956,7 @@ function render(d){
         if(!pp.minC&&!pp.izg&&!pp.kis) h+=`<p class="flag">Pravilo ne navodi posebne uvjete za ovaj tip kuće; provjeri detaljna pravila.</p>`;
         if(buildArea!=null&&buildArea<area-1) h+=`<div class="row"><span>Građevinski dio čestice</span><span>${fmt(buildArea)} od ${fmt(area)} m²</span></div>`;
         if(envelope&&envelope.area!=null){const tl=pp.izg?A*pp.izg:null, lim=tl&&envelope.area<tl;
-          h+=`<div class="row"><span>Prostor za kuću (${String(envelope.d).replace(".",",")} m od međa, zeleno na karti)</span><span class="${lim?"bad":""}">${fmt(envelope.area)} m²</span></div>`;
+          h+=`<div class="row"><span>Teorijski prostor za kuću (samo odmak ${String(envelope.d).replace(".",",")} m od međa, zeleno na karti)</span><span class="${lim?"bad":""}">${fmt(envelope.area)} m²</span></div><p class="meta">Teorijska geometrijska procjena, nije potvrđeno dopušteno područje gradnje.</p>`;
           if(envelope.est) h+=`<p class="meta">Udaljenost od međa je procjena (${esc(envelope.est)}); potrebna dodatna provjera.</p>`;
           if(lim) h+=`<p class="meta">Prostor unutar udaljenosti od međa manji je od dopuštenog tlocrta, pa oblik čestice ograničava tlocrt kuće na najviše ${fmt(envelope.area)} m².</p>`;}
         if(pp.minC){const ok=A>=pp.minC, edge=!ok&&A>=pp.minC*0.95;
