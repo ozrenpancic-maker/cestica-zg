@@ -1165,6 +1165,10 @@ function krkRuleStateJls(d,jls){
   if(RS.upozorenje) notes.unshift(RS.upozorenje);
   return {st:RS.upozorenje||notes.some(n=>n===N.msg||/lokacijska informacija|ne odgovara|nije odgovorila/.test(n))?"provjera":"ok",RS,izgr,notes,grupa:RS.grupa.naziv};
 }
+// pravna provjera izvora pravila (rules_krk.json → izvor.pravna_provjera): status plana („na snazi”) nije isto što i neovisna
+// provjera lanca objava. Dok provjera nije POTVRDENO, pravilo nema razinu A, a uz prikazane uvjete gradnje stoji upozorenje.
+const pravnaNepotvrdena=I=>!!(I&&I.pravna_provjera&&I.pravna_provjera.status!=="POTVRDENO");
+function krkPravnaHtml(I){ return pravnaNepotvrdena(I)?`<div class="verdict v-warn" data-pravna-provjera="nepotvrdeno"><strong>Pravna aktualnost nije neovisno potvrđena.</strong> ${esc(I.pravna_provjera.napomena||"")}</div>`:""; }
 function krkRulesHtml(d){
   const R=RULES_KRK, S=krkRuleState(d); let h=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>%%PREK%%`; window.__krkS=S; krkEnvLayer.clearLayers(); gpLayer.clearLayers(); window.__gp=null; pzDel("gp-podrucje");
   window.__krkCalc=null; window.__env=null; window.__krkLim=null;
@@ -1189,7 +1193,7 @@ function krkRulesHtml(d){
   }
   const src=`<p class="meta">Izvor: <a href="${esc(I.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(I.naziv)}</a>, ${esc(I.sn)} · status: ${esc(I.status)}</p>`;
   const T=RS.tipovi[KRK_TIP.tip]||RS.tipovi.obit||Object.values(RS.tipovi)[0], P=T[KRK_TIP.oblik]||T.dvoj||T.slob, area=d.area;
-  h+=`<p class="rule-title"><span class="rule-code">${esc(RS.kod)}</span>${esc(T.naziv)}, čl. ${esc(T.clanak)}${/\.$/.test(T.clanak)?"":"."}${S.na?" · naselje "+esc(S.na):""}${S.grupa?" · "+esc(S.grupa):""}</p>`+src;
+  h+=`<p class="rule-title"><span class="rule-code">${esc(RS.kod)}</span>${esc(T.naziv)}, čl. ${esc(T.clanak)}${/\.$/.test(T.clanak)?"":"."}${S.na?" · naselje "+esc(S.na):""}${S.grupa?" · "+esc(S.grupa):""}</p>`+src+krkPravnaHtml(I);
   if(S.st==="provjera") h+=`<div class="verdict v-warn">${esc(S.msg||"Potrebna dodatna provjera.")}</div>`;
   for(const n of S.notes||[]) h+=`<p class="flag">${esc(n)}</p>`;
   const sel=(id,opts,v)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===v?" selected":""}>${esc(o[1])}</option>`).join("")}</select>`;
@@ -1261,7 +1265,7 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   window.__krkLim=krkSimLim(RS,T,kosi);
   if(window.__krkLim.zast&&window.__krkLim.zast.v==="C"&&T.kosi) h+=`<p class="flag">U zoni »C« najviše su dvije nadzemne etaže (čl. 85.), pa iznimka za kosi teren (${esc(T.kosi.etaze)}, ${dec(T.kosi.visina)} m) ovdje ne vrijedi.</p>`;
   // pouzdanost izračuna: nikad bolja od B; zona koju je korisnik odabrao (UPU) ili nepotvrđen uvjet daje C
-  const pzA=PZREG.items.get(AS&&AS.k?"pov-"+AS.k:"pov-graf")||PZREG.items.get("pov-graf"), pzR=pzSet("pravilo","Pravila gradnje",RS.kod+" · "+T.naziv+", čl. "+T.clanak,/^\s*(na snazi|važeći)/i.test(String(I.status||""))?pz("A",{izvor:I.naziv+(I.sn?", "+I.sn:""),obuhvat:"tekst odredbi, ručno prenesen u aplikaciju",razlog:/izradi/i.test(I.status)?"izmjene plana su u izradi":null}):pz("C",{izvor:I.naziv,razlog:"status plana: "+(I.status||"nepoznat"),provjera:"Službene novine, lokacijska informacija"}));
+  const pzA=PZREG.items.get(AS&&AS.k?"pov-"+AS.k:"pov-graf")||PZREG.items.get("pov-graf"), pzR=pzSet("pravilo","Pravila gradnje",RS.kod+" · "+T.naziv+", čl. "+T.clanak,/^\s*(na snazi|važeći)/i.test(String(I.status||""))?pz(pravnaNepotvrdena(I)?"B":"A",{izvor:I.naziv+(I.sn?", "+I.sn:""),obuhvat:"tekst odredbi, ručno prenesen u aplikaciju",razlog:[pravnaNepotvrdena(I)?"Pravna aktualnost nije neovisno potvrđena":null,/izradi/i.test(I.status)?"izmjene plana su u izradi":null].filter(Boolean).join("; ")||null,provjera:pravnaNepotvrdena(I)?"Službene novine PGŽ (objave nakon "+(I.sn||"zadnjeg pročišćenog teksta")+"), lokacijska informacija":undefined}):pz("C",{izvor:I.naziv,razlog:"status plana: "+(I.status||"nepoznat"),provjera:"Službene novine, lokacijska informacija"}));
   const pzZ=isUpu?PZREG.items.get("zona-korisnik"):PZREG.items.get("namjena"), pzS=S.st==="provjera"?pz("C",{naziv:"Uvjet iz plana",razlog:S.msg||"potrebna dodatna provjera"}):null;
   const pzT=pzSet("calc-tlocrt","Najveći tlocrt (teorijski, kig)",fmt(tl)+" m²",pzCalc({metoda:"površina "+fmt(A)+" m² × kig "+dec(P.izg)},[pzA,pzR,pzZ,pzS]));
   const pzG=pzSet("calc-gbp","Najveći GBP (teorijski, kis)",fmt(gbpN)+" m²",pzCalc({metoda:"površina "+fmt(A)+" m² × kis "+dec(P.kis)},[pzA,pzR,pzZ,pzS]));

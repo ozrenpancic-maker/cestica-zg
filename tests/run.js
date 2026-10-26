@@ -2095,6 +2095,34 @@ async function skenTests(){
   ok(errs.length===0,"bez JS grešaka (skener): "+errs.join(" | "));
 }
 
+// pravna provjera PPUG-a Krk: upozorenje i pouzdanost pravila (rules_krk.json → izvor.pravna_provjera)
+async function pravnaTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), R=E("RULES_KRK"), P=()=>E("PZREG").items.get("pravilo");
+  const parcel=parcelRect(30,20), red=(o)=>({p:Object.assign({OPCINA_GRAD:"KRK",POLAZNA_NAMJENA:"građevinsko područje",PRIMARNA_NAMJENA:"naselje",IZGRADJENOST:"izgrađeni dio",NASELJE:"Kornić"},o||{}),share:1});
+  const d=o=>Object.assign({rows:[red()],pl:{v:[]},area:600,parcel,ll:{lat:45.05,lng:14.6}},o||{});
+  const prikaz=dd=>{ const div=w.document.createElement("div"); div.innerHTML=E("krkRulesHtml")(dd).replace("%%PREK%%",""); return div; };
+  ok(R.izvor.pravna_provjera&&R.izvor.pravna_provjera.status==="NIJE_POTVRDENO"&&/na snazi/.test(R.izvor.status),"Pravna provjera: PPUG Krk ima status NIJE_POTVRDENO, a status plana ostaje „na snazi …”");
+  E("pzReset")("t1"); let el=prikaz(d()), v=el.querySelector('[data-pravna-provjera="nepotvrdeno"]');
+  ok(v&&v.classList.contains("verdict")&&v.classList.contains("v-warn")&&/^Pravna aktualnost nije neovisno potvrđena\. Objave nakon SN PGŽ 29\/20 nisu iscrpno provjerene\. Uvjeti gradnje služe za orijentaciju; mjerodavni su važeći prostorni planovi i lokacijska informacija\.$/.test(v.textContent.trim())&&/Uvjeti gradnje/.test(el.textContent)&&el.querySelector(".rule-title"),"Pravna provjera: uz prikazane uvjete gradnje PPUG-a Krk vidljivo je upozorenje (v-warn): "+(v?v.textContent:"nema"));
+  ok(P()&&P().raz==="B"&&/Pravna aktualnost nije neovisno potvrđena/.test(P().razlog)&&/izmjene plana su u izradi/.test(P().razlog),"Pravna provjera: pravilo je B (ne A), s razlogom; izmjene u izradi ostaju u razlogu: "+(P()&&P().raz+" "+P().razlog));
+  ok([...E("PZREG").items.values()].filter(x=>/^calc-/.test(x.id)).every(x=>x.raz!=="A"),"Pravna provjera: izračuni ostaju najviše B");
+  // status plana koji nije „na snazi” ostaje C (ne podiže se na B)
+  const st0=R.izvor.status; R.izvor.status="prijedlog izmjena"; E("pzReset")("t2"); prikaz(d()); R.izvor.status=st0;
+  ok(P()&&P().raz==="C","Pravna provjera: postojeća razina C se ne podiže na B: "+(P()&&P().raz));
+  // kad je provjera potvrđena, vrijedi dosadašnje pravilo (A uz „na snazi”) i nema upozorenja
+  const pp0=R.izvor.pravna_provjera; R.izvor.pravna_provjera=Object.assign({},pp0,{status:"POTVRDENO"}); E("pzReset")("t3"); el=prikaz(d()); R.izvor.pravna_provjera=pp0;
+  ok(P()&&P().raz==="A"&&!el.querySelector("[data-pravna-provjera]"),"Pravna provjera: uz POTVRDENO ostaje dosadašnja razina A i nema upozorenja");
+  // bez prikazanih uvjeta gradnje nema upozorenja: izvan građevinskog područja, neizgrađeni dio (UPU)
+  E("pzReset")("t4"); el=prikaz(d({rows:[red({POLAZNA_NAMJENA:"poljoprivredno tlo",PRIMARNA_NAMJENA:"ostalo"})]}));
+  ok(!el.querySelector("[data-pravna-provjera]")&&/nije u građevinskom području/.test(el.textContent),"Pravna provjera: izvan građevinskog područja nema upozorenja");
+  E("pzReset")("t5"); el=prikaz(d({rows:[red({IZGRADJENOST:"neizgrađeni dio"})]}));
+  ok(!el.querySelector("[data-pravna-provjera]")&&/tek nakon izrade urbanističkog plana/.test(el.textContent),"Pravna provjera: neizgrađeni dio (gradnja tek nakon UPU-a) bez upozorenja");
+  // ostale općine na otoku: dosadašnje ponašanje (izvor bez pravne provjere)
+  const J=R.ostaleJls["MALINSKA-DUBAŠNICA"]; E("pzReset")("t6"); el=prikaz(d({rows:[red({OPCINA_GRAD:"MALINSKA-DUBAŠNICA",NASELJE:"Malinska",OZNAKA_NAMJENE:((J.grupe||[])[0]&&(J.grupe[0].oznake||[])[0])||""})]}));
+  ok(!J.izvor.pravna_provjera&&!el.querySelector("[data-pravna-provjera]")&&el.querySelector(".rule-title")&&!!P()&&(P().raz===(/^\s*(na snazi|važeći)/i.test(J.izvor.status)?"A":"C")),"Pravna provjera: Malinska-Dubašnica bez promjene (bez upozorenja, razina "+(P()&&P().raz)+")");
+  ok(errs.length===0,"bez JS grešaka (pravna provjera): "+errs.join(" | "));
+}
+
 // osunčanost dvorišta, vjetar i bura, pogled na more, promjene na spremljenoj čestici (čiste funkcije i prikaz)
 async function napTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -2288,7 +2316,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
