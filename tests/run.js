@@ -2134,8 +2134,10 @@ async function pravnaTests(){
 async function formulaTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x), R=E("RULES_KRK"), T=w.turf, fs=require("fs"), crypto=require("crypto");
   // očuvanje pravila: rules_krk.json se u ovoj verziji ne mijenja (promjena tek nakon neovisne provjere)
-  const sha=crypto.createHash("sha256").update(fs.readFileSync(path.join(__dirname,"..","src","rules_krk.json"))).digest("hex");
-  ok(sha==="25276bb035ce0dd582a4020deb52b1add142170d696615fceb5cce688da1580d","Pravila: src/rules_krk.json nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
+  // sažetak pravila bez oznaka pravne provjere (status provjere smije se mijenjati, brojke i tekstovi pravila ne)
+  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera").map(([k,v])=>[k,bezPP(v)])):o;
+  const sha=crypto.createHash("sha256").update(JSON.stringify(bezPP(JSON.parse(fs.readFileSync(path.join(__dirname,"..","src","rules_krk.json"),"utf8"))))).digest("hex");
+  ok(sha==="6c6741620a351ab6058812f2aba8f3723534ef42a17c8b6013fd42e829e9d166","Pravila: src/rules_krk.json bez oznaka pravne provjere nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
   const t0=R.tipovi.obit, u2=R.upu["UPU 2"];
   ok(t0.slob.minC===500&&t0.slob.minCIznimno===400&&t0.slob.izg===0.25&&t0.slob.kis===0.5&&t0.slob.kisPodrum===0.75&&t0.slob.tlMax===200&&t0.gbpMax===200&&t0.visina===6.5&&R.meda.min===4&&R.regulacija.ostale===4&&R.regulacija.razvrstane===6&&u2.tipovi.obit.slob.kis===0.75&&u2.kisUkupni===true&&R.komunalniDoprinos.tecaj===7.5345,"Pravila: učitane vrijednosti PPUG-a i UPU-a 2 jednake su dosadašnjima");
   // komunalni doprinos: 9 slučajeva iz neovisnog audita v0.24.18 (krkKdTotal)
@@ -2272,6 +2274,46 @@ async function k73576Tests(){
   ok(!w.document.querySelector("[data-pravna-provjera]")&&!w.document.querySelector("[data-teorijski-prostor]")&&!$(w,"krkKdRed")&&!$(w,"krkZona")&&!E("PZREG").items.get("zona-korisnik")&&!E("PZREG").items.get("zast-korisnik"),"735/76 H: Zagreb bez krčkih upozorenja, komunalnog doprinosa Krka i odabira zona");
   for(const k of Object.keys(w.localStorage)) if(/^krk(Zona|Zast)/.test(k)) w.localStorage.removeItem(k);
   ok(errs.length===0,"bez JS grešaka (735/76): "+errs.join(" | "));
+}
+
+// v0.24.23: pravna aktualnost UPU-a 2 Kornić (rules_krk.json → upu["UPU 2"].izvor.pravna_provjera), čestica 735/76
+async function upu2PravnaTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), T=w.turf, tick=(ms=30)=>new Promise(r=>setTimeout(r,ms)), U2=E("RULES_KRK").upu["UPU 2"];
+  const D="pgz-odgovori/735-76-kornic-2026-10-22/", rd=f=>JSON.parse(fs.readFileSync(path.join(__dirname,f),"utf8"));
+  const bez3=g=>JSON.parse(JSON.stringify(g,(k,v)=>Array.isArray(v)&&v.length===3&&v.every(x=>typeof x==="number")?v.slice(0,2):v));
+  const gj=rd("../docs/primjeri/kornic_cestica_735_76.geojson").features[0], parcel=w.JSON.parse(JSON.stringify({type:"Feature",geometry:bez3(gj.geometry),properties:{broj:"735/76",ko:"KORNIĆ",ref:"735/76@315907",cid:19311099}}));
+  const area=T.area(parcel), nam=rd(D+"namjena_cestica_app.geojson").features.map(f=>w.JSON.parse(JSON.stringify(bez3(f))));
+  const rows=nam.map(f=>{let sh=0; try{const i=T.intersect(parcel,f); sh=i?T.area(i)/area:0;}catch(e){} return {p:f.properties,share:sh,geom:f.geometry};}).filter(r=>r.share>0).sort((a,b)=>b.share-a.share);
+  const pl=w.JSON.parse(JSON.stringify(rd(D+"planovi_tocka_app.geojson").features)), c=T.pointOnFeature(parcel).geometry.coordinates;
+  const d={region:"krk",ll:{lat:c[1],lng:c[0]},parcel,area,rows,ces:{v:[parcel]},nam:{v:nam},pl:{v:pl},slope:null,env:null};
+  const R=()=>E("PZREG").items, tx=()=>txt(w,"sheet"), pv=()=>w.document.querySelector('[data-pravna-provjera="nepotvrdeno"]'), zn=()=>w.document.querySelector("[data-zona-nepotvrdena]");
+  const ocisti=()=>{ for(const k of Object.keys(w.localStorage)) if(/^krk(Zona|Zast|Tip|Kd)/.test(k)) w.localStorage.removeItem(k); };
+  ocisti(); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
+  ok(U2.izvor.pravna_provjera&&U2.izvor.pravna_provjera.status==="NIJE_POTVRDENO"&&/UPU-a 2 Kornić/.test(U2.izvor.pravna_provjera.razlog)&&U2.izvor.status==="na snazi","UPU 2: izvor ima pravna_provjera NIJE_POTVRDENO, a status plana ostaje „na snazi”");
+  // nepotvrđen (neodabran) korisnički odabir zone: nema uvjeta gradnje, pa ni upozorenja o pravnoj aktualnosti
+  E("renderKrk")(d); await tick();
+  ok(!pv()&&!zn()&&/Detaljna zona nije potvrđena/.test(tx())&&!R().get("pravilo")&&!R().get("calc-tlocrt"),"735/76, zona nije odabrana: bez uvjeta gradnje nema upozorenja o pravnoj aktualnosti ni razine pravila");
+  // korisnik odabrao M11: pravilo UPU-a 2 najviše B, zona i izračuni C; dva odvojena upozorenja
+  E("krkZonaSet")("M11"); E("renderKrk")(d); await tick();
+  const pr=R().get("pravilo");
+  ok(pr&&pr.raz==="B"&&/Pravna aktualnost nije neovisno potvrđena/.test(pr.razlog)&&/19\/2016/.test(pr.provjera||""),"735/76, M11: pravilo UPU-a 2 je B (ne A) s razlogom o pravnoj aktualnosti: "+(pr&&pr.raz));
+  ok(R().get("zona-korisnik").raz==="C"&&["calc-tlocrt","calc-gbp"].every(k=>R().get(k).raz==="C")&&(E("window.__tipCmp")||[]).every(r=>r.pz.raz==="C"),"735/76, M11: odabrana zona, tlocrt, GBP i svi scenariji ostaju C");
+  ok(pv()&&zn()&&pv()!==zn()&&/^Pravna aktualnost nije neovisno potvrđena\. Objave nakon SN PGŽ 19\/16/.test(pv().textContent.trim())&&pv().dataset.plan==="Službene novine PGŽ 19/2016"&&/Zona čestice nije automatski potvrđena/.test(zn().textContent)&&/odvojeno od pravne aktualnosti plana/.test(zn().textContent)&&!/Zona čestice/.test(pv().textContent),"735/76, M11: upozorenje o pravnoj aktualnosti plana (v-warn, UPU 2) odvojeno je od upozorenja da zona nije potvrđena");
+  // M2 i zona zaštite C: isto (pravilo B, odabiri C)
+  E("krkZonaSet")("M2"); E("krkZastSet")("C"); E("renderKrk")(d); await tick();
+  ok(R().get("pravilo").raz==="B"&&R().get("zona-korisnik").raz==="C"&&R().get("zast-korisnik").raz==="C"&&R().get("calc-tlocrt").raz==="C"&&pv()&&zn(),"735/76, M2 i zaštita C: pravilo B, odabrana zona i zona zaštite C, izračun C");
+  // dosje: obje napomene i razine
+  {const Rp=E("buildReport")(), t2=Rp.textContent;
+   ok(/Pravna aktualnost nije neovisno potvrđena\. Objave nakon SN PGŽ 19\/16/.test(t2)&&/Zona čestice nije automatski potvrđena/.test(t2),"735/76: dosje sadrži upozorenje o pravnoj aktualnosti UPU-a 2 i odvojeno upozorenje o zoni"); Rp.remove();}
+  // zona zaštite B: uvjeti gradnje se ne prikazuju (samo napomena zone B) → nema upozorenja o pravnoj aktualnosti
+  E("krkZastSet")("B"); E("renderKrk")(d); await tick(); ok(pv()&&/kulturno-povijesna cjelina/i.test(tx())&&!R().get("calc-tlocrt")&&R().get("zast-korisnik").raz==="C","735/76, zona zaštite B: prikazuju se odredbe plana za zonu »B« (bez izračuna), pa i upozorenje o pravnoj aktualnosti; odabir zaštite je C");
+  // C se ne podiže: plan koji nije „na snazi” ostaje C; uz POTVRDENO vraća se dosadašnje ponašanje (A)
+  E("krkZastSet")(""); const st0=U2.izvor.status; U2.izvor.status="prijedlog izmjena"; E("renderKrk")(d); await tick(); U2.izvor.status=st0;
+  ok(R().get("pravilo").raz==="C","UPU 2: status plana koji nije „na snazi” ostaje C (ne podiže se na B)");
+  const pp0=U2.izvor.pravna_provjera; U2.izvor.pravna_provjera=Object.assign({},pp0,{status:"POTVRDENO"}); E("renderKrk")(d); await tick(); U2.izvor.pravna_provjera=pp0;
+  ok(R().get("pravilo").raz==="A"&&!pv()&&zn()&&R().get("calc-tlocrt").raz==="C","UPU 2 uz POTVRDENO: pravilo A, bez upozorenja o pravnoj aktualnosti; upozorenje o zoni ostaje i izračun ostaje C");
+  ocisti();
+  ok(errs.length===0,"bez JS grešaka (pravna aktualnost UPU-a 2): "+errs.join(" | "));
 }
 
 // osunčanost dvorišta, vjetar i bura, pogled na more, promjene na spremljenoj čestici (čiste funkcije i prikaz)
@@ -2467,7 +2509,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(napTests).then(izvTests).then(dosTests).then(()=>{
+netTests().then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

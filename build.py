@@ -56,8 +56,9 @@ def check_krk(r):
                 if not isinstance(v.get(s,{}).get(f),(int,float)): errs.append(f"KRK {t}.{s}: nedostaje broj '{f}'")
         for f in ("clanak","gbpMax","visina","etaze"):
             if f not in v: errs.append(f"KRK {t}: nedostaje '{f}'")
-    pp = r.get("izvor",{}).get("pravna_provjera")
-    if pp is not None and pp.get("status") not in ("POTVRDENO","NIJE_POTVRDENO"): errs.append("KRK izvor.pravna_provjera: status mora biti POTVRDENO ili NIJE_POTVRDENO")
+    for naziv, izv in [("izvor", r.get("izvor", {}))] + [(f"upu.{k}.izvor", u.get("izvor", {})) for k, u in r.get("upu", {}).items()]:
+        pp = izv.get("pravna_provjera")
+        if pp is not None and pp.get("status") not in ("POTVRDENO","NIJE_POTVRDENO"): errs.append(f"KRK {naziv}.pravna_provjera: status mora biti POTVRDENO ili NIJE_POTVRDENO")
     if errs: print("\n".join(errs)); sys.exit(1)
 rules_krk = json.loads((root / "src/rules_krk.json").read_text(encoding="utf-8")); check_krk(rules_krk)
 data_krk = json.dumps(rules_krk, ensure_ascii=False).replace("</", "<\\/")
