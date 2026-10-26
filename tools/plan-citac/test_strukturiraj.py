@@ -250,6 +250,29 @@ class PrilagodnikTeksta(unittest.TestCase):
         self.assertEqual(r["status"], "ABSTAIN_KODIRANJE"); self.assertEqual(r["clanci"], {})
 
 
+class SlijepiPpug(unittest.TestCase):
+    """Početni slijepi test (v0): PPUG Krk čl. 22. i 23. iz izvornog HTML-a, obrasci UPU-a 2 bez ikakvih dodataka.
+    Zaključava polazno stanje: ništa nije predloženo, pa ništa nije pogrešno."""
+    IZVOR = MAPA / "slijepo/ppug_krk/ppug_krk_sn_2020_29.html"
+
+    def test_izvor(self):
+        import hashlib
+        self.assertEqual(hashlib.sha256(self.IZVOR.read_bytes()).hexdigest(), "f67ac384d8f30d444cf19a10165f29b65ee93cf37281bb6e183abd981f5cf318")
+        from citac_tekst import izdvoji_tekst
+        r = izdvoji_tekst(self.IZVOR, [22, 23])
+        self.assertEqual(r["status"], "ABSTAIN_VISE_AKATA")
+        self.assertEqual([(d["dio"], d["od_clanka"], d["do_clanka"]) for d in r["dijelovi"]], [(1, 4, 173), (2, 1, 150)])
+
+    def test_pocetno_stanje_v0(self):
+        from citac_tekst import izdvoji_tekst
+        D = izdvoji_tekst(self.IZVOR, [22, 23], dio=1)
+        self.assertTrue(D["clanci"]["22"]["tekst"].startswith("(1) Utvrđuju se slijedeće granične vrijednosti za izgradnju obiteljske kuće:"))
+        self.assertTrue(D["clanci"]["23"]["tekst"].startswith("(1) Utvrđuju se slijedeće granične vrijednosti za izgradnju višeobiteljske kuće:"))
+        R = strukturiraj(D, [22, 23], "PPUG Krk")
+        self.assertEqual([p for c in R["clanci"].values() for p in c["pravila"]], [])
+        self.assertTrue(all(c["pregled"] for c in R["clanci"].values()))
+
+
 class DvosmisleniNavodi(unittest.TestCase):
     def test_navod_vise_clanaka_sa_stavkom(self):
         for s in ("čl. 38. i 39. st. 2.", "čl. 38.–40. st. 1.", "38., 39. st. 2."):
