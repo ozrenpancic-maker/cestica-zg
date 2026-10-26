@@ -1,0 +1,3194 @@
+{
+ "shema": "plan-citac/pravila-0.1",
+ "izvor_sha256": "5b4ec76db4232f3efad0dd7ad01e109130bcc3a2702c95ff9857bf48590eae08",
+ "plan": "UPU 2 Kornić",
+ "clanci": {
+  "38": {
+   "clanak": 38,
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "pravila": [
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "a",
+     "alineja": 1,
+     "gradjevina": "osnovna",
+     "parametar": "minC",
+     "vrijednost": 500.0,
+     "jedinica": "m²",
+     "vrste": [
+      "obit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "minC",
+     "dokaz": "najmanja površina građevne čestice obiteljske kuće iznosi 500 m², a iznimno 400 m² ako se građevna čestica nalazi u okruženju već uređenih i izgrađenih građevnih čestica,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       382.8,
+       292.0,
+       429.1
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "a",
+     "alineja": 1,
+     "gradjevina": "osnovna",
+     "parametar": "minC",
+     "vrijednost": 400.0,
+     "jedinica": "m²",
+     "vrste": [
+      "obit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako se građevna čestica nalazi u okruženju već uređenih i izgrađenih građevnih čestica",
+     "uvjet_upucuje_na": null,
+     "obrazac": "minC",
+     "dokaz": "najmanja površina građevne čestice obiteljske kuće iznosi 500 m², a iznimno 400 m² ako se građevna čestica nalazi u okruženju već uređenih i izgrađenih građevnih čestica,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       382.8,
+       292.0,
+       429.1
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "a",
+     "alineja": 2,
+     "gradjevina": "osnovna",
+     "parametar": "minC",
+     "vrijednost": 500.0,
+     "jedinica": "m²",
+     "vrste": [
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "minC",
+     "dokaz": "najmanja površina građevne čestice višeobiteljske kuće iznosi 500 m²,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       429.9,
+       292.0,
+       447.9
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "a",
+     "alineja": 3,
+     "gradjevina": "osnovna",
+     "parametar": "kig",
+     "vrijednost": 0.25,
+     "jedinica": null,
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "kig",
+     "dokaz": "najveći koeficijent izgrađenosti građevne čestice iznosi 0,25,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       448.8,
+       292.0,
+       514.0
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "a",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "kis",
+     "vrijednost": 0.75,
+     "jedinica": null,
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "kis",
+     "dokaz": "najveći koeficijent iskorištenosti iznosi 0,75, a iznimno 1,0 ako se višeobiteljska kuća gradi prema uvjetima alineje 5. točke b) ovog članka.",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       448.8,
+       292.0,
+       514.0
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "a",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "kis",
+     "vrijednost": 1.0,
+     "jedinica": null,
+     "vrste": [
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako se višeobiteljska kuća gradi prema uvjetima alineje 5. točke b) ovog članka",
+     "uvjet_upucuje_na": {
+      "tocka": "b",
+      "alineja": 5,
+      "tekst": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12% najveći broj etaža građevine iznosi podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren te najveća visina građevine iznosi 10,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena."
+     },
+     "obrazac": "kis",
+     "dokaz": "najveći koeficijent iskorištenosti iznosi 0,75, a iznimno 1,0 ako se višeobiteljska kuća gradi prema uvjetima alineje 5. točke b) ovog članka.",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       448.8,
+       292.0,
+       514.0
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "b",
+     "alineja": 1,
+     "gradjevina": "osnovna",
+     "parametar": "tlMin",
+     "vrijednost": 60.0,
+     "jedinica": "m²",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "tlMin",
+     "dokaz": "najmanja tlocrtna površina građevine iznosi 60 m²,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       513.0,
+       291.9,
+       551.9
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "b",
+     "alineja": 2,
+     "gradjevina": "osnovna",
+     "parametar": "tlMax",
+     "vrijednost": 200.0,
+     "jedinica": "m²",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "tlMax",
+     "dokaz": "najveća tlocrtna površina građevine iznosi 200 m²,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       513.0,
+       291.9,
+       551.9
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "b",
+     "alineja": 3,
+     "gradjevina": "osnovna",
+     "parametar": "etazeMax",
+     "vrijednost": "podrum i 2 nadzemne etaže",
+     "jedinica": null,
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "etaze",
+     "dokaz": "najveći broj etaža građevine iznosi podrum i 2 nadzemne etaže,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       513.0,
+       291.9,
+       551.9
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "b",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "visinaMax",
+     "vrijednost": 7.5,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "visina",
+     "dokaz": "najveća visina građevine iznosi 7,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       552.7,
+       292.0,
+       580.1
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "b",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "kotaTerenaMax",
+     "vrijednost": 1.5,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "visina",
+     "dokaz": "najveća visina građevine iznosi 7,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       552.7,
+       292.0,
+       580.1
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "b",
+     "alineja": 5,
+     "gradjevina": "osnovna",
+     "parametar": "etazeMax",
+     "vrijednost": "podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren",
+     "jedinica": null,
+     "vrste": [
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%",
+     "uvjet_upucuje_na": null,
+     "obrazac": "kosi",
+     "dokaz": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12% najveći broj etaža građevine iznosi podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren te najveća visina građevine iznosi 10,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena.",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       580.9,
+       292.0,
+       636.5
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "b",
+     "alineja": 5,
+     "gradjevina": "osnovna",
+     "parametar": "visinaMax",
+     "vrijednost": 10.5,
+     "jedinica": "m",
+     "vrste": [
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%",
+     "uvjet_upucuje_na": null,
+     "obrazac": "kosi",
+     "dokaz": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12% najveći broj etaža građevine iznosi podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren te najveća visina građevine iznosi 10,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena.",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       580.9,
+       292.0,
+       636.5
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "b",
+     "alineja": 5,
+     "gradjevina": "osnovna",
+     "parametar": "kotaTerenaMax",
+     "vrijednost": 1.5,
+     "jedinica": "m",
+     "vrste": [
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%",
+     "uvjet_upucuje_na": null,
+     "obrazac": "kosi",
+     "dokaz": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12% najveći broj etaža građevine iznosi podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren te najveća visina građevine iznosi 10,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena.",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       580.9,
+       292.0,
+       636.5
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "b",
+     "alineja": 6,
+     "gradjevina": "osnovna",
+     "parametar": "gbpMax",
+     "vrijednost": 200.0,
+     "jedinica": "m²",
+     "vrste": [
+      "obit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "gbp",
+     "dokaz": "najveći GBP iznosi 200 m² za građevnu česticu obiteljske građevine, odnosno 400 m² za građevnu česticu višeobiteljske građevine pri čemu se u navedeni GBP uračunavaju sve građevine na građevnoj čestici.",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       633.4,
+       291.9,
+       674.4
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "b",
+     "alineja": 6,
+     "gradjevina": "osnovna",
+     "parametar": "gbpMax",
+     "vrijednost": 400.0,
+     "jedinica": "m²",
+     "vrste": [
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "gbp",
+     "dokaz": "najveći GBP iznosi 200 m² za građevnu česticu obiteljske građevine, odnosno 400 m² za građevnu česticu višeobiteljske građevine pri čemu se u navedeni GBP uračunavaju sve građevine na građevnoj čestici.",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       633.4,
+       291.9,
+       674.4
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "c",
+     "alineja": 1,
+     "gradjevina": "osnovna",
+     "parametar": "regulacijaJavna",
+     "vrijednost": 6.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "regCesta",
+     "dokaz": "najmanja udaljenost građevine od regulacijskog pravca prema javnoj cesti iznosi 6 m, pri čemu udaljenosti od osi prometne površine javne ceste ne može biti manja od 9 m,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       694.0,
+       291.9,
+       721.3
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "c",
+     "alineja": 1,
+     "gradjevina": "osnovna",
+     "parametar": "regulacijaJavnaOs",
+     "vrijednost": 9.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "regCesta",
+     "dokaz": "najmanja udaljenost građevine od regulacijskog pravca prema javnoj cesti iznosi 6 m, pri čemu udaljenosti od osi prometne površine javne ceste ne može biti manja od 9 m,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       694.0,
+       291.9,
+       721.3
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "c",
+     "alineja": 2,
+     "gradjevina": "osnovna",
+     "parametar": "regulacijaNerazvrstana",
+     "vrijednost": 4.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "regCesta",
+     "dokaz": "najmanja udaljenost građevine od regulacijskog pravca prema nerazvrstanoj cesti iznosi 4 m, pri čemu udaljenosti od osi prometne površine nerazvrstane ceste ne može biti manja od 7 m,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       722.2,
+       291.9,
+       759.0
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "c",
+     "alineja": 2,
+     "gradjevina": "osnovna",
+     "parametar": "regulacijaNerazvrstanaOs",
+     "vrijednost": 7.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "regCesta",
+     "dokaz": "najmanja udaljenost građevine od regulacijskog pravca prema nerazvrstanoj cesti iznosi 4 m, pri čemu udaljenosti od osi prometne površine nerazvrstane ceste ne može biti manja od 7 m,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       722.2,
+       291.9,
+       759.0
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "c",
+     "alineja": 3,
+     "gradjevina": "osnovna",
+     "parametar": "regulacija",
+     "vrijednost": null,
+     "jedinica": null,
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "kod interpolacije nove građevine između postojećih građevina na susjednim građevnim česticama koje su od regulacijske linije prema javnoj prometnoj površini udaljene manje od prethodno utvrđene udaljenosti",
+     "uvjet_upucuje_na": null,
+     "obrazac": "interp",
+     "dokaz": "kod interpolacije nove građevine između postojećih građevina na susjednim građevnim česticama koje su od regulacijske linije prema javnoj prometnoj površini udaljene manje od prethodno utvrđene udaljenosti, interpoliranu građevinu moguće je graditi i na manjoj udaljenosti od prethodno utvrđene, a uz uvjet da se građevni pravac uskladi s postojećim građevinama na susjednim građevnim česticama vodeći računa o lokalnim uvjetima,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       107.6,
+       535.7,
+       181.9
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "c",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "medaMin",
+     "vrijednost": 4.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "meda",
+     "dokaz": "najmanja udaljenost građevine od ostalih međa građevne čestice iznosi 4 m, a iznimno 3 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost građevine od ostalih međa građevne čestice iznosi pola visine građevine, ali ne manje od 3 m, a iznimno 2 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno se obvezna udaljenost od pola visine građevine ne mora primjenjivati ako se višeobiteljska građevina gradi prema uvjetima alineje 5. točke b) ovog članka.",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       183.0,
+       535.7,
+       304.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "c",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "medaMin",
+     "vrijednost": 3.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama",
+     "uvjet_upucuje_na": null,
+     "obrazac": "meda",
+     "dokaz": "najmanja udaljenost građevine od ostalih međa građevne čestice iznosi 4 m, a iznimno 3 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost građevine od ostalih međa građevne čestice iznosi pola visine građevine, ali ne manje od 3 m, a iznimno 2 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno se obvezna udaljenost od pola visine građevine ne mora primjenjivati ako se višeobiteljska građevina gradi prema uvjetima alineje 5. točke b) ovog članka.",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       183.0,
+       535.7,
+       304.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "c",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "medaMin",
+     "vrijednost": "pola visine građevine, ali ne manje od 3 m",
+     "jedinica": null,
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83.",
+     "uvjet_upucuje_na": null,
+     "obrazac": "meda",
+     "dokaz": "najmanja udaljenost građevine od ostalih međa građevne čestice iznosi 4 m, a iznimno 3 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost građevine od ostalih međa građevne čestice iznosi pola visine građevine, ali ne manje od 3 m, a iznimno 2 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno se obvezna udaljenost od pola visine građevine ne mora primjenjivati ako se višeobiteljska građevina gradi prema uvjetima alineje 5. točke b) ovog članka.",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       183.0,
+       535.7,
+       304.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "c",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "medaMin",
+     "vrijednost": 2.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost građevine od ostalih međa građevne čestice iznosi pola visine građevine, ali ne manje od 3 m, a iznimno 2 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama",
+     "uvjet_upucuje_na": null,
+     "obrazac": "meda",
+     "dokaz": "najmanja udaljenost građevine od ostalih međa građevne čestice iznosi 4 m, a iznimno 3 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost građevine od ostalih međa građevne čestice iznosi pola visine građevine, ali ne manje od 3 m, a iznimno 2 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno se obvezna udaljenost od pola visine građevine ne mora primjenjivati ako se višeobiteljska građevina gradi prema uvjetima alineje 5. točke b) ovog članka.",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       183.0,
+       535.7,
+       304.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "c",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "medaMin",
+     "vrijednost": null,
+     "jedinica": null,
+     "vrste": [
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako se višeobiteljska građevina gradi prema uvjetima alineje 5. točke b) ovog članka",
+     "uvjet_upucuje_na": {
+      "tocka": "b",
+      "alineja": 5,
+      "tekst": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12% najveći broj etaža građevine iznosi podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren te najveća visina građevine iznosi 10,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena."
+     },
+     "obrazac": "meda",
+     "dokaz": "najmanja udaljenost građevine od ostalih međa građevne čestice iznosi 4 m, a iznimno 3 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost građevine od ostalih međa građevne čestice iznosi pola visine građevine, ali ne manje od 3 m, a iznimno 2 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno se obvezna udaljenost od pola visine građevine ne mora primjenjivati ako se višeobiteljska građevina gradi prema uvjetima alineje 5. točke b) ovog članka.",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       183.0,
+       535.7,
+       304.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "d",
+     "alineja": 2,
+     "gradjevina": "osnovna",
+     "parametar": "nagibKrovaMin",
+     "vrijednost": 17.0,
+     "jedinica": "°",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ako se gradi kao koso",
+     "uvjet_upucuje_na": null,
+     "obrazac": "krov",
+     "dokaz": "krovište građevine može biti ravno ili koso; ako se gradi kao koso može biti dvostrešno ili višestrešno i mora biti s nagibom krovnih ploha između 17o i 23o, a pokrov mora biti mediteran crijep ili kupa kanalica,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       361.9,
+       535.7,
+       398.7
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "d",
+     "alineja": 2,
+     "gradjevina": "osnovna",
+     "parametar": "nagibKrovaMax",
+     "vrijednost": 23.0,
+     "jedinica": "°",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ako se gradi kao koso",
+     "uvjet_upucuje_na": null,
+     "obrazac": "krov",
+     "dokaz": "krovište građevine može biti ravno ili koso; ako se gradi kao koso može biti dvostrešno ili višestrešno i mora biti s nagibom krovnih ploha između 17o i 23o, a pokrov mora biti mediteran crijep ili kupa kanalica,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       361.9,
+       535.7,
+       398.7
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "e",
+     "alineja": 1,
+     "gradjevina": "pomocna",
+     "parametar": "etazeMax",
+     "vrijednost": "jedna nadzemna etaža",
+     "jedinica": null,
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "etaze",
+     "dokaz": "najveći broj etaža građevine iznosi jedna nadzemna etaža,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       552.1,
+       535.7,
+       579.7
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "e",
+     "alineja": 2,
+     "gradjevina": "pomocna",
+     "parametar": "visinaMax",
+     "vrijednost": "visinu osnovne građevine, ali ne više od 4 m",
+     "jedinica": null,
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "visina",
+     "dokaz": "najveća visina građevine iznosi visinu osnovne građevine, ali ne više od 4 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       580.7,
+       535.7,
+       617.5
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "e",
+     "alineja": 2,
+     "gradjevina": "pomocna",
+     "parametar": "kotaTerenaMax",
+     "vrijednost": 1.5,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "visina",
+     "dokaz": "najveća visina građevine iznosi visinu osnovne građevine, ali ne više od 4 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       580.7,
+       535.7,
+       617.5
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "e",
+     "alineja": 3,
+     "gradjevina": "pomocna",
+     "parametar": "gbpMax",
+     "vrijednost": 50.0,
+     "jedinica": "m²",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "gbpPom",
+     "dokaz": "najveći GBP iznosi 50 m²,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       616.6,
+       535.8,
+       740.0
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "e",
+     "alineja": 4,
+     "gradjevina": "pomocna",
+     "parametar": "regulacija",
+     "vrijednost": 5.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "regPom",
+     "dokaz": "najmanja udaljenost građevine od regulacijskog pravca iznosi 5 m, pri čemu udaljenost od osi postojeće ceste ne može biti manja od 8 m; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost građevine od regulacijskog pravca iznosi 4 m; iznimno se garaže mogu graditi na regulacijskom pravcu ako je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno najviše do visine ogradnog zida visine 1,1 m kada to dozvoljavaju lokalni uvjeti, te ako se zadovolji uvjet da je garaža udaljena od osi postojeće ceste najmanje 3 m,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       616.6,
+       535.8,
+       740.0
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "e",
+     "alineja": 4,
+     "gradjevina": "pomocna",
+     "parametar": "regulacijaOs",
+     "vrijednost": 8.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "regPom",
+     "dokaz": "najmanja udaljenost građevine od regulacijskog pravca iznosi 5 m, pri čemu udaljenost od osi postojeće ceste ne može biti manja od 8 m; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost građevine od regulacijskog pravca iznosi 4 m; iznimno se garaže mogu graditi na regulacijskom pravcu ako je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno najviše do visine ogradnog zida visine 1,1 m kada to dozvoljavaju lokalni uvjeti, te ako se zadovolji uvjet da je garaža udaljena od osi postojeće ceste najmanje 3 m,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       616.6,
+       535.8,
+       740.0
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "e",
+     "alineja": 4,
+     "gradjevina": "pomocna",
+     "parametar": "regulacija",
+     "vrijednost": 4.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83.",
+     "uvjet_upucuje_na": null,
+     "obrazac": "regPom",
+     "dokaz": "najmanja udaljenost građevine od regulacijskog pravca iznosi 5 m, pri čemu udaljenost od osi postojeće ceste ne može biti manja od 8 m; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost građevine od regulacijskog pravca iznosi 4 m; iznimno se garaže mogu graditi na regulacijskom pravcu ako je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno najviše do visine ogradnog zida visine 1,1 m kada to dozvoljavaju lokalni uvjeti, te ako se zadovolji uvjet da je garaža udaljena od osi postojeće ceste najmanje 3 m,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       616.6,
+       535.8,
+       740.0
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "e",
+     "alineja": 4,
+     "gradjevina": "pomocna",
+     "parametar": "regulacija",
+     "vrijednost": "na regulacijskom pravcu",
+     "jedinica": null,
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "iznimno se garaže mogu graditi na regulacijskom pravcu ako je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno najviše do visine ogradnog zida visine 1,1 m kada to dozvoljavaju lokalni uvjeti, te ako se zadovolji uvjet da je garaža udaljena od osi postojeće ceste najmanje 3 m",
+     "uvjet_upucuje_na": null,
+     "obrazac": "regPom",
+     "dokaz": "najmanja udaljenost građevine od regulacijskog pravca iznosi 5 m, pri čemu udaljenost od osi postojeće ceste ne može biti manja od 8 m; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost građevine od regulacijskog pravca iznosi 4 m; iznimno se garaže mogu graditi na regulacijskom pravcu ako je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno najviše do visine ogradnog zida visine 1,1 m kada to dozvoljavaju lokalni uvjeti, te ako se zadovolji uvjet da je garaža udaljena od osi postojeće ceste najmanje 3 m,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       616.6,
+       535.8,
+       740.0
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "e",
+     "alineja": 4,
+     "gradjevina": "pomocna",
+     "parametar": "regulacijaOs",
+     "vrijednost": 3.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "iznimno se garaže mogu graditi na regulacijskom pravcu ako je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno najviše do visine ogradnog zida visine 1,1 m kada to dozvoljavaju lokalni uvjeti, te ako se zadovolji uvjet da je garaža udaljena od osi postojeće ceste najmanje 3 m",
+     "uvjet_upucuje_na": null,
+     "obrazac": "regPom",
+     "dokaz": "najmanja udaljenost građevine od regulacijskog pravca iznosi 5 m, pri čemu udaljenost od osi postojeće ceste ne može biti manja od 8 m; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost građevine od regulacijskog pravca iznosi 4 m; iznimno se garaže mogu graditi na regulacijskom pravcu ako je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno najviše do visine ogradnog zida visine 1,1 m kada to dozvoljavaju lokalni uvjeti, te ako se zadovolji uvjet da je garaža udaljena od osi postojeće ceste najmanje 3 m,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       616.6,
+       535.8,
+       740.0
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "e",
+     "alineja": 5,
+     "gradjevina": "pomocna",
+     "parametar": "medaMin",
+     "vrijednost": 4.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "medaPom",
+     "dokaz": "najmanja udaljenost pomoćne građevine od ostalih međa građevne čestice iznosi 4 m, a iznimno 3 m ako se građevna čestica nalazi unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83., odnosno ako pomoćna građevina nema otvore može se graditi i na manjoj udaljenosti; ako se gradi na međi mora biti odijeljena vatrobranim zidom od susjedne građevine te nagib krova pomoćne građevine ne smije biti prema susjednoj građevnoj čestici,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       741.0,
+       535.8,
+       759.1
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "e",
+     "alineja": 5,
+     "gradjevina": "pomocna",
+     "parametar": "medaMin",
+     "vrijednost": 3.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako se građevna čestica nalazi unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83.",
+     "uvjet_upucuje_na": null,
+     "obrazac": "medaPom",
+     "dokaz": "najmanja udaljenost pomoćne građevine od ostalih međa građevne čestice iznosi 4 m, a iznimno 3 m ako se građevna čestica nalazi unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83., odnosno ako pomoćna građevina nema otvore može se graditi i na manjoj udaljenosti; ako se gradi na međi mora biti odijeljena vatrobranim zidom od susjedne građevine te nagib krova pomoćne građevine ne smije biti prema susjednoj građevnoj čestici,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       741.0,
+       535.8,
+       759.1
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "e",
+     "alineja": 5,
+     "gradjevina": "pomocna",
+     "parametar": "medaMin",
+     "vrijednost": null,
+     "jedinica": null,
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako pomoćna građevina nema otvore može se graditi i na manjoj udaljenosti",
+     "uvjet_upucuje_na": null,
+     "obrazac": "medaPom",
+     "dokaz": "najmanja udaljenost pomoćne građevine od ostalih međa građevne čestice iznosi 4 m, a iznimno 3 m ako se građevna čestica nalazi unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83., odnosno ako pomoćna građevina nema otvore može se graditi i na manjoj udaljenosti; ako se gradi na međi mora biti odijeljena vatrobranim zidom od susjedne građevine te nagib krova pomoćne građevine ne smije biti prema susjednoj građevnoj čestici,",
+     "izvor": {
+      "stranica": 13,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       741.0,
+       535.8,
+       759.1
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "e",
+     "alineja": 6,
+     "gradjevina": "pomocna",
+     "parametar": "nagibKrovaMin",
+     "vrijednost": 17.0,
+     "jedinica": "°",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ako se gradi kao koso",
+     "uvjet_upucuje_na": null,
+     "obrazac": "krov",
+     "dokaz": "krovište pomoćne građevine može biti ravno ili koso; ako se gradi kao koso može biti jednostrešno, dvostrešno ili višestrešno i mora biti s nagibom krovnih ploha između 17o i 23o, a pokrov mora biti mediteran crijep ili kupa kanalica.",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       176.4,
+       292.0,
+       222.6
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "e",
+     "alineja": 6,
+     "gradjevina": "pomocna",
+     "parametar": "nagibKrovaMax",
+     "vrijednost": 23.0,
+     "jedinica": "°",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ako se gradi kao koso",
+     "uvjet_upucuje_na": null,
+     "obrazac": "krov",
+     "dokaz": "krovište pomoćne građevine može biti ravno ili koso; ako se gradi kao koso može biti jednostrešno, dvostrešno ili višestrešno i mora biti s nagibom krovnih ploha između 17o i 23o, a pokrov mora biti mediteran crijep ili kupa kanalica.",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       176.4,
+       292.0,
+       222.6
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "f",
+     "alineja": 1,
+     "gradjevina": "poljoprivredna",
+     "parametar": "visinaMax",
+     "vrijednost": 4.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "visina",
+     "dokaz": "najveća visina građevine iznosi 4 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       224.9,
+       292.0,
+       263.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "f",
+     "alineja": 1,
+     "gradjevina": "poljoprivredna",
+     "parametar": "kotaTerenaMax",
+     "vrijednost": 1.5,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "visina",
+     "dokaz": "najveća visina građevine iznosi 4 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       224.9,
+       292.0,
+       263.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "f",
+     "alineja": 2,
+     "gradjevina": "poljoprivredna",
+     "parametar": "regulacija",
+     "vrijednost": 6.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "regPom",
+     "dokaz": "najmanja udaljenost poljoprivredne gospodarske građevine od regulacijskog pravca iznosi 6 m, pri čemu udaljenosti od osi postojeće ceste ne može biti manja od 9 m; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost poljoprivredne gospodarske građevine od regulacijskog pravca iznosi 5 m,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       265.6,
+       292.0,
+       330.7
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "f",
+     "alineja": 2,
+     "gradjevina": "poljoprivredna",
+     "parametar": "regulacijaOs",
+     "vrijednost": 9.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "regPom",
+     "dokaz": "najmanja udaljenost poljoprivredne gospodarske građevine od regulacijskog pravca iznosi 6 m, pri čemu udaljenosti od osi postojeće ceste ne može biti manja od 9 m; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost poljoprivredne gospodarske građevine od regulacijskog pravca iznosi 5 m,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       265.6,
+       292.0,
+       330.7
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "f",
+     "alineja": 2,
+     "gradjevina": "poljoprivredna",
+     "parametar": "regulacija",
+     "vrijednost": 5.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83.",
+     "uvjet_upucuje_na": null,
+     "obrazac": "regPom",
+     "dokaz": "najmanja udaljenost poljoprivredne gospodarske građevine od regulacijskog pravca iznosi 6 m, pri čemu udaljenosti od osi postojeće ceste ne može biti manja od 9 m; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost poljoprivredne gospodarske građevine od regulacijskog pravca iznosi 5 m,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       265.6,
+       292.0,
+       330.7
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "f",
+     "alineja": 3,
+     "gradjevina": "poljoprivredna",
+     "parametar": "medaMin",
+     "vrijednost": 4.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "medaPom",
+     "dokaz": "najmanja udaljenost poljoprivredne gospodarske građevine od ostalih međa građevne čestice iznosi 4 m, a iznimno 3 m ako se građevna čestica nalazi unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83.,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       265.6,
+       292.0,
+       330.7
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "f",
+     "alineja": 3,
+     "gradjevina": "poljoprivredna",
+     "parametar": "medaMin",
+     "vrijednost": 3.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako se građevna čestica nalazi unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83.",
+     "uvjet_upucuje_na": null,
+     "obrazac": "medaPom",
+     "dokaz": "najmanja udaljenost poljoprivredne gospodarske građevine od ostalih međa građevne čestice iznosi 4 m, a iznimno 3 m ako se građevna čestica nalazi unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83.,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       265.6,
+       292.0,
+       330.7
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "f",
+     "alineja": 5,
+     "gradjevina": "poljoprivredna",
+     "parametar": "nagibKrovaMin",
+     "vrijednost": 17.0,
+     "jedinica": "°",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ako se gradi kao koso",
+     "uvjet_upucuje_na": null,
+     "obrazac": "krov",
+     "dokaz": "krovište poljoprivredne gospodarske građevine može biti ravno ili koso; ako se gradi kao koso može biti jednostrešno, dvostrešno ili višestrešno i mora biti s nagibom krovnih ploha između 17o i 23o, a pokrov mora biti mediteran crijep ili kupa kanalica.",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       410.9,
+       292.0,
+       457.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "f",
+     "alineja": 5,
+     "gradjevina": "poljoprivredna",
+     "parametar": "nagibKrovaMax",
+     "vrijednost": 23.0,
+     "jedinica": "°",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "ako se gradi kao koso",
+     "uvjet_upucuje_na": null,
+     "obrazac": "krov",
+     "dokaz": "krovište poljoprivredne gospodarske građevine može biti ravno ili koso; ako se gradi kao koso može biti jednostrešno, dvostrešno ili višestrešno i mora biti s nagibom krovnih ploha između 17o i 23o, a pokrov mora biti mediteran crijep ili kupa kanalica.",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       410.9,
+       292.0,
+       457.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "g",
+     "alineja": 2,
+     "gradjevina": "osnovna",
+     "parametar": "zelenilo",
+     "vrijednost": 0.4,
+     "jedinica": "udio",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "zelenilo",
+     "dokaz": "najmanje 40% površine građevne čestice mora se urediti visokim i niskim zelenilom; kao zelene površine obračunavaju se sve zelene površine kao i sve staze maksimalne širine 1,5 m; odstupanja od ovog stavka moguća su samo u zonama starih naselja gdje se interpolacijama u postojećoj građevnoj strukturi dograđuju postojeće ili grade nove građevine,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       528.2,
+       292.0,
+       593.4
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "g",
+     "alineja": 2,
+     "gradjevina": "osnovna",
+     "parametar": "zelenilo",
+     "vrijednost": null,
+     "jedinica": null,
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "odstupanja od ovog stavka moguća su samo u zonama starih naselja gdje se interpolacijama u postojećoj građevnoj strukturi dograđuju postojeće ili grade nove građevine",
+     "uvjet_upucuje_na": null,
+     "obrazac": "zelenilo",
+     "dokaz": "najmanje 40% površine građevne čestice mora se urediti visokim i niskim zelenilom; kao zelene površine obračunavaju se sve zelene površine kao i sve staze maksimalne širine 1,5 m; odstupanja od ovog stavka moguća su samo u zonama starih naselja gdje se interpolacijama u postojećoj građevnoj strukturi dograđuju postojeće ili grade nove građevine,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       528.2,
+       292.0,
+       593.4
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "g",
+     "alineja": 2,
+     "gradjevina": "osnovna",
+     "parametar": "zelenaStazaMaxSirina",
+     "vrijednost": 1.5,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "zelenilo",
+     "dokaz": "najmanje 40% površine građevne čestice mora se urediti visokim i niskim zelenilom; kao zelene površine obračunavaju se sve zelene površine kao i sve staze maksimalne širine 1,5 m; odstupanja od ovog stavka moguća su samo u zonama starih naselja gdje se interpolacijama u postojećoj građevnoj strukturi dograđuju postojeće ili grade nove građevine,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       528.2,
+       292.0,
+       593.4
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "g",
+     "alineja": 3,
+     "gradjevina": "osnovna",
+     "parametar": "podzidMax",
+     "vrijednost": 1.5,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "na kosim građevnim česticama",
+     "uvjet_upucuje_na": null,
+     "obrazac": "podzid",
+     "dokaz": "terase i potporni zidovi moraju se graditi tako da nisu u suprotnosti s oblikovnim obilježjima naselja; radi očuvanja izgleda padina na kosim građevnim česticama uvjetuje se gradnja podzida visine do 1,5 m,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       595.5,
+       292.0,
+       632.3
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "g",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "ogradaOsMin",
+     "vrijednost": 3.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "ograda",
+     "dokaz": "ograda se može podizati na međi prema susjednim građevnim česticama, a prema ulici na način da je od osi postojeće ceste udaljena najmanje 3 m; ulična ograda može se izvesti od kamena, betona, zelenila, metala i kombinacije ovih materijala, a u skladu s lokalnim uvjetima, do 1,1 m visine.",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       634.5,
+       292.0,
+       710.5
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "g",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "ogradaVisinaMax",
+     "vrijednost": 1.1,
+     "jedinica": "m",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "ograda",
+     "dokaz": "ograda se može podizati na međi prema susjednim građevnim česticama, a prema ulici na način da je od osi postojeće ceste udaljena najmanje 3 m; ulična ograda može se izvesti od kamena, betona, zelenila, metala i kombinacije ovih materijala, a u skladu s lokalnim uvjetima, do 1,1 m visine.",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       634.5,
+       292.0,
+       710.5
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "h",
+     "alineja": 3,
+     "gradjevina": "osnovna",
+     "parametar": "parkiranjePoStanu",
+     "vrijednost": 2.0,
+     "jedinica": "mjesta",
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "kod nove gradnje ili rekonstrukcije građevine kojom se povećava broj samostalnih uporabnih cjelina ili GBP",
+     "uvjet_upucuje_na": null,
+     "obrazac": "parking",
+     "dokaz": "kod nove gradnje ili rekonstrukcije građevine kojom se povećava broj samostalnih uporabnih cjelina ili GBP potrebno je za promet u mirovanju osigurati minimalni broj parkirališnih/ garažnih mjesta najmanjih dimenzija 2,5x5,0 m na građevnoj čestici uz građevinu osnovne namjene ili u okviru građevine osnovne namjene prema normativu 2 mjesta po stanu,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       135.9,
+       535.7,
+       200.8
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 38,
+     "tocka": "h",
+     "alineja": 3,
+     "gradjevina": "osnovna",
+     "parametar": "parkirnoMjesto",
+     "vrijednost": "2,5x5,0 m",
+     "jedinica": null,
+     "vrste": [
+      "obit-slob",
+      "visobit-slob"
+     ],
+     "vrsta_pravila": "UVJETNO",
+     "uvjet": "kod nove gradnje ili rekonstrukcije građevine kojom se povećava broj samostalnih uporabnih cjelina ili GBP",
+     "uvjet_upucuje_na": null,
+     "obrazac": "parking",
+     "dokaz": "kod nove gradnje ili rekonstrukcije građevine kojom se povećava broj samostalnih uporabnih cjelina ili GBP potrebno je za promet u mirovanju osigurati minimalni broj parkirališnih/ garažnih mjesta najmanjih dimenzija 2,5x5,0 m na građevnoj čestici uz građevinu osnovne namjene ili u okviru građevine osnovne namjene prema normativu 2 mjesta po stanu,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       135.9,
+       535.7,
+       200.8
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    }
+   ],
+   "upucivanja": [],
+   "nepokriveno": [],
+   "pregled": []
+  },
+  "39": {
+   "clanak": 39,
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr",
+    "visobit-dvoj"
+   ],
+   "pravila": [
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "a",
+     "alineja": 1,
+     "gradjevina": "osnovna",
+     "parametar": "minC",
+     "vrijednost": 300.0,
+     "jedinica": "m²",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "minC",
+     "dokaz": "najmanja površina građevne čestice obiteljske kuće iznosi 300 m², odnosno višeobiteljske kuće 400 m²,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       411.1,
+       535.7,
+       438.6
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "a",
+     "alineja": 1,
+     "gradjevina": "osnovna",
+     "parametar": "minC",
+     "vrijednost": 400.0,
+     "jedinica": "m²",
+     "vrste": [
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "minC",
+     "dokaz": "najmanja površina građevne čestice obiteljske kuće iznosi 300 m², odnosno višeobiteljske kuće 400 m²,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       411.1,
+       535.7,
+       438.6
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "a",
+     "alineja": 2,
+     "gradjevina": "osnovna",
+     "parametar": "kig",
+     "vrijednost": 0.25,
+     "jedinica": null,
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr",
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "kig",
+     "dokaz": "najveći koeficijent izgrađenosti građevne čestice iznosi 0,25,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       439.5,
+       535.7,
+       504.6
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "a",
+     "alineja": 3,
+     "gradjevina": "osnovna",
+     "parametar": "kis",
+     "vrijednost": 0.75,
+     "jedinica": null,
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr",
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "kis",
+     "dokaz": "najveći koeficijent iskorištenosti iznosi 0,75, a iznimno 1,0 ako se višeobiteljska kuća gradi prema uvjetima alineje 5. točke b) ovog članka.",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       439.5,
+       535.7,
+       504.6
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "a",
+     "alineja": 3,
+     "gradjevina": "osnovna",
+     "parametar": "kis",
+     "vrijednost": 1.0,
+     "jedinica": null,
+     "vrste": [
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako se višeobiteljska kuća gradi prema uvjetima alineje 5. točke b) ovog članka",
+     "uvjet_upucuje_na": {
+      "tocka": "b",
+      "alineja": 5,
+      "tekst": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12% najveći broj etaža građevine iznosi podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren te najveća visina građevine iznosi 10,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena."
+     },
+     "obrazac": "kis",
+     "dokaz": "najveći koeficijent iskorištenosti iznosi 0,75, a iznimno 1,0 ako se višeobiteljska kuća gradi prema uvjetima alineje 5. točke b) ovog članka.",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       439.5,
+       535.7,
+       504.6
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "b",
+     "alineja": 1,
+     "gradjevina": "osnovna",
+     "parametar": "tlMin",
+     "vrijednost": 60.0,
+     "jedinica": "m²",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr",
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "tlMin",
+     "dokaz": "najmanja tlocrtna površina građevine iznosi 60 m²,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       503.7,
+       535.7,
+       533.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "b",
+     "alineja": 2,
+     "gradjevina": "osnovna",
+     "parametar": "tlMax",
+     "vrijednost": 150.0,
+     "jedinica": "m²",
+     "vrste": [
+      "obit-dvoj",
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "tlMax",
+     "dokaz": "najveća tlocrtna površina građevine iznosi 150 m², odnosno 100 m² za ugrađenu obiteljsku kuću,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       503.7,
+       535.7,
+       533.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "b",
+     "alineja": 2,
+     "gradjevina": "osnovna",
+     "parametar": "tlMax",
+     "vrijednost": 100.0,
+     "jedinica": "m²",
+     "vrste": [
+      "obit-ugr"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "tlMax",
+     "dokaz": "najveća tlocrtna površina građevine iznosi 150 m², odnosno 100 m² za ugrađenu obiteljsku kuću,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       503.7,
+       535.7,
+       533.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "b",
+     "alineja": 3,
+     "gradjevina": "osnovna",
+     "parametar": "etazeMax",
+     "vrijednost": "podrum i 2 nadzemne etaže",
+     "jedinica": null,
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr",
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "etaze",
+     "dokaz": "najveći broj etaža građevine iznosi podrum i 2 nadzemne etaže,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       533.8,
+       535.7,
+       551.9
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "b",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "visinaMax",
+     "vrijednost": 7.5,
+     "jedinica": "m",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr",
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "visina",
+     "dokaz": "najveća visina građevine iznosi 7,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       552.7,
+       535.7,
+       580.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "b",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "kotaTerenaMax",
+     "vrijednost": 1.5,
+     "jedinica": "m",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr",
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "visina",
+     "dokaz": "najveća visina građevine iznosi 7,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       552.7,
+       535.7,
+       580.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "b",
+     "alineja": 5,
+     "gradjevina": "osnovna",
+     "parametar": "etazeMax",
+     "vrijednost": "podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren",
+     "jedinica": null,
+     "vrste": [
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%",
+     "uvjet_upucuje_na": null,
+     "obrazac": "kosi",
+     "dokaz": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12% najveći broj etaža građevine iznosi podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren te najveća visina građevine iznosi 10,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena.",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       581.0,
+       535.8,
+       636.6
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "b",
+     "alineja": 5,
+     "gradjevina": "osnovna",
+     "parametar": "visinaMax",
+     "vrijednost": 10.5,
+     "jedinica": "m",
+     "vrste": [
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%",
+     "uvjet_upucuje_na": null,
+     "obrazac": "kosi",
+     "dokaz": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12% najveći broj etaža građevine iznosi podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren te najveća visina građevine iznosi 10,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena.",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       581.0,
+       535.8,
+       636.6
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "b",
+     "alineja": 5,
+     "gradjevina": "osnovna",
+     "parametar": "kotaTerenaMax",
+     "vrijednost": 1.5,
+     "jedinica": "m",
+     "vrste": [
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%",
+     "uvjet_upucuje_na": null,
+     "obrazac": "kosi",
+     "dokaz": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12% najveći broj etaža građevine iznosi podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren te najveća visina građevine iznosi 10,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena.",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       581.0,
+       535.8,
+       636.6
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "b",
+     "alineja": 6,
+     "gradjevina": "osnovna",
+     "parametar": "gbpMax",
+     "vrijednost": 200.0,
+     "jedinica": "m²",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "gbp",
+     "dokaz": "najveći GBP iznosi 200 m² za građevnu česticu obiteljske građevine, odnosno 400 m² za građevnu česticu višeobiteljske građevine pri čemu se u navedeni GBP uračunavaju sve građevine na građevnoj čestici.",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       633.4,
+       535.7,
+       674.4
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "b",
+     "alineja": 6,
+     "gradjevina": "osnovna",
+     "parametar": "gbpMax",
+     "vrijednost": 400.0,
+     "jedinica": "m²",
+     "vrste": [
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "gbp",
+     "dokaz": "najveći GBP iznosi 200 m² za građevnu česticu obiteljske građevine, odnosno 400 m² za građevnu česticu višeobiteljske građevine pri čemu se u navedeni GBP uračunavaju sve građevine na građevnoj čestici.",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       633.4,
+       535.7,
+       674.4
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "c",
+     "alineja": 1,
+     "gradjevina": "osnovna",
+     "parametar": "regulacijaJavna",
+     "vrijednost": 6.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr",
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "regCesta",
+     "dokaz": "najmanja udaljenost građevine od regulacijskog pravca prema javnoj cesti iznosi 6 m, pri čemu udaljenosti od osi prometne površine javne ceste ne može biti manja od 9 m,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       694.0,
+       535.7,
+       721.3
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "c",
+     "alineja": 1,
+     "gradjevina": "osnovna",
+     "parametar": "regulacijaJavnaOs",
+     "vrijednost": 9.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr",
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "regCesta",
+     "dokaz": "najmanja udaljenost građevine od regulacijskog pravca prema javnoj cesti iznosi 6 m, pri čemu udaljenosti od osi prometne površine javne ceste ne može biti manja od 9 m,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       694.0,
+       535.7,
+       721.3
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "c",
+     "alineja": 2,
+     "gradjevina": "osnovna",
+     "parametar": "regulacijaNerazvrstana",
+     "vrijednost": 4.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr",
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "regCesta",
+     "dokaz": "najmanja udaljenost građevine od regulacijskog pravca prema nerazvrstanoj cesti iznosi 4 m, pri čemu udaljenosti od osi prometne površine nerazvrstane ceste ne može biti manja od 7 m,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       722.2,
+       535.7,
+       759.0
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "c",
+     "alineja": 2,
+     "gradjevina": "osnovna",
+     "parametar": "regulacijaNerazvrstanaOs",
+     "vrijednost": 7.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr",
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "regCesta",
+     "dokaz": "najmanja udaljenost građevine od regulacijskog pravca prema nerazvrstanoj cesti iznosi 4 m, pri čemu udaljenosti od osi prometne površine nerazvrstane ceste ne može biti manja od 7 m,",
+     "izvor": {
+      "stranica": 14,
+      "stupac": "D",
+      "okvir": [
+       303.3,
+       722.2,
+       535.7,
+       759.0
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "c",
+     "alineja": 3,
+     "gradjevina": "osnovna",
+     "parametar": "regulacija",
+     "vrijednost": null,
+     "jedinica": null,
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr",
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "kod interpolacije nove građevine između postojećih građevina na susjednim građevnim česticama koje su od regulacijske linije prema javnoj prometnoj površini udaljene manje od prethodno utvrđene udaljenosti",
+     "uvjet_upucuje_na": null,
+     "obrazac": "interp",
+     "dokaz": "kod interpolacije nove građevine između postojećih građevina na susjednim građevnim česticama koje su od regulacijske linije prema javnoj prometnoj površini udaljene manje od prethodno utvrđene udaljenosti, interpoliranu građevinu moguće je graditi i na manjoj udaljenosti od prethodno utvrđene, a uz uvjet da se građevni pravac uskladi s postojećim građevinama na susjednim građevnim česticama vodeći računa o lokalnim uvjetima,",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       107.6,
+       292.0,
+       181.9
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "c",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "medaMin",
+     "vrijednost": 4.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr",
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "meda",
+     "dokaz": "najmanja udaljenost građevine od ostalih međa građevne čestice, izuzev međa na koje su prislonjene, iznosi 4 m, a iznimno 3 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost građevine od ostalih međa građevne čestice, izuzev međa na koje su prislonjene, iznosi pola visine građevine, ali ne manje od 3 m, a iznimno 2 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno se obvezna udaljenost od pola visine građevine ne mora primjenjivati ako se višeobiteljska građevina gradi prema uvjetima alineje 5. točke b) ovog članka.",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       184.9,
+       292.0,
+       315.4
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "c",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "medaMin",
+     "vrijednost": 3.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr",
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama",
+     "uvjet_upucuje_na": null,
+     "obrazac": "meda",
+     "dokaz": "najmanja udaljenost građevine od ostalih međa građevne čestice, izuzev međa na koje su prislonjene, iznosi 4 m, a iznimno 3 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost građevine od ostalih međa građevne čestice, izuzev međa na koje su prislonjene, iznosi pola visine građevine, ali ne manje od 3 m, a iznimno 2 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno se obvezna udaljenost od pola visine građevine ne mora primjenjivati ako se višeobiteljska građevina gradi prema uvjetima alineje 5. točke b) ovog članka.",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       184.9,
+       292.0,
+       315.4
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "c",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "medaMin",
+     "vrijednost": "pola visine građevine, ali ne manje od 3 m",
+     "jedinica": null,
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr",
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83.",
+     "uvjet_upucuje_na": null,
+     "obrazac": "meda",
+     "dokaz": "najmanja udaljenost građevine od ostalih međa građevne čestice, izuzev međa na koje su prislonjene, iznosi 4 m, a iznimno 3 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost građevine od ostalih međa građevne čestice, izuzev međa na koje su prislonjene, iznosi pola visine građevine, ali ne manje od 3 m, a iznimno 2 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno se obvezna udaljenost od pola visine građevine ne mora primjenjivati ako se višeobiteljska građevina gradi prema uvjetima alineje 5. točke b) ovog članka.",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       184.9,
+       292.0,
+       315.4
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "c",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "medaMin",
+     "vrijednost": 2.0,
+     "jedinica": "m",
+     "vrste": [
+      "obit-dvoj",
+      "obit-ugr",
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost građevine od ostalih međa građevne čestice, izuzev međa na koje su prislonjene, iznosi pola visine građevine, ali ne manje od 3 m, a iznimno 2 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama",
+     "uvjet_upucuje_na": null,
+     "obrazac": "meda",
+     "dokaz": "najmanja udaljenost građevine od ostalih međa građevne čestice, izuzev međa na koje su prislonjene, iznosi 4 m, a iznimno 3 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost građevine od ostalih međa građevne čestice, izuzev međa na koje su prislonjene, iznosi pola visine građevine, ali ne manje od 3 m, a iznimno 2 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno se obvezna udaljenost od pola visine građevine ne mora primjenjivati ako se višeobiteljska građevina gradi prema uvjetima alineje 5. točke b) ovog članka.",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       184.9,
+       292.0,
+       315.4
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 39,
+     "tocka": "c",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "medaMin",
+     "vrijednost": null,
+     "jedinica": null,
+     "vrste": [
+      "visobit-dvoj"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako se višeobiteljska građevina gradi prema uvjetima alineje 5. točke b) ovog članka",
+     "uvjet_upucuje_na": {
+      "tocka": "b",
+      "alineja": 5,
+      "tekst": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12% najveći broj etaža građevine iznosi podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren te najveća visina građevine iznosi 10,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena."
+     },
+     "obrazac": "meda",
+     "dokaz": "najmanja udaljenost građevine od ostalih međa građevne čestice, izuzev međa na koje su prislonjene, iznosi 4 m, a iznimno 3 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83. najmanja udaljenost građevine od ostalih međa građevne čestice, izuzev međa na koje su prislonjene, iznosi pola visine građevine, ali ne manje od 3 m, a iznimno 2 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama; iznimno se obvezna udaljenost od pola visine građevine ne mora primjenjivati ako se višeobiteljska građevina gradi prema uvjetima alineje 5. točke b) ovog članka.",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       184.9,
+       292.0,
+       315.4
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    }
+   ],
+   "upucivanja": [
+    {
+     "tocka": "d",
+     "alineja": 1,
+     "upucuje_na": {
+      "clanak": 38,
+      "tocke": [
+       "d",
+       "e",
+       "f",
+       "g",
+       "h",
+       "i"
+      ]
+     },
+     "dokaz": "primjenjuju se odredbe iz točaka d), e), f), g), h) i i) članka 38."
+    }
+   ],
+   "nepokriveno": [],
+   "pregled": []
+  },
+  "40": {
+   "clanak": 40,
+   "vrste": [
+    "stamb"
+   ],
+   "pravila": [
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 40,
+     "tocka": "a",
+     "alineja": 1,
+     "gradjevina": "osnovna",
+     "parametar": "minC",
+     "vrijednost": 500.0,
+     "jedinica": "m²",
+     "vrste": [
+      "stamb"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "minC",
+     "dokaz": "najmanja površina građevne čestice iznosi 500 m²,",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       443.5,
+       292.0,
+       526.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 40,
+     "tocka": "a",
+     "alineja": 2,
+     "gradjevina": "osnovna",
+     "parametar": "kig",
+     "vrijednost": 0.25,
+     "jedinica": null,
+     "vrste": [
+      "stamb"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "kig",
+     "dokaz": "najveći koeficijent izgrađenosti građevne čestice iznosi 0,25,",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       443.5,
+       292.0,
+       526.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 40,
+     "tocka": "a",
+     "alineja": 3,
+     "gradjevina": "osnovna",
+     "parametar": "kis",
+     "vrijednost": 0.75,
+     "jedinica": null,
+     "vrste": [
+      "stamb"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "kis",
+     "dokaz": "najveći koeficijent iskorištenosti iznosi 0,75, a iznimno 1,0 ako se građevina gradi prema uvjetima alineje 5. točke b) ovog članka.",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       443.5,
+       292.0,
+       526.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 40,
+     "tocka": "a",
+     "alineja": 3,
+     "gradjevina": "osnovna",
+     "parametar": "kis",
+     "vrijednost": 1.0,
+     "jedinica": null,
+     "vrste": [
+      "stamb"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako se građevina gradi prema uvjetima alineje 5. točke b) ovog članka",
+     "uvjet_upucuje_na": {
+      "tocka": "b",
+      "alineja": 5,
+      "tekst": "ako se građevina gradi na kosom terenu gdje je nagib prirodnog terena veći od 12% najveći broj etaža građevine iznosi podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren te najveća visina građevine iznosi 10,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena."
+     },
+     "obrazac": "kis",
+     "dokaz": "najveći koeficijent iskorištenosti iznosi 0,75, a iznimno 1,0 ako se građevina gradi prema uvjetima alineje 5. točke b) ovog članka.",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       443.5,
+       292.0,
+       526.2
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 40,
+     "tocka": "b",
+     "alineja": 1,
+     "gradjevina": "osnovna",
+     "parametar": "tlMin",
+     "vrijednost": 100.0,
+     "jedinica": "m²",
+     "vrste": [
+      "stamb"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "tlMin",
+     "dokaz": "najmanja tlocrtna površina građevine iznosi 100 m²,",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       529.0,
+       291.9,
+       581.6
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 40,
+     "tocka": "b",
+     "alineja": 2,
+     "gradjevina": "osnovna",
+     "parametar": "tlMax",
+     "vrijednost": 200.0,
+     "jedinica": "m²",
+     "vrste": [
+      "stamb"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "tlMax",
+     "dokaz": "najveća tlocrtna površina građevine iznosi 200 m²,",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       529.0,
+       291.9,
+       581.6
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 40,
+     "tocka": "b",
+     "alineja": 3,
+     "gradjevina": "osnovna",
+     "parametar": "etazeMax",
+     "vrijednost": "podrum i 2 nadzemne etaže",
+     "jedinica": null,
+     "vrste": [
+      "stamb"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "etaze",
+     "dokaz": "najveći broj etaža građevine iznosi podrum i 2 nadzemne etaže,",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       529.0,
+       291.9,
+       581.6
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 40,
+     "tocka": "b",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "visinaMax",
+     "vrijednost": 7.5,
+     "jedinica": "m",
+     "vrste": [
+      "stamb"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "visina",
+     "dokaz": "najveća visina građevine iznosi 7,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena,",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       584.4,
+       292.0,
+       611.8
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 40,
+     "tocka": "b",
+     "alineja": 4,
+     "gradjevina": "osnovna",
+     "parametar": "kotaTerenaMax",
+     "vrijednost": 1.5,
+     "jedinica": "m",
+     "vrste": [
+      "stamb"
+     ],
+     "vrsta_pravila": "OSNOVNO",
+     "uvjet": null,
+     "uvjet_upucuje_na": null,
+     "obrazac": "visina",
+     "dokaz": "najveća visina građevine iznosi 7,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena,",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       584.4,
+       292.0,
+       611.8
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 40,
+     "tocka": "b",
+     "alineja": 5,
+     "gradjevina": "osnovna",
+     "parametar": "etazeMax",
+     "vrijednost": "podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren",
+     "jedinica": null,
+     "vrste": [
+      "stamb"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako se građevina gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%",
+     "uvjet_upucuje_na": null,
+     "obrazac": "kosi",
+     "dokaz": "ako se građevina gradi na kosom terenu gdje je nagib prirodnog terena veći od 12% najveći broj etaža građevine iznosi podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren te najveća visina građevine iznosi 10,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena.",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       614.8,
+       291.9,
+       670.3
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 40,
+     "tocka": "b",
+     "alineja": 5,
+     "gradjevina": "osnovna",
+     "parametar": "visinaMax",
+     "vrijednost": 10.5,
+     "jedinica": "m",
+     "vrste": [
+      "stamb"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako se građevina gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%",
+     "uvjet_upucuje_na": null,
+     "obrazac": "kosi",
+     "dokaz": "ako se građevina gradi na kosom terenu gdje je nagib prirodnog terena veći od 12% najveći broj etaža građevine iznosi podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren te najveća visina građevine iznosi 10,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena.",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       614.8,
+       291.9,
+       670.3
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    },
+    {
+     "plan": "UPU 2 Kornić",
+     "clanak": 40,
+     "tocka": "b",
+     "alineja": 5,
+     "gradjevina": "osnovna",
+     "parametar": "kotaTerenaMax",
+     "vrijednost": 1.5,
+     "jedinica": "m",
+     "vrste": [
+      "stamb"
+     ],
+     "vrsta_pravila": "IZNIMKA",
+     "uvjet": "ako se građevina gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%",
+     "uvjet_upucuje_na": null,
+     "obrazac": "kosi",
+     "dokaz": "ako se građevina gradi na kosom terenu gdje je nagib prirodnog terena veći od 12% najveći broj etaža građevine iznosi podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren te najveća visina građevine iznosi 10,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena.",
+     "izvor": {
+      "stranica": 15,
+      "stupac": "L",
+      "okvir": [
+       59.5,
+       614.8,
+       291.9,
+       670.3
+      ]
+     },
+     "status": "PRIJEDLOG",
+     "razlozi": [],
+     "pravno_potvrdeno": false
+    }
+   ],
+   "upucivanja": [
+    {
+     "tocka": "c",
+     "alineja": 1,
+     "upucuje_na": {
+      "clanak": 38,
+      "tocke": [
+       "c",
+       "d",
+       "e",
+       "f",
+       "g",
+       "h",
+       "i"
+      ]
+     },
+     "dokaz": "primjenjuju se odredbe iz točaka c), d), e), f), g), h) i i) članka 38."
+    }
+   ],
+   "nepokriveno": [],
+   "pregled": []
+  }
+ },
+ "automatska_potvrda": 0,
+ "pravno_potvrdeno": false,
+ "sazetak": {
+  "prijedlozi": 97,
+  "pregled": 0,
+  "nepokrivene_alineje": 0
+ }
+}

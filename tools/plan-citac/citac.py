@@ -381,10 +381,15 @@ def _dio_navoda(dio):
     broj bez riječi je članak dok se ne navede stavak. »2. i 3.«, »1.–3.« i »1.–3. i 5.« ostaju u istoj vrsti."""
     tok = re.findall(r"čl\.|članak\w*|članci\w*|članc\w*|st\.|stav\w*|t\.|točk\w*|al\.|aline\w*|\d{1,3}|[–-]|\bdo\b|\bi\b|\bili\b|,|[a-z]\)", dio, re.I)
     vrsta, out, zadnji, raspon, par = "clanak", {"clanak": [], "stavak": [], "tocka": [], "alineja": [], "slovo": []}, None, False, []
+    niz_clanaka, dvosmisleno = 0, False  # koliko je članaka navedeno zaredom prije stavka
     for t in tok:
         tl = t.lower()
         k = next((v for v, rx in KONTEKST if re.fullmatch(rx, tl) or (v == "clanak" and tl.startswith("član")) or (v == "stavak" and tl.startswith("stav")) or (v == "tocka" and tl.startswith("točk")) or (v == "alineja" and tl.startswith("aline"))), None)
         if k:
+            if k == "stavak" and vrsta == "clanak" and niz_clanaka > 1:
+                dvosmisleno = True  # »čl. 38. i 39. st. 2.«: ne zna se kojem članku pripada stavak
+            if k == "clanak":
+                niz_clanaka = 0
             vrsta, zadnji, raspon = k, None, False; continue
         if re.fullmatch(r"[a-z]\)", tl):
             out["slovo"].append(tl[0]); continue
@@ -399,11 +404,11 @@ def _dio_navoda(dio):
             novi = [n]
         out[vrsta] += novi
         if vrsta == "clanak":
-            par += [{"clanak": x, "stavci": []} for x in novi]
-        elif vrsta == "stavak" and par:
+            par += [{"clanak": x, "stavci": []} for x in novi]; niz_clanaka += len(novi)
+        elif vrsta == "stavak" and par and not dvosmisleno:
             par[-1]["stavci"] += novi
         zadnji, raspon = n, False
-    return out, par
+    return out, par, dvosmisleno
 
 
 def navod(s):
@@ -417,16 +422,18 @@ def navod(s):
         plan, t = pm.group(1), t[pm.end():]
     if re.search(r"pojmovnik", t, re.I):
         return {"vrsta": "POJMOVNIK", "plan": plan, "clanci": [], "stavci": [], "tocke": [int(x) for x in re.findall(r"točk\w*\s*(\d+)", t, re.I)],
-                "alineje": [], "slova": [], "parovi": [], "izvorno": raw}
+                "alineje": [], "slova": [], "parovi": [], "dvosmisleno": False, "status": "JEDNOZNACNO", "izvorno": raw}
     sve = {"clanak": [], "stavak": [], "tocka": [], "alineja": [], "slovo": []}; parovi = []
+    dvosm = False
     for dio in t.split(";"):
-        o, p = _dio_navoda(dio)
+        o, p, dv = _dio_navoda(dio)
+        dvosm = dvosm or dv
         for k in sve:
             sve[k] += o[k]
         parovi += p
     return {"vrsta": "CLANAK" if sve["clanak"] else "NEPOZNATO", "plan": plan, "clanci": sorted(set(sve["clanak"])),
             "stavci": sorted(set(sve["stavak"])), "tocke": sorted(set(sve["tocka"])) + sve["slovo"], "alineje": sorted(set(sve["alineja"])),
-            "slova": sve["slovo"], "parovi": parovi, "izvorno": raw}
+            "slova": sve["slovo"], "parovi": parovi, "dvosmisleno": dvosm, "status": "PREGLED" if dvosm else "JEDNOZNACNO", "izvorno": raw}
 
 
 def main(argv=None):

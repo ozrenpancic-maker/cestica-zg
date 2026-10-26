@@ -1,0 +1,1509 @@
+{
+ "opis": "Ručno označena pravila čl. 38.–40. UPU-a 2 Kornić (SN PGŽ 19/2016), iz teksta odluke. Služi kao referenca za ocjenu modula strukturiranja.",
+ "oznacio": "Claude (razvoj, ista sesija kao implementacija)",
+ "neovisnost": "NIJE NEOVISNO: oznake je napisao isti autor koji piše modul. Prije ocjene točnosti treba ih neovisno pregledati ili ponovno označiti (ChatGPT / korisnik).",
+ "izvor": {
+  "pdf": "tests/pgz-odgovori/735-76-kornic-2026-10-22/sn-19-16/odluka_34138.pdf",
+  "sha256": "5b4ec76db4232f3efad0dd7ad01e109130bcc3a2702c95ff9857bf48590eae08"
+ },
+ "vrste": {
+  "obit-slob": "slobodnostojeća obiteljska kuća",
+  "visobit-slob": "slobodnostojeća višeobiteljska kuća",
+  "obit-dvoj": "dvojna obiteljska kuća",
+  "obit-ugr": "ugrađena obiteljska kuća",
+  "visobit-dvoj": "dvojna višeobiteljska kuća",
+  "stamb": "stambena građevina"
+ },
+ "pravila_oznacavanja": [
+  "Svaka brojčana ili opisna vrijednost uvjeta gradnje je jedan zapis; »odnosno« za drugu vrstu građevine daje zaseban zapis.",
+  "IZNIMKA = odstupanje od osnovnog pravila iste alineje (»iznimno«, »ako …« uz drugačiju vrijednost); uvjet je doslovna uvjetna formulacija.",
+  "UVJETNO = pravilo koje vrijedi samo uz uvjet, bez osnovne vrijednosti u istoj alineji (npr. nagib krova ako je krov kos).",
+  "Vrijednost null = iznimka bez brojčane vrijednosti (npr. manja udaljenost kod interpolacije).",
+  "Alineje se broje unutar točke redom pojavljivanja crtice »-« na početku alineje; podnabrajanje u točki d) (kriteriji sljemena) ne broji se kao alineja.",
+  "Upućivanja (»primjenjuju se odredbe iz točaka … članka 38.«) ne prepisuju se kao pravila.",
+  "Uvjet može biti popis odlomaka koji se svi moraju nalaziti u predloženoj uvjetnoj formulaciji (npr. zona KPC i zgrada bez otvora).",
+  "Opseg: svi uvjeti s vrijednošću (brojem ili opisnom granicom) u čl. 38.–40. te iznimke bez vrijednosti koje u istoj alineji mijenjaju takav uvjet. Opisni uvjeti bez vrijednosti (materijali, oblikovanje, priključci) nisu u skupu."
+ ],
+ "pravila": [
+  {
+   "clanak": 38,
+   "tocka": "a",
+   "alineja": 1,
+   "gradjevina": "osnovna",
+   "parametar": "minC",
+   "vrijednost": 500,
+   "jedinica": "m²",
+   "vrste": [
+    "obit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "a",
+   "alineja": 1,
+   "gradjevina": "osnovna",
+   "parametar": "minC",
+   "vrijednost": 400,
+   "jedinica": "m²",
+   "vrste": [
+    "obit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako se građevna čestica nalazi u okruženju već uređenih i izgrađenih građevnih čestica"
+  },
+  {
+   "clanak": 38,
+   "tocka": "a",
+   "alineja": 2,
+   "gradjevina": "osnovna",
+   "parametar": "minC",
+   "vrijednost": 500,
+   "jedinica": "m²",
+   "vrste": [
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "a",
+   "alineja": 3,
+   "gradjevina": "osnovna",
+   "parametar": "kig",
+   "vrijednost": 0.25,
+   "jedinica": null,
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "a",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "kis",
+   "vrijednost": 0.75,
+   "jedinica": null,
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "a",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "kis",
+   "vrijednost": 1.0,
+   "jedinica": null,
+   "vrste": [
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako se višeobiteljska kuća gradi prema uvjetima alineje 5. točke b) ovog članka"
+  },
+  {
+   "clanak": 38,
+   "tocka": "b",
+   "alineja": 1,
+   "gradjevina": "osnovna",
+   "parametar": "tlMin",
+   "vrijednost": 60,
+   "jedinica": "m²",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "b",
+   "alineja": 2,
+   "gradjevina": "osnovna",
+   "parametar": "tlMax",
+   "vrijednost": 200,
+   "jedinica": "m²",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "b",
+   "alineja": 3,
+   "gradjevina": "osnovna",
+   "parametar": "etazeMax",
+   "vrijednost": "podrum i 2 nadzemne etaže",
+   "jedinica": null,
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "b",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "visinaMax",
+   "vrijednost": 7.5,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "b",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "kotaTerenaMax",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "b",
+   "alineja": 5,
+   "gradjevina": "osnovna",
+   "parametar": "etazeMax",
+   "vrijednost": "podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren",
+   "jedinica": null,
+   "vrste": [
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%"
+  },
+  {
+   "clanak": 38,
+   "tocka": "b",
+   "alineja": 5,
+   "gradjevina": "osnovna",
+   "parametar": "visinaMax",
+   "vrijednost": 10.5,
+   "jedinica": "m",
+   "vrste": [
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%"
+  },
+  {
+   "clanak": 38,
+   "tocka": "b",
+   "alineja": 5,
+   "gradjevina": "osnovna",
+   "parametar": "kotaTerenaMax",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "vrste": [
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%"
+  },
+  {
+   "clanak": 38,
+   "tocka": "b",
+   "alineja": 6,
+   "gradjevina": "osnovna",
+   "parametar": "gbpMax",
+   "vrijednost": 200,
+   "jedinica": "m²",
+   "vrste": [
+    "obit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "b",
+   "alineja": 6,
+   "gradjevina": "osnovna",
+   "parametar": "gbpMax",
+   "vrijednost": 400,
+   "jedinica": "m²",
+   "vrste": [
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "c",
+   "alineja": 1,
+   "gradjevina": "osnovna",
+   "parametar": "regulacijaJavna",
+   "vrijednost": 6,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "c",
+   "alineja": 1,
+   "gradjevina": "osnovna",
+   "parametar": "regulacijaJavnaOs",
+   "vrijednost": 9,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "c",
+   "alineja": 2,
+   "gradjevina": "osnovna",
+   "parametar": "regulacijaNerazvrstana",
+   "vrijednost": 4,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "c",
+   "alineja": 2,
+   "gradjevina": "osnovna",
+   "parametar": "regulacijaNerazvrstanaOs",
+   "vrijednost": 7,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "c",
+   "alineja": 3,
+   "gradjevina": "osnovna",
+   "parametar": "regulacija",
+   "vrijednost": null,
+   "jedinica": null,
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "kod interpolacije nove građevine između postojećih građevina na susjednim građevnim česticama koje su od regulacijske linije prema javnoj prometnoj površini udaljene manje od prethodno utvrđene udaljenosti"
+  },
+  {
+   "clanak": 38,
+   "tocka": "c",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "medaMin",
+   "vrijednost": 4,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "c",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "medaMin",
+   "vrijednost": 3,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama"
+  },
+  {
+   "clanak": 38,
+   "tocka": "c",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "medaMin",
+   "vrijednost": "pola visine građevine, ali ne manje od 3 m",
+   "jedinica": null,
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83."
+  },
+  {
+   "clanak": 38,
+   "tocka": "c",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "medaMin",
+   "vrijednost": 2,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": [
+    "na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83.",
+    "ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama"
+   ]
+  },
+  {
+   "clanak": 38,
+   "tocka": "c",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "medaMin",
+   "vrijednost": null,
+   "jedinica": null,
+   "vrste": [
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako se višeobiteljska građevina gradi prema uvjetima alineje 5. točke b) ovog članka"
+  },
+  {
+   "clanak": 38,
+   "tocka": "d",
+   "alineja": 2,
+   "gradjevina": "osnovna",
+   "parametar": "nagibKrovaMin",
+   "vrijednost": 17,
+   "jedinica": "°",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "uvjet": "ako se gradi kao koso"
+  },
+  {
+   "clanak": 38,
+   "tocka": "d",
+   "alineja": 2,
+   "gradjevina": "osnovna",
+   "parametar": "nagibKrovaMax",
+   "vrijednost": 23,
+   "jedinica": "°",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "uvjet": "ako se gradi kao koso"
+  },
+  {
+   "clanak": 38,
+   "tocka": "e",
+   "alineja": 1,
+   "gradjevina": "pomocna",
+   "parametar": "etazeMax",
+   "vrijednost": "jedna nadzemna etaža",
+   "jedinica": null,
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "e",
+   "alineja": 2,
+   "gradjevina": "pomocna",
+   "parametar": "visinaMax",
+   "vrijednost": "visinu osnovne građevine, ali ne više od 4 m",
+   "jedinica": null,
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "e",
+   "alineja": 2,
+   "gradjevina": "pomocna",
+   "parametar": "kotaTerenaMax",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "e",
+   "alineja": 3,
+   "gradjevina": "pomocna",
+   "parametar": "gbpMax",
+   "vrijednost": 50,
+   "jedinica": "m²",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "e",
+   "alineja": 4,
+   "gradjevina": "pomocna",
+   "parametar": "regulacija",
+   "vrijednost": 5,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "e",
+   "alineja": 4,
+   "gradjevina": "pomocna",
+   "parametar": "regulacijaOs",
+   "vrijednost": 8,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "e",
+   "alineja": 4,
+   "gradjevina": "pomocna",
+   "parametar": "regulacija",
+   "vrijednost": 4,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83."
+  },
+  {
+   "clanak": 38,
+   "tocka": "e",
+   "alineja": 4,
+   "gradjevina": "pomocna",
+   "parametar": "regulacija",
+   "vrijednost": "na regulacijskom pravcu",
+   "jedinica": null,
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "iznimno se garaže mogu graditi na regulacijskom pravcu ako je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno najviše do visine ogradnog zida visine 1,1 m kada to dozvoljavaju lokalni uvjeti, te ako se zadovolji uvjet da je garaža udaljena od osi postojeće ceste najmanje 3 m"
+  },
+  {
+   "clanak": 38,
+   "tocka": "e",
+   "alineja": 4,
+   "gradjevina": "pomocna",
+   "parametar": "regulacijaOs",
+   "vrijednost": 3,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "iznimno se garaže mogu graditi na regulacijskom pravcu ako je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice, odnosno najviše do visine ogradnog zida visine 1,1 m kada to dozvoljavaju lokalni uvjeti, te ako se zadovolji uvjet da je garaža udaljena od osi postojeće ceste najmanje 3 m"
+  },
+  {
+   "clanak": 38,
+   "tocka": "e",
+   "alineja": 5,
+   "gradjevina": "pomocna",
+   "parametar": "medaMin",
+   "vrijednost": 4,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "e",
+   "alineja": 5,
+   "gradjevina": "pomocna",
+   "parametar": "medaMin",
+   "vrijednost": 3,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako se građevna čestica nalazi unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83."
+  },
+  {
+   "clanak": 38,
+   "tocka": "e",
+   "alineja": 5,
+   "gradjevina": "pomocna",
+   "parametar": "medaMin",
+   "vrijednost": null,
+   "jedinica": null,
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako pomoćna građevina nema otvore može se graditi i na manjoj udaljenosti"
+  },
+  {
+   "clanak": 38,
+   "tocka": "e",
+   "alineja": 6,
+   "gradjevina": "pomocna",
+   "parametar": "nagibKrovaMin",
+   "vrijednost": 17,
+   "jedinica": "°",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "uvjet": "ako se gradi kao koso"
+  },
+  {
+   "clanak": 38,
+   "tocka": "e",
+   "alineja": 6,
+   "gradjevina": "pomocna",
+   "parametar": "nagibKrovaMax",
+   "vrijednost": 23,
+   "jedinica": "°",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "uvjet": "ako se gradi kao koso"
+  },
+  {
+   "clanak": 38,
+   "tocka": "f",
+   "alineja": 1,
+   "gradjevina": "poljoprivredna",
+   "parametar": "visinaMax",
+   "vrijednost": 4,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "f",
+   "alineja": 1,
+   "gradjevina": "poljoprivredna",
+   "parametar": "kotaTerenaMax",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "f",
+   "alineja": 2,
+   "gradjevina": "poljoprivredna",
+   "parametar": "regulacija",
+   "vrijednost": 6,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "f",
+   "alineja": 2,
+   "gradjevina": "poljoprivredna",
+   "parametar": "regulacijaOs",
+   "vrijednost": 9,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "f",
+   "alineja": 2,
+   "gradjevina": "poljoprivredna",
+   "parametar": "regulacija",
+   "vrijednost": 5,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83."
+  },
+  {
+   "clanak": 38,
+   "tocka": "f",
+   "alineja": 3,
+   "gradjevina": "poljoprivredna",
+   "parametar": "medaMin",
+   "vrijednost": 4,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "f",
+   "alineja": 3,
+   "gradjevina": "poljoprivredna",
+   "parametar": "medaMin",
+   "vrijednost": 3,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako se građevna čestica nalazi unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83."
+  },
+  {
+   "clanak": 38,
+   "tocka": "f",
+   "alineja": 5,
+   "gradjevina": "poljoprivredna",
+   "parametar": "nagibKrovaMin",
+   "vrijednost": 17,
+   "jedinica": "°",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "uvjet": "ako se gradi kao koso"
+  },
+  {
+   "clanak": 38,
+   "tocka": "f",
+   "alineja": 5,
+   "gradjevina": "poljoprivredna",
+   "parametar": "nagibKrovaMax",
+   "vrijednost": 23,
+   "jedinica": "°",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "uvjet": "ako se gradi kao koso"
+  },
+  {
+   "clanak": 38,
+   "tocka": "g",
+   "alineja": 2,
+   "gradjevina": "osnovna",
+   "parametar": "zelenilo",
+   "vrijednost": 0.4,
+   "jedinica": "udio",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "g",
+   "alineja": 2,
+   "gradjevina": "osnovna",
+   "parametar": "zelenilo",
+   "vrijednost": null,
+   "jedinica": null,
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "odstupanja od ovog stavka moguća su samo u zonama starih naselja gdje se interpolacijama u postojećoj građevnoj strukturi dograđuju postojeće ili grade nove građevine"
+  },
+  {
+   "clanak": 38,
+   "tocka": "g",
+   "alineja": 2,
+   "gradjevina": "osnovna",
+   "parametar": "zelenaStazaMaxSirina",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "g",
+   "alineja": 3,
+   "gradjevina": "osnovna",
+   "parametar": "podzidMax",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "uvjet": "na kosim građevnim česticama"
+  },
+  {
+   "clanak": 38,
+   "tocka": "g",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "ogradaOsMin",
+   "vrijednost": 3,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "g",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "ogradaVisinaMax",
+   "vrijednost": 1.1,
+   "jedinica": "m",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 38,
+   "tocka": "h",
+   "alineja": 3,
+   "gradjevina": "osnovna",
+   "parametar": "parkiranjePoStanu",
+   "vrijednost": 2,
+   "jedinica": "mjesta",
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "uvjet": "kod nove gradnje ili rekonstrukcije građevine kojom se povećava broj samostalnih uporabnih cjelina ili GBP"
+  },
+  {
+   "clanak": 38,
+   "tocka": "h",
+   "alineja": 3,
+   "gradjevina": "osnovna",
+   "parametar": "parkirnoMjesto",
+   "vrijednost": "2,5x5,0 m",
+   "jedinica": null,
+   "vrste": [
+    "obit-slob",
+    "visobit-slob"
+   ],
+   "vrsta_pravila": "UVJETNO",
+   "uvjet": "kod nove gradnje ili rekonstrukcije građevine kojom se povećava broj samostalnih uporabnih cjelina ili GBP"
+  },
+  {
+   "clanak": 39,
+   "tocka": "a",
+   "alineja": 1,
+   "gradjevina": "osnovna",
+   "parametar": "minC",
+   "vrijednost": 300,
+   "jedinica": "m²",
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 39,
+   "tocka": "a",
+   "alineja": 1,
+   "gradjevina": "osnovna",
+   "parametar": "minC",
+   "vrijednost": 400,
+   "jedinica": "m²",
+   "vrste": [
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 39,
+   "tocka": "a",
+   "alineja": 2,
+   "gradjevina": "osnovna",
+   "parametar": "kig",
+   "vrijednost": 0.25,
+   "jedinica": null,
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr",
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 39,
+   "tocka": "a",
+   "alineja": 3,
+   "gradjevina": "osnovna",
+   "parametar": "kis",
+   "vrijednost": 0.75,
+   "jedinica": null,
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr",
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 39,
+   "tocka": "a",
+   "alineja": 3,
+   "gradjevina": "osnovna",
+   "parametar": "kis",
+   "vrijednost": 1.0,
+   "jedinica": null,
+   "vrste": [
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako se višeobiteljska kuća gradi prema uvjetima alineje 5. točke b) ovog članka"
+  },
+  {
+   "clanak": 39,
+   "tocka": "b",
+   "alineja": 1,
+   "gradjevina": "osnovna",
+   "parametar": "tlMin",
+   "vrijednost": 60,
+   "jedinica": "m²",
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr",
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 39,
+   "tocka": "b",
+   "alineja": 2,
+   "gradjevina": "osnovna",
+   "parametar": "tlMax",
+   "vrijednost": 150,
+   "jedinica": "m²",
+   "vrste": [
+    "obit-dvoj",
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 39,
+   "tocka": "b",
+   "alineja": 2,
+   "gradjevina": "osnovna",
+   "parametar": "tlMax",
+   "vrijednost": 100,
+   "jedinica": "m²",
+   "vrste": [
+    "obit-ugr"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 39,
+   "tocka": "b",
+   "alineja": 3,
+   "gradjevina": "osnovna",
+   "parametar": "etazeMax",
+   "vrijednost": "podrum i 2 nadzemne etaže",
+   "jedinica": null,
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr",
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 39,
+   "tocka": "b",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "visinaMax",
+   "vrijednost": 7.5,
+   "jedinica": "m",
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr",
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 39,
+   "tocka": "b",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "kotaTerenaMax",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr",
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 39,
+   "tocka": "b",
+   "alineja": 5,
+   "gradjevina": "osnovna",
+   "parametar": "etazeMax",
+   "vrijednost": "podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren",
+   "jedinica": null,
+   "vrste": [
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%"
+  },
+  {
+   "clanak": 39,
+   "tocka": "b",
+   "alineja": 5,
+   "gradjevina": "osnovna",
+   "parametar": "visinaMax",
+   "vrijednost": 10.5,
+   "jedinica": "m",
+   "vrste": [
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%"
+  },
+  {
+   "clanak": 39,
+   "tocka": "b",
+   "alineja": 5,
+   "gradjevina": "osnovna",
+   "parametar": "kotaTerenaMax",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "vrste": [
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako se višeobiteljska kuća gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%"
+  },
+  {
+   "clanak": 39,
+   "tocka": "b",
+   "alineja": 6,
+   "gradjevina": "osnovna",
+   "parametar": "gbpMax",
+   "vrijednost": 200,
+   "jedinica": "m²",
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 39,
+   "tocka": "b",
+   "alineja": 6,
+   "gradjevina": "osnovna",
+   "parametar": "gbpMax",
+   "vrijednost": 400,
+   "jedinica": "m²",
+   "vrste": [
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 39,
+   "tocka": "c",
+   "alineja": 1,
+   "gradjevina": "osnovna",
+   "parametar": "regulacijaJavna",
+   "vrijednost": 6,
+   "jedinica": "m",
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr",
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 39,
+   "tocka": "c",
+   "alineja": 1,
+   "gradjevina": "osnovna",
+   "parametar": "regulacijaJavnaOs",
+   "vrijednost": 9,
+   "jedinica": "m",
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr",
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 39,
+   "tocka": "c",
+   "alineja": 2,
+   "gradjevina": "osnovna",
+   "parametar": "regulacijaNerazvrstana",
+   "vrijednost": 4,
+   "jedinica": "m",
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr",
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 39,
+   "tocka": "c",
+   "alineja": 2,
+   "gradjevina": "osnovna",
+   "parametar": "regulacijaNerazvrstanaOs",
+   "vrijednost": 7,
+   "jedinica": "m",
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr",
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 39,
+   "tocka": "c",
+   "alineja": 3,
+   "gradjevina": "osnovna",
+   "parametar": "regulacija",
+   "vrijednost": null,
+   "jedinica": null,
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr",
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "kod interpolacije nove građevine između postojećih građevina na susjednim građevnim česticama koje su od regulacijske linije prema javnoj prometnoj površini udaljene manje od prethodno utvrđene udaljenosti"
+  },
+  {
+   "clanak": 39,
+   "tocka": "c",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "medaMin",
+   "vrijednost": 4,
+   "jedinica": "m",
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr",
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 39,
+   "tocka": "c",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "medaMin",
+   "vrijednost": 3,
+   "jedinica": "m",
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr",
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama"
+  },
+  {
+   "clanak": 39,
+   "tocka": "c",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "medaMin",
+   "vrijednost": "pola visine građevine, ali ne manje od 3 m",
+   "jedinica": null,
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr",
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83."
+  },
+  {
+   "clanak": 39,
+   "tocka": "c",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "medaMin",
+   "vrijednost": 2,
+   "jedinica": "m",
+   "vrste": [
+    "obit-dvoj",
+    "obit-ugr",
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": [
+    "na građevnim česticama smještenim unutar zone Kulturno-povijesne cjeline utvrđene u stavcima (1) i (2) članka 83.",
+    "ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama"
+   ]
+  },
+  {
+   "clanak": 39,
+   "tocka": "c",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "medaMin",
+   "vrijednost": null,
+   "jedinica": null,
+   "vrste": [
+    "visobit-dvoj"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako se višeobiteljska građevina gradi prema uvjetima alineje 5. točke b) ovog članka"
+  },
+  {
+   "clanak": 40,
+   "tocka": "a",
+   "alineja": 1,
+   "gradjevina": "osnovna",
+   "parametar": "minC",
+   "vrijednost": 500,
+   "jedinica": "m²",
+   "vrste": [
+    "stamb"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 40,
+   "tocka": "a",
+   "alineja": 2,
+   "gradjevina": "osnovna",
+   "parametar": "kig",
+   "vrijednost": 0.25,
+   "jedinica": null,
+   "vrste": [
+    "stamb"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 40,
+   "tocka": "a",
+   "alineja": 3,
+   "gradjevina": "osnovna",
+   "parametar": "kis",
+   "vrijednost": 0.75,
+   "jedinica": null,
+   "vrste": [
+    "stamb"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 40,
+   "tocka": "a",
+   "alineja": 3,
+   "gradjevina": "osnovna",
+   "parametar": "kis",
+   "vrijednost": 1.0,
+   "jedinica": null,
+   "vrste": [
+    "stamb"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako se građevina gradi prema uvjetima alineje 5. točke b) ovog članka"
+  },
+  {
+   "clanak": 40,
+   "tocka": "b",
+   "alineja": 1,
+   "gradjevina": "osnovna",
+   "parametar": "tlMin",
+   "vrijednost": 100,
+   "jedinica": "m²",
+   "vrste": [
+    "stamb"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 40,
+   "tocka": "b",
+   "alineja": 2,
+   "gradjevina": "osnovna",
+   "parametar": "tlMax",
+   "vrijednost": 200,
+   "jedinica": "m²",
+   "vrste": [
+    "stamb"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 40,
+   "tocka": "b",
+   "alineja": 3,
+   "gradjevina": "osnovna",
+   "parametar": "etazeMax",
+   "vrijednost": "podrum i 2 nadzemne etaže",
+   "jedinica": null,
+   "vrste": [
+    "stamb"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 40,
+   "tocka": "b",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "visinaMax",
+   "vrijednost": 7.5,
+   "jedinica": "m",
+   "vrste": [
+    "stamb"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 40,
+   "tocka": "b",
+   "alineja": 4,
+   "gradjevina": "osnovna",
+   "parametar": "kotaTerenaMax",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "vrste": [
+    "stamb"
+   ],
+   "vrsta_pravila": "OSNOVNO",
+   "uvjet": null
+  },
+  {
+   "clanak": 40,
+   "tocka": "b",
+   "alineja": 5,
+   "gradjevina": "osnovna",
+   "parametar": "etazeMax",
+   "vrijednost": "podrum i 3 nadzemne etaže od kojih je jedna obavezno suteren",
+   "jedinica": null,
+   "vrste": [
+    "stamb"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako se građevina gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%"
+  },
+  {
+   "clanak": 40,
+   "tocka": "b",
+   "alineja": 5,
+   "gradjevina": "osnovna",
+   "parametar": "visinaMax",
+   "vrijednost": 10.5,
+   "jedinica": "m",
+   "vrste": [
+    "stamb"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako se građevina gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%"
+  },
+  {
+   "clanak": 40,
+   "tocka": "b",
+   "alineja": 5,
+   "gradjevina": "osnovna",
+   "parametar": "kotaTerenaMax",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "vrste": [
+    "stamb"
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "uvjet": "ako se građevina gradi na kosom terenu gdje je nagib prirodnog terena veći od 12%"
+  }
+ ],
+ "upucivanja": [
+  {
+   "clanak": 39,
+   "tocka": "d",
+   "upucuje_na": {
+    "clanak": 38,
+    "tocke": [
+     "d",
+     "e",
+     "f",
+     "g",
+     "h",
+     "i"
+    ]
+   }
+  },
+  {
+   "clanak": 40,
+   "tocka": "c",
+   "upucuje_na": {
+    "clanak": 38,
+    "tocke": [
+     "c",
+     "d",
+     "e",
+     "f",
+     "g",
+     "h",
+     "i"
+    ]
+   }
+  }
+ ],
+ "pravno_potvrdeno": false
+}

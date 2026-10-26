@@ -23,7 +23,27 @@ PyMuPDF je licenciran pod AGPL-3.0. Koristi se samo kao lokalni alat i ne ugrađ
 9. **`navod(s)`:** čita navod slijeva nadesno; riječ »čl./st./t./al.« mijenja vrstu brojeva koji slijede. Nabrajanja i rasponi (»st. 2. i 3.«, »st. 1.–3. i 5.«, »st. 2. do 4.«) ostaju stavci. Vraća i parove članak → stavci, točku pojmovnika, točku slovom »d)« i oznaku plana.
 10. **Vrijednost uz oznaku** (»P₁ - 15«: broj mjesta na parkiralištu P₁) dobiva polje `oznaka`. `ima_broj()` je broji samo kad se ta oznaka izričito traži.
 
+## Strukturiranje pravila (`strukturiraj.py`, EKSPERIMENT)
+
+    python3 strukturiraj.py izlaz/upu2_kornic_sn_19_2016.json --clanci 38 39 40 -o izlaz/upu2_pravila_38_40.json --csv izlaz/upu2_pravila_38_40.csv
+    python3 ocijeni.py izlaz/upu2_pravila_38_40.json oznake/upu2_cl38_40.json
+    python3 -m unittest -v test_strukturiraj
+
+- **Struktura:** članak → točke »a) …« → alineje »- …«. Podnabrajanje iza dvotočke ne broji se kao alineja.
+- **Vrste građevina** čitaju se iz uvodne rečenice (»Utvrđuju se uvjeti gradnje …:«). »obiteljske kuće«, »višeobiteljske …« i »ugrađenu obiteljsku kuću« biraju podskup. Ako vrsta ne postoji u članku, pravilo dobiva status PREGLED.
+- **Pravilo nastaje samo kad cijela alineja odgovara obrascu rečenice.** Alineja s brojem bez obrasca ide u `nepokriveno`, bez prijedloga.
+- **Vrste pravila:** OSNOVNO, IZNIMKA (»a iznimno …«, »iznimno …«) i UVJETNO (vrijedi samo uz uvjet). Uvjet je uvijek doslovni odlomak alineje. Inače je status PREGLED.
+- **Upućivanje »alineje 5. točke b) ovog članka«** razrješava se i provjerava (alineja mora postojati i biti uvjetna). »primjenjuju se odredbe iz točaka … članka 38.« bilježi se kao upućivanje, bez prepisivanja pravila.
+- **Položaj u PDF-u:** blok u kojem alineja počinje (stranica, stupac, okvir).
+- **Dvosmislen navod** (»čl. 38. i 39. st. 2.«) u `citac.navod()` dobiva `dvosmisleno: true`, a stavak se ne pripisuje nijednom članku.
+
+### Ručne oznake i neovisnost
+`oznake/upu2_cl38_40.json` sadrži 97 pravila i 2 upućivanja, ručno iz teksta čl. 38.–40. **Oznake je napisao isti autor koji je napisao obrasce, pa rezultat 97/97 nije neovisna ocjena.** Obrasci su pisani za upravo te rečenice.
+
+Za neovisnu ocjenu drugi označivač, bez uvida u ove oznake i u kod obrazaca, ispunjava isti oblik (`pravila_oznacavanja` u datoteci) i pokreće `ocijeni.py` sa svojom datotekom.
+
 ## Neriješeno (stanje: SN PGŽ 19/2016, UPU 2 Kornić)
+- **Strukturiranje pokriva samo čl. 38.–40. UPU-a 2.** Za PPUG Krk (čl. 22. i 23.) obrasci se tek trebaju napisati. Do tada će te alineje ići u `nepokriveno`.
 - **Prepoznavanje je provjereno samo na ovom PDF-u.** Sidra (naslov odluke, »Klasa:«), prag razmaka (1 pt), prepoznavanje zaglavlja i tablica treba provjeriti na drugim brojevima Službenih novina i na PPUG-u.
 - **Tablica u čl. 53 (normativi parkiranja)** nije rekonstruirana; vrijednosti se moraju ručno prepisati i provjeriti.
 - **Podstavci, alineje i iznimke** (osnovna vrijednost ili iznimka, vrsta građevine, uvjet) nisu razdvojeni. To je sljedeća faza.
