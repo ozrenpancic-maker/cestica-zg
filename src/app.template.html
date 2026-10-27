@@ -945,10 +945,76 @@ function pzInner(){
   if(C.length) h+=`<div class="verdict v-warn" style="margin:6px 0">Prije kupnje ili gradnje provjeri ${C.length} ${C.length===1?"stavku":C.length<5?"stavke":"stavki"} označenih s C.</div>`;
   h+=`<table class="pzt"><tbody>${L.slice().sort((a,b)=>ord[a.raz]-ord[b.raz]).map(x=>`<tr><td>${pzTag(x)}</td><td><b>${esc(x.naziv)}</b>${x.vrijednost?": "+esc(x.vrijednost):""}<small class="fx">${esc([x.izvor,x.obuhvat,x.datum?"provjereno "+x.datum:null,x.metoda].filter(Boolean).join(" · "))}</small>${x.razlog?`<small class="fx">${esc(x.razlog)}</small>`:""}${x.provjera?`<small class="fx">Gdje provjeriti: ${esc(x.provjera)}</small>`:""}</td></tr>`).join("")}</tbody></table>`;
   h+=`<p class="meta">A znači da je podatak preuzet iz službenog izvora; to ne znači da je gradnja pravno dopuštena. Pravnu dopuštenost aplikacija ne utvrđuje: potvrđuje je lokacijska informacija i projekt.</p>`;
+  if(L.some(x=>/^(calc-|blok-)/.test(x.id))) h+=`<div class="actions"><button type="button" class="ib" id="piDl">Izvještaj o integritetu (JSON)</button></div>`;
   return h;
 }
 function pzSecHtml(){return `<h2 id="sec-pouzdanost">Pouzdanost podataka</h2><div id="pzBox">${pzInner()}</div>`}
 const pzDan=()=>new Date().toISOString().slice(0,10);
+
+// ================= PLAN INTEGRITY: dokazni lanac uvjeta gradnje (v4–v10 na postojećem registru PZREG) =================
+// Oznake A/B/C ostaju kakve jesu (pouzdanost podatka). Uz njih svaki građevinski pokazatelj dobiva status rezultata:
+//   provjereno = primjena stručno potvrđena za ovaj kontekst (aplikacija zasad nema takvih izvora, pa se ne dodjeljuje),
+//   izvedeno   = tehnički izveden broj iz evidentiranih izvora, bez nepotvrđenog ulaza (nije stručna potvrda),
+//   uvjetno    = neki ulaz je nepotvrđen (C), usklađenost izvora nije potvrđena ili je otvoren uvjet / iznimka,
+//   blokirano  = izračun se ne smije prikazati (sukob, nedostaje podatak, zona isključuje gradnju).
+// Usklađenost izvora (po karici): "sukob" (potvrđen nesklad), "nepoznata", "kompatibilno" (dokazano).
+// Različite godine izvora same po sebi nisu sukob, nego nepoznata usklađenost.
+const PI_ST={provjereno:["st-ok","provjereno za ovaj kontekst"],izvedeno:["st-muted","tehnički izvedeno"],uvjetno:["st-warn","uvjetno"],blokirano:["st-no","blokirano"]};
+const piWith=(p,o)=>p?Object.freeze({...p,...o,...(o&&o.lanac?{lanac:o.lanac.filter(Boolean)}:{}),...(o&&o.uvjeti?{uvjeti:o.uvjeti.filter(Boolean)}:{})}):p;
+function piObjava(it){
+  if(!it) return null;
+  if(it.blokada) return {razina:"blokirano",zasto:[it.blokada]};
+  const L=(it.lanac||[]).filter(Boolean), suk=L.filter(k=>k.uskladenost==="sukob");
+  if(suk.length) return {razina:"blokirano",zasto:suk.map(k=>k.karika+": "+(k.razlog||"potvrđen sukob izvora"))};
+  const zasto=[];
+  for(const k of L){ if(k.raz==="C") zasto.push(k.karika+": "+(k.razlog||"nepotvrđeno")); if(k.uskladenost==="nepoznata") zasto.push(k.karika+": usklađenost izvora nije potvrđena"+(k.razlogUsk?" ("+k.razlogUsk+")":"")); }
+  for(const u of it.uvjeti||[]) if(!u.razrijeseno) zasto.push("otvoren uvjet: "+u.tekst);
+  if(it.raz==="C"&&!zasto.length) zasto.push(it.razlog||"nepotvrđen ulaz");
+  if(zasto.length) return {razina:"uvjetno",zasto:[...new Set(zasto)]};
+  if(L.length&&L.every(k=>k.strucno===true)) return {razina:"provjereno",zasto:[]};
+  return {razina:"izvedeno",zasto:["izvedeno iz evidentiranih izvora; nije stručna potvrda primjene na česticu"]};
+}
+// karika lanca iz postojeće stavke registra (ista oznaka, isti izvor)
+function piK(karika,it,o){ if(!it) return null; return {karika,vrijednost:it.vrijednost??null,raz:it.raz,izvor:it.izvor||it.metoda||null,razlog:it.razlog||null,...(o||{})}; }
+// blokirani pokazatelj: zapisuje se zasebno (ne briše postojeće informativne podatke, karte ni simulator)
+function piBlok(id,naziv,razlog,lanac){ return pzSet(id,naziv,null,pz("C",{razlog,blokada:razlog,lanac:(lanac||[]).filter(Boolean)})); }
+function piStTag(it){const o=piObjava(it); if(!o) return ""; const s=PI_ST[o.razina]; return `<em class="kind ${s[0]}" data-pi="${o.razina}">${s[1]}</em>`;}
+// prikaz dokaznog lanca za zadane pokazatelje, u postojećem stilu (accordion, pzTag, fx)
+function piLanacHtml(ids){
+  const L=ids.map(id=>PZREG.items.get(id)).filter(x=>x&&(x.lanac||x.blokada)); if(!L.length) return "";
+  const cnt={}; for(const x of L){const r=piObjava(x).razina; cnt[r]=(cnt[r]||0)+1;}
+  let h=`<details class="acc" data-k="piLanac"><summary><span>Dokazni lanac</span><b>${Object.entries(cnt).map(([k,n])=>n+" "+PI_ST[k][1]).join(" · ")}</b></summary><div class="calc" data-pi-lanac="1">`;
+  for(const x of L){const o=piObjava(x);
+    h+=`<div class="row"><span><b>${esc(x.naziv)}</b>${x.vrijednost?": "+esc(x.vrijednost):""}</span><span>${piStTag(x)}</span></div><ol class="zi">`;
+    for(const k of x.lanac||[]) h+=`<li><b>${esc(k.karika)}</b>${k.vrijednost?": "+esc(k.vrijednost):""} ${k.raz?pzTag(pz(k.raz,{izvor:k.izvor,razlog:k.razlog})):""}<small class="fx">${esc([k.izvor,k.revizija?"revizija: "+k.revizija:null,k.status?"status: "+k.status:null,k.uskladenost?"usklađenost izvora: "+k.uskladenost:null].filter(Boolean).join(" · "))}</small>${k.citat?`<small class="fx src">„${esc(k.citat)}“</small>`:""}</li>`;
+    h+=`</ol>`;
+    if(x.uvjeti&&x.uvjeti.length) h+=`<p class="meta" style="margin:2px 0">Uvjeti i iznimke: ${esc(x.uvjeti.map(u=>u.tekst+(u.razrijeseno?" (razriješeno)":" (otvoreno)")).join("; "))}</p>`;
+    h+=`<p class="meta" style="margin:2px 0 8px">${o.razina==="blokirano"?"Razlog blokade":"Zašto "+PI_ST[o.razina][1]}: ${esc(o.zasto.join("; "))}</p>`;}
+  return h+`<p class="meta">Status rezultata nije pravna potvrda. Službeni podatak nije isto što i stručno provjereno tumačenje; mjerodavna je lokacijska informacija.</p></div></details>`;
+}
+// strukturirani izvještaj o integritetu (JSON): pokazatelji, pravila, izvori, usklađenost, status, blokade, otvoreni uvjeti.
+// Bez osobnih podataka: nema vlasnika, ZK tereta, bilješki, financija ni korisničkih unosa izvan odabira za izračun.
+const PI_ULAZI=/^(pravilo|pravilo-karta|zona|zona-korisnik|zast-korisnik|namjena|namjena-udio|izgradenost|plan-|upu-|pov-graf|pov-kat|pov-zk)/;
+function piReport(){
+  const L=pzList(), cur=window.__cur||{};
+  const ind=L.filter(x=>/^(calc-|blok-)/.test(x.id)).map(x=>{const o=piObjava(x), lan=x.lanac||[];
+    return {id:x.id,pokazatelj:x.naziv,vrijednost:x.vrijednost,pouzdanost:x.raz,status_rezultata:o.razina,razlozi:o.zasto,razlog_blokade:x.blokada||null,
+      pravila:lan.filter(k=>k.karika==="članak").map(k=>({clanak:k.vrijednost,citat:k.citat||null,plan:(lan.find(z=>z.karika==="plan")||{}).vrijednost||null})),
+      izvori:lan.map(k=>({karika:k.karika,vrijednost:k.vrijednost,pouzdanost:k.raz,izvor:k.izvor,revizija:k.revizija||null,status:k.status||null,uskladenost:k.uskladenost||null})),
+      uskladenost:lan.some(k=>k.uskladenost==="sukob")?"sukob":lan.some(k=>k.uskladenost==="nepoznata")?"nepoznata":lan.length&&lan.filter(k=>k.uskladenost).every(k=>k.uskladenost==="kompatibilno")?"kompatibilno":"nepoznata",
+      otvoreni_uvjeti:(x.uvjeti||[]).filter(u=>!u.razrijeseno).map(u=>u.tekst),metoda:x.metoda||null};});
+  const ul=L.filter(x=>PI_ULAZI.test(x.id)).map(x=>({id:x.id,naziv:x.naziv,vrijednost:x.vrijednost,pouzdanost:x.raz,izvor:x.izvor||null,razlog:x.razlog||null,korisnicki_odabir:!!x.korisnik}));
+  const db=window.__dbLast&&RULES_DB?dbIntegrityReport(window.__dbLast.M,window.__dbLast.area):null;
+  const st={}; for(const i of ind) st[i.status_rezultata]=(st[i.status_rezultata]||0)+1;
+  return {schema:"cesticahr.plan_integrity.v10",aplikacija:"Čestica HR "+APP_VERSION,datum:pzDan(),
+    cestica:{broj:cur.ces||null,katastarska_opcina:cur.ko||null,podrucje:cur.region||"zagreb"},
+    sazetak:st,pokazatelji:ind,ulazi:ul,baza_pravila:db,
+    ogranicenja:["Nije službena lokacijska informacija","Nije dokaz prava na gradnju","Status »izvedeno« nije stručna potvrda primjene na česticu","Pravna valjanost se u aplikaciji ne utvrđuje"]};
+}
+document.addEventListener("click",e=>{ if(!e.target||e.target.id!=="piDl") return;
+  const r=piReport(), blob=new Blob([JSON.stringify(r,null,1)],{type:"application/json"}), u=URL.createObjectURL(blob), a=document.createElement("a");
+  a.href=u; a.download="integritet_"+String(r.cestica.broj||"lokacija").replace(/[^\w.-]+/g,"_")+".json"; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(u); a.remove()},1000);
+});
 // površine čestice (A iz službenih izvora; ručni unos je C)
 function pzArea(P,area){
   try{const I=areaInfo(P,area), d=pzDan();
@@ -1171,11 +1237,19 @@ function krkRuleStateJls(d,jls){
 // provjera lanca objava. Dok provjera nije POTVRDENO, pravilo nema razinu A, a uz prikazane uvjete gradnje stoji upozorenje.
 const pravnaNepotvrdena=I=>!!(I&&I.pravna_provjera&&I.pravna_provjera.status!=="POTVRDENO");
 function krkPravnaHtml(I){ return pravnaNepotvrdena(I)?`<div class="verdict v-warn" data-pravna-provjera="nepotvrdeno" data-plan="${esc(I.sn||"")}"><strong>Pravna aktualnost nije neovisno potvrđena.</strong> ${esc(I.pravna_provjera.napomena||"")}</div>`:""; }
+// zajedničke karike dokaznog lanca za Krk: čestica, plan (revizija i usklađenost), GIS zona iz vektora
+function piBase(RS,I){
+  const plan=RS&&I?{karika:"plan",vrijednost:(RS.kod||I.naziv)+(I.sn?" ("+I.sn+")":""),raz:/^\s*(na snazi|važeći)/i.test(String(I.status||""))?(pravnaNepotvrdena(I)?"B":"A"):"C",izvor:I.naziv,revizija:I.sn||null,status:I.status||null,
+    uskladenost:I.pravna_provjera&&I.pravna_provjera.status==="POTVRDENO"?"kompatibilno":"nepoznata",razlogUsk:pravnaNepotvrdena(I)?"objave nakon "+(I.sn||"zadnje odluke")+" nisu iscrpno provjerene":null}:null;
+  const nam=PZREG.items.get("namjena");
+  return [piK("čestica",PZREG.items.get("pov-graf")),plan,piK("GIS zona (prostorni plan grada ili općine)",nam,nam&&nam.raz!=="C"?{uskladenost:"nepoznata",razlogUsk:"oznaka iz županijskog sloja; podudarnost s grafičkim dijelom važeće odluke nije stručno potvrđena"}:null)].filter(Boolean);
+}
 function krkRulesHtml(d){
   const R=RULES_KRK, S=krkRuleState(d); let h=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>%%PREK%%`; window.__krkS=S; krkEnvLayer.clearLayers(); gpLayer.clearLayers(); window.__gp=null; pzDel("gp-podrucje");
   window.__krkCalc=null; window.__env=null; window.__krkLim=null;
-  if(S.st==="ne"||S.st==="upuNe"){h+=`<p class="hint">${esc(S.msg)}</p>`; return h;}
-  if(S.st==="blok"){h+=`<div class="verdict v-no">${esc(S.msg)}</div><p class="meta">Čl. ${esc(S.cl)}.: „${esc(S.txt)}“</p>`; return h;}
+  for(const k of ["blok-uvjeti","blok-krov","calc-min","calc-tlocrt","calc-gbp","calc-prostor"]) pzDel(k);
+  if(S.st==="ne"||S.st==="upuNe"){h+=`<p class="hint">${esc(S.msg)}</p>`; piBlok("blok-uvjeti","Uvjeti gradnje (izračun)",S.msg||"uvjeti za ovu lokaciju nisu obrađeni",piBase(S.RS,S.RS&&(S.RS.izvor||R.izvor))); return h+piLanacHtml(["blok-uvjeti"]);}
+  if(S.st==="blok"){h+=`<div class="verdict v-no">${esc(S.msg)}</div><p class="meta">Čl. ${esc(S.cl)}.: „${esc(S.txt)}“</p>`; piBlok("blok-uvjeti","Uvjeti gradnje (izračun)",S.msg,[...piBase(S.RS,S.RS&&(S.RS.izvor||R.izvor)),{karika:"članak",vrijednost:"čl. "+S.cl+".",citat:S.txt,raz:"A",izvor:"odredbe plana"}]); return h+piLanacHtml(["blok-uvjeti"]);}
   const isUpu=S.st==="upu";
   let RS=S.RS; const I=RS.izvor||R.izvor;
   // UPU s pravilima po zonama: zonu bira korisnik za ovu česticu; bez odabira nema izračuna (detaljna zona nije potvrđena)
@@ -1184,12 +1258,14 @@ function krkRulesHtml(d){
     const opts=[["","— odaberi zonu —"],...RS.zone];
     return h+`<p class="rule-title"><span class="rule-code">${esc(RS.kod)}</span></p><p class="meta">Izvor: <a href="${esc(I.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(I.naziv)}</a>, ${esc(I.sn)}</p>`+
       `<div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label><select id="krkZona" class="bsel">${opts.map(o=>`<option value="${esc(o[0])}">${esc(o[1])}</option>`).join("")}</select></div>`+
-      `<div class="verdict v-warn">Detaljna zona nije potvrđena. Izračun uvjeta gradnje radi se tek kad odabereš zonu.</div><p class="meta">${esc(RS.zonaNapomena||"")} Zonu možeš očitati na karti UPU-a u odjeljku „Detaljna namjena (UPU)”; mjerodavna je lokacijska informacija.</p>`;
+      `<div class="verdict v-warn">Detaljna zona nije potvrđena. Izračun uvjeta gradnje radi se tek kad odabereš zonu.</div><p class="meta">${esc(RS.zonaNapomena||"")} Zonu možeš očitati na karti UPU-a u odjeljku „Detaljna namjena (UPU)”; mjerodavna je lokacijska informacija.</p>`+
+      (piBlok("blok-uvjeti","Uvjeti gradnje (izračun)","detaljna zona UPU-a nije potvrđena ni odabrana; pokazatelji ovise o zoni",[...piBase(RS,I),piK("kartografski prikaz",PZREG.items.get("upu-list")),piK("detaljna zona",PZREG.items.get("upu-zona"))]),piLanacHtml(["blok-uvjeti"]));
   }
   if(zona) pzSet("zona-korisnik","Zona u UPU-u (tvoj odabir)",zona,pzUser({provjera:"legenda donesenog plana, lokacijska informacija"})); else pzDel("zona-korisnik");
   for(const k of ["pravilo","calc-tlocrt","calc-gbp","calc-prostor"]) pzDel(k);
   if(zona&&RS.zoneSet&&RS.zoneSet[zona]) RS={...RS,...RS.zoneSet[zona]};
   if(!RS.tipovi){ // zona bez pravila za kuće (npr. „druga zona”)
+    piBlok("blok-uvjeti","Uvjeti gradnje (izračun)","za odabranu zonu ("+zona+") uvjeti za kuće nisu obrađeni",piBase(RS,I));
     const sel0=(id,opts,v)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===v?" selected":""}>${esc(o[1])}</option>`).join("")}</select>`;
     return h+`<p class="rule-title"><span class="rule-code">${esc(RS.kod)}</span></p><p class="meta">Izvor: <a href="${esc(I.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(I.naziv)}</a>, ${esc(I.sn)}</p><div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label>${sel0("krkZona",RS.zone,zona)}</div><p class="meta">${esc(RS.zonaNapomena)}</p><p class="hint">${esc(RS.drugaZona||"Za ovu zonu uvjeti za obiteljske i višeobiteljske kuće nisu obrađeni.")}</p>`;
   }
@@ -1201,13 +1277,13 @@ function krkRulesHtml(d){
   const sel=(id,opts,v)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===v?" selected":""}>${esc(o[1])}</option>`).join("")}</select>`;
   if(isUpu){
     h+=`<div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label>${sel("krkZona",[["","— odaberi zonu —"],...RS.zone],zona)}</div><p class="flag" data-zona-nepotvrdena="1"><b>Zona čestice nije automatski potvrđena.</b> Izračun je za zonu koju si odabrao (${esc(zona)}). Detaljna zona nije potvrđena službenim vektorskim slojem ni lokacijskom informacijom (to je odvojeno od pravne aktualnosti plana).</p><p class="meta">${esc(RS.zonaNapomena)}</p>`+(RS.upozorenja||[]).map(n=>`<p class="flag">${esc(n)}</p>`).join("");
-    if(zona==="druga"){h+=`<p class="hint">${esc(RS.drugaZona||"Za ovu zonu uvjeti za obiteljske i višeobiteljske kuće nisu obrađeni.")}</p>`; return h;}
+    if(zona==="druga"){h+=`<p class="hint">${esc(RS.drugaZona||"Za ovu zonu uvjeti za obiteljske i višeobiteljske kuće nisu obrađeni.")}</p>`; piBlok("blok-uvjeti","Uvjeti gradnje (izračun)","za odabranu zonu uvjeti za kuće nisu obrađeni",[...piBase(RS,I),piK("detaljna zona",PZREG.items.get("zona-korisnik"))]); return h+piLanacHtml(["blok-uvjeti"]);}
     const ZS=RS.simulator&&RS.simulator.zastita;
     if(ZS){const zv=krkZastGet();
       h+=`<div class="kd" style="margin:6px 0"><label for="krkZast">Zona zaštite (karta ${esc(ZS.karta)})</label>${sel("krkZast",ZS.opcije,zv)}</div>`;
       if(zv) pzSet("zast-korisnik","Zona zaštite u UPU-u (tvoj odabir)",(ZS.opcije.find(x=>x[0]===zv)||[,zv])[1],pzUser({provjera:"karta "+ZS.karta+" plana, lokacijska informacija, konzervatorski uvjeti"})); else pzDel("zast-korisnik");
       h+=zv?`<p class="meta">Zonu zaštite odabrao si sam prema karti ${esc(ZS.karta)}; potvrđuje je lokacijska informacija.</p>`:`<p class="flag">Zona zaštite nije odabrana: pogledaj kartu ${esc(ZS.karta)} (granice zona »B« i »C«, čl. ${esc(ZS.clanak)}). Simulator do tada ne provjerava uvjete zaštite.</p>`;
-      if(zv==="B"&&ZS.B){h+=`<div class="verdict v-warn">${esc(ZS.B.napomena)}</div>`; return h;}
+      if(zv==="B"&&ZS.B){h+=`<div class="verdict v-warn">${esc(ZS.B.napomena)}</div>`; piBlok("blok-uvjeti","Uvjeti gradnje (izračun)","zona zaštite »B«: uvjeti gradnje ovise o posebnim konzervatorskim uvjetima (čl. "+(ZS.B.clanak||"")+".); izračun se ne prikazuje",[...piBase(RS,I),piK("detaljna zona",PZREG.items.get("zona-korisnik")),piK("zona zaštite",PZREG.items.get("zast-korisnik"))]); return h+piLanacHtml(["blok-uvjeti"]);}
     }
   }
   h+=`<div class="kd" style="margin:6px 0"><label for="krkTip">Građevina</label>${sel("krkTip",Object.entries(RS.tipovi).map(([k,t])=>[k,t.naziv]),RS.tipovi[KRK_TIP.tip]?KRK_TIP.tip:Object.keys(RS.tipovi)[0])}</div>`;
@@ -1216,7 +1292,7 @@ function krkRulesHtml(d){
   const oblSel=obl.some(o=>o[0]===KRK_TIP.oblik)&&T[KRK_TIP.oblik]?KRK_TIP.oblik:obl.some(o=>o[0]==="dvoj")&&KRK_TIP.oblik==="ugr"&&T.dvoj?"dvoj":"slob";
   h+=`<div class="kd" style="margin:0 0 6px"><label for="krkOblik">Način gradnje</label>${sel("krkOblik",obl,oblSel)}</div>`;
   const zab=RS.grupa&&RS.grupa.zabranjeno||[];
-  if(zab.includes(oblSel)){h+=`<div class="verdict v-no">U ovom naselju nova gradnja ovog načina (${esc((obl.find(o=>o[0]===KRK_TIP.oblik)||["",""])[1])}) nije dozvoljena.</div>`; return h;}
+  if(zab.includes(oblSel)){h+=`<div class="verdict v-no">U ovom naselju nova gradnja ovog načina (${esc((obl.find(o=>o[0]===KRK_TIP.oblik)||["",""])[1])}) nije dozvoljena.</div>`; piBlok("blok-uvjeti","Uvjeti gradnje (izračun)","odabrani način gradnje u ovom naselju nije dozvoljen",piBase(RS,I)); return h+piLanacHtml(["blok-uvjeti"]);}
   const Pm=T[oblSel]||P;
   if(Pm.napomena) h+=`<p class="flag">${esc(Pm.napomena)}</p>`;
   return h+krkCalcHtml(d,S,RS,T,Pm,oblSel,isUpu);
@@ -1284,9 +1360,25 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   // pouzdanost izračuna: nikad bolja od B; zona koju je korisnik odabrao (UPU) ili nepotvrđen uvjet daje C
   const pzA=PZREG.items.get(AS&&AS.k?"pov-"+AS.k:"pov-graf")||PZREG.items.get("pov-graf"), pzR=pzSet("pravilo","Pravila gradnje",RS.kod+" · "+T.naziv+", čl. "+T.clanak,/^\s*(na snazi|važeći)/i.test(String(I.status||""))?pz(pravnaNepotvrdena(I)?"B":"A",{izvor:I.naziv+(I.sn?", "+I.sn:""),obuhvat:"tekst odredbi, ručno prenesen u aplikaciju",razlog:[pravnaNepotvrdena(I)?"Pravna aktualnost nije neovisno potvrđena":null,/izradi/i.test(I.status)?"izmjene plana su u izradi":null].filter(Boolean).join("; ")||null,provjera:pravnaNepotvrdena(I)?"Službene novine PGŽ (objave nakon "+(I.sn||"zadnjeg pročišćenog teksta")+"), lokacijska informacija":undefined}):pz("C",{izvor:I.naziv,razlog:"status plana: "+(I.status||"nepoznat"),provjera:"Službene novine, lokacijska informacija"}));
   const pzZ=isUpu?PZREG.items.get("zona-korisnik"):PZREG.items.get("namjena"), pzS=S.st==="provjera"?pz("C",{naziv:"Uvjet iz plana",razlog:S.msg||"potrebna dodatna provjera"}):null;
-  const pzT=pzSet("calc-tlocrt","Najveći tlocrt (teorijski, kig)",fmt(tl)+" m²",pzCalc({metoda:"površina "+fmt(A)+" m² × kig "+dec(P.izg)},[pzA,pzR,pzZ,pzS]));
-  const pzG=pzSet("calc-gbp","Najveći GBP (teorijski, kis)",fmt(gbpN)+" m²",pzCalc({metoda:"površina "+fmt(A)+" m² × kis "+dec(P.kis)},[pzA,pzR,pzZ,pzS]));
-  if(env) pzSet("calc-prostor","Prostor za građevinu nakon odmaka od međa",fmt(env.area)+" m²",pzCalc({metoda:RS.meda.min+" m od međa, bez regulacijskog pravca"},[pzA,pzR,pzZ]));
+  // Plan Integrity: dokazni lanac (čestica → zona → plan → karta → članak → pravilo → izračun), uvjeti i iznimke
+  const tx=T.txt||{}, ZS0=isUpu&&RS.simulator&&RS.simulator.zastita, zv0=ZS0?krkZastGet():null;
+  const piL=[piK("čestica",pzA),...piBase(RS,I).filter(k=>k.karika!=="čestica")];
+  if(isUpu){piL.push(piK("detaljna zona",pzZ,{izvor:"tvoj odabir prema karti plana"})); const ul=PZREG.items.get("upu-list"), ua=PZREG.items.get("upu-aktualnost");
+    if(ul) piL.push(piK("kartografski prikaz",ul,ua?{status:ua.vrijednost,uskladenost:ua.raz==="A"?"kompatibilno":"nepoznata",razlogUsk:ua.razlog||null}:{uskladenost:"nepoznata"}));}
+  if(ZS0) piL.push(zv0?piK("zona zaštite",PZREG.items.get("zast-korisnik"),{izvor:"tvoj odabir prema karti "+ZS0.karta}):{karika:"zona zaštite",vrijednost:"nije odabrana",raz:"C",razlog:"karta "+ZS0.karta+": granice zona »B« i »C« nisu potvrđene za česticu (čl. "+ZS0.clanak+".)"});
+  const cl=(t)=>({karika:"članak",vrijednost:"čl. "+String(T.clanak).replace(/\.$/,"")+".",citat:t||null,raz:pzR.raz,izvor:I.naziv+(I.sn?", "+I.sn:"")});
+  const piU=[...(S.st==="provjera"?[{tekst:S.msg||"potrebna dodatna provjera",razrijeseno:false}]:[]),...(S.notes||[]).map(n=>({tekst:n,razrijeseno:false}))];
+  const ul0=[pzA,pzR,pzZ,pzS,ZS0&&!zv0?pz("C",{naziv:"Zona zaštite",razlog:"nije odabrana"}):null];
+  pzSet("calc-min","Najmanja površina čestice",(minOk?"ispunjeno":minEx?"samo iznimno":"nije ispunjeno")+" ("+fmt(A)+" od "+fmt(P.minC)+" m²)",piWith(pzCalc({metoda:"površina "+fmt(A)+" m² prema najmanjoj "+fmt(P.minC)+" m²"},ul0),{lanac:[...piL,cl(tx.minC)],
+    uvjeti:[...piU,...(minEx?[{tekst:"iznimka "+fmt(P.minCIznimno)+" m²"+(tx.minCIznimno?": "+tx.minCIznimno:""),razrijeseno:false}]:[])]}));
+  const pzT=pzSet("calc-tlocrt","Najveći tlocrt (teorijski, kig)",fmt(tl)+" m²",piWith(pzCalc({metoda:"površina "+fmt(A)+" m² × kig "+dec(P.izg)},ul0),{lanac:[...piL,cl(tx.izg),...(tx.tl?[cl(tx.tl)]:[])],uvjeti:piU}));
+  const pzG=pzSet("calc-gbp","Najveći GBP (teorijski, kis)",fmt(gbpN)+" m²",piWith(pzCalc({metoda:"površina "+fmt(A)+" m² × kis "+dec(P.kis)},ul0),{lanac:[...piL,cl(tx.kis),...(tx.gbp?[cl(tx.gbp)]:[])],uvjeti:piU}));
+  if(env) pzSet("calc-prostor","Prostor za građevinu nakon odmaka od međa",fmt(env.area)+" m²",piWith(pzCalc({metoda:RS.meda.min+" m od međa, bez regulacijskog pravca"},[pzA,pzR,pzZ]),{lanac:[...piL,{karika:"članak",vrijednost:"čl. "+RS.meda.clanak+".",citat:RS.meda.txt||null,raz:pzR.raz,izvor:I.naziv}],
+    uvjeti:[{tekst:"regulacijski pravac i kategorija ceste nisu uračunati",razrijeseno:false},...(krkH2(RS)?[{tekst:"pravilo h/2 nije uračunato",razrijeseno:false}]:[])]}));
+  // sukob pravila istog plana: nagib krova u zoni zaštite »C« (čl. 85.) i opće pravilo krova (čl. 38. d); prednost posebnog režima nije stručno potvrđena
+  {const K=RS.simulator&&RS.simulator.krov, C=ZS0&&ZS0.C; if(K&&C&&zv0==="C"&&C.krovNagib&&(C.krovNagib<K.nagibMin||C.krovNagib>K.nagibMax))
+    piBlok("blok-krov","Nagib krova","dva pravila istog plana propisuju različit nagib (čl. "+K.clanak+": "+K.nagibMin+"°–"+K.nagibMax+"°; čl. "+String(C.clanak).replace(/\.$/,"")+". zona »C«: oko "+C.krovNagib+"°). Simulator primjenjuje posebni režim zone »C«; da on ima prednost, nije stručno potvrđeno",
+      [...piL,{karika:"članak",vrijednost:"čl. "+K.clanak,citat:K.txt||null,raz:pzR.raz,izvor:I.naziv,uskladenost:"sukob"},{karika:"članak",vrijednost:"čl. "+String(C.clanak).replace(/\.$/,"")+".",citat:(C.txt||[]).find(t=>/krov/i.test(t))||null,raz:pzR.raz,izvor:I.naziv,uskladenost:"sukob"}]);}
   if(env) L.geoJSON(env.geom,{style:{color:"#1f6f54",weight:2,dashArray:"4 3",fillColor:"#1f6f54",fillOpacity:.25},interactive:false}).addTo(krkEnvLayer);
   {const zab=RS.grupa&&RS.grupa.zabranjeno||[], rows=[], ON={slob:"slobodnostojeća",dvoj:"dvojna",ugr:"ugrađena"};
    for(const [k,T2] of Object.entries(RS.tipovi||{})){
@@ -1326,7 +1418,8 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   h+=row(`Od regulacijskog pravca (čl. ${esc(RS.regulacija.clanak)})`,esc(RS.regulacija.opis));
   h+=row(`${esc(RS.zelenilo.opisNaziv||"Zelenilo")} (čl. ${esc(RS.zelenilo.clanak)})`,RS.zelenilo.min?`najmanje ${Math.round(RS.zelenilo.min*100)} % = ${fmt(Aall*RS.zelenilo.min)} m²`:"plan ne određuje");
   h+=`<p class="meta">${esc(RS.pristup.napomena)}</p></div></details>`;
-  const c=T.clanak, tx=T.txt||{}, Q=[[c,tx.minC],[c,tx.minCIznimno],[c,tx.maxC],[c,tx.dvoj],[c,tx.izg],[c,tx.kis],[c,tx.tl],[c,tx.gbp],[c,tx.etaze],[c,tx.visina],[RS.meda.clanak,RS.meda.txt],[RS.meda.clanak,RS.meda.txtBezOtvora],[RS.regulacija.clanak,RS.regulacija.txt],[RS.zelenilo.clanak,RS.zelenilo.txt]];
+  h+=piLanacHtml(["calc-min","calc-tlocrt","calc-gbp","calc-prostor","blok-krov"]);
+  const c=T.clanak, Q=[[c,tx.minC],[c,tx.minCIznimno],[c,tx.maxC],[c,tx.dvoj],[c,tx.izg],[c,tx.kis],[c,tx.tl],[c,tx.gbp],[c,tx.etaze],[c,tx.visina],[RS.meda.clanak,RS.meda.txt],[RS.meda.clanak,RS.meda.txtBezOtvora],[RS.regulacija.clanak,RS.regulacija.txt],[RS.zelenilo.clanak,RS.zelenilo.txt]];
   if(RS===R) Q.push([R.izravnaProvedba.clanak,R.izravnaProvedba.txt]); else if(RS.neizgradeni) Q.push([RS.neizgradeni.clanak,RS.neizgradeni.txt]);
   h+=`<details data-k="krkTxt"><summary>Navodi iz plana</summary><ol>${Q.filter(x=>x[1]).map(([cl,t])=>`<li><b>čl. ${esc(String(cl).replace(/\.$/,""))}.</b> „${esc(t)}“</li>`).join("")}</ol>`;
   h+=`<p class="meta">${esc(I.provjera)}</p>${(RS.napomene||[]).map(n=>`<p class="meta">${esc(n)}</p>`).join("")}</details>`;
@@ -2183,7 +2276,22 @@ function dbRuleLegal(r,plan,od){
   if(!(pr.zone&&pr.zone.length)) miss.push("zone"); if(!(pr.vrste_gradnje&&pr.vrste_gradnje.length)) miss.push("vrste gradnje");
   return {ok:!miss.length,miss};
 }
-// ctx: {jls, zone:[oznake iz GIS-a], izgradenost, vrsta, nacin}
+// Integritet verzija: ne pretpostavljaj da su različite godine automatski sukob.
+// Blokiraj samo izričito dokumentiran nesklad ili potvrđenu zamjenu izvora.
+function dbSourceIntegrity(r,p,od){
+  const flags=[];
+  const sources=[r,p,od].filter(Boolean);
+  if(sources.some(x=>x.integritet_izvora==="neusklađeno" || x.status_aktualnosti==="zastarjelo"))
+    flags.push("izvor označen kao neusklađen ili zastario");
+  const rev=(r.izvor_revizija||r.revizija_plana||"").trim();
+  const current=(p.primjenjiva_revizija||"").trim();
+  // Samo eksplicitno deklarirane usporedive revizije, nikada iz godina ili datuma.
+  if(rev&&current&&rev!==current) flags.push("izričito različita revizija pravila i plana");
+  const decision=(r.odluka_id||"");
+  if(decision && (!od || od.id!==decision)) flags.push("nepoznata odluka izvora");
+  return {ok:flags.length===0,flags};
+}
+// ctx: {jls, zone:[oznake iz GIS-a], izgradenost, vrsta, nacin, zahvat}
 function dbMatch(ctx,db=RULES_DB){
   if(!db||!db.planovi||!db.pravila||!ctx) return null;
   const plans=db.planovi.filter(p=>dbHit((p.obuhvat||{}).jls,[ctx.jls]));
@@ -2193,42 +2301,183 @@ function dbMatch(ctx,db=RULES_DB){
     const rr=[];
     for(const r of db.pravila){ if(r.plan_id!==p.id) continue;
       const pr=r.primjenjivost||{};
-      if(!dbHit(pr.zone,ctx.zone)) continue;
-      if(pr.izgradenost&&pr.izgradenost.length&&ctx.izgradenost!=null&&!dbHit(pr.izgradenost,[ctx.izgradenost])) continue;
-      const L=dbRuleLegal(r,p,od[r.odluka_id]), gis=(r.gis_status||{}).razina==="potvrđeno"&&(((p.obuhvat||{}).gis||{}).status||"potvrđeno")!=="nema";
-      const vrstaOk=!ctx.vrsta||dbHit(pr.vrste_gradnje,[ctx.vrsta]), nacinOk=!ctx.nacin||dbHit(pr.nacin_gradnje,[ctx.nacin]);
-      rr.push({r,p,od:od[r.odluka_id]||null,legal:L.ok,miss:L.miss,gis,tipOk:vrstaOk&&nacinOk,calc:L.ok&&gis&&p.status_vazenja==="važeći"&&vrstaOk&&nacinOk});
+      // Nedostajuća ili prazna zona ne dokazuje prostornu primjenjivost.
+      if(!Array.isArray(ctx.zone)||!ctx.zone.length||!dbHit(pr.zone,ctx.zone)) continue;
+      // Ako su izgrađenost i zahvat obvezni, moraju biti eksplicitno poznati.
+      // Izričito poznata, a različita izgrađenost ili zahvat: pravilo se ne odnosi na lokaciju (kao i prije PI v2).
+      // Nepoznata vrijednost: pravilo ostaje vidljivo uz razlog (OPSEG), ali ne ulazi u izračun.
+      const znan=v=>v!=null&&String(v).trim()!=="";
+      if(pr.izgradenost&&pr.izgradenost.length&&znan(ctx.izgradenost)&&!dbHit(pr.izgradenost,[ctx.izgradenost])) continue;
+      if(pr.zahvat&&pr.zahvat.length&&znan(ctx.zahvat)&&!dbHit(pr.zahvat,[ctx.zahvat])) continue;
+      const izgradenostOk=!pr.izgradenost||!pr.izgradenost.length||znan(ctx.izgradenost);
+      const zahvatOk=!pr.zahvat||!pr.zahvat.length||znan(ctx.zahvat);
+      const source=od[r.odluka_id]||null;
+      const L=dbRuleLegal(r,p,source), integrity=dbSourceIntegrity(r,p,source);
+      const gis=(r.gis_status||{}).razina==="potvrđeno"&&(((p.obuhvat||{}).gis||{}).status||"potvrđeno")!=="nema";
+      // Nedostajući tip/nacin NIJE dokaz podudaranja. Uvjetni izračuni moraju biti fail-closed.
+      // Iznimka: pravilo izričito za sve vrste („sve” ili „*”) ne ovisi o vrsti, pa nepoznata vrsta tu nije prepreka.
+      const svaVrsta=(pr.vrste_gradnje||[]).some(x=>["*","sve"].includes(dbN(x)));
+      const vrstaOk=svaVrsta||(!!ctx.vrsta&&dbHit(pr.vrste_gradnje,[ctx.vrsta]));
+      const nacinOk=(!pr.nacin_gradnje||!pr.nacin_gradnje.length)|| (!!ctx.nacin&&dbHit(pr.nacin_gradnje,[ctx.nacin]));
+      const scopeMissing=[!izgradenostOk?"izgrađenost nije potvrđena":null,
+        !zahvatOk?"vrsta zahvata nije potvrđena":null].filter(Boolean);
+      const conditions=dbConditions({r,ctx});
+      rr.push({r,p,od:source,legal:L.ok,miss:L.miss,gis,integrity,conditions,
+        scopeMissing,tipOk:vrstaOk&&nacinOk,
+        calc:L.ok&&gis&&integrity.ok&&p.status_vazenja==="važeći"&&vrstaOk&&nacinOk&&izgradenostOk&&zahvatOk&&conditions.ok});
     }
     if(rr.length) out.push({plan:p,rules:rr});
   }
   // neusklađenosti: isti parametar s različitim vrijednostima u različitim planovima (za izračun)
   const byP={}; for(const g of out) for(const x of g.rules) if(x.calc) (byP[x.r.parametar]=byP[x.r.parametar]||[]).push(x);
-  const sukobi=Object.entries(byP).filter(([k,xs])=>new Set(xs.map(x=>String(x.r.vrijednost))).size>1&&new Set(xs.map(x=>x.p.id)).size>1).map(([k,xs])=>({parametar:k,xs}));
+  // Sukob postoji i unutar istog plana. Različite uvjetne norme ne smiju biti
+  // proizvoljno izabrane po redoslijedu učitavanja.
+  const sukobi=Object.entries(byP).filter(([k,xs])=>
+    new Set(xs.map(x=>dbValueKey(x.r))).size>1
+  ).map(([k,xs])=>({parametar:k,xs}));
   return {grupe:out,sukobi,byP};
 }
+// Kanonska usporedba samo jednostavnih skalarnih vrijednosti. Različite
+// formule ili uvjetni opisi ostaju različiti i zahtijevaju pregled.
+function dbValueKey(r){
+  const val=r.vrijednost;
+  const unit=dbN(r.jedinica||"");
+  if(typeof val==="number"&&Number.isFinite(val)) return `num:${val}|${unit}`;
+  const s=String(val==null?"":val).trim().replace(",",".");
+  if(/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(s)) return `num:${Number(s)}|${unit}`;
+  return `other:${dbN(val)}|${unit}`;
+}
+function dbNumeric(r){
+  const v=r.vrijednost;
+  if(typeof v==="number") return Number.isFinite(v)?v:null;
+  if(typeof v!=="string") return null;
+  const s=v.trim().replace(",",".");
+  if(!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(s)) return null;
+  const n=Number(s); return Number.isFinite(n)?n:null;
+}
+// Plan Integrity v4: strojno provjerljiv zapis bez pretpostavljene stručne potvrde.
+// Plan Integrity v5: eksplicitni status izvora, odvojen od dokumentiranog konflikta.
+// Plan Integrity v6: slobodni uvjet/iznimka bez strukturirane potvrde ne ulazi u izračun.
+function dbConditions(x){
+ const r=x.r||{},pr=r.primjenjivost||{},c=x.ctx||{};
+ const issues=[];
+ if(r.iznimka||r.iznimke&&r.iznimke.length) {
+   if(r.status_iznimke!=='razriješeno') issues.push('iznimka nije razriješena');
+ }
+ if(r.uvjet && r.status_uvjeta!=='razriješeno') issues.push('tekstualni uvjet nije razriješen');
+ if(pr.posebni_rezim&&pr.posebni_rezim.length && (!c.posebni_rezim||!dbHit(pr.posebni_rezim,[c.posebni_rezim])))
+   issues.push('posebni režim nije potvrđen');
+ return {ok:issues.length===0,issues};
+}
+function dbIntegrityState(x){
+ const r=x.r||{},p=x.p||{},o=x.od||{};
+ if(x.integrity&&!x.integrity.ok) return {state:'conflict',why:x.integrity.flags};
+ if([r,p,o].some(v=>v&&v.status_aktualnosti==='nepotvrđeno'))
+   return {state:'unknown',why:['aktualnost izvora nije potvrđena']};
+ const rr=(r.izvor_revizija||r.revizija_plana||'').trim(),pr=(p.primjenjiva_revizija||'').trim();
+ if(!rr||!pr) return {state:'unknown',why:['revizija nije potpuno dokumentirana']};
+ return {state:'declared_consistent',why:[]};
+}
+function dbEvidence(x){
+  const r=x.r||{},p=x.p||{},o=x.od||{},ps=r.pravni_status||{},gis=r.gis_status||{};
+  return {rule_id:r.id||null,plan_id:p.id||r.plan_id||null,plan_name:p.naziv||null,
+    plan_status:p.status_vazenja||null,plan_revision:p.primjenjiva_revizija||null,
+    rule_revision:r.izvor_revizija||r.revizija_plana||null,
+    article:r.clanak||null,citation:r.citat||null,decision_id:o.id||null,
+    source_url:o.url||null,source_label:o.glasilo||o.naziv||null,
+    legal_level:ps.razina||null,legal_checked:ps.datum_provjere||null,
+    gis_level:gis.razina||null,zone:(r.primjenjivost||{}).zone||[],
+    integrity:x.integrity?{ok:x.integrity.ok,flags:x.integrity.flags}:null,
+    eligible:!!x.calc,source_consistency:dbIntegrityState(x),conditions:x.conditions||null};
+}
+// Plan Integrity v7: odluka za prikaz razlikuje izračun od prava na tvrdnju "potvrđeno".
+function dbPublicationGate(trace){
+ if(trace.reason!=='resolved') return {level:'blocked',why:trace.reason};
+ if(!trace.evidence.length) return {level:'blocked',why:'missing_evidence'};
+ if(trace.evidence.some(e=>e.source_consistency.state==='conflict')) return {level:'blocked',why:'source_conflict'};
+ if(trace.evidence.some(e=>e.conditions&&!e.conditions.ok)) return {level:'blocked',why:'unresolved_conditions'};
+ if(trace.evidence.some(e=>e.source_consistency.state==='unknown')) return {level:'conditional',why:'unverified_revision'};
+ return {level:'derived',why:'source_rule_checked_not_expert_parcel_confirmation'};
+}
+function dbExplain(M,k){const t=dbTrace(M,k);return {...t,publication:dbPublicationGate(t)};}
+function dbTrace(M,k){
+  const result=dbResolve(M,k);
+  const evidence=result.sources.map(dbEvidence);
+  return {parameter:k,value:result.value,reason:result.reason,evidence,
+    // Broj iz pravila nije isto što i stručna potvrda njegove primjene na parcelu.
+    verification:evidence.length&&result.reason==='resolved'?'source_rule_checked':'not_confirmed'};
+}
+function dbResolve(M,k){
+  const xs=(M&&M.byP&&M.byP[k])||[];
+  if(!xs.length) return {value:null,reason:"missing",sources:[]};
+  if((M.sukobi||[]).some(s=>s.parametar===k)) return {value:null,reason:"conflict",sources:xs};
+  const n=dbNumeric(xs[0].r);
+  if(n===null) return {value:null,reason:"not_numeric",sources:xs};
+  return {value:n,reason:"resolved",sources:xs};
+}
 function dbCalc(M,A){ // samo potvrđena, primjenjiva i usklađena pravila
-  const one=k=>{const xs=M.byP[k]; if(!xs||!xs.length) return null; if(M.sukobi.some(s=>s.parametar===k)) return null; const v=parseFloat(xs[0].r.vrijednost); return Number.isFinite(v)?v:null;};
+  const one=k=>dbResolve(M,k).value;
   const minC=one("min_cestica"), kig=one("kig"), kis=one("kis_nadzemni")??one("kis"), tlM=one("tlocrt_max"), gM=one("gbp_max");
   return {minC,min:minC!=null?A>=minC:null,tl:kig!=null?Math.min(A*kig,tlM??Infinity):tlM,gbp:kis!=null?Math.min(A*kis,gM??Infinity):gM};
 }
+// Plan Integrity v10: stabilni podaci za izvještaj, bez podataka o korisniku.
+function dbIntegrityReport(M,area){
+ const keys=Array.from(new Set(Object.keys((M&&M.byP)||{}).concat(((M&&M.sukobi)||[]).map(x=>x.parametar)))).sort();
+ const indicators=keys.map(k=>dbExplain(M,k));
+ const publication={blocked:indicators.filter(x=>x.publication.level==='blocked').length,
+    conditional:indicators.filter(x=>x.publication.level==='conditional').length,
+    derived:indicators.filter(x=>x.publication.level==='derived').length};
+ // pravila koja se na lokaciju odnose, ali ne ulaze u izračun: razlog je dio izvještaja (inače bi blokirani pokazatelj nestao)
+ const excluded=[]; for(const g of (M&&M.grupe)||[]) for(const x of g.rules) if(!x.calc) excluded.push({parameter:x.r.parametar,rule_id:x.r.id||null,plan_id:g.plan.id||null,article:x.r.clanak||null,reasons:dbWhyNot(x)});
+ const blockedOnly=Array.from(new Set(excluded.map(e=>e.parameter))).filter(k=>!keys.includes(k)).sort();
+ publication.blocked+=blockedOnly.length;
+ return {schema:'cesticahr.plan_integrity.v10',area_m2:Number.isFinite(area)?area:null,
+    indicators,excluded,blocked_parameters:blockedOnly,publication,limitations:['Nije službena lokacijska informacija','Nije dokaz prava na gradnju']};
+}
+// razlozi zbog kojih pravilo ne ulazi u izračun (za prikaz i izvještaj)
+function dbWhyNot(x){const w=[];
+  if(!x.legal) w.push(x.miss&&x.miss.length?"pravno nepotpuno: "+x.miss.join(", "):"kandidat, nije pravno potvrđeno");
+  if(!x.gis) w.push("GIS primjenjivost nije potvrđena");
+  if(x.integrity&&!x.integrity.ok) w.push(...x.integrity.flags);
+  if(x.p&&x.p.status_vazenja!=="važeći") w.push("plan nije važeći");
+  if(!x.tipOk) w.push("vrsta ili način gradnje nije potvrđen");
+  if(x.scopeMissing&&x.scopeMissing.length) w.push(...x.scopeMissing);
+  if(x.conditions&&!x.conditions.ok) w.push(...x.conditions.issues);
+  return w;}
 function dbHtml(ctx,areaCtx){
   if(!RULES_DB) return "";
-  const M=dbMatch(ctx); let h=`<h3 class="dbh">Uvjeti iz baze ČesticaHR</h3>`;
+  const M=dbMatch(ctx); window.__dbLast=M?{M,area:areaCtx?areaCtx.area:null}:null; let h=`<h3 class="dbh">Uvjeti iz baze ČesticaHR</h3>`;
   const src=`<p class="meta">Baza: ${esc(RULES_DB.izvor||"")}${RULES_DB.verzija_izvora?" "+esc(RULES_DB.verzija_izvora):""}, izvezeno ${esc(RULES_DB.izvezeno||"")}. Postojeći uvjeti gradnje iznad ostaju nepromijenjeni.</p>`;
   if(!M||!M.grupe.length) return h+`<p class="meta">Za ovu lokaciju baza nema pravila (${esc(ctx.jls||"nepoznata jedinica")}${ctx.zone&&ctx.zone.length?", zona "+esc(ctx.zone.join(", ")):""}).</p>`+src;
   const st=(x)=>`<span class="dbst ${x.legal?"ok":"kand"}">${x.legal?"pravno potvrđeno "+esc(x.r.pravni_status.datum_provjere):"kandidat"}</span> <span class="dbst ${x.gis?"ok":"kand"}">${x.gis?"GIS potvrđen":"GIS nije potvrđen"}</span>${x.calc?` <span class="dbst ok">u izračunu</span>`:""}`;
   const row=x=>{const r=x.r, pr=r.primjenjivost||{};
-    return `<li><b>${esc(DB_PARAM[r.parametar]||r.parametar)}: ${esc(typeof r.vrijednost==="number"?dec(String(r.vrijednost)):String(r.vrijednost))}${r.jedinica?" "+esc(r.jedinica):""}</b>${r.uvjet?` <span class="meta">(${esc(r.uvjet)})</span>`:""}<br>${st(x)}<small class="fx">${esc([pr.vrste_gradnje&&pr.vrste_gradnje.join(", "),pr.nacin_gradnje&&pr.nacin_gradnje.join(", "),pr.zahvat&&pr.zahvat.join(", ")].filter(Boolean).join(" · "))}${r.clanak?" · čl. "+esc(String(r.clanak).replace(/\.$/,""))+".":""}${x.od?` · ${x.od.url?`<a href="${esc(safeLink(x.od.url)||"#")}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(x.od.glasilo||x.od.naziv)}${x.od.broj?" "+esc(x.od.broj):""}</a>`:esc(x.od.glasilo||x.od.naziv)}`:""}${x.miss&&x.miss.length?" · nedostaje: "+esc(x.miss.join(", ")):""}${!x.tipOk?" · drugi tip gradnje":""}</small>${r.citat?`<small class="fx src">„${esc(r.citat)}“</small>`:""}</li>`;};
+    return `<li><b>${esc(DB_PARAM[r.parametar]||r.parametar)}: ${esc(typeof r.vrijednost==="number"?dec(String(r.vrijednost)):String(r.vrijednost))}${r.jedinica?" "+esc(r.jedinica):""}</b>${r.uvjet?` <span class="meta">(${esc(r.uvjet)})</span>`:""}<br>${st(x)}<small class="fx">${esc([pr.vrste_gradnje&&pr.vrste_gradnje.join(", "),pr.nacin_gradnje&&pr.nacin_gradnje.join(", "),pr.zahvat&&pr.zahvat.join(", ")].filter(Boolean).join(" · "))}${r.clanak?" · čl. "+esc(String(r.clanak).replace(/\.$/,""))+".":""}${x.od?` · ${x.od.url?`<a href="${esc(safeLink(x.od.url)||"#")}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(x.od.glasilo||x.od.naziv)}${x.od.broj?" "+esc(x.od.broj):""}</a>`:esc(x.od.glasilo||x.od.naziv)}`:""}${x.miss&&x.miss.length?" · nedostaje: "+esc(x.miss.join(", ")):""}${!x.tipOk?" · vrsta/način gradnje nije potvrđen":""}${x.scopeMissing&&x.scopeMissing.length?" · OPSEG: "+esc(x.scopeMissing.join("; ")):""}${x.integrity&&!x.integrity.ok?" · INTEGRITET: "+esc(x.integrity.flags.join("; ")):""}</small>${r.citat?`<small class="fx src">„${esc(r.citat)}“</small>`:""}</li>`;};
   if(M.grupe.length>1) h+=`<p class="flag">Na lokaciji vrijedi više planova (${esc(M.grupe.map(g=>g.plan.vrsta+" "+g.plan.naziv).join("; "))}). Aplikacija ne određuje koji uvjet ima prednost; to potvrđuje lokacijska informacija.</p>`;
-  for(const s of M.sukobi) h+=`<p class="flag">${esc(DB_PARAM[s.parametar]||s.parametar)}: planovi propisuju različite vrijednosti (${esc(s.xs.map(x=>x.p.vrsta+": "+x.r.vrijednost).join(", "))}). Ta vrijednost se ne koristi u izračunu.</p>`;
+  for(const s of M.sukobi) h+=`<p class="flag">${esc(DB_PARAM[s.parametar]||s.parametar)}: više primjenjivih pravila daje različite vrijednosti (${esc(s.xs.map(x=>(x.p.vrsta||x.p.naziv)+" čl. "+(x.r.clanak||"?")+": "+x.r.vrijednost).join(", "))}). Taj pokazatelj se ne koristi u izračunu.</p>`;
   for(const g of M.grupe){const P=g.plan, pot=g.rules.filter(x=>x.legal), kan=g.rules.filter(x=>!x.legal);
     h+=`<p class="rule-title"><span class="rule-code">${esc(P.vrsta)}</span>${esc(P.naziv)}</p><p class="meta">Status plana: ${esc(P.status_vazenja)}${(P.obuhvat||{}).gis&&P.obuhvat.gis.status!=="potvrđeno"?" · obuhvat na karti nije potvrđen":""}</p>`;
     if(pot.length) h+=`<ul class="dbl">${pot.map(row).join("")}</ul>`; else h+=`<p class="meta">Nema pravno potvrđenih pravila za ovu zonu.</p>`;
     if(kan.length) h+=`<details data-k="dbk-${esc(P.id)}"><summary>Istraživački kandidati, nepotvrđeno (${kan.length})</summary><p class="meta">Automatski izdvojeni podaci; nisu pravno potvrđeni i ne ulaze u izračun.</p><ul class="dbl">${kan.map(row).join("")}</ul></details>`;
   }
+  // Plan Integrity v8: dokazni lanac za svaki izračunavani parametar, bez novih GIS slojeva.
+  const traceKeys=['min_cestica','kig','kis','kis_nadzemni','tlocrt_max','gbp_max'];
+  const traces=traceKeys.map(k=>dbExplain(M,k)).filter(t=>t.evidence.length);
+  if(traces.length){
+    const reasonText={resolved:'jednoznačno',conflict:'sukob pravila',missing:'nema pravila',not_numeric:'složena vrijednost'};
+    h+=`<details data-k="dbtrace"><summary>Dokazni lanac i ograničenja (${traces.length})</summary><ul class="dbl">`;
+    for(const t of traces){
+      h+=`<li><b>${esc(DB_PARAM[t.parameter]||t.parameter)}: ${esc(reasonText[t.reason]||t.reason)}</b> · status ${esc(t.publication.level)}${t.publication.why?` (${esc(t.publication.why)})`:''}`;
+      for(const e of t.evidence) h+=`<small class="fx">${esc(e.plan_name||e.plan_id||'?')} · čl. ${esc(e.article||'?')} · odluka ${esc(e.decision_id||'?')} · revizija ${esc(e.rule_revision||'?')} / ${esc(e.plan_revision||'?')} · ${esc(e.source_consistency.state)}${e.conditions&&!e.conditions.ok?' · '+esc(e.conditions.issues.join('; ')):''}${e.source_url?` · <a href="${esc(safeLink(e.source_url)||'#')}" target="_blank" rel="noopener">izvor</a>`:''}</small>`;
+      h+=`</li>`;
+    }
+    h+=`</ul><p class="meta">Izvedeno nije isto što i stručno potvrđena gradivost čestice.</p></details>`;
+  }
   if(areaCtx&&Object.keys(M.byP).length){const S=areaSel(areaCtx.P,areaCtx.area), A=S.a*(areaCtx.share??1), c=dbCalc(M,A);
-    if(c.min!=null||c.tl||c.gbp){
-      h+=`<div class="calc"><p class="eyebrow">Izračun iz potvrđenih uvjeta baze</p><p class="meta" style="margin:0 0 4px">Korištena površina: <b>${fmt(S.a)} m²</b> (${esc(S.naziv)}; izvor: ${esc(S.src)})${(areaCtx.share??1)<0.999?`, građevinski dio ${fmt(A)} m²`:""}.</p>`;
+    const needed=[...(c.tl!=null?['kig']:[]),...(c.gbp!=null?['kis_nadzemni','kis']:[]),...(c.min!=null?['min_cestica']:[])];
+    const gates=needed.filter(k=>(M.byP[k]||[]).length).map(k=>dbExplain(M,k).publication);
+    const caution=gates.some(g=>g.level==='conditional');
+    if(c.min!=null||c.tl!=null||c.gbp!=null){
+      h+=`<div class="calc"><p class="eyebrow">Izračun prema evidentiranim pravilima${caution?' – UVJETNO':''}</p>${caution?'<p class="flag">Aktualnost nekih revizija nije potvrđena; ovo je uvjetni izračun, ne potvrda gradivosti.</p>':''}<p class="meta" style="margin:0 0 4px">Korištena površina: <b>${fmt(S.a)} m²</b> (${esc(S.naziv)}; izvor: ${esc(S.src)})${(areaCtx.share??1)<0.999?`, građevinski dio ${fmt(A)} m²`:""}.</p>`;
       if(c.min!=null) h+=`<div class="row"><span>Najmanja čestica ${fmt(c.minC)} m²</span><span class="${c.min?"good":"bad"}">${c.min?"ispunjeno":"nije ispunjeno"}</span></div>`;
       if(c.tl) h+=`<div class="row"><span>Najveći tlocrt</span><span>${fmt(c.tl)} m²</span></div>`;
       if(c.gbp) h+=`<div class="row"><span>Najveći GBP</span><span>${fmt(c.gbp)} m²</span></div>`;
@@ -4892,12 +5141,12 @@ function render(d){
   RK_CTX=parcel?{key:window.__cur.key,parcel,ll,region:"zg",rows}:null;
   if(parcel&&rkKatalog(ll)) h+=`<h2 id="sec-upu">${esc(rkKatalog(ll).naslov)}</h2><div id="rkBox">${rkInner()}</div>`;
   // Urbano pravilo
-  h+=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>%%PREK%%`;
+  h+=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>%%PREK%%`; for(const k of ["blok-uvjeti","calc-min"]) pzDel(k);
   const {code,rule,se,pp:isPP}=ruleLookup(up,rows);
   window.__rule={code,clanak:rule?rule.clanak:null,naziv:rule?rule.naziv:null,src:isPP?"PP":se?"SE":"GUP",zona:null};
   if(up.e){h+=`<p class="err">Urbana pravila: ${esc(up.e)}</p>`}
-  else if(!code){h+=`<p class="hint">Lokacija nije u obuhvatu urbanih pravila GUP-a Zagreba ni GUP-a Sesveta. Vrijedi Prostorni plan Grada Zagreba, čiji uvjeti još nisu u aplikaciji; traži lokacijsku informaciju.</p>`}
-  else if(!rule){h+=`<p><span class="rule-code">${esc(code)}</span>Pravilo nije pronađeno u tekstu odluke.</p>`}
+  else if(!code){h+=`<p class="hint">Lokacija nije u obuhvatu urbanih pravila GUP-a Zagreba ni GUP-a Sesveta. Vrijedi Prostorni plan Grada Zagreba, čiji uvjeti još nisu u aplikaciji; traži lokacijsku informaciju.</p>`; if(parcel) piBlok("blok-uvjeti","Uvjeti gradnje (izračun)","lokacija nije u obuhvatu urbanih pravila; uvjeti Prostornog plana Grada Zagreba nisu u aplikaciji",[piK("čestica",PZREG.items.get("pov-graf"))]);}
+  else if(!rule){h+=`<p><span class="rule-code">${esc(code)}</span>Pravilo nije pronađeno u tekstu odluke.</p>`; if(parcel) piBlok("blok-uvjeti","Uvjeti gradnje (izračun)","urbano pravilo "+code+" nije pronađeno u tekstu odluke",[piK("čestica",PZREG.items.get("pov-graf"))]);}
   else{
     h+=`<p class="rule-title"><span class="rule-code">${esc(isPP?"PPGZ":code)}</span>${esc(rule.naziv)}</p><p class="meta">${isPP?"Točka 2.3.1. Odredbi za provedbu Prostornog plana Grada Zagreba (izmjene i dopune 2017.; izmjene 2025. ove uvjete ne mijenjaju). Vrijedi u građevinskim područjima naselja izvan GUP-ova; potvrdi lokacijskom informacijom.":`Članak ${esc(rule.clanak)}. `}${isPP?"":se?"Odluke o GUP-u Sesveta (prijedlog izmjena za ponovnu javnu raspravu, lipanj 2026.)":"Odluke o GUP-u Grada Zagreba (pročišćeni tekst 2025.)"}</p>`;
     {const M=RULES_META&&RULES_META[isPP?"PP":se?"SE":"GUP"]; if(M) h+=`<p class="meta">Izvor: <a href="${esc(M.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(M.naziv)}</a>, ${esc(M.verzija)} · status: ${esc(M.status)}</p>`;}
@@ -4931,8 +5180,18 @@ function render(d){
         if(!gbpMax&&pp.izg){gbpMax=A*pp.izg*2.5; gbpEst=true;}
         window.__tl=pp.izg?Math.round(A*pp.izg):null; window.__gbp=gbpMax?Math.round(gbpMax):null;
         {const pzA=PZREG.items.get(AS&&AS.k?"pov-"+AS.k:"pov-graf")||PZREG.items.get("pov-graf"), uv=[pzA,pzR,pzZ,PZREG.items.get("pravilo-karta"),ZAHVAT!=="nova"?pz("C",{naziv:"Zahvat",razlog:"posebne odredbe za zahvat nisu u izračunu"}):null,exHit.length?pz("C",{naziv:"Iznimka u pravilu",razlog:"spominje ulicu uz česticu"}):null];
-         if(pp.izg) pzSet("calc-tlocrt","Najveći tlocrt (teorijski, kig)",fmt(A*pp.izg)+" m²",pzCalc({metoda:"površina "+fmt(A)+" m² × "+Math.round(pp.izg*100)+" %"},uv));
-         if(gbpMax) pzSet("calc-gbp","Najveći GBP (teorijski)",fmt(gbpMax)+" m²",pzCalc({metoda:gbpEst?"procjena: tlocrt × 2,5 etaže":"površina × kis "+String(pp.kis).replace(".",",")},uv));
+         // Plan Integrity: dokazni lanac za Zagreb (tekst GUP-a, karta urbanih pravila, GIS namjena, zona unutar pravila)
+         const kart=PZREG.items.get("pravilo-karta"), ul=PZREG.items.get("upu-list"), ua=PZREG.items.get("upu-aktualnost"), rpT=id=>{const x=RP.find(y=>y.id===id); return x&&x.txt?x.txt:null;};
+         const piL=[piK("čestica",pzA),{karika:"plan",vrijednost:M0?M0.naziv:(se?"GUP Sesvete":"Odluka o GUP-u"),raz:pzR.raz,izvor:M0?M0.naziv:null,revizija:M0?M0.verzija:null,status:M0?M0.status:null,
+             uskladenost:"nepoznata",razlogUsk:se?"prijedlog izmjena, nije doneseni tekst":(M0&&/neslužben/i.test(M0.verzija||"")?"neslužbeni pročišćeni tekst":"pravna aktualnost teksta nije neovisno potvrđena")},
+           piK("GIS zona (namjena)",PZREG.items.get("namjena")),
+           kart?piK("kartografski prikaz (urbana pravila)",kart,{uskladenost:"nepoznata",razlogUsk:"karta iz ponovne javne rasprave 2024., tekst odluke "+(M0&&M0.datum||"2025")+"; usklađenost lista s donesenim planom nije potvrđena"}):null,
+           ul?piK("kartografski list (ISPU)",ul,ua?{status:ua.vrijednost,uskladenost:ua.raz==="A"?"kompatibilno":"nepoznata",razlogUsk:ua.razlog||null}:{uskladenost:"nepoznata"}):null,
+           piK("zona unutar pravila",pzZ),{karika:"članak",vrijednost:"čl. "+rule.clanak+". ("+code+")",citat:rpT("izg"),raz:pzR.raz,izvor:M0?M0.naziv:null}].filter(Boolean);
+         const piU=[...RP.filter(x=>x.status==="provjera").map(x=>({tekst:x.label+(x.note?": "+x.note:": tekst sadrži uvjet koji aplikacija ne provjerava"),razrijeseno:false})),...(exHit.length?[{tekst:"iznimka u pravilu spominje ulicu uz česticu ("+[...new Set(exHit.map(x=>x.hit))].join(", ")+")",razrijeseno:false}]:[]),...(ZAHVAT!=="nova"?[{tekst:"zahvat "+((ZAHVATI.find(x=>x[0]===ZAHVAT)||[])[1]||ZAHVAT)+": posebne odredbe nisu u izračunu",razrijeseno:false}]:[])];
+         if(pp.minC) pzSet("calc-min","Najmanja površina čestice",(A>=pp.minC?"ispunjeno":"nije ispunjeno")+" ("+fmt(A)+" od "+fmt(pp.minC)+" m²)",piWith(pzCalc({metoda:"površina "+fmt(A)+" m² prema najmanjoj "+fmt(pp.minC)+" m²"},uv),{lanac:[...piL.filter(k=>k.karika!=="članak"),{karika:"članak",vrijednost:"čl. "+rule.clanak+". ("+code+")",citat:rpT("minC"),raz:pzR.raz,izvor:M0?M0.naziv:null}],uvjeti:piU}));
+         if(pp.izg) pzSet("calc-tlocrt","Najveći tlocrt (teorijski, kig)",fmt(A*pp.izg)+" m²",piWith(pzCalc({metoda:"površina "+fmt(A)+" m² × "+Math.round(pp.izg*100)+" %"},uv),{lanac:piL,uvjeti:piU}));
+         if(gbpMax) pzSet("calc-gbp","Najveći GBP (teorijski)",fmt(gbpMax)+" m²",piWith(pzCalc({metoda:gbpEst?"procjena: tlocrt × 2,5 etaže":"površina × kis "+String(pp.kis).replace(".",",")},uv),{lanac:[...piL.filter(k=>k.karika!=="članak"),{karika:"članak",vrijednost:"čl. "+rule.clanak+". ("+code+")",citat:rpT("kis")||rpT("gbp"),raz:pzR.raz,izvor:M0?M0.naziv:null}],uvjeti:[...piU,...(gbpEst?[{tekst:"GBP je procjena (tlocrt × 2,5 etaže), pravilo ne daje kis",razrijeseno:false}]:[])]}));
          if(envelope&&envelope.area!=null) pzSet("calc-prostor","Prostor za građevinu nakon odmaka od međa",fmt(envelope.area)+" m²",pzCalc({metoda:String(envelope.d).replace(".",",")+" m od međa, bez regulacijskog pravca",razlog:envelope.est?"udaljenost od međa je procjena":null},envelope.est?[pzA,pz("C",{naziv:"Udaljenost od međa",razlog:envelope.est})]:[pzA,pzR]));}
         // posebne odredbe za čestice manje od propisane (rekonstrukcija, zamjenska građevina, interpolacija)
         const minCond=RP.find(x=>x.id==="minC"&&x.status==="provjera");
@@ -4946,6 +5205,7 @@ function render(d){
          window.__tipCmp=rows; h+=tipCmpHtml(rows,A,AS&&AS.naziv?AS.naziv+" površina":null);}
         if(envelope&&envelope.geom){const pr=RP.find(x=>x.id==="pravac"), pd=pr&&pr.value?parseFloat(String(pr.value).replace(/[^\d,]/g,"").replace(",",".")):null;
           h+=gpHtml(gradivo(parcel,envelope.geom,envelope.d,pd,env&&env.v?env.v.roadLines:null),pp.izg?A*pp.izg:null,`${String(envelope.d).replace(".",",")} m od međa${envelope.est?" (procjena: "+envelope.est+")":""}`,pd?`${String(pd).replace(".",",")} m od regulacijskog pravca (pravilo ${code})`:"");}
+        h+=piLanacHtml(["calc-min","calc-tlocrt","calc-gbp","calc-prostor"]);
         h+=`<details class="acc" data-k="calc"><summary><span>Izračun za ovu česticu</span><b class="${okC}">${esc(sumC)}</b></summary><div class="calc">`;
         if(AP){const smallX0=!!(pp.minC&&(smallParcelRule(zone)||minCond)), calcZ=a=>{let g=pp.kis?Math.min(a*pp.kis,pp.gbp||Infinity):(pp.gbp||null); if(!g&&pp.izg) g=a*pp.izg*2.5; return {min:pp.minC?(a>=pp.minC?true:a>=pp.minC*0.95?"rub":smallX0?"provj":false):null,tl:pp.izg?a*pp.izg:null,gbp:g};};
           window.__areaCmp={P:AP,area,share,calc:calcZ,rerender:()=>{if(window.__lastData) render(window.__lastData)}}; h+=areaCmpHtml(AP,area,share,calcZ);}
@@ -5023,13 +5283,15 @@ function render(d){
       const others=rule.zone.filter(z=>z!==zone);
       if(others.length) h+=`<details><summary>Ostale zone u pravilu ${esc(code)}</summary>${others.map(z=>`<p><b>${esc(z.zona)}</b></p><ol>${z.items.map(i=>`<li>${esc(i)}</li>`).join("")}</ol>`).join("")}</details>`;
     }else{
+      if(parcel) piBlok("blok-uvjeti","Uvjeti gradnje (izračun)",main&&VERDICT[main.p.Analitika]&&VERDICT[main.p.Analitika][0]==="no"?"namjena ne predviđa gradnju stambenih ili poslovnih građevina":"zona unutar urbanog pravila nije automatski određena",[piK("čestica",PZREG.items.get("pov-graf")),piK("GIS zona (namjena)",PZREG.items.get("namjena")),piK("kartografski prikaz (urbana pravila)",PZREG.items.get("pravilo-karta"))]);
       if(main&&VERDICT[main.p.Analitika]&&VERDICT[main.p.Analitika][0]==="no") h+=`<p class="hint">Za ovu namjenu pravilo ne predviđa gradnju stambenih ili poslovnih građevina.</p>`;
       else if(rule.zone.length) h+=`<p class="hint">Nisam mogao automatski odrediti zonu. Pravilo ima ove zone:</p>${rule.zone.map(z=>`<details><summary>${esc(z.zona)}</summary><ol>${z.items.map(i=>`<li>${esc(i)}</li>`).join("")}</ol></details>`).join("")}`;
+      h+=piLanacHtml(["blok-uvjeti"]);
     }
     if(rule.opca&&rule.opca.length) h+=`<details><summary>Opća pravila</summary><ol>${rule.opca.map(i=>`<li>${esc(i)}</li>`).join("")}</ol></details>`;
     h+=`<details><summary>Cijeli članak ${esc(rule.clanak)}.</summary>${rule.tekst.map(p=>`<p>${esc(p)}</p>`).join("")}</details>`;
   }
-  if(RULES_DB&&rows.length) h+=dbHtml({jls:"Grad Zagreb",zone:[code,(isPP?"PPGZ":se?"GUP Sesvete":"GUP"),...rows.filter(r=>r.share==null||r.share>0.05).map(r=>r.p.Analitika)].filter(Boolean),izgradenost:null,vrsta:null,nacin:TIPOVI.find(t=>t[0]===TIP)[1]},
+  if(RULES_DB&&rows.length) h+=dbHtml({jls:"Grad Zagreb",zone:[code,(isPP?"PPGZ":se?"GUP Sesvete":"GUP"),...rows.filter(r=>r.share==null||r.share>0.05).map(r=>r.p.Analitika)].filter(Boolean),izgradenost:null,vrsta:null,nacin:TIPOVI.find(t=>t[0]===TIP)[1],zahvat:(ZAHVATI.find(x=>x[0]===ZAHVAT)||[])[1]||null},
     parcel?{P:zgAreaP(parcel,favKey(parcel,ll)),area,share:area&&buildArea!=null?buildArea/area:1}:null);
   if(parcel) h+=G("troskovi")+moneyHtml(favKey(parcel,ll),area)+G("analiza");
   if(parcel){ h+=`<h2 id="sec-sunce">Sunce i energija</h2>`+sunHtml()+pvHtml(); if(FEATURES.seis) h+=seisHtml(ll); }

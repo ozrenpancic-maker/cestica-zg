@@ -1,0 +1,20 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const app=fs.readFileSync(__dirname+'/../../src/app.template.html','utf8');
+const start=app.indexOf('const DB_PARAM='),end=app.indexOf('function dbHtml(',start);
+const s=app.slice(start,end).replace('function dbMatch(ctx,db=RULES_DB)', 'function dbMatch(ctx,db)');
+const c=vm.createContext({});vm.runInContext(s+'\nthis.f={dbMatch,dbCalc};',c);
+const p={id:'p1',naziv:'Test',status_vazenja:'važeći',primjenjiva_revizija:'R01',obuhvat:{jls:['Grad Krk'],gis:{status:'potvrđeno'}},odluke:[{id:'d1',url:'https://example.org',naziv:'Odluka'}]};
+const rule={id:'r1',plan_id:'p1',odluka_id:'d1',clanak:'1',citat:'citat',parametar:'kig',vrijednost:0.25,izvor_revizija:'R01',pravni_status:{razina:'potvrđeno',datum_provjere:'2026-10-27'},gis_status:{razina:'potvrđeno'},primjenjivost:{zone:['M11'],vrste_gradnje:['obiteljska kuća'],nacin_gradnje:['slobodnostojeća'],izgradenost:['izgrađeno'],zahvat:['nova gradnja']}};
+const ctx={jls:'Grad Krk',zone:['M11'],vrsta:'obiteljska kuća',nacin:'slobodnostojeća',izgradenost:'izgrađeno',zahvat:'nova gradnja'};
+let count=0;
+function check(label,ctxPatch={},rulePatch={},expected=true){let x={...rule,...rulePatch,primjenjivost:{...rule.primjenjivost,...(rulePatch.primjenjivost||{})}};let M=c.f.dbMatch({...ctx,...ctxPatch},{planovi:[p],pravila:[x]});let got=M.grupe.flatMap(g=>g.rules).some(x=>x.calc);assert.strictEqual(got,expected,label);count++;}
+check('base');check('missing zone',{zone:[]},{},false);check('missing zone null',{zone:null},{},false);
+check('wrong zone',{zone:['M2']},{},false);check('missing build status',{izgradenost:null},{},false);
+check('empty build status',{izgradenost:''},{},false);check('wrong build status',{izgradenost:'neizgrađeno'},{},false);
+check('missing action',{zahvat:null},{},false);check('empty action',{zahvat:''},{},false);
+check('wrong action',{zahvat:'rekonstrukcija'},{},false);check('missing type',{vrsta:null},{},false);
+check('missing construction mode',{nacin:null},{},false);check('bad revision',{}, {izvor_revizija:'R02'},false);
+check('no action required',{zahvat:null},{primjenjivost:{zahvat:[]}},true);
+check('no build status required',{izgradenost:null},{primjenjivost:{izgradenost:[]}},true);
+const M=c.f.dbMatch(ctx,{planovi:[p],pravila:[rule]});assert.strictEqual(c.f.dbCalc(M,405).tl,101.25);count++;
+console.log(`${count}/${count} ciljnih testova prolazi`);

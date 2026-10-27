@@ -1,0 +1,568 @@
+{
+ "schema": "cesticahr.plan_integrity.v10",
+ "aplikacija": "Čestica HR 27.10.2026. 12:46",
+ "datum": "2026-10-27",
+ "cestica": {
+  "broj": "735/76",
+  "katastarska_opcina": "KORNIĆ",
+  "podrucje": "krk"
+ },
+ "sazetak": {
+  "uvjetno": 4,
+  "blokirano": 1
+ },
+ "pokazatelji": [
+  {
+   "id": "calc-min",
+   "pokazatelj": "Najmanja površina čestice",
+   "vrijednost": "ispunjeno (404 od 300 m²)",
+   "pouzdanost": "C",
+   "status_rezultata": "uvjetno",
+   "razlozi": [
+    "plan: usklađenost izvora nije potvrđena (objave nakon Službene novine PGŽ 19/2016 nisu iscrpno provjerene)",
+    "GIS zona (prostorni plan grada ili općine): usklađenost izvora nije potvrđena (oznaka iz županijskog sloja; podudarnost s grafičkim dijelom važeće odluke nije stručno potvrđena)",
+    "detaljna zona: tvoja pretpostavka",
+    "zona zaštite: tvoja pretpostavka"
+   ],
+   "razlog_blokade": null,
+   "pravila": [
+    {
+     "clanak": "čl. 38. i 39.",
+     "citat": "najmanja površina građevne čestice obiteljske kuće iznosi 500 m2 (dvojna i ugrađena: 300 m2)",
+     "plan": "UPU 2 Kornić (Službene novine PGŽ 19/2016)"
+    }
+   ],
+   "izvori": [
+    {
+     "karika": "čestica",
+     "vrijednost": "405 m²",
+     "pouzdanost": "A",
+     "izvor": "granica čestice u katastarskom planu DGU",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
+     "karika": "plan",
+     "vrijednost": "UPU 2 Kornić (Službene novine PGŽ 19/2016)",
+     "pouzdanost": "B",
+     "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje",
+     "revizija": "Službene novine PGŽ 19/2016",
+     "status": "na snazi",
+     "uskladenost": "nepoznata"
+    },
+    {
+     "karika": "GIS zona (prostorni plan grada ili općine)",
+     "vrijednost": "NA2 · naselje",
+     "pouzdanost": "A",
+     "izvor": "PGŽ, sloj NAMJENA_POVRSINA_NOVO (SN 18/19)",
+     "revizija": null,
+     "status": null,
+     "uskladenost": "nepoznata"
+    },
+    {
+     "karika": "detaljna zona",
+     "vrijednost": "M11",
+     "pouzdanost": "C",
+     "izvor": "tvoj odabir prema karti plana",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
+     "karika": "zona zaštite",
+     "vrijednost": "zona »C« – ambijentalna zaštita (čl. 85.)",
+     "pouzdanost": "C",
+     "izvor": "tvoj odabir prema karti 3A",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
+     "karika": "članak",
+     "vrijednost": "čl. 38. i 39.",
+     "pouzdanost": "B",
+     "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje, Službene novine PGŽ 19/2016",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    }
+   ],
+   "uskladenost": "nepoznata",
+   "otvoreni_uvjeti": [],
+   "metoda": "površina 404 m² prema najmanjoj 300 m²"
+  },
+  {
+   "id": "calc-tlocrt",
+   "pokazatelj": "Najveći tlocrt (teorijski, kig)",
+   "vrijednost": "101 m²",
+   "pouzdanost": "C",
+   "status_rezultata": "uvjetno",
+   "razlozi": [
+    "plan: usklađenost izvora nije potvrđena (objave nakon Službene novine PGŽ 19/2016 nisu iscrpno provjerene)",
+    "GIS zona (prostorni plan grada ili općine): usklađenost izvora nije potvrđena (oznaka iz županijskog sloja; podudarnost s grafičkim dijelom važeće odluke nije stručno potvrđena)",
+    "detaljna zona: tvoja pretpostavka",
+    "zona zaštite: tvoja pretpostavka"
+   ],
+   "razlog_blokade": null,
+   "pravila": [
+    {
+     "clanak": "čl. 38. i 39.",
+     "citat": "najveći koeficijent izgrađenosti građevne čestice iznosi 0,25",
+     "plan": "UPU 2 Kornić (Službene novine PGŽ 19/2016)"
+    },
+    {
+     "clanak": "čl. 38. i 39.",
+     "citat": "najmanja tlocrtna površina građevine iznosi 60 m2 … najveća tlocrtna površina građevine iznosi 200 m2 (dvojna 150 m2, ugrađena 100 m2)",
+     "plan": "UPU 2 Kornić (Službene novine PGŽ 19/2016)"
+    }
+   ],
+   "izvori": [
+    {
+     "karika": "čestica",
+     "vrijednost": "405 m²",
+     "pouzdanost": "A",
+     "izvor": "granica čestice u katastarskom planu DGU",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
+     "karika": "plan",
+     "vrijednost": "UPU 2 Kornić (Službene novine PGŽ 19/2016)",
+     "pouzdanost": "B",
+     "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje",
+     "revizija": "Službene novine PGŽ 19/2016",
+     "status": "na snazi",
+     "uskladenost": "nepoznata"
+    },
+    {
+     "karika": "GIS zona (prostorni plan grada ili općine)",
+     "vrijednost": "NA2 · naselje",
+     "pouzdanost": "A",
+     "izvor": "PGŽ, sloj NAMJENA_POVRSINA_NOVO (SN 18/19)",
+     "revizija": null,
+     "status": null,
+     "uskladenost": "nepoznata"
+    },
+    {
+     "karika": "detaljna zona",
+     "vrijednost": "M11",
+     "pouzdanost": "C",
+     "izvor": "tvoj odabir prema karti plana",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
+     "karika": "zona zaštite",
+     "vrijednost": "zona »C« – ambijentalna zaštita (čl. 85.)",
+     "pouzdanost": "C",
+     "izvor": "tvoj odabir prema karti 3A",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
+     "karika": "članak",
+     "vrijednost": "čl. 38. i 39.",
+     "pouzdanost": "B",
+     "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje, Službene novine PGŽ 19/2016",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
+     "karika": "članak",
+     "vrijednost": "čl. 38. i 39.",
+     "pouzdanost": "B",
+     "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje, Službene novine PGŽ 19/2016",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    }
+   ],
+   "uskladenost": "nepoznata",
+   "otvoreni_uvjeti": [],
+   "metoda": "površina 404 m² × kig 0,25"
+  },
+  {
+   "id": "calc-gbp",
+   "pokazatelj": "Najveći GBP (teorijski, kis)",
+   "vrijednost": "200 m²",
+   "pouzdanost": "C",
+   "status_rezultata": "uvjetno",
+   "razlozi": [
+    "plan: usklađenost izvora nije potvrđena (objave nakon Službene novine PGŽ 19/2016 nisu iscrpno provjerene)",
+    "GIS zona (prostorni plan grada ili općine): usklađenost izvora nije potvrđena (oznaka iz županijskog sloja; podudarnost s grafičkim dijelom važeće odluke nije stručno potvrđena)",
+    "detaljna zona: tvoja pretpostavka",
+    "zona zaštite: tvoja pretpostavka"
+   ],
+   "razlog_blokade": null,
+   "pravila": [
+    {
+     "clanak": "čl. 38. i 39.",
+     "citat": "najveći koeficijent iskorištenosti iznosi 0,75",
+     "plan": "UPU 2 Kornić (Službene novine PGŽ 19/2016)"
+    },
+    {
+     "clanak": "čl. 38. i 39.",
+     "citat": "najveći GBP iznosi 200 m2 za građevnu česticu obiteljske građevine",
+     "plan": "UPU 2 Kornić (Službene novine PGŽ 19/2016)"
+    }
+   ],
+   "izvori": [
+    {
+     "karika": "čestica",
+     "vrijednost": "405 m²",
+     "pouzdanost": "A",
+     "izvor": "granica čestice u katastarskom planu DGU",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
+     "karika": "plan",
+     "vrijednost": "UPU 2 Kornić (Službene novine PGŽ 19/2016)",
+     "pouzdanost": "B",
+     "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje",
+     "revizija": "Službene novine PGŽ 19/2016",
+     "status": "na snazi",
+     "uskladenost": "nepoznata"
+    },
+    {
+     "karika": "GIS zona (prostorni plan grada ili općine)",
+     "vrijednost": "NA2 · naselje",
+     "pouzdanost": "A",
+     "izvor": "PGŽ, sloj NAMJENA_POVRSINA_NOVO (SN 18/19)",
+     "revizija": null,
+     "status": null,
+     "uskladenost": "nepoznata"
+    },
+    {
+     "karika": "detaljna zona",
+     "vrijednost": "M11",
+     "pouzdanost": "C",
+     "izvor": "tvoj odabir prema karti plana",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
+     "karika": "zona zaštite",
+     "vrijednost": "zona »C« – ambijentalna zaštita (čl. 85.)",
+     "pouzdanost": "C",
+     "izvor": "tvoj odabir prema karti 3A",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
+     "karika": "članak",
+     "vrijednost": "čl. 38. i 39.",
+     "pouzdanost": "B",
+     "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje, Službene novine PGŽ 19/2016",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
+     "karika": "članak",
+     "vrijednost": "čl. 38. i 39.",
+     "pouzdanost": "B",
+     "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje, Službene novine PGŽ 19/2016",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    }
+   ],
+   "uskladenost": "nepoznata",
+   "otvoreni_uvjeti": [],
+   "metoda": "površina 404 m² × kis 0,75"
+  },
+  {
+   "id": "calc-prostor",
+   "pokazatelj": "Prostor za građevinu nakon odmaka od međa",
+   "vrijednost": "133 m²",
+   "pouzdanost": "C",
+   "status_rezultata": "uvjetno",
+   "razlozi": [
+    "plan: usklađenost izvora nije potvrđena (objave nakon Službene novine PGŽ 19/2016 nisu iscrpno provjerene)",
+    "GIS zona (prostorni plan grada ili općine): usklađenost izvora nije potvrđena (oznaka iz županijskog sloja; podudarnost s grafičkim dijelom važeće odluke nije stručno potvrđena)",
+    "detaljna zona: tvoja pretpostavka",
+    "zona zaštite: tvoja pretpostavka",
+    "otvoren uvjet: regulacijski pravac i kategorija ceste nisu uračunati",
+    "otvoren uvjet: pravilo h/2 nije uračunato"
+   ],
+   "razlog_blokade": null,
+   "pravila": [
+    {
+     "clanak": "čl. 38..",
+     "citat": "najmanja udaljenost građevine od ostalih međa građevne čestice iznosi 4 m",
+     "plan": "UPU 2 Kornić (Službene novine PGŽ 19/2016)"
+    }
+   ],
+   "izvori": [
+    {
+     "karika": "čestica",
+     "vrijednost": "405 m²",
+     "pouzdanost": "A",
+     "izvor": "granica čestice u katastarskom planu DGU",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
+     "karika": "plan",
+     "vrijednost": "UPU 2 Kornić (Službene novine PGŽ 19/2016)",
+     "pouzdanost": "B",
+     "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje",
+     "revizija": "Službene novine PGŽ 19/2016",
+     "status": "na snazi",
+     "uskladenost": "nepoznata"
+    },
+    {
+     "karika": "GIS zona (prostorni plan grada ili općine)",
+     "vrijednost": "NA2 · naselje",
+     "pouzdanost": "A",
+     "izvor": "PGŽ, sloj NAMJENA_POVRSINA_NOVO (SN 18/19)",
+     "revizija": null,
+     "status": null,
+     "uskladenost": "nepoznata"
+    },
+    {
+     "karika": "detaljna zona",
+     "vrijednost": "M11",
+     "pouzdanost": "C",
+     "izvor": "tvoj odabir prema karti plana",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
+     "karika": "zona zaštite",
+     "vrijednost": "zona »C« – ambijentalna zaštita (čl. 85.)",
+     "pouzdanost": "C",
+     "izvor": "tvoj odabir prema karti 3A",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
+     "karika": "članak",
+     "vrijednost": "čl. 38..",
+     "pouzdanost": "B",
+     "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    }
+   ],
+   "uskladenost": "nepoznata",
+   "otvoreni_uvjeti": [
+    "regulacijski pravac i kategorija ceste nisu uračunati",
+    "pravilo h/2 nije uračunato"
+   ],
+   "metoda": "4 m od međa, bez regulacijskog pravca"
+  },
+  {
+   "id": "blok-krov",
+   "pokazatelj": "Nagib krova",
+   "vrijednost": null,
+   "pouzdanost": "C",
+   "status_rezultata": "blokirano",
+   "razlozi": [
+    "dva pravila istog plana propisuju različit nagib (čl. 38. d): 17°–23°; čl. 85. zona »C«: oko 30°). Simulator primjenjuje posebni režim zone »C«; da on ima prednost, nije stručno potvrđeno"
+   ],
+   "razlog_blokade": "dva pravila istog plana propisuju različit nagib (čl. 38. d): 17°–23°; čl. 85. zona »C«: oko 30°). Simulator primjenjuje posebni režim zone »C«; da on ima prednost, nije stručno potvrđeno",
+   "pravila": [
+    {
+     "clanak": "čl. 38. d)",
+     "citat": "krovište građevine može biti ravno ili koso; ako se gradi kao koso može biti dvostrešno ili višestrešno i mora biti s nagibom krovnih ploha između 17o i 23o",
+     "plan": "UPU 2 Kornić (Službene novine PGŽ 19/2016)"
+    },
+    {
+     "clanak": "čl. 85.",
+     "citat": "visine najviše dvije nadzemne etaže, bez povišenja nadozida za potkrovlje",
+     "plan": "UPU 2 Kornić (Službene novine PGŽ 19/2016)"
+    }
+   ],
+   "izvori": [
+    {
+     "karika": "čestica",
+     "vrijednost": "405 m²",
+     "pouzdanost": "A",
+     "izvor": "granica čestice u katastarskom planu DGU",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
+     "karika": "plan",
+     "vrijednost": "UPU 2 Kornić (Službene novine PGŽ 19/2016)",
+     "pouzdanost": "B",
+     "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje",
+     "revizija": "Službene novine PGŽ 19/2016",
+     "status": "na snazi",
+     "uskladenost": "nepoznata"
+    },
+    {
+     "karika": "GIS zona (prostorni plan grada ili općine)",
+     "vrijednost": "NA2 · naselje",
+     "pouzdanost": "A",
+     "izvor": "PGŽ, sloj NAMJENA_POVRSINA_NOVO (SN 18/19)",
+     "revizija": null,
+     "status": null,
+     "uskladenost": "nepoznata"
+    },
+    {
+     "karika": "detaljna zona",
+     "vrijednost": "M11",
+     "pouzdanost": "C",
+     "izvor": "tvoj odabir prema karti plana",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
+     "karika": "zona zaštite",
+     "vrijednost": "zona »C« – ambijentalna zaštita (čl. 85.)",
+     "pouzdanost": "C",
+     "izvor": "tvoj odabir prema karti 3A",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
+     "karika": "članak",
+     "vrijednost": "čl. 38. d)",
+     "pouzdanost": "B",
+     "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje",
+     "revizija": null,
+     "status": null,
+     "uskladenost": "sukob"
+    },
+    {
+     "karika": "članak",
+     "vrijednost": "čl. 85.",
+     "pouzdanost": "B",
+     "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje",
+     "revizija": null,
+     "status": null,
+     "uskladenost": "sukob"
+    }
+   ],
+   "uskladenost": "sukob",
+   "otvoreni_uvjeti": [],
+   "metoda": null
+  }
+ ],
+ "ulazi": [
+  {
+   "id": "namjena",
+   "naziv": "Namjena (prostorni plan grada ili općine)",
+   "vrijednost": "NA2 · naselje",
+   "pouzdanost": "A",
+   "izvor": "PGŽ, sloj NAMJENA_POVRSINA_NOVO (SN 18/19)",
+   "razlog": null,
+   "korisnicki_odabir": false
+  },
+  {
+   "id": "namjena-udio",
+   "naziv": "Udio zona na čestici",
+   "vrijednost": "NA2 100 %, P3 0 %",
+   "pouzdanost": "B",
+   "izvor": "PGŽ i DGU",
+   "razlog": null,
+   "korisnicki_odabir": false
+  },
+  {
+   "id": "izgradenost",
+   "naziv": "Izgrađenost dijela građevinskog područja",
+   "vrijednost": "izgrađeno",
+   "pouzdanost": "A",
+   "izvor": "PGŽ, sloj NAMJENA_POVRSINA_NOVO",
+   "razlog": null,
+   "korisnicki_odabir": false
+  },
+  {
+   "id": "plan-UPU",
+   "naziv": "Važeći plan: Urbanistički plan uređenja",
+   "vrijednost": "Odluka o donošenju Urbanističkog plana uređenja UPU 2 - Kornić · SN 19/2016",
+   "pouzdanost": "A",
+   "izvor": "PGŽ, evidencija prostornih planova",
+   "razlog": null,
+   "korisnicki_odabir": false
+  },
+  {
+   "id": "plan-PPUO/G",
+   "naziv": "Važeći plan: Prostorni plan uređenja općine ili grada",
+   "vrijednost": "Pročišćeni tekst odredbi za provođenje i pročišćeni grafički dio Prostornog plana uređenja Grada Krka · SN 29/2020",
+   "pouzdanost": "A",
+   "izvor": "PGŽ, evidencija prostornih planova",
+   "razlog": null,
+   "korisnicki_odabir": false
+  },
+  {
+   "id": "plan-PPŽ",
+   "naziv": "Važeći plan: Prostorni plan Primorsko-goranske županije",
+   "vrijednost": "Odredbe za provođenje Prostornog plana Primorsko-goranske županije (pročišćeni tekst) · SN 12/2024",
+   "pouzdanost": "A",
+   "izvor": "PGŽ, evidencija prostornih planova",
+   "razlog": null,
+   "korisnicki_odabir": false
+  },
+  {
+   "id": "plan-izrada",
+   "naziv": "Planovi u izradi",
+   "vrijednost": "Prostorni plan Primorsko-goranske županije (Primorsko-goranska županija); Prostorni plan uređenja općine ili grada (Krk)",
+   "pouzdanost": "C",
+   "izvor": "PGŽ, evidencija prostornih planova",
+   "razlog": "uvjeti se mogu promijeniti",
+   "korisnicki_odabir": false
+  },
+  {
+   "id": "pov-graf",
+   "naziv": "Grafička površina",
+   "vrijednost": "405 m²",
+   "pouzdanost": "A",
+   "izvor": "granica čestice u katastarskom planu DGU",
+   "razlog": null,
+   "korisnicki_odabir": false
+  },
+  {
+   "id": "zona-korisnik",
+   "naziv": "Zona u UPU-u (tvoj odabir)",
+   "vrijednost": "M11",
+   "pouzdanost": "C",
+   "izvor": null,
+   "razlog": "tvoja pretpostavka",
+   "korisnicki_odabir": true
+  },
+  {
+   "id": "zast-korisnik",
+   "naziv": "Zona zaštite u UPU-u (tvoj odabir)",
+   "vrijednost": "zona »C« – ambijentalna zaštita (čl. 85.)",
+   "pouzdanost": "C",
+   "izvor": null,
+   "razlog": "tvoja pretpostavka",
+   "korisnicki_odabir": true
+  },
+  {
+   "id": "pravilo",
+   "naziv": "Pravila gradnje",
+   "vrijednost": "UPU 2 Kornić · Obiteljska kuća, čl. 38. i 39.",
+   "pouzdanost": "B",
+   "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje, Službene novine PGŽ 19/2016",
+   "razlog": "Pravna aktualnost nije neovisno potvrđena",
+   "korisnicki_odabir": false
+  }
+ ],
+ "baza_pravila": null,
+ "ogranicenja": [
+  "Nije službena lokacijska informacija",
+  "Nije dokaz prava na gradnju",
+  "Status »izvedeno« nije stručna potvrda primjene na česticu",
+  "Pravna valjanost se u aplikaciji ne utvrđuje"
+ ]
+}
