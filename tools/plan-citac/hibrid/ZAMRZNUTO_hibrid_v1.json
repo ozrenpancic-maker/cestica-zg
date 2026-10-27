@@ -1,0 +1,58 @@
+{
+ "naziv": "hibridni čitač v1 (eksperiment)",
+ "zamrznuto": "2026-10-27",
+ "datoteke": {
+  "hibrid/UPUTE_GENERATORA_v2.md": "808d9d5cfc6d66fb080883da85bf59d5aa385745332ba4b3a16eec23020b9c24",
+  "hibrid/PROMPT_GENERATORA_v2.txt": "cc055a0527df9a68821ec40968ef475df9dbefd3e216db15665e2e3032769e57",
+  "hibrid/SHEMA_KANDIDATA_v1.json": "4c92d6714cc4ba9f519202d4dd6fa7d8e51d69f9295b7110763d7fe3b965a8e6",
+  "hibrid/provjera.py": "350f11a6d7109ac1599a8e1bf3dcead2eb5edf80b6a5c7476bddea7ed0475309",
+  "hibrid/usporedba.py": "533bc065b81041d45ce99a236bc7dc8e05d64635df3cd238911441575277e25a",
+  "hibrid/mjeri.py": "bbee5af7b0230f54dd51906574defe36a90922944f13f8ed9da3749f8dfa92ad",
+  "hibrid/izvuci.py": "6ef5b5c315d8b2bd6af724cb975d77505188cf64f578247f98a31d92f76ccd14",
+  "hibrid/spoji.py": "c4022b8c6ad5c84a81696bd345bc5fa7cde4a3eca22768e69e83a37768a822db",
+  "hibrid/slijepi_hibrid.py": "f9a34db74355db4c695b0b2e4180e27f309b3fe6b79d477e5f5fadc2eb822ff0",
+  "hibrid/test_hibrid.py": "29f8335e1932a9ba5c1942e72404c238887eced0b56a5e3bee33d18635cdf6db",
+  "vrste_gradevina.py": "9c5abe3525b6fc813abd1cfe913b2e01b85350344b23ebeece4105da91e0c89f",
+  "gramatika.py": "8c39cea4b959c67c18252956ce38ab5e2ec8789de734bc3fd35fd88757ec4574",
+  "gramatika_v25.py": "a044762c0b07c0e058d340c73f4388d82b3b79135f2179233bcdeed6a8ccd73e",
+  "gramatika_v26.py": "bf066a4ea1550ae136170943cec76f209ed4e8f57e7a97492c2340cd31abd27c",
+  "izvor_v26.py": "52427e13544cc046bafee50a6e22c331b15965e52763d7af67eeda6f6b8aa95a",
+  "strukturiraj_v26.py": "9139ef00c159b763e2eb57a5243aa0523d7f5b1cc83a727ca1b8bd35629b782c",
+  "usporedi_v2.py": "90945101f1e8c11b67564250a66ab34cd8fc969e72d33d9245e3166a843ef6df",
+  "usporedi_v22.py": "4f34464bb4c61189d09b28bc2e74973f352f1fa99739a83808df6f7d76af3140",
+  "oznake/v1/mjeri_v26.py": "305715df0fff67f00a1ff596a33d58d1ab82febdd909ece0da8ccf7a9c352c09",
+  "ZAMRZNUTO_v2_6.json": "e4e4975b24b84c8cfbd228c69cfca49979bc088a388d2bd0f5e163627f3ac4e2",
+  "slijepi_v26.py": "5b4e44c4dedd572ba51fc017d460b811b8d25da09a7e4f1025d305b5444552e7",
+  "hibrid/IZVJESTAJ_hibrid_razvoj.md": "8ef7b23057a8485f82d19cbac1ab021acf3bcc752aced8a135ae177aef8c159c"
+ },
+ "generator": {
+  "model": "isti model kao razvojna sesija, izolirani pod-agent bez alata, bez plaćenih API-ja",
+  "upute": "UPUTE_GENERATORA_v2.md",
+  "predlozak_poziva": "PROMPT_GENERATORA_v2.txt",
+  "podjela": "cijeli članci, najviše 8 000 znakova teksta po pozivu (slijepi_hibrid.MAKS_ZNAKOVA)",
+  "pravilo_izolacije": "poziv mora biti točno predložak + tekst dijela (slijepi_hibrid.provjeri_poziv); izlaz s bilo kojim pozivom alata osim predaje rezultata ne koristi se i bilježi se kao odstupanje"
+ },
+ "razine": [
+  "IZDVOJEN",
+  "TEHNICKI_PROVJEREN_ZA_PREGLED",
+  "AUTOMATSKI_PRIHVACEN",
+  "ZA_PREGLED",
+  "ODBIJEN"
+ ],
+ "kriteriji_usporedbe": "hibrid/usporedba.py: strogo i semanticki, isti za v2.6 i hibrid; pogrešno prihvaćeno = automatski prihvaćen kandidat bez para u oznakama",
+ "pragovi": {
+  "pogresno_prihvacenih": 0,
+  "pokrivenost_JASNIH_min": 0.4,
+  "pogreske_medju_tehnicki_provjerenima_max": 0.02
+ },
+ "razvojni_skupovi": {
+  "ppug_krk": "7ce89e3da90a061bb396b16e980a430a0cdda35e96e639a3188b0808c849b05e",
+  "upu1_krk": "90f470e6c93582732ea2bb8a6527b5cd1552924be786875114cb49ab034362c7",
+  "nv": "c02b9a6d17aaf78b556e2946885d23dd15c45b366d02941163dd20aa5bbe2601",
+  "crikvenica": "234b2866de1a0d10857656009e91ca53b3d43aaf90c4f6853c834d8e0fef1de7"
+ },
+ "razvojno_mjerenje": {
+  "datoteka": "hibrid/razvoj/mjerenje_hibrid.json",
+  "sha256": "c13b56f06c8b2b3c6d1848aac637cbf34fa3fa95c213112e3dff53cb81037c2c"
+ }
+}

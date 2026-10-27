@@ -1,0 +1,2249 @@
+{
+ "generator": "Ručno izdvajanje iz čl. 39. i 50.; svaka vrijednost iz rečenica s dvije granice (h/2 i najmanje X m; (h1+h2)/2 i najmanje 6,0 m) je zaseban kandidat; prostorni obuhvat povijesnih cjelina upisan u zona bez planskih oznaka; uvjet 'uz građevine ... namjene' iz uvoda stavka upisan kod svih kandidata pomoćnih građevina.",
+ "kandidati": [
+  {
+   "clanak": 39,
+   "stavak": 1,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "da građevine budu oblikovanjem sukladne s izvornim urbanim i arhitektonskim obilježjima uz upotrebu postojanih materijala i boja",
+   "parametar": "drugo: arhitektonsko oblikovanje",
+   "operator": "opis",
+   "vrijednost": "sukladne s izvornim urbanim i arhitektonskim obilježjima uz upotrebu postojanih materijala i boja",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevina društvene i sportsko-rekreacijske namjene",
+    "izraz": "građevina društvene i sportsko-rekreacijske namjene",
+    "citat_izraza": "Uvjeti za arhitektonsko oblikovanje građevina društvene i sportsko-rekreacijske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "OBUHVAT: izraz obuhvaća dvije vrste građevina (društvene i sportsko-rekreacijske namjene)"
+  },
+  {
+   "clanak": 39,
+   "stavak": 1,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "krovište može biti ravno ili koso",
+   "parametar": "oblik krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "ravno ili koso",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevina društvene i sportsko-rekreacijske namjene",
+    "izraz": "građevina društvene i sportsko-rekreacijske namjene",
+    "citat_izraza": "Uvjeti za arhitektonsko oblikovanje građevina društvene i sportsko-rekreacijske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "OBUHVAT: izraz obuhvaća dvije vrste građevina (društvene i sportsko-rekreacijske namjene)"
+  },
+  {
+   "clanak": 39,
+   "stavak": 1,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "krovište može biti ravno ili koso nagiba između 17° i 23°, a kojeg predviđa usvojena tehnologija građenja pojedine građevine",
+   "parametar": "nagib krovnih ploha",
+   "operator": "izmedju",
+   "vrijednost": "17–23",
+   "jedinica": "°",
+   "vrsta_gradevine": {
+    "naziv": "građevina društvene i sportsko-rekreacijske namjene",
+    "izraz": "građevina društvene i sportsko-rekreacijske namjene",
+    "citat_izraza": "Uvjeti za arhitektonsko oblikovanje građevina društvene i sportsko-rekreacijske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "koso",
+     "citat": "koso nagiba između 17° i 23°",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: nije jasno odnosi li se »a kojeg predviđa usvojena tehnologija građenja pojedine građevine« na oblik krovišta ili može odstupiti od raspona nagiba; izraz obuhvaća i dvije vrste građevina"
+  },
+  {
+   "clanak": 39,
+   "stavak": 1,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "građevine društvene ili sportsko-rekreacijske namjene moraju biti udaljene najmanje pola visine (h/2) od granice građevinske čestice",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": "h/2",
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina društvene ili sportsko-rekreacijske namjene",
+    "izraz": "građevine društvene ili sportsko-rekreacijske namjene",
+    "citat_izraza": "građevine društvene ili sportsko-rekreacijske namjene moraju biti udaljene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "OBUHVAT: izraz obuhvaća dvije vrste građevina (društvene ili sportsko-rekreacijske namjene)"
+  },
+  {
+   "clanak": 39,
+   "stavak": 1,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "građevine društvene ili sportsko-rekreacijske namjene moraju biti udaljene najmanje pola visine (h/2) od granice građevinske čestice, ali ne manje od 4,0 metra",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina društvene ili sportsko-rekreacijske namjene",
+    "izraz": "građevine društvene ili sportsko-rekreacijske namjene",
+    "citat_izraza": "građevine društvene ili sportsko-rekreacijske namjene moraju biti udaljene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "OBUHVAT: izraz obuhvaća dvije vrste građevina (društvene ili sportsko-rekreacijske namjene)"
+  },
+  {
+   "clanak": 39,
+   "stavak": 1,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, građevine društvene ili sportsko-rekreacijske namjene moraju biti udaljene najmanje pola visine (h/2) od granice građevinske čestice",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": "h/2",
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina društvene ili sportsko-rekreacijske namjene",
+    "izraz": "građevine društvene ili sportsko-rekreacijske namjene",
+    "citat_izraza": "povijesnih graditeljskih cjelina, građevine društvene ili sportsko-rekreacijske namjene moraju biti udaljene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "OBUHVAT: izraz obuhvaća dvije vrste građevina (društvene ili sportsko-rekreacijske namjene)"
+  },
+  {
+   "clanak": 39,
+   "stavak": 1,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, građevine društvene ili sportsko-rekreacijske namjene moraju biti udaljene najmanje pola visine (h/2) od granice građevinske čestice, ali ne manje od 3,0 metra",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina društvene ili sportsko-rekreacijske namjene",
+    "izraz": "građevine društvene ili sportsko-rekreacijske namjene",
+    "citat_izraza": "povijesnih graditeljskih cjelina, građevine društvene ili sportsko-rekreacijske namjene moraju biti udaljene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "OBUHVAT: izraz obuhvaća dvije vrste građevina (društvene ili sportsko-rekreacijske namjene)"
+  },
+  {
+   "clanak": 39,
+   "stavak": 1,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "ukoliko se na jednoj građevnoj čestici smješta više građevina, najmanja međusobna udaljenost između građevina definira se (h1+h2)/2",
+   "parametar": "najmanja udaljenost između građevina na istoj čestici",
+   "operator": ">=",
+   "vrijednost": "(h1+h2)/2",
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina društvene i sportsko-rekreacijske namjene",
+    "izraz": "građevina društvene i sportsko-rekreacijske namjene",
+    "citat_izraza": "Uvjeti za arhitektonsko oblikovanje građevina društvene i sportsko-rekreacijske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko se na jednoj građevnoj čestici smješta više građevina",
+     "citat": "ukoliko se na jednoj građevnoj čestici smješta više građevina",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "OBUHVAT: subjekt odredbe je samo »građevina«; vrsta iz uvoda obuhvaća dvije vrste (društvene i sportsko-rekreacijske namjene)"
+  },
+  {
+   "clanak": 39,
+   "stavak": 1,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "ukoliko se na jednoj građevnoj čestici smješta više građevina, najmanja međusobna udaljenost između građevina definira se (h1+h2)/2 (h1 i h2 su visine susjednih građevina), ali ne manje od 6,0 m",
+   "parametar": "najmanja udaljenost između građevina na istoj čestici",
+   "operator": ">=",
+   "vrijednost": 6.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina društvene i sportsko-rekreacijske namjene",
+    "izraz": "građevina društvene i sportsko-rekreacijske namjene",
+    "citat_izraza": "Uvjeti za arhitektonsko oblikovanje građevina društvene i sportsko-rekreacijske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko se na jednoj građevnoj čestici smješta više građevina",
+     "citat": "ukoliko se na jednoj građevnoj čestici smješta više građevina",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "OBUHVAT: subjekt odredbe je samo »građevina«; vrsta iz uvoda obuhvaća dvije vrste (društvene i sportsko-rekreacijske namjene)"
+  },
+  {
+   "clanak": 39,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "najmanje 20% građevne čestice mora biti hortikulturno uređen temeljem krajobraznog projekta",
+   "parametar": "najmanji udio zelenila na građevnoj čestici",
+   "operator": ">=",
+   "vrijednost": 20,
+   "jedinica": "%",
+   "vrsta_gradevine": {
+    "naziv": "građevina društvene i sportsko-rekreacijske namjene",
+    "izraz": "građevina društvene i sportsko-rekreacijske namjene",
+    "citat_izraza": "Uvjeti za arhitektonsko oblikovanje građevina društvene i sportsko-rekreacijske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "OBUHVAT: izraz obuhvaća dvije vrste građevina (društvene i sportsko-rekreacijske namjene)"
+  },
+  {
+   "clanak": 39,
+   "stavak": 1,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "kod građenja građevina društvene ili sportsko-rekreacijske namjene potrebno je na građevnoj čestici osigurati potreban broj parkirališnih mjesta u skladu s točkom 5.1.1. ovih odredbi",
+   "parametar": "drugo: broj parkirališnih mjesta na građevnoj čestici",
+   "operator": "opis",
+   "vrijednost": "u skladu s točkom 5.1.1. ovih odredbi",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevina društvene ili sportsko-rekreacijske namjene",
+    "izraz": "građevina društvene ili sportsko-rekreacijske namjene",
+    "citat_izraza": "kod građenja građevina društvene ili sportsko-rekreacijske namjene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "UPUCIVANJE: broj parkirališnih mjesta određuje točka 5.1.1. odredbi, koja nije u danom tekstu"
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Pomoćne građevine grade se kao jednoetažne",
+   "parametar": "najveći broj etaža",
+   "operator": "=",
+   "vrijednost": 1,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": "visina osnovne građevine",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine i ne prelazi visinu od 4,0 metra",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "tlocrtna projekcija nije veća od 50 m 2",
+   "parametar": "najveća površina tlocrtne projekcije građevine",
+   "operator": "<=",
+   "vrijednost": 50,
+   "jedinica": "m²",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "krovišta mogu biti ravna ili kosa",
+   "parametar": "oblik krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "ravna ili kosa",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna",
+   "parametar": "vrsta kosog krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "jednostrešna, dvostrešna ili višestrešna",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "ako se grade kao kosa",
+     "citat": "ako se grade kao kosa",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23°",
+   "parametar": "nagib krovnih ploha",
+   "operator": "izmedju",
+   "vrijednost": "17–23",
+   "jedinica": "°",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "ako se grade kao kosa",
+     "citat": "ako se grade kao kosa",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "pokrov mora biti mediteran crijep ili kupa kanalica",
+   "parametar": "vrsta pokrova",
+   "operator": "=",
+   "vrijednost": "mediteran crijep ili kupa kanalica",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "ako se grade kao kosa",
+     "citat": "ako se grade kao kosa",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "mogu se graditi do granice građevne čestice",
+   "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+   "operator": "dopustenje",
+   "vrijednost": "do granice građevne čestice",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici",
+   "parametar": "drugo: odvajanje od susjedne građevine vatrobranim zidom",
+   "operator": "opis",
+   "vrijednost": "vatrobranim zidom",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "Ako se grade na granici građevne čestice",
+     "citat": "Ako se grade na granici građevne čestice",
+     "izvor": "odredba"
+    },
+    {
+     "tekst": "uz uvjet da nagib krova nije prema susjednoj građevnoj čestici",
+     "citat": "uz uvjet da nagib krova nije prema susjednoj građevnoj čestici",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: nije jasno je li »uz uvjet da nagib krova nije prema susjednoj građevnoj čestici« uvjet za vatrobrani zid ili za samu gradnju na granici čestice"
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "Ako imaju otvore prema susjednoj građevnoj čestici, moraju biti udaljene od te čestice najmanje 4,0 metra",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "Ako imaju otvore prema susjednoj građevnoj čestici",
+     "citat": "Ako imaju otvore prema susjednoj građevnoj čestici",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "najmanja dopuštena udaljenost od regulacijskog pravca iznosi 5,0 metara",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 5.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, mogu se graditi do granice građevne čestice",
+   "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+   "operator": "dopustenje",
+   "vrijednost": "do granice građevne čestice",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici",
+   "parametar": "drugo: odvajanje od susjedne građevine vatrobranim zidom",
+   "operator": "opis",
+   "vrijednost": "vatrobranim zidom",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "Ako se grade na granici građevne čestice",
+     "citat": "Ako se grade na granici građevne čestice",
+     "izvor": "odredba"
+    },
+    {
+     "tekst": "uz uvjet da nagib krova nije prema susjednoj građevnoj čestici",
+     "citat": "uz uvjet da nagib krova nije prema susjednoj građevnoj čestici",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "TUMACENJE: nije jasno je li »uz uvjet da nagib krova nije prema susjednoj građevnoj čestici« uvjet za vatrobrani zid ili za samu gradnju na granici čestice"
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Ako imaju otvore prema susjednoj građevnoj čestici, moraju biti udaljene od te čestice najmanje 3,0 metra",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "Ako imaju otvore prema susjednoj građevnoj čestici",
+     "citat": "Ako imaju otvore prema susjednoj građevnoj čestici",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 4,0 metara",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "na regulacijskom pravcu mogu se graditi samo garaže, kada je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "na regulacijskom pravcu",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "garaža",
+    "izraz": "garaže",
+    "citat_izraza": "na regulacijskom pravcu mogu se graditi samo garaže",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "kada je takav zahtjev uvjetovan konfiguracijom terena",
+     "citat": "kada je takav zahtjev uvjetovan konfiguracijom terena",
+     "izvor": "odredba"
+    },
+    {
+     "tekst": "kada je završna kota ravnog krova ista kao niveleta ulice",
+     "citat": "kada je završna kota ravnog krova ista kao niveleta ulice",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "VEZNIK: »odnosno« između uvjeta može značiti da moraju biti ispunjeni svi uvjeti ili bilo koji od njih"
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "odnosno max do visine ogradnog zida 1,1m kada to dozvoljavaju lokalni uvjeti",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 1.1,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "garaža",
+    "izraz": "garaže",
+    "citat_izraza": "na regulacijskom pravcu mogu se graditi samo garaže",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "na regulacijskom pravcu",
+     "citat": "na regulacijskom pravcu mogu se graditi samo garaže",
+     "izvor": "odredba"
+    },
+    {
+     "tekst": "kada to dozvoljavaju lokalni uvjeti",
+     "citat": "kada to dozvoljavaju lokalni uvjeti",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: nije jasno je li 1,1 m visina garaže, visina ogradnog zida ili kota krova u odnosu na ulicu, ni je li to alternativni uvjet (»odnosno«) za gradnju na regulacijskom pravcu; »lokalni uvjeti« nisu definirani"
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 8,
+   "citat": "postojeće pomoćne građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "u skladu s odredbama ovog Prostornog plana",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina (postojeća)",
+    "izraz": "postojeće pomoćne građevine",
+    "citat_izraza": "postojeće pomoćne građevine mogu se rekonsturirati i prenamjeniti",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "postojeća",
+   "citat_stanja": "postojeće pomoćne građevine",
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 39,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 8,
+   "citat": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom mogu se rekonstruirati samo u postojećim tlocrtnim i visinskim gabaritima",
+   "parametar": "gabariti pri rekonstrukciji",
+   "operator": "opis",
+   "vrijednost": "postojećim tlocrtnim i visinskim gabaritima",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina (postojeća)",
+    "izraz": "postojeće pomoćne građevine",
+    "citat_izraza": "postojeće pomoćne građevine mogu se rekonsturirati i prenamjeniti",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "postojeća",
+   "citat_stanja": "postojeće pomoćne građevine",
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "citat": "uz građevine društvene i sportsko-rekreacijske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom",
+     "citat": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 1,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Udaljenost građevine osnovne namjene od granice građevne čestice iznosi najmanje h/2",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": "h/2",
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina osnovne namjene",
+    "izraz": "građevine osnovne namjene",
+    "citat_izraza": "Udaljenost građevine osnovne namjene od granice građevne čestice",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "VRSTA_OPCENITA: subjekt je »građevina osnovne namjene« bez navedene vrste; kontekst članka (ugostiteljsko-turistička namjena) nije izričito vezan uz ovu odredbu"
+  },
+  {
+   "clanak": 50,
+   "stavak": 1,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Udaljenost građevine osnovne namjene od granice građevne čestice iznosi najmanje h/2, ali ne manje od 6,0 metara",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 6.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina osnovne namjene",
+    "izraz": "građevine osnovne namjene",
+    "citat_izraza": "Udaljenost građevine osnovne namjene od granice građevne čestice",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "VRSTA_OPCENITA: subjekt je »građevina osnovne namjene« bez navedene vrste; kontekst članka (ugostiteljsko-turistička namjena) nije izričito vezan uz ovu odredbu"
+  },
+  {
+   "clanak": 50,
+   "stavak": 1,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "pomoćne građevine ugostiteljsko-turističke namjene mogu se graditi kao prizemnice",
+   "parametar": "najveći broj etaža",
+   "operator": "opis",
+   "vrijednost": "prizemnice",
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina ugostiteljsko-turističke namjene",
+    "izraz": "pomoćne građevine ugostiteljsko-turističke namjene",
+    "citat_izraza": "pomoćne građevine ugostiteljsko-turističke namjene mogu se graditi kao prizemnice",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "VEZNIK: »kao prizemnice i na granici građevne čestice« može značiti da je prizemnica obvezna općenito ili samo kad se gradi na granici čestice"
+  },
+  {
+   "clanak": 50,
+   "stavak": 1,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "pomoćne građevine ugostiteljsko-turističke namjene mogu se graditi kao prizemnice i na granici građevne čestice, uz uvjet da se na pročelju koja se nalazi na manjoj udaljenosti od 4,0 metra od granice čestice ne dozvoljava izgradnja otvora",
+   "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+   "operator": "dopustenje",
+   "vrijednost": "na granici građevne čestice",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina ugostiteljsko-turističke namjene",
+    "izraz": "pomoćne građevine ugostiteljsko-turističke namjene",
+    "citat_izraza": "pomoćne građevine ugostiteljsko-turističke namjene mogu se graditi kao prizemnice",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz uvjet da se na pročelju koja se nalazi na manjoj udaljenosti od 4,0 metra od granice čestice ne dozvoljava izgradnja otvora",
+     "citat": "uz uvjet da se na pročelju koja se nalazi na manjoj udaljenosti od 4,0 metra od granice čestice ne dozvoljava izgradnja otvora",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 1,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "na pročelju koja se nalazi na manjoj udaljenosti od 4,0 metra od granice čestice ne dozvoljava izgradnja otvora",
+   "parametar": "drugo: zabrana otvora na pročelju bližem granici čestice od propisane udaljenosti",
+   "operator": "zabrana",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina ugostiteljsko-turističke namjene",
+    "izraz": "pomoćne građevine ugostiteljsko-turističke namjene",
+    "citat_izraza": "pomoćne građevine ugostiteljsko-turističke namjene mogu se graditi kao prizemnice",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "NEGATIVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": "1a",
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, udaljenost građevine osnovne namjene od granice građevne čestice iznosi najmanje h/2",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": "h/2",
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina osnovne namjene",
+    "izraz": "građevine osnovne namjene",
+    "citat_izraza": "udaljenost građevine osnovne namjene od granice građevne čestice",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "VRSTA_OPCENITA: subjekt je »građevina osnovne namjene« bez navedene vrste"
+  },
+  {
+   "clanak": 50,
+   "stavak": "1a",
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "udaljenost građevine osnovne namjene od granice građevne čestice iznosi najmanje h/2, ali ne manje od 5,0 metara",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 5.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina osnovne namjene",
+    "izraz": "građevine osnovne namjene",
+    "citat_izraza": "udaljenost građevine osnovne namjene od granice građevne čestice",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "VRSTA_OPCENITA: subjekt je »građevina osnovne namjene« bez navedene vrste"
+  },
+  {
+   "clanak": 50,
+   "stavak": "1a",
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "pomoćne građevine ugostiteljsko-turističke namjene mogu se graditi kao prizemnice i na granici građevne čestice, uz uvjet da se na pročelju koja se nalazi na manjoj udaljenosti od 3,0 metra od granice čestice ne dozvoljava izgradnja otvora",
+   "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+   "operator": "dopustenje",
+   "vrijednost": "na granici građevne čestice",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina ugostiteljsko-turističke namjene",
+    "izraz": "pomoćne građevine ugostiteljsko-turističke namjene",
+    "citat_izraza": "pomoćne građevine ugostiteljsko-turističke namjene mogu se graditi kao prizemnice",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz uvjet da se na pročelju koja se nalazi na manjoj udaljenosti od 3,0 metra od granice čestice ne dozvoljava izgradnja otvora",
+     "citat": "uz uvjet da se na pročelju koja se nalazi na manjoj udaljenosti od 3,0 metra od granice čestice ne dozvoljava izgradnja otvora",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": "1a",
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "na pročelju koja se nalazi na manjoj udaljenosti od 3,0 metra od granice čestice ne dozvoljava izgradnja otvora",
+   "parametar": "drugo: zabrana otvora na pročelju bližem granici čestice od propisane udaljenosti",
+   "operator": "zabrana",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina ugostiteljsko-turističke namjene",
+    "izraz": "pomoćne građevine ugostiteljsko-turističke namjene",
+    "citat_izraza": "pomoćne građevine ugostiteljsko-turističke namjene mogu se graditi kao prizemnice",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 2,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Građevna čestica građevine ugostiteljsko-turističke namjene (odnosi se isključivo na hotele, hotele baštinu i pansione) mora se nalaziti uz prometnu površinu širine najmanje 5,5 metara za dvosmjerne",
+   "parametar": "drugo: najmanja širina prometne površine uz građevnu česticu",
+   "operator": ">=",
+   "vrijednost": 5.5,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina ugostiteljsko-turističke namjene (hotel, hotel baština, pansion)",
+    "izraz": "građevine ugostiteljsko-turističke namjene (odnosi se isključivo na hotele, hotele baštinu i pansione)",
+    "citat_izraza": "Građevna čestica građevine ugostiteljsko-turističke namjene (odnosi se isključivo na hotele, hotele baštinu i pansione)",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "za dvosmjerne",
+     "citat": "za dvosmjerne",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "osim u zaštićenim povijesnim cjelinama",
+     "citat": "osim u zaštićenim povijesnim cjelinama"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 2,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Građevna čestica građevine ugostiteljsko-turističke namjene (odnosi se isključivo na hotele, hotele baštinu i pansione) mora se nalaziti uz prometnu površinu širine najmanje 5,5 metara za dvosmjerne i 4,5 m za jednosmjerne",
+   "parametar": "drugo: najmanja širina prometne površine uz građevnu česticu",
+   "operator": ">=",
+   "vrijednost": 4.5,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina ugostiteljsko-turističke namjene (hotel, hotel baština, pansion)",
+    "izraz": "građevine ugostiteljsko-turističke namjene (odnosi se isključivo na hotele, hotele baštinu i pansione)",
+    "citat_izraza": "Građevna čestica građevine ugostiteljsko-turističke namjene (odnosi se isključivo na hotele, hotele baštinu i pansione)",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "za jednosmjerne",
+     "citat": "za jednosmjerne",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "osim u zaštićenim povijesnim cjelinama",
+     "citat": "osim u zaštićenim povijesnim cjelinama"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 3,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Najmanja udaljenost između građevina na istoj građevnoj čestici definira se (h1+h2)/2",
+   "parametar": "najmanja udaljenost između građevina na istoj čestici",
+   "operator": ">=",
+   "vrijednost": "(h1+h2)/2",
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina",
+    "izraz": "građevina",
+    "citat_izraza": "Najmanja udaljenost između građevina na istoj građevnoj čestici",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "VRSTA_OPCENITA: subjekt je samo »građevine«"
+  },
+  {
+   "clanak": 50,
+   "stavak": 3,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Najmanja udaljenost između građevina na istoj građevnoj čestici definira se (h1+h2)/2 (h1 i h2 su visine susjednih građevina), ali ne manje od 6,0 m",
+   "parametar": "najmanja udaljenost između građevina na istoj čestici",
+   "operator": ">=",
+   "vrijednost": 6.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina",
+    "izraz": "građevina",
+    "citat_izraza": "Najmanja udaljenost između građevina na istoj građevnoj čestici",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "VRSTA_OPCENITA: subjekt je samo »građevine«"
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Pomoćne građevine grade se kao jednoetažne",
+   "parametar": "najveći broj etaža",
+   "operator": "=",
+   "vrijednost": 1,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": "visina osnovne građevine",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena nije viša od visine osnovne građevine i ne prelazi visinu od 4,0 metra",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "tlocrtna projekcija nije veća od 50 m 2",
+   "parametar": "najveća površina tlocrtne projekcije građevine",
+   "operator": "<=",
+   "vrijednost": 50,
+   "jedinica": "m²",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "krovišta mogu biti ravna ili kosa",
+   "parametar": "oblik krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "ravna ili kosa",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna",
+   "parametar": "vrsta kosog krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "jednostrešna, dvostrešna ili višestrešna",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "ako se grade kao kosa",
+     "citat": "ako se grade kao kosa",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna i moraju biti s nagibom krovnih ploha između 17° i 23°",
+   "parametar": "nagib krovnih ploha",
+   "operator": "izmedju",
+   "vrijednost": "17–23",
+   "jedinica": "°",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "ako se grade kao kosa",
+     "citat": "ako se grade kao kosa",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "pokrov mora biti mediteran crijep ili kupa kanalica",
+   "parametar": "vrsta pokrova",
+   "operator": "=",
+   "vrijednost": "mediteran crijep ili kupa kanalica",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "ako se grade kao kosa",
+     "citat": "ako se grade kao kosa",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "mogu se graditi do granice građevne čestice",
+   "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+   "operator": "dopustenje",
+   "vrijednost": "do granice građevne čestice",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici",
+   "parametar": "drugo: odvajanje od susjedne građevine vatrobranim zidom",
+   "operator": "opis",
+   "vrijednost": "vatrobranim zidom",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "Ako se grade na granici građevne čestice",
+     "citat": "Ako se grade na granici građevne čestice",
+     "izvor": "odredba"
+    },
+    {
+     "tekst": "uz uvjet da nagib krova nije prema susjednoj građevnoj čestici",
+     "citat": "uz uvjet da nagib krova nije prema susjednoj građevnoj čestici",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: nije jasno je li »uz uvjet da nagib krova nije prema susjednoj građevnoj čestici« uvjet za vatrobrani zid ili za samu gradnju na granici čestice"
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "Ako imaju otvore prema susjednoj građevnoj čestici, moraju biti udaljene od te čestice najmanje 4,0 metra",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "Ako imaju otvore prema susjednoj građevnoj čestici",
+     "citat": "Ako imaju otvore prema susjednoj građevnoj čestici",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "najmanja dopuštena udaljenost od regulacijskog pravca iznosi 5,0 metara",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 5.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina, mogu se graditi do granice građevne čestice",
+   "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+   "operator": "dopustenje",
+   "vrijednost": "do granice građevne čestice",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Ako se grade na granici građevne čestice, moraju od susjedne građevine biti odijeljene vatrobranim zidom, uz uvjet da nagib krova nije prema susjednoj građevnoj čestici",
+   "parametar": "drugo: odvajanje od susjedne građevine vatrobranim zidom",
+   "operator": "opis",
+   "vrijednost": "vatrobranim zidom",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "Ako se grade na granici građevne čestice",
+     "citat": "Ako se grade na granici građevne čestice",
+     "izvor": "odredba"
+    },
+    {
+     "tekst": "uz uvjet da nagib krova nije prema susjednoj građevnoj čestici",
+     "citat": "uz uvjet da nagib krova nije prema susjednoj građevnoj čestici",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "TUMACENJE: nije jasno je li »uz uvjet da nagib krova nije prema susjednoj građevnoj čestici« uvjet za vatrobrani zid ili za samu gradnju na granici čestice"
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Ako imaju otvore prema susjednoj građevnoj čestici, moraju biti udaljene od te čestice najmanje 3,0 metra",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "Ako imaju otvore prema susjednoj građevnoj čestici",
+     "citat": "Ako imaju otvore prema susjednoj građevnoj čestici",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "Najmanja dopuštena udaljenost od regulacijskog pravca iznosi 4,0 metra",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina",
+    "izraz": "Pomoćne građevine",
+    "citat_izraza": "Pomoćne građevine grade se kao jednoetažne uz građevine gospodarske namjene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "Iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "na regulacijskom pravcu mogu se graditi samo garaže, kada je takav zahtjev uvjetovan konfiguracijom terena, odnosno kada je završna kota ravnog krova ista kao niveleta ulice",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "na regulacijskom pravcu",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "garaža",
+    "izraz": "garaže",
+    "citat_izraza": "na regulacijskom pravcu mogu se graditi samo garaže",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "kada je takav zahtjev uvjetovan konfiguracijom terena",
+     "citat": "kada je takav zahtjev uvjetovan konfiguracijom terena",
+     "izvor": "odredba"
+    },
+    {
+     "tekst": "kada je završna kota ravnog krova ista kao niveleta ulice",
+     "citat": "kada je završna kota ravnog krova ista kao niveleta ulice",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "VEZNIK: »odnosno« između uvjeta može značiti da moraju biti ispunjeni svi uvjeti ili bilo koji od njih"
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "odnosno max do visine ogradnog zida 1,1m kada to dozvoljavaju lokalni uvjeti",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 1.1,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "garaža",
+    "izraz": "garaže",
+    "citat_izraza": "na regulacijskom pravcu mogu se graditi samo garaže",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "na regulacijskom pravcu",
+     "citat": "na regulacijskom pravcu mogu se graditi samo garaže",
+     "izvor": "odredba"
+    },
+    {
+     "tekst": "kada to dozvoljavaju lokalni uvjeti",
+     "citat": "kada to dozvoljavaju lokalni uvjeti",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: nije jasno je li 1,1 m visina garaže, visina ogradnog zida ili kota krova u odnosu na ulicu, ni je li to alternativni uvjet (»odnosno«) za gradnju na regulacijskom pravcu; »lokalni uvjeti« nisu definirani"
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 8,
+   "citat": "postojeće pomoćne građevine mogu se rekonsturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "u skladu s odredbama ovog Prostornog plana",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina (postojeća)",
+    "izraz": "postojeće pomoćne građevine",
+    "citat_izraza": "postojeće pomoćne građevine mogu se rekonsturirati i prenamjeniti",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "postojeća",
+   "citat_stanja": "postojeće pomoćne građevine",
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 50,
+   "stavak": 4,
+   "tocka": "-",
+   "alineja_rb": 8,
+   "citat": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom mogu se rekonstruirati samo u postojećim tlocrtnim i visinskim gabaritima",
+   "parametar": "gabariti pri rekonstrukciji",
+   "operator": "opis",
+   "vrijednost": "postojećim tlocrtnim i visinskim gabaritima",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "pomoćna građevina (postojeća)",
+    "izraz": "postojeće pomoćne građevine",
+    "citat_izraza": "postojeće pomoćne građevine mogu se rekonsturirati i prenamjeniti",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "postojeća",
+   "citat_stanja": "postojeće pomoćne građevine",
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz građevine gospodarske namjene",
+     "citat": "uz građevine gospodarske namjene",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom",
+     "citat": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  }
+ ],
+ "metapodaci": {
+  "skup": "ppug_krk",
+  "pozvani_alati": [
+   "SubagentHandback"
+  ],
+  "tokena": 107697,
+  "trajanje_ms": 277620,
+  "generator": "izolirani agent u razvojnoj sesiji, bez alata za čitanje; samo upute generatora v1 i tekst",
+  "upute": "hibrid/UPUTE_GENERATORA_v1.md"
+ }
+}

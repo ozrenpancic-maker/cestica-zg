@@ -1,0 +1,40 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "Izlaz AI generatora kandidata (hibridni čitač v1, upute v2)",
+ "type": "object",
+ "required": ["kandidati"],
+ "properties": {
+  "generator": {"type": "string"},
+  "kandidati": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": ["clanak", "stavak", "tocka", "citat", "parametar", "operator", "vrijednost", "jedinica", "vrsta_gradevine", "zona", "uvjeti", "iznimke", "vrsta_pravila", "nejasno"],
+    "properties": {
+     "clanak": {"type": "integer"},
+     "stavak": {"type": ["integer", "string", "null"]},
+     "tocka": {"type": ["string", "null"]},
+     "alineja_rb": {"type": ["integer", "null"]},
+     "citat": {"type": "string", "minLength": 1},
+     "parametar": {"type": "string"},
+     "operator": {"enum": ["=", "<=", ">=", "izmedju", "dopustenje", "zabrana", "opis", "nije_propisano"]},
+     "vrijednost": {"type": ["number", "string", "null"]},
+     "jedinica": {"enum": ["m", "m²", "°", "%", "koeficijent", "opis", null]},
+     "vrsta_gradevine": {"type": "object", "required": ["naziv", "izraz", "citat_izraza", "izvor"],
+      "properties": {"naziv": {"type": "string"}, "izraz": {"type": "string"}, "citat_izraza": {"type": "string"},
+                     "izvor": {"enum": ["odredba", "uvod_stavka", "uvod_clanka", "naslov"]}}},
+     "nacin_gradnje": {"enum": ["slobodnostojeća", "dvojna", "ugrađena", null]},
+     "citat_nacina": {"type": ["string", "null"]},
+     "stanje": {"enum": ["nova", "postojeća", null]},
+     "citat_stanja": {"type": ["string", "null"]},
+     "zona": {"type": "object", "properties": {"oznake": {"type": "array", "items": {"type": "string"}}, "citat": {"type": ["string", "null"]}}},
+     "uvjeti": {"type": "array", "items": {"type": "object", "required": ["tekst", "citat", "izvor"],
+      "properties": {"tekst": {"type": "string"}, "citat": {"type": "string"}, "izvor": {"enum": ["odredba", "uvod"]}}}},
+     "iznimke": {"type": "array", "items": {"type": "object", "required": ["tekst", "citat"]}},
+     "vrsta_pravila": {"enum": ["OSNOVNO", "IZNIMKA", "UVJETNO", "NEGATIVNO"]},
+     "nejasno": {"type": ["string", "null"]}
+    }
+   }
+  }
+ }
+}
