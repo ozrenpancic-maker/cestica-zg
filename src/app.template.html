@@ -94,6 +94,9 @@ body.net-busy #netbar{opacity:1}
   #lyrBtn{display:block;min-height:44px;background:var(--panel);box-shadow:0 1px 6px rgba(0,0,0,.15)}
   #lyrList{display:none;margin-top:6px}
   .layers.open #lyrList{display:flex}
+  /* otvoren izbornik slojeva je iznad donjeg panela (z-index panela 1001), a visinom staje do donje navigacije: svi prekidači dostupni dodirom i uz panel na pola zaslona */
+  .layers.open{z-index:1002}
+  .layers.open #lyrList{max-height:var(--lyrMax,60vh);overflow-y:auto;overscroll-behavior:contain;padding-bottom:2px}
   .layers label{min-height:40px;font-size:14px}
   .layers input{width:20px;height:20px}
   .ib{min-height:44px}
@@ -1410,7 +1413,7 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
     const ck=krkCitKey(RS,"krov"), cz=krkCitKey(RS,"zastitaC_krov");
     const kK=ck?{karika:"članak",vrijednost:"čl. "+ck.clanak+" "+ck.t,citat:ck.x,citatVrsta:"doslovni navod (provjeren prema "+(I.sn||"objavi")+")",raz:pzR.raz,izvor:I.naziv,uskladenost:"sukob"}:{karika:"članak",vrijednost:"čl. "+K.clanak,citat:K.txt||null,citatVrsta:"sažetak iz aplikacije, nije doslovni navod",raz:pzR.raz,izvor:I.naziv,uskladenost:"sukob"};
     const kZ=cz?{karika:"članak",vrijednost:"čl. "+cz.clanak+" "+cz.t,citat:cz.x,citatVrsta:"doslovni navod (provjeren prema "+(I.sn||"objavi")+")",raz:pzR.raz,izvor:I.naziv,uskladenost:"sukob"}:{karika:"članak",vrijednost:"čl. "+String(C.clanak).replace(/\.$/,"")+".",citat:null,raz:"C",razlog:"doslovni navod o nagibu krova nije pronađen u podacima aplikacije; tvrdnja nije potvrđena",izvor:I.naziv,uskladenost:"sukob"};
-    piBlok("blok-krov","Nagib krova","dva pravila istog plana za istu građevinu propisuju različito: čl. "+K.clanak+" dopušta ravni krov ili kosi "+K.nagibMin+"°–"+K.nagibMax+"°, a čl. "+String(C.clanak).replace(/\.$/,"")+" st. 2. za zonu »C« traži kosi krov oko "+C.krovNagib+"°. Plan nema izričito pravilo o prednosti; simulator primjenjuje režim zone »C«, ali to nije utvrđeno",
+    piBlok("blok-krov","Nagib krova","dva pravila istog plana za istu građevinu propisuju različito: čl. "+K.clanak+" dopušta ravni krov ili kosi "+K.nagibMin+"°–"+K.nagibMax+"°, a čl. "+String(C.clanak).replace(/\.$/,"")+" st. 2. za zonu »C« traži kosi krov oko "+C.krovNagib+"°. Plan nema izričito pravilo o prednosti; simulator oba pravila prikazuje samo informativno, bez potvrde dopuštenog nagiba",
       [...piL,kK,kZ]);}}
   if(env) L.geoJSON(env.geom,{style:{color:"#1f6f54",weight:2,dashArray:"4 3",fillColor:"#1f6f54",fillOpacity:.25},interactive:false}).addTo(krkEnvLayer);
   {const zab=RS.grupa&&RS.grupa.zabranjeno||[], rows=[], ON={slob:"slobodnostojeća",dvoj:"dvojna",ugr:"ugrađena"};
@@ -3120,8 +3123,9 @@ function tChecks(){
     if(LM.visMax) add("Visina (procjena)",`oko ${String(height.toFixed(1)).replace(".",",")} m od najviše ${String(LM.visMax).replace(".",",")} m`,height<=LM.visMax+1e-9?"ok":"no",`${hTxt}; visina se mjeri od najniže kote zaravnatog terena uz građevinu (${LM.clanak}), pa ovisi o terenu`);
     else add("Visina do vijenca (procjena)",`oko ${String(height.toFixed(1)).replace(".",",")} m`,"info",hTxt);
     if(kr||zC){ const ravni=TL.krov==="ravni", n=ravni?0:TL.nagib;
-      if(zC&&zC.krovKosi&&ravni) add("Krov (zona »C«)","ravni krov","no",`čl. ${zC.clanak}: građevine moraju imati kosi krov (oko ${zC.krovNagib}°)`);
-      else if(zC&&!ravni) add("Krov (zona »C«)",`kosi, nagib ${deg(n)}`,"warn",`plan traži dva različita nagiba: čl. ${zC.clanak} „oko ${zC.krovNagib}°” za zonu »C«, a čl. ${kr?kr.clanak:"38."} ${kr?kr.nagibMin+"°–"+kr.nagibMax+"°":""}. Nagib određuju posebni konzervatorski uvjeti`);
+      // odnos čl. 38. d) i čl. 85. st. 2. nije razriješen (docs/plan-integrity/cl38-cl85.md): ni ravni krov ni »oko 30°« nisu potvrđeno (ne)dopušteni; samo informativno upozorenje
+      if(zC&&zC.krovKosi&&ravni) add("Krov (zona »C«)","ravni krov","warn",`odnos odredbi nije razriješen: čl. ${kr?kr.clanak:"38. d)"} dopušta ravni krov, a čl. ${zC.clanak} za zonu »C« traži kosi krov (oko ${zC.krovNagib}°). Nije utvrđeno koje pravilo vrijedi; odlučuju posebni konzervatorski uvjeti i lokacijska informacija`);
+      else if(zC&&!ravni) add("Krov (zona »C«)",`kosi, nagib ${deg(n)}`,"warn",`plan traži dva različita nagiba: čl. ${zC.clanak} „oko ${zC.krovNagib}°” za zonu »C«, a čl. ${kr?kr.clanak:"38."} ${kr?kr.nagibMin+"°–"+kr.nagibMax+"°":""}. Odnos odredbi nije razriješen, pa nijedan nagib nije potvrđen kao dopušten; nagib određuju posebni konzervatorski uvjeti`);
       else if(kr&&ravni) add("Krov","ravni krov",kr.ravniDopusten?"ok":"no",`čl. ${kr.clanak}: ${kr.ravniDopusten?"krov može biti ravan ili kos":"ravni krov nije predviđen"}`);
       else if(kr) add("Krov",`kosi, nagib ${deg(n)} (dopušteno ${kr.nagibMin}°–${kr.nagibMax}°)`,n>=kr.nagibMin-1e-9&&n<=kr.nagibMax+1e-9?"ok":"no",`čl. ${kr.clanak}; pokrov mediteran crijep ili kupa kanalica`); }
     if(LM.zast){ if(!zv) add("Zona zaštite baštine",`nije odabrana (karta ${LM.zast.karta})`,"warn","u zoni »C« vrijede stroži uvjeti (najviše 2 nadzemne etaže, kosi krov), a u zoni »B« nova gradnja samo prema konzervatorskim uvjetima");
@@ -3481,7 +3485,7 @@ function simHtml(pp,A,area,gbpMax,RP,lim){
   h+=`<label for="tRot">Okret</label><span>${stp("tRot",5)}<input id="tRot" type="number" inputmode="decimal" min="0" max="359" step="1" value="${TL.rot}">${stu("tRot",5)} °<output id="tRotV" hidden>${TL.rot}°</output></span>`;
   h+=`<label for="tKrov">Krov</label><select id="tKrov" class="bsel">${KROVOVI.map(k=>`<option value="${k[0]}"${k[0]===TL.krov?" selected":""}>${k[1]}</option>`).join("")}</select>`;
   const kr=lim&&lim.krov, zC=lim&&lim.zast&&lim.zast.cfg&&lim.zast.v==="C"?lim.zast.cfg:null;
-  h+=`<label for="tNagib">Nagib krova</label><span><input id="tNagib" type="number" inputmode="decimal" min="0" max="60" step="1" value="${TL.krov==="ravni"?0:TL.nagib}"${TL.krov==="ravni"?" disabled":""}> °${kr?` <small class="meta">plan: ${kr.ravniDopusten&&!zC?"ravni ili ":""}${kr.nagibMin}°–${kr.nagibMax}° (čl. ${esc(kr.clanak)})${zC?`; zona »C«: kosi, oko ${zC.krovNagib}° (čl. ${esc(zC.clanak)})`:""}</small>`:""}</span>`;
+  h+=`<label for="tNagib">Nagib krova</label><span><input id="tNagib" type="number" inputmode="decimal" min="0" max="60" step="1" value="${TL.krov==="ravni"?0:TL.nagib}"${TL.krov==="ravni"?" disabled":""}> °${kr?` <small class="meta">plan: ${kr.ravniDopusten?"ravni ili ":""}${kr.nagibMin}°–${kr.nagibMax}° (čl. ${esc(kr.clanak)})${zC?`; zona »C«: kosi, oko ${zC.krovNagib}° (čl. ${esc(zC.clanak)}). Odnos odredbi nije razriješen; scenarij je informativan, nijedan nagib nije potvrđen kao dopušten`:""}</small>`:""}</span>`;
   h+=`<label for="tSlj">Sljeme</label><select id="tSlj" class="bsel"${TL.krov!=="dvo"?" disabled":""}><option value="duz"${TL.sljeme==="duz"?" selected":""}>uzduž dulje strane</option><option value="pop"${TL.sljeme==="pop"?" selected":""}>uzduž kraće strane</option></select>`;
   h+=`<label for="tPod">Podrum</label><span><input type="checkbox" id="tPod"${TL.podrum?" checked":""}> ispod cijele kuće</span>`;
   h+=`<label for="tGar">Garaža</label><span><input type="checkbox" id="tGar"${TL.gar?" checked":""}> prizemna, uz desni bok kuće</span>`;
@@ -8196,7 +8200,12 @@ function cardsUpdate(){
 }
 sheet.addEventListener("click",e=>{const b=e.target.closest(".card[data-go]"); if(b) setTab(b.dataset.tab,{scrollTo:b.dataset.go});});
 // slojevi: gumb na karti otvara popis bez zatvaranja karte
-document.getElementById("lyrBtn").addEventListener("click",e=>{const l=document.getElementById("layers"), o=l.classList.toggle("open"); e.currentTarget.setAttribute("aria-expanded",o);});
+// visina otvorenog izbornika slojeva: od vrha popisa do donje navigacije (ili dna zaslona), da ništa ne ostane izvan dosega
+function lyrFit(){const l=document.getElementById("layers"), L=document.getElementById("lyrList"); if(!l||!L||!l.classList.contains("open")) return;
+  const tabs=document.getElementById("tabs"), tb=tabs&&tabs.offsetParent?tabs.getBoundingClientRect().top:window.innerHeight, top=L.getBoundingClientRect().top;
+  l.style.setProperty("--lyrMax",Math.max(120,Math.floor(tb-top-8))+"px");}
+document.getElementById("lyrBtn").addEventListener("click",e=>{const l=document.getElementById("layers"), o=l.classList.toggle("open"); e.currentTarget.setAttribute("aria-expanded",o); if(o) lyrFit();});
+window.addEventListener("resize",()=>lyrFit());
 document.getElementById("lyrInf").addEventListener("change",e=>{ e.target.checked?infLayer.addTo(map):map.removeLayer(infLayer); });
 document.getElementById("lyrSki").addEventListener("change",e=>{ e.target.checked?skiLayer.addTo(map):map.removeLayer(skiLayer); });
 document.getElementById("lyrSun").addEventListener("change",e=>{ SUN.on=e.target.checked; const c=document.getElementById("sunOn"); if(c) c.checked=SUN.on; if(SUN.on&&curData()&&curData().parcel){sunEnsureNb();} sunDraw(); });
