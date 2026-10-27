@@ -1,0 +1,1637 @@
+{
+ "generator": "Ručno izdvajanje iz teksta, bez alata. Numerirani blokovi 1.-5. nisu točke; alineje (»-«) označene tocka \"-\" i numerirane unutar bloka jer članci nemaju stavaka. Svaka vrijednost uz »odnosno« i »ali ne manje od« je zaseban kandidat. Čl. 9 nema imenovanu vrstu građevine (samo zona T2-5 i turističko naselje), pa je označen VRSTA_OPCENITA. Tekstovi o krovištu koji se samo »definira prema...«, površina »oko 9000 m 2« i preporuka za studiju nisu uzeti kao kandidati.",
+ "kandidati": [
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "cijela zona T2-5 predstavlja jednu jedinstvenu građevnu česticu",
+   "parametar": "drugo: oblik i veličina građevne čestice",
+   "operator": "opis",
+   "vrijednost": "cijela zona T2-5 predstavlja jednu jedinstvenu građevnu česticu",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "turističko naselje",
+    "izraz": "turističko naselje",
+    "citat_izraza": "Bilo koja građevina u građevnom sklopu koji čini turističko naselje",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "najveći koeficijent izgrađenosti građevne čestice (k ig ) iznosi 0,25",
+   "parametar": "najveći koeficijent izgrađenosti (kig)",
+   "operator": "<=",
+   "vrijednost": 0.25,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "građevina",
+    "izraz": "građevine",
+    "citat_izraza": "Veličina i građevna (bruto) površina građevine",
+    "izvor": "naslov"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "VRSTA_OPCENITA: subjekt je samo »građevine«; članak se odnosi na turističko naselje Travičići u zoni T2-5 bez navedene vrste građevine"
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "najveći koeficijent iskorištenosti građevne čestice (k is ) iznosi 0,75",
+   "parametar": "najveći koeficijent iskoristivosti (kis) (uz podrum ili ukupni)",
+   "operator": "<=",
+   "vrijednost": 0.75,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "građevina",
+    "izraz": "građevine",
+    "citat_izraza": "Veličina i građevna (bruto) površina građevine",
+    "izvor": "naslov"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "VRSTA_OPCENITA: subjekt je samo »građevine«; nije navedeno odnosi li se kis na nadzemne ili sve etaže"
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "Najveća ukupna GBP turističkog naselja Travičići (svih sadržaja) iznosi 7.000 m 2",
+   "parametar": "drugo: najveća ukupna GBP",
+   "operator": "<=",
+   "vrijednost": 7000,
+   "jedinica": "m²",
+   "vrsta_gradevine": {
+    "naziv": "turističko naselje",
+    "izraz": "turističkog naselja Travičići",
+    "citat_izraza": "Najveća ukupna GBP turističkog naselja Travičići (svih sadržaja)",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "40% površine treba urediti kao prostor javnog parka i zelenila",
+   "parametar": "najmanji udio zelenila na građevnoj čestici",
+   "operator": "=",
+   "vrijednost": 40,
+   "jedinica": "%",
+   "vrsta_gradevine": {
+    "naziv": "građevina",
+    "izraz": "građevine",
+    "citat_izraza": "Veličina i građevna (bruto) površina građevine",
+    "izvor": "naslov"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "TUMACENJE: odredba ne kaže »najmanje« (operator = ili >=), a »javni park« nije isto što i zelenilo iz bloka 5"
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "najviša visina građevine iznosi 9 m do kote vijenca odnosno 11m do sljemena",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 9,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina",
+    "izraz": "građevine",
+    "citat_izraza": "najviša visina građevine",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "VRSTA_OPCENITA: subjekt je samo »građevine«"
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "najviša visina građevine iznosi 9 m do kote vijenca odnosno 11m do sljemena",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 11,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina",
+    "izraz": "građevine",
+    "citat_izraza": "najviša visina građevine",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "VRSTA_OPCENITA: subjekt je samo »građevine«"
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "kapacitet turističkog naselja Travičići iznosi do 150 ležajeva",
+   "parametar": "drugo: najveći kapacitet (broj ležajeva)",
+   "operator": "<=",
+   "vrijednost": 150,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "turističko naselje",
+    "izraz": "turističkog naselja Travičići",
+    "citat_izraza": "kapacitet turističkog naselja Travičići",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "kapacitet turističkog naselja Travičići iznosi do 150 ležajeva (najmanje 30% u Hotelu sa depandansama,najviše 70% u vilama)",
+   "parametar": "drugo: najmanji udio ležajeva u hotelu sa depandansama",
+   "operator": ">=",
+   "vrijednost": 30,
+   "jedinica": "%",
+   "vrsta_gradevine": {
+    "naziv": "hotel sa depandansama",
+    "izraz": "Hotelu sa depandansama",
+    "citat_izraza": "najmanje 30% u Hotelu sa depandansama",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "kapacitet turističkog naselja Travičići iznosi do 150 ležajeva (najmanje 30% u Hotelu sa depandansama,najviše 70% u vilama)",
+   "parametar": "drugo: najveći udio ležajeva u vilama",
+   "operator": "<=",
+   "vrijednost": 70,
+   "jedinica": "%",
+   "vrsta_gradevine": {
+    "naziv": "vila",
+    "izraz": "vilama",
+    "citat_izraza": "najviše 70% u vilama",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "najveći broj etaža: podrum i tri nadzemne etaže (Po+P+2)",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": "Po+P+2",
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "građevina",
+    "izraz": "građevine",
+    "citat_izraza": "Veličina i građevna (bruto) površina građevine",
+    "izvor": "naslov"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "VRSTA_OPCENITA: subjekt je samo »građevine«; podrum može imati jednu ili više podzemnih etaža pa broj podzemnih etaža nije ograničen"
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "unutar ove zone nije moguće etažiranje vila",
+   "parametar": "drugo: etažiranje",
+   "operator": "zabrana",
+   "vrijednost": "etažiranje vila",
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "vila",
+    "izraz": "vila",
+    "citat_izraza": "nije moguće etažiranje vila",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "NEGATIVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Bilo koja građevina u građevnom sklopu koji čini turističko naselje mora biti udaljena najmanje h/2 visine od granica građevne čestice sa svih strana",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": "h/2",
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina u građevnom sklopu turističkog naselja",
+    "izraz": "Bilo koja građevina u građevnom sklopu koji čini turističko naselje",
+    "citat_izraza": "Bilo koja građevina u građevnom sklopu koji čini turističko naselje",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Bilo koja građevina u građevnom sklopu koji čini turističko naselje mora biti udaljena najmanje h/2 visine od granica građevne čestice sa svih strana, ali ne manje od 4,0 m",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina u građevnom sklopu turističkog naselja",
+    "izraz": "Bilo koja građevina u građevnom sklopu koji čini turističko naselje",
+    "citat_izraza": "Bilo koja građevina u građevnom sklopu koji čini turističko naselje",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Bilo koja građevina u građevnom sklopu koji čini turističko naselje mora biti udaljena najmanje h/2 visine od granica građevne čestice sa svih strana, ali ne manje od 4,0 m, mjereno od najistaknutijih dijelova građevine, a najmanje 6,0 m od susjednih građevina »povijesnih ruralnih jezgri naselja« ili u slučaju interpolacije",
+   "parametar": "drugo: najmanja udaljenost od susjednih građevina",
+   "operator": ">=",
+   "vrijednost": 6.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina u građevnom sklopu turističkog naselja",
+    "izraz": "Bilo koja građevina u građevnom sklopu koji čini turističko naselje",
+    "citat_izraza": "Bilo koja građevina u građevnom sklopu koji čini turističko naselje",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [
+    {
+     "tekst": "od susjednih građevina »povijesnih ruralnih jezgri naselja« ili u slučaju interpolacije",
+     "citat": "od susjednih građevina »povijesnih ruralnih jezgri naselja« ili u slučaju interpolacije",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "VEZNIK: nije jasno vrijedi li 6,0 m prema susjednim građevinama povijesnih jezgri ili prema bilo kojoj susjednoj građevini pri interpolaciji"
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Arhitektonsko oblikovanje građevina treba biti suvremenog tipa, volumenom,materijalima i stilom uklopljeno u širi kontekst priobalne i visinske gradnje",
+   "parametar": "drugo: arhitektonsko oblikovanje",
+   "operator": "opis",
+   "vrijednost": "suvremenog tipa, volumenom,materijalima i stilom uklopljeno u širi kontekst priobalne i visinske gradnje",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevina",
+    "izraz": "građevina",
+    "citat_izraza": "Arhitektonsko oblikovanje građevina",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "VRSTA_OPCENITA: subjekt je samo »građevine«"
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Ne dopušta se uporaba pokrova od bitumenskog i salonitnog i drvenog materijala",
+   "parametar": "vrsta pokrova",
+   "operator": "zabrana",
+   "vrijednost": "bitumenskog i salonitnog i drvenog materijala",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevina",
+    "izraz": "građevina",
+    "citat_izraza": "Uvjeti oblikovanja građevina",
+    "izvor": "naslov"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "NEGATIVNO",
+   "nejasno": "VRSTA_OPCENITA: subjekt je samo »građevine«"
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Najveći nagib kosog krova iznosi 23Ê",
+   "parametar": "nagib krovnih ploha",
+   "operator": "<=",
+   "vrijednost": 23,
+   "jedinica": "°",
+   "vrsta_gradevine": {
+    "naziv": "građevina",
+    "izraz": "građevina",
+    "citat_izraza": "Uvjeti oblikovanja građevina",
+    "izvor": "naslov"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "TUMACENJE: jedinica je u tekstu pokvaren znak »Ê«, vjerojatno »°«"
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Krov može biti izveden i kao ravni krov",
+   "parametar": "oblik krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "ravni krov",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevina",
+    "izraz": "građevina",
+    "citat_izraza": "Uvjeti oblikovanja građevina",
+    "izvor": "naslov"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "VRSTA_OPCENITA: subjekt je samo »građevine«"
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "najmanje 40% ukupne površine građevne čestice mora biti uređena površina zelenila",
+   "parametar": "najmanji udio zelenila na građevnoj čestici",
+   "operator": ">=",
+   "vrijednost": 40,
+   "jedinica": "%",
+   "vrsta_gradevine": {
+    "naziv": "građevina",
+    "izraz": "građevine",
+    "citat_izraza": "Neizgrađeni dio građevne čestice građevine",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "VRSTA_OPCENITA: subjekt je samo »građevine«"
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Ograda se gradi unutar građevne čestice predviđene za gradnju građevine predviđenih ovim Planom, sa vanjskim rubom najdalje na regulacijskom pravcu",
+   "parametar": "drugo: položaj ograde",
+   "operator": "opis",
+   "vrijednost": "sa vanjskim rubom najdalje na regulacijskom pravcu",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "ograda",
+    "izraz": "Ograda",
+    "citat_izraza": "Ograda se gradi unutar građevne čestice",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Najviša visina ograde je 1,8 m",
+   "parametar": "drugo: najveća visina ograde",
+   "operator": "<=",
+   "vrijednost": 1.8,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "ograda",
+    "izraz": "ograde",
+    "citat_izraza": "Najviša visina ograde",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "visina punog dijela ograde iznosi u pravilu najviše do 0,9 m ako je izgrađena od kamena prema prometnoj i javnoj površini",
+   "parametar": "drugo: najveća visina punog dijela ograde",
+   "operator": "<=",
+   "vrijednost": 0.9,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "ograda",
+    "izraz": "ograde",
+    "citat_izraza": "visina punog dijela ograde",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [
+    {
+     "tekst": "ako je izgrađena od kamena prema prometnoj i javnoj površini",
+     "citat": "ako je izgrađena od kamena prema prometnoj i javnoj površini",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: »u pravilu« ostavlja otvoreno smije li se granica prekoračiti"
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Visina potpornih zidova u pravilu ne prelazi 1,5 m",
+   "parametar": "drugo: najveća visina potpornog zida",
+   "operator": "<=",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "potporni zid",
+    "izraz": "potpornih zidova",
+    "citat_izraza": "Visina potpornih zidova",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "TUMACENJE: »u pravilu« ostavlja otvoreno smije li se granica prekoračiti"
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Osnovni materijal za izgradnju potpornih zidova je kamen",
+   "parametar": "drugo: materijal potpornih zidova",
+   "operator": "opis",
+   "vrijednost": "kamen",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "potporni zid",
+    "izraz": "potpornih zidova",
+    "citat_izraza": "izgradnju potpornih zidova",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Osnovni materijal za izgradnju potpornih zidova je kamen ili iznimno beton",
+   "parametar": "drugo: materijal potpornih zidova",
+   "operator": "dopustenje",
+   "vrijednost": "beton",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "potporni zid",
+    "izraz": "potpornih zidova",
+    "citat_izraza": "izgradnju potpornih zidova",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "iznimno beton",
+     "citat": "iznimno beton"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "TUMACENJE: nije navedeno kada je beton iznimno dopušten"
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Ako je potrebna veća visina, potporni zid se izvodi terasasto, uz netto širinu terase od najmanje 0,9 m",
+   "parametar": "drugo: najmanja netto širina terase potpornog zida",
+   "operator": ">=",
+   "vrijednost": 0.9,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "potporni zid",
+    "izraz": "potporni zid",
+    "citat_izraza": "potporni zid se izvodi terasasto",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [
+    {
+     "tekst": "Ako je potrebna veća visina",
+     "citat": "Ako je potrebna veća visina",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Iznimno od prethodnog visina potpornog zida može biti veća ako se: -zbog konfiguracije terena ne može ostvariti propisana visina, -potporni zid interpolira unutar postojeće gradnje",
+   "parametar": "drugo: najveća visina potpornog zida",
+   "operator": "dopustenje",
+   "vrijednost": "veća",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "potporni zid",
+    "izraz": "potpornog zida",
+    "citat_izraza": "visina potpornog zida može biti veća",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [
+    {
+     "tekst": "zbog konfiguracije terena ne može ostvariti propisana visina",
+     "citat": "zbog konfiguracije terena ne može ostvariti propisana visina",
+     "izvor": "odredba"
+    },
+    {
+     "tekst": "potporni zid interpolira unutar postojeće gradnje",
+     "citat": "potporni zid interpolira unutar postojeće gradnje",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "Iznimno od prethodnog visina potpornog zida može biti veća",
+     "citat": "Iznimno od prethodnog visina potpornog zida može biti veća"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "VEZNIK: nije rečeno moraju li biti ispunjena oba uvjeta iz alineja ili je dovoljan jedan; gornja granica visine nije zadana"
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "uredi: 1 PM/30,0 - 40,0 m 2 korisne površine (25-30 PM/ 1.000 m 2 korisne površine)",
+   "parametar": "drugo: broj parkirališnih mjesta",
+   "operator": "opis",
+   "vrijednost": "1 PM/30,0 - 40,0 m 2 korisne površine (25-30 PM/ 1.000 m 2 korisne površine)",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "ured",
+    "izraz": "uredi",
+    "citat_izraza": "uredi: 1 PM/30,0 - 40,0 m 2 korisne površine",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "TUMACENJE: normativ je raspon (30-40 m2 po PM), pa nije jasno koja se vrijednost primjenjuje"
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "ugostiteljski sadržaji: 1 PM/8 sjedala",
+   "parametar": "drugo: broj parkirališnih mjesta",
+   "operator": ">=",
+   "vrijednost": "1 PM/8 sjedala",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "ugostiteljski sadržaj",
+    "izraz": "ugostiteljski sadržaji",
+    "citat_izraza": "ugostiteljski sadržaji: 1 PM/8 sjedala",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 9,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "ugostiteljski sadržaji: 1 PM/2 smještajne jedinice (sobe)",
+   "parametar": "drugo: broj parkirališnih mjesta",
+   "operator": ">=",
+   "vrijednost": "1 PM/2 smještajne jedinice (sobe)",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "ugostiteljski sadržaj",
+    "izraz": "ugostiteljski sadržaji",
+    "citat_izraza": "ugostiteljski sadržaji: 1 PM/2 smještajne jedinice (sobe)",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "T2-5"
+    ],
+    "citat": "cijela zona T2-5"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "SUKOB: dvije alineje »ugostiteljski sadržaji« imaju različite normative (sjedala i sobe), nije rečeno zbrajaju li se"
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "najmanja površina građevne čestice iznosi 1.000,0 m 2",
+   "parametar": "najmanja površina građevne čestice",
+   "operator": ">=",
+   "vrijednost": 1000,
+   "jedinica": "m²",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina",
+    "izraz": "poslovnih građevina",
+    "citat_izraza": "Za građenje poslovnih građevina unutar poslovne namjene (K)",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "najveća (bruto) tlocrtna površina građevine iznosi 300,0 m 2",
+   "parametar": "najveća površina tlocrtne projekcije građevine",
+   "operator": "<=",
+   "vrijednost": 300,
+   "jedinica": "m²",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina",
+    "izraz": "poslovnih građevina",
+    "citat_izraza": "Za građenje poslovnih građevina unutar poslovne namjene (K)",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "najveći koeficijent izgrađenosti građevne čestice (k ig ) iznosi 0,20",
+   "parametar": "najveći koeficijent izgrađenosti (kig)",
+   "operator": "<=",
+   "vrijednost": 0.2,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina",
+    "izraz": "poslovnih građevina",
+    "citat_izraza": "Za građenje poslovnih građevina unutar poslovne namjene (K)",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "najveći koeficijent iskorištenosti građevne čestice (k is ) iznosi 0,20",
+   "parametar": "najveći koeficijent iskoristivosti (kis) (uz podrum ili ukupni)",
+   "operator": "<=",
+   "vrijednost": 0.2,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina",
+    "izraz": "poslovnih građevina",
+    "citat_izraza": "Za građenje poslovnih građevina unutar poslovne namjene (K)",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "najviša visina građevine iznosi 7,0 m",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 7.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina",
+    "izraz": "poslovnih građevina",
+    "citat_izraza": "Za građenje poslovnih građevina unutar poslovne namjene (K)",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "najveći broj etaža:1 nadzemna etaža",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": 1,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina",
+    "izraz": "poslovnih građevina",
+    "citat_izraza": "Za građenje poslovnih građevina unutar poslovne namjene (K)",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "nadzemna etaža",
+     "citat": "1 nadzemna etaža",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "TUMACENJE: nije rečeno je li podrum dopušten uz 1 nadzemnu etažu"
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Građevina mora biti udaljena najmanje h/2 visine od granica građevne čestice sa svih strana",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": "h/2",
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina",
+    "izraz": "poslovnih građevina",
+    "citat_izraza": "Za građenje poslovnih građevina unutar poslovne namjene (K)",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Građevina mora biti udaljena najmanje h/2 visine od granica građevne čestice sa svih strana, ali ne manje od 4,0 m",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina",
+    "izraz": "poslovnih građevina",
+    "citat_izraza": "Za građenje poslovnih građevina unutar poslovne namjene (K)",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Građevina mora biti udaljena najmanje h/2 visine od granica građevne čestice sa svih strana, ali ne manje od 4,0 m, mjereno od najistaknutijih dijelova građevine, a najmanje 6,0 m od susjednih građevina u slučaju interpolacije",
+   "parametar": "drugo: najmanja udaljenost od susjednih građevina",
+   "operator": ">=",
+   "vrijednost": 6.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina",
+    "izraz": "poslovnih građevina",
+    "citat_izraza": "Za građenje poslovnih građevina unutar poslovne namjene (K)",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "u slučaju interpolacije",
+     "citat": "u slučaju interpolacije",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "NEDEFINIRAN_POJAM: o pojmu »interpolacija« ovisi primjenjuje li se uvjet"
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Pri projektiranju novih građevina ove tipologije potrebno je težiti suvremenim arhitektonskim rješenjima uklopivim u kontekst i podneblje",
+   "parametar": "drugo: arhitektonsko oblikovanje",
+   "operator": "opis",
+   "vrijednost": "suvremenim arhitektonskim rješenjima uklopivim u kontekst i podneblje",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina",
+    "izraz": "poslovnih građevina",
+    "citat_izraza": "Za građenje poslovnih građevina unutar poslovne namjene (K)",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "novih građevina",
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "OBUHVAT: isti blok govori o kompleksu ugostiteljsko-turističke namjene i turističkom naselju Travičići, a članak uređuje poslovnu namjenu (K)"
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "najmanje 40% ukupne površine građevne čestice mora biti uređena površina zelenila",
+   "parametar": "najmanji udio zelenila na građevnoj čestici",
+   "operator": ">=",
+   "vrijednost": 40,
+   "jedinica": "%",
+   "vrsta_gradevine": {
+    "naziv": "poslovna građevina",
+    "izraz": "poslovnih građevina",
+    "citat_izraza": "Za građenje poslovnih građevina unutar poslovne namjene (K)",
+    "izvor": "uvod_clanka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Ograda se gradi unutar građevne čestice predviđene za gradnju građevine predviđenih ovim Planom, sa vanjskim rubom najdalje na regulacijskom pravcu",
+   "parametar": "drugo: položaj ograde",
+   "operator": "opis",
+   "vrijednost": "sa vanjskim rubom najdalje na regulacijskom pravcu",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "ograda",
+    "izraz": "Ograda",
+    "citat_izraza": "Ograda se gradi unutar građevne čestice",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Najviša visina ograde je 1,8 m",
+   "parametar": "drugo: najveća visina ograde",
+   "operator": "<=",
+   "vrijednost": 1.8,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "ograda",
+    "izraz": "ograde",
+    "citat_izraza": "Najviša visina ograde",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "visina punog dijela ograde iznosi u pravilu najviše do 0,9 m ako je izgrađena od kamena prema prometnoj i javnoj površini",
+   "parametar": "drugo: najveća visina punog dijela ograde",
+   "operator": "<=",
+   "vrijednost": 0.9,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "ograda",
+    "izraz": "ograde",
+    "citat_izraza": "visina punog dijela ograde",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "ako je izgrađena od kamena prema prometnoj i javnoj površini",
+     "citat": "ako je izgrađena od kamena prema prometnoj i javnoj površini",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: »u pravilu« ostavlja otvoreno smije li se granica prekoračiti"
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Visina potpornih zidova u pravilu ne prelazi 1,5 m",
+   "parametar": "drugo: najveća visina potpornog zida",
+   "operator": "<=",
+   "vrijednost": 1.5,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "potporni zid",
+    "izraz": "potpornih zidova",
+    "citat_izraza": "Visina potpornih zidova",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "TUMACENJE: »u pravilu« ostavlja otvoreno smije li se granica prekoračiti"
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Osnovni materijal za izgradnju potpornih zidova je kamen",
+   "parametar": "drugo: materijal potpornih zidova",
+   "operator": "opis",
+   "vrijednost": "kamen",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "potporni zid",
+    "izraz": "potpornih zidova",
+    "citat_izraza": "izgradnju potpornih zidova",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Osnovni materijal za izgradnju potpornih zidova je kamen ili iznimno beton",
+   "parametar": "drugo: materijal potpornih zidova",
+   "operator": "dopustenje",
+   "vrijednost": "beton",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "potporni zid",
+    "izraz": "potpornih zidova",
+    "citat_izraza": "izgradnju potpornih zidova",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "iznimno beton",
+     "citat": "iznimno beton"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "TUMACENJE: nije navedeno kada je beton iznimno dopušten"
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Ako je potrebna veća visina, potporni zid se izvodi terasasto, uz netto širinu terase od najmanje 0,9 m",
+   "parametar": "drugo: najmanja netto širina terase potpornog zida",
+   "operator": ">=",
+   "vrijednost": 0.9,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "potporni zid",
+    "izraz": "potporni zid",
+    "citat_izraza": "potporni zid se izvodi terasasto",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "Ako je potrebna veća visina",
+     "citat": "Ako je potrebna veća visina",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Iznimno od prethodnog visina potpornog zida može biti veća ako se: -zbog konfiguracije terena ne može ostvariti propisana visina, -potporni zid interpolira unutar postojeće gradnje",
+   "parametar": "drugo: najveća visina potpornog zida",
+   "operator": "dopustenje",
+   "vrijednost": "veća",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "potporni zid",
+    "izraz": "potpornog zida",
+    "citat_izraza": "visina potpornog zida može biti veća",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [
+    {
+     "tekst": "zbog konfiguracije terena ne može ostvariti propisana visina",
+     "citat": "zbog konfiguracije terena ne može ostvariti propisana visina",
+     "izvor": "odredba"
+    },
+    {
+     "tekst": "potporni zid interpolira unutar postojeće gradnje",
+     "citat": "potporni zid interpolira unutar postojeće gradnje",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "Iznimno od prethodnog visina potpornog zida može biti veća",
+     "citat": "Iznimno od prethodnog visina potpornog zida može biti veća"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "VEZNIK: nije rečeno moraju li biti ispunjena oba uvjeta iz alineja ili je dovoljan jedan; gornja granica visine nije zadana"
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "uredi: 1 PM/30,0 - 40,0 m 2 korisne površine (25-30 PM/ 1.000 m 2 korisne površine)",
+   "parametar": "drugo: broj parkirališnih mjesta",
+   "operator": "opis",
+   "vrijednost": "1 PM/30,0 - 40,0 m 2 korisne površine (25-30 PM/ 1.000 m 2 korisne površine)",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "ured",
+    "izraz": "uredi",
+    "citat_izraza": "uredi: 1 PM/30,0 - 40,0 m 2 korisne površine",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "TUMACENJE: normativ je raspon (30-40 m2 po PM), pa nije jasno koja se vrijednost primjenjuje"
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "ugostiteljski sadržaji: 1 PM/8 sjedala",
+   "parametar": "drugo: broj parkirališnih mjesta",
+   "operator": ">=",
+   "vrijednost": "1 PM/8 sjedala",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "ugostiteljski sadržaj",
+    "izraz": "ugostiteljski sadržaji",
+    "citat_izraza": "ugostiteljski sadržaji: 1 PM/8 sjedala",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 10,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "ugostiteljski sadržaji: 1 PM/2 smještajne jedinice (sobe)",
+   "parametar": "drugo: broj parkirališnih mjesta",
+   "operator": ">=",
+   "vrijednost": "1 PM/2 smještajne jedinice (sobe)",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "ugostiteljski sadržaj",
+    "izraz": "ugostiteljski sadržaji",
+    "citat_izraza": "ugostiteljski sadržaji: 1 PM/2 smještajne jedinice (sobe)",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "K"
+    ],
+    "citat": "unutar poslovne namjene (K)"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "SUKOB: dvije alineje »ugostiteljski sadržaji« imaju različite normative (sjedala i sobe), nije rečeno zbrajaju li se"
+  }
+ ],
+ "metapodaci": {
+  "skup": "travicici_upu13",
+  "pozvani_alati": [
+   "SubagentHandback"
+  ],
+  "tokena": 94778,
+  "trajanje_ms": 189764,
+  "generator": "izolirani agent u razvojnoj sesiji, bez alata za čitanje; samo upute generatora v1 i tekst",
+  "upute": "hibrid/UPUTE_GENERATORA_v1.md"
+ }
+}
