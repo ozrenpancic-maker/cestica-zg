@@ -192,6 +192,7 @@ def _segment_alineje(st, poz):
 
 
 RX_TOCKA = re.compile(r"(?:^|\s)([a-z])\)\s")
+RX_UVJET_UVODA = re.compile(r"(?:na\s+građevnoj\s+čestici\s+)?\buz\s+(?:građevin|obiteljsk|višeobiteljsk|stambenu|osnovn)[^,:;]*?(?=\s+uz\s+(?:poštivanje|uvjet)|\s*$)", re.I)
 RX_ALINEJA = re.compile(r"(?:^|[.;:,]\s|\s{2})[-–]\s|•")
 
 
@@ -205,10 +206,10 @@ def polozaj(st, poz):
     la = None
     for m in RX_ALINEJA.finditer(seg):
         la = m
-    if lt:
+    if lt and not (la and la.start() > lt.start()):
         return lt.group(1)
     if la:
-        return "-"
+        return "-"          # upute označavanja v1.2: odredba u alineji (i alineji unutar točke) → »-«
     return None
 
 
@@ -412,6 +413,14 @@ def provjeri(k, art):
     if re.search(r"\buz\s+(?:građevin\w+|obiteljsk\w+|višeobiteljsk\w+|stambenu|osnovn\w+)", uv, re.I) and k.get("stavak") is not None:
         if not any(x[2] == "uvod" and _nl(x[1]) and _nl(x[1]) in _nl(uv) for x in U):
             pregled("UVJET_UVODA_IZGUBLJEN", "uvjet iz uvoda stavka (»uz …«) nije prenesen")
+        else:
+            m_uv = RX_UVJET_UVODA.search(uv)
+            if m_uv and not any(x[2] == "uvod" and _nl(x[1]) == _nl(m_uv.group(0)) for x in U):
+                pregled("UVJET_UVODA_NEPOTPUN", f"uvjet iz uvoda mora biti cijeli odlomak »{m_uv.group(0).strip()}«")
+    if poz_v is not None:
+        m_za = re.match(r"[\s\d.,]*(?:m\s*2|m²|metr\w*|m|%|°)?\s*(za\s+[^,;.:]+)", cit[poz_v:], re.I)
+        if m_za and not any(_nl(m_za.group(1))[:20] in _nl(x[1]) for x in U):
+            pregled("UVJET_IZGUBLJEN", f"odlomak iza vrijednosti »{m_za.group(1).strip()}« nije zapisan kao uvjet")
 
     # --- dosljednost vrste pravila
     vp = k.get("vrsta_pravila")
@@ -456,7 +465,13 @@ def provjeri_sve(kandidati, clanci):
         else:
             k["_status"], k["_razlozi"] = provjeri(k, art)
             st = _n(stavak_tekst(art, k.get("stavak")) or art["tekst"])
-            pz = st.find(_n(k.get("citat")))
+            cit = _n(k.get("citat"))
+            pz = st.find(cit)
+            v = k.get("vrijednost")
+            if pz >= 0 and isinstance(v, (int, float)) and not isinstance(v, bool):
+                Pv = _pozicije(float(v), cit)
+                if Pv:
+                    pz += Pv[0][1]          # položaj vrijednosti, ne početka citata (alineja unutar točke)
             k["_tocka"] = polozaj(st, pz) if pz >= 0 else k.get("tocka")
         out.append(k)
     sukobi(out)

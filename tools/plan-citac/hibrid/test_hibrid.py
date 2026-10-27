@@ -77,6 +77,41 @@ def stanje_postojece_iz_uvoda():
     assert st != "AUTOMATSKI_PRIHVACEN", R
 
 
+ART2 = {"broj": 22, "naslov": None,
+        "tekst": "(1) Utvrđuju se slijedeće granične vrijednosti za izgradnju obiteljske kuće: a) najmanja dopuštena površina građevne čestice za izgradnju "
+                 "obiteljske kuće iznosi: - za slobodnostojeće građevine: 500 m 2 - za dvojne i ugrađene građevine: 300 m 2 c) najmanja dopuštena površina "
+                 "tlocrtne projekcije nove obiteljske kuće iznosi 100 m 2 za sve tipove gradnje; "
+                 "(2) Poljoprivredne gospodarske građevine mogu se graditi na građevnoj čestici uz obiteljsku kuću uz poštivanje sljedećih uvjeta: "
+                 "- najmanja udaljenost od granice građevne čestice iznosi 4,0 m, - krovišta mogu biti ravna."}
+
+
+@t
+def tocka_alineja_unutar_tocke():
+    k = {"clanak": 22, "stavak": 1, "citat": "najmanja dopuštena površina građevne čestice za izgradnju obiteljske kuće iznosi: - za slobodnostojeće građevine: 500 m 2",
+         "vrijednost": 500}
+    assert P.provjeri_sve([k], {22: ART2})[0]["_tocka"] == "-"
+
+
+@t
+def uvjet_uvoda_nepotpun():
+    k = {"clanak": 22, "stavak": 2, "tocka": "-", "citat": "najmanja udaljenost od granice građevne čestice iznosi 4,0 m", "parametar": "najmanja udaljenost od granice građevne čestice",
+         "operator": ">=", "vrijednost": 4.0, "jedinica": "m", "vrsta_gradevine": {"naziv": "poljoprivredna gospodarska građevina", "izraz": "Poljoprivredne gospodarske građevine",
+         "citat_izraza": "Poljoprivredne gospodarske građevine mogu se graditi", "izvor": "uvod_stavka"}, "zona": {"oznake": [], "citat": None},
+         "uvjeti": [{"tekst": "uz obiteljsku kuću", "citat": "uz obiteljsku kuću", "izvor": "uvod"}], "iznimke": [], "vrsta_pravila": "OSNOVNO", "nejasno": None}
+    assert "UVJET_UVODA_NEPOTPUN" in {c for c, _ in P.provjeri(k, ART2)[1]}
+    k["uvjeti"] = [{"tekst": "na građevnoj čestici uz obiteljsku kuću", "citat": "na građevnoj čestici uz obiteljsku kuću", "izvor": "uvod"}]
+    assert "UVJET_UVODA_NEPOTPUN" not in {c for c, _ in P.provjeri(k, ART2)[1]}
+
+
+@t
+def odlomak_za_iza_vrijednosti():
+    k = {"clanak": 22, "stavak": 1, "tocka": "c", "citat": "najmanja dopuštena površina tlocrtne projekcije nove obiteljske kuće iznosi 100 m 2 za sve tipove gradnje",
+         "parametar": "najmanja površina tlocrtne projekcije građevine", "operator": ">=", "vrijednost": 100, "jedinica": "m²",
+         "vrsta_gradevine": {"naziv": "obiteljska kuća (nova)", "izraz": "obiteljske kuće", "citat_izraza": "nove obiteljske kuće", "izvor": "odredba"},
+         "zona": {"oznake": [], "citat": None}, "uvjeti": [], "iznimke": [], "vrsta_pravila": "OSNOVNO", "nejasno": None}
+    assert "UVJET_IZGUBLJEN" in {c for c, _ in P.provjeri(k, ART2)[1]}
+
+
 def zapis(**kw):
     z = {"id": "X", "clanak": 24, "stavak": None, "tocka": "-", "parametar": "najveći koeficijent iskoristivosti (kis) (uz podrum ili ukupni)", "operator": "<=",
          "vrijednost": 1.5, "jedinica": "koeficijent", "vrsta_gradevine": "hotel", "vrsta_pravila": "OSNOVNO", "uvjet_tekst": "", "uvjet_konteksta": "", "prihvacen": True}
