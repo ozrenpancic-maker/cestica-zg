@@ -1,0 +1,305 @@
+{
+ "generator": "Ručno čitanje čl. 19; članak je pretežno o prometnoj infrastrukturi, pa su kandidati uglavnom 'drugo:' parametri za ceste i priključke; obrazložni dijelovi (Zakon, PPUG, I. kategorija opremljenosti, ocjena dostatnosti) nisu kandidati; alineja 6 (uređenje zemljišta uz prometnicu) izostavljena jer nije ograničenje za građevinu.",
+ "kandidati": [
+  {
+   "clanak": 19,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Kod rekonstrukcije postojećih cesta, širina kolnika može se izvesti i manja od one propisane Planom, ali ne manja od 3,0 m, ako položaj postojećih građevina onemogućava realizaciju propisane širine",
+   "parametar": "drugo: najmanja širina kolnika pri rekonstrukciji postojeće ceste",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "cesta (postojeća)",
+    "izraz": "postojećih cesta",
+    "citat_izraza": "Kod rekonstrukcije postojećih cesta",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "postojeća",
+   "citat_stanja": "rekonstrukcije postojećih cesta",
+   "zona": {
+    "oznake": [],
+    "citat": ""
+   },
+   "uvjeti": [
+    {
+     "tekst": "ako položaj postojećih građevina onemogućava realizaciju propisane širine",
+     "citat": "ako položaj postojećih građevina onemogućava realizaciju propisane širine",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 19,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "uz izvedbu proširenja za mimoilaženje vozila na udaljenosti od cca 50,0 m, odnosno sukladno lokalnim uvjetima",
+   "parametar": "drugo: razmak proširenja za mimoilaženje vozila pri rekonstrukciji ceste suženog kolnika",
+   "operator": "=",
+   "vrijednost": 50.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "cesta (postojeća)",
+    "izraz": "postojećih cesta",
+    "citat_izraza": "Kod rekonstrukcije postojećih cesta",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "postojeća",
+   "citat_stanja": "rekonstrukcije postojećih cesta",
+   "zona": {
+    "oznake": [],
+    "citat": ""
+   },
+   "uvjeti": [
+    {
+     "tekst": "ako položaj postojećih građevina onemogućava realizaciju propisane širine",
+     "citat": "ako položaj postojećih građevina onemogućava realizaciju propisane širine",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: vrijednost je približna (»cca«), a »odnosno sukladno lokalnim uvjetima« dopušta drugačiji razmak bez kriterija"
+  },
+  {
+   "clanak": 19,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Do formiranja građevinske parcele za cestu, udaljenost građevinskog pravca utvrđuje se od zaštitnog koridora, a nakon utvrđivanja građevne parcele za cestu, od granice te građevne parcele",
+   "parametar": "položaj građevnog pravca",
+   "operator": "opis",
+   "vrijednost": "od zaštitnog koridora do formiranja građevinske parcele za cestu, a nakon toga od granice građevne parcele ceste",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevina",
+    "izraz": "građevinskog pravca",
+    "citat_izraza": "udaljenost građevinskog pravca utvrđuje se od zaštitnog koridora",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": ""
+   },
+   "uvjeti": [
+    {
+     "tekst": "Do formiranja građevinske parcele za cestu",
+     "citat": "Do formiranja građevinske parcele za cestu",
+     "izvor": "odredba"
+    },
+    {
+     "tekst": "nakon utvrđivanja građevne parcele za cestu",
+     "citat": "nakon utvrđivanja građevne parcele za cestu",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "VRSTA_OPCENITA: vrsta građevine nije navedena; »zaštitni koridor« nije definiran u ovom tekstu (NEDEFINIRAN_POJAM)"
+  },
+  {
+   "clanak": 19,
+   "stavak": null,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Sukladno Zakonu i PPUG Opatije nova gradnja neće biti moguća u zoni T2 i drugim zonama dok se ne ispune zakonski uvjeti (započeta gradnja ceste)",
+   "parametar": "dopuštenost gradnje",
+   "operator": "zabrana",
+   "vrijednost": null,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "građevina (nova)",
+    "izraz": "nova gradnja",
+    "citat_izraza": "nova gradnja neće biti moguća",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "nova gradnja",
+   "zona": {
+    "oznake": [
+     "T2"
+    ],
+    "citat": "u zoni T2 i drugim zonama"
+   },
+   "uvjeti": [
+    {
+     "tekst": "dok se ne ispune zakonski uvjeti (započeta gradnja ceste)",
+     "citat": "dok se ne ispune zakonski uvjeti (započeta gradnja ceste)",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "NEGATIVNO",
+   "nejasno": "OBUHVAT: »i drugim zonama« nije određeno; uvjet ovisi o Zakonu i PPUG Opatije (UPUCIVANJE)"
+  },
+  {
+   "clanak": 19,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "građevine unutar dijelova naselja Travičići priključuju se u pravilu na postojeće ili planirane sabirne,ostale i nerazvrstane ulice",
+   "parametar": "drugo: priključak građevine na prometnu mrežu",
+   "operator": "opis",
+   "vrijednost": "na postojeće ili planirane sabirne, ostale i nerazvrstane ulice",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevina",
+    "izraz": "građevine",
+    "citat_izraza": "građevine unutar dijelova naselja Travičići",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar dijelova naselja Travičići"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "TUMACENJE: »u pravilu« ostavlja otvorene iznimke bez kriterija; VRSTA_OPCENITA: subjekt je samo »građevine«"
+  },
+  {
+   "clanak": 19,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "do izgradnje prometne mreže u planiranim koridorima, priključak na javnu prometnu povržinu može se izvesti i na postojećim prometnicama širine najmanje 3m, sve sukladno članku 98. Odluke o PPU Grada Opatije",
+   "parametar": "drugo: najmanja širina postojeće prometnice za priključak na javnu prometnu površinu",
+   "operator": ">=",
+   "vrijednost": 3,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "prometnica (postojeća)",
+    "izraz": "postojećim prometnicama",
+    "citat_izraza": "na postojećim prometnicama širine najmanje 3m",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "postojeća",
+   "citat_stanja": "postojećim prometnicama",
+   "zona": {
+    "oznake": [],
+    "citat": ""
+   },
+   "uvjeti": [
+    {
+     "tekst": "do izgradnje prometne mreže u planiranim koridorima",
+     "citat": "do izgradnje prometne mreže u planiranim koridorima",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "UPUCIVANJE: »sve sukladno članku 98. Odluke o PPU Grada Opatije« može dodati uvjete"
+  },
+  {
+   "clanak": 19,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "izgradnja turističkog naselja Travičići uvjetuje se izgradnjom pristupne prometnice u punom koridoru od 6,5 m",
+   "parametar": "drugo: širina koridora pristupne prometnice kao uvjet izgradnje",
+   "operator": "=",
+   "vrijednost": 6.5,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "turističko naselje",
+    "izraz": "turističkog naselja Travičići",
+    "citat_izraza": "izgradnja turističkog naselja Travičići",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": ""
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 19,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "pristup građevne čestice s prometne površine na javnu prometnu površinu mora se odrediti na način da se osigura nesmetano odvijanje prometa a ako se građevinska čestica nalazi između ili na spoju cesta različitih kategorija, pristup je potrebno osigurati sa ceste niže kategorije",
+   "parametar": "drugo: pristup građevne čestice s ceste niže kategorije",
+   "operator": "opis",
+   "vrijednost": "pristup sa ceste niže kategorije",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevna čestica",
+    "izraz": "građevinska čestica",
+    "citat_izraza": "ako se građevinska čestica nalazi između ili na spoju cesta različitih kategorija",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": ""
+   },
+   "uvjeti": [
+    {
+     "tekst": "ako se građevinska čestica nalazi između ili na spoju cesta različitih kategorija",
+     "citat": "ako se građevinska čestica nalazi između ili na spoju cesta različitih kategorija",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "VRSTA_OPCENITA: subjekt je čestica, ne vrsta građevine"
+  },
+  {
+   "clanak": 19,
+   "stavak": null,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "svaka građevinska čestica mora imati priključak na javnu prometnu površinu, neposredno ili posredno (pravom služnosti) s prometne površine, kojim se osigurava pješački i kolni pristup čestici i građevini te protupožarni pristup vatrogasnog vozila",
+   "parametar": "drugo: obvezni priključak građevne čestice na javnu prometnu površinu",
+   "operator": "opis",
+   "vrijednost": "neposredno ili posredno (pravom služnosti), s pješačkim, kolnim i protupožarnim pristupom",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevna čestica",
+    "izraz": "svaka građevinska čestica",
+    "citat_izraza": "svaka građevinska čestica mora imati priključak na javnu prometnu površinu",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": ""
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "VRSTA_OPCENITA: odnosi se na svaku česticu bez vrste građevine"
+  }
+ ],
+ "metapodaci": {
+  "skup": "travicici_upu13",
+  "pozvani_alati": [
+   "SubagentHandback"
+  ],
+  "tokena": 71768,
+  "trajanje_ms": 43631,
+  "generator": "izolirani agent u razvojnoj sesiji, bez alata za čitanje; samo upute generatora v1 i tekst",
+  "upute": "hibrid/UPUTE_GENERATORA_v1.md"
+ }
+}
