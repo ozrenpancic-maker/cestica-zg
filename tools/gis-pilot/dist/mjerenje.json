@@ -1,0 +1,147 @@
+{
+ "pokazatelji_po_stanju": {
+  "UVJETNO": 20,
+  "NIJE_IZRACUNATO": 2
+ },
+ "karike_po_razini": {
+  "SLUZBENI_VEKTOR": 22,
+  "RASTER_KANDIDAT": 24,
+  "SLUZBENA_EVIDENCIJA": 22,
+  "SLUZBENA_OBJAVA": 54,
+  "SLUZBENI_TEKST": 54
+ },
+ "ulazi": [
+  {
+   "podatak": "Granica i grafička površina čestice",
+   "izvor": "DGU DKP (ATOM)",
+   "stanje": "ima",
+   "napomena": "vektor, lokalno 210 862 čestica Krka"
+  },
+  {
+   "podatak": "Površina upisana u zemljišnu knjigu",
+   "izvor": "ZK / OSS",
+   "stanje": "nema",
+   "napomena": "Podaci nisu dostupni (nema javnog strojnog izvora u pilotu)"
+  },
+  {
+   "podatak": "Važeći planovi na lokaciji, datumi, glasila",
+   "izvor": "PGŽ IZRADA_PP",
+   "stanje": "ima",
+   "napomena": "29 zapisa na točki; provjereno 22. i 27. 10."
+  },
+  {
+   "podatak": "Obuhvat UPU-a 2",
+   "izvor": "PGŽ IZRADA_PP (geometrija)",
+   "stanje": "ima",
+   "napomena": "vektor, 43,24 ha"
+  },
+  {
+   "podatak": "Namjena prema PPUG-u (NA2)",
+   "izvor": "PGŽ NAMJENA_POVRSINA_NOVO",
+   "stanje": "ima",
+   "napomena": "vektor; udio na čestici 99,78 %"
+  },
+  {
+   "podatak": "Detaljna zona UPU-a (M11 / M2 / D2 …)",
+   "izvor": "PGŽ PP_RASTERI, karta 4",
+   "stanje": "kandidat",
+   "napomena": "samo raster bez legende; treba stručna potvrda"
+  },
+  {
+   "podatak": "Zona zaštite »B« / »C«",
+   "izvor": "PGŽ PP_RASTERI, karta 3A; čl. 83.",
+   "stanje": "kandidat",
+   "napomena": "samo raster; popis rubnih čestica zone »B« zastario (27/72 ne postoji)"
+  },
+  {
+   "podatak": "Tekst odredbi UPU-a 2 (čl. 1.–108.)",
+   "izvor": "SN PGŽ 19/2016, PDF",
+   "stanje": "ima",
+   "napomena": "cijeli tekst, SHA provjeren"
+  },
+  {
+   "podatak": "Pravila za stambenu gradnju",
+   "izvor": "pripremljeno ručno iz teksta",
+   "stanje": "kandidat",
+   "napomena": "30 pravila + 3 okvirne odredbe, svi citati doslovno nađeni; 0 stručno potvrđenih"
+  },
+  {
+   "podatak": "Pravna aktualnost UPU-a 2",
+   "izvor": "SN PGŽ nakon 19/2016",
+   "stanje": "nema",
+   "napomena": "nije neovisno provjereno"
+  },
+  {
+   "podatak": "Kategorija ceste i regulacijski pravac",
+   "izvor": "Grad Krk / geodet",
+   "stanje": "nema",
+   "napomena": "Podaci nisu dostupni"
+  },
+  {
+   "podatak": "Nagib terena na čestici",
+   "izvor": "DMR / geodet",
+   "stanje": "nema",
+   "napomena": "Podaci nisu dostupni u pilotu"
+  },
+  {
+   "podatak": "»Okruženje uređenih i izgrađenih čestica« (iznimka 400 m²)",
+   "izvor": "očevid / stručnjak",
+   "stanje": "nema",
+   "napomena": "Podaci nisu dostupni"
+  }
+ ],
+ "ulazi_po_stanju": {
+  "ima": 5,
+  "nema": 5,
+  "kandidat": 3
+ },
+ "cestica_u_obuhvatu_upu2": 1184,
+ "raspon_povrsina": {
+  "≥ 500 m²": 238,
+  "300–399 m²": 102,
+  "< 300 m²": 734,
+  "400–499 m²": 110
+ },
+ "strucni_rad": [
+  {
+   "posao": "Potvrditi 30 pripremljenih pravila (5 članaka) u alatu za pregled",
+   "jednom_po": "planu",
+   "kolicina": "30 pravila, čl. 37, 38, 39, 40, 85.",
+   "vrijeme": "nije izmjereno"
+  },
+  {
+   "posao": "Digitalizirati zone s karte 4 (M11, M12, M2, D, …) za cijeli obuhvat",
+   "jednom_po": "planu",
+   "kolicina": "43,24 ha; broj zona na listu nije prebrojan",
+   "vrijeme": "nije izmjereno"
+  },
+  {
+   "posao": "Digitalizirati granice zona zaštite »B« i »C« s karte 3A",
+   "jednom_po": "planu",
+   "kolicina": "2 zone",
+   "vrijeme": "nije izmjereno"
+  },
+  {
+   "posao": "Riješiti sukobe i nejasnoće u tekstu (Q3, Q8, Q9, Q10)",
+   "jednom_po": "planu",
+   "kolicina": "4 pitanja",
+   "vrijeme": "nije izmjereno"
+  },
+  {
+   "posao": "Provjeriti pravnu aktualnost plana u SN PGŽ",
+   "jednom_po": "planu i svakom novom broju glasila",
+   "kolicina": "1",
+   "vrijeme": "nije izmjereno"
+  },
+  {
+   "posao": "Utvrditi kategoriju ceste, ZK površinu i uvjet okruženja",
+   "jednom_po": "čestici",
+   "kolicina": "Q4, Q5, Q6",
+   "vrijeme": "nije izmjereno"
+  }
+ ],
+ "pravila": 30,
+ "clanaka": 5,
+ "trajanje_dosjea_s": 0.107,
+ "trajanje_sastavljanja_s": 0.35
+}

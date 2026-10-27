@@ -1,0 +1,249 @@
+<title>Dosje čestice 735/76 Kornić</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;650;750&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Raspored: jedan stupac poput katastarskog dosjea; karta i rasteri u dva stupca na širokom zaslonu; lanac kao niz karika */
+:root {
+  --bg: #f6f6f2; --surface: #ffffff; --ink: #1c2320; --muted: #5b655f; --line: #d9ddd6;
+  --parcel: #c3332b; --plan: #a87a12; --zone: #e9d27a; --obuhvat: #1c2320;
+  --ok: #2f7a4b; --ok-bg: #e3f1e7; --wait: #9a6a00; --wait-bg: #fbf0d4; --stop: #a3362f; --stop-bg: #f8e2df; --info-bg: #e9eef0;
+  --f-disp: "Archivo", "Helvetica Neue", Arial, sans-serif; --f-body: "Public Sans", "Segoe UI", Arial, sans-serif; --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #151a18; --surface: #1d2321; --ink: #e5e9e6; --muted: #9aa49e; --line: #333c38;
+  --parcel: #ff6b5f; --plan: #e0b44a; --zone: #6b5b1f; --obuhvat: #e5e9e6;
+  --ok: #7fd19a; --ok-bg: #1f3a29; --wait: #f0c25a; --wait-bg: #3d3115; --stop: #ff8a7f; --stop-bg: #44211e; --info-bg: #243035; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #151a18; --surface: #1d2321; --ink: #e5e9e6; --muted: #9aa49e; --line: #333c38;
+  --parcel: #ff6b5f; --plan: #e0b44a; --zone: #6b5b1f; --obuhvat: #e5e9e6;
+  --ok: #7fd19a; --ok-bg: #1f3a29; --wait: #f0c25a; --wait-bg: #3d3115; --stop: #ff8a7f; --stop-bg: #44211e; --info-bg: #243035; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body); }
+.omot { max-width: 1000px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 64px; display: grid; gap: 40px; }
+h1, h2, h3 { font-family: var(--f-disp); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(26px, 4.2vw, 38px); font-weight: 750; line-height: 1.1; }
+h2 { font-size: 21px; font-weight: 650; }
+h3 { font-size: 15px; font-weight: 650; }
+p { margin: 0; max-width: 68ch; }
+.oznaka { font: 600 11px/1 var(--f-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.mono { font-family: var(--f-mono); font-size: 12.5px; }
+section { display: grid; gap: 14px; min-width: 0; }
+.zaglavlje { display: grid; gap: 12px; }
+.trak { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px; font: 600 12px/1.4 var(--f-body); white-space: nowrap; }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.s-IZRACUNATO { background: var(--ok-bg); color: var(--ok); }
+.s-UVJETNO { background: var(--wait-bg); color: var(--wait); }
+.s-NIJE_IZRACUNATO { background: var(--stop-bg); color: var(--stop); }
+.s-info { background: var(--info-bg); color: var(--muted); }
+.upozorenje { border-left: 3px solid var(--parcel); background: var(--surface); padding: 12px 14px; max-width: 76ch; }
+.brojke { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.brojka { background: var(--surface); border: 1px solid var(--line); padding: 12px 14px; display: grid; gap: 4px; }
+.brojka b { font: 750 28px/1 var(--f-disp); font-variant-numeric: tabular-nums; }
+.dva { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 760px) { .dva { grid-template-columns: minmax(0, 1fr); } }
+.karta { background: var(--surface); border: 1px solid var(--line); padding: 10px; display: grid; gap: 8px; }
+.karta svg { width: 100%; height: auto; display: block; }
+.legenda { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--muted); }
+.legenda i { display: inline-block; width: 18px; height: 10px; vertical-align: -1px; margin-right: 5px; }
+.rasteri { display: grid; gap: 12px; }
+figure { margin: 0; background: var(--surface); border: 1px solid var(--line); padding: 10px; display: grid; gap: 6px; }
+figure img { width: 100%; display: block; }
+figcaption { font-size: 12.5px; color: var(--muted); }
+.lanac-izbor { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 760px) { .lanac-izbor { grid-template-columns: minmax(0, 1fr); } }
+.popis { display: grid; gap: 4px; max-height: 520px; overflow: auto; }
+.popis button { all: unset; cursor: pointer; display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 8px 10px; border: 1px solid transparent; font-size: 13.5px; }
+.popis button:hover { background: var(--surface); }
+.popis button[aria-pressed="true"] { background: var(--surface); border-color: var(--line); }
+.popis button:focus-visible { outline: 2px solid var(--plan); outline-offset: 1px; }
+.lanac { display: grid; gap: 0; background: var(--surface); border: 1px solid var(--line); }
+.karika { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 12px; padding: 10px 14px; border-top: 1px solid var(--line); }
+.karika:first-child { border-top: 0; }
+.karika .k { font: 600 11px/1.6 var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.karika .r { font-size: 12px; color: var(--muted); }
+.karika.ceka { box-shadow: inset 3px 0 0 var(--wait); }
+.karika.izracun { box-shadow: inset 3px 0 0 var(--ok); }
+.karika.blok { box-shadow: inset 3px 0 0 var(--stop); }
+blockquote { margin: 4px 0 0; padding: 0 0 0 10px; border-left: 2px solid var(--line); font-style: italic; color: var(--ink); max-width: 70ch; }
+.tablica { overflow-x: auto; border: 1px solid var(--line); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th, td { text-align: left; padding: 8px 10px; border-top: 1px solid var(--line); vertical-align: top; }
+thead th { border-top: 0; font: 600 11px/1.4 var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); background: var(--bg); }
+td.br { font-variant-numeric: tabular-nums; white-space: nowrap; }
+details { background: var(--surface); border: 1px solid var(--line); }
+details summary { cursor: pointer; padding: 10px 14px; font-weight: 600; }
+details > div { padding: 0 14px 14px; display: grid; gap: 10px; }
+.pitanja { display: grid; gap: 8px; counter-reset: q; }
+.pitanje { background: var(--surface); border: 1px solid var(--line); padding: 10px 14px; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 10px; }
+.pitanje .id { font: 650 14px/1.4 var(--f-mono); color: var(--plan); }
+.sitno { font-size: 12.5px; color: var(--muted); }
+a { color: inherit; text-decoration-color: var(--plan); text-underline-offset: 2px; }
+.zakljucak { background: var(--surface); border: 1px solid var(--line); padding: 16px 18px; display: grid; gap: 10px; }
+.zakljucak ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; max-width: 74ch; }
+</style>
+
+<div class="omot">
+  <header class="zaglavlje">
+    <span class="oznaka">ČesticaHR · GIS-first pilot · stanje 27. 10. 2026.</span>
+    <h1>Čestica 735/76, k.o. Kornić</h1>
+    <p id="uvod"></p>
+    <div class="upozorenje">Pilot, nije u produkciji. Ništa na ovoj stranici nije pravna potvrda: pravna valjanost svih pokazatelja je »nije utvrđena«. Stručno potvrđenih ulaza: <b id="br-potvrda">0</b>. Mjerodavna je lokacijska informacija.</div>
+  </header>
+
+  <section aria-labelledby="h-sazetak">
+    <h2 id="h-sazetak">Što sustav zna bez AI čitanja plana</h2>
+    <div class="brojke" id="brojke"></div>
+    <div class="zakljucak" id="zakljucak"></div>
+  </section>
+
+  <section aria-labelledby="h-karta">
+    <h2 id="h-karta">Karta: čestica, obuhvat plana i zone</h2>
+    <div class="dva">
+      <div class="karta">
+        <svg id="karta" role="img" aria-label="Čestica 735/76 sa susjednim česticama, granicom obuhvata UPU-a 2 i zonom NA2"></svg>
+        <div class="legenda">
+          <span><i style="background:none;border:2px solid var(--parcel)"></i>čestica 735/76 (DGU)</span>
+          <span><i style="background:var(--zone);opacity:.6"></i>NA2 prema PPUG-u (vektor PGŽ)</span>
+          <span><i style="border-top:2px dashed var(--obuhvat);height:0"></i>granica obuhvata UPU-a 2 (vektor PGŽ)</span>
+          <span><i style="border:1px solid var(--muted);background:none"></i>susjedne čestice</span>
+        </div>
+        <div class="sitno">HTRS96/TM, okvir ±110 m. Pregled: cijeli obuhvat UPU-a 2 (43,24 ha) s položajem okvira.</div>
+        <svg id="pregled" style="max-width:240px" role="img" aria-label="Obuhvat UPU-a 2 Kornić i položaj čestice"></svg>
+      </div>
+      <div class="rasteri" id="rasteri"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-lanac">
+    <h2 id="h-lanac">Lanac za svaki pokazatelj</h2>
+    <p class="sitno">čestica → zona → plan → članak → pravilo → izračun. Karika označena žuto čeka stručnu potvrdu; crveno znači da se pokazatelj ne računa.</p>
+    <div class="lanac-izbor">
+      <div class="popis" id="popis" role="list"></div>
+      <div id="lanac" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-geo">
+    <h2 id="h-geo">Utvrđeno iz službenih vektora i evidencije</h2>
+    <div class="tablica"><table><thead><tr><th>#</th><th>Tvrdnja</th><th>Razina</th><th>Izvor</th></tr></thead><tbody id="geo"></tbody></table></div>
+  </section>
+
+  <section aria-labelledby="h-pitanja">
+    <h2 id="h-pitanja">Otvorena pitanja</h2>
+    <div class="pitanja" id="pitanja"></div>
+  </section>
+
+  <section aria-labelledby="h-mjerenje">
+    <h2 id="h-mjerenje">Koliko podataka imamo</h2>
+    <div class="tablica"><table><thead><tr><th>Podatak</th><th>Izvor</th><th>Stanje</th><th>Napomena</th></tr></thead><tbody id="ulazi"></tbody></table></div>
+    <h3>Stručni rad za pripremu područja UPU-a 2</h3>
+    <p class="sitno" id="rad-uvod"></p>
+    <div class="tablica"><table><thead><tr><th>Posao</th><th>Jednom po</th><th>Količina</th><th>Vrijeme</th></tr></thead><tbody id="rad"></tbody></table></div>
+  </section>
+
+  <section aria-labelledby="h-pravila">
+    <h2 id="h-pravila">Pripremljena pravila UPU-a 2</h2>
+    <p class="sitno" id="pravila-uvod"></p>
+    <details><summary id="pravila-sazetak"></summary><div class="tablica" style="border:0"><table><thead><tr><th>Pravilo</th><th>Parametar</th><th>Vrijednost</th><th>Doslovni citat</th><th>Provjera</th></tr></thead><tbody id="pravila"></tbody></table></div></details>
+  </section>
+
+  <section aria-labelledby="h-izvori">
+    <h2 id="h-izvori">Izvori i kontrolne sume</h2>
+    <div class="tablica"><table><thead><tr><th>Izvor</th><th>Dohvat</th><th>SHA-256</th><th>Opis</th></tr></thead><tbody id="izvori"></tbody></table></div>
+  </section>
+</div>
+
+<script>
+const D = __PODACI__;
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const ST = { IZRACUNATO: "izračunato", UVJETNO: "uvjetno", NIJE_IZRACUNATO: "ne računa se" };
+const RZ = { SLUZBENI_VEKTOR: "službeni vektor", SLUZBENA_EVIDENCIJA: "službena evidencija", SLUZBENA_OBJAVA: "službena objava", SLUZBENI_TEKST: "doslovni citat, nije stručno potvrđeno",
+  RASTER_KANDIDAT: "raster, vizualno očitanje – kandidat", STRUCNO_POTVRDENO: "stručno potvrđeno", IZRACUN: "izračun", NEDOSTAJE: "Podaci nisu dostupni" };
+const PRIHV = new Set(["SLUZBENI_VEKTOR", "SLUZBENA_EVIDENCIJA", "SLUZBENA_OBJAVA", "STRUCNO_POTVRDENO", "IZRACUN"]);
+const pill = (s, t) => `<span class="pill s-${s}">${esc(t ?? ST[s] ?? s)}</span>`;
+const fmt = (x) => typeof x === "number" ? x.toLocaleString("hr-HR", { maximumFractionDigits: 1 }) : x;
+const dos = D.dosje, c = dos.cestica, M = D.mjerenje;
+
+$("#br-potvrda").textContent = dos.potvrde.length;
+$("#uvod").textContent = `Grafička površina ${fmt(c.povrsina_graficka_dgu_m2)} m² prema katastarskom planu DGU-a (podaci od 19. 10. 2026.). Vrijedi ${D.plan.naziv.replace(", odredbe za provođenje", "")} (${D.plan.glasilo}). Sve ispod složeno je iz javnih vektorskih slojeva, evidencije planova i unaprijed pripremljenih pravila; nijedan dio plana nije pročitao AI.`;
+
+// sažetak
+const ps = M.pokazatelji_po_stanju;
+$("#brojke").innerHTML = [
+  [dos.geo_cinjenice.length, "činjenica iz vektora i evidencije", "IZRACUNATO"],
+  [ps.IZRACUNATO || 0, "pokazatelja gradnje izračunato", "IZRACUNATO"],
+  [ps.UVJETNO || 0, "pokazatelja uvjetno (čekaju potvrdu)", "UVJETNO"],
+  [ps.NIJE_IZRACUNATO || 0, "pokazatelja se ne računa", "NIJE_IZRACUNATO"],
+  [dos.otvorena_pitanja.length, "otvorenih pitanja", "info"],
+].map(([n, t, s]) => `<div class="brojka"><b>${n}</b><span class="sitno">${t}</span>${s !== "info" ? pill(s) : ""}</div>`).join("");
+$("#zakljucak").innerHTML = `<h3>Odgovor za ovu česticu</h3><ul>
+<li><b>Sigurno iz službenih slojeva:</b> granica i površina čestice, da je cijela u obuhvatu UPU-a 2 Kornić (granica obuhvata ${fmt(D.upu2.udaljenost_do_granice_m)} m istočno), da je u NA2 prema PPUG-u te da je UPU 2 važeći prema evidenciji PGŽ.</li>
+<li><b>Ključna rupa:</b> detaljna zona UPU-a (M11) i zona zaštite (»C«) postoje samo na skeniranoj karti. Dok ih stručnjak ne potvrdi, svi pokazatelji gradnje ostaju uvjetni.</li>
+<li><b>Uvjetno, ako je zona M11:</b> dvojna ili ugrađena obiteljska kuća te dvojna višeobiteljska kuća su mogući po površini; slobodnostojeća obiteljska samo po iznimci od 400 m²; tlocrt do 101,2 m², GBP do 200 m² (obiteljska), dvije nadzemne etaže, visina 7,5 m, zelenilo najmanje 162 m².</li>
+<li><b>Ne računa se:</b> nagib krova (čl. 38. i čl. 85. si proturječe) i udaljenost od ceste (kategorija ceste nije poznata).</li></ul>`;
+
+// karta
+const K = D.karta, svg = $("#karta");
+svg.setAttribute("viewBox", `0 0 ${K.w} ${K.w}`);
+svg.innerHTML = `<rect width="${K.w}" height="${K.w}" fill="var(--surface)"/>
+<path d="${K.na2}" fill="var(--zone)" fill-opacity=".45" stroke="var(--plan)" stroke-width="1"/>
+${K.susjedi.map((s) => `<path d="${s.d}" fill="none" stroke="var(--muted)" stroke-opacity=".55" stroke-width=".8"/>`).join("")}
+${K.susjedi.filter((s) => s.lab).map((s) => `<text x="${s.lab[0]}" y="${s.lab[1]}" font-size="9" fill="var(--muted)" text-anchor="middle" font-family="var(--f-mono)">${esc(s.lab[2])}</text>`).join("")}
+<path d="${K.obuhvat}" fill="none" stroke="var(--obuhvat)" stroke-width="2.2" stroke-dasharray="9 5"/>
+<path d="${K.cestica}" fill="var(--parcel)" fill-opacity=".12" stroke="var(--parcel)" stroke-width="2.6"/>
+<text x="${K.oznaka[0]}" y="${K.oznaka[1] + 4}" font-size="12" font-weight="700" fill="var(--parcel)" text-anchor="middle" font-family="var(--f-mono)">735/76</text>
+<g transform="translate(16 ${K.w - 20})"><rect width="${K.mjerilo_px}" height="5" fill="var(--ink)"/><text y="-5" font-size="11" fill="var(--ink)" font-family="var(--f-mono)">50 m</text></g>
+<g transform="translate(${K.w - 26} 30)"><path d="M0,-16 L6,4 L0,0 L-6,4 Z" fill="var(--ink)"/><text y="18" font-size="11" text-anchor="middle" fill="var(--ink)" font-family="var(--f-mono)">S</text></g>`;
+const G = D.pregled, pv = $("#pregled");
+pv.setAttribute("viewBox", `0 0 ${G.w} ${G.h}`);
+pv.innerHTML = `<path d="${G.obuhvat}" fill="var(--zone)" fill-opacity=".35" stroke="var(--obuhvat)" stroke-width="1.2" stroke-dasharray="5 3"/><path d="${G.okvir}" fill="none" stroke="var(--muted)" stroke-width="1"/><circle cx="${G.cestica[0]}" cy="${G.cestica[1]}" r="3.5" fill="var(--parcel)"/>`;
+$("#rasteri").innerHTML = D.rasteri.map((r) => {
+  const kz = dos.kandidati_zona.find((k) => k.izvor === "raster:" + r.id);
+  return `<figure><img src="${r.src}" alt="${esc(r.naslov)} s ucrtanom granicom čestice" loading="lazy"><figcaption><b>${esc(r.naslov)}</b>, PGŽ PP_RASTERI, OBJECTID ${r.oid}, izrez ±90 m od 22. 10. 2026. Crveno: granica čestice iz DGU-a.<br>${pill("UVJETNO", "kandidat: " + r.kandidat)} ${esc(kz ? kz.napomena : "")}</figcaption></figure>`;
+}).join("");
+
+// lanac
+const pok = dos.pokazatelji;
+const popis = $("#popis");
+popis.innerHTML = pok.map((p, i) => `<button role="listitem" type="button" data-i="${i}" aria-pressed="false"><span>${esc(p.pokazatelj)}</span>${pill(p.stanje)}</button>`).join("");
+function rez(p) {
+  if (p.rezultat) return `${esc(p.rezultat)} (traži ${fmt(p.trazi)} m², ima ${fmt(p.ima)} m²; razlika ${fmt(p.rezerva_m2)} m²)`;
+  if (p.vrijednost_m2 != null) return `${fmt(p.vrijednost_m2)} m² = ${esc(p.formula)}`;
+  return esc(p.vrijednost ?? "–");
+}
+function prikazi(i) {
+  const p = pok[i];
+  popis.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.i === i)));
+  const red = { "čestica": 0, "zona": 1, "zona zaštite": 2, "plan": 3, "članak": 4, "pravilo": 5 };
+  const k = p.lanac.map((x) => `<div class="karika ${PRIHV.has(x.razina) ? "" : "ceka"}"><span class="k">${esc(x.karika)}</span><div><div>${esc(x.vrijednost)}</div>${x.citat ? `<blockquote>»${esc(x.citat)}«</blockquote>` : ""}<div class="r">${esc(RZ[x.razina] || x.razina)} · ${esc(x.izvor)}</div></div></div>`).join("");
+  const kraj = p.stanje === "NIJE_IZRACUNATO"
+    ? `<div class="karika blok"><span class="k">izračun</span><div>${pill(p.stanje)}<div style="margin-top:6px">${esc(p.ceka.join(" "))}</div></div></div>`
+    : `<div class="karika izracun"><span class="k">izračun</span><div><div><b>${rez(p)}</b></div><div style="margin-top:6px">${pill(p.stanje)} <span class="pill s-info">pravna valjanost: nije utvrđena</span></div>${p.ceka.length ? `<div class="r" style="margin-top:6px">Čeka: ${p.ceka.map(esc).join("; ")}</div>` : ""}${p.otvoreno ? `<div class="r">Otvoreno: ${esc(p.otvoreno)}</div>` : ""}${p.napomena ? `<div class="r">${esc(p.napomena)}</div>` : ""}</div></div>`;
+  $("#lanac").innerHTML = `<div class="lanac">${k}${kraj}</div>`;
+}
+popis.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) prikazi(+b.dataset.i); });
+prikazi(Math.max(0, pok.findIndex((p) => p.id === "tlocrt_max:obit:dvoj")));
+
+// činjenice
+$("#geo").innerHTML = dos.geo_cinjenice.map((g) => `<tr><td class="mono">${g.id}</td><td>${esc(g.tvrdnja)}</td><td>${pill(g.stanje, RZ[g.razina])}</td><td class="mono">${esc(g.izvor)}</td></tr>`).join("");
+$("#pitanja").innerHTML = dos.otvorena_pitanja.map((q) => `<div class="pitanje"><span class="id">${q.id}</span><div><b>${esc(q.pitanje)}</b><div class="sitno">${esc(q.zasto)} Tko: ${esc(q.tko)}.</div></div></div>`).join("");
+
+// mjerenje
+const SU = { ima: ["IZRACUNATO", "ima"], kandidat: ["UVJETNO", "kandidat"], nema: ["NIJE_IZRACUNATO", "nema"] };
+$("#ulazi").innerHTML = M.ulazi.map((u) => `<tr><td>${esc(u.podatak)}</td><td>${esc(u.izvor)}</td><td>${pill(...SU[u.stanje])}</td><td class="sitno">${esc(u.napomena)}</td></tr>`).join("");
+const us = M.ulazi_po_stanju, rp = M.raspon_povrsina;
+$("#rad-uvod").textContent = `Od ${M.ulazi.length} potrebnih ulaza: ${us.ima || 0} imamo strojno, ${us.kandidat || 0} su kandidati koji čekaju stručnjaka, ${us.nema || 0} nedostaju. Jedna priprema područja vrijedi za ${M.cestica_u_obuhvatu_upu2.toLocaleString("hr-HR")} katastarskih čestica u obuhvatu UPU-a 2 (po grafičkoj površini: ${["< 300 m²", "300–399 m²", "400–499 m²", "≥ 500 m²"].map((k) => `${k} ${rp[k] || 0}`).join(", ")}). Ljudsko vrijeme nije izmjereno; dosje se strojno složi za ${fmt(M.trajanje_dosjea_s)} s.`;
+$("#rad").innerHTML = M.strucni_rad.map((r) => `<tr><td>${esc(r.posao)}</td><td>${esc(r.jednom_po)}</td><td class="sitno">${esc(r.kolicina)}</td><td>${pill("UVJETNO", r.vrijeme)}</td></tr>`).join("");
+
+// pravila
+const n = D.pravila.length, nOk = D.pravila.filter((p) => p.tehnicki.tehnicki === "PROVJERENO").length;
+$("#pravila-uvod").textContent = `Pripremio razvoj iz službenog teksta (${D.plan.glasilo}, PDF čl. 1.–108.). Strojna provjera: citat se doslovno nalazi u svom članku i sadrži upisanu vrijednost. Vrijednosti se podudaraju s pravilima koja aplikacija već koristi (${D.usporedba.filter((u) => u.isto).length}/${D.usporedba.length} usporedbi). Stručno potvrđenih: 0.`;
+$("#pravila-sazetak").textContent = `${n} pravila · ${nOk} citata nađeno doslovno · 0 stručno potvrđenih`;
+const v = (x) => Array.isArray(x) ? x.join(", ") : typeof x === "object" && x ? Object.entries(x).map(([k, y]) => `${k} ${fmt(y)}`).join(", ") : fmt(x);
+$("#pravila").innerHTML = D.pravila.map((p) => `<tr><td class="mono">${p.id}<div class="sitno">čl. ${p.clanak}.${p.tocka ? " " + p.tocka + ")" : ""}</div></td><td class="mono">${esc(p.parametar)}</td><td class="br">${esc(p.operator)} ${esc(v(p.vrijednost))} ${esc(p.jedinica || "")}${p.iznimka ? `<div class="sitno">iznimno ${fmt(p.iznimka.vrijednost)}: ${esc(p.iznimka.uvjet)}</div>` : ""}</td><td><blockquote style="margin:0">»${esc(p.citat)}«</blockquote></td><td>${pill(p.tehnicki.tehnicki === "PROVJERENO" ? "UVJETNO" : "NIJE_IZRACUNATO", p.tehnicki.tehnicki === "PROVJERENO" ? "citat nađen" : "nije nađen")}</td></tr>`).join("");
+
+// izvori
+$("#izvori").innerHTML = dos.izvori.map((s) => `<tr><td class="mono">${esc(s.id)}<div class="sitno">${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.url.replace(/^https?:\/\//, "").slice(0, 70))}${s.url.length > 78 ? "…" : ""}</a>` : ""}</div></td><td class="mono">${esc(String(s.dohvat).slice(0, 16))}</td><td class="mono">${s.sha256.slice(0, 16)}…${s.sha_odgovara === true ? " ✓" : ""}</td><td class="sitno">${esc(s.opis)}</td></tr>`).join("");
+</script>

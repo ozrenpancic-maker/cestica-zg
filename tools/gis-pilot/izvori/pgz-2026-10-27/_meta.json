@@ -1,0 +1,36 @@
+{
+ "retrieved_utc": "2026-10-27T06:19:44Z",
+ "nacin": "Claude, ugrađeni preglednik na Ozrenovu računalu (fetch s ishodišta gisportal.pgz.hr); tijelo odgovora prenijeto kao gzip+base64, SHA-256 izračunat u pregledniku i ovdje se podudara",
+ "izvor": "GEOPORTAL PGŽ, gisportal.pgz.hr (javni ArcGIS REST, bez jamstva)",
+ "odgovori": {
+  "planovi_tocka.json": {
+   "url": "https://gisportal.pgz.hr/server/rest/services/STANJE/IZRADA_PP/FeatureServer/0/query?geometry=14.615896,45.044049&geometryType=esriGeometryPoint&inSR=4326&outFields=*&returnGeometry=false&f=json",
+   "date": "Tue, 27 Oct 2026 06:19:44 GMT",
+   "status": 200,
+   "sha256": "10594afece8a3305c732cc786885268377b1c24248be6c8a7e2ee7885816c659",
+   "opis": "evidencija planova na točki čestice (svi zapisi)"
+  },
+  "upu2_obuhvat.geojson": {
+   "url": "https://gisportal.pgz.hr/server/rest/services/STANJE/IZRADA_PP/FeatureServer/0/query?where=IDPLAN%3D618&outFields=OBJECTID,IDPLAN,NAZIV,STATUS_PP,SN_BROJ,DatumStNaSnPlana,DatumStVanSnage,obradaKarataPP&returnGeometry=true&outSR=4326&f=geojson",
+   "date": "Tue, 27 Oct 2026 06:19:44 GMT",
+   "status": 200,
+   "sha256": "b2b3d642cc030d15889f2480c58f513a02562f4cf1eb93431fd2e35740c89c04",
+   "opis": "vektorski obuhvat UPU-a 2 Kornić (IDPLAN 618)"
+  },
+  "rasteri_tocka_sloj5.json": {
+   "url": "https://gisportal.pgz.hr/server/rest/services/PP_RASTERI/PP_RASTERI/MapServer/5/query?geometry=14.615896,45.044049&geometryType=esriGeometryPoint&inSR=4326&outFields=OBJECTID,Name,KARTA_NAZIV,PLAN_NAZIV,OPCINA,GIS_SIFRA,MJERILO,KARTA_SIFRA,STANJE_1212&returnGeometry=false&f=json",
+   "date": "Tue, 27 Oct 2026 06:19:44 GMT",
+   "status": 200,
+   "sha256": "ab0612ba0230f330dca2e04b1dbaf898558be77fcb71c8060b3f6ba56dfc6056",
+   "opis": "katalog rasterskih listova UPU-a na točki (sloj 5)"
+  },
+  "namjena_tocka.json": {
+   "url": "https://gisportal.pgz.hr/server/rest/services/STANJE/NAMJENA_POVRSINA_NOVO/FeatureServer/0/query?geometry=14.615896,45.044049&geometryType=esriGeometryPoint&inSR=4326&outFields=*&returnGeometry=false&f=json",
+   "date": "Tue, 27 Oct 2026 06:19:44 GMT",
+   "status": 200,
+   "sha256": "0d02a8379ea3a13c91ae4ee153bd3b49fcfcae232bca7de86f16fea803944fed",
+   "opis": "namjena na točki; tijelo nije preneseno jer je SHA isti kao 22. 10. (tests/…/namjena_tocka_doc.json)",
+   "nije_preneseno": true
+  }
+ }
+}
