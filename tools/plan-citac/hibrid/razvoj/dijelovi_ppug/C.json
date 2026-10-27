@@ -1,0 +1,1397 @@
+{
+ "generator": "Ručno izdvajanje iz čl. 38. Svaki stavak (1)-(6) ima svoju vrstu građevine iz uvoda stavka. Kis potpuno ukopane etaže (0,8) zapisan je kao zaseban kandidat. Upućivanja na standarde označena su kao UPUCIVANJE. Bez korištenja alata.",
+ "kandidati": [
+  {
+   "clanak": 38,
+   "stavak": 1,
+   "tocka": "a",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent izgrađenosti (kig) iznosi 0,5",
+   "parametar": "najveći koeficijent izgrađenosti (kig)",
+   "operator": "<=",
+   "vrijednost": 0.5,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "predškolska ustanova",
+    "izraz": "predškolskih ustanova",
+    "citat_izraza": "Uvjeti za gradnju predškolskih ustanova su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 1,
+   "tocka": "b",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent iskoristivosti (kis) nadzemnih etaža iznosi 1,0",
+   "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+   "operator": "<=",
+   "vrijednost": 1.0,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "predškolska ustanova",
+    "izraz": "predškolskih ustanova",
+    "citat_izraza": "Uvjeti za gradnju predškolskih ustanova su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 1,
+   "tocka": "c",
+   "alineja_rb": null,
+   "citat": "ukoliko se ispod građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi 1,8",
+   "parametar": "najveći koeficijent iskoristivosti (kis) (uz podrum ili ukupni)",
+   "operator": "<=",
+   "vrijednost": 1.8,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "predškolska ustanova",
+    "izraz": "predškolskih ustanova",
+    "citat_izraza": "Uvjeti za gradnju predškolskih ustanova su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko se ispod građevine gradi podrum",
+     "citat": "ukoliko se ispod građevine gradi podrum",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 1,
+   "tocka": "c",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent iskoristivosti (kis) iznosi 1,8 od čega je 0,8 koeficijent iskoristivosti (kis) potpuno ukopane etaže",
+   "parametar": "drugo: koeficijent iskoristivosti (kis) potpuno ukopane etaže",
+   "operator": "<=",
+   "vrijednost": 0.8,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "predškolska ustanova",
+    "izraz": "predškolskih ustanova",
+    "citat_izraza": "Uvjeti za gradnju predškolskih ustanova su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko se ispod građevine gradi podrum",
+     "citat": "ukoliko se ispod građevine gradi podrum",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: »od čega je 0,8« može značiti točan udio ili gornju granicu kis-a potpuno ukopane etaže"
+  },
+  {
+   "clanak": 38,
+   "stavak": 1,
+   "tocka": "d",
+   "alineja_rb": null,
+   "citat": "mogu se graditi kao podrum i dvije nadzemne etaže",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": "podrum i dvije nadzemne etaže",
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "predškolska ustanova",
+    "izraz": "predškolskih ustanova",
+    "citat_izraza": "Uvjeti za gradnju predškolskih ustanova su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 1,
+   "tocka": "d",
+   "alineja_rb": null,
+   "citat": "mogu se graditi kao podrum i dvije nadzemne etaže, najveće visine 8,0 m",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 8.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "predškolska ustanova",
+    "izraz": "predškolskih ustanova",
+    "citat_izraza": "Uvjeti za gradnju predškolskih ustanova su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 1,
+   "tocka": "e",
+   "alineja_rb": null,
+   "citat": "uvjeti o veličini građevne čestice, uređenju građevne čestice i obveznim prostorima građevina predškolskog odgoja određeni su Državnim pedagoškim standardom predškolskog odgoja (NN 63/08)",
+   "parametar": "drugo: veličina i uređenje građevne čestice te obvezni prostori prema pedagoškom standardu",
+   "operator": "opis",
+   "vrijednost": "određeni su Državnim pedagoškim standardom predškolskog odgoja (NN 63/08)",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevina predškolskog odgoja",
+    "izraz": "građevina predškolskog odgoja",
+    "citat_izraza": "obveznim prostorima građevina predškolskog odgoja",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "UPUCIVANJE: vrijednosti određuje Državni pedagoški standard predškolskog odgoja (NN 63/08)"
+  },
+  {
+   "clanak": 38,
+   "stavak": 2,
+   "tocka": "a",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent izgrađenosti (kig) iznosi 0,5",
+   "parametar": "najveći koeficijent izgrađenosti (kig)",
+   "operator": "<=",
+   "vrijednost": 0.5,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "školska ustanova",
+    "izraz": "školskih ustanova",
+    "citat_izraza": "Uvjeti za gradnju školskih ustanova su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 2,
+   "tocka": "b",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent iskoristivosti (kis) nadzemnih etaža iznosi 1,0",
+   "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+   "operator": "<=",
+   "vrijednost": 1.0,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "školska ustanova",
+    "izraz": "školskih ustanova",
+    "citat_izraza": "Uvjeti za gradnju školskih ustanova su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 2,
+   "tocka": "c",
+   "alineja_rb": null,
+   "citat": "ukoliko se ispod građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi 1,8",
+   "parametar": "najveći koeficijent iskoristivosti (kis) (uz podrum ili ukupni)",
+   "operator": "<=",
+   "vrijednost": 1.8,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "školska ustanova",
+    "izraz": "školskih ustanova",
+    "citat_izraza": "Uvjeti za gradnju školskih ustanova su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko se ispod građevine gradi podrum",
+     "citat": "ukoliko se ispod građevine gradi podrum",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 2,
+   "tocka": "c",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent iskoristivosti (kis) iznosi 1,8 od čega je 0,8 koeficijent iskoristivosti (kis) potpuno ukopane etaže",
+   "parametar": "drugo: koeficijent iskoristivosti (kis) potpuno ukopane etaže",
+   "operator": "<=",
+   "vrijednost": 0.8,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "školska ustanova",
+    "izraz": "školskih ustanova",
+    "citat_izraza": "Uvjeti za gradnju školskih ustanova su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko se ispod građevine gradi podrum",
+     "citat": "ukoliko se ispod građevine gradi podrum",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: »od čega je 0,8« može značiti točan udio ili gornju granicu kis-a potpuno ukopane etaže"
+  },
+  {
+   "clanak": 38,
+   "stavak": 2,
+   "tocka": "d",
+   "alineja_rb": null,
+   "citat": "mogu se graditi kao podrum i dvije nadzemne etaže",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": "podrum i dvije nadzemne etaže",
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "školska ustanova",
+    "izraz": "školskih ustanova",
+    "citat_izraza": "Uvjeti za gradnju školskih ustanova su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 2,
+   "tocka": "d",
+   "alineja_rb": null,
+   "citat": "mogu se graditi kao podrum i dvije nadzemne etaže, najveće visine 8,0m",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 8.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "školska ustanova",
+    "izraz": "školskih ustanova",
+    "citat_izraza": "Uvjeti za gradnju školskih ustanova su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 2,
+   "tocka": "e",
+   "alineja_rb": null,
+   "citat": "uvjeti o veličini građevne čestice, uređenju građevne čestice i obveznim prostorima građevina školskog odgoja određeni su Državnim pedagoškim standardom osnovnoškolskog sustava odgoja i obrazovanja (NN 63/08)",
+   "parametar": "drugo: veličina i uređenje građevne čestice te obvezni prostori prema pedagoškom standardu",
+   "operator": "opis",
+   "vrijednost": "određeni su Državnim pedagoškim standardom osnovnoškolskog sustava odgoja i obrazovanja (NN 63/08)",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevina školskog odgoja",
+    "izraz": "građevina školskog odgoja",
+    "citat_izraza": "obveznim prostorima građevina školskog odgoja",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "UPUCIVANJE: vrijednosti određuje Državni pedagoški standard osnovnoškolskog sustava odgoja i obrazovanja (NN 63/08)"
+  },
+  {
+   "clanak": 38,
+   "stavak": 3,
+   "tocka": "a",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent izgrađenosti (kig) iznosi 0,5",
+   "parametar": "najveći koeficijent izgrađenosti (kig)",
+   "operator": "<=",
+   "vrijednost": 0.5,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "građevina zdravstvene i socijalne djelatnosti",
+    "izraz": "građevina zdravstvene i socijalne djelatnosti",
+    "citat_izraza": "Uvjeti za gradnju građevina zdravstvene i socijalne djelatnosti su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 3,
+   "tocka": "b",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent iskoristivosti (kis) nadzemnih etaža iznosi 1,0",
+   "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+   "operator": "<=",
+   "vrijednost": 1.0,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "građevina zdravstvene i socijalne djelatnosti",
+    "izraz": "građevina zdravstvene i socijalne djelatnosti",
+    "citat_izraza": "Uvjeti za gradnju građevina zdravstvene i socijalne djelatnosti su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 3,
+   "tocka": "c",
+   "alineja_rb": null,
+   "citat": "ukoliko se ispod građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi 1,8",
+   "parametar": "najveći koeficijent iskoristivosti (kis) (uz podrum ili ukupni)",
+   "operator": "<=",
+   "vrijednost": 1.8,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "građevina zdravstvene i socijalne djelatnosti",
+    "izraz": "građevina zdravstvene i socijalne djelatnosti",
+    "citat_izraza": "Uvjeti za gradnju građevina zdravstvene i socijalne djelatnosti su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko se ispod građevine gradi podrum",
+     "citat": "ukoliko se ispod građevine gradi podrum",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 3,
+   "tocka": "c",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent iskoristivosti (kis) iznosi 1,8 od čega je 0,8 koeficijent iskoristivosti (kis) potpuno ukopane etaže",
+   "parametar": "drugo: koeficijent iskoristivosti (kis) potpuno ukopane etaže",
+   "operator": "<=",
+   "vrijednost": 0.8,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "građevina zdravstvene i socijalne djelatnosti",
+    "izraz": "građevina zdravstvene i socijalne djelatnosti",
+    "citat_izraza": "Uvjeti za gradnju građevina zdravstvene i socijalne djelatnosti su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko se ispod građevine gradi podrum",
+     "citat": "ukoliko se ispod građevine gradi podrum",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: »od čega je 0,8« može značiti točan udio ili gornju granicu kis-a potpuno ukopane etaže"
+  },
+  {
+   "clanak": 38,
+   "stavak": 3,
+   "tocka": "d",
+   "alineja_rb": null,
+   "citat": "mogu se graditi kao podrum i dvije nadzemne etaže",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": "podrum i dvije nadzemne etaže",
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "građevina zdravstvene i socijalne djelatnosti",
+    "izraz": "građevina zdravstvene i socijalne djelatnosti",
+    "citat_izraza": "Uvjeti za gradnju građevina zdravstvene i socijalne djelatnosti su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 3,
+   "tocka": "d",
+   "alineja_rb": null,
+   "citat": "mogu se graditi kao podrum i dvije nadzemne etaže, najveće visine 8,0m",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 8.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina zdravstvene i socijalne djelatnosti",
+    "izraz": "građevina zdravstvene i socijalne djelatnosti",
+    "citat_izraza": "Uvjeti za gradnju građevina zdravstvene i socijalne djelatnosti su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 3,
+   "tocka": "e",
+   "alineja_rb": null,
+   "citat": "građevine zdravstvene i socijalne djelatnosti grade se unutar građevinskih područja naselja u skladu s veličinom naselja i standardima, na način da pridonose kvaliteti života u naselju",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "unutar građevinskih područja naselja u skladu s veličinom naselja i standardima",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevina zdravstvene i socijalne djelatnosti",
+    "izraz": "građevine zdravstvene i socijalne djelatnosti",
+    "citat_izraza": "građevine zdravstvene i socijalne djelatnosti grade se",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar građevinskih područja naselja"
+   },
+   "uvjeti": [
+    {
+     "tekst": "u skladu s veličinom naselja i standardima",
+     "citat": "u skladu s veličinom naselja i standardima",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "UPUCIVANJE: »standardima« nisu imenovani, uvjet određuju drugi propisi"
+  },
+  {
+   "clanak": 38,
+   "stavak": 3,
+   "tocka": "f",
+   "alineja_rb": null,
+   "citat": "na razini primarne zdravstvene zaštite planira se mogućnost otvaranja specijalističkih ambulanti i poliklinika",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "mogućnost otvaranja specijalističkih ambulanti i poliklinika",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "specijalistička ambulanta i poliklinika",
+    "izraz": "specijalističkih ambulanti i poliklinika",
+    "citat_izraza": "mogućnost otvaranja specijalističkih ambulanti i poliklinika",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "na razini primarne zdravstvene zaštite",
+     "citat": "na razini primarne zdravstvene zaštite",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: odnosi se na planiranje sadržaja (otvaranje ambulanti), nije jasno je li to pravilo o gradnji građevine"
+  },
+  {
+   "clanak": 38,
+   "stavak": 3,
+   "tocka": "f",
+   "alineja_rb": null,
+   "citat": "za prostore zdravstvene stanice (ambulante) optimalna površina iznosi 0,02 - 0,05 m 2 /st",
+   "parametar": "drugo: optimalna površina prostora zdravstvene stanice po stanovniku",
+   "operator": "izmedju",
+   "vrijednost": "0.02–0.05",
+   "jedinica": "m²",
+   "vrsta_gradevine": {
+    "naziv": "zdravstvena stanica (ambulanta)",
+    "izraz": "zdravstvene stanice (ambulante)",
+    "citat_izraza": "za prostore zdravstvene stanice (ambulante)",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "TUMACENJE: vrijednost je »optimalna« (preporuka, ne granica) i izražena u m² po stanovniku (»m 2 /st«), nije jasno kojeg obuhvata stanovnika"
+  },
+  {
+   "clanak": 38,
+   "stavak": 4,
+   "tocka": "a",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent izgrađenosti (kig) iznosi 0,5",
+   "parametar": "najveći koeficijent izgrađenosti (kig)",
+   "operator": "<=",
+   "vrijednost": 0.5,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "građevina kulturnih djelatnosti",
+    "izraz": "građevina kulturnih djelatnosti",
+    "citat_izraza": "Uvjeti za gradnju građevina kulturnih djelatnosti su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 4,
+   "tocka": "b",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent iskoristivosti (kis) nadzemnih etaža iznosi 1,0",
+   "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+   "operator": "<=",
+   "vrijednost": 1.0,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "građevina kulturnih djelatnosti",
+    "izraz": "građevina kulturnih djelatnosti",
+    "citat_izraza": "Uvjeti za gradnju građevina kulturnih djelatnosti su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 4,
+   "tocka": "c",
+   "alineja_rb": null,
+   "citat": "ukoliko se ispod građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi 1,8",
+   "parametar": "najveći koeficijent iskoristivosti (kis) (uz podrum ili ukupni)",
+   "operator": "<=",
+   "vrijednost": 1.8,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "građevina kulturnih djelatnosti",
+    "izraz": "građevina kulturnih djelatnosti",
+    "citat_izraza": "Uvjeti za gradnju građevina kulturnih djelatnosti su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko se ispod građevine gradi podrum",
+     "citat": "ukoliko se ispod građevine gradi podrum",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 4,
+   "tocka": "c",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent iskoristivosti (kis) iznosi 1,8 od čega je 0,8 koeficijent iskoristivosti (kis) potpuno ukopane etaže",
+   "parametar": "drugo: koeficijent iskoristivosti (kis) potpuno ukopane etaže",
+   "operator": "<=",
+   "vrijednost": 0.8,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "građevina kulturnih djelatnosti",
+    "izraz": "građevina kulturnih djelatnosti",
+    "citat_izraza": "Uvjeti za gradnju građevina kulturnih djelatnosti su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko se ispod građevine gradi podrum",
+     "citat": "ukoliko se ispod građevine gradi podrum",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: »od čega je 0,8« može značiti točan udio ili gornju granicu kis-a potpuno ukopane etaže"
+  },
+  {
+   "clanak": 38,
+   "stavak": 4,
+   "tocka": "d",
+   "alineja_rb": null,
+   "citat": "mogu se graditi kao podrum i dvije nadzemne etaže",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": "podrum i dvije nadzemne etaže",
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "građevina kulturnih djelatnosti",
+    "izraz": "građevina kulturnih djelatnosti",
+    "citat_izraza": "Uvjeti za gradnju građevina kulturnih djelatnosti su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 4,
+   "tocka": "d",
+   "alineja_rb": null,
+   "citat": "mogu se graditi kao podrum i dvije nadzemne etaže, najveće visine 8,0m",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 8.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina kulturnih djelatnosti",
+    "izraz": "građevina kulturnih djelatnosti",
+    "citat_izraza": "Uvjeti za gradnju građevina kulturnih djelatnosti su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 4,
+   "tocka": "e",
+   "alineja_rb": null,
+   "citat": "građevine kulturnih djelatnosti grade se unutar građevinskih područja naselja u skladu s veličinom naselja i standardima, na način da pridonose kvaliteti života u naselju",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "unutar građevinskih područja naselja u skladu s veličinom naselja i standardima",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevina kulturnih djelatnosti",
+    "izraz": "građevine kulturnih djelatnosti",
+    "citat_izraza": "građevine kulturnih djelatnosti grade se",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar građevinskih područja naselja"
+   },
+   "uvjeti": [
+    {
+     "tekst": "u skladu s veličinom naselja i standardima",
+     "citat": "u skladu s veličinom naselja i standardima",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "UPUCIVANJE: »standardima« nisu imenovani, uvjet određuju drugi propisi"
+  },
+  {
+   "clanak": 38,
+   "stavak": 5,
+   "tocka": "a",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent izgrađenosti (kig) iznosi 0,6",
+   "parametar": "najveći koeficijent izgrađenosti (kig)",
+   "operator": "<=",
+   "vrijednost": 0.6,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "vjerska građevina",
+    "izraz": "vjerskih građevina",
+    "citat_izraza": "Uvjeti za gradnju vjerskih građevina su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 5,
+   "tocka": "b",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent iskoristivosti (kis) nadzemnih etaža iznosi 1,0",
+   "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+   "operator": "<=",
+   "vrijednost": 1.0,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "vjerska građevina",
+    "izraz": "vjerskih građevina",
+    "citat_izraza": "Uvjeti za gradnju vjerskih građevina su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 5,
+   "tocka": "c",
+   "alineja_rb": null,
+   "citat": "ukoliko se ispod građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi 1,8",
+   "parametar": "najveći koeficijent iskoristivosti (kis) (uz podrum ili ukupni)",
+   "operator": "<=",
+   "vrijednost": 1.8,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "vjerska građevina",
+    "izraz": "vjerskih građevina",
+    "citat_izraza": "Uvjeti za gradnju vjerskih građevina su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko se ispod građevine gradi podrum",
+     "citat": "ukoliko se ispod građevine gradi podrum",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 5,
+   "tocka": "c",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent iskoristivosti (kis) iznosi 1,8 od čega je 0,8 koeficijent iskoristivosti (kis) potpuno ukopane etaže",
+   "parametar": "drugo: koeficijent iskoristivosti (kis) potpuno ukopane etaže",
+   "operator": "<=",
+   "vrijednost": 0.8,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "vjerska građevina",
+    "izraz": "vjerskih građevina",
+    "citat_izraza": "Uvjeti za gradnju vjerskih građevina su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko se ispod građevine gradi podrum",
+     "citat": "ukoliko se ispod građevine gradi podrum",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: »od čega je 0,8« može značiti točan udio ili gornju granicu kis-a potpuno ukopane etaže"
+  },
+  {
+   "clanak": 38,
+   "stavak": 5,
+   "tocka": "d",
+   "alineja_rb": null,
+   "citat": "mogu se graditi kao podrum i dvije nadzemne etaže",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": "podrum i dvije nadzemne etaže",
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "vjerska građevina",
+    "izraz": "vjerskih građevina",
+    "citat_izraza": "Uvjeti za gradnju vjerskih građevina su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 5,
+   "tocka": "d",
+   "alineja_rb": null,
+   "citat": "mogu se graditi kao podrum i dvije nadzemne etaže, najveće visine 8,0m",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 8.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "vjerska građevina",
+    "izraz": "vjerskih građevina",
+    "citat_izraza": "Uvjeti za gradnju vjerskih građevina su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 5,
+   "tocka": "d",
+   "alineja_rb": null,
+   "citat": "a visina zvonika može biti viša",
+   "parametar": "najveća visina građevine",
+   "operator": "dopustenje",
+   "vrijednost": null,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "zvonik",
+    "izraz": "zvonika",
+    "citat_izraza": "a visina zvonika može biti viša",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "a visina zvonika može biti viša",
+     "citat": "a visina zvonika može biti viša"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "TUMACENJE: nije propisana najveća visina zvonika (»može biti viša« od 8,0 m bez gornje granice)"
+  },
+  {
+   "clanak": 38,
+   "stavak": 6,
+   "tocka": "a",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent izgrađenosti (kig) iznosi 0,6",
+   "parametar": "najveći koeficijent izgrađenosti (kig)",
+   "operator": "<=",
+   "vrijednost": 0.6,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "sportsko-rekreacijska građevina",
+    "izraz": "sportsko-rekreacijskih građevina",
+    "citat_izraza": "Uvjeti za gradnju sportsko-rekreacijskih građevina su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 6,
+   "tocka": "b",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent iskoristivosti (kis) nadzemnih etaža iznosi 1,2",
+   "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+   "operator": "<=",
+   "vrijednost": 1.2,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "sportsko-rekreacijska građevina",
+    "izraz": "sportsko-rekreacijskih građevina",
+    "citat_izraza": "Uvjeti za gradnju sportsko-rekreacijskih građevina su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 6,
+   "tocka": "c",
+   "alineja_rb": null,
+   "citat": "ukoliko se ispod građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi 2,0",
+   "parametar": "najveći koeficijent iskoristivosti (kis) (uz podrum ili ukupni)",
+   "operator": "<=",
+   "vrijednost": 2.0,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "sportsko-rekreacijska građevina",
+    "izraz": "sportsko-rekreacijskih građevina",
+    "citat_izraza": "Uvjeti za gradnju sportsko-rekreacijskih građevina su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko se ispod građevine gradi podrum",
+     "citat": "ukoliko se ispod građevine gradi podrum",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 6,
+   "tocka": "c",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent iskoristivosti (kis) iznosi 2,0 od čega je 0,8 koeficijent iskoristivosti (kis) potpuno ukopane etaže",
+   "parametar": "drugo: koeficijent iskoristivosti (kis) potpuno ukopane etaže",
+   "operator": "<=",
+   "vrijednost": 0.8,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "sportsko-rekreacijska građevina",
+    "izraz": "sportsko-rekreacijskih građevina",
+    "citat_izraza": "Uvjeti za gradnju sportsko-rekreacijskih građevina su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko se ispod građevine gradi podrum",
+     "citat": "ukoliko se ispod građevine gradi podrum",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: »od čega je 0,8« može značiti točan udio ili gornju granicu kis-a potpuno ukopane etaže"
+  },
+  {
+   "clanak": 38,
+   "stavak": 6,
+   "tocka": "d",
+   "alineja_rb": null,
+   "citat": "mogu se graditi kao podrum i dvije nadzemne etaže",
+   "parametar": "najveći broj etaža",
+   "operator": "<=",
+   "vrijednost": "podrum i dvije nadzemne etaže",
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "sportsko-rekreacijska građevina",
+    "izraz": "sportsko-rekreacijskih građevina",
+    "citat_izraza": "Uvjeti za gradnju sportsko-rekreacijskih građevina su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 6,
+   "tocka": "d",
+   "alineja_rb": null,
+   "citat": "mogu se graditi kao podrum i dvije nadzemne etaže, najveće visine 12,0m",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 12.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "sportsko-rekreacijska građevina",
+    "izraz": "sportsko-rekreacijskih građevina",
+    "citat_izraza": "Uvjeti za gradnju sportsko-rekreacijskih građevina su:",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 38,
+   "stavak": 6,
+   "tocka": "e",
+   "alineja_rb": null,
+   "citat": "sportsko-rekreacijske građevine grade se unutar građevinskih područja naselja u skladu s veličinom naselja i standardima, na način da pridonose kvaliteti života u naselju",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "unutar građevinskih područja naselja u skladu s veličinom naselja i standardima",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "sportsko-rekreacijska građevina",
+    "izraz": "sportsko-rekreacijske građevine",
+    "citat_izraza": "sportsko-rekreacijske građevine grade se",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar građevinskih područja naselja"
+   },
+   "uvjeti": [
+    {
+     "tekst": "u skladu s veličinom naselja i standardima",
+     "citat": "u skladu s veličinom naselja i standardima",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "UPUCIVANJE: »standardima« nisu imenovani, uvjet određuju drugi propisi"
+  },
+  {
+   "clanak": 38,
+   "stavak": 6,
+   "tocka": "f",
+   "alineja_rb": null,
+   "citat": "unutar građevinskog područja naselja omogućuje se građenje zatvorenih sportsko-rekreacijskih građevina (dvorana) te bazena i otvorenih sportskih sadržaja prema standardima koji vrijede za pojedini sportski objekt",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "omogućuje se građenje",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "zatvorena sportsko-rekreacijska građevina (dvorana), bazen i otvoreni sportski sadržaj",
+    "izraz": "zatvorenih sportsko-rekreacijskih građevina (dvorana) te bazena i otvorenih sportskih sadržaja",
+    "citat_izraza": "građenje zatvorenih sportsko-rekreacijskih građevina (dvorana) te bazena i otvorenih sportskih sadržaja",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar građevinskog područja naselja"
+   },
+   "uvjeti": [
+    {
+     "tekst": "prema standardima koji vrijede za pojedini sportski objekt",
+     "citat": "prema standardima koji vrijede za pojedini sportski objekt",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "UPUCIVANJE: uvjete određuju standardi za pojedini sportski objekt, koji nisu navedeni"
+  },
+  {
+   "clanak": 38,
+   "stavak": 7,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Građevine mješovite namjene grade se prema strožim uvjetima za izgradnju od dviju kombiniranih namjena",
+   "parametar": "drugo: primjena strožih uvjeta za izgradnju od dviju kombiniranih namjena",
+   "operator": "opis",
+   "vrijednost": "prema strožim uvjetima za izgradnju od dviju kombiniranih namjena",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevina mješovite namjene",
+    "izraz": "Građevine mješovite namjene",
+    "citat_izraza": "Građevine mješovite namjene grade se",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "TUMACENJE: »strožim uvjetima« treba odrediti po svakom parametru zasebno; nije jasno što ako se namjene kombiniraju u više od dvije ili je za pojedini parametar teško odrediti koji je stroži"
+  },
+  {
+   "clanak": 38,
+   "stavak": 8,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Građevine koje služe društvenim djelatnostima i sportsko-rekreacijskim i ostalim sadržajima javnog interesa grade se na građevnoj čestici min 500m 2 , ako ovim odredbama nije drugačije određeno",
+   "parametar": "najmanja površina građevne čestice",
+   "operator": ">=",
+   "vrijednost": 500,
+   "jedinica": "m²",
+   "vrsta_gradevine": {
+    "naziv": "građevina koja služi društvenim djelatnostima i sportsko-rekreacijskim i ostalim sadržajima javnog interesa",
+    "izraz": "Građevine koje služe društvenim djelatnostima i sportsko-rekreacijskim i ostalim sadržajima javnog interesa",
+    "citat_izraza": "Građevine koje služe društvenim djelatnostima i sportsko-rekreacijskim i ostalim sadržajima javnog interesa grade se",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ako ovim odredbama nije drugačije određeno",
+     "citat": "ako ovim odredbama nije drugačije određeno",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "SUKOB: za predškolske i školske ustanove veličinu čestice određuje Državni pedagoški standard (st. (1) e i (2) e), pa nije jasno vrijedi li za njih min 500 m²"
+  }
+ ],
+ "metapodaci": {
+  "skup": "ppug_krk",
+  "pozvani_alati": [
+   "SubagentHandback"
+  ],
+  "tokena": 87463,
+  "trajanje_ms": 140015,
+  "generator": "izolirani agent u razvojnoj sesiji, bez alata za čitanje; samo upute generatora v1 i tekst",
+  "upute": "hibrid/UPUTE_GENERATORA_v1.md"
+ }
+}

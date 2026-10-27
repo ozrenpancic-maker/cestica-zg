@@ -1,0 +1,1405 @@
+{
+ "generator": "Ručno čitanje teksta, bez alata. Čl. 25 (1): po jedan kandidat za svaku točku a–h. Čl. 25 (2): dopuštenost gradnje iz uvoda stavka i po jedan kandidat za svaku vrijednost u alinejama; uvjet iz uvoda »uz stambenu građevinu« ponovljen je kod svakog kandidata stavka. Čl. 33: dvojne i ugrađene kuće razdvojene su u zasebne kandidate prema načinu gradnje; povijesne graditeljske cjeline zapisane su kao prostorni obuhvat (zona bez planske oznake).",
+ "kandidati": [
+  {
+   "clanak": 25,
+   "stavak": 1,
+   "tocka": "a",
+   "alineja_rb": null,
+   "citat": "najmanja dopuštena površina građevne čestice za izgradnju stambene građevine iznosi 500 m 2",
+   "parametar": "najmanja površina građevne čestice",
+   "operator": ">=",
+   "vrijednost": 500,
+   "jedinica": "m²",
+   "vrsta_gradevine": {
+    "naziv": "stambena građevina",
+    "izraz": "stambene građevine",
+    "citat_izraza": "za izgradnju stambene građevine iznosi 500 m 2",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 1,
+   "tocka": "b",
+   "alineja_rb": null,
+   "citat": "ovim prostornim planom se ne propisuje najveća dopuštena površina građevne čestice za izgradnju stambene građevine",
+   "parametar": "najveća površina građevne čestice",
+   "operator": "nije_propisano",
+   "vrijednost": null,
+   "jedinica": null,
+   "vrsta_gradevine": {
+    "naziv": "stambena građevina",
+    "izraz": "stambene građevine",
+    "citat_izraza": "za izgradnju stambene građevine",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 1,
+   "tocka": "c",
+   "alineja_rb": null,
+   "citat": "najmanja dopuštena površina tlocrtne projekcije nove stambene građevine iznosi 100 m 2 za sve tipove gradnje",
+   "parametar": "najmanja površina tlocrtne projekcije građevine",
+   "operator": ">=",
+   "vrijednost": 100,
+   "jedinica": "m²",
+   "vrsta_gradevine": {
+    "naziv": "stambena građevina (nova)",
+    "izraz": "nove stambene građevine",
+    "citat_izraza": "površina tlocrtne projekcije nove stambene građevine iznosi 100 m 2",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "nove stambene građevine",
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 1,
+   "tocka": "d",
+   "alineja_rb": null,
+   "citat": "najveća dopuštena površina tlocrtne projekcije nove stambene građevine iznosi 200 m 2",
+   "parametar": "najveća površina tlocrtne projekcije građevine",
+   "operator": "<=",
+   "vrijednost": 200,
+   "jedinica": "m²",
+   "vrsta_gradevine": {
+    "naziv": "stambena građevina (nova)",
+    "izraz": "nove stambene građevine",
+    "citat_izraza": "površina tlocrtne projekcije nove stambene građevine iznosi 200 m 2",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "nova",
+   "citat_stanja": "nove stambene građevine",
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 1,
+   "tocka": "e",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent izgrađenosti (kig) određuje se 0,25",
+   "parametar": "najveći koeficijent izgrađenosti (kig)",
+   "operator": "<=",
+   "vrijednost": 0.25,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "stambena građevina",
+    "izraz": "stambenih građevina",
+    "citat_izraza": "Utvrđuju se slijedeće granične vrijednosti za izgradnju stambenih građevina",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 1,
+   "tocka": "f",
+   "alineja_rb": null,
+   "citat": "najveći dopušteni koeficijent iskoristivosti (kis) nadzemnih etaža u NA2-NA15.2 iznosi 0,50",
+   "parametar": "najveći koeficijent iskoristivosti (kis) nadzemnih etaža",
+   "operator": "<=",
+   "vrijednost": 0.5,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "stambena građevina",
+    "izraz": "stambenih građevina",
+    "citat_izraza": "Utvrđuju se slijedeće granične vrijednosti za izgradnju stambenih građevina",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [
+     "NA2-NA15.2"
+    ],
+    "citat": "u NA2-NA15.2"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "OBUHVAT: »NA2-NA15.2« je raspon planskih oznaka; tekst ne navodi pojedinačne zone koje raspon obuhvaća (npr. podzone poput NA15.1), a ni koji kis vrijedi izvan tih zona."
+  },
+  {
+   "clanak": 25,
+   "stavak": 1,
+   "tocka": "g",
+   "alineja_rb": null,
+   "citat": "ukoliko se ispod stambene građevine gradi podrum najveći dopušteni koeficijent iskoristivosti (kis) iznosi 0,75",
+   "parametar": "najveći koeficijent iskoristivosti (kis) (uz podrum ili ukupni)",
+   "operator": "<=",
+   "vrijednost": 0.75,
+   "jedinica": "koeficijent",
+   "vrsta_gradevine": {
+    "naziv": "stambena građevina",
+    "izraz": "stambene građevine",
+    "citat_izraza": "ukoliko se ispod stambene građevine gradi podrum",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko se ispod stambene građevine gradi podrum",
+     "citat": "ukoliko se ispod stambene građevine gradi podrum",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 1,
+   "tocka": "h",
+   "alineja_rb": null,
+   "citat": "stambene građevine mogu se graditi samo kao samostojeće građevine",
+   "parametar": "način gradnje",
+   "operator": "=",
+   "vrijednost": "samostojeće",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "stambena građevina",
+    "izraz": "stambene građevine",
+    "citat_izraza": "stambene građevine mogu se graditi samo kao samostojeće građevine",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "SUKOB: čl. 25 (1) h) dopušta samo samostojeće stambene građevine, a čl. 33 (2) i (4) propisuju udaljenosti za dvojne/ugrađene obiteljske/višeobiteljske kuće."
+  },
+  {
+   "clanak": 25,
+   "stavak": 2,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Poljoprivredne gospodarske građevine mogu se graditi na građevnoj čestici uz stambenu građevinu",
+   "parametar": "dopuštenost gradnje",
+   "operator": "dopustenje",
+   "vrijednost": "na građevnoj čestici uz stambenu građevinu",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poljoprivredna gospodarska građevina",
+    "izraz": "Poljoprivredne gospodarske građevine",
+    "citat_izraza": "Poljoprivredne gospodarske građevine mogu se graditi na građevnoj čestici uz stambenu građevinu",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz stambenu građevinu",
+     "citat": "uz stambenu građevinu",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 1,
+   "citat": "visina od najniže kote konačno zaravnatog terena iznosi najviše 4,0 m",
+   "parametar": "najveća visina građevine",
+   "operator": "<=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poljoprivredna gospodarska građevina",
+    "izraz": "Poljoprivredne gospodarske građevine",
+    "citat_izraza": "Poljoprivredne gospodarske građevine mogu se graditi na građevnoj čestici uz stambenu građevinu",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz stambenu građevinu",
+     "citat": "uz stambenu građevinu",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 2,
+   "citat": "građevni pravac je iza građevnog pravca građevine osnovne namjene",
+   "parametar": "položaj građevnog pravca",
+   "operator": "opis",
+   "vrijednost": "iza građevnog pravca građevine osnovne namjene",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poljoprivredna gospodarska građevina",
+    "izraz": "Poljoprivredne gospodarske građevine",
+    "citat_izraza": "Poljoprivredne gospodarske građevine mogu se graditi na građevnoj čestici uz stambenu građevinu",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz stambenu građevinu",
+     "citat": "uz stambenu građevinu",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 3,
+   "citat": "najmanja udaljenost od granice građevne čestice iznosi 4,0 m",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poljoprivredna gospodarska građevina",
+    "izraz": "Poljoprivredne gospodarske građevine",
+    "citat_izraza": "Poljoprivredne gospodarske građevine mogu se graditi na građevnoj čestici uz stambenu građevinu",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz stambenu građevinu",
+     "citat": "uz stambenu građevinu",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice iznosi 3,0 m",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poljoprivredna gospodarska građevina",
+    "izraz": "poljoprivredne gospodarske građevine",
+    "citat_izraza": "najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz stambenu građevinu",
+     "citat": "uz stambenu građevinu",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 4,
+   "citat": "udaljenost od regulacijskog pravca iznosi najmanje 5,0 m",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 5.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poljoprivredna gospodarska građevina",
+    "izraz": "poljoprivredne gospodarske građevine",
+    "citat_izraza": "najmanja udaljenost poljoprivredne gospodarske građevine od granice građevne čestice iznosi 3,0 m, a udaljenost od regulacijskog pravca iznosi najmanje 5,0 m",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz stambenu građevinu",
+     "citat": "uz stambenu građevinu",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "iznimno, unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "krovišta mogu biti ravna ili kosa",
+   "parametar": "oblik krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "ravna ili kosa",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poljoprivredna gospodarska građevina",
+    "izraz": "Poljoprivredne gospodarske građevine",
+    "citat_izraza": "Poljoprivredne gospodarske građevine mogu se graditi na građevnoj čestici uz stambenu građevinu",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz stambenu građevinu",
+     "citat": "uz stambenu građevinu",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "ako se grade kao kosa mogu biti jednostrešna, dvostrešna ili višestrešna",
+   "parametar": "vrsta kosog krovišta",
+   "operator": "dopustenje",
+   "vrijednost": "jednostrešna, dvostrešna ili višestrešna",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poljoprivredna gospodarska građevina",
+    "izraz": "Poljoprivredne gospodarske građevine",
+    "citat_izraza": "Poljoprivredne gospodarske građevine mogu se graditi na građevnoj čestici uz stambenu građevinu",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz stambenu građevinu",
+     "citat": "uz stambenu građevinu",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "ako se grade kao kosa",
+     "citat": "ako se grade kao kosa",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "moraju biti s nagibom krovnih ploha između 17° i 23°",
+   "parametar": "nagib krovnih ploha",
+   "operator": "izmedju",
+   "vrijednost": "17–23",
+   "jedinica": "°",
+   "vrsta_gradevine": {
+    "naziv": "poljoprivredna gospodarska građevina",
+    "izraz": "Poljoprivredne gospodarske građevine",
+    "citat_izraza": "Poljoprivredne gospodarske građevine mogu se graditi na građevnoj čestici uz stambenu građevinu",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz stambenu građevinu",
+     "citat": "uz stambenu građevinu",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "ako se grade kao kosa",
+     "citat": "ako se grade kao kosa",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 5,
+   "citat": "pokrov mora biti mediteran crijep ili kupa kanalica",
+   "parametar": "vrsta pokrova",
+   "operator": "dopustenje",
+   "vrijednost": "mediteran crijep ili kupa kanalica",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poljoprivredna gospodarska građevina",
+    "izraz": "Poljoprivredne gospodarske građevine",
+    "citat_izraza": "Poljoprivredne gospodarske građevine mogu se graditi na građevnoj čestici uz stambenu građevinu",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz stambenu građevinu",
+     "citat": "uz stambenu građevinu",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "ako se grade kao kosa",
+     "citat": "ako se grade kao kosa",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 6,
+   "citat": "udaljenost poljoprivredne gospodarske građevine od regulacijskog pravca iznosi najmanje 6,0 m",
+   "parametar": "najmanja udaljenost od regulacijskog pravca",
+   "operator": ">=",
+   "vrijednost": 6.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "poljoprivredna gospodarska građevina",
+    "izraz": "poljoprivredne gospodarske građevine",
+    "citat_izraza": "udaljenost poljoprivredne gospodarske građevine od regulacijskog pravca iznosi najmanje 6,0 m",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz stambenu građevinu",
+     "citat": "uz stambenu građevinu",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "postojeće poljoprivredne gospodarske građevine mogu se rekonsrturirati i prenamjeniti u skladu s odredbama ovog Prostornog plana",
+   "parametar": "rekonstrukcija i prenamjena",
+   "operator": "dopustenje",
+   "vrijednost": "u skladu s odredbama ovog Prostornog plana",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poljoprivredna gospodarska građevina (postojeća)",
+    "izraz": "postojeće poljoprivredne gospodarske građevine",
+    "citat_izraza": "postojeće poljoprivredne gospodarske građevine mogu se rekonsrturirati i prenamjeniti",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "postojeća",
+   "citat_stanja": "postojeće poljoprivredne gospodarske građevine",
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz stambenu građevinu",
+     "citat": "uz stambenu građevinu",
+     "izvor": "uvod"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 25,
+   "stavak": 2,
+   "tocka": "-",
+   "alineja_rb": 7,
+   "citat": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom mogu se rekonstruirati samo u postojećim tlocrtnim i visinskim gabaritima",
+   "parametar": "gabariti pri rekonstrukciji",
+   "operator": "opis",
+   "vrijednost": "samo u postojećim tlocrtnim i visinskim gabaritima",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "poljoprivredna gospodarska građevina (postojeća)",
+    "izraz": "postojeće poljoprivredne gospodarske građevine",
+    "citat_izraza": "postojeće poljoprivredne gospodarske građevine mogu se rekonsrturirati i prenamjeniti",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": null,
+   "stanje": "postojeća",
+   "citat_stanja": "postojeće poljoprivredne gospodarske građevine",
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "uz stambenu građevinu",
+     "citat": "uz stambenu građevinu",
+     "izvor": "uvod"
+    },
+    {
+     "tekst": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom",
+     "citat": "Ukoliko nisu ispunjeni uvjeti propisani ovim Prostornim planom",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 33,
+   "stavak": 1,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "moraju biti udaljene najmanje pola visine (h/2) od granice građevinske čestice",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": "h/2",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevina stambene namjene – slobodnostojeća",
+    "izraz": "Građevine stambene namjene",
+    "citat_izraza": "Građevine stambene namjene koje će se graditi na slobodnostojeći način",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": "slobodnostojeća",
+   "citat_nacina": "na slobodnostojeći način",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": null
+  },
+  {
+   "clanak": 33,
+   "stavak": 1,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "moraju biti udaljene najmanje pola visine (h/2) od granice građevinske čestice, ali ne manje od 4,0 metra ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina stambene namjene – slobodnostojeća",
+    "izraz": "Građevine stambene namjene",
+    "citat_izraza": "Građevine stambene namjene koje će se graditi na slobodnostojeći način",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": "slobodnostojeća",
+   "citat_nacina": "na slobodnostojeći način",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+     "citat": "ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "VEZNIK: »otvore, prohodne terase i otvorena stubišta« može značiti da su potrebna sva tri elementa ili da je dovoljan bilo koji od njih."
+  },
+  {
+   "clanak": 33,
+   "stavak": 1,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta, udaljenost građevine od granice građevne čestice može iznositi i 3,0 m",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina stambene namjene – slobodnostojeća",
+    "izraz": "Građevine stambene namjene",
+    "citat_izraza": "Građevine stambene namjene koje će se graditi na slobodnostojeći način",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": "slobodnostojeća",
+   "citat_nacina": "na slobodnostojeći način",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta",
+     "citat": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: nije jasno zamjenjuje li 3,0 m i uvjet h/2 ili samo najmanjih 4,0 m; uvjet ne spominje prohodne terase, a ni položaj na kojem vrijedi (samo prema bočnim i stražnjim granicama ili prema svima)."
+  },
+  {
+   "clanak": 33,
+   "stavak": 2,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "tako da će se jednom stranom (ugrađene s dvije ili tri strane) prislanjati uz susjednu građevinu ili granicu građevne čestice",
+   "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+   "operator": "opis",
+   "vrijednost": "jednom stranom",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "obiteljska/višeobiteljska kuća – dvojna",
+    "izraz": "Obiteljske/višeobiteljske kuće",
+    "citat_izraza": "Obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": "dvojna",
+   "citat_nacina": "dvojne/ugrađene",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "SUKOB: čl. 25 (1) h) propisuje da se stambene građevine mogu graditi samo kao samostojeće."
+  },
+  {
+   "clanak": 33,
+   "stavak": 2,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "tako da će se jednom stranom (ugrađene s dvije ili tri strane) prislanjati uz susjednu građevinu ili granicu građevne čestice",
+   "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+   "operator": "opis",
+   "vrijednost": "s dvije ili tri strane",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "obiteljska/višeobiteljska kuća – ugrađena",
+    "izraz": "Obiteljske/višeobiteljske kuće",
+    "citat_izraza": "Obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": "ugrađena",
+   "citat_nacina": "dvojne/ugrađene",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "SUKOB: čl. 25 (1) h) propisuje da se stambene građevine mogu graditi samo kao samostojeće."
+  },
+  {
+   "clanak": 33,
+   "stavak": 2,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2",
+   "parametar": "najmanja udaljenost istaka od granice susjedne građevine",
+   "operator": ">=",
+   "vrijednost": "h/2",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "obiteljska/višeobiteljska kuća – dvojna",
+    "izraz": "Obiteljske/višeobiteljske kuće",
+    "citat_izraza": "Obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": "dvojna",
+   "citat_nacina": "dvojne/ugrađene",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "TUMACENJE: nije jasno odnosi li se uvjet »ukoliko građevina ima otvore, prohodne terase i otvorena stubišta« i na h/2 ili samo na najmanjih 4,0 m."
+  },
+  {
+   "clanak": 33,
+   "stavak": 2,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2",
+   "parametar": "najmanja udaljenost istaka od granice susjedne građevine",
+   "operator": ">=",
+   "vrijednost": "h/2",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "obiteljska/višeobiteljska kuća – ugrađena",
+    "izraz": "Obiteljske/višeobiteljske kuće",
+    "citat_izraza": "Obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": "ugrađena",
+   "citat_nacina": "dvojne/ugrađene",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "TUMACENJE: nije jasno odnosi li se uvjet »ukoliko građevina ima otvore, prohodne terase i otvorena stubišta« i na h/2 ili samo na najmanjih 4,0 m."
+  },
+  {
+   "clanak": 33,
+   "stavak": 2,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2, ali ne manje od 4,0 metra od granice građevne čestice, ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+   "parametar": "najmanja udaljenost istaka od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "obiteljska/višeobiteljska kuća – dvojna",
+    "izraz": "Obiteljske/višeobiteljske kuće",
+    "citat_izraza": "Obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": "dvojna",
+   "citat_nacina": "dvojne/ugrađene",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+     "citat": "ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "VEZNIK: »otvore, prohodne terase i otvorena stubišta« može značiti da su potrebna sva tri elementa ili da je dovoljan bilo koji od njih."
+  },
+  {
+   "clanak": 33,
+   "stavak": 2,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2, ali ne manje od 4,0 metra od granice građevne čestice, ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+   "parametar": "najmanja udaljenost istaka od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 4.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "obiteljska/višeobiteljska kuća – ugrađena",
+    "izraz": "Obiteljske/višeobiteljske kuće",
+    "citat_izraza": "Obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": "ugrađena",
+   "citat_nacina": "dvojne/ugrađene",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+     "citat": "ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "VEZNIK: »otvore, prohodne terase i otvorena stubišta« može značiti da su potrebna sva tri elementa ili da je dovoljan bilo koji od njih."
+  },
+  {
+   "clanak": 33,
+   "stavak": 2,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta, udaljenost građevine od granice građevne čestice može iznositi i 3,0 m",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "obiteljska/višeobiteljska kuća – dvojna",
+    "izraz": "Obiteljske/višeobiteljske kuće",
+    "citat_izraza": "Obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": "dvojna",
+   "citat_nacina": "dvojne/ugrađene",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta",
+     "citat": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: tekst kaže »udaljenost građevine«, dok se prethodna rečenica odnosi na istak; nije jasno vrijedi li 3,0 m samo za istak i zamjenjuje li i h/2."
+  },
+  {
+   "clanak": 33,
+   "stavak": 2,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta, udaljenost građevine od granice građevne čestice može iznositi i 3,0 m",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "obiteljska/višeobiteljska kuća – ugrađena",
+    "izraz": "Obiteljske/višeobiteljske kuće",
+    "citat_izraza": "Obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": "ugrađena",
+   "citat_nacina": "dvojne/ugrađene",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": null
+   },
+   "uvjeti": [
+    {
+     "tekst": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta",
+     "citat": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: tekst kaže »udaljenost građevine«, dok se prethodna rečenica odnosi na istak; nije jasno vrijedi li 3,0 m samo za istak i zamjenjuje li i h/2."
+  },
+  {
+   "clanak": 33,
+   "stavak": 3,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "moraju biti udaljene najmanje pola visine (h/2) od granice građevinske čestice",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": "h/2",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "građevina stambene namjene – slobodnostojeća",
+    "izraz": "građevine stambene namjene",
+    "citat_izraza": "građevine stambene namjene koje će se graditi na slobodnostojeći način",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": "slobodnostojeća",
+   "citat_nacina": "na slobodnostojeći način",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [],
+   "iznimke": [
+    {
+     "tekst": "Iznimno, građevine stambene namjene koje će se graditi na slobodnostojeći način unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "Iznimno, građevine stambene namjene koje će se graditi na slobodnostojeći način unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": null
+  },
+  {
+   "clanak": 33,
+   "stavak": 3,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "moraju biti udaljene najmanje pola visine (h/2) od granice građevinske čestice, ali ne manje od 3,0 m ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina stambene namjene – slobodnostojeća",
+    "izraz": "građevine stambene namjene",
+    "citat_izraza": "građevine stambene namjene koje će se graditi na slobodnostojeći način",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": "slobodnostojeća",
+   "citat_nacina": "na slobodnostojeći način",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+     "citat": "ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "Iznimno, građevine stambene namjene koje će se graditi na slobodnostojeći način unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "Iznimno, građevine stambene namjene koje će se graditi na slobodnostojeći način unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "VEZNIK: »otvore, prohodne terase i otvorena stubišta« može značiti da su potrebna sva tri elementa ili da je dovoljan bilo koji od njih."
+  },
+  {
+   "clanak": 33,
+   "stavak": 3,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta, udaljenost građevine od granice građevne čestice može iznositi i 2,0 m",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 2.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "građevina stambene namjene – slobodnostojeća",
+    "izraz": "građevine stambene namjene",
+    "citat_izraza": "građevine stambene namjene koje će se graditi na slobodnostojeći način",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": "slobodnostojeća",
+   "citat_nacina": "na slobodnostojeći način",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [
+    {
+     "tekst": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta",
+     "citat": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [
+    {
+     "tekst": "Iznimno, građevine stambene namjene koje će se graditi na slobodnostojeći način unutar registriranih i evidentiranih povijesnih graditeljskih cjelina",
+     "citat": "Iznimno, građevine stambene namjene koje će se graditi na slobodnostojeći način unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+    }
+   ],
+   "vrsta_pravila": "IZNIMKA",
+   "nejasno": "TUMACENJE: nije jasno zamjenjuje li 2,0 m i uvjet h/2 ili samo najmanjih 3,0 m; uvjet ne spominje prohodne terase."
+  },
+  {
+   "clanak": 33,
+   "stavak": 4,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "tako da će se jednom stranom (ugrađene s dvije ili tri strane) prislanjati uz susjednu građevinu ili granicu građevne čestice",
+   "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+   "operator": "opis",
+   "vrijednost": "jednom stranom",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "obiteljska/višeobiteljska kuća – dvojna",
+    "izraz": "obiteljske/višeobiteljske kuće",
+    "citat_izraza": "obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": "dvojna",
+   "citat_nacina": "dvojne/ugrađene",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "SUKOB: čl. 25 (1) h) propisuje da se stambene građevine mogu graditi samo kao samostojeće."
+  },
+  {
+   "clanak": 33,
+   "stavak": 4,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "tako da će se jednom stranom (ugrađene s dvije ili tri strane) prislanjati uz susjednu građevinu ili granicu građevne čestice",
+   "parametar": "prislanjanje uz susjednu građevinu ili granicu građevne čestice",
+   "operator": "opis",
+   "vrijednost": "s dvije ili tri strane",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "obiteljska/višeobiteljska kuća – ugrađena",
+    "izraz": "obiteljske/višeobiteljske kuće",
+    "citat_izraza": "obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": "ugrađena",
+   "citat_nacina": "dvojne/ugrađene",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "SUKOB: čl. 25 (1) h) propisuje da se stambene građevine mogu graditi samo kao samostojeće."
+  },
+  {
+   "clanak": 33,
+   "stavak": 4,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2",
+   "parametar": "najmanja udaljenost istaka od granice susjedne građevine",
+   "operator": ">=",
+   "vrijednost": "h/2",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "obiteljska/višeobiteljska kuća – dvojna",
+    "izraz": "obiteljske/višeobiteljske kuće",
+    "citat_izraza": "obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": "dvojna",
+   "citat_nacina": "dvojne/ugrađene",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "TUMACENJE: nije jasno odnosi li se uvjet »ukoliko građevina ima otvore, prohodne terase i otvorena stubišta« i na h/2 ili samo na najmanjih 3,0 m."
+  },
+  {
+   "clanak": 33,
+   "stavak": 4,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2",
+   "parametar": "najmanja udaljenost istaka od granice susjedne građevine",
+   "operator": ">=",
+   "vrijednost": "h/2",
+   "jedinica": "opis",
+   "vrsta_gradevine": {
+    "naziv": "obiteljska/višeobiteljska kuća – ugrađena",
+    "izraz": "obiteljske/višeobiteljske kuće",
+    "citat_izraza": "obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": "ugrađena",
+   "citat_nacina": "dvojne/ugrađene",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [],
+   "iznimke": [],
+   "vrsta_pravila": "OSNOVNO",
+   "nejasno": "TUMACENJE: nije jasno odnosi li se uvjet »ukoliko građevina ima otvore, prohodne terase i otvorena stubišta« i na h/2 ili samo na najmanjih 3,0 m."
+  },
+  {
+   "clanak": 33,
+   "stavak": 4,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2, ali ne manje od 3,0 m od granice građevne čestice, ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+   "parametar": "najmanja udaljenost istaka od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "obiteljska/višeobiteljska kuća – dvojna",
+    "izraz": "obiteljske/višeobiteljske kuće",
+    "citat_izraza": "obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": "dvojna",
+   "citat_nacina": "dvojne/ugrađene",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+     "citat": "ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "VEZNIK: »otvore, prohodne terase i otvorena stubišta« može značiti da su potrebna sva tri elementa ili da je dovoljan bilo koji od njih."
+  },
+  {
+   "clanak": 33,
+   "stavak": 4,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "moraju s drugim dijelovima građevine (istakom) biti udaljene od granice susjedne građevine najmanje h/2, ali ne manje od 3,0 m od granice građevne čestice, ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+   "parametar": "najmanja udaljenost istaka od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 3.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "obiteljska/višeobiteljska kuća – ugrađena",
+    "izraz": "obiteljske/višeobiteljske kuće",
+    "citat_izraza": "obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene",
+    "izvor": "odredba"
+   },
+   "nacin_gradnje": "ugrađena",
+   "citat_nacina": "dvojne/ugrađene",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [
+    {
+     "tekst": "ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+     "citat": "ukoliko građevina ima otvore, prohodne terase i otvorena stubišta",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "VEZNIK: »otvore, prohodne terase i otvorena stubišta« može značiti da su potrebna sva tri elementa ili da je dovoljan bilo koji od njih."
+  },
+  {
+   "clanak": 33,
+   "stavak": 4,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta, udaljenost građevine od granice građevne čestice može iznositi i 2,0 m",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 2.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "obiteljska/višeobiteljska kuća – dvojna",
+    "izraz": "obiteljske/višeobiteljske kuće",
+    "citat_izraza": "obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": "dvojna",
+   "citat_nacina": "dvojne/ugrađene",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [
+    {
+     "tekst": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta",
+     "citat": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: tekst kaže »udaljenost građevine«, dok se prethodna rečenica odnosi na istak; nije jasno vrijedi li 2,0 m samo za istak i zamjenjuje li i h/2."
+  },
+  {
+   "clanak": 33,
+   "stavak": 4,
+   "tocka": null,
+   "alineja_rb": null,
+   "citat": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta, udaljenost građevine od granice građevne čestice može iznositi i 2,0 m",
+   "parametar": "najmanja udaljenost od granice građevne čestice",
+   "operator": ">=",
+   "vrijednost": 2.0,
+   "jedinica": "m",
+   "vrsta_gradevine": {
+    "naziv": "obiteljska/višeobiteljska kuća – ugrađena",
+    "izraz": "obiteljske/višeobiteljske kuće",
+    "citat_izraza": "obiteljske/višeobiteljske kuće koje će se graditi kao dvojne/ugrađene",
+    "izvor": "uvod_stavka"
+   },
+   "nacin_gradnje": "ugrađena",
+   "citat_nacina": "dvojne/ugrađene",
+   "stanje": null,
+   "zona": {
+    "oznake": [],
+    "citat": "Unutar registriranih i evidentiranih povijesnih graditeljskih cjelina"
+   },
+   "uvjeti": [
+    {
+     "tekst": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta",
+     "citat": "Ukoliko na bočnim i stražnjim fasadama građevine nisu predviđeni otvori niti otvorena stubišta",
+     "izvor": "odredba"
+    }
+   ],
+   "iznimke": [],
+   "vrsta_pravila": "UVJETNO",
+   "nejasno": "TUMACENJE: tekst kaže »udaljenost građevine«, dok se prethodna rečenica odnosi na istak; nije jasno vrijedi li 2,0 m samo za istak i zamjenjuje li i h/2."
+  }
+ ],
+ "metapodaci": {
+  "skup": "ppug_krk",
+  "pozvani_alati": [
+   "SubagentHandback"
+  ],
+  "tokena": 93836,
+  "trajanje_ms": 188462,
+  "generator": "izolirani agent u razvojnoj sesiji, bez alata za čitanje; samo upute generatora v1 i tekst",
+  "upute": "hibrid/UPUTE_GENERATORA_v1.md"
+ }
+}
