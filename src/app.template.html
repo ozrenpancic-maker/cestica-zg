@@ -423,6 +423,7 @@ ol.zi{font-size:13.5px;padding-left:18px}
 .rb-no{background:var(--no-bg);color:var(--no)} .rb-warn{background:var(--warn-bg);color:var(--warn)} .rb-muted{background:var(--soft);color:var(--muted);border:1px solid var(--line)}
 .st-no{background:var(--no-bg);color:var(--no)}
 .pis{margin:4px 0 10px}
+.uz{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:6px 0}
 .pis-t{border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .pis-h{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.2fr) auto;gap:8px;padding:6px 10px;font-size:11.5px;font-weight:600;color:var(--muted);background:var(--soft,transparent);border-bottom:1px solid var(--line)}
 .pis-r{border-top:1px solid var(--line)} .pis-r:first-of-type{border-top:0}
@@ -622,7 +623,7 @@ const CHECKS = [
 ];
 // Koridori infrastrukture (GUP čl. 50: DV 110 kV 20 m, 220 kV 25 m, 400 kV 35 m od osi; čl. 53: magistralni plinovod 30 m, VTP 10 m)
 // moduli koji su u razvoju (faze C i D) i još nisu uključeni
-const FEATURES={infra:true,seis:false,ai:false}; // seis: potresna opasnost, privremeno skrivena; ai: AI asistent (AI-1/AI-2 kod postoji) privremeno isključen: nema stavke u izborniku i ništa se ne šalje; uključuje se postavljanjem na true
+const FEATURES={infra:true,seis:false,ai:false,upuZona:false}; // seis: potresna opasnost, privremeno skrivena; ai: AI asistent (AI-1/AI-2 kod postoji) privremeno isključen: nema stavke u izborniku i ništa se ne šalje; uključuje se postavljanjem na true
 const INFRA=BASE+"GUP_Infrastruktura/FeatureServer/";
 const corrDist=(f,kind)=>{
   if(kind==="ee"){const l=String(f.LAYER||"")+String(f.EE_VODOVI_OPIS||""); return /400|440/.test(l)?35:/220/.test(l)?25:20;}
@@ -1316,10 +1317,11 @@ function krkRulesHtml(d){
     const opts=[["","— odaberi zonu —"],...RS.zone];
     return h+`<p class="rule-title"><span class="rule-code">${esc(RS.kod)}</span></p><p class="meta">Izvor: <a href="${esc(I.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(I.naziv)}</a>, ${esc(I.sn)}</p>`+
       `<div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label><select id="krkZona" class="bsel">${opts.map(o=>`<option value="${esc(o[0])}">${esc(o[1])}</option>`).join("")}</select></div>`+
-      `<div class="verdict v-warn">Detaljna zona nije potvrđena. Izračun uvjeta gradnje radi se tek kad odabereš zonu.</div><p class="meta">${esc(RS.zonaNapomena||"")} Zonu možeš očitati na karti UPU-a u odjeljku „Detaljna namjena (UPU)”; mjerodavna je lokacijska informacija.</p>`+
+      uzUvjetiBox()+`<div class="verdict v-warn">Detaljna zona nije potvrđena. Izračun uvjeta gradnje radi se tek kad odabereš zonu.</div><p class="meta">${esc(RS.zonaNapomena||"")} Zonu možeš očitati na karti UPU-a u odjeljku „Detaljna namjena (UPU)”; mjerodavna je lokacijska informacija.</p>`+
       (piBlok("blok-uvjeti","Uvjeti gradnje (izračun)","detaljna zona UPU-a nije potvrđena ni odabrana; pokazatelji ovise o zoni",[...piBase(RS,I),piK("kartografski prikaz",PZREG.items.get("upu-list")),piK("detaljna zona",PZREG.items.get("upu-zona"))]),"");
   }
-  if(zona) pzSet("zona-korisnik","Zona u UPU-u (tvoj odabir)",zona,pzUser({provjera:"legenda donesenog plana, lokacijska informacija"})); else pzDel("zona-korisnik");
+  const zIzv=(()=>{try{const k=window.__cur&&window.__cur.key, v=k&&JSON.parse(localStorage.getItem("krkZonaIzvor:"+k)||"null"); return v&&v.zona===zona?v:null}catch(e){return null}})();
+  if(zona) pzSet("zona-korisnik","Zona u UPU-u (tvoj odabir)",zona,pzUser({provjera:"legenda donesenog plana, lokacijska informacija",...(zIzv?{izvor:"prihvaćen automatski prijedlog iz rastera (pilot, "+zIzv.datum+"); nije stručna potvrda",razlog:"prijedlog "+zIzv.kandidat+" iz boja karte, prihvatio korisnik"}:{})})); else pzDel("zona-korisnik");
   for(const k of ["pravilo","calc-tlocrt","calc-gbp","calc-prostor","calc-visina"]) pzDel(k);
   if(zona&&RS.zoneSet&&RS.zoneSet[zona]) RS={...RS,...RS.zoneSet[zona]};
   if(!RS.tipovi){ // zona bez pravila za kuće (npr. „druga zona”)
@@ -1334,7 +1336,7 @@ function krkRulesHtml(d){
   for(const n of S.notes||[]) h+=`<p class="flag">${esc(n)}</p>`;
   const sel=(id,opts,v)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===v?" selected":""}>${esc(o[1])}</option>`).join("")}</select>`;
   if(isUpu){
-    h+=`<div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label>${sel("krkZona",[["","— odaberi zonu —"],...RS.zone],zona)}</div><p class="flag" data-zona-nepotvrdena="1"><b>Zona čestice nije automatski potvrđena.</b> Izračun je za zonu koju si odabrao (${esc(zona)}). Detaljna zona nije potvrđena službenim vektorskim slojem ni lokacijskom informacijom (to je odvojeno od pravne aktualnosti plana).</p><p class="meta">${esc(RS.zonaNapomena)}</p>`+(RS.upozorenja||[]).map(n=>`<p class="flag">${esc(n)}</p>`).join("");
+    h+=`<div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label>${sel("krkZona",[["","— odaberi zonu —"],...RS.zone],zona)}</div>${uzUvjetiBox()}<p class="flag" data-zona-nepotvrdena="1"><b>Zona čestice nije automatski potvrđena.</b> Izračun je za zonu koju si odabrao (${esc(zona)}). Detaljna zona nije potvrđena službenim vektorskim slojem ni lokacijskom informacijom (to je odvojeno od pravne aktualnosti plana).</p><p class="meta">${esc(RS.zonaNapomena)}</p>`+(RS.upozorenja||[]).map(n=>`<p class="flag">${esc(n)}</p>`).join("");
     if(zona==="druga"){h+=`<p class="hint">${esc(RS.drugaZona||"Za ovu zonu uvjeti za obiteljske i višeobiteljske kuće nisu obrađeni.")}</p>`; piBlok("blok-uvjeti","Uvjeti gradnje (izračun)","za odabranu zonu uvjeti za kuće nisu obrađeni",[...piBase(RS,I),piK("detaljna zona",PZREG.items.get("zona-korisnik"))]); return h;}
     const ZS=RS.simulator&&RS.simulator.zastita;
     if(ZS){const zv=krkZastGet();
@@ -1563,7 +1565,7 @@ sheet.addEventListener("input",e=>{ if(/^krkKd/.test(e.target.id||"")) krkKdUpda
 sheet.addEventListener("change",e=>{ if(/^krkKd/.test(e.target.id||"")) krkKdUpdate(); });
 sheet.addEventListener("change",e=>{
   if((e.target.id==="krkTip"||e.target.id==="krkOblik"||e.target.id==="krkZona"||e.target.id==="krkZast"||e.target.id==="krkZahvat")&&KRK_CUR){
-    if(e.target.id==="krkZona") krkZonaSet(e.target.value);
+    if(e.target.id==="krkZona"){krkZonaSet(e.target.value); try{localStorage.removeItem("krkZonaIzvor:"+window.__cur.key)}catch(err){}}
     else if(e.target.id==="krkZahvat"){KRK_ZAHVAT=e.target.value; try{localStorage.setItem("krkZahvat",KRK_ZAHVAT)}catch(err){}}
     else if(e.target.id==="krkZast") krkZastSet(e.target.value);
     else{KRK_TIP[{krkTip:"tip",krkOblik:"oblik"}[e.target.id]]=e.target.value; try{localStorage.setItem("krkTip",JSON.stringify(KRK_TIP))}catch(err){}}
@@ -2163,6 +2165,94 @@ const RK_PIX={async share(blob,polys,W,H){
   for(let y=y0;y<=y1;y+=st) for(let x=x0;x<=x1;x+=st){ if(!inside(x+.5,y+.5)) continue; n++; const o=(y*W+x)*4; if(d[o+3]>16&&!(d[o]>245&&d[o+1]>245&&d[o+2]>245)) hit++; }
   return n?hit/n:null;
 }};
+// ---------- Prijedlog detaljne zone iz rasterske karte (pilot: UPU 2 Kornić, karta 4 „Način i uvjeti gradnje”) ----------
+// Službeni vektor detaljnih zona nije javno dostupan (PGŽ: samo rasterski katalog; JLS sloj traži prijavu), pa se zona
+// predlaže iz boja izreza karte koji aplikacija već dohvaća (RK_ARCGIS.img). Prijedlog je kandidat (C): ne bira zonu sam,
+// korisnik ga prihvaća, mijenja ili odbija. Pragovi su određeni na kalibracijskoj polovici referentnog skupa i provjereni
+// na drugoj polovici (docs/upu-zona/README.md); bez dovoljnog dokaza algoritam odustaje i ostaje ručni odabir.
+// parametri odabrani na razvojnom skupu (42 čestice), provjereni na slijepom skupu (40 čestica), docs/upu-zona/rezultati_2026-10-27.json
+const UZ_PARAM={tamno:96,bijelo:224,sivo:24,prostor:"hsv",tezV:0.3,boja:40,razmak:0,unutra:1,prsten:6,minUzoraka:400,minBoje:0.6,maxBijelo:0.2,minDom:0.8,prstenDrugo:0.1,verzija:"2026-10-27"};
+// histogram boja (4 bita po kanalu) unutar čestice (dalje od granice za »unutra« m), uz rub i u prstenu do »prsten« m izvan granice
+function uzHist(d,W,H,polys,mpx,P){P=P||UZ_PARAM; const rin=P.unutra/mpx, rout=P.prsten/mpx, pts=polys.flat(), xs=pts.map(p=>p[0]), ys=pts.map(p=>p[1]);
+  const x0=Math.max(0,Math.floor(Math.min(...xs)-rout)),x1=Math.min(W-1,Math.ceil(Math.max(...xs)+rout)),y0=Math.max(0,Math.floor(Math.min(...ys)-rout)),y1=Math.min(H-1,Math.ceil(Math.max(...ys)+rout));
+  const st=Math.max(1,Math.round(0.25/mpx)), hc={}, he={}, hr={}; let nc=0,ne=0,nr=0;
+  for(let y=y0;y<=y1;y+=st) for(let x=x0;x<=x1;x+=st){const px=x+.5,py=y+.5; let ins=false,dm=1e18;
+    for(const P0 of polys) for(let i=0,j=P0.length-1;i<P0.length;j=i++){const [xi,yi]=P0[i],[xj,yj]=P0[j]; if((yi>py)!==(yj>py)&&px<(xj-xi)*(py-yi)/(yj-yi)+xi) ins=!ins;
+      const dx=xj-xi,dy=yj-yi,L2=dx*dx+dy*dy; let t=L2?((px-xi)*dx+(py-yi)*dy)/L2:0; t=t<0?0:t>1?1:t; const ex=xi+t*dx-px,ey=yi+t*dy-py,dd=ex*ex+ey*ey; if(dd<dm) dm=dd;}
+    dm=Math.sqrt(dm); const o=(y*W+x)*4, k=d[o+3]<16?"t":((d[o]>>4)<<8|(d[o+1]>>4)<<4|(d[o+2]>>4)).toString(16);
+    if(ins&&dm>=rin){hc[k]=(hc[k]||0)+1;nc++} else if(ins){he[k]=(he[k]||0)+1;ne++} else if(dm<=rout){hr[k]=(hr[k]||0)+1;nr++}}
+  return {mpx,st,nc,ne,nr,hc,he,hr};}
+// razred jedne (kvantizirane) boje: tamno (linije, tekst), bijelo (prometnice, podloga), sivo, zona iz legende, dvojbeno ili nepoznato.
+// Udaljenost do boje iz legende: »rgb« (euklidska) ili »hsv« (ton u stupnjevima, zasićenost i svjetlina u postocima, svjetlina s težinom
+// »tezV«), jer je skenirana karta tamnija i manje zasićena od rastera legende pa se ton čuva bolje od samih vrijednosti RGB.
+const uzHsv=(r,g,b)=>{const mx=Math.max(r,g,b), mn=Math.min(r,g,b), c=mx-mn; let h=0; if(c){h=mx===r?((g-b)/c)%6:mx===g?(b-r)/c+2:(r-g)/c+4; h*=60; if(h<0) h+=360;} return [h,mx?c/mx:0,mx/255];};
+function uzBoja(r,g,b,leg,P){const mx=Math.max(r,g,b), mn=Math.min(r,g,b);
+  if(mx<P.tamno) return "tamno"; if(mn>=P.bijelo) return "bijelo"; if(mx-mn<P.sivo) return "sivo";
+  const X=P.prostor==="hsv"?uzHsv(r,g,b):null;
+  const dist=L=>{if(!X) return Math.hypot(r-L.rgb[0],g-L.rgb[1],b-L.rgb[2]); const Y=L.hsv||(L.hsv=uzHsv(...L.rgb)); let dh=Math.abs(X[0]-Y[0]); if(dh>180) dh=360-dh; return Math.hypot(dh,(X[1]-Y[1])*100,(X[2]-Y[2])*100*(P.tezV??0.3));};
+  let b1=null,d1=1e9,d2=1e9; for(const L of leg){const dd=dist(L); if(dd<d1){d2=d1;d1=dd;b1=L} else if(dd<d2) d2=dd;}
+  return d1>P.boja?"nepoznato":d2-d1<P.razmak?"dvojbeno":b1.zona;}
+// odluka iz histograma: kandidat ili odustajanje s razlogom; dokaz su udjeli razreda (bez izmišljenog postotka pouzdanosti)
+function uzOdluka(Hs,leg,P){P=P||UZ_PARAM; const zone=leg.map(l=>l.zona);
+  const cnt=h=>{const c={}; let n=0; for(const k in h){const v=h[k]; n+=v; let cl; if(k==="t") cl="prozirno"; else {const q=parseInt(k,16); cl=uzBoja(((q>>8)&15)*16+8,((q>>4)&15)*16+8,(q&15)*16+8,leg,P);} c[cl]=(c[cl]||0)+v;} return {c,n};};
+  const C=cnt(Hs.hc), Rg=cnt(Hs.hr), zon=o=>Object.entries(o.c).filter(([k])=>zone.includes(k)).sort((a,b)=>b[1]-a[1]);
+  const zc=zon(C), boje=zc.reduce((s,[,v])=>s+v,0), n=C.n, u=k=>n?(C.c[k]||0)/n:0, zr=zon(Rg), rb=zr.reduce((s,[,v])=>s+v,0);
+  const nt=n-(C.c.tamno||0)-(C.c.prozirno||0), dokaz={uzorci:n,boje:nt>0?boje/nt:0,bijelo:u("bijelo"),tamno:u("tamno"),sivo:u("sivo"),nepoznato:u("nepoznato")+u("dvojbeno"),prozirno:u("prozirno"),
+    udjeli:Object.fromEntries(zc.map(([k,v])=>[k,v/boje])),prsten:Object.fromEntries(zr.map(([k,v])=>[k,v/rb])),mpx:Hs.mpx};
+  const D=zc.length?zc[0][0]:null, dom=D?zc[0][1]/boje:0; let razlog=null;
+  if(n<P.minUzoraka) razlog="premalo uzoraka unutar čestice (čestica je premala za izrez ili je izvan lista)";
+  else if(dokaz.prozirno>0.5) razlog="list na čestici nema sadržaja";
+  else if(dokaz.boje<P.minBoje) razlog="prepoznato je premalo boja iz legende (linije, oznake, šrafura ili nečitljiv dio rastera)";
+  else if(dokaz.bijelo>P.maxBijelo) razlog="dio čestice je na bijeloj površini (prometnica ili površina bez boje zone)";
+  else if(dom<P.minDom) razlog="unutar čestice je više boja zona (mješovito ili granica zone)";
+  const drugo=D&&rb?1-(dokaz.prsten[D]||0):0;
+  return {kandidat:razlog?null:D,najcesca:D,udioNajcesce:dom,razlog,blizuGranice:drugo>=P.prstenDrugo,drugoUPrstenu:drugo,dokaz,parametri:P};}
+// pilot je isključen za sve korisnike (FEATURES.upuZona=false) dok točnost na slijepom skupu nije dovoljna; ispitivač ga uključuje
+// adresom s ?pilot=zona (pamti se u pregledniku) i isključuje s ?pilot=ne
+function uzUkljuceno(){try{const q=new URLSearchParams(location.search).get("pilot"); if(q==="zona") localStorage.setItem("uzPilot","1"); else if(q==="ne") localStorage.removeItem("uzPilot"); return FEATURES.upuZona||localStorage.getItem("uzPilot")==="1"}catch(e){return !!FEATURES.upuZona}}
+// oznaka izvora za koji vrijedi prijedlog i svaka potvrda: list (sloj i OBJECTID), šifra lista, stanje kataloga, legenda
+const uzRevizija=(it,LG)=>({list:"PP_RASTERI/"+(it._sloj?it._sloj.id:"?")+":"+it.OBJECTID,sifra:(it.a&&(it.a.KARTA_SIFRA||it.a.Name))||null,stanje:(it.a&&it.a.STANJE_1212)||null,legenda:LG&&LG.L.legenda?"AGS_LEGENDA_SASTAVNICA/8:2139":null});
+const uzRevKljuc=r=>[r.list,r.sifra,r.stanje].join("|");
+// stručno provjereni obuhvati: vrijede samo za točno navedenu česticu i istu reviziju izvora (nikad za cijeli UPU)
+function uzProvjereno(LG,ref,rev){const L=(LG&&LG.L.provjereno)||[]; return L.find(x=>x&&x.cestica===ref&&x.revizija===uzRevKljuc(rev)&&x.provjerio&&/^\d{4}-\d\d-\d\d$/.test(x.datum||""))||null;}
+async function uzPrijedlog(S,it,im){
+  const LG=uzLegenda(it); if(!LG||!im||im.st!=="ok"||!im.url) return null;
+  const rev=uzRevizija(it,LG), out={st:"load",rev,LG,dan:pzDan(),key:rkKey()};
+  try{if(typeof createImageBitmap!=="function") throw new Error("preglednik ne može očitati sliku");
+    const ac=typeof AbortController!=="undefined"?new AbortController():null, t=ac?setTimeout(()=>ac.abort(),20000):0;
+    const r=await fetch(im.url,{mode:"cors",credentials:"omit",signal:ac?ac.signal:undefined}); clearTimeout(t); if(!r.ok) throw new Error("HTTP "+r.status);
+    const bm=await createImageBitmap(await r.blob()), c=document.createElement("canvas"); c.width=im.W; c.height=im.H; const g=c.getContext&&c.getContext("2d"); if(!g) throw new Error("nema platna za očitavanje");
+    g.drawImage(bm,0,0,im.W,im.H); let d; try{d=g.getImageData(0,0,im.W,im.H).data}catch(e){throw new Error("servis ne dopušta očitavanje piksela (CORS)")}
+    const mpx=(im.extent.xmax-im.extent.xmin)/im.W, Hs=uzHist(d,im.W,im.H,im.poly,mpx,UZ_PARAM);
+    Object.assign(out,{st:"ok",o:uzOdluka(Hs,LG.L.legenda.boje,UZ_PARAM),n:{unutra:Hs.nc,rub:Hs.ne,prsten:Hs.nr}});
+  }catch(e){Object.assign(out,{st:"err",e:e&&e.message?e.message:"izvor nije dostupan"});}
+  return out;}
+const uzOdbijKey=(k,rev)=>"uzOdbij:"+k+":"+uzRevKljuc(rev);
+function uzPrijedlogHtml(S){const Z=S&&S.zp; if(!Z) return ""; const pc=v=>Math.round(v*100)+" %";
+  if(Z.st==="load") return `<div class="uz" data-uz="load"><p class="hint"><span class="spin"></span>Pilot: tražim prijedlog detaljne zone iz boja karte…</p></div>`;
+  let h=`<div class="uz" data-uz="${Z.st==="ok"?(Z.o.kandidat?"kandidat":"odustao"):"err"}"><p class="eyebrow" style="margin:0 0 4px">Prijedlog detaljne zone (pilot, iz rastera)</p>`;
+  if(Z.st==="err") return h+`<p class="meta">Podaci nisu dostupni: ${esc(Z.e)}. Prijedlog se ne daje; zonu odaberi sam.</p></div>`;
+  const o=Z.o, D=o.dokaz, odb=(()=>{try{return localStorage.getItem(uzOdbijKey(Z.key,Z.rev))==="1"}catch(e){return false}})(), RS=RULES_KRK.upu[Z.LG.kod], ids=(RS.zone||[]).map(z=>z[0]);
+  const PR=uzProvjereno(Z.LG,RK_CTX&&RK_CTX.parcel&&RK_CTX.parcel.properties&&RK_CTX.parcel.properties.ref,Z.rev);
+  if(PR) h+=`<p class="meta">${pzTag(pz("B",{izvor:"stručna provjera: "+PR.provjerio+", "+PR.datum}))} Zona <b>${esc(PR.zona)}</b> stručno je provjerena za ovu česticu i ovu reviziju lista (${esc(PR.provjerio)}, ${esc(PR.datum)}). Ne vrijedi za druge čestice.</p>`;
+  if(o.kandidat){const cilj=ids.includes(o.kandidat)?o.kandidat:"druga";
+    h+=`<p style="margin:0 0 4px">${pzTag(pz("C",{razlog:"automatski prijedlog iz boja rasterske karte; nije potvrđen"}))} Kandidat: <b data-uz-kandidat="${esc(o.kandidat)}">${esc(o.kandidat)}</b>${cilj==="druga"?" (u izračunu: »druga zona«)":""}</p>`;
+    if(o.blizuGranice) h+=`<p class="flag" data-uz-granica="1">Blizu granice zone: u pojasu do ${UZ_PARAM.prsten} m oko čestice ${pc(o.drugoUPrstenu)} obojenih uzoraka pripada drugim zonama (${esc(Object.entries(D.prsten).filter(([k])=>k!==o.kandidat).slice(0,3).map(([k,v])=>k+" "+pc(v)).join(", "))}). Provjeri granicu na karti.</p>`;
+    h+=odb?`<p class="meta" data-uz-odbijen="1">Prijedlog si odbio; zona ostaje tvoj ručni odabir. <button type="button" class="ib" data-uzb="vrati">Prikaži prijedlog ponovno</button></p>`:
+      `<div class="kd"><button type="button" class="ib" data-uzb="prihvati" data-zona="${esc(cilj)}">Prihvati ${esc(o.kandidat)}</button><button type="button" class="ib" data-uzb="promijeni">Odaberi drugu zonu</button><button type="button" class="ib" data-uzb="odbij">Odbij prijedlog</button></div>`;
+  } else h+=`<p style="margin:0 0 4px" data-uz-odustao="1"><b>Algoritam ne predlaže zonu:</b> ${esc(o.razlog)}.${o.najcesca?" Najčešća boja zone u čestici: "+esc(o.najcesca)+" ("+pc(o.udioNajcesce)+" obojenih uzoraka).":""} Zonu odaberi sam prema karti i legendi.</p>`;
+  h+=`<details class="acc" data-k="uzDokaz"><summary><span>Dokaz i neizvjesnost</span><b>${D.uzorci} uzoraka</b></summary><div class="calc"><ul class="zi">`+
+    `<li><b>Boje zona unutar čestice</b> (dalje od ${UZ_PARAM.unutra} m od granice): ${esc(Object.entries(D.udjeli).slice(0,4).map(([k,v])=>k+" "+pc(v)).join(", ")||"nijedna")}</li>`+
+    `<li><b>Udio prepoznatih boja</b> među uzorcima koji nisu linije ni tekst: ${pc(D.boje)}; bijelo ${pc(D.bijelo)}, linije i tekst ${pc(D.tamno)}, sivo ${pc(D.sivo)}, neprepoznato ${pc(D.nepoznato)}</li>`+
+    `<li><b>Pojas oko čestice</b> (do ${UZ_PARAM.prsten} m): ${esc(Object.entries(D.prsten).slice(0,4).map(([k,v])=>k+" "+pc(v)).join(", ")||"bez boja zona")}</li>`+
+    `<li><b>Izvor</b>: ${esc(Z.rev.list)}${Z.rev.sifra?", "+esc(Z.rev.sifra):""}${Z.rev.stanje?", stanje "+esc(Z.rev.stanje):""}; razlučivost ${String(Math.round(D.mpx*100)/100).replace(".",",")} m/piksel; boje legende: ${esc(Z.LG.L.legenda.izvor)}</li>`+
+    `<li><b>Postupak</b>: boja svakog uzorka uspoređuje se s bojama legende (ton, zasićenost, svjetlina); linije, tekst, bijele i sive površine ne broje se kao zona. Odustaje se kad je prepoznatih boja premalo, kad je dio čestice bijel (prometnica) ili kad ni jedna zona ne prevladava. Pragovi su određeni na referentnom skupu čestica (docs/upu-zona/README.md); postotak pouzdanosti se ne iskazuje.</li>`+
+    `<li><b>Ograničenja</b>: georeferenciranje skenirane karte i granice čestice mogu se razlikovati za nekoliko metara; šrafure i oznake mogu prekriti boju zone; prihvaćeni prijedlog ostaje razina C i vrijedi samo za ovu česticu i ovu reviziju lista.</li></ul></div></details></div>`;
+  return h;}
+// legenda lista iz rules_krk.json (samo obrađeni UPU s uzorkovanom legendom)
+function uzLegenda(it){const U=RULES_KRK&&RULES_KRK.upu; if(!U||!it) return null; const sif=[it.a&&it.a.KARTA_SIFRA,it.a&&it.a.Name].filter(Boolean).join(" "), m=sif.match(/karta_?(\d+[a-z]?)(?![a-z0-9])/i); if(!m) return null;
+  for(const [kod,R] of Object.entries(U)){if(!R.karte||!R.prepoznaj||!new RegExp(R.prepoznaj,"i").test(it.plan)) continue; const L=R.karte.listovi[m[1].toLowerCase()]; if(L&&L.zona&&L.legenda) return {kod,list:m[1],L,R};}
+  return null;}
 const RK_WMS={
   async query(K,E,N,ll){
     const C=await wmsCaps(K), pt=ll;
@@ -2275,11 +2365,14 @@ async function rkImg(parcel,scale,auto){
   const key=rkKey(), S=RKAT.get(key); if(!S||S.st!=="ok") return;
   const it=S.items[S.sel]; S.img={st:"load",scale}; rkUpd();
   try{const im=await RK_TIPOVI[S.K.tip].img(S.K,it,parcel,scale); if(RKAT.get(key)===S&&S.items[S.sel]===it){S.img={st:"ok",...im};
+      if(scale===1&&it.zona&&uzUkljuceno()&&uzLegenda(it)&&!(S.zp&&S.zp.it===it&&S.zp.st!=="err")){S.zp={st:"load",it}; uzPrijedlog(S,it,S.img).then(z=>{if(RKAT.get(key)===S&&z){S.zp={...z,it}; window.__uzZadnji=S.zp; rkUpd();}});}
       if(im.share===0){S.prazni.add(it.id); if(auto){const nx=S.items.findIndex(x=>x.vrsta===it.vrsta&&!x.starija&&!S.prazni.has(x.id)); if(nx>=0){S.sel=nx; S.preskoceno=(S.preskoceno||[]).concat(it.karta); rkUpd(); return rkImg(parcel,scale,true);}}}}}
   catch(e){if(RKAT.get(key)===S) S.img={st:"err",e:e.message,scale}}
   rkUpd();
 }
-function rkUpd(){const el=document.getElementById("rkBox"); if(el&&RK_CTX&&RK_CTX.key===rkKey()) el.innerHTML=rkInner();}
+function rkUpd(){const el=document.getElementById("rkBox"); if(el&&RK_CTX&&RK_CTX.key===rkKey()) el.innerHTML=rkInner(); const u=document.getElementById("uzUvjeti"); if(u) u.outerHTML=uzUvjetiBox();}
+// prijedlog zone i uz izbornik zone u „Uvjetima gradnje” (vidljiv i u osnovnom prikazu, gdje je odjeljak s kartom skriven)
+function uzUvjetiBox(){let h=""; try{const S=RKAT.get(rkKey()); if(S&&S.zp&&S.zp.it&&S.zp.it.zona&&S.zp.key===rkKey()) h=uzPrijedlogHtml(S);}catch(e){} return `<div id="uzUvjeti">${h}</div>`;}
 function rkInner(){
   const S=RKAT.get(rkKey());
   if(!S) return `<p class="meta">Katalog karata prostornih planova nije dostupan za ovo područje.</p>`;
@@ -2314,6 +2407,7 @@ function rkInner(){
     h+=`<div class="kd"><button type="button" class="ib" id="rkIn">Uvećaj</button><button type="button" class="ib" id="rkOut">Umanji</button><button type="button" class="ib" id="rkMap">${RK_MAP.on?"Ukloni s karte":"Prikaži na karti"}</button><a class="ib" href="${esc(im.url)}" target="_blank" rel="noopener">Otvori izrez</a>${T.fullUrl?`<a class="ib" id="rkFull" href="${esc(T.fullUrl(S.K,it))}" target="_blank" rel="noopener">Otvori cijeli list</a>`:""}</div>`;
     h+=`<p class="meta">Prikazano je ${Math.round(im.extent.xmax-im.extent.xmin)} × ${Math.round(im.extent.ymax-im.extent.ymin)} m. Granica čestice (plavo) ucrtana je prema okviru koji je ${im.okvir==="vraćeni"?"vratio servis":"zatražen od servisa (WMS vraća točno taj okvir)"} (${esc(im.crs==="CRS:84"?"WGS84":"HTRS96/TM")}).</p>`;
   }
+  if(it.zona&&S.zp) h+=uzPrijedlogHtml(S);
   h+=`<div class="verdict v-warn" style="margin:6px 0">Detaljna zona nije potvrđena.</div>`;
   h+=`<p class="meta">Oznaku zone pročitaj na karti i usporedi s legendom i odredbama plana. Aplikacija je ne očitava automatski, jer skenirana karta nema digitalnu legendu povezanu s bojama.${S.K.tip==="arcgis"?" Uvjeti gradnje računaju se samo za zonu koju sam odabereš u „Uvjetima gradnje”, uz napomenu da nije potvrđena.":""}</p>`;
   const R=PZREG.items;
@@ -2336,6 +2430,11 @@ function rkMapDraw(){
 }
 map.on("moveend",()=>{if(RK_MAP.on) rkMapDraw();});
 sheet.addEventListener("change",e=>{ if(e.target.id!=="rkSel") return; const S=RKAT.get(rkKey()); if(!S||!RK_CTX) return; S.sel=+e.target.value; rkImg(RK_CTX.parcel,1,false); if(RK_MAP.on) rkMapDraw(); });
+sheet.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-uzb]"); if(!b) return; const S=RKAT.get(rkKey()), Z=S&&S.zp; if(!Z||Z.st!=="ok") return; const a=b.dataset.uzb;
+  if(a==="prihvati"){krkZonaSet(b.dataset.zona); try{localStorage.setItem("krkZonaIzvor:"+Z.key,JSON.stringify({izvor:"prijedlog iz rastera (pilot)",kandidat:Z.o.kandidat,zona:b.dataset.zona,revizija:uzRevKljuc(Z.rev),datum:pzDan()}))}catch(err){} if(KRK_CUR) renderKrk(KRK_CUR); rkUpd();}
+  else if(a==="odbij"||a==="vrati"){try{if(a==="odbij") localStorage.setItem(uzOdbijKey(Z.key,Z.rev),"1"); else localStorage.removeItem(uzOdbijKey(Z.key,Z.rev))}catch(err){} rkUpd();}
+  else if(a==="promijeni"){const el=document.getElementById("krkZona"); if(el){el.scrollIntoView({block:"center"}); el.focus();}}
+});
 sheet.addEventListener("click",e=>{ const id=e.target.id; if(!/^rk(In|Out|Map)$/.test(id)||!RK_CTX) return; const S=RKAT.get(rkKey()); if(!S) return;
   if(id==="rkMap"){RK_MAP.on=!RK_MAP.on; rkMapDraw(); rkUpd(); if(RK_MAP.on&&RK_CTX.parcel){try{map.fitBounds(window.L.geoJSON(RK_CTX.parcel).getBounds(),{maxZoom:19,padding:[40,40]})}catch(err){} if(isMobile()) setState("peek");} return;}
   const sc=(S.img&&S.img.scale)||1; rkImg(RK_CTX.parcel,id==="rkIn"?Math.max(0.35,sc/1.6):Math.min(6,sc*1.6),false); });

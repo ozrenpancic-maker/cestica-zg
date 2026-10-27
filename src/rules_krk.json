@@ -394,7 +394,101 @@
             "naziv": "4. Način i uvjeti gradnje",
             "vrsta": "pravila",
             "zona": true,
-            "napomena": "zone M11, M12 i M2 (čl. 37. st. 2.–3.)"
+            "napomena": "zone M11, M12 i M2 (čl. 37. st. 2.–3.)",
+            "legenda": {
+              "izvor": "legenda karte 4 UPU-a 2 Kornić: Ministarstvo prostornoga uređenja, servis AGS_LEGENDA_SASTAVNICA (MapServer, sloj 8, OBJECTID 2139), raster 1075 × 2117 px; boja je medijan piksela polja legende, uzorkovano programski 27. 10. 2026.",
+              "napomena": "boje su prototipi za pilot prijedloga zone; nisu dio odluke i ne zamjenjuju čitanje karte. Oznaka TS (crna šrafura) nije uzorkovana; D2/D8 je šrafura. Prijedlog je samo kandidat (C).",
+              "boje": [
+                {
+                  "zona": "M11",
+                  "rgb": [
+                    243,
+                    224,
+                    102
+                  ]
+                },
+                {
+                  "zona": "M12",
+                  "rgb": [
+                    236,
+                    179,
+                    104
+                  ]
+                },
+                {
+                  "zona": "M2",
+                  "rgb": [
+                    235,
+                    136,
+                    108
+                  ]
+                },
+                {
+                  "zona": "D2/D8",
+                  "rgb": [
+                    224,
+                    119,
+                    117
+                  ]
+                },
+                {
+                  "zona": "I2",
+                  "rgb": [
+                    182,
+                    177,
+                    205
+                  ]
+                },
+                {
+                  "zona": "K1",
+                  "rgb": [
+                    117,
+                    140,
+                    170
+                  ]
+                },
+                {
+                  "zona": "K2",
+                  "rgb": [
+                    139,
+                    169,
+                    193
+                  ]
+                },
+                {
+                  "zona": "R1",
+                  "rgb": [
+                    196,
+                    231,
+                    207
+                  ]
+                },
+                {
+                  "zona": "Z1/Z2",
+                  "rgb": [
+                    173,
+                    221,
+                    169
+                  ]
+                },
+                {
+                  "zona": "Z",
+                  "rgb": [
+                    201,
+                    235,
+                    192
+                  ]
+                },
+                {
+                  "zona": "P",
+                  "rgb": [
+                    232,
+                    156,
+                    162
+                  ]
+                }
+              ]
+            }
           }
         }
       },

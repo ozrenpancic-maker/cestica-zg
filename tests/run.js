@@ -2140,7 +2140,8 @@ async function formulaTests(){
   // sažetak pravila bez oznaka pravne provjere (status provjere smije se mijenjati, brojke i tekstovi pravila ne)
   // Plan Integrity v10: novo polje »citati« (doslovni navodi iz objave) ne mijenja postojeće brojke ni tekstove; ne ulazi u sažetak,
   // a njegovu doslovnost provjerava zaseban test (»PI v10 navodi«) prema tekstu SN PGŽ 19/2016
-  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati").map(([k,v])=>[k,bezPP(v)])):o;
+  // Sljedeća faza: »legenda« (boje polja legende karte 4 za pilot prijedloga zone) i »provjereno« (stručno provjereni obuhvati) nisu pravila; ne ulaze u sažetak
+  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno").map(([k,v])=>[k,bezPP(v)])):o;
   const sha=crypto.createHash("sha256").update(JSON.stringify(bezPP(JSON.parse(fs.readFileSync(path.join(__dirname,"..","src","rules_krk.json"),"utf8"))))).digest("hex");
   ok(sha==="6c6741620a351ab6058812f2aba8f3723534ef42a17c8b6013fd42e829e9d166","Pravila: src/rules_krk.json bez oznaka pravne provjere nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
   const t0=R.tipovi.obit, u2=R.upu["UPU 2"];
@@ -2453,6 +2454,61 @@ async function piTests(){
   ok(errs.length===0,"bez JS grešaka (Plan Integrity): "+errs.join(" | "));
 }
 
+// Sljedeća faza, FAZA 3–4: pilot prijedloga detaljne zone iz rastera (čiste funkcije na sintetičkim slikama, sučelje, izvor nedostupan)
+async function uzTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=(ms=30)=>new Promise(r=>setTimeout(r,ms));
+  const LEG=E("RULES_KRK").upu["UPU 2"].karte.listovi["4"].legenda, P=E("UZ_PARAM");
+  ok(LEG&&LEG.boje.length>=10&&LEG.boje.every(b=>b.zona&&b.rgb.length===3)&&/OBJECTID 2139/.test(LEG.izvor)&&/27\. 10\. 2026/.test(LEG.izvor),"Zona (pilot): boje legende karte 4 UPU-a 2 zapisane su s izvorom (servis legende, OBJECTID 2139, datum uzorkovanja)");
+  ok(E("FEATURES").upuZona===false&&E("uzUkljuceno()")===false,"Zona (pilot): isključen za sve korisnike (FEATURES.upuZona=false, bez ?pilot=zona)");
+  // sintetička karta 200 × 200 px, 1 m/px: lijevo boja »M11« s karte, desno »M2« (vrijednosti kakve daje skenirani list)
+  const W=200,H=200, img=(fn)=>{const d=new Uint8ClampedArray(W*H*4); for(let y=0;y<H;y++) for(let x=0;x<W;x++){const c=fn(x,y), o=(y*W+x)*4; d[o]=c[0];d[o+1]=c[1];d[o+2]=c[2];d[o+3]=c[3]??255;} return d;};
+  const M11=[232,216,88], M2=[232,136,104], BIJ=[250,250,250], CRNA=[20,20,20];
+  const sq=(x0,y0,x1,y1)=>[[[x0,y0],[x1,y0],[x1,y1],[x0,y1]]];
+  const run=(d,poly)=>{const Hs=E("uzHist")(d,W,H,poly,1,P); return E("uzOdluka")(Hs,LEG.boje,P);};
+  const dva=img((x,y)=>x<100?M11:M2);
+  let o=run(dva,sq(10,10,60,60)); ok(o.kandidat==="M11"&&!o.blizuGranice&&o.dokaz.udjeli.M11>0.9&&!o.razlog,"Zona (pilot): čestica u jednoj boji daleko od granice → kandidat M11 bez upozorenja o granici ("+JSON.stringify(o.dokaz.udjeli)+")");
+  o=run(dva,sq(40,40,97,90)); ok(o.kandidat==="M11"&&o.blizuGranice&&o.dokaz.prsten.M2>0,"Zona (pilot): čestica unutar M11 do granice → kandidat uz upozorenje »blizu granice zone«");
+  o=run(dva,sq(70,40,130,100)); ok(o.kandidat===null&&/više boja zona/.test(o.razlog)&&o.najcesca,"Zona (pilot): čestica preko granice M11/M2 → odustaje (mješovito), ne pogađa");
+  o=run(img((x,y)=>x<100?BIJ:M11),sq(40,40,130,100)); ok(o.kandidat===null&&/bijeloj površini|više boja|premalo/.test(o.razlog),"Zona (pilot): dio čestice na bijeloj površini (prometnica) → odustaje: "+o.razlog);
+  o=run(img(()=>[0,0,0,0]),sq(10,10,60,60)); ok(o.kandidat===null&&/nema sadržaja/.test(o.razlog),"Zona (pilot): prozirni list → odustaje (list nema sadržaja)");
+  o=run(img((x,y)=>(x%10<3||y%17<2)?CRNA:M11),sq(10,10,90,90)); ok(o.kandidat==="M11"&&o.dokaz.tamno>0.2,"Zona (pilot): linije i tekst (tamni pikseli) ne smanjuju prepoznavanje boje zone (tamno "+Math.round(o.dokaz.tamno*100)+" %)");
+  o=run(img(()=>[30,200,60]),sq(10,10,60,60)); ok(o.kandidat===null&&/premalo boja/.test(o.razlog),"Zona (pilot): boja koje nema u legendi (nečitljiv dio rastera) → odustaje");
+  o=run(img(()=>M11),sq(10,10,13,13)); ok(o.kandidat===null&&/premalo uzoraka/.test(o.razlog),"Zona (pilot): premalo uzoraka unutar čestice → odustaje");
+  ok(!/pouzdanost\w* \d+ ?%/i.test(JSON.stringify(o))&&!("pouzdanost" in o),"Zona (pilot): rezultat nema izmišljeni postotak pouzdanosti");
+  // stvarni histogrami izreza karte 4 (preglednik, 27. 10. 2026.): 735/76 → M11; 88/7 (referenca: mješovito M2/M11) → odustaje
+  {const F=JSON.parse(fs.readFileSync(path.join(__dirname,"pgz-odgovori/upu2-karta4-histogrami-2026-10-27/735-76_88-7.json"),"utf8")).cestice, od=x=>E("uzOdluka")(w.JSON.parse(JSON.stringify(x)),LEG.boje,P);
+   const a=od(F[0]), b=od(F[1]); ok(a.kandidat==="M11"&&a.dokaz.udjeli.M11>0.9&&!a.blizuGranice,"Zona (pilot): 735/76 iz stvarnog izreza karte 4 → kandidat M11 (M11 "+Math.round(a.dokaz.udjeli.M11*100)+" % boja), bez upozorenja o granici");
+   ok(b.kandidat===null&&/više boja/.test(b.razlog)&&b.najcesca==="M2","Zona (pilot): 88/7 (mješovito M2/M11) → odustaje, ne pogađa ("+b.razlog+")");}
+  // cijeli put piksel → histogram → odluka na spremljenom izrezu karte 4 (PGŽ, 22. 10. 2026., ±90 m oko 735/76, 800 × 800 px)
+  {const png=fs.readFileSync(path.join(__dirname,"pgz-odgovori/735-76-kornic-2026-10-22/karte/karta4_izvorno.png")), zlib=require("zlib");
+   // najmanji dekoder za paletni PNG (8 bita), dovoljan za izrez PP_RASTERI
+   let o=8, Wp=0,Hp=0, pal=null, trns=null; const idat=[]; while(o<png.length){const n=png.readUInt32BE(o), t=png.toString("ascii",o+4,o+8), c=png.subarray(o+8,o+8+n);
+     if(t==="IHDR"){Wp=c.readUInt32BE(0); Hp=c.readUInt32BE(4);} else if(t==="PLTE") pal=c; else if(t==="tRNS") trns=c; else if(t==="IDAT") idat.push(c); o+=12+n;}
+   const raw=zlib.inflateSync(Buffer.concat(idat)), px=new Uint8Array(Wp*Hp), prev=new Uint8Array(Wp);
+   for(let y=0;y<Hp;y++){const f=raw[y*(Wp+1)], row=raw.subarray(y*(Wp+1)+1,(y+1)*(Wp+1)), cur=new Uint8Array(Wp);
+     for(let x=0;x<Wp;x++){const a=x?cur[x-1]:0,b=prev[x],c=x?prev[x-1]:0; let v=row[x]; if(f===1) v+=a; else if(f===2) v+=b; else if(f===3) v+=(a+b)>>1; else if(f===4){const p=a+b-c,pa=Math.abs(p-a),pb=Math.abs(p-b),pc=Math.abs(p-c); v+=pa<=pb&&pa<=pc?a:pb<=pc?b:c;} cur[x]=v&255;}
+     px.set(cur,y*Wp); prev.set(cur);}
+   const d=new Uint8ClampedArray(Wp*Hp*4); for(let i=0;i<Wp*Hp;i++){const k=px[i]; d[i*4]=pal[k*3]; d[i*4+1]=pal[k*3+1]; d[i*4+2]=pal[k*3+2]; d[i*4+3]=trns&&k<trns.length?trns[k]:255;}
+   const M=JSON.parse(fs.readFileSync(path.join(__dirname,"pgz-odgovori/735-76-kornic-2026-10-22/karte/_meta.json"),"utf8")).karta4.extent, mpx=(M.xmax-M.xmin)/Wp;
+   const ring=JSON.parse(fs.readFileSync(path.join(__dirname,"../tools/upu-zona/referentni_uzorak.json"),"utf8")).cestice.find(c=>c.broj==="735/76").prsten3765.map(([e,n])=>[(e-M.xmin)/mpx,(M.ymax-n)/mpx]);
+   const t0=Date.now(), Hs=E("uzHist")(w.Uint8ClampedArray.from(d),Wp,Hp,w.JSON.parse(JSON.stringify([ring])),mpx,P), od=E("uzOdluka")(Hs,LEG.boje,P), ms=Date.now()-t0;
+   ok(Wp===800&&Hp===800&&od.kandidat==="M11"&&od.dokaz.udjeli.M11>0.85&&od.dokaz.uzorci>=P.minUzoraka,"Zona (pilot): spremljeni izrez karte 4 (0,225 m/px) → 735/76 kandidat M11 ("+Math.round(od.dokaz.udjeli.M11*100)+" % boja zona, "+od.dokaz.uzorci+" uzoraka, "+ms+" ms)");
+   ok(ms<1500,"Zona (pilot): histogram i odluka za česticu traju "+ms+" ms (manje od 1,5 s)");}
+  // sučelje: prijedlog, prihvati / promijeni / odbij; prihvaćeno ostaje C i vrijedi samo za tu česticu
+  const it={a:{KARTA_SIFRA:"618_karta4",Name:"618_karta4_i",STANJE_1212:"x"},plan:"UPU 2 - Kornić",OBJECTID:7104,_sloj:{id:5},zona:true};
+  const LG=E("uzLegenda")(w.JSON.parse(JSON.stringify(it))); ok(LG&&LG.kod==="UPU 2"&&LG.list==="4","Zona (pilot): legenda se veže samo uz list 4 UPU-a 2 (prepoznavanje plana i lista)");
+  ok(!E("uzLegenda")(w.JSON.parse(JSON.stringify({...it,a:{KARTA_SIFRA:"618_karta3a"}}))),"Zona (pilot): za list 3A (zone zaštite) prijedlog zone se ne daje");
+  // izvor nedostupan: fetch odbija → nema prijedloga, poruka »Podaci nisu dostupni«
+  w.fetch=()=>Promise.reject(new Error("bez mreže")); w.createImageBitmap=async()=>({});
+  const Z0=await E("uzPrijedlog")({},w.JSON.parse(JSON.stringify(it)),{st:"ok",url:"https://example.org/x.png",W,H,extent:{xmin:0,xmax:200,ymin:0,ymax:200},poly:sq(10,10,60,60)});
+  ok(Z0&&Z0.st==="err"&&/Podaci nisu dostupni/.test(E("uzPrijedlogHtml")({zp:Z0}))&&!/Prihvati/.test(E("uzPrijedlogHtml")({zp:Z0})),"Zona (pilot): izvor nedostupan → nema prijedloga ni gumba za prihvaćanje, poruka »Podaci nisu dostupni«");
+  // provjereni obuhvat vrijedi samo za točnu česticu i reviziju
+  const rev=E("uzRevizija")(w.JSON.parse(JSON.stringify(it)),LG), rk=E("uzRevKljuc")(rev);
+  const LG2={...LG,L:{...LG.L,provjereno:[{cestica:"735/76@315907",zona:"M11",revizija:rk,provjerio:"test",datum:"2026-10-27"}]}};
+  ok(E("uzProvjereno")(LG2,"735/76@315907",rev)&&!E("uzProvjereno")(LG2,"735/54@315907",rev)&&!E("uzProvjereno")(LG2,"735/76@315907",{...rev,stanje:"drugo"})&&(LG.L.provjereno||[]).length===0,"Zona (pilot): stručna provjera obuhvata vrijedi samo za točno navedenu česticu i istu reviziju lista; zapisanih provjera je 0");
+  ok(errs.length===0,"bez JS grešaka (pilot zone): "+errs.join(" | "));
+}
+
 // osunčanost dvorišta, vjetar i bura, pogled na more, promjene na spremljenoj čestici (čiste funkcije i prikaz)
 async function napTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
@@ -2646,7 +2702,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(piTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
+netTests().then(piTests).then(uzTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
