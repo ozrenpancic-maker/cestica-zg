@@ -2138,7 +2138,9 @@ async function formulaTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x), R=E("RULES_KRK"), T=w.turf, fs=require("fs"), crypto=require("crypto");
   // očuvanje pravila: rules_krk.json se u ovoj verziji ne mijenja (promjena tek nakon neovisne provjere)
   // sažetak pravila bez oznaka pravne provjere (status provjere smije se mijenjati, brojke i tekstovi pravila ne)
-  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera").map(([k,v])=>[k,bezPP(v)])):o;
+  // Plan Integrity v10: novo polje »citati« (doslovni navodi iz objave) ne mijenja postojeće brojke ni tekstove; ne ulazi u sažetak,
+  // a njegovu doslovnost provjerava zaseban test (»PI v10 navodi«) prema tekstu SN PGŽ 19/2016
+  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati").map(([k,v])=>[k,bezPP(v)])):o;
   const sha=crypto.createHash("sha256").update(JSON.stringify(bezPP(JSON.parse(fs.readFileSync(path.join(__dirname,"..","src","rules_krk.json"),"utf8"))))).digest("hex");
   ok(sha==="6c6741620a351ab6058812f2aba8f3723534ef42a17c8b6013fd42e829e9d166","Pravila: src/rules_krk.json bez oznaka pravne provjere nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
   const t0=R.tipovi.obit, u2=R.upu["UPU 2"];
@@ -2328,7 +2330,7 @@ async function piTests(){
   const ocisti=()=>{ for(const k of Object.keys(w.localStorage)) if(/^krk(Zona|Zast|Tip|Kd)/.test(k)) w.localStorage.removeItem(k); };
   // 735/76 (spremljeni odgovori PGŽ-a 22. 10. 2026.)
   const D="pgz-odgovori/735-76-kornic-2026-10-22/";
-  const gj=rd("../docs/primjeri/kornic_cestica_735_76.geojson").features[0], parcel=w.JSON.parse(JSON.stringify({type:"Feature",geometry:bez3(gj.geometry),properties:{broj:"735/76",ko:"KORNIĆ",ref:"735/76@315907",cid:19311099}}));
+  const gj=rd("../docs/primjeri/kornic_cestica_735_76.geojson").features[0], parcel=w.JSON.parse(JSON.stringify({type:"Feature",geometry:bez3(gj.geometry),properties:{broj:"735/76",ko:"KORNIĆ",ref:"735/76@315907",cid:19311099,povrsinaKatastar:405}}));
   const mkD=(parcel,namF,plF)=>{const area=T.area(parcel), nam=namF.map(f=>w.JSON.parse(JSON.stringify(bez3(f))));
     const rows=nam.map(f=>{let sh=0; try{const i=T.intersect(parcel,f); sh=i?T.area(i)/area:0;}catch(e){} return {p:f.properties,share:sh,geom:f.geometry};}).filter(r=>r.share>0).sort((a,b)=>b.share-a.share);
     const c=T.pointOnFeature(parcel).geometry.coordinates; return {region:"krk",ll:{lat:c[1],lng:c[0]},parcel,area,rows,ces:{v:[parcel]},nam:{v:nam},pl:{v:w.JSON.parse(JSON.stringify(plF))},slope:null,env:null};};
@@ -2351,6 +2353,56 @@ async function piTests(){
   ok(O("calc-tlocrt").razina==="uvjetno"&&R().get("calc-tlocrt").lanac.find(k=>k.karika==="zona zaštite").raz==="C","PI 735/76, zona C (tvoj odabir): izračun i dalje uvjetan; zona zaštite nije potvrđena");
   E("krkZastSet")("B"); E("renderKrk")(d76); await tick();
   ok(O("blok-uvjeti")&&O("blok-uvjeti").razina==="blokirano"&&/»B«/.test(R().get("blok-uvjeti").blokada)&&!R().get("calc-tlocrt"),"PI 735/76, zona B: izračun blokiran s razlogom");
+  // --- završna provjera v10: kontrolne nedosljednosti (735/76) ---
+  {const SN=fs.readFileSync(path.join(__dirname,D+"sn-19-16/odluka_34138_pdf_tekst.txt"),"utf8").split("\n"), H=/^(Petak, 29\. srpnja 2016\.|SLUŽBENE NOVINE|Stranica \d+ — broj 19|Broj 19 — Stranica \d+)$/, CL={}; let cur=null;
+   for(const r of SN){const m=r.trim().match(/^Članak (\d+)\.$/); if(m){cur=m[1]; CL[cur]=[]; continue} if(cur&&!H.test(r.trim())) CL[cur].push(r.trim());}
+   for(const k in CL) CL[k]=CL[k].join(" ").replace(/\s+/g," ");
+   const lit=(cl,x)=>(CL[String(cl).replace(/\D.*$/,"")]||"").includes(String(x).replace(/\s+/g," "));
+   const CI=E("RULES_KRK").upu["UPU 2"].citati, sve=[]; for(const g of ["slob","dvoj","stamb"]){const G=CI[g]; for(const [k,v] of Object.entries(G)) if(k!=="clanak") (k==="minC"?Object.values(v):[v]).forEach(x=>sve.push([G.clanak,x.x]));}
+   for(const k of ["krov","zastitaC_krov","zastitaC_etaze"]) sve.push([CI[k].clanak,CI[k].x]);
+   ok(sve.length>=20&&sve.every(([c,x])=>lit(c,x)),"PI v10 navodi: svih "+sve.length+" navoda UPU-a 2 u rules_krk.json (citati) doslovno je u svom članku SN PGŽ 19/2016: "+sve.filter(([c,x])=>!lit(c,x)).map(x=>x[0]).join(","));
+   ocisti(); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="dvoj"; E("renderKrk")(d76); await tick(); E("krkZonaSet")("M11"); E("renderKrk")(d76); await tick();
+   const m=R().get("calc-min"), mc=m.lanac.filter(k=>k.karika==="članak");
+   ok(/obiteljska kuća, dvojna/.test(m.naziv)&&/^ispunjeno: 404,4 m² ≥ 300 m²$/.test(m.vrijednost)&&mc.length===1&&mc[0].vrijednost==="čl. 39. a)"&&mc[0].citat==="najmanja površina građevne čestice obiteljske kuće iznosi 300 m2, odnosno višeobiteljske kuće 400 m2"&&/doslovni/.test(mc[0].citatVrsta)&&lit(39,mc[0].citat),"PI v10 #1: najmanja čestica navodi kategoriju (obiteljska, dvojna), prag 300 m² i doslovni čl. 39. a): "+m.naziv+" · "+m.vrijednost);
+   const os=m.lanac.find(k=>k.karika==="osnovica izračuna");
+   ok(os&&/površina iz koordinata granice 405,3 m² \(atribut katastra: 405,0 m²\) × udio u građevinskom području naselja 99,78 % = 404,4 m²/.test(os.vrijednost)&&/P3 0,22 %/.test(os.razlog)&&/nezaokruženom/.test(os.pravilo)&&E("piReport")().pokazatelji.find(p=>p.id==="calc-min").osnovica===os.vrijednost,"PI v10 #2: osnovica 405,3 m² (koordinate; katastar 405,0) × 99,78 % = 404,4 m² i pravilo zaokruživanja u lancu i izvještaju: "+(os&&os.vrijednost));
+   ok(R().get("namjena-udio").vrijednost==="NA2 99,78 %, P3 0,22 %"&&E("udioTxt")(1)==="100 %"&&E("udioTxt")(0.5)==="50 %"&&E("udioTxt")(0.0022)==="0,22 %","PI v10 #3: udio namjene NA2 99,78 %, P3 0,22 % (ne 100 % / 0 %): "+R().get("namjena-udio").vrijednost);
+   E("KRK_TIP").oblik="slob"; E("renderKrk")(d76); await tick(); const m2=R().get("calc-min"), c2=m2.lanac.find(k=>k.karika==="članak");
+   ok(/obiteljska kuća, slobodnostojeća/.test(m2.naziv)&&/samo iznimno: 404,4 m² < 500 m² \(iznimno 400 m²\)/.test(m2.vrijednost)&&c2.vrijednost==="čl. 38. a)"&&/500 m2, a iznimno 400 m2/.test(c2.citat),"PI v10 #1b: slobodnostojeća obiteljska: prag 500 m², iznimno 400 m², čl. 38. a): "+m2.vrijednost);
+   E("krkZastSet")("C"); E("renderKrk")(d76); await tick(); const kr=R().get("blok-krov").lanac.filter(k=>k.karika==="članak");
+   ok(kr.length===2&&kr[1].vrijednost==="čl. 85. st. 2."&&/kosi krov s nagibom tradicijskog krova \(oko 30˚\)/.test(kr[1].citat)&&!/etaž/.test(kr[1].citat)&&lit(85,kr[1].citat)&&lit(38,kr[0].citat)&&/17o i 23o/.test(kr[0].citat),"PI v10 #4: sukob krova citira doslovni navod o nagibu iz čl. 85. st. 2. (ne o etažama) i čl. 38. d)");
+   E("krkZastSet")(""); E("KRK_TIP").oblik="slob";}
+  // --- zadatak 2: vrsta zahvata na Krku, bez prešutne vrijednosti ---
+  {ocisti(); try{w.localStorage.removeItem("krkZahvat")}catch(e){} E("KRK_ZAHVAT=''"); E("renderKrk")(d76); await tick(); E("krkZonaSet")("M11"); E("renderKrk")(d76); await tick();
+   const z0=(R().get("calc-tlocrt").uvjeti||[]).some(u=>/vrsta zahvata nije odabrana/.test(u.tekst)&&!u.razrijeseno);
+   ok(!!w.document.getElementById("krkZahvat")&&w.document.getElementById("krkZahvat").value===""&&z0&&w.document.querySelector('[data-krk-zahvat="nije-odabran"]'),"PI zahvat (Krk): izbornik postoji, bez odabira nema zadane vrijednosti; otvoren uvjet »vrsta zahvata nije odabrana«");
+   setv(w,"krkZahvat","rek","change"); await tick();
+   ok(E("KRK_ZAHVAT")==="rek"&&w.document.querySelector('[data-krk-zahvat="rek"]')&&(R().get("calc-tlocrt").uvjeti||[]).some(u=>/rekonstrukcija: posebne odredbe/.test(u.tekst)),"PI zahvat (Krk): rekonstrukcija daje upozorenje i otvoren uvjet; brojke ostaju za novu gradnju");
+   setv(w,"krkZahvat","nova","change"); await tick();
+   ok(!(R().get("calc-tlocrt").uvjeti||[]).some(u=>/zahvat/.test(u.tekst)),"PI zahvat (Krk): nova gradnja (odabrana) ne ostavlja uvjet zahvata");
+   try{w.localStorage.removeItem("krkZahvat")}catch(e){} E("KRK_ZAHVAT=''"); ocisti();}
+  // baza pravila: Krk predaje zahvat samo kad je odabran; Zagreb vrstu i zahvat samo kad su odabrani
+  {const PR=rd("../tools/baza/primjer_baza.json"), b=boot(html.replace("const RULES_DB = null;","const RULES_DB = "+JSON.stringify(PR)+";")), W=b.w, EE=x=>W.eval(x);
+   const p2=W.JSON.parse(JSON.stringify(parcel));
+   const area=W.turf.area(p2), nam=rd(D+"namjena_cestica_app.geojson").features.map(f=>W.JSON.parse(JSON.stringify(bez3(f)))), rows=nam.map(f=>{let sh=0;try{const i=W.turf.intersect(p2,f);sh=i?W.turf.area(i)/area:0}catch(e){} return {p:f.properties,share:sh,geom:f.geometry}}).filter(r=>r.share>0).sort((a,b)=>b.share-a.share);
+   const c=W.turf.pointOnFeature(p2).geometry.coordinates, dd={region:"krk",ll:{lat:c[1],lng:c[0]},parcel:p2,area,rows,ces:{v:[p2]},nam:{v:nam},pl:{v:W.JSON.parse(JSON.stringify(rd(D+"planovi_tocka_app.geojson").features))},slope:null,env:null};
+   EE("KRK_TIP").tip="obit"; EE("KRK_TIP").oblik="slob"; EE("renderKrk")(dd); await tick(); EE("krkZonaSet")("M11"); EE("renderKrk")(dd); await tick();
+   const kig=()=>{const M=EE("window.__dbLast").M; return M.grupe.flatMap(g=>g.rules).find(x=>x.r.parametar==="kig");};
+   const k0=kig(); EE("KRK_ZAHVAT='nova'"); EE("renderKrk")(dd); await tick(); const k1=kig();
+   ok(k0&&!k0.calc&&k0.scopeMissing.includes("vrsta zahvata nije potvrđena")&&k1&&k1.calc,"PI zahvat (Krk, baza): bez odabranog zahvata pravilo s obveznim zahvatom ne ulazi u izračun; uz odabranu novu gradnju ulazi");
+   // Zagreb: pravilo za određenu vrstu i zahvat
+   const DZ={verzija_sheme:"1.0",izvor:"test",izvezeno:"2026-10-27",planovi:[{id:"GUP-ZG",naziv:"GUP Grada Zagreba",vrsta:"GUP",status_vazenja:"važeći",obuhvat:{jls:["Grad Zagreb"],gis:{status:"potvrđeno"}},odluke:[{id:"G1",naziv:"Odluka o GUP-u",glasilo:"SGGZ",url:"https://example.org/gup"}]}],
+     pravila:[{id:"g-kig",plan_id:"GUP-ZG",odluka_id:"G1",parametar:"kig",vrijednost:0.3,clanak:"69",citat:"test",primjenjivost:{zone:["2.2."],vrste_gradnje:["obiteljska kuća","višestambena građevina"],zahvat:["nova gradnja"]},pravni_status:{razina:"potvrđeno",datum_provjere:"2026-10-27"},gis_status:{razina:"potvrđeno"}}]};
+   const z=boot(html.replace("const RULES_DB = null;","const RULES_DB = "+JSON.stringify(DZ)+";")), Z=z.w, ZE=x=>Z.eval(x);
+   try{Z.localStorage.removeItem("zahvat"); Z.localStorage.removeItem("zgVrsta")}catch(e){} ZE("ZG_VRSTA=''");
+   ZE("render")(data(Z,parcelRect(40,25),"2.2.")); await tick();
+   const g0=()=>ZE("window.__dbLast").M.grupe[0].rules[0], sel=Z.document.getElementById("zgVrsta");
+   ok(sel&&[...sel.options].map(o=>o.value).join("|")==="|obiteljska kuća|višestambena građevina"&&!g0().calc&&Z.document.querySelector('[data-db-vrsta="nije-odabrana"]'),"PI vrsta (Zagreb): kad pravilo traži vrstu, nudi se izbor vrste (odvojen od načina gradnje); bez izbora pravilo ne ulazi u izračun");
+   setv(Z,"zgVrsta","obiteljska kuća","change"); await tick();
+   ok(ZE("ZG_VRSTA")==="obiteljska kuća"&&!g0().calc&&g0().scopeMissing.includes("vrsta zahvata nije potvrđena"),"PI zahvat (Zagreb): zadana »nova gradnja« nije izričit izbor, pa pravilo s obveznim zahvatom i dalje ne ulazi u izračun");
+   Z.localStorage.setItem("zahvat","nova"); ZE("render")(data(Z,parcelRect(40,25),"2.2.")); await tick();
+   ok(g0().calc===true&&!!Z.document.getElementById("tipSel"),"PI vrsta i zahvat (Zagreb): uz odabranu vrstu i izričit zahvat pravilo ulazi u izračun; način gradnje ostaje zaseban izbor (tipSel)");
+   ok(!b.errs.length&&!z.errs.length,"bez JS grešaka (baza, zahvat, vrsta): "+b.errs.concat(z.errs).join(" | "));}
   // čista logika statusa
   const ob=it=>E("piObjava")(it);
   ok(ob({raz:"B",lanac:[{karika:"a",raz:"A",uskladenost:"kompatibilno"},{karika:"b",raz:"B"}]}).razina==="izvedeno"&&ob({raz:"B",lanac:[{karika:"a",raz:"A",strucno:true},{karika:"b",raz:"B",strucno:true}]}).razina==="provjereno"&&ob({raz:"B",lanac:[{karika:"a",raz:"A",uskladenost:"nepoznata"}]}).razina==="uvjetno"&&ob({raz:"B",lanac:[{karika:"a",raz:"A",uskladenost:"sukob"}]}).razina==="blokirano"&&ob({raz:"B",lanac:[{karika:"a",raz:"A"}],uvjeti:[{tekst:"x",razrijeseno:false}]}).razina==="uvjetno","PI status: izvedeno / provjereno samo uz stručnu potvrdu svih karika / nepoznata usklađenost = uvjetno / sukob = blokirano / otvoren uvjet = uvjetno");
@@ -2359,7 +2411,7 @@ async function piTests(){
   {const F=rd("pgz-odgovori/735-54-kornic-2026-10-27/podaci.json"), p54=w.JSON.parse(JSON.stringify({type:"Feature",geometry:F.granica,properties:{broj:"735/54",ko:"KORNIĆ",ref:"735/54@315907",cid:19311175}}));
    const d54=mkD(p54,F.namjena.features,F.planovi.features); E("renderKrk")(d54); await tick(); E("krkZonaSet")("M11"); E("renderKrk")(d54); await tick();
    const C=E("window.__krkCalc"), vm=R().get("calc-min").vrijednost;
-   ok(Math.abs(d54.area-772)<3&&d54.rows[0].p.OZNAKA_NAMJENE==="NA2"&&d54.rows[0].share>0.99&&Math.abs(C.A-d54.area)<1&&/772/.test(vm)&&!/405/.test(vm)&&/ispunjeno/.test(vm),"PI 735/54: površina ≈ 772 m² (iz koordinata), NA2 "+(d54.rows[0].share*100).toFixed(2)+" %, izračun s 735/54 (ne 405 m² od 735/76): "+vm);
+   ok(Math.abs(d54.area-772)<3&&d54.rows[0].p.OZNAKA_NAMJENE==="NA2"&&d54.rows[0].share>0.99&&Math.abs(C.A-d54.area)<1&&/77[12],\d m²/.test(vm)&&!/40[45]/.test(vm)&&/ispunjeno/.test(vm),"PI 735/54: površina ≈ 772 m² (iz koordinata), NA2 "+(d54.rows[0].share*100).toFixed(2)+" %, izračun s 735/54 (ne 405 m² od 735/76): "+vm);
    ok(O("calc-tlocrt").razina==="uvjetno"&&/UPU 2 Kornić/.test(tx()),"PI 735/54: UPU 2 Kornić; izračun uz odabranu zonu M11 uvjetan");}
   ocisti();
   // Zagreb, kontrolni slučaj (čestica 1541/2 k.o. Remete, pravilo 2.2.; podaci Grada Zagreba 27. 10. 2026.)

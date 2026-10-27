@@ -1,0 +1,651 @@
+{
+ "opis": "Unaprijed pripremljena pravila UPU-a 2 Kornić za stambenu gradnju (pilot GIS-first). Pripremio razvoj (Claude) iz službenog teksta; NISU stručno ni pravno potvrđena. Ne zamjenjuje src/rules_krk.json: s njim se samo uspoređuje.",
+ "plan": {
+  "naziv": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje",
+  "glasilo": "Službene novine Primorsko-goranske županije 19/2016",
+  "idplan_pgz": 618,
+  "izvor_teksta": "tests/pgz-odgovori/735-76-kornic-2026-10-22/sn-19-16/odluka_34138_pdf_tekst.txt",
+  "izvor_pdf": "http://www.sn.pgz.hr/download.asp?id=28072",
+  "izvor_html": "http://www.sn.pgz.hr/default.asp?Link=odluke&id=34138"
+ },
+ "pripremio": "razvoj (Claude), 27. 10. 2026.",
+ "status_pripreme": "PRIPREMLJENO_NIJE_STRUCNO_POTVRDENO",
+ "pravila": [
+  {
+   "id": "U2-37-2",
+   "clanak": 37,
+   "stavak": "2",
+   "parametar": "dopustene_zone",
+   "operator": "u",
+   "vrijednost": [
+    "M11",
+    "M2"
+   ],
+   "jedinica": null,
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit",
+     "stamb"
+    ]
+   },
+   "citat": "Planom je dozvoljena gradnja obiteljskih i višeobiteljskih kuća te stambenih građevina u zonama mješovite, pretežito stambene (M11), odnosno pretežito poslovne (M2) namjene prikazanim na kartografskom prikazu br. 4: Način i uvjeti gradnje"
+  },
+  {
+   "id": "U2-37-1-obit",
+   "clanak": 37,
+   "stavak": "1",
+   "parametar": "nacin_gradnje",
+   "operator": "u",
+   "vrijednost": [
+    "slob",
+    "dvoj",
+    "ugr"
+   ],
+   "jedinica": null,
+   "vrijedi_za": {
+    "tip": [
+     "obit"
+    ]
+   },
+   "citat": "obiteljska kuća je građevina isključivo stambene namjene s najviše jednim stanom, a gradi se kao slobodnostojeća, dvojna ili ugrađena građevina"
+  },
+  {
+   "id": "U2-37-1-visobit",
+   "clanak": 37,
+   "stavak": "1",
+   "parametar": "nacin_gradnje",
+   "operator": "u",
+   "vrijednost": [
+    "slob",
+    "dvoj"
+   ],
+   "jedinica": null,
+   "vrijedi_za": {
+    "tip": [
+     "visobit"
+    ]
+   },
+   "citat": "višeobiteljska kuća je građevina isključivo stambene namjene s najviše dva stana, a gradi se kao slobodnostojeća ili dvojna građevina"
+  },
+  {
+   "id": "U2-37-1-stamb",
+   "clanak": 37,
+   "stavak": "1",
+   "parametar": "nacin_gradnje",
+   "operator": "u",
+   "vrijednost": [
+    "slob"
+   ],
+   "jedinica": null,
+   "vrijedi_za": {
+    "tip": [
+     "stamb"
+    ]
+   },
+   "citat": "stambena građevina je građevina stambene namjene koja može sadržavati i poslovni prostor, sadrži najviše 4 samostalne uporabne cjeline namijenjene stanovanju, a gradi se kao slobodnostojeća građevina"
+  },
+  {
+   "id": "U2-38-a1",
+   "clanak": 38,
+   "tocka": "a",
+   "parametar": "min_povrsina_cestice",
+   "operator": ">=",
+   "vrijednost": 500,
+   "jedinica": "m2",
+   "iznimka": {
+    "vrijednost": 400,
+    "uvjet": "građevna čestica nalazi se u okruženju već uređenih i izgrađenih građevnih čestica",
+    "provjerljivo_iz_podataka": false
+   },
+   "vrijedi_za": {
+    "tip": [
+     "obit"
+    ],
+    "oblik": [
+     "slob"
+    ]
+   },
+   "citat": "najmanja površina građevne čestice obiteljske kuće iznosi 500 m2, a iznimno 400 m2 ako se građevna čestica nalazi u okruženju već uređenih i izgrađenih građevnih čestica"
+  },
+  {
+   "id": "U2-38-a2",
+   "clanak": 38,
+   "tocka": "a",
+   "parametar": "min_povrsina_cestice",
+   "operator": ">=",
+   "vrijednost": 500,
+   "jedinica": "m2",
+   "vrijedi_za": {
+    "tip": [
+     "visobit"
+    ],
+    "oblik": [
+     "slob"
+    ]
+   },
+   "citat": "najmanja površina građevne čestice višeobiteljske kuće iznosi 500 m2"
+  },
+  {
+   "id": "U2-38-a3",
+   "clanak": 38,
+   "tocka": "a",
+   "parametar": "kig_max",
+   "operator": "<=",
+   "vrijednost": 0.25,
+   "jedinica": null,
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit"
+    ],
+    "oblik": [
+     "slob"
+    ]
+   },
+   "citat": "najveći koeficijent izgrađenosti građevne čestice iznosi 0,25"
+  },
+  {
+   "id": "U2-38-a4",
+   "clanak": 38,
+   "tocka": "a",
+   "parametar": "kis_max",
+   "operator": "<=",
+   "vrijednost": 0.75,
+   "jedinica": null,
+   "iznimka": {
+    "vrijednost": 1.0,
+    "uvjet": "višeobiteljska kuća na kosom terenu nagiba većeg od 12 % (alineja 5. točke b)",
+    "provjerljivo_iz_podataka": false
+   },
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit"
+    ],
+    "oblik": [
+     "slob"
+    ]
+   },
+   "citat": "najveći koeficijent iskorištenosti iznosi 0,75, a iznimno 1,0 ako se višeobiteljska kuća gradi prema uvjetima alineje 5. točke b) ovog članka"
+  },
+  {
+   "id": "U2-38-b1",
+   "clanak": 38,
+   "tocka": "b",
+   "parametar": "tlocrt_min",
+   "operator": ">=",
+   "vrijednost": 60,
+   "jedinica": "m2",
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit"
+    ],
+    "oblik": [
+     "slob"
+    ]
+   },
+   "citat": "najmanja tlocrtna površina građevine iznosi 60 m2"
+  },
+  {
+   "id": "U2-38-b2",
+   "clanak": 38,
+   "tocka": "b",
+   "parametar": "tlocrt_max",
+   "operator": "<=",
+   "vrijednost": 200,
+   "jedinica": "m2",
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit"
+    ],
+    "oblik": [
+     "slob"
+    ]
+   },
+   "citat": "najveća tlocrtna površina građevine iznosi 200 m2"
+  },
+  {
+   "id": "U2-38-b3",
+   "clanak": 38,
+   "tocka": "b",
+   "parametar": "etaze_max",
+   "operator": "<=",
+   "vrijednost": "podrum i 2 nadzemne etaže",
+   "jedinica": null,
+   "nadzemnih": 2,
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit"
+    ],
+    "oblik": [
+     "slob"
+    ]
+   },
+   "citat": "najveći broj etaža građevine iznosi podrum i 2 nadzemne etaže"
+  },
+  {
+   "id": "U2-38-b4",
+   "clanak": 38,
+   "tocka": "b",
+   "parametar": "visina_max",
+   "operator": "<=",
+   "vrijednost": 7.5,
+   "jedinica": "m",
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit"
+    ],
+    "oblik": [
+     "slob"
+    ]
+   },
+   "citat": "najveća visina građevine iznosi 7,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena"
+  },
+  {
+   "id": "U2-38-b6",
+   "clanak": 38,
+   "tocka": "b",
+   "parametar": "gbp_max_cestica",
+   "operator": "<=",
+   "vrijednost": {
+    "obit": 200,
+    "visobit": 400
+   },
+   "jedinica": "m2",
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit"
+    ],
+    "oblik": [
+     "slob"
+    ]
+   },
+   "citat": "najveći GBP iznosi 200 m2 za građevnu česticu obiteljske građevine, odnosno 400 m2 za građevnu česticu višeobiteljske građevine pri čemu se u navedeni GBP uračunavaju sve građevine na građevnoj čestici"
+  },
+  {
+   "id": "U2-38-c1",
+   "clanak": 38,
+   "tocka": "c",
+   "parametar": "udaljenost_regulacija_javna_cesta",
+   "operator": ">=",
+   "vrijednost": 6,
+   "jedinica": "m",
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit",
+     "stamb"
+    ],
+    "oblik": [
+     "slob"
+    ]
+   },
+   "citat": "najmanja udaljenost građevine od regulacijskog pravca prema javnoj cesti iznosi 6 m, pri čemu udaljenosti od osi prometne površine javne ceste ne može biti manja od 9 m"
+  },
+  {
+   "id": "U2-38-c2",
+   "clanak": 38,
+   "tocka": "c",
+   "parametar": "udaljenost_regulacija_nerazvrstana",
+   "operator": ">=",
+   "vrijednost": 4,
+   "jedinica": "m",
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit",
+     "stamb"
+    ],
+    "oblik": [
+     "slob"
+    ]
+   },
+   "citat": "najmanja udaljenost građevine od regulacijskog pravca prema nerazvrstanoj cesti iznosi 4 m, pri čemu udaljenosti od osi prometne površine nerazvrstane ceste ne može biti manja od 7 m"
+  },
+  {
+   "id": "U2-38-c4",
+   "clanak": 38,
+   "tocka": "c",
+   "parametar": "udaljenost_meda",
+   "operator": ">=",
+   "vrijednost": 4,
+   "jedinica": "m",
+   "iznimka": {
+    "vrijednost": 3,
+    "uvjet": "građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama",
+    "provjerljivo_iz_podataka": false
+   },
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit",
+     "stamb"
+    ],
+    "oblik": [
+     "slob"
+    ]
+   },
+   "citat": "najmanja udaljenost građevine od ostalih međa građevne čestice iznosi 4 m, a iznimno 3 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama"
+  },
+  {
+   "id": "U2-38-d2",
+   "clanak": 38,
+   "tocka": "d",
+   "parametar": "nagib_kosog_krova",
+   "operator": "izmedu",
+   "vrijednost": [
+    17,
+    23
+   ],
+   "jedinica": "°",
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit",
+     "stamb"
+    ],
+    "oblik": [
+     "slob",
+     "dvoj",
+     "ugr"
+    ]
+   },
+   "napomena": "čl. 39. d) i čl. 40. c) upućuju na točku d) čl. 38.",
+   "citat": "krovište građevine može biti ravno ili koso; ako se gradi kao koso može biti dvostrešno ili višestrešno i mora biti s nagibom krovnih ploha između 17o i 23o"
+  },
+  {
+   "id": "U2-38-g2",
+   "clanak": 38,
+   "tocka": "g",
+   "parametar": "zelenilo_min_udio",
+   "operator": ">=",
+   "vrijednost": 0.4,
+   "jedinica": null,
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit",
+     "stamb"
+    ],
+    "oblik": [
+     "slob",
+     "dvoj",
+     "ugr"
+    ]
+   },
+   "napomena": "čl. 39. d) i čl. 40. c) upućuju na točku g) čl. 38.",
+   "citat": "najmanje 40% površine građevne čestice mora se urediti visokim i niskim zelenilom"
+  },
+  {
+   "id": "U2-38-h3",
+   "clanak": 38,
+   "tocka": "h",
+   "parametar": "parkiralista_po_stanu",
+   "operator": ">=",
+   "vrijednost": 2,
+   "jedinica": "PM/stan",
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit",
+     "stamb"
+    ],
+    "oblik": [
+     "slob",
+     "dvoj",
+     "ugr"
+    ]
+   },
+   "citat": "prema normativu 2 mjesta po stanu"
+  },
+  {
+   "id": "U2-39-a1",
+   "clanak": 39,
+   "tocka": "a",
+   "parametar": "min_povrsina_cestice",
+   "operator": ">=",
+   "vrijednost": {
+    "obit": 300,
+    "visobit": 400
+   },
+   "jedinica": "m2",
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit"
+    ],
+    "oblik": [
+     "dvoj",
+     "ugr"
+    ]
+   },
+   "citat": "najmanja površina građevne čestice obiteljske kuće iznosi 300 m2, odnosno višeobiteljske kuće 400 m2"
+  },
+  {
+   "id": "U2-39-a2",
+   "clanak": 39,
+   "tocka": "a",
+   "parametar": "kig_max",
+   "operator": "<=",
+   "vrijednost": 0.25,
+   "jedinica": null,
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit"
+    ],
+    "oblik": [
+     "dvoj",
+     "ugr"
+    ]
+   },
+   "citat": "najveći koeficijent izgrađenosti građevne čestice iznosi 0,25"
+  },
+  {
+   "id": "U2-39-a3",
+   "clanak": 39,
+   "tocka": "a",
+   "parametar": "kis_max",
+   "operator": "<=",
+   "vrijednost": 0.75,
+   "jedinica": null,
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit"
+    ],
+    "oblik": [
+     "dvoj",
+     "ugr"
+    ]
+   },
+   "citat": "najveći koeficijent iskorištenosti iznosi 0,75, a iznimno 1,0 ako se višeobiteljska kuća gradi prema uvjetima alineje 5. točke b) ovog članka"
+  },
+  {
+   "id": "U2-39-b2",
+   "clanak": 39,
+   "tocka": "b",
+   "parametar": "tlocrt_max",
+   "operator": "<=",
+   "vrijednost": {
+    "dvoj": 150,
+    "ugr": 100
+   },
+   "jedinica": "m2",
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit"
+    ],
+    "oblik": [
+     "dvoj",
+     "ugr"
+    ]
+   },
+   "citat": "najveća tlocrtna površina građevine iznosi 150 m2, odnosno 100 m2 za ugrađenu obiteljsku kuću"
+  },
+  {
+   "id": "U2-39-b3",
+   "clanak": 39,
+   "tocka": "b",
+   "parametar": "etaze_max",
+   "operator": "<=",
+   "vrijednost": "podrum i 2 nadzemne etaže",
+   "jedinica": null,
+   "nadzemnih": 2,
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit"
+    ],
+    "oblik": [
+     "dvoj",
+     "ugr"
+    ]
+   },
+   "citat": "najveći broj etaža građevine iznosi podrum i 2 nadzemne etaže"
+  },
+  {
+   "id": "U2-39-b4",
+   "clanak": 39,
+   "tocka": "b",
+   "parametar": "visina_max",
+   "operator": "<=",
+   "vrijednost": 7.5,
+   "jedinica": "m",
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit"
+    ],
+    "oblik": [
+     "dvoj",
+     "ugr"
+    ]
+   },
+   "citat": "najveća visina građevine iznosi 7,5 m, pri čemu najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad kote prirodnog terena"
+  },
+  {
+   "id": "U2-39-b6",
+   "clanak": 39,
+   "tocka": "b",
+   "parametar": "gbp_max_cestica",
+   "operator": "<=",
+   "vrijednost": {
+    "obit": 200,
+    "visobit": 400
+   },
+   "jedinica": "m2",
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit"
+    ],
+    "oblik": [
+     "dvoj",
+     "ugr"
+    ]
+   },
+   "citat": "najveći GBP iznosi 200 m2 za građevnu česticu obiteljske građevine, odnosno 400 m2 za građevnu česticu višeobiteljske građevine pri čemu se u navedeni GBP uračunavaju sve građevine na građevnoj čestici"
+  },
+  {
+   "id": "U2-40-a1",
+   "clanak": 40,
+   "tocka": "a",
+   "parametar": "min_povrsina_cestice",
+   "operator": ">=",
+   "vrijednost": 500,
+   "jedinica": "m2",
+   "vrijedi_za": {
+    "tip": [
+     "stamb"
+    ],
+    "oblik": [
+     "slob"
+    ]
+   },
+   "citat": "najmanja površina građevne čestice iznosi 500 m2"
+  },
+  {
+   "id": "U2-85-2b",
+   "clanak": 85,
+   "stavak": "2",
+   "parametar": "nadzemne_etaze_max_zona_C",
+   "operator": "<=",
+   "vrijednost": 2,
+   "jedinica": "etaže",
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit",
+     "stamb"
+    ],
+    "zona_zastite": "C"
+   },
+   "citat": "visine najviše dvije nadzemne etaže, bez povišenja nadozida za potkrovlje",
+   "vrijednost_u_tekstu": "dvije"
+  },
+  {
+   "id": "U2-85-2c",
+   "clanak": 85,
+   "stavak": "2",
+   "parametar": "krov_zona_C",
+   "operator": "=",
+   "vrijednost": "kosi, oko 30°",
+   "jedinica": null,
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit",
+     "stamb"
+    ],
+    "zona_zastite": "C"
+   },
+   "citat": "Građevine moraju imati kosi krov s nagibom tradicijskog krova (oko 30˚) s pokrovom kupom kanalicom ili pločama lokalnog kamena"
+  },
+  {
+   "id": "U2-85-2f",
+   "clanak": 85,
+   "stavak": "2",
+   "parametar": "konzervatorski_uvjeti_zona_C",
+   "operator": "=",
+   "vrijednost": "obvezni",
+   "jedinica": null,
+   "vrijedi_za": {
+    "tip": [
+     "obit",
+     "visobit",
+     "stamb"
+    ],
+    "zona_zastite": "C"
+   },
+   "citat": "za sve građevinske zahvate nove gradnje ili promjene volumena postojećih građevina potrebno je ishoditi posebne konzervatorske uvjete odnosno prethodno odobrenje nadležnog konzervatorskog odjela"
+  }
+ ],
+ "okvir": [
+  {
+   "id": "U2-1",
+   "clanak": 1,
+   "svrha": "obuhvat plana = građevinsko područje naselja Kornić NA 2",
+   "citat": "obuhvaća građevinsko područje naselja Kornić - NA 2"
+  },
+  {
+   "id": "U2-83-4",
+   "clanak": 83,
+   "svrha": "granice zona zaštite »B« i »C« su na karti 3A",
+   "citat": "Granice zona »B« i »C« prikazane su na kartografskom prikazu 3A"
+  },
+  {
+   "id": "U2-108",
+   "clanak": 108,
+   "svrha": "stupanje na snagu",
+   "citat": "Ova Odluka stupa na snagu osmoga dana od dana objave"
+  }
+ ]
+}

@@ -1,6 +1,6 @@
 {
  "schema": "cesticahr.plan_integrity.v10",
- "aplikacija": "Čestica HR 27.10.2026. 12:46",
+ "aplikacija": "Čestica HR 27.10.2026. 13:41",
  "datum": "2026-10-27",
  "cestica": {
   "broj": "735/76",
@@ -14,24 +14,28 @@
  "pokazatelji": [
   {
    "id": "calc-min",
-   "pokazatelj": "Najmanja površina čestice",
-   "vrijednost": "ispunjeno (404 od 300 m²)",
+   "pokazatelj": "Najmanja površina čestice (obiteljska kuća, dvojna)",
+   "vrijednost": "ispunjeno: 404,4 m² ≥ 300 m²",
    "pouzdanost": "C",
    "status_rezultata": "uvjetno",
    "razlozi": [
     "plan: usklađenost izvora nije potvrđena (objave nakon Službene novine PGŽ 19/2016 nisu iscrpno provjerene)",
     "GIS zona (prostorni plan grada ili općine): usklađenost izvora nije potvrđena (oznaka iz županijskog sloja; podudarnost s grafičkim dijelom važeće odluke nije stručno potvrđena)",
     "detaljna zona: tvoja pretpostavka",
-    "zona zaštite: tvoja pretpostavka"
+    "zona zaštite: tvoja pretpostavka",
+    "otvoren uvjet: vrsta zahvata nije odabrana; prikazani uvjeti vrijede za novu gradnju"
    ],
    "razlog_blokade": null,
    "pravila": [
     {
-     "clanak": "čl. 38. i 39.",
-     "citat": "najmanja površina građevne čestice obiteljske kuće iznosi 500 m2 (dvojna i ugrađena: 300 m2)",
+     "clanak": "čl. 39. a)",
+     "citat": "najmanja površina građevne čestice obiteljske kuće iznosi 300 m2, odnosno višeobiteljske kuće 400 m2",
+     "vrsta_navoda": "doslovni navod (provjeren prema Službene novine PGŽ 19/2016)",
      "plan": "UPU 2 Kornić (Službene novine PGŽ 19/2016)"
     }
    ],
+   "osnovica": "grafička površina iz koordinata granice 405,3 m² (atribut katastra: 405,0 m²) × udio u građevinskom području naselja 99,78 % = 404,4 m²",
+   "zaokruzivanje": "usporedba i izračun s nezaokruženom površinom; prikaz na 0,1 m², u tablicama na cijeli m²; površina iz koordinata računa se na elipsoidu WGS84 (Turf), pa se može razlikovati od atributa katastra za nekoliko desetinki m²",
    "izvori": [
     {
      "karika": "čestica",
@@ -79,8 +83,17 @@
      "uskladenost": null
     },
     {
+     "karika": "osnovica izračuna",
+     "vrijednost": "grafička površina iz koordinata granice 405,3 m² (atribut katastra: 405,0 m²) × udio u građevinskom području naselja 99,78 % = 404,4 m²",
+     "pouzdanost": "B",
+     "izvor": "granica čestice u katastarskom planu DGU; udio iz GIS presjeka granice čestice i sloja namjene PGŽ",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
      "karika": "članak",
-     "vrijednost": "čl. 38. i 39.",
+     "vrijednost": "čl. 39. a)",
      "pouzdanost": "B",
      "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje, Službene novine PGŽ 19/2016",
      "revizija": null,
@@ -89,8 +102,10 @@
     }
    ],
    "uskladenost": "nepoznata",
-   "otvoreni_uvjeti": [],
-   "metoda": "površina 404 m² prema najmanjoj 300 m²"
+   "otvoreni_uvjeti": [
+    "vrsta zahvata nije odabrana; prikazani uvjeti vrijede za novu gradnju"
+   ],
+   "metoda": "površina 404,4 m² prema najmanjoj 300 m² za obiteljska kuća, dvojna"
   },
   {
    "id": "calc-tlocrt",
@@ -102,21 +117,26 @@
     "plan: usklađenost izvora nije potvrđena (objave nakon Službene novine PGŽ 19/2016 nisu iscrpno provjerene)",
     "GIS zona (prostorni plan grada ili općine): usklađenost izvora nije potvrđena (oznaka iz županijskog sloja; podudarnost s grafičkim dijelom važeće odluke nije stručno potvrđena)",
     "detaljna zona: tvoja pretpostavka",
-    "zona zaštite: tvoja pretpostavka"
+    "zona zaštite: tvoja pretpostavka",
+    "otvoren uvjet: vrsta zahvata nije odabrana; prikazani uvjeti vrijede za novu gradnju"
    ],
    "razlog_blokade": null,
    "pravila": [
     {
-     "clanak": "čl. 38. i 39.",
+     "clanak": "čl. 39. a)",
      "citat": "najveći koeficijent izgrađenosti građevne čestice iznosi 0,25",
+     "vrsta_navoda": "doslovni navod (provjeren prema Službene novine PGŽ 19/2016)",
      "plan": "UPU 2 Kornić (Službene novine PGŽ 19/2016)"
     },
     {
-     "clanak": "čl. 38. i 39.",
-     "citat": "najmanja tlocrtna površina građevine iznosi 60 m2 … najveća tlocrtna površina građevine iznosi 200 m2 (dvojna 150 m2, ugrađena 100 m2)",
+     "clanak": "čl. 39. b)",
+     "citat": "najveća tlocrtna površina građevine iznosi 150 m2, odnosno 100 m2 za ugrađenu obiteljsku kuću",
+     "vrsta_navoda": "doslovni navod (provjeren prema Službene novine PGŽ 19/2016)",
      "plan": "UPU 2 Kornić (Službene novine PGŽ 19/2016)"
     }
    ],
+   "osnovica": "grafička površina iz koordinata granice 405,3 m² (atribut katastra: 405,0 m²) × udio u građevinskom području naselja 99,78 % = 404,4 m²",
+   "zaokruzivanje": "usporedba i izračun s nezaokruženom površinom; prikaz na 0,1 m², u tablicama na cijeli m²; površina iz koordinata računa se na elipsoidu WGS84 (Turf), pa se može razlikovati od atributa katastra za nekoliko desetinki m²",
    "izvori": [
     {
      "karika": "čestica",
@@ -164,8 +184,17 @@
      "uskladenost": null
     },
     {
+     "karika": "osnovica izračuna",
+     "vrijednost": "grafička površina iz koordinata granice 405,3 m² (atribut katastra: 405,0 m²) × udio u građevinskom području naselja 99,78 % = 404,4 m²",
+     "pouzdanost": "B",
+     "izvor": "granica čestice u katastarskom planu DGU; udio iz GIS presjeka granice čestice i sloja namjene PGŽ",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
      "karika": "članak",
-     "vrijednost": "čl. 38. i 39.",
+     "vrijednost": "čl. 39. a)",
      "pouzdanost": "B",
      "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje, Službene novine PGŽ 19/2016",
      "revizija": null,
@@ -174,7 +203,7 @@
     },
     {
      "karika": "članak",
-     "vrijednost": "čl. 38. i 39.",
+     "vrijednost": "čl. 39. b)",
      "pouzdanost": "B",
      "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje, Službene novine PGŽ 19/2016",
      "revizija": null,
@@ -183,8 +212,10 @@
     }
    ],
    "uskladenost": "nepoznata",
-   "otvoreni_uvjeti": [],
-   "metoda": "površina 404 m² × kig 0,25"
+   "otvoreni_uvjeti": [
+    "vrsta zahvata nije odabrana; prikazani uvjeti vrijede za novu gradnju"
+   ],
+   "metoda": "površina 404,4 m² × kig 0,25 = 101,1 m², najviše 150 m²"
   },
   {
    "id": "calc-gbp",
@@ -196,21 +227,26 @@
     "plan: usklađenost izvora nije potvrđena (objave nakon Službene novine PGŽ 19/2016 nisu iscrpno provjerene)",
     "GIS zona (prostorni plan grada ili općine): usklađenost izvora nije potvrđena (oznaka iz županijskog sloja; podudarnost s grafičkim dijelom važeće odluke nije stručno potvrđena)",
     "detaljna zona: tvoja pretpostavka",
-    "zona zaštite: tvoja pretpostavka"
+    "zona zaštite: tvoja pretpostavka",
+    "otvoren uvjet: vrsta zahvata nije odabrana; prikazani uvjeti vrijede za novu gradnju"
    ],
    "razlog_blokade": null,
    "pravila": [
     {
-     "clanak": "čl. 38. i 39.",
-     "citat": "najveći koeficijent iskorištenosti iznosi 0,75",
+     "clanak": "čl. 39. a)",
+     "citat": "najveći koeficijent iskorištenosti iznosi 0,75, a iznimno 1,0 ako se višeobiteljska kuća gradi prema uvjetima alineje 5. točke b) ovog članka",
+     "vrsta_navoda": "doslovni navod (provjeren prema Službene novine PGŽ 19/2016)",
      "plan": "UPU 2 Kornić (Službene novine PGŽ 19/2016)"
     },
     {
-     "clanak": "čl. 38. i 39.",
-     "citat": "najveći GBP iznosi 200 m2 za građevnu česticu obiteljske građevine",
+     "clanak": "čl. 39. b)",
+     "citat": "najveći GBP iznosi 200 m2 za građevnu česticu obiteljske građevine, odnosno 400 m2 za građevnu česticu višeobiteljske građevine pri čemu se u navedeni GBP uračunavaju sve građevine na građevnoj čestici",
+     "vrsta_navoda": "doslovni navod (provjeren prema Službene novine PGŽ 19/2016)",
      "plan": "UPU 2 Kornić (Službene novine PGŽ 19/2016)"
     }
    ],
+   "osnovica": "grafička površina iz koordinata granice 405,3 m² (atribut katastra: 405,0 m²) × udio u građevinskom području naselja 99,78 % = 404,4 m²",
+   "zaokruzivanje": "usporedba i izračun s nezaokruženom površinom; prikaz na 0,1 m², u tablicama na cijeli m²; površina iz koordinata računa se na elipsoidu WGS84 (Turf), pa se može razlikovati od atributa katastra za nekoliko desetinki m²",
    "izvori": [
     {
      "karika": "čestica",
@@ -258,8 +294,17 @@
      "uskladenost": null
     },
     {
+     "karika": "osnovica izračuna",
+     "vrijednost": "grafička površina iz koordinata granice 405,3 m² (atribut katastra: 405,0 m²) × udio u građevinskom području naselja 99,78 % = 404,4 m²",
+     "pouzdanost": "B",
+     "izvor": "granica čestice u katastarskom planu DGU; udio iz GIS presjeka granice čestice i sloja namjene PGŽ",
+     "revizija": null,
+     "status": null,
+     "uskladenost": null
+    },
+    {
      "karika": "članak",
-     "vrijednost": "čl. 38. i 39.",
+     "vrijednost": "čl. 39. a)",
      "pouzdanost": "B",
      "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje, Službene novine PGŽ 19/2016",
      "revizija": null,
@@ -268,7 +313,7 @@
     },
     {
      "karika": "članak",
-     "vrijednost": "čl. 38. i 39.",
+     "vrijednost": "čl. 39. b)",
      "pouzdanost": "B",
      "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje, Službene novine PGŽ 19/2016",
      "revizija": null,
@@ -277,8 +322,10 @@
     }
    ],
    "uskladenost": "nepoznata",
-   "otvoreni_uvjeti": [],
-   "metoda": "površina 404 m² × kis 0,75"
+   "otvoreni_uvjeti": [
+    "vrsta zahvata nije odabrana; prikazani uvjeti vrijede za novu gradnju"
+   ],
+   "metoda": "površina 404,4 m² × kis 0,75 = 303,3 m², najviše 200 m²"
   },
   {
    "id": "calc-prostor",
@@ -292,16 +339,20 @@
     "detaljna zona: tvoja pretpostavka",
     "zona zaštite: tvoja pretpostavka",
     "otvoren uvjet: regulacijski pravac i kategorija ceste nisu uračunati",
-    "otvoren uvjet: pravilo h/2 nije uračunato"
+    "otvoren uvjet: pravilo h/2 nije uračunato",
+    "otvoren uvjet: vrsta zahvata nije odabrana; prikazani uvjeti vrijede za novu gradnju"
    ],
    "razlog_blokade": null,
    "pravila": [
     {
-     "clanak": "čl. 38..",
-     "citat": "najmanja udaljenost građevine od ostalih međa građevne čestice iznosi 4 m",
+     "clanak": "čl. 39. c)",
+     "citat": "najmanja udaljenost građevine od ostalih međa građevne čestice, izuzev međa na koje su prislonjene, iznosi 4 m",
+     "vrsta_navoda": "doslovni navod (provjeren prema Službene novine PGŽ 19/2016)",
      "plan": "UPU 2 Kornić (Službene novine PGŽ 19/2016)"
     }
    ],
+   "osnovica": null,
+   "zaokruzivanje": null,
    "izvori": [
     {
      "karika": "čestica",
@@ -350,9 +401,9 @@
     },
     {
      "karika": "članak",
-     "vrijednost": "čl. 38..",
+     "vrijednost": "čl. 39. c)",
      "pouzdanost": "B",
-     "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje",
+     "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje, Službene novine PGŽ 19/2016",
      "revizija": null,
      "status": null,
      "uskladenost": null
@@ -361,7 +412,8 @@
    "uskladenost": "nepoznata",
    "otvoreni_uvjeti": [
     "regulacijski pravac i kategorija ceste nisu uračunati",
-    "pravilo h/2 nije uračunato"
+    "pravilo h/2 nije uračunato",
+    "vrsta zahvata nije odabrana; prikazani uvjeti vrijede za novu gradnju"
    ],
    "metoda": "4 m od međa, bez regulacijskog pravca"
   },
@@ -372,21 +424,25 @@
    "pouzdanost": "C",
    "status_rezultata": "blokirano",
    "razlozi": [
-    "dva pravila istog plana propisuju različit nagib (čl. 38. d): 17°–23°; čl. 85. zona »C«: oko 30°). Simulator primjenjuje posebni režim zone »C«; da on ima prednost, nije stručno potvrđeno"
+    "dva pravila istog plana za istu građevinu propisuju različito: čl. 38. d) dopušta ravni krov ili kosi 17°–23°, a čl. 85 st. 2. za zonu »C« traži kosi krov oko 30°. Plan nema izričito pravilo o prednosti; simulator primjenjuje režim zone »C«, ali to nije utvrđeno"
    ],
-   "razlog_blokade": "dva pravila istog plana propisuju različit nagib (čl. 38. d): 17°–23°; čl. 85. zona »C«: oko 30°). Simulator primjenjuje posebni režim zone »C«; da on ima prednost, nije stručno potvrđeno",
+   "razlog_blokade": "dva pravila istog plana za istu građevinu propisuju različito: čl. 38. d) dopušta ravni krov ili kosi 17°–23°, a čl. 85 st. 2. za zonu »C« traži kosi krov oko 30°. Plan nema izričito pravilo o prednosti; simulator primjenjuje režim zone »C«, ali to nije utvrđeno",
    "pravila": [
     {
      "clanak": "čl. 38. d)",
      "citat": "krovište građevine može biti ravno ili koso; ako se gradi kao koso može biti dvostrešno ili višestrešno i mora biti s nagibom krovnih ploha između 17o i 23o",
+     "vrsta_navoda": "doslovni navod (provjeren prema Službene novine PGŽ 19/2016)",
      "plan": "UPU 2 Kornić (Službene novine PGŽ 19/2016)"
     },
     {
-     "clanak": "čl. 85.",
-     "citat": "visine najviše dvije nadzemne etaže, bez povišenja nadozida za potkrovlje",
+     "clanak": "čl. 85. st. 2.",
+     "citat": "Građevine moraju imati kosi krov s nagibom tradicijskog krova (oko 30˚) s pokrovom kupom kanalicom ili pločama lokalnog kamena",
+     "vrsta_navoda": "doslovni navod (provjeren prema Službene novine PGŽ 19/2016)",
      "plan": "UPU 2 Kornić (Službene novine PGŽ 19/2016)"
     }
    ],
+   "osnovica": null,
+   "zaokruzivanje": null,
    "izvori": [
     {
      "karika": "čestica",
@@ -444,7 +500,7 @@
     },
     {
      "karika": "članak",
-     "vrijednost": "čl. 85.",
+     "vrijednost": "čl. 85. st. 2.",
      "pouzdanost": "B",
      "izvor": "Urbanistički plan uređenja UPU 2 – Kornić, odredbe za provođenje",
      "revizija": null,
@@ -470,7 +526,7 @@
   {
    "id": "namjena-udio",
    "naziv": "Udio zona na čestici",
-   "vrijednost": "NA2 100 %, P3 0 %",
+   "vrijednost": "NA2 99,78 %, P3 0,22 %",
    "pouzdanost": "B",
    "izvor": "PGŽ i DGU",
    "razlog": null,
