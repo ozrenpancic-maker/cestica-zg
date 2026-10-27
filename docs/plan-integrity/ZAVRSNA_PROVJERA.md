@@ -18,7 +18,7 @@
 | 4 | Uz sukob krova citirana je odredba o etažama | Navod se tražio izrazom `/krov/`, a prvi pogodak bio je »…nadozida za **pot**krovlje« | Lanac koristi doslovne navode čl. 38. d) i čl. 85. st. 2. o nagibu. Kad navod nedostaje, karika je C i »nije potvrđeno«. | PI v10 #4 |
 
 **Novo polje `citati` u `upu["UPU 2"]` (rules_krk.json):**
-- **Sadržaj:** 23 doslovna navoda iz SN PGŽ 19/2016, za čl. 38., 39., 40. i 85.
+- **Sadržaj:** 21 doslovni navod iz SN PGŽ 19/2016, za čl. 38., 39., 40. i 85.
 - **Provjera:** test »PI v10 navodi« potvrđuje da je svaki doslovno u svom članku.
 - **Bez polja:** za planove bez tog polja lanac uz navod piše »sažetak iz aplikacije, nije doslovni navod« (npr. PPUG Krk, čiji tekst nije u repozitoriju).
 - **Pregled:** polje je novi tekst i nije izuzeto od pregleda. Pripremio ga je razvoj, a prema pravilu »tko gradi, ne ocjenjuje« treba ga neovisno pregledati.
