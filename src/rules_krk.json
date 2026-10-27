@@ -6,7 +6,11 @@
     "pdf": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1541",
     "status": "na snazi; V. izmjene i dopune u izradi (odluka o izradi SN 7/2025)",
     "provjera": "Vrijednosti i navodi provjereni su s cijelim pročišćenim tekstom (PDF elaborata, SN PGŽ 29/2020).",
-    "pravna_provjera": {"status": "NIJE_POTVRDENO", "razlog": "Aktualnost PPUG-a Krk nakon SN PGŽ 29/20 još nije neovisno potvrđena: objave nakon SN PGŽ 29/20 nisu iscrpno provjerene.", "napomena": "Objave nakon SN PGŽ 29/20 nisu iscrpno provjerene. Uvjeti gradnje služe za orijentaciju; mjerodavni su važeći prostorni planovi i lokacijska informacija."}
+    "pravna_provjera": {
+      "status": "NIJE_POTVRDENO",
+      "razlog": "Aktualnost PPUG-a Krk nakon SN PGŽ 29/20 još nije neovisno potvrđena: objave nakon SN PGŽ 29/20 nisu iscrpno provjerene.",
+      "napomena": "Objave nakon SN PGŽ 29/20 nisu iscrpno provjerene. Uvjeti gradnje služe za orijentaciju; mjerodavni su važeći prostorni planovi i lokacijska informacija."
+    }
   },
   "naselja": {
     "NA1": [
@@ -265,7 +269,11 @@
         "url": "http://www.sn.pgz.hr/default.asp?Link=odluke&id=34138",
         "status": "na snazi",
         "provjera": "Vrijednosti i navodi provjereni su s cijelim tekstom odluke (SN PGŽ 19/2016): HTML objave (čl. 1.–53., 108.) i PDF izdanja (čl. 1.–108.), 22. 10. 2026.",
-        "pravna_provjera": {"status": "NIJE_POTVRDENO", "razlog": "Potpuna pravna aktualnost UPU-a 2 Kornić (SN PGŽ 19/2016) nije neovisno potvrđena: objave nakon SN PGŽ 19/16 nisu iscrpno provjerene.", "napomena": "Objave nakon SN PGŽ 19/16 nisu iscrpno provjerene, pa potpuna pravna aktualnost UPU-a 2 Kornić nije neovisno potvrđena. Uvjeti gradnje služe za orijentaciju; mjerodavni su važeći prostorni planovi i lokacijska informacija."}
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "razlog": "Potpuna pravna aktualnost UPU-a 2 Kornić (SN PGŽ 19/2016) nije neovisno potvrđena: objave nakon SN PGŽ 19/16 nisu iscrpno provjerene.",
+          "napomena": "Objave nakon SN PGŽ 19/16 nisu iscrpno provjerene, pa potpuna pravna aktualnost UPU-a 2 Kornić nije neovisno potvrđena. Uvjeti gradnje služe za orijentaciju; mjerodavni su važeći prostorni planovi i lokacijska informacija."
+        }
       },
       "zone": [
         [
@@ -544,7 +552,113 @@
         "Kulturno-povijesna cjelina, zona »B« (čl. 83. st. 1.–2., međe određene popisom rubnih čestica): udaljenost od međa h/2, najmanje 3 m (2 m bez otvora) (čl. 38.).",
         "Najniža kota zaravnatog terena uz građevinu može biti najviše 1,5 m iznad prirodnog terena (čl. 38.)."
       ],
-      "drugaZona": "UPU 2 dopušta obiteljske i višeobiteljske kuće samo u zonama M11 i M2 (čl. 37.)."
+      "drugaZona": "UPU 2 dopušta obiteljske i višeobiteljske kuće samo u zonama M11 i M2 (čl. 37.).",
+      "citati": {
+        "izvor": "doslovni navodi iz SN PGŽ 19/2016 (PDF izdanja, čl. 1.–108.); provjera: tests/run.js (piCitTests) prema tests/pgz-odgovori/735-76-kornic-2026-10-22/sn-19-16/odluka_34138_pdf_tekst.txt",
+        "slob": {
+          "clanak": "38.",
+          "minC": {
+            "obit": {
+              "t": "a)",
+              "x": "najmanja površina građevne čestice obiteljske kuće iznosi 500 m2, a iznimno 400 m2 ako se građevna čestica nalazi u okruženju već uređenih i izgrađenih građevnih čestica"
+            },
+            "visobit": {
+              "t": "a)",
+              "x": "najmanja površina građevne čestice višeobiteljske kuće iznosi 500 m2"
+            }
+          },
+          "izg": {
+            "t": "a)",
+            "x": "najveći koeficijent izgrađenosti građevne čestice iznosi 0,25"
+          },
+          "kis": {
+            "t": "a)",
+            "x": "najveći koeficijent iskorištenosti iznosi 0,75, a iznimno 1,0 ako se višeobiteljska kuća gradi prema uvjetima alineje 5. točke b) ovog članka"
+          },
+          "tl": {
+            "t": "b)",
+            "x": "najveća tlocrtna površina građevine iznosi 200 m2"
+          },
+          "gbp": {
+            "t": "b)",
+            "x": "najveći GBP iznosi 200 m2 za građevnu česticu obiteljske građevine, odnosno 400 m2 za građevnu česticu višeobiteljske građevine pri čemu se u navedeni GBP uračunavaju sve građevine na građevnoj čestici"
+          },
+          "meda": {
+            "t": "c)",
+            "x": "najmanja udaljenost građevine od ostalih međa građevne čestice iznosi 4 m, a iznimno 3 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama"
+          }
+        },
+        "dvoj": {
+          "clanak": "39.",
+          "minC": {
+            "obit": {
+              "t": "a)",
+              "x": "najmanja površina građevne čestice obiteljske kuće iznosi 300 m2, odnosno višeobiteljske kuće 400 m2"
+            },
+            "visobit": {
+              "t": "a)",
+              "x": "najmanja površina građevne čestice obiteljske kuće iznosi 300 m2, odnosno višeobiteljske kuće 400 m2"
+            }
+          },
+          "izg": {
+            "t": "a)",
+            "x": "najveći koeficijent izgrađenosti građevne čestice iznosi 0,25"
+          },
+          "kis": {
+            "t": "a)",
+            "x": "najveći koeficijent iskorištenosti iznosi 0,75, a iznimno 1,0 ako se višeobiteljska kuća gradi prema uvjetima alineje 5. točke b) ovog članka"
+          },
+          "tl": {
+            "t": "b)",
+            "x": "najveća tlocrtna površina građevine iznosi 150 m2, odnosno 100 m2 za ugrađenu obiteljsku kuću"
+          },
+          "gbp": {
+            "t": "b)",
+            "x": "najveći GBP iznosi 200 m2 za građevnu česticu obiteljske građevine, odnosno 400 m2 za građevnu česticu višeobiteljske građevine pri čemu se u navedeni GBP uračunavaju sve građevine na građevnoj čestici"
+          },
+          "meda": {
+            "t": "c)",
+            "x": "najmanja udaljenost građevine od ostalih međa građevne čestice, izuzev međa na koje su prislonjene, iznosi 4 m, a iznimno 3 m ako građevina nema otvore, prohodne terase ili otvorena stubišta prema tim međama",
+            "provjera": "produženo nakon neovisne provjere 27. 10. 2026.: raniji navod je završavao na »4 m« i izostavljao iznimku od 3 m"
+          }
+        },
+        "stamb": {
+          "clanak": "40.",
+          "minC": {
+            "stamb": {
+              "t": "a)",
+              "x": "najmanja površina građevne čestice iznosi 500 m2"
+            }
+          },
+          "izg": {
+            "t": "a)",
+            "x": "najveći koeficijent izgrađenosti građevne čestice iznosi 0,25"
+          },
+          "kis": {
+            "t": "a)",
+            "x": "najveći koeficijent iskorištenosti iznosi 0,75, a iznimno 1,0 ako se građevina gradi prema uvjetima alineje 5. točke b) ovog članka"
+          },
+          "tl": {
+            "t": "b)",
+            "x": "najveća tlocrtna površina građevine iznosi 200 m2"
+          }
+        },
+        "krov": {
+          "clanak": "38.",
+          "t": "d)",
+          "x": "krovište građevine može biti ravno ili koso; ako se gradi kao koso može biti dvostrešno ili višestrešno i mora biti s nagibom krovnih ploha između 17o i 23o"
+        },
+        "zastitaC_krov": {
+          "clanak": "85.",
+          "t": "st. 2.",
+          "x": "Građevine moraju imati kosi krov s nagibom tradicijskog krova (oko 30˚) s pokrovom kupom kanalicom ili pločama lokalnog kamena"
+        },
+        "zastitaC_etaze": {
+          "clanak": "85.",
+          "t": "st. 2.",
+          "x": "visine najviše dvije nadzemne etaže, bez povišenja nadozida za potkrovlje"
+        }
+      }
     },
     "UPU 1": {
       "kod": "UPU 1 Krk",

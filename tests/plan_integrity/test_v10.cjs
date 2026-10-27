@@ -1,0 +1,25 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const f=process.argv[2]||__dirname+'/../../src/app.template.html',app=fs.readFileSync(f,'utf8');
+const s=app.slice(app.indexOf('const DB_PARAM='),app.indexOf('function dbHtml(')).replace('function dbMatch(ctx,db=RULES_DB)','function dbMatch(ctx,db)');
+const c=vm.createContext({});vm.runInContext(s+'\nthis.f={dbMatch,dbTrace,dbExplain,dbIntegrityReport,dbPublicationGate,dbResolve};',c);
+const plan={id:'p',naziv:'UPU 2',status_vazenja:'važeći',primjenjiva_revizija:'R01',obuhvat:{jls:['Krk'],gis:{status:'potvrđeno'}},odluke:[{id:'d',url:'https://example.org/doc',naziv:'SN PGZ'}]};
+const base={id:'r',plan_id:'p',odluka_id:'d',clanak:'33',citat:'koeficijent izgrađenosti',parametar:'kig',vrijednost:0.25,izvor_revizija:'R01',pravni_status:{razina:'potvrđeno',datum_provjere:'2026-10-27'},gis_status:{razina:'potvrđeno'},primjenjivost:{zone:['M11'],vrste_gradnje:['obiteljska']}};
+const ctx={jls:'Krk',zone:['M11'],vrsta:'obiteljska'};
+const make=(edits={},context=ctx)=>c.f.dbMatch(context,{planovi:[plan],pravila:[{...base,...edits}]});
+let n=0;function t(name,run){try{run();n++}catch(e){console.error('FAIL',name);throw e}}
+t('v4 citation and source',()=>{const x=c.f.dbTrace(make(),'kig');assert.equal(x.evidence[0].article,'33');assert.equal(x.evidence[0].source_url,'https://example.org/doc');assert.equal(x.verification,'source_rule_checked')});
+t('v4 missing provenance not misleading',()=>{const x=c.f.dbTrace(make({clanak:''}),'kig');assert.equal(x.reason,'missing')});
+t('v5 consistency named revision',()=>assert.equal(c.f.dbExplain(make(),'kig').publication.level,'derived'));
+t('v5 unknown revision conditional',()=>assert.equal(c.f.dbExplain(make({izvor_revizija:''}),'kig').publication.level,'conditional'));
+t('v5 mismatch never publish',()=>assert.equal(c.f.dbTrace(make({izvor_revizija:'R02'}),'kig').reason,'missing'));
+t('v6 unknown textual condition blocks',()=>assert.equal(c.f.dbTrace(make({uvjet:'osim kod postojećih zgrada'}),'kig').reason,'missing'));
+t('v6 resolved textual condition may calculate',()=>assert.equal(c.f.dbTrace(make({uvjet:'provedeno',status_uvjeta:'razriješeno'}),'kig').reason,'resolved'));
+t('v6 exception blocks',()=>assert.equal(c.f.dbTrace(make({iznimke:['rekonstrukcija']}),'kig').reason,'missing'));
+t('v6 explicit resolved exception',()=>assert.equal(c.f.dbTrace(make({iznimke:['rekonstrukcija'],status_iznimke:'razriješeno'}),'kig').reason,'resolved'));
+t('v6 required special regime',()=>assert.equal(c.f.dbTrace(make({primjenjivost:{...base.primjenjivost,posebni_rezim:['C']}}),'kig').reason,'missing'));
+t('v7 publication gate',()=>assert.equal(c.f.dbExplain(make(),'kig').publication.why,'source_rule_checked_not_expert_parcel_confirmation'));
+t('v7 missing',()=>assert.equal(c.f.dbExplain(make({izvor_revizija:'R02'}),'kig').publication.level,'blocked'));
+t('v9 conflict',()=>{const M=c.f.dbMatch(ctx,{planovi:[plan],pravila:[base,{...base,id:'r2',vrijednost:0.3}]});assert.equal(c.f.dbExplain(M,'kig').publication.level,'blocked')});
+t('v10 report',()=>{const r=c.f.dbIntegrityReport(make(),405.41);assert.equal(r.schema,'cesticahr.plan_integrity.v10');assert.equal(r.area_m2,405.41);assert.equal(r.indicators[0].parameter,'kig')});
+t('v10 JSON',()=>assert.doesNotThrow(()=>JSON.stringify(c.f.dbIntegrityReport(make(),405))));
+console.log(`${n}/${n} novih Plan Integrity testova prolazi`);

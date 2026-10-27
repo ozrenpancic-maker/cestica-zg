@@ -1,0 +1,121 @@
+{
+ "pravila": 3,
+ "bez_nalaza": 0,
+ "po_kategoriji": {
+  "uvjet_nerazrijesen": {
+   "naziv": "pravila s nerazriješenim uvjetima",
+   "broj": 0,
+   "primjeri": []
+  },
+  "iznimka": {
+   "naziv": "pravila s iznimkama",
+   "broj": 0,
+   "primjeri": []
+  },
+  "vrsta_neprecizna": {
+   "naziv": "pravila bez precizne vrste građevine",
+   "broj": 1,
+   "primjeri": [
+    {
+     "id": "PPUG-KRK-meda",
+     "clanak": "33",
+     "parametar": "udaljenost_meda",
+     "razlog": "računa se za sve vrste (»sve«); opseg treba stručno potvrditi"
+    }
+   ]
+  },
+  "zahvat_nenaveden": {
+   "naziv": "pravila bez vrste zahvata",
+   "broj": 1,
+   "primjeri": [
+    {
+     "id": "PPUG-KRK-meda",
+     "clanak": "33",
+     "parametar": "udaljenost_meda",
+     "razlog": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi"
+    }
+   ]
+  },
+  "revizija_nejasna": {
+   "naziv": "pravila s nejasnom revizijom",
+   "broj": 3,
+   "primjeri": [
+    {
+     "id": "PPUG-KRK-obit-kig",
+     "clanak": "22",
+     "parametar": "kig",
+     "razlog": "uvjetno: revizija pravila i plana nije dokumentirana"
+    },
+    {
+     "id": "PPUG-KRK-obit-minC",
+     "clanak": "22",
+     "parametar": "min_cestica",
+     "razlog": "uvjetno: revizija pravila i plana nije dokumentirana"
+    },
+    {
+     "id": "PPUG-KRK-meda",
+     "clanak": "33",
+     "parametar": "udaljenost_meda",
+     "razlog": "uvjetno: revizija pravila i plana nije dokumentirana"
+    }
+   ]
+  },
+  "citat_nepotpun": {
+   "naziv": "pravila s nepotpunim ili neodgovarajućim citatom",
+   "broj": 2,
+   "primjeri": [
+    {
+     "id": "PPUG-KRK-obit-kig",
+     "clanak": "22",
+     "parametar": "kig",
+     "razlog": "citat je skraćen (…), nije doslovni navod"
+    },
+    {
+     "id": "PPUG-KRK-obit-minC",
+     "clanak": "22",
+     "parametar": "min_cestica",
+     "razlog": "citat je skraćen (…), nije doslovni navod"
+    }
+   ]
+  }
+ },
+ "detalji": [
+  {
+   "id": "PPUG-KRK-obit-kig",
+   "plan": "PPUG-KRK",
+   "clanak": "22",
+   "parametar": "kig",
+   "vrijednost": 0.25,
+   "pravni_status": "potvrđeno",
+   "kategorije": {
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana",
+    "citat_nepotpun": "citat je skraćen (…), nije doslovni navod"
+   }
+  },
+  {
+   "id": "PPUG-KRK-obit-minC",
+   "plan": "PPUG-KRK",
+   "clanak": "22",
+   "parametar": "min_cestica",
+   "vrijednost": 500,
+   "pravni_status": "potvrđeno",
+   "kategorije": {
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana",
+    "citat_nepotpun": "citat je skraćen (…), nije doslovni navod"
+   }
+  },
+  {
+   "id": "PPUG-KRK-meda",
+   "plan": "PPUG-KRK",
+   "clanak": "33",
+   "parametar": "udaljenost_meda",
+   "vrijednost": "h/2, najmanje 4 m",
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "vrsta_neprecizna": "računa se za sve vrste (»sve«); opseg treba stručno potvrditi",
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  }
+ ]
+}
