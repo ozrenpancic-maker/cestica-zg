@@ -1,0 +1,593 @@
+<title>Pregled pravila Travičići</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Raspored: traka plana gore, karticama odvojeni pogledi; u pregledu popis kandidata lijevo, radni list desno. */
+:root{
+  --papir:#f6f7f4; --list:#ffffff; --tinta:#1d2430; --tinta2:#566070; --crta:#d9ddd6; --crta2:#eceee9;
+  --plan:#2a4f8f; --plan-svijetlo:#e6edf8; --oznaka:#fff1b8; --oznaka-rub:#d9b200;
+  --ok:#1f7a4a; --ok-bg:#e3f3e9; --pazi:#9a5b00; --pazi-bg:#fbefd9; --ne:#a32a2a; --ne-bg:#f8e3e3; --neutral-bg:#eef0ec;
+  --zona-t:#c8553d; --zona-t-bg:rgba(200,85,61,.18); --obuhvat:#2a4f8f;
+  --f-ui:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --f-tekst:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-kod:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --papir:#14181f; --list:#1b2029; --tinta:#e4e8ee; --tinta2:#a1aab8; --crta:#2f3744; --crta2:#252c37;
+  --plan:#8fb0ea; --plan-svijetlo:#1f2b40; --oznaka:#5a4b0e; --oznaka-rub:#c9a414;
+  --ok:#6fd19b; --ok-bg:#16301f; --pazi:#e8b465; --pazi-bg:#352812; --ne:#f08a8a; --ne-bg:#3a1b1b; --neutral-bg:#222934;
+  --zona-t:#ef8a73; --zona-t-bg:rgba(239,138,115,.22); --obuhvat:#8fb0ea; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --papir:#14181f; --list:#1b2029; --tinta:#e4e8ee; --tinta2:#a1aab8; --crta:#2f3744; --crta2:#252c37;
+  --plan:#8fb0ea; --plan-svijetlo:#1f2b40; --oznaka:#5a4b0e; --oznaka-rub:#c9a414;
+  --ok:#6fd19b; --ok-bg:#16301f; --pazi:#e8b465; --pazi-bg:#352812; --ne:#f08a8a; --ne-bg:#3a1b1b; --neutral-bg:#222934;
+  --zona-t:#ef8a73; --zona-t-bg:rgba(239,138,115,.22); --obuhvat:#8fb0ea; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.ispravak>label,.ispravak input,.ispravak select,.ispravak textarea,.polje textarea,.polje input,.polje select,.filtri select{min-width:0;width:100%;max-width:100%}
+body{background:var(--papir);color:var(--tinta);font-family:var(--f-ui);font-size:14px;line-height:1.45}
+.omot{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 40px;max-width:1440px;margin:0 auto}
+h1,h2,h3{text-wrap:balance;margin:0}
+h1{font-size:19px;font-weight:700;letter-spacing:-.01em}
+h2{font-size:15px;font-weight:600}
+h3{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tinta2)}
+a{color:var(--plan)}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--plan);outline-offset:2px}
+.kod{font-family:var(--f-kod);font-size:12px}
+.sitno{font-size:12px;color:var(--tinta2)}
+.tn{font-variant-numeric:tabular-nums}
+
+/* traka plana */
+.plan{display:flex;flex-wrap:wrap;gap:8px 24px;align-items:baseline;padding-bottom:12px;border-bottom:1px solid var(--crta)}
+.plan .meta{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--tinta2)}
+.plan .meta b{color:var(--tinta);font-weight:600}
+.stanje-plana{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:99px;background:var(--ok-bg);color:var(--ok);font-weight:600;font-size:12px}
+.upozorenje{margin:12px 0 0;padding:8px 12px;border-radius:var(--r);background:var(--pazi-bg);color:var(--tinta);font-size:13px}
+.upozorenje b{color:var(--pazi)}
+
+/* kartice pogleda */
+nav.pogledi{display:flex;gap:4px;margin:14px 0 12px;flex-wrap:wrap;border-bottom:1px solid var(--crta)}
+nav.pogledi a{padding:8px 12px;text-decoration:none;color:var(--tinta2);font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px}
+nav.pogledi a[aria-current="page"]{color:var(--tinta);border-bottom-color:var(--plan)}
+.pogled{display:none}.pogled.aktivan{display:block}
+
+/* oznake razina */
+.chip{display:inline-flex;align-items:center;gap:4px;padding:1px 7px;border-radius:99px;font-size:11px;font-weight:600;white-space:nowrap;background:var(--neutral-bg);color:var(--tinta2)}
+.chip.ok{background:var(--ok-bg);color:var(--ok)}.chip.pazi{background:var(--pazi-bg);color:var(--pazi)}.chip.ne{background:var(--ne-bg);color:var(--ne)}
+.chip.plan{background:var(--plan-svijetlo);color:var(--plan)}
+
+/* pregled */
+.radno{display:grid;grid-template-columns:minmax(260px,330px) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.radno{grid-template-columns:1fr}}
+.popis{background:var(--list);border:1px solid var(--crta);border-radius:var(--r);overflow:hidden;position:sticky;top:env(safe-area-inset-top,0px)}
+@media (max-width:860px){.popis{position:static}}
+.filtri{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px;border-bottom:1px solid var(--crta)}
+.filtri label{display:flex;flex-direction:column;gap:2px;font-size:11px;color:var(--tinta2)}
+.filtri select{padding:4px 6px;border:1px solid var(--crta);border-radius:4px;background:var(--list)}
+.filtri .broj{grid-column:1/-1;font-size:12px;color:var(--tinta2)}
+.stavke{max-height:calc(100vh - 230px);overflow:auto}
+@media (max-width:860px){.stavke{max-height:340px}}
+.skupina{padding:6px 10px;font-size:11px;font-weight:600;color:var(--tinta2);background:var(--crta2);text-transform:uppercase;letter-spacing:.06em;position:sticky;top:0}
+.stavka{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--crta2);background:none;padding:8px 10px}
+.stavka:hover{background:var(--crta2)}
+.stavka[aria-selected="true"]{background:var(--plan-svijetlo)}
+.stavka .id{font-family:var(--f-kod);font-size:11px;color:var(--tinta2);grid-row:span 2}
+.stavka .par{font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stavka .ch{display:flex;gap:4px;flex-wrap:wrap}
+
+.list{background:var(--list);border:1px solid var(--crta);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.zag{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between}
+.razine{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:640px){.razine{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.razina{border:1px solid var(--crta);border-radius:var(--r);padding:8px 10px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.razina .n{font-size:11px;color:var(--tinta2);text-transform:uppercase;letter-spacing:.06em}
+.razina .v{font-weight:600}
+.razina .o{font-size:11px;color:var(--tinta2)}
+.razina.zakljucana{background:var(--neutral-bg);border-style:dashed}
+
+.clanak{font-family:var(--f-tekst);font-size:15px;line-height:1.6;max-height:230px;overflow:auto;padding:10px 12px;border:1px solid var(--crta);border-radius:var(--r);background:var(--papir)}
+.clanak mark{background:var(--oznaka);color:inherit;box-shadow:0 0 0 1px var(--oznaka-rub);border-radius:2px;padding:0 1px}
+.dva{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+@media (max-width:980px){.dva{grid-template-columns:1fr}}
+table.polja{width:100%;border-collapse:collapse;font-size:13px}
+table.polja th{text-align:left;font-weight:500;color:var(--tinta2);width:34%;vertical-align:top;padding:5px 8px 5px 0;border-bottom:1px solid var(--crta2)}
+table.polja td{padding:5px 0;border-bottom:1px solid var(--crta2);vertical-align:top;min-width:0;overflow-wrap:anywhere}
+.razlozi{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.razlozi li{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;font-size:13px}
+.razlozi .kod{color:var(--pazi);font-weight:500}
+.nema{color:var(--tinta2);font-style:italic}
+
+form.radnja{border-top:1px solid var(--crta);padding-top:14px;display:flex;flex-direction:column;gap:12px}
+.izbor{display:flex;flex-wrap:wrap;gap:6px}
+.izbor label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--crta);border-radius:var(--r);padding:6px 10px;cursor:pointer}
+.izbor input{accent-color:var(--plan)}
+.izbor label:has(input:checked){border-color:var(--plan);background:var(--plan-svijetlo)}
+.ispravak{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}
+@media (max-width:640px){.ispravak{grid-template-columns:1fr}}
+.ispravak label,.polje{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--tinta2)}
+.ispravak input,.ispravak select,.ispravak textarea,.polje textarea,.polje input,.polje select{padding:6px 8px;border:1px solid var(--crta);border-radius:4px;background:var(--list);color:var(--tinta);font-size:13px}
+.ispravak .siroko{grid-column:1/-1}
+textarea{resize:vertical;min-height:58px}
+.akcije{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.gumb{border:1px solid var(--plan);background:var(--plan);color:var(--list);padding:7px 14px;border-radius:var(--r);font-weight:600}
+.gumb:disabled{opacity:.45;cursor:not-allowed}
+.gumb.sporedni{background:none;color:var(--plan)}
+.poruka{font-size:13px}.poruka.ne{color:var(--ne)}.poruka.ok{color:var(--ok)}
+.sat{font-family:var(--f-kod);font-size:12px;color:var(--tinta2)}
+.trag{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.trag li{border-left:2px solid var(--crta);padding:2px 0 2px 10px;font-size:13px}
+.trag .kad{font-size:11px;color:var(--tinta2)}
+
+/* tablice */
+.tablica{overflow-x:auto;border:1px solid var(--crta);border-radius:var(--r);background:var(--list)}
+.tablica table{border-collapse:collapse;width:100%;font-size:13px}
+.tablica th,.tablica td{padding:7px 10px;border-bottom:1px solid var(--crta2);text-align:left;vertical-align:top}
+.tablica th{font-weight:600;font-size:12px;color:var(--tinta2);background:var(--crta2)}
+.tablica td.br{text-align:right;font-variant-numeric:tabular-nums}
+.stup{display:flex;flex-direction:column;gap:14px;max-width:980px}
+.tekst p{margin:0 0 8px;max-width:70ch}
+.ruka{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:980px){.ruka{grid-template-columns:1fr}}
+.ruka .clanak{max-height:560px}
+.karta{border:1px solid var(--crta);border-radius:var(--r);background:var(--list);overflow:hidden}
+.karta svg{display:block;width:100%;height:auto}
+.legenda{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--tinta2);padding:8px 10px;border-top:1px solid var(--crta2)}
+.legenda i{display:inline-block;width:14px;height:10px;margin-right:5px;vertical-align:-1px;border-radius:2px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+
+<div class="omot">
+  <header class="plan">
+    <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+      <h1>Pregled pravila: UPU 13 Travičići</h1>
+      <div class="meta" id="plan-meta"></div>
+    </div>
+    <span class="stanje-plana" id="plan-stanje"></span>
+  </header>
+  <p class="upozorenje"><b>Pilot, nije za produkciju.</b> AI prijedlog, tehnička provjera, stručna potvrda i pravna valjanost su četiri odvojene razine. Ništa se ne potvrđuje automatski. Pravnu valjanost ovaj alat ne utvrđuje: mjerodavna je službena lokacijska informacija.</p>
+
+  <nav class="pogledi" aria-label="Pogledi">
+    <a href="#pregled" data-v="pregled">Pregled AI kandidata</a>
+    <a href="#rucni-unos" data-v="rucni-unos">Ručni unos</a>
+    <a href="#mjerenje" data-v="mjerenje">Mjerenje koristi</a>
+    <a href="#cestice" data-v="cestice">Obuhvat i čestice</a>
+    <a href="#trag" data-v="trag">Revizijski trag</a>
+  </nav>
+
+  <!-- PREGLED -->
+  <section class="pogled" id="v-pregled">
+    <div class="radno">
+      <aside class="popis" aria-label="Kandidati">
+        <div class="filtri">
+          <label for="f-clanak">Članak<select id="f-clanak"></select></label>
+          <label for="f-teh">Tehnička provjera<select id="f-teh"></select></label>
+          <label for="f-str">Stručna potvrda<select id="f-str"></select></label>
+          <label for="f-faza">Mjerenje<select id="f-faza"><option value="">sve</option><option value="faza1">Faza 1 (čl. 9)</option></select></label>
+          <div class="broj" id="f-broj"></div>
+        </div>
+        <div class="stavke" id="stavke" role="listbox" aria-label="Popis kandidata"></div>
+      </aside>
+      <article class="list" id="detalj"></article>
+    </div>
+  </section>
+
+  <!-- RUČNI UNOS -->
+  <section class="pogled" id="v-rucni-unos">
+    <div class="ruka">
+      <div class="stup" style="max-width:none">
+        <div class="zag"><h2 id="ru-naslov">Ručni unos</h2>
+          <label class="sitno" for="ru-clanak">Članak <select id="ru-clanak"></select></label></div>
+        <p class="sitno">Označi doslovni dio teksta mišem, pa ga preuzmi kao citat. AI kandidati se ovdje ne prikazuju.</p>
+        <div class="clanak" id="ru-tekst" tabindex="0"></div>
+        <div class="akcije"><button type="button" class="gumb sporedni" id="ru-uzmi">Preuzmi označeni tekst kao citat</button></div>
+      </div>
+      <form class="list" id="ru-forma" novalidate>
+        <div class="zag"><h2>Novo pravilo</h2><span class="sat" id="ru-sat">0:00 aktivno</span></div>
+        <div class="polje"><label for="ru-citat">Doslovni citat</label><textarea id="ru-citat" readonly placeholder="Označi tekst lijevo i preuzmi ga"></textarea></div>
+        <div class="ispravak" id="ru-polja"></div>
+        <div class="polje"><label for="ru-obr">Obrazloženje (obavezno)</label><textarea id="ru-obr"></textarea></div>
+        <div class="akcije"><button class="gumb" type="submit" id="ru-spremi">Spremi ručno pravilo</button><span class="poruka" id="ru-poruka" role="status"></span></div>
+        <div><h3 style="margin-bottom:6px">Ručno uneseno u ovom članku</h3><ul class="trag" id="ru-popis"></ul></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- MJERENJE -->
+  <section class="pogled" id="v-mjerenje">
+    <div class="stup">
+      <h2>Mjerenje: pregled AI kandidata prema ručnom unosu</h2>
+      <div class="tekst" id="mj-protokol"></div>
+      <div class="tablica"><table><thead><tr><th>Faza</th><th>Način</th><th>Članak</th><th class="br">Događaja</th><th class="br">Završenih pravila</th><th class="br">Aktivno vrijeme</th><th class="br">s po pravilu</th></tr></thead><tbody id="mj-tablica"></tbody></table></div>
+      <div class="tekst" id="mj-zakljucak"></div>
+    </div>
+  </section>
+
+  <!-- ČESTICE -->
+  <section class="pogled" id="v-cestice">
+    <div class="stup" style="max-width:1100px">
+      <h2>Povezivanje pravila s obuhvatom plana i česticom</h2>
+      <div class="ruka">
+        <div class="karta"><svg id="karta" role="img" aria-label="Obuhvat UPU 13, zona T2-5 i katastarske čestice"></svg>
+          <div class="legenda"><span><i style="border:2px solid var(--obuhvat)"></i>Obuhvat UPU 13 (PGŽ)</span><span><i style="background:var(--zona-t-bg);border:1px solid var(--zona-t)"></i>Zona T2-5 (PPUG Opatija)</span><span id="lg-cestice"></span></div></div>
+        <div class="list" id="ce-detalj"></div>
+      </div>
+      <div class="tekst" id="ce-model"></div>
+    </div>
+  </section>
+
+  <!-- TRAG -->
+  <section class="pogled" id="v-trag">
+    <div class="stup" style="max-width:1100px">
+      <div class="zag"><h2>Revizijski trag</h2>
+        <div class="akcije"><button class="gumb sporedni" type="button" id="tr-provjeri">Provjeri lanac</button><button class="gumb sporedni" type="button" id="tr-izvoz" hidden>Preuzmi CSV</button></div></div>
+      <p class="sitno" id="tr-stanje"></p>
+      <div class="tablica"><table><thead><tr><th>Vrijeme</th><th>Pregledavatelj</th><th>Radnja</th><th>Kandidat / članak</th><th>Izmjena</th><th>Obrazloženje</th><th class="br">Aktivno</th><th>Hash</th></tr></thead><tbody id="tr-tablica"></tbody></table></div>
+    </div>
+  </section>
+</div>
+
+<script type="application/json" id="podaci">__PODACI__</script>
+<script>__LOGIKA__</script>
+<script>
+"use strict";
+const D = JSON.parse(document.getElementById("podaci").textContent);
+const L = window.PregledLogika;
+const $ = s => document.querySelector(s);
+const el = (tag, attrs, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs || {})) { if (k === "class") e.className = v; else if (k === "text") e.textContent = v; else if (v !== null && v !== undefined && v !== false) e.setAttribute(k, v === true ? "" : v); } for (const c of kids.flat()) if (c != null) e.append(c.nodeType ? c : document.createTextNode(String(c))); return e; };
+
+const PARAMETRI = ["najmanja površina građevne čestice","najveća površina građevne čestice","najmanja površina tlocrtne projekcije građevine","najveća površina tlocrtne projekcije građevine","najveći koeficijent izgrađenosti (kig)","najveći koeficijent iskoristivosti (kis) nadzemnih etaža","najveći koeficijent iskoristivosti (kis) (uz podrum ili ukupni)","najveći broj etaža","najveća visina građevine","najmanja udaljenost od granice građevne čestice","najmanja udaljenost od regulacijskog pravca","najmanja udaljenost između građevina na istoj čestici","najmanja udaljenost istaka od granice susjedne građevine","najmanja udaljenost istaka od granice građevne čestice","položaj građevnog pravca","najmanji udio zelenila na građevnoj čestici","način gradnje","prislanjanje uz susjednu građevinu ili granicu građevne čestice","dopuštenost gradnje","oblik krovišta","vrsta kosog krovišta","nagib krovnih ploha","vrsta pokrova","rekonstrukcija i prenamjena","gabariti pri rekonstrukciji"];
+const OPERATORI = ["=","<=",">=","izmedju","dopustenje","zabrana","opis","nije_propisano"];
+const JEDINICE = ["","m","m²","°","%","koeficijent","opis"];
+const VRSTE_PRAVILA = ["OSNOVNO","UVJETNO","IZNIMKA","NEGATIVNO"];
+const FAZA1 = 9, FAZA2 = 10;   // unaprijed određen protokol mjerenja (vidi pogled Mjerenje)
+
+/* ---------- stanje ---------- */
+const S = { db: null, user: null, uid: null, mozePisati: false, dogadjaji: [], zaglavlja: {}, imena: {}, odabran: null, sub: {} };
+const teh = k => k.tehnicka_provjera.status;
+const tehChip = s => ({ AUTOMATSKI_PRIHVACEN: ["ok", "prošlo provjere"], TEHNICKI_PROVJEREN_ZA_PREGLED: ["pazi", "vrijednost provjerena"], ZA_PREGLED: ["", "za pregled"], ODBIJEN: ["ne", "odbijeno pri provjeri"] })[s];
+const strChip = s => ({ NIJE_PREGLEDANO: ["", "nije pregledano"], POTVRDENO: ["ok", "potvrđeno"], ISPRAVLJENO: ["ok", "ispravljeno"], ODBIJENO: ["ne", "odbijeno"], VRACENO: ["pazi", "vraćeno"] })[s];
+const chip = (v) => el("span", { class: "chip " + v[0], text: v[1] });
+const fmtV = v => v === null || v === undefined || v === "" ? "—" : (typeof v === "object" ? JSON.stringify(v) : String(v));
+const fmtMs = ms => { const s = Math.round(ms / 1000); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+const ime = id => S.imena[id] || (id === S.uid ? "ti" : "pregledavatelj");
+
+/* ---------- traka plana ---------- */
+(function plan() {
+  const p = D.plan, e = p.evidencija_pgz;
+  $("#plan-meta").append(
+    el("span", {}, el("b", { text: p.glasilo }), " · Klasa ", p.klasa),
+    el("span", {}, "Na snazi od ", el("b", { text: e.datum_stupanja_na_snagu })),
+    el("span", {}, "Verzija teksta: ", p.verzija_teksta),
+    el("span", {}, el("a", { href: p.izvor_url, target: "_blank", rel: "noopener", text: "izvorni tekst" }), " · ", el("a", { href: e.pdf, target: "_blank", rel: "noopener", text: "dokumentacija PGŽ" })));
+  $("#plan-stanje").textContent = "Evidencija PGŽ: " + e.status.toLowerCase() + " (" + e.provjereno.split("-").reverse().join(". ") + ".)";
+})();
+
+/* ---------- pregled ---------- */
+function razinaKand(k) { return L.razine(k, S.dogadjaji); }
+function popuniFiltre() {
+  const sel = (id, opc) => { const s = $(id); s.replaceChildren(...opc.map(([v, t]) => el("option", { value: v, text: t }))); };
+  sel("#f-clanak", [["", "svi"], ...D.clanci.map(c => [c.broj, "čl. " + c.broj])]);
+  sel("#f-teh", [["", "sve"], ["AUTOMATSKI_PRIHVACEN", "prošlo provjere"], ["TEHNICKI_PROVJEREN_ZA_PREGLED", "vrijednost provjerena"], ["ZA_PREGLED", "za pregled"], ["ODBIJEN", "odbijeno pri provjeri"]]);
+  sel("#f-str", [["", "sve"], ["NIJE_PREGLEDANO", "nije pregledano"], ["POTVRDENO", "potvrđeno"], ["ISPRAVLJENO", "ispravljeno"], ["ODBIJENO", "odbijeno"], ["VRACENO", "vraćeno"]]);
+  for (const id of ["#f-clanak", "#f-teh", "#f-str", "#f-faza"]) $(id).addEventListener("change", crtajPopis);
+}
+function filtrirani() {
+  const c = $("#f-clanak").value, t = $("#f-teh").value, s = $("#f-str").value, f = $("#f-faza").value;
+  return D.kandidati.filter(k => (!c || String(k.clanak) === c) && (!t || teh(k) === t) && (!s || razinaKand(k).strucna === s) && (!f || k.clanak === FAZA1));
+}
+function crtajPopis() {
+  const K = filtrirani(), box = $("#stavke"); box.replaceChildren();
+  let cl = null;
+  for (const k of K) {
+    if (k.clanak !== cl) { cl = k.clanak; box.append(el("div", { class: "skupina", text: "Članak " + cl })); }
+    const r = razinaKand(k);
+    const b = el("button", { type: "button", class: "stavka", role: "option", "aria-selected": String(S.odabran === k.id), "data-id": k.id },
+      el("span", { class: "id", text: k.id }), el("span", { class: "par", text: k.ai_prijedlog.parametar + " · " + fmtV(k.ai_prijedlog.vrijednost) + (k.ai_prijedlog.jedinica && k.ai_prijedlog.jedinica !== "opis" ? " " + k.ai_prijedlog.jedinica : "") }),
+      el("span", { class: "ch" }, chip(tehChip(r.tehnicka)), chip(strChip(r.strucna))));
+    b.addEventListener("click", () => odaberi(k.id));
+    box.append(b);
+  }
+  const pregledano = D.kandidati.filter(k => razinaKand(k).strucna !== "NIJE_PREGLEDANO").length;
+  $("#f-broj").textContent = `${K.length} prikazano · ${pregledano} od ${D.kandidati.length} pregledano`;
+  if (!S.odabran && K.length) odaberi(K[0].id);
+}
+
+/* aktivno vrijeme: broji se samo dok je stranica vidljiva i dok pregledavatelj radi (2 min bez unosa = stanka) */
+function Sat(prikaz) {
+  let ms = 0, zadnji = null, aktivnost = Date.now(), iv = null;
+  const tik = () => { const n = Date.now(); if (zadnji !== null && !document.hidden && n - aktivnost < 120000) ms += n - zadnji; zadnji = n; if (prikaz) prikaz.textContent = fmtMs(ms) + " aktivno"; };
+  const dir = () => { aktivnost = Date.now(); };
+  return { start() { ms = 0; zadnji = Date.now(); aktivnost = Date.now(); clearInterval(iv); iv = setInterval(tik, 1000); for (const e of ["keydown", "pointerdown", "pointermove", "scroll", "input"]) document.addEventListener(e, dir, { passive: true }); },
+           stop() { tik(); clearInterval(iv); return ms; }, vrijeme() { tik(); return ms; } };
+}
+const satPregled = Sat(null);
+
+function odaberi(id) {
+  S.odabran = id;
+  for (const b of document.querySelectorAll(".stavka")) b.setAttribute("aria-selected", String(b.dataset.id === id));
+  crtajDetalj(); satPregled.start();
+}
+function tekstSOznakom(tekst, poz) {
+  const box = el("div", { class: "clanak", tabindex: "0" });
+  if (!poz) { box.textContent = tekst; return box; }
+  const m = el("mark", { text: tekst.slice(poz[0], poz[1]) });
+  box.append(tekst.slice(0, poz[0]), m, tekst.slice(poz[1]));
+  requestAnimationFrame(() => { box.scrollTop = Math.max(0, m.offsetTop - box.offsetTop - 60); });
+  return box;
+}
+function redovi(o) { return el("table", { class: "polja" }, el("tbody", {}, ...o.map(([k, v]) => el("tr", {}, el("th", { text: k }), el("td", {}, v))))); }
+function popisUvjeta(U, prazno) { return U && U.length ? el("ul", { class: "razlozi" }, ...U.map(u => el("li", {}, el("span", { class: "kod", text: u.izvor || "iznimka" }), el("span", { text: u.citat || u.tekst })))) : el("span", { class: "nema", text: prazno }); }
+
+function crtajDetalj() {
+  const k = D.kandidati.find(x => x.id === S.odabran), box = $("#detalj");
+  if (!k) { box.replaceChildren(el("p", { class: "nema", text: "Odaberi kandidata s popisa." })); return; }
+  const a = k.ai_prijedlog, r = razinaKand(k), cl = D.clanci.find(c => c.broj === k.clanak);
+  const zadnji = r.zadnji;
+  const razinaKartica = (n, v, o, cls) => el("div", { class: "razina " + (cls || "") }, el("span", { class: "n", text: n }), el("span", { class: "v" }, v), el("span", { class: "o", text: o }));
+  const polozaj = ["čl. " + k.clanak, k.stavak ? "st. " + k.stavak : null, k.tocka && k.tocka !== "-" ? "t. " + k.tocka : (k.tocka === "-" ? "alineja" : null), k.alineja_rb ? "rb " + k.alineja_rb : null].filter(Boolean).join(", ");
+  box.replaceChildren(
+    el("div", { class: "zag" }, el("h2", {}, el("span", { class: "kod", text: k.id + " " }), a.parametar), el("span", { class: "sitno", text: polozaj })),
+    el("div", { class: "razine" },
+      razinaKartica("1 · AI prijedlog", chip(["plan", "prijedlog"]), "generator hibrid v1, zamrznut"),
+      razinaKartica("2 · Tehnička provjera", chip(tehChip(r.tehnicka)), k.tehnicka_provjera.razlozi.length + " razloga za pregled"),
+      razinaKartica("3 · Stručna potvrda", chip(strChip(r.strucna)), zadnji ? ime(zadnji.tko) + ", " + new Date(zadnji.kada).toLocaleString("hr-HR") : "čeka pregledavatelja"),
+      razinaKartica("4 · Pravna valjanost", chip(["", "nije utvrđena"]), "ovaj alat je ne utvrđuje", "zakljucana")),
+    el("div", {}, el("h3", { text: "Izvorni članak " + k.clanak + " i citat", style: "margin-bottom:6px" }), tekstSOznakom(cl.tekst, k.citat_pozicija)),
+    el("div", { class: "dva" },
+      el("div", {}, el("h3", { text: "Predloženo pravilo", style: "margin-bottom:4px" }), redovi([
+        ["Parametar", a.parametar], ["Operator", el("span", { class: "kod", text: a.operator })], ["Vrijednost", el("span", { class: "tn", text: fmtV(a.vrijednost) })], ["Jedinica", fmtV(a.jedinica)],
+        ["Vrsta građevine", a.vrsta_gradevine ? el("span", {}, el("b", { text: a.vrsta_gradevine.naziv }), el("br"), el("span", { class: "sitno", text: "izraz »" + a.vrsta_gradevine.izraz + "«, izvor: " + a.vrsta_gradevine.izvor })) : "—"],
+        ["Način gradnje / stanje", fmtV(a.nacin_gradnje) + " / " + fmtV(a.stanje)],
+        ["Zona", a.zona && a.zona.oznake && a.zona.oznake.length ? el("span", {}, el("b", { text: a.zona.oznake.join(", ") }), a.zona.citat ? el("span", { class: "sitno", text: " · »" + a.zona.citat + "«" }) : null) : el("span", { class: "nema", text: "nije navedena" })],
+        ["Uvjeti primjene", popisUvjeta(a.uvjeti, "nema")], ["Iznimke", popisUvjeta(a.iznimke, "nema")], ["Vrsta pravila", a.vrsta_pravila],
+        ["AI napomena", a.nejasno ? el("span", { text: a.nejasno }) : el("span", { class: "nema", text: "nema" })]])),
+      el("div", { style: "display:flex;flex-direction:column;gap:16px" },
+        el("div", {}, el("h3", { text: "Zašto je na pregledu", style: "margin-bottom:6px" }), k.tehnicka_provjera.razlozi.length ? el("ul", { class: "razlozi" }, ...k.tehnicka_provjera.razlozi.map(x => el("li", {}, el("span", { class: "kod kod", text: x.kod }), el("span", { text: x.tekst })))) : el("p", { class: "nema", text: "Tehnička provjera nije našla razlog. To nije stručna potvrda." })),
+        el("div", {}, el("h3", { text: "Referentni izvor i verzija", style: "margin-bottom:4px" }), redovi([
+          ["Plan", D.plan.naziv], ["Glasilo", D.plan.glasilo], ["Verzija teksta", D.plan.verzija_teksta],
+          ["Izvor", el("a", { href: D.plan.izvor_url, target: "_blank", rel: "noopener", text: "sn.pgz.hr, odluka 24558" })],
+          ["SHA-256 izvora", el("span", { class: "kod", text: D.plan.izvor_sha256.slice(0, 16) + "…" })],
+          ["Generator / provjera", el("span", { class: "kod", text: "gen " + D.lanac.gen_sha256.slice(0, 10) + "… · provjera " + D.lanac.provjera_sha256.slice(0, 10) + "…" })]])))),
+    formaRadnje(k),
+    el("div", {}, el("h3", { text: "Povijest ovog kandidata", style: "margin-bottom:6px" }), povijest(k.id)));
+}
+function povijest(id) {
+  const L2 = S.dogadjaji.filter(e => e.kandidat === id).sort((a, b) => String(b.kada).localeCompare(String(a.kada)));
+  if (!L2.length) return el("p", { class: "nema", text: "Još nema događaja." });
+  return el("ul", { class: "trag" }, ...L2.map(e => el("li", {}, el("div", { class: "kad", text: new Date(e.kada).toLocaleString("hr-HR") + " · " + ime(e.tko) + " · " + fmtMs(e.trajanje_ms || 0) + " aktivno" }),
+    el("b", { text: { POTVRDA: "Potvrđeno", ISPRAVAK: "Ispravljeno", ODBIJANJE: "Odbijeno", VRACANJE: "Vraćeno na pregled" }[e.radnja] }), e.radnja === "ISPRAVAK" ? el("span", { class: "sitno", text: " · " + Object.keys(e.razlike || {}).join(", ") }) : null,
+    el("div", { text: e.obrazlozenje }))));
+}
+function poljaZaUnos(pref, a) {
+  const opc = (lista, v) => lista.map(x => el("option", { value: x, text: x || "—", selected: String(v ?? "") === x }));
+  const parOpc = PARAMETRI.includes(a.parametar) ? PARAMETRI : [a.parametar, ...PARAMETRI];
+  return [
+    el("label", { for: pref + "parametar" }, "Parametar", el("select", { id: pref + "parametar" }, ...opc(parOpc, a.parametar), el("option", { value: "__drugo", text: "drugo: (upiši ispod)" }))),
+    el("label", { for: pref + "drugo" }, "Drugo: opis parametra", el("input", { id: pref + "drugo", placeholder: "samo ako parametar nije na popisu" })),
+    el("label", { for: pref + "operator" }, "Operator", el("select", { id: pref + "operator" }, ...opc(OPERATORI, a.operator))),
+    el("label", { for: pref + "vrijednost" }, "Vrijednost", el("input", { id: pref + "vrijednost", value: a.vrijednost ?? "" })),
+    el("label", { for: pref + "jedinica" }, "Jedinica", el("select", { id: pref + "jedinica" }, ...opc(JEDINICE, a.jedinica ?? ""))),
+    el("label", { for: pref + "vrsta_pravila" }, "Vrsta pravila", el("select", { id: pref + "vrsta_pravila" }, ...opc(VRSTE_PRAVILA, a.vrsta_pravila))),
+    el("label", { for: pref + "vrsta", class: "siroko" }, "Vrsta građevine", el("input", { id: pref + "vrsta", value: a.vrsta_gradevine ? a.vrsta_gradevine.naziv : "" })),
+    el("label", { for: pref + "zona" }, "Zona (oznake, zarezom)", el("input", { id: pref + "zona", value: a.zona && a.zona.oznake ? a.zona.oznake.join(", ") : "" })),
+    el("label", { for: pref + "iznimke" }, "Iznimke (jedna po retku, doslovno)", el("textarea", { id: pref + "iznimke" }, (a.iznimke || []).map(u => u.citat || u.tekst).join("\n"))),
+    el("label", { for: pref + "uvjeti", class: "siroko" }, "Uvjeti primjene (jedan po retku, doslovno)", el("textarea", { id: pref + "uvjeti" }, (a.uvjeti || []).map(u => u.citat || u.tekst).join("\n")))];
+}
+function procitajPolja(pref, a) {
+  const v = id => document.getElementById(pref + id).value;
+  const broj = s => { const t = s.trim(); if (t === "") return null; const n = Number(t.replace(",", ".")); return isNaN(n) ? t : n; };
+  const par = v("parametar") === "__drugo" ? "drugo: " + v("drugo").trim() : v("parametar");
+  const vrsta = v("vrsta").trim();
+  return { parametar: par, operator: v("operator"), vrijednost: broj(v("vrijednost")), jedinica: v("jedinica") || null, vrsta_pravila: v("vrsta_pravila"),
+    vrsta_gradevine: vrsta ? Object.assign({}, a.vrsta_gradevine || {}, { naziv: vrsta }) : null,
+    zona: Object.assign({}, a.zona || {}, { oznake: v("zona").split(",").map(s => s.trim()).filter(Boolean) }),
+    uvjeti: v("uvjeti").split("\n").map(s => s.trim()).filter(Boolean).map(t => ({ tekst: t, citat: t, izvor: "pregledavatelj" })),
+    iznimke: v("iznimke").split("\n").map(s => s.trim()).filter(Boolean).map(t => ({ tekst: t, citat: t })) };
+}
+function formaRadnje(k) {
+  const a = k.ai_prijedlog;
+  const f = el("form", { class: "radnja", novalidate: true });
+  const izbori = [["POTVRDA", "Potvrdi kako je"], ["ISPRAVAK", "Ispravi i potvrdi"], ["ODBIJANJE", "Odbij"], ["VRACANJE", "Vrati na pregled"]];
+  const ispravak = el("div", { class: "ispravak", hidden: true }, ...poljaZaUnos("is-", a));
+  const sat = el("span", { class: "sat", text: "0:00 aktivno" });
+  const poruka = el("span", { class: "poruka", role: "status" });
+  const gumb = el("button", { class: "gumb", type: "submit", text: "Spremi odluku" });
+  f.append(el("div", { class: "zag" }, el("h2", { text: "Odluka pregledavatelja" }), sat),
+    el("div", { class: "izbor", role: "radiogroup", "aria-label": "Radnja" }, ...izbori.map(([v, t], i) => el("label", {}, el("input", { type: "radio", name: "radnja", value: v, checked: i === 0 }), t))),
+    ispravak,
+    el("div", { class: "polje" }, el("label", { for: "obr-" + k.id, text: "Obrazloženje (obavezno, najmanje " + L.MIN_OBRAZLOZENJE + " znakova)" }), el("textarea", { id: "obr-" + k.id, placeholder: "Npr. vrijednost i uvjet odgovaraju citatu; vrsta građevine je iz naslova bloka." })),
+    el("div", { class: "akcije" }, gumb, poruka));
+  f.addEventListener("change", e => { if (e.target.name === "radnja") ispravak.hidden = e.target.value !== "ISPRAVAK"; });
+  const iv = setInterval(() => { if (!f.isConnected) { clearInterval(iv); return; } sat.textContent = fmtMs(satPregled.vrijeme()) + " aktivno"; }, 1000);
+  if (!S.mozePisati) { gumb.disabled = true; poruka.textContent = S.db ? "Ovaj pregled je samo za čitanje." : "Spremanje nije dostupno u ovom prikazu."; }
+  f.addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const radnja = f.querySelector("input[name=radnja]:checked").value;
+    const osnova = { id: novId(), rb: 0, kandidat: k.id, radnja, obrazlozenje: f.querySelector("textarea[id^=obr-]").value.trim(), tko: S.uid, kada: new Date().toISOString(),
+                     trajanje_ms: Math.round(satPregled.vrijeme()), nacin: "PREGLED_AI", podaci_sha256: D.lanac.rezultat_sha256 };
+    if (radnja === "ISPRAVAK") { osnova.poslije = procitajPolja("is-", a); osnova.razlike = L.razlike(a, osnova.poslije); }
+    const g = L.provjeriDogadjaj(osnova, k);
+    if (g.length) { poruka.className = "poruka ne"; poruka.textContent = g.join("; "); return; }
+    gumb.disabled = true; poruka.className = "poruka"; poruka.textContent = "Spremam…";
+    try { await spremi(osnova); poruka.className = "poruka ok"; poruka.textContent = "Spremljeno u revizijski trag."; satPregled.start(); }
+    catch (e) { poruka.className = "poruka ne"; poruka.textContent = "Nije spremljeno: " + (e && e.message ? e.message : e); gumb.disabled = false; }
+  });
+  return f;
+}
+const novId = () => Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+
+/* ---------- spremanje (samo dodavanje) ---------- */
+async function spremi(osnova) {
+  if (!S.db || !S.uid) throw new Error("spremanje nije dostupno");
+  const zag = S.db.doc("trag/" + S.uid);
+  const z = await zag.get();
+  const pre = z.exists ? z.data() : { rb: 0, zadnji_hash: null };
+  osnova.rb = (pre.rb || 0) + 1;
+  const e = await L.napraviDogadjaj(osnova, pre.zadnji_hash || null);
+  await zag.collection("dogadjaji").doc(e.id).set(JSON.parse(JSON.stringify(e)));
+  await zag.set({ rb: e.rb, zadnji_hash: e.hash, azurirano: e.kada });
+  return e;
+}
+
+/* ---------- ručni unos ---------- */
+const satRucno = Sat($("#ru-sat"));
+function crtajRucno() {
+  const s = $("#ru-clanak");
+  if (!s.options.length) { s.replaceChildren(...D.clanci.map(c => el("option", { value: c.broj, text: "čl. " + c.broj + (c.broj === FAZA2 ? " (faza 2)" : ""), selected: c.broj === FAZA2 }))); s.addEventListener("change", crtajRucno); }
+  const cl = D.clanci.find(c => String(c.broj) === s.value);
+  $("#ru-naslov").textContent = "Ručni unos: članak " + cl.broj;
+  $("#ru-tekst").textContent = cl.tekst;
+  const prazno = { parametar: PARAMETRI[0], operator: "<=", vrijednost: "", jedinica: "", vrsta_pravila: "OSNOVNO", vrsta_gradevine: null, zona: { oznake: [] }, uvjeti: [], iznimke: [] };
+  if (!$("#ru-polja").children.length) $("#ru-polja").replaceChildren(...poljaZaUnos("ru-", prazno));
+  const moji = S.dogadjaji.filter(e => e.radnja === "RUCNI_UNOS" && e.clanak === cl.broj).sort((a, b) => String(a.kada).localeCompare(String(b.kada)));
+  $("#ru-popis").replaceChildren(...(moji.length ? moji.map(e => el("li", {}, el("div", { class: "kad", text: ime(e.tko) + " · " + fmtMs(e.trajanje_ms) + " aktivno" }), el("b", { text: e.poslije.parametar + " " + e.poslije.operator + " " + fmtV(e.poslije.vrijednost) + " " + (e.poslije.jedinica || "") }), el("div", { class: "sitno", text: "»" + e.citat + "«" }))) : [el("li", { class: "nema", text: "Još ništa." })]));
+  $("#ru-spremi").disabled = !S.mozePisati;
+  if (!S.mozePisati) $("#ru-poruka").textContent = S.db ? "Ovaj pregled je samo za čitanje." : "Spremanje nije dostupno u ovom prikazu.";
+}
+$("#ru-uzmi").addEventListener("click", () => {
+  const sel = window.getSelection(), t = sel ? sel.toString().trim() : "";
+  const box = $("#ru-tekst");
+  if (!t || !sel.anchorNode || !box.contains(sel.anchorNode)) { $("#ru-poruka").className = "poruka ne"; $("#ru-poruka").textContent = "Najprije označi tekst u članku."; return; }
+  $("#ru-citat").value = t; $("#ru-poruka").textContent = "";
+});
+$("#ru-forma").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const cl = Number($("#ru-clanak").value), por = $("#ru-poruka");
+  const osnova = { id: novId(), rb: 0, radnja: "RUCNI_UNOS", clanak: cl, citat: $("#ru-citat").value.trim(), poslije: procitajPolja("ru-", {}),
+                   obrazlozenje: $("#ru-obr").value.trim(), tko: S.uid, kada: new Date().toISOString(), trajanje_ms: Math.round(satRucno.vrijeme()), nacin: "RUCNI_UNOS" };
+  const g = L.provjeriDogadjaj(osnova, null);
+  if (g.length) { por.className = "poruka ne"; por.textContent = g.join("; "); return; }
+  por.className = "poruka"; por.textContent = "Spremam…";
+  try { await spremi(osnova); por.className = "poruka ok"; por.textContent = "Spremljeno. Sat kreće ispočetka za sljedeće pravilo."; $("#ru-citat").value = ""; $("#ru-obr").value = ""; satRucno.start(); }
+  catch (e) { por.className = "poruka ne"; por.textContent = "Nije spremljeno: " + (e && e.message ? e.message : e); }
+});
+
+/* ---------- mjerenje ---------- */
+function crtajMjerenje() {
+  const n9 = D.kandidati.filter(k => k.clanak === FAZA1).length;
+  $("#mj-protokol").replaceChildren(
+    el("p", {}, "Protokol je određen prije mjerenja i ne mijenja se nakon uvida u rezultate."),
+    el("p", {}, el("b", { text: "Faza 1, pregled AI kandidata: članak 9 " }), `(${n9} kandidata). Pregledavatelj svaki kandidat potvrdi, ispravi ili odbije s obrazloženjem. Pravila koja AI nije predložio dodaju se u Ručnom unosu i ulaze u vrijeme faze 1.`),
+    el("p", {}, el("b", { text: "Faza 2, ručni unos od početka: članak 10 " }), "(drugi pregledavatelj ili isti nakon faze 1). AI kandidati se ne prikazuju; svako pravilo se upisuje iz teksta."),
+    el("p", {}, "Članci 9 i 10 imaju gotovo iste blokove 4 i 5, a drugi je kraći. Faza 2 je uvijek druga, pa učenje ide u korist ručnog unosa. Procjena uštede je zato konzervativna za AI."),
+    el("p", {}, "Mjeri se aktivno vrijeme (sat stane nakon 2 minute bez unosa i dok je stranica skrivena). Mjera usporedbe je broj sekundi po završenom pravilu. Kvaliteta ishoda usporedit će se naknadno s neovisnim oznakama, samo kao mjera, nikad za potvrdu."),
+    el("p", { class: "sitno" }, `Strojno vrijeme AI-ja za cijeli plan: oko 190 s usporedno (400 s zbroj), 258 676 tokena, bez plaćenog API-ja. Ne ulazi u ljudsko vrijeme.`));
+  const M = L.mjerenje(S.dogadjaji, D.kandidati);
+  const faza = m => m.nacin === "PREGLED_AI" && m.clanak === FAZA1 ? "1" : (m.nacin === "RUCNI_UNOS" && m.clanak === FAZA2 ? "2" : (m.nacin === "RUCNI_UNOS" && m.clanak === FAZA1 ? "1 (dopuna)" : "izvan protokola"));
+  $("#mj-tablica").replaceChildren(...(M.length ? M.map(m => el("tr", {}, el("td", { text: faza(m) }), el("td", { text: m.nacin === "PREGLED_AI" ? "pregled AI" : "ručni unos" }), el("td", { text: "čl. " + m.clanak }),
+    el("td", { class: "br", text: m.dogadjaja }), el("td", { class: "br", text: m.zavrsenih_pravila }), el("td", { class: "br", text: fmtMs(m.ms) }), el("td", { class: "br", text: m.s_po_pravilu ?? "—" })))
+    : [el("tr", {}, el("td", { colspan: "7", class: "nema", text: "Još nema mjerenja. Počni s fazom 1: Pregled AI kandidata, filtar »Faza 1 (čl. 9)«." }))]));
+  const f1 = M.filter(m => m.clanak === FAZA1), f2 = M.filter(m => m.nacin === "RUCNI_UNOS" && m.clanak === FAZA2);
+  const zb = L2 => L2.reduce((s, m) => ({ ms: s.ms + m.ms, p: s.p + m.zavrsenih_pravila }), { ms: 0, p: 0 });
+  const a = zb(f1), b = zb(f2), gotovo = D.kandidati.filter(k => k.clanak === FAZA1).every(k => L.strucniStatus(S.dogadjaji, k.id).stanje !== "NIJE_PREGLEDANO");
+  const z = $("#mj-zakljucak");
+  if (!a.p || !b.p || !gotovo) { z.replaceChildren(el("p", { class: "nema", text: "Zaključak se računa tek kad su obje faze gotove (svi kandidati čl. 9 pregledani i čl. 10 ručno unesen)." })); return; }
+  const sa = a.ms / a.p / 1000, sb = b.ms / b.p / 1000, ust = 1 - sa / sb;
+  z.replaceChildren(el("p", {}, el("b", { text: `Pregled AI: ${sa.toFixed(0)} s po pravilu; ručni unos: ${sb.toFixed(0)} s po pravilu. ` }),
+    ust > 0.1 ? `Pregled AI kandidata bio je ${Math.round(ust * 100)} % brži po pravilu.` : (ust < -0.1 ? `Pregled AI kandidata bio je ${Math.round(-ust * 100)} % sporiji od ručnog unosa: AI ovdje ne donosi uštedu.` : "Razlika je unutar ±10 %: AI ovdje ne donosi stvarnu uštedu.")));
+}
+
+/* ---------- čestice ---------- */
+function crtajCestice() {
+  const svg = $("#karta"), G = D.geometrija, ces = (G.cestice || []);
+  const sve = [G.upu13_obuhvat.coordinates[0], ...G.zone.map(z => z.geometrija.coordinates[0]), ...ces.map(c => c.prsten)].flat();
+  const xs = sve.map(c => c[0]), ys = sve.map(c => c[1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys), kx = Math.cos(((y0 + y1) / 2) * Math.PI / 180);
+  const W = 640, pad = 16, sk = (W - 2 * pad) / ((x1 - x0) * kx), H = Math.round((y1 - y0) * sk + 2 * pad);
+  const pt = c => [pad + (c[0] - x0) * kx * sk, H - pad - (c[1] - y0) * sk];
+  const pth = r => "M" + r.map(c => pt(c).map(v => v.toFixed(1)).join(",")).join("L") + "Z";
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const ns = "http://www.w3.org/2000/svg", s = (t, a) => { const e = document.createElementNS(ns, t); for (const [k, v] of Object.entries(a)) e.setAttribute(k, v); return e; };
+  svg.replaceChildren(s("rect", { x: 0, y: 0, width: W, height: H, fill: "var(--list)" }));
+  svg.append(s("path", { d: pth(G.upu13_obuhvat.coordinates[0]), fill: "none", stroke: "var(--obuhvat)", "stroke-width": 2, "stroke-dasharray": "6 4" }));
+  for (const z of G.zone) svg.append(s("path", { d: pth(z.geometrija.coordinates[0]), fill: "var(--zona-t-bg)", stroke: "var(--zona-t)", "stroke-width": 1.5 }));
+  for (const c of ces) { const p = s("path", { d: pth(c.prsten), fill: "transparent", stroke: "var(--tinta2)", "stroke-width": 0.8, tabindex: 0, role: "button", "aria-label": "čestica " + c.broj });
+    p.addEventListener("click", () => detaljCestice(c)); p.addEventListener("keydown", e => { if (e.key === "Enter") detaljCestice(c); }); svg.append(p); }
+  const zc = G.zone[0].geometrija.coordinates[0], cx = zc.reduce((s, c) => s + c[0], 0) / zc.length, cy = zc.reduce((s, c) => s + c[1], 0) / zc.length, [lx, ly] = pt([cx, cy]);
+  const t = s("text", { x: lx, y: ly, "text-anchor": "middle", "font-size": 13, "font-weight": 600, fill: "var(--zona-t)", "font-family": "var(--f-ui)" }); t.textContent = "T2-5"; svg.append(t);
+  $("#lg-cestice").textContent = ces.length ? `Katastarske čestice (DGU, ${ces.length})` : "Katastarske čestice: Podaci nisu dostupni";
+  detaljCestice(ces.find(c => c.u_t2_5) || null);
+  $("#ce-model").replaceChildren(...modelTekst());
+}
+function detaljCestice(c) {
+  const box = $("#ce-detalj"), ev = D.plan.evidencija_pgz, danas = new Date().toISOString().slice(0, 10), v = L.vaziNaDan(ev, danas);
+  const z = D.geometrija.zone[0], povZ = Math.round(L.povrsinaM2(z.geometrija.coordinates[0]));
+  const kids = [el("h2", { text: c ? "Čestica " + c.broj + ", k.o. " + c.ko : "Zona T2-5" }),
+    redovi([["Plan", "UPU 13 Travičići, SN PGŽ 15/2012"], ["Važenje na dan " + danas.split("-").reverse().join(". ") + ".", el("span", {}, chip(v.vazi ? ["ok", "vrijedi"] : ["ne", "ne vrijedi"]), " " + v.razlog)],
+      ["Izmjene plana", "nisu upisane u evidenciji PGŽ (" + ev.provjereno + ")"], ["Zona T2-5", `PPUG Opatija (SN 04/16), sloj PGŽ; površina oko ${povZ.toLocaleString("hr-HR")} m²`],
+      ["Zone S1, S2, K", "samo na rasterskoj karti UPU-a: vektorska granica nije dostupna, pravila se ne vežu automatski"],
+      c ? ["Udio čestice u T2-5", Math.round(L.udioUZoni(c.prsten, z.geometrija.coordinates[0]) * 100) + " %"] : null].filter(Boolean))];
+  const P = L.pravilaZaCesticu(c ? c : { prsten: z.geometrija.coordinates[0] }, D.geometrija.zone, D.kandidati, S.dogadjaji, 0.5);
+  const vrijedi = P.filter(p => p.stanje === "VRIJEDI"), ceka = P.filter(p => p.stanje !== "VRIJEDI");
+  kids.push(el("div", {}, el("h3", { text: `Pravila zone T2-5: ${vrijedi.length} stručno potvrđeno, ${ceka.length} čeka`, style: "margin:4px 0 6px" }),
+    vrijedi.length ? el("ul", { class: "trag" }, ...vrijedi.map(p => el("li", {}, el("b", { text: p.pravilo.parametar + " " + p.pravilo.operator + " " + fmtV(p.pravilo.vrijednost) + " " + (p.pravilo.jedinica || "") }), el("div", { class: "sitno", text: p.kandidat + " · " + p.pravilo.izvor + " · pravna valjanost: nije utvrđena" }))))
+      : el("p", { class: "nema", text: "Nijedno pravilo zone T2-5 još nije stručno potvrđeno, pa se čestici ništa ne pridružuje." })));
+  box.replaceChildren(...kids);
+}
+function modelTekst() {
+  return [el("h3", { text: "Kako se pravilo veže uz česticu", style: "margin-bottom:6px" }),
+    el("p", {}, "Plan (evidencija PGŽ: status, datum stupanja na snagu, prestanak) → obuhvat plana (vektor PGŽ) → zona s planskom oznakom → pravilo s doslovnim citatom → stručna potvrda iz revizijskog traga → čestica (DGU) presjekom s granicom zone."),
+    el("p", {}, "Pravilo se čestici pridružuje samo ako je stručno potvrđeno, ako zona ima vektorsku granicu i ako plan na traženi dan vrijedi. Kad se plan izmijeni, nova odluka dobiva nove kandidate, a stara pravila se zatvaraju datumom prestanka; trag ostaje."),
+    el("p", { class: "sitno" }, D.geometrija.napomena)];
+}
+
+/* ---------- trag ---------- */
+function crtajTrag() {
+  const E = S.dogadjaji.slice().sort((a, b) => String(b.kada).localeCompare(String(a.kada)));
+  $("#tr-tablica").replaceChildren(...(E.length ? E.map(e => el("tr", {}, el("td", { class: "tn", text: new Date(e.kada).toLocaleString("hr-HR") }), el("td", { text: ime(e.tko) }), el("td", { text: e.radnja }),
+    el("td", { text: e.kandidat || ("čl. " + e.clanak) }), el("td", { class: "sitno", text: e.radnja === "ISPRAVAK" ? Object.entries(e.razlike || {}).map(([k, v]) => k + ": " + fmtV(v.prije) + " → " + fmtV(v.poslije)).join("; ") : (e.radnja === "RUCNI_UNOS" ? e.poslije.parametar + " " + fmtV(e.poslije.vrijednost) : "") }),
+    el("td", { text: e.obrazlozenje }), el("td", { class: "br", text: fmtMs(e.trajanje_ms || 0) }), el("td", { class: "kod", text: (e.hash || "").slice(0, 10) })))
+    : [el("tr", {}, el("td", { colspan: "8", class: "nema", text: "Revizijski trag je prazan. Svaka potvrda, ispravak, odbijanje i ručni unos pojavit će se ovdje s obrazloženjem i hashom." }))]));
+  $("#tr-stanje").textContent = `${E.length} događaja od ${Object.keys(S.zaglavlja).length} pregledavatelja. Događaji se samo dodaju; svaki pregledavatelj piše samo svoj trag.`;
+}
+$("#tr-provjeri").addEventListener("click", async () => {
+  const r = await L.provjeriLanac(S.dogadjaji);
+  $("#tr-stanje").textContent = r.ispravno ? `Lanac je ispravan: ${S.dogadjaji.length} događaja, nijedan nije izmijenjen ni uklonjen.` : `Lanac NIJE ispravan: ${r.greske.length} problema (${r.greske.slice(0, 3).map(g => g.id + ": " + g.greska).join("; ")}).`;
+});
+
+/* ---------- usmjeravanje ---------- */
+const POGLEDI = { pregled: () => crtajPopis(), "rucni-unos": () => { crtajRucno(); satRucno.start(); }, mjerenje: crtajMjerenje, cestice: crtajCestice, trag: crtajTrag };
+function idi() {
+  const v = (location.hash || "#pregled").slice(1), k = POGLEDI[v] ? v : "pregled";
+  for (const s of document.querySelectorAll(".pogled")) s.classList.toggle("aktivan", s.id === "v-" + k);
+  for (const a of document.querySelectorAll("nav.pogledi a")) a.toggleAttribute("aria-current", a.dataset.v === k), a.dataset.v === k ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current");
+  POGLEDI[k]();
+}
+window.addEventListener("hashchange", idi);
+function osvjezi() { const v = (location.hash || "#pregled").slice(1); if (v === "pregled" || !POGLEDI[v]) { crtajPopis(); crtajDetalj(); } else POGLEDI[v](); }
+
+/* ---------- pokretanje ---------- */
+popuniFiltre(); idi();
+(async () => {
+  const cl = window.claude;
+  if (!cl || !cl.use) return;
+  const [db, user, dl] = await Promise.all([cl.use("db"), cl.use("user"), cl.use("downloads")]);
+  S.db = db; S.user = user;
+  if (user) { S.uid = await user.id(); const w = await user.can("data.write"); S.mozePisati = !!(db && S.uid && w !== false); }
+  if (dl) { const b = $("#tr-izvoz"); b.hidden = false; b.addEventListener("click", async () => {
+    const red = e => [e.kada, e.tko, e.radnja, e.kandidat || "", e.clanak || "", JSON.stringify(e.razlike || e.poslije || {}), e.obrazlozenje, e.trajanje_ms, e.hash, e.prethodni || ""].map(x => '"' + String(x ?? "").replace(/"/g, '""') + '"').join(",");
+    const csv = "kada,tko,radnja,kandidat,clanak,izmjena,obrazlozenje,trajanje_ms,hash,prethodni\n" + S.dogadjaji.map(red).join("\n");
+    try { await dl.save({ filename: "revizijski-trag-travicici.csv", data: new Blob([csv], { type: "text/csv" }) }); } catch (e) { $("#tr-stanje").textContent = "Preuzimanje nije uspjelo ili je odbijeno."; } }); }
+  if (!db) { osvjezi(); return; }
+  db.collection("trag").onSnapshot(snap => {
+    for (const d of snap.docs) if (!S.sub[d.id]) {
+      S.zaglavlja[d.id] = d.data();
+      S.sub[d.id] = db.collection("trag/" + d.id + "/dogadjaji").onSnapshot(s2 => {
+        S.dogadjaji = S.dogadjaji.filter(e => e.tko !== d.id).concat(s2.docs.map(x => x.data()).filter(e => e.tko === d.id));
+        imena().then(osvjezi);
+      }, () => {});
+    }
+  }, () => {});
+  osvjezi();
+})();
+async function imena() {
+  if (!S.user) return;
+  const ids = [...new Set(S.dogadjaji.map(e => e.tko))];
+  if (!ids.length) return;
+  const ps = await S.user.profiles(ids);
+  for (const id of ids) S.imena[id] = (ps[id] && ps[id].name) || (id === S.uid ? "ti" : "pregledavatelj");
+}
+</script>
