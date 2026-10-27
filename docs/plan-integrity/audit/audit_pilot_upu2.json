@@ -1,0 +1,717 @@
+{
+ "pravila": 49,
+ "bez_nalaza": 0,
+ "po_kategoriji": {
+  "uvjet_nerazrijesen": {
+   "naziv": "pravila s nerazriješenim uvjetima",
+   "broj": 0,
+   "primjeri": []
+  },
+  "iznimka": {
+   "naziv": "pravila s iznimkama",
+   "broj": 6,
+   "primjeri": [
+    {
+     "id": "U2-38-a1-obit",
+     "clanak": "38 a)",
+     "parametar": "min_cestica",
+     "razlog": "blokirano: iznimka nije razriješena"
+    },
+    {
+     "id": "U2-38-a4-obit",
+     "clanak": "38 a)",
+     "parametar": "kis",
+     "razlog": "blokirano: iznimka nije razriješena"
+    },
+    {
+     "id": "U2-38-a4-visobit",
+     "clanak": "38 a)",
+     "parametar": "kis",
+     "razlog": "blokirano: iznimka nije razriješena"
+    }
+   ]
+  },
+  "vrsta_neprecizna": {
+   "naziv": "pravila bez precizne vrste građevine",
+   "broj": 0,
+   "primjeri": []
+  },
+  "zahvat_nenaveden": {
+   "naziv": "pravila bez vrste zahvata",
+   "broj": 49,
+   "primjeri": [
+    {
+     "id": "U2-38-a1-obit",
+     "clanak": "38 a)",
+     "parametar": "min_cestica",
+     "razlog": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi"
+    },
+    {
+     "id": "U2-38-a2-visobit",
+     "clanak": "38 a)",
+     "parametar": "min_cestica",
+     "razlog": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi"
+    },
+    {
+     "id": "U2-38-a3-obit",
+     "clanak": "38 a)",
+     "parametar": "kig",
+     "razlog": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi"
+    }
+   ]
+  },
+  "revizija_nejasna": {
+   "naziv": "pravila s nejasnom revizijom",
+   "broj": 49,
+   "primjeri": [
+    {
+     "id": "U2-38-a1-obit",
+     "clanak": "38 a)",
+     "parametar": "min_cestica",
+     "razlog": "uvjetno: revizija pravila i plana nije dokumentirana"
+    },
+    {
+     "id": "U2-38-a2-visobit",
+     "clanak": "38 a)",
+     "parametar": "min_cestica",
+     "razlog": "uvjetno: revizija pravila i plana nije dokumentirana"
+    },
+    {
+     "id": "U2-38-a3-obit",
+     "clanak": "38 a)",
+     "parametar": "kig",
+     "razlog": "uvjetno: revizija pravila i plana nije dokumentirana"
+    }
+   ]
+  },
+  "citat_nepotpun": {
+   "naziv": "pravila s nepotpunim ili neodgovarajućim citatom",
+   "broj": 3,
+   "primjeri": [
+    {
+     "id": "U2-85-2b-obit",
+     "clanak": "85",
+     "parametar": "etaze",
+     "razlog": "vrijednost pravila ne nalazi se u citatu"
+    },
+    {
+     "id": "U2-85-2b-visobit",
+     "clanak": "85",
+     "parametar": "etaze",
+     "razlog": "vrijednost pravila ne nalazi se u citatu"
+    },
+    {
+     "id": "U2-85-2b-stamb",
+     "clanak": "85",
+     "parametar": "etaze",
+     "razlog": "vrijednost pravila ne nalazi se u citatu"
+    }
+   ]
+  }
+ },
+ "detalji": [
+  {
+   "id": "U2-38-a1-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 a)",
+   "parametar": "min_cestica",
+   "vrijednost": 500,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "iznimka": "blokirano: iznimka nije razriješena",
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-a2-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 a)",
+   "parametar": "min_cestica",
+   "vrijednost": 500,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-a3-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 a)",
+   "parametar": "kig",
+   "vrijednost": 0.25,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-a3-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 a)",
+   "parametar": "kig",
+   "vrijednost": 0.25,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-a4-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 a)",
+   "parametar": "kis",
+   "vrijednost": 0.75,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "iznimka": "blokirano: iznimka nije razriješena",
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-a4-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 a)",
+   "parametar": "kis",
+   "vrijednost": 0.75,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "iznimka": "blokirano: iznimka nije razriješena",
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-b1-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 b)",
+   "parametar": "tlocrt_min",
+   "vrijednost": 60,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-b1-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 b)",
+   "parametar": "tlocrt_min",
+   "vrijednost": 60,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-b2-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 b)",
+   "parametar": "tlocrt_max",
+   "vrijednost": 200,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-b2-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 b)",
+   "parametar": "tlocrt_max",
+   "vrijednost": 200,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-b3-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 b)",
+   "parametar": "etaze",
+   "vrijednost": "podrum i 2 nadzemne etaže",
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-b3-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 b)",
+   "parametar": "etaze",
+   "vrijednost": "podrum i 2 nadzemne etaže",
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-b4-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 b)",
+   "parametar": "visina",
+   "vrijednost": 7.5,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-b4-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 b)",
+   "parametar": "visina",
+   "vrijednost": 7.5,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-b6-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 b)",
+   "parametar": "gbp_max",
+   "vrijednost": 200,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-b6-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 b)",
+   "parametar": "gbp_max",
+   "vrijednost": 400,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-c1-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 c)",
+   "parametar": "udaljenost_regulacija",
+   "vrijednost": 6,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-c1-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 c)",
+   "parametar": "udaljenost_regulacija",
+   "vrijednost": 6,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-c1-stamb",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 c)",
+   "parametar": "udaljenost_regulacija",
+   "vrijednost": 6,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-c2-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 c)",
+   "parametar": "udaljenost_regulacija",
+   "vrijednost": 4,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-c2-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 c)",
+   "parametar": "udaljenost_regulacija",
+   "vrijednost": 4,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-c2-stamb",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 c)",
+   "parametar": "udaljenost_regulacija",
+   "vrijednost": 4,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-c4-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 c)",
+   "parametar": "udaljenost_meda",
+   "vrijednost": 4,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "iznimka": "blokirano: iznimka nije razriješena",
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-c4-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 c)",
+   "parametar": "udaljenost_meda",
+   "vrijednost": 4,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "iznimka": "blokirano: iznimka nije razriješena",
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-c4-stamb",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 c)",
+   "parametar": "udaljenost_meda",
+   "vrijednost": 4,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "iznimka": "blokirano: iznimka nije razriješena",
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-g2-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 g)",
+   "parametar": "zelenilo",
+   "vrijednost": 0.4,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-g2-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 g)",
+   "parametar": "zelenilo",
+   "vrijednost": 0.4,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-g2-stamb",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 g)",
+   "parametar": "zelenilo",
+   "vrijednost": 0.4,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-h3-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 h)",
+   "parametar": "parkiranje",
+   "vrijednost": 2,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-h3-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 h)",
+   "parametar": "parkiranje",
+   "vrijednost": 2,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-38-h3-stamb",
+   "plan": "UPU2-KORNIC",
+   "clanak": "38 h)",
+   "parametar": "parkiranje",
+   "vrijednost": 2,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-39-a1-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "39 a)",
+   "parametar": "min_cestica",
+   "vrijednost": 300,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-39-a1-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "39 a)",
+   "parametar": "min_cestica",
+   "vrijednost": 400,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-39-a2-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "39 a)",
+   "parametar": "kig",
+   "vrijednost": 0.25,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-39-a2-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "39 a)",
+   "parametar": "kig",
+   "vrijednost": 0.25,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-39-a3-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "39 a)",
+   "parametar": "kis",
+   "vrijednost": 0.75,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-39-a3-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "39 a)",
+   "parametar": "kis",
+   "vrijednost": 0.75,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-39-b2-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "39 b)",
+   "parametar": "tlocrt_max",
+   "vrijednost": {
+    "dvoj": 150,
+    "ugr": 100
+   },
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-39-b2-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "39 b)",
+   "parametar": "tlocrt_max",
+   "vrijednost": {
+    "dvoj": 150,
+    "ugr": 100
+   },
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-39-b3-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "39 b)",
+   "parametar": "etaze",
+   "vrijednost": "podrum i 2 nadzemne etaže",
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-39-b3-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "39 b)",
+   "parametar": "etaze",
+   "vrijednost": "podrum i 2 nadzemne etaže",
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-39-b4-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "39 b)",
+   "parametar": "visina",
+   "vrijednost": 7.5,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-39-b4-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "39 b)",
+   "parametar": "visina",
+   "vrijednost": 7.5,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-39-b6-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "39 b)",
+   "parametar": "gbp_max",
+   "vrijednost": 200,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-39-b6-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "39 b)",
+   "parametar": "gbp_max",
+   "vrijednost": 400,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-40-a1-stamb",
+   "plan": "UPU2-KORNIC",
+   "clanak": "40 a)",
+   "parametar": "min_cestica",
+   "vrijednost": 500,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana"
+   }
+  },
+  {
+   "id": "U2-85-2b-obit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "85",
+   "parametar": "etaze",
+   "vrijednost": 2,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana",
+    "citat_nepotpun": "vrijednost pravila ne nalazi se u citatu"
+   }
+  },
+  {
+   "id": "U2-85-2b-visobit",
+   "plan": "UPU2-KORNIC",
+   "clanak": "85",
+   "parametar": "etaze",
+   "vrijednost": 2,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana",
+    "citat_nepotpun": "vrijednost pravila ne nalazi se u citatu"
+   }
+  },
+  {
+   "id": "U2-85-2b-stamb",
+   "plan": "UPU2-KORNIC",
+   "clanak": "85",
+   "parametar": "etaze",
+   "vrijednost": 2,
+   "pravni_status": "kandidat",
+   "kategorije": {
+    "zahvat_nenaveden": "zahvat nije naveden: pravilo bi vrijedilo i za rekonstrukciju i dogradnju; potvrditi",
+    "revizija_nejasna": "uvjetno: revizija pravila i plana nije dokumentirana",
+    "citat_nepotpun": "vrijednost pravila ne nalazi se u citatu"
+   }
+  }
+ ]
+}

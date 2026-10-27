@@ -48,15 +48,33 @@ with sync_playwright() as p:
     pg.screenshot(path=OUT+"/m_slow1.png")
     pg.wait_for_timeout(9000); res["slow_done"]=pg.evaluate("document.getElementById('sheet').textContent.slice(0,120)"); res["slow_busy_after"]=pg.evaluate("document.body.classList.contains('net-busy')")
     pg.close()
-    # 5) više slojeva odjednom
-    pg=page(b,390,844); pg.evaluate(SETUP)
-    pg.click("#lyrBtn"); pg.check("#lyrSat"); pg.check("#lyrSun"); pg.wait_for_timeout(300)
-    res["layers_errors"]=pg.evaluate("window.__err||0")
-    pg.screenshot(path=OUT+"/m_layers.png"); pg.close()
+    # 5) više slojeva odjednom; svaki prekidač mora biti dostupan dodirom i kad je panel na pola zaslona (pogreška se ne skriva:
+    #    provjerava se element na mjestu prekidača i stvarni dodir; dodir kroz panel ne prolazi)
+    nedostupni=[]
+    for (vw,vh,st) in ((390,844,"half"),(320,568,"half"),(390,844,"peek"),(360,640,"half")):
+        pg=page(b,vw,vh); pg.evaluate(SETUP); pg.evaluate(f"setState('{st}')"); pg.wait_for_timeout(300)
+        pg.tap("#lyrBtn"); pg.wait_for_timeout(200)
+        ids=pg.evaluate("[...document.querySelectorAll('#lyrList input[type=checkbox]')].map(e=>e.id)")
+        for i in ids:
+            pg.evaluate(f"document.getElementById('{i}').scrollIntoView({{block:'nearest'}})"); pg.wait_for_timeout(50)
+            pokriva=pg.evaluate(f"""()=>{{const e=document.getElementById('{i}'), r=e.getBoundingClientRect(), t=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
+              return !t?'izvan zaslona':t===e||t.closest('label')===e.closest('label')?null:(t.closest('#panel')?'panel':t.closest('#tabs')?'navigacija':(t.id||t.tagName))}}""")
+            if pokriva: nedostupni.append(f"{vw}x{vh} {st} {i}: pokriva {pokriva}"); continue
+            prije=pg.evaluate(f"document.getElementById('{i}').checked")
+            try: pg.tap("#"+i, timeout=3000)
+            except Exception as ex: nedostupni.append(f"{vw}x{vh} {st} {i}: dodir nije uspio ({str(ex).splitlines()[0][:80]})"); continue
+            pg.wait_for_timeout(80)
+            if pg.evaluate(f"document.getElementById('{i}').checked")==prije: nedostupni.append(f"{vw}x{vh} {st} {i}: dodir nije promijenio stanje")
+        if (vw,vh,st)==(390,844,"half"): pg.screenshot(path=OUT+"/m_layers.png")
+        res[f"layers_{vw}x{vh}_{st}_errors"]=pg.evaluate("window.__err||0"); pg.close()
+    res["layers_nedostupni"]=nedostupni
     # 6) ispis u PDF s mobitela
     pg=page(b,390,844); pg.evaluate(SETUP); pg.emulate_media(media="print")
-    vis=pg.evaluate("""()=>({tabs:getComputedStyle(document.getElementById('tabs')).display, troskovi:getComputedStyle(document.querySelector('.grp[data-g=troskovi]')).display, grab:getComputedStyle(document.getElementById('grab')).display})""")
+    vis=pg.evaluate("""()=>({tabs:getComputedStyle(document.getElementById('tabs')).display, troskovi:(e=>e?getComputedStyle(e).display:'nema odjeljka')(document.querySelector('.grp[data-g=troskovi]')||document.querySelector('details.izb.izb-tr')), grab:getComputedStyle(document.getElementById('grab')).display})""")
     res["print"]=vis
     pg.pdf(path=OUT+"/m_print.pdf",format="A4",print_background=True); pg.close()
     b.close()
 print(json.dumps(res,ensure_ascii=False,indent=1))
+if res.get("layers_nedostupni"):
+    print("PALO: prekidači slojeva nisu dostupni dodirom:\n - "+"\n - ".join(res["layers_nedostupni"])); sys.exit(1)
+print("INTERAKCIJA: svi prekidači slojeva dostupni dodirom")
