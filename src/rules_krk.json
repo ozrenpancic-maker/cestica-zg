@@ -3485,6 +3485,125 @@
         "Krov kosi s nagibom 23°; ravni krov dopušten samo izvan povijesnih graditeljskih cjelina (čl. 60.a).",
         "Međusobna udaljenost građevina najmanje visina više građevine, ne manje od 6 m (prizemne) i 8 m (jednokatne) (čl. 58.)."
       ]
+    },
+    "LOPAR": {
+      "kod": "PPUO Lopar",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Lopar, pročišćeni tekst odredbi za provedbu (SN PGŽ 33/2022)",
+        "sn": "Službene novine PGŽ 53/2011, 16/2022 (I. izmjene i dopune) i 33/2022 (pročišćeni tekst)",
+        "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=45434",
+        "pdf": "https://www.sn.pgz.hr/download.asp?id=32555",
+        "status": "na snazi (pročišćeni tekst SN 33/2022); II. izmjene i dopune su u izradi",
+        "provjera": "Čl. 21.–24. iz pročišćenog teksta (PDF Službenih novina; dio teksta u PDF-u je u pogrešnom kodiranju fonta i dekodiran je strojno), preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Pročišćeni tekst nema pravnu snagu; dijelovi PDF-a dekodirani strojno."
+        }
+      },
+      "upozorenje": "Neposredno se grade samo stambene građevine (do 3 stana, GBP manji od 700 m²) u izgrađenom dijelu naselja Lopar NA 12, NA 13, NA 14 i izgrađenom izdvojenom dijelu NA 16–NA 19 (čl. 21.). Kis i broj etaža samostojeće kuće ovise o površini čestice; aplikacija računa s nižim vrijednostima.",
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ],
+        [
+          "ugr",
+          "u nizu"
+        ]
+      ],
+      "kisUkupni": false,
+      "neizgradeni": {
+        "mod": "blok",
+        "clanak": "21.",
+        "txt": "u izgrađenom dijelu građevinskog područja naselja Lopar - NA 12, NA 13, NA 14 i izgrađenom izdvojenom dijelu građevinskog područja naselja Lopar - NA 16, NA 17, NA 18 i NA 19",
+        "msg": "Neizgrađeni dio: PPUO dopušta neposrednu gradnju stambenih građevina samo u izgrađenom dijelu navedenih građevinskih područja (čl. 21.)."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "građevinska područja naselja Lopar",
+          "napomena": "Neposredna gradnja samo u NA 12, NA 13, NA 14 i izdvojenim NA 16–NA 19 (čl. 21.); oznaku područja provjeri u lokacijskoj informaciji."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Stambena građevina",
+          "opis": "najviše 3 stana, GBP manji od 700 m² (čl. 21.)",
+          "clanak": "21.–24.",
+          "gbpMax": 700,
+          "etaze": "2 nadzemne etaže na čestici 350–600 m² (3 na terenu nagiba većem od 20 %), 3 nadzemne na većoj čestici; jedna podzemna",
+          "visina": 6.0,
+          "visinaOpis": "6,0 m s dvije nadzemne etaže, 9,0 m s tri",
+          "slob": {
+            "minC": 400,
+            "izg": 0.4,
+            "kis": 0.8,
+            "kisPodrum": 0.8,
+            "tlMin": null,
+            "tlMax": null,
+            "napomena": "Za 3 stana 450 m²; iznimno 350 m² s jednim stanom u izgrađenom dijelu; širina čestice najmanje 15 m. Na čestici većoj od 600 m² kis 1,2, tri nadzemne etaže i visina 9 m (čl. 22.)."
+          },
+          "dvoj": {
+            "minC": 400,
+            "izg": 0.45,
+            "kis": 1.35,
+            "kisPodrum": 1.35,
+            "tlMin": null,
+            "tlMax": null
+          },
+          "ugr": {
+            "minC": 400,
+            "izg": 0.5,
+            "kis": 1.5,
+            "kisPodrum": 1.5,
+            "tlMin": 60,
+            "tlMax": null
+          },
+          "txt": {
+            "minC": "do dva =2= stana odnosno samostalne uporabne cjeline  400 m",
+            "izg": "Najveći dopušteni koeficijent izgrađenosti (kig) stambene građevine-slobodnostojeće iznosi 0,4",
+            "visina": "6,0 m ako stambena građevina ima 2 nadzemne etaže",
+            "dvoj": "Najmanja dopuštena površina građevne čestice za izgradnju stambene građevine-dvojne iznosi 400 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "22.",
+        "min": 3,
+        "opis": "najmanje 3 m od međe, 6 m od susjedne građevine",
+        "opisIznimka": "",
+        "txt": "ne manje od 3,0 m od granice građevne čestice najviše sa dvije"
+      },
+      "regulacija": {
+        "clanak": "22.",
+        "ostale": 5,
+        "razvrstane": 6,
+        "opis": "najmanje 5 m od nerazvrstane ceste, 6 m od razvrstane",
+        "txt": "Udaljenost građevine od regulacijskog pravca razvrstanih cesta ne može biti manja od 6,0 m"
+      },
+      "zelenilo": {
+        "clanak": "22.",
+        "min": 0.2,
+        "txt": "Najmanje 20% građevne čestice mora se urediti visokim i niskim"
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "22.",
+          "nagibMin": 17,
+          "nagibMax": 23,
+          "ravniDopusten": true
+        }
+      },
+      "pristup": {
+        "napomena": "Prometna površina najmanje 4,5 m (jednosmjerna) ili 5,5 m (dvosmjerna); u izgrađenom dijelu iznimno najmanje 3 m (čl. 22.)."
+      },
+      "napomene": [
+        "Višestambene građevine i stambena građevina od interesa za Općinu (čl. 25.) nisu obrađene."
+      ]
     }
   },
   "oblici": [
