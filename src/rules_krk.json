@@ -5584,6 +5584,168 @@
         "Nove dvojne i skupne građevine samo kao interpolacija (čl. 60.); u gusto građenim jezgrama posebni uvjeti.",
         "Krovovi kosi, nagiba do 25°."
       ]
+    },
+    "FUŽINE": {
+      "kod": "PPUO Fužine",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Fužine, odredbe iz elaborata VIII. izmjena i dopuna (Službene novine Općine Fužine 8/2022); izmjene 3/2024 ne odnose se na stanovanje (izletišta, pristaništa)",
+        "sn": "Službene novine Općine Fužine 8/2022 i 3/2024",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1615",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1615/ppuo-fuzine-viii-id.pdf",
+        "status": "na snazi (izmjene 2024.)",
+        "provjera": "Čl. 18.–23., 28.–29. iz elaborata VIII. izmjena (PDF Zavoda, cijele odredbe, tekst izvučen strojno) i odluka 3/2024 (čl. 4., 75., 85.a); županijski sloj navodi SN 03/24. Preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Elaborat izmjena, ne službeni pročišćeni tekst."
+        }
+      },
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ],
+        [
+          "ugr",
+          "u nizu"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "19.",
+        "txt": "Neposrednim provođenjem odredbi ovog Prostornog plana grade se",
+        "msg": "Neizgrađeni dio: provjeri obvezu UPU-a u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "U Fužinama (NA1-1) i Vratima na kosom terenu do 4 nadzemne etaže, kis 1,5 / 2,0 / 2,5, visina 10,2 m (čl. 20.). U povijesnoj cjelini Fužina uz regulacijski pravac kig do 1,0."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća",
+          "opis": "najviše 2 stana (čl. 19.)",
+          "clanak": "20.",
+          "gbpMax": null,
+          "etaze": "4 etaže, od toga najviše 3 nadzemne",
+          "visina": 6.5,
+          "visinaOpis": "6,5 m, ukupna 11 m",
+          "slob": {
+            "minC": 400,
+            "maxC": 2500,
+            "izg": 0.3,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 80,
+            "tlMax": 400
+          },
+          "dvoj": {
+            "minC": 300,
+            "maxC": 2500,
+            "izg": 0.4,
+            "kis": 1.6,
+            "kisPodrum": 1.6,
+            "tlMin": 60,
+            "tlMax": 400
+          },
+          "ugr": {
+            "minC": 250,
+            "maxC": 2500,
+            "izg": 0.5,
+            "kis": 2.0,
+            "kisPodrum": 2.0,
+            "tlMin": 50,
+            "tlMax": 400,
+            "napomena": "Niz najviše 3 građevine (čl. 19.)."
+          },
+          "txt": {
+            "minC": "za slobodno stojeće građevine: 400 m",
+            "izg": "za slobodno stojeće građevine 0,3",
+            "kis": "za slobodno stojeće građevine 1,2",
+            "visina": "Najveća dopuštena visina građevine od tri (3) nadzemne etaže 6,5 metara"
+          }
+        },
+        "stamb": {
+          "naziv": "Stambena građevina",
+          "opis": "najviše 3 stambene jedinice (čl. 19.)",
+          "clanak": "21.–22.",
+          "gbpMax": null,
+          "etaze": "4 etaže, od toga najviše 3 nadzemne",
+          "visina": 7.2,
+          "visinaOpis": "7,2 m, ukupna 11 m",
+          "slob": {
+            "minC": 300,
+            "maxC": 2500,
+            "izg": 0.4,
+            "kis": 1.6,
+            "kisPodrum": 1.6,
+            "tlMin": 64,
+            "tlMax": null,
+            "napomena": "Širina čestice najmanje 14 m (čl. 21.)."
+          },
+          "dvoj": {
+            "minC": 250,
+            "maxC": 2500,
+            "izg": 0.4,
+            "kis": 1.6,
+            "kisPodrum": 1.6,
+            "tlMin": 64,
+            "tlMax": null
+          },
+          "ugr": {
+            "minC": 200,
+            "maxC": 2500,
+            "izg": 0.5,
+            "kis": 2.0,
+            "kisPodrum": 2.0,
+            "tlMin": 64,
+            "tlMax": null
+          },
+          "txt": {
+            "minC": "za slobodno stojeće stambene građevine: 300 m",
+            "visina": "Najveća visina građevine od tri (3) nadzemne etaže iznosi 7,20 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "23.",
+        "min": 3,
+        "opis": "h/2, najmanje 3 m",
+        "opisIznimka": "",
+        "txt": "ne manje od 3,0 m od granice susjedne građevne čestice"
+      },
+      "regulacija": {
+        "clanak": "18.",
+        "ostale": 6,
+        "opis": "najmanje 6 m od granice čestice javne ili nerazvrstane ceste",
+        "txt": "Udaljenost građevine osnovne namjene i pomoćnih građevina od granice građevne čestice javnih i nerazvrstanih cesta iznosi najmanje 6,0 m."
+      },
+      "zelenilo": {
+        "clanak": "29.",
+        "min": 0.2,
+        "txt": "Najmanje 20% građevne čestice mora se urediti visokim i niskim zelenilom."
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "28.",
+          "nagibMin": 25,
+          "nagibMax": 45,
+          "ravniDopusten": false
+        }
+      },
+      "pristup": {
+        "napomena": "Podaci nisu dostupni."
+      },
+      "napomene": [
+        "Krov kosi 25–45°, crijep tamne boje (čl. 28.).",
+        "Višestambene građevine (Fužine, Lič, Banovina, Vrata) nisu obrađene."
+      ]
     }
   },
   "oblici": [
