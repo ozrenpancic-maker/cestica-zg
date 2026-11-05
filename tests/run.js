@@ -2855,6 +2855,9 @@ async function tri3dTests(){
    const G3=K(T,{...o0,balkon:true}), c3=dijelovi(G3), bk=bb(G3,"balkon"); ok(c3.balkon===1&&c3["balkon-ograda"]>=4&&bk.max.z<-3.99&&Math.abs(bk.max.y-3.45)<0.01,"3D: balkon sa staklenom ogradom na katu prema vrtu");
    const G4=K(T,{...o0,V:4.2,etaza:{n:1,fh:3,pk:true},nagib:40,balkon:true}), c4=dijelovi(G4); ok(c4.balkon===1,"3D: kuća s potkrovljem – balkon na zabatu");
    const c5=dijelovi(K(T,{...o0,krov:"ravni",nagib:0,stil:"moderni"})); ok(c5.pergola>5,"3D: pergola nad terasom kod modernog ravnog krova");}
+  {const P=E("triTocke")({...o0,rot:90}), P2=E("triTocke")({...o0,gar:{w:3.5,d:6,offX:6.75,offY:-1}}), m=(a,b)=>w.turf.distance(a,b,{units:"kilometers"})*1000;
+   ok(P.length===5&&P2.length===9&&Math.abs(m(P[1],P[2])-10)<0.15&&Math.abs(m(P[2],P[3])-8)<0.15&&Math.abs(P[1][1]-P[2][1])>Math.abs(P[1][0]-P[2][0]),"3D: visina terena uzima se u središtu i kutovima tlocrta (okret 90°: širina 10 m ide sjever–jug), uz garažu i njezine kutove");
+   }
   {const L=E("triSloj")(o0); ok(L.id==="kuca3d"&&L.type==="custom"&&L.renderingMode==="3d","3D: kuća je zaseban sloj MapLibrea (dijeli dubinu s terenom i okolnim zgradama)");
    ok(["zid","krov","pv","prozor","garaza"].every(k=>E("TRI_K").has(k)),"3D: dijelovi koje crta three.js izbacuju se iz modela od kvadara");}
   ok(errs.length===0,"bez JS grešaka (3D three.js): "+errs.join(" | "));

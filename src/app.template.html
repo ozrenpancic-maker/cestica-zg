@@ -7668,8 +7668,12 @@ function triSloj(o){
       sun.shadow.mapSize.set(2048,2048); sun.shadow.bias=-0.0004; sun.shadow.normalBias=0.03; scene.add(sun); scene.add(sun.target); this.sun=sun;
       renderer=new T.WebGLRenderer({canvas:map.getCanvas(),context:gl,antialias:true}); renderer.autoClear=false; renderer.shadowMap.enabled=true; renderer.shadowMap.type=T.PCFSoftShadowMap; renderer.outputEncoding=T.sRGBEncoding;
       TRI.r=renderer; },
-    matrica(){ let e=0; try{ e=mapa.queryTerrainElevation?(mapa.queryTerrainElevation(o.c)||0):0; }catch(x){}
-      if(mm&&e===elev) return mm; elev=e; const mc=maplibregl.MercatorCoordinate.fromLngLat(o.c,e), s=mc.meterInMercatorCoordinateUnits();
+    // visina terena: najniža od središta i kutova tlocrta (s garažom), da kuća na kosom terenu nigdje ne lebdi; viša strana ulazi u teren
+    // (podnožje seže do 3 m ispod). Visina se uzima iz istog modela terena koji MapLibre crta, za trenutni zum, u svakom kadru.
+    matrica(){ let e=0; try{ const tr=mapa.transform, te=mapa.terrain; if(te&&te.getElevationForLngLatZoom){ let mn=Infinity;
+        for(const q of triTocke(o)){ const v=te.getElevationForLngLatZoom(new maplibregl.LngLat(q[0],q[1]),tr.tileZoom); if(isFinite(v)&&v<mn) mn=v; }
+        e=isFinite(mn)?mn-tr.elevation:0; } else if(mapa.queryTerrainElevation) e=mapa.queryTerrainElevation(o.c)||0; }catch(x){ e=0; }
+      if(mm&&Math.abs(e-elev)<1e-4) return mm; elev=e; const mc=maplibregl.MercatorCoordinate.fromLngLat(o.c,e), s=mc.meterInMercatorCoordinateUnits();
       mm=new T.Matrix4().makeTranslation(mc.x,mc.y,mc.z).scale(new T.Vector3(s,-s,s)).multiply(new T.Matrix4().makeRotationX(Math.PI/2)); return mm; },
     render(gl,matrix){ if(!renderer) return; const M=Array.isArray(matrix)||matrix instanceof Float32Array||matrix instanceof Float64Array?matrix:(matrix&&matrix.defaultProjectionData&&matrix.defaultProjectionData.mainMatrix)||matrix;
       if(this.sun) this.sun.position.copy(sunce());
@@ -7678,6 +7682,12 @@ function triSloj(o){
   };
 }
 // dijelovi kuće koje crta three.js: izbacuju se iz modela od kvadara
+// središte i kutovi tlocrta kuće (i garaže) u zemljopisnim koordinatama, isto kao v3dModel
+function triTocke(o){ const lat=o.c[1]*Math.PI/180, mx=1/(111320*Math.cos(lat)), my=1/110540, th=(o.rot||0)*Math.PI/180, cs=Math.cos(th), sn=Math.sin(th);
+  const L=(x,y)=>[o.c[0]+(x*cs+y*sn)*mx,o.c[1]+(-x*sn+y*cs)*my], P=[o.c];
+  for(const [x,y] of [[-1,-1],[1,-1],[1,1],[-1,1]]) P.push(L(x*o.w/2,y*o.d/2));
+  if(o.gar){ const g=o.gar; for(const [x,y] of [[-1,-1],[1,-1],[1,1],[-1,1]]) P.push(L(g.offX+x*g.w/2,g.offY+y*g.d/2)); }
+  return P; }
 function triPv(){ try{ const g=TRI.grp; if(g) g.traverse(x=>{ if(x.name==="pv") x.visible=!!V3D.pv; }); }catch(e){} }
 const TRI_K=new Set(["podest","zid","krov","streha","sljeme","atika","okvir","prozor","vrata","nadstresnica","obloga","garaza","garazna-vrata","pv"]);
 async function v3dOpen(){
