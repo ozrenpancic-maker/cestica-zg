@@ -1,0 +1,29 @@
+# Realističniji model kuće u 3D pogledu
+
+Stanje 5. 11. 2026., grana `kuca-3d`.
+
+## Što radi
+
+3D pogled kuću iz simulatora crta biblioteka three.js 0.149 (MIT, `vendor/three-0.149.0`). Učitava se tek kad se 3D pogled otvori. Kuća je zaseban sloj u MapLibreu i dijeli dubinu s terenom i okolnim zgradama.
+
+Model ima:
+- **krov:** prave plohe (dvostrešni, četverostrešni ili ravni s atikom i opšavom), strehu od 0,5 m, zabatni prepust od 0,4 m, podgled, sljeme, dimnjak, olučne horizontale i vertikale;
+- **zidove:** od žbuke s podnožjem; drvena obloga u izgledu »moderni s drvenom oblogom«;
+- **otvore:** prozore s okvirom, klupčicom i roletom; ulaz s vratima i nadstrešnicom (kosom ili ravnom) i podestom; staklenu stijenu u prizemlju prema vrtu; prozore u zabatima kad je krov visok;
+- **ostalo:** garažu s ravnim krovom i sekcijskim vratima, solarne panele (na ravnom krovu na nosačima, na kosom na kosini prema odabranoj orijentaciji);
+- **svjetlo:** sunce s istim smjerom kao sjena na tlu, sjene na samoj kući (streha na zidu, nadstrešnica, dimnjak).
+
+Mjere su iste kao u simulatoru: širina, dubina, visina do vijenca, nagib, smjer sljemena i okret. Materijali i raspored prozora samo su ilustracija.
+
+Bez WebGL-a, ili ako se biblioteka ne učita, ostaje dosadašnji model od kvadara.
+
+## Testovi
+
+`tests/run.js`, `tri3dTests`: geometrija iz three.js u jsdomu:
+- broj ploha krova;
+- visina sljemena: vijenac + tg(nagib) × pola raspona;
+- prepusti;
+- zidovi prema simulatoru;
+- ulaz, staklena stijena, obloga, garaža, paneli.
+
+Ukupno 1101 / 1101.

@@ -2826,7 +2826,34 @@ async function montazneTests(){
   ok(errs.length===0,"bez JS grešaka (montažne kuće): "+errs.join(" | "));
 }
 
-netTests().then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
+// ---------------- realističniji model kuće u 3D pogledu (three.js): geometrija iz mjera simulatora
+async function tri3dTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  w.eval(fs.readFileSync(path.join(__dirname,"..","vendor","three-0.149.0","three.min.js"),"utf8"));
+  const T=w.THREE; ok(T&&T.REVISION==="149","3D: three.js 0.149 je u mapi vendor (bez CDN-a)");
+  const K=E("triKuca"), o0={c:[14.6,45.04],w:10,d:8,rot:0,V:6,krov:"dvo",nagib:35,alongW:true,gar:null,etaza:{n:2,fh:3,pk:false},ulaz:"S",pv:null,stil:"klasicni"};
+  const dijelovi=G=>{const c={}; G.traverse(x=>{ if(x.isMesh) c[x.name]=(c[x.name]||0)+1; }); return c;};
+  const bb=(G,ime)=>{const b=new T.Box3(); G.traverse(x=>{ if(x.isMesh&&x.name===ime){ x.updateWorldMatrix(true,false); b.expandByObject(x); } }); return b;};
+  {const G=K(T,o0), c=dijelovi(G), kr=bb(G,"krov"), R=Math.tan(35*Math.PI/180)*4;
+   ok(c.krov===2&&c.zabat===2&&c.sljeme===1&&c.dimnjak===2&&c.vrata===1&&c.oluk>=6&&!c.atika&&!c.obloga,"3D dvostrešni: dvije plohe krova, dva zabata, sljeme, dimnjak, vrata, oluci ("+JSON.stringify(c).slice(0,120)+")");
+   ok(Math.abs(kr.max.y-(6+R))<0.01&&Math.abs((kr.max.x-kr.min.x)-(10+0.8))<0.01&&Math.abs((kr.max.z-kr.min.z)-(8+1.0))<0.01,"3D dvostrešni: sljeme na visini vijenca + tg(nagib) × pola raspona ("+kr.max.y.toFixed(2)+" m), streha 0,5 m i zabatni prepust 0,4 m");
+   const zid=bb(G,"zid"); ok(Math.abs(zid.max.x-zid.min.x-10)<1e-6&&Math.abs(zid.max.z-zid.min.z-8)<1e-6&&Math.abs(zid.max.y-6)<1e-6,"3D: zidovi točno prema simulatoru (10 × 8 m, vijenac 6 m)");
+   const st=bb(G,"prozor"), vr=bb(G,"vrata-staklo"); ok(vr.max.z>3.99&&c.prozor>=6,"3D: ulaz na strani prema cesti (jug), prozori na obje etaže ("+c.prozor+")");
+   let stij=0; G.traverse(x=>{ if(x.isMesh&&x.name==="prozor"&&x.position.z<-3.9&&x.scale&&x.geometry.parameters.height>2.2) stij++; }); ok(stij>=1,"3D: prema vrtu (sjever) staklena stijena u prizemlju");}
+  {const G=K(T,{...o0,alongW:false}), kr=bb(G,"krov"); ok(Math.abs((kr.max.x-kr.min.x)-(10+1.0))<0.01&&Math.abs(kr.max.y-(6+Math.tan(35*Math.PI/180)*5))<0.01,"3D: sljeme uzduž kraće strane – raspon 10 m, viši krov");}
+  {const G=K(T,{...o0,krov:"cet",nagib:25,w:12,d:8}), c=dijelovi(G), sl=bb(G,"sljeme"); ok(c.krov===4&&!c.zabat&&Math.abs((sl.max.x-sl.min.x)-4)<0.01,"3D četverostrešni: četiri plohe, bez zabata, greben duljine 12 − 8 = 4 m");}
+  {const G=K(T,{...o0,krov:"ravni",nagib:0,stil:"moderni"}), c=dijelovi(G); ok(c.atika===4&&!c.dimnjak&&!c.zabat&&c.krov===1&&c.opsav===4,"3D ravni krov: atika i opšav uokolo, bez dimnjaka");}
+  {const G=K(T,{...o0,stil:"drvo"}), ob=bb(G,"obloga"); ok(ob.min.y>3.4&&ob.min.y<3.5,"3D drvena obloga na katu (od 3,45 m)");
+   const g1=K(T,{...o0,etaza:{n:1,fh:3,pk:false},V:3.45,stil:"drvo"}), o1=bb(g1,"obloga"); ok(o1.min.x>0.9&&o1.max.x>5,"3D drvena obloga kod prizemnice na istočnom dijelu");}
+  {const G=K(T,{...o0,gar:{w:3.5,d:6,offX:6.75,offY:-1}}), c=dijelovi(G), g=bb(G,"garaza"); ok(c.garaza===1&&Math.abs(g.max.y-2.8)<1e-6&&Math.abs((g.min.x+g.max.x)/2-6.75)<1e-6,"3D garaža uz desni bok, visina 2,8 m");}
+  {const G=K(T,{...o0,pv:{m2:12,az:"0"}}), c=dijelovi(G); let z=0; G.traverse(x=>{ if(x.name==="pv") z+=x.position.z; }); ok(c.pv===6&&z>0,"3D solarni paneli: 12 m² → 6 panela na južnoj kosini");}
+  {const G=K(T,{...o0,krov:"ravni",nagib:0,pv:{m2:8,az:"0"}}), c=dijelovi(G); ok(c.pv===4,"3D solarni paneli na ravnom krovu");}
+  {const L=E("triSloj")(o0); ok(L.id==="kuca3d"&&L.type==="custom"&&L.renderingMode==="3d","3D: kuća je zaseban sloj MapLibrea (dijeli dubinu s terenom i okolnim zgradama)");
+   ok(["zid","krov","pv","prozor","garaza"].every(k=>E("TRI_K").has(k)),"3D: dijelovi koje crta three.js izbacuju se iz modela od kvadara");}
+  ok(errs.length===0,"bez JS grešaka (3D three.js): "+errs.join(" | "));
+}
+
+netTests().then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
