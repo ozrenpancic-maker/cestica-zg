@@ -3515,7 +3515,7 @@
           "u nizu"
         ]
       ],
-      "kisUkupni": false,
+      "kisUkupni": true,
       "neizgradeni": {
         "mod": "blok",
         "clanak": "21.",
@@ -3602,7 +3602,117 @@
         "napomena": "Prometna površina najmanje 4,5 m (jednosmjerna) ili 5,5 m (dvosmjerna); u izgrađenom dijelu iznimno najmanje 3 m (čl. 22.)."
       },
       "napomene": [
-        "Višestambene građevine i stambena građevina od interesa za Općinu (čl. 25.) nisu obrađene."
+        "Višestambene građevine i stambena građevina od interesa za Općinu (čl. 25.) nisu obrađene.",
+        "Plan propisuje samo nadzemni koeficijent (kin); podzemna etaža u njega se ne računa (čl. 22.–24.)."
+      ]
+    },
+    "KRALJEVICA": {
+      "kod": "PPUG Kraljevica",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Grada Kraljevice, odredbe za provođenje iz elaborata VI. izmjena i dopuna (SN PGŽ 6/2025)",
+        "sn": "Službene novine PGŽ 6/2025 (VI. izmjene i dopune)",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1725",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1725/ppug-kraljevice-vi-id.pdf",
+        "status": "na snazi (VI. izmjene i dopune 2025.)",
+        "provjera": "Čl. 3., 18.–23. i 28. iz elaborata VI. izmjena (PDF Zavoda, tekst izvučen strojno), preuzeto 5. 11. 2026. Elaborat prikazuje cijele odredbe s oznakama izmjena; precrtani tekst se pri strojnom čitanju ne razlikuje od važećeg.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Elaborat izmjena, ne službeni pročišćeni tekst; precrtani dijelovi nisu prepoznati."
+        }
+      },
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "ugr",
+          "u nizu"
+        ]
+      ],
+      "kisUkupni": false,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "19.",
+        "txt": "Neposrednim provođenjem ovih Odredbi unutar građevinskih područja naselja za koja nije propisana obavezna izrada urbanističkih planova uređenja (definirano člankom 164.) grade se",
+        "msg": "Neposredno se gradi samo ondje gdje nije propisana obveza UPU-a (čl. 19. i 164.). Provjeri u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "U jezgri naselja Bakarac samo rekonstrukcija do 6 m i dvije etaže (čl. 18.). Poluotvorene (dvojne) kuće: čestica 250 m², kin 0,8, kis 1,0; kig za njih u tekstu nije pronađen, pa ih aplikacija ne računa (čl. 20.–21.)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Stambena građevina",
+          "opis": "samostojeća, dvojna ili u nizu, najviše 3 stana (čl. 3.)",
+          "clanak": "20.–23.",
+          "gbpMax": null,
+          "etaze": "najviše 4 etaže",
+          "visina": 11.5,
+          "visinaOpis": "11,5 m ukupne visine od prirodnog terena",
+          "slob": {
+            "minC": 300,
+            "izg": 0.4,
+            "kis": 0.8,
+            "kisPodrum": 1.0,
+            "tlMin": 50,
+            "tlMax": null,
+            "napomena": "Širina čestice najmanje 12 m (čl. 20.)."
+          },
+          "ugr": {
+            "minC": 200,
+            "izg": 0.5,
+            "kis": 1.0,
+            "kisPodrum": 1.25,
+            "tlMin": 50,
+            "tlMax": null,
+            "napomena": "Širina čestice najmanje 9 m (čl. 20.)."
+          },
+          "txt": {
+            "minC": "za slobodnostojeće građevine: 300 m",
+            "izg": "za slobodnostojeće građevine: 0,4",
+            "kis": "za slobodnostojeće građevine 0,8",
+            "tl": "Minimalna tlocrtna površina nove stambene građevine je 50 m2",
+            "etaze": "Maksimalni broj etaža građevine je 4 etaže",
+            "visina": "Najveća ukupna visina građevine u odnosu na prirodni teren (h) iznosi 11,5 metara"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "23.",
+        "min": 3,
+        "opis": "h/2 od susjedne građevine, najmanje 3 m od međe",
+        "opisIznimka": "",
+        "txt": "moraju biti udaljene najmanje pola visine (h/2) od susjedne građevine osnovne namjene i ne manje od 3 metra od granice susjedne građevne čestice"
+      },
+      "regulacija": {
+        "clanak": "18.",
+        "ostale": 5,
+        "razvrstane": 6,
+        "opis": "najmanje 5 m od ulice, 6 m od razvrstane ceste",
+        "txt": "ne može biti manja od 5 metara"
+      },
+      "zelenilo": {
+        "clanak": "28.",
+        "min": 0.2,
+        "txt": "Najmanje 20% građevne čestice mora se urediti visokim i niskim zelenilom"
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "22.",
+          "nagibMin": 0,
+          "nagibMax": 30,
+          "ravniDopusten": true
+        }
+      },
+      "pristup": {
+        "napomena": "Prometna površina postojeće širine najmanje 3 m (čl. 18.)."
+      },
+      "napomene": [
+        "Višestambene građevine samo u Kraljevici (NA 5) i dijelu Šmrike (čl. 29.) nisu obrađene."
       ]
     }
   },
