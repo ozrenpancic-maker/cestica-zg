@@ -93,6 +93,15 @@ Popis važećih UPU-ova na Krku dohvaćen je iz evidencije planova PGŽ (IZRADA_
 - Od međe h/2, najmanje 3 m; od ceste 6 m ili 5 m; zelenilo 40 %.
 - Stavak 1. čl. 46. u mrežnom tekstu nedostaje.
 
+**Obrađeno:** UPU 1 Vrbnik (pročišćeni tekst SN 11/2019 s izmjenama SN 34/2024, primijenjenima ručno), čl. 16., 19., 27. i 83.
+- Zone: M1-1 i M1-2.
+- Najmanja čestica: 400 m² (samostojeća), 300 m² (dvojna); najveća čestica više nije propisana.
+- Tlocrt: 80 m² (samostojeća) ili 60 m² (dvojna) do 200 m²; na čestici većoj od 1500 m² prizemlje do 350 m².
+- kig 0,30 / 0,40; kis nadzemno 0,60 / 0,80.
+- Visina 6,5 m, a na kosom terenu 9,5 m.
+- Od međe h/2, najmanje 4 m; od ceste 4 m; zelenilo 20 %; krov 17–22°.
+- Nizovi i višeobiteljske zgrade brisani su 2024. Pročišćeni tekst SN 46/2024 nije pregledan.
+
 **Bez stambene gradnje (provjereno u tekstu):** UPU 23 Torkul (čl. 18.) i UPU 26 Dunat (čl. 49.). Oni nisu u građevinskom području naselja, pa aplikacija već javlja da uvjeti za kuće ondje ne vrijede.
 
 **Ostaju:**
@@ -104,5 +113,4 @@ Popis važećih UPU-ova na Krku dohvaćen je iz evidencije planova PGŽ (IZRADA_
 | UPU 1 Malinska, Radići | SN 14/2013 + izmjene 2014., 2015., 2017. |
 | UPU 3 Dobrinčevo i UPU 4 Rova | SN 7/2012 i 12/2012. |
 | UPU 2 Njivice i UPU Njivice – naselje | SN 38/2025 (pročišćeni tekst) i SN 12/2022. |
-| UPU 1 Vrbnik | Pročišćeni tekst SN 46/2024. |
 | UPU 2, 7 i 11 Risika | Vrbnik, 2009. |
