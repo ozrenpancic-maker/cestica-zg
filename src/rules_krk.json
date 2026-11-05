@@ -3714,6 +3714,115 @@
       "napomene": [
         "Višestambene građevine samo u Kraljevici (NA 5) i dijelu Šmrike (čl. 29.) nisu obrađene."
       ]
+    },
+    "MOŠĆENIČKA DRAGA": {
+      "kod": "PPUO Mošćenička Draga",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Mošćenička Draga, odredbe za provedbu iz elaborata IV. izmjena i dopuna (SN PGŽ 13/2024)",
+        "sn": "Službene novine PGŽ 13/2024 (IV. izmjene i dopune)",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1699",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1699/ppuo-mdraga-iv-id.pdf",
+        "status": "na snazi (IV. izmjene i dopune 2024.)",
+        "provjera": "Čl. 31.–35.b iz elaborata IV. izmjena (PDF Zavoda, cijele odredbe, tekst izvučen strojno), preuzeto 5. 11. 2026. Precrtani tekst se pri strojnom čitanju ne razlikuje od važećeg.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Elaborat izmjena, ne službeni pročišćeni tekst."
+        }
+      },
+      "upozorenje": "U središnjem naselju (Na 34-01) plan dopušta više: GBP 600 m², kis 0,75, tri nadzemne etaže, visina 9 m. Aplikacija ne zna granicu tog područja, pa računa s vrijednostima za ostala naselja.",
+      "oblici": [
+        [
+          "slob",
+          "samostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "31.–32.",
+        "txt": "U neizgrađenim i neuređenim djelovima građevinskih područja naselja do donošenja provedbenih planova moguća e je samo rekonstrukcija građevina prema uvjetima iz Plana.",
+        "msg": "Neizgrađeni dio: nova gradnja neposredno je moguća samo u uređenom dijelu; u neuređenom samo rekonstrukcija do donošenja plana užeg područja (čl. 31.–32.). Provjeri u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "U zaštićenim cjelinama (Mošćenička Draga, Mošćenice, Brseč, Donji Kraj, Zagore), kulturnom krajoliku Trebišće–Sveti Anton–Potok i starim zaseocima čestica može biti i manja, najmanje 100 m² (čl. 35.a)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća",
+          "opis": "najviše 3 stana ili 2 stana i poslovni prostor (čl. 35.a)",
+          "clanak": "35.a–35.b",
+          "gbpMax": 400,
+          "etaze": "suteren i dvije etaže (središnje naselje tri nadzemne)",
+          "visina": 7.5,
+          "visinaOpis": "7,5 m, ukupna 9,5 m (dvojna 7 m i 9 m; središnje naselje 9 m i 11 m)",
+          "slob": {
+            "minC": 400,
+            "izg": 0.25,
+            "kis": 0.5,
+            "kisPodrum": 0.5,
+            "tlMin": 60,
+            "tlMax": 200
+          },
+          "dvoj": {
+            "minC": 400,
+            "izg": 0.25,
+            "kis": 0.5,
+            "kisPodrum": 0.5,
+            "tlMin": 60,
+            "tlMax": 150,
+            "napomena": "Dvojna: visina 7 m, ukupna 9 m (čl. 35.b)."
+          },
+          "txt": {
+            "minC": "najmanja površina građevinske čestice iznosi 400 m",
+            "izg": "najveći dopušteni koeficijent izgrađenosti (kig) iznosi 0,25",
+            "kis": "najveći dopušteni koeficijent iskorištenosti nadzemno iznosi (kis) iznosi 0,75 u središnjem naselju Na 34-",
+            "tl": "najveća dopuštena površina tlocrtne projekcije samostojeće obiteljske kuće na parceli iznosi 200 m",
+            "gbp": "najveća dopuštena građevinska (bruto) površina samostojeće obiteljske kuće (GBP) iznosi 600 m",
+            "visina": "visina obiteljske kuće (v) iznosi najviše 9,0 m na području središnjeg naselja Na 34-01, a 7,5 m u"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "35.a",
+        "min": 4,
+        "opis": "najmanje 4 m od međe",
+        "opisIznimka": "U izgrađenim dijelovima i zaštićenim cjelinama prema lokalnim uvjetima.",
+        "txt": "Najmanja udaljenost građevine od susjedne parcele iznosi 4,0 m a od regulacijskog pravca 6,0 m"
+      },
+      "regulacija": {
+        "clanak": "35.a",
+        "ostale": 6,
+        "opis": "najmanje 6 m (u izgrađenim dijelovima i na regulacijskom pravcu prema lokalnim uvjetima)",
+        "txt": "Najmanja udaljenost građevine od susjedne parcele iznosi 4,0 m a od regulacijskog pravca 6,0 m"
+      },
+      "zelenilo": {
+        "clanak": "35.a",
+        "min": 0.3,
+        "txt": "Najmanje 30% parcele potrebno je hortikulturno urediti zelenilom."
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "35.a",
+          "nagibMin": 17,
+          "nagibMax": 23,
+          "ravniDopusten": false
+        }
+      },
+      "pristup": {
+        "napomena": "Na čestici jedna stambena građevina i najviše dvije pomoćne ili manje gospodarske (čl. 34.)."
+      },
+      "napomene": [
+        "Ravni krov samo kao terasa ili krovni vrt u kombinaciji s kosim krovom (čl. 35.a).",
+        "Vile i višestambene građevine nisu obrađene."
+      ]
     }
   },
   "oblici": [
