@@ -6121,6 +6121,118 @@
         "Krov u pravilu dvostrešan, nagib prema susjednim građevinama (čl. 27.).",
         "Višeobiteljske i višestambene građevine nisu obrađene."
       ]
+    },
+    "KLANA": {
+      "kod": "PPUO Klana",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Klana (SN PGŽ 34/2007, ispravak 9/2012) s I. izmjenama i dopunama (Službene novine Općine Klana 22/2016), kojima su čl. 45. i 46. zamijenjeni novim čl. 46.a i 46.b",
+        "sn": "Službene novine PGŽ 34/2007 i 9/2012; Službene novine Općine Klana 22/2016",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1128",
+        "pdf": "https://zavod.pgz.hr/sn_jls/Klana/2016_22_1128_donosenje.pdf",
+        "status": "na snazi (I. izmjene i dopune 2016.)",
+        "provjera": "Odluka o I. izmjenama 2016. je skenirani PDF: tekst pročitan OCR-om, a tablice čl. 46.a provjerene na slici stranice 19 glasila; čl. 28.a, 43., 46.a. Županijski sloj navodi SN 22/16. Preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Tekst pročitan OCR-om iz skeniranog glasila; tablice provjerene vizualno."
+        }
+      },
+      "upozorenje": "Obiteljska kuća s jednim stanom samo samostojeća; s dva ili tri stana samostojeća ili dvojna. U tradicionalnim ruralnim dijelovima naselja posebni uvjeti (čl. 26.).",
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "28.a",
+        "txt": "Neposredna provedba Plana vrši se u svim izgrađenim i neizgrađenim - uređenim dijelovima građevinskih područja naselja, ako drugačije nije utvrđeno ovim Planom.",
+        "msg": "Neizgrađeni dio: neposredno samo u uređenom dijelu, u neuređenom prema planu užeg područja (čl. 28.a). Provjeri u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "Zelenilo najmanje 40 % za kuću s jednim stanom, 30 % za kuću s dva ili tri stana (čl. 46.a)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća s jednim stanom",
+          "opis": "jedna stambena jedinica, samo samostojeća (čl. 46.a)",
+          "clanak": "46.a",
+          "gbpMax": null,
+          "etaze": "jedna podzemna i dvije nadzemne",
+          "visina": 7.5,
+          "visinaOpis": "7,5 m",
+          "slob": {
+            "minC": 750,
+            "izg": 0.2,
+            "kis": 0.6,
+            "kisPodrum": 0.6,
+            "tlMin": 80,
+            "tlMax": null
+          },
+          "txt": {}
+        },
+        "visobit": {
+          "naziv": "Obiteljska kuća s dva ili tri stana",
+          "opis": "dvije ili tri stambene jedinice (čl. 46.a)",
+          "clanak": "46.a",
+          "gbpMax": null,
+          "etaze": "jedna podzemna i tri nadzemne",
+          "visina": 9.0,
+          "visinaOpis": "9 m",
+          "slob": {
+            "minC": 900,
+            "izg": 0.3,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 80,
+            "tlMax": null
+          },
+          "dvoj": {
+            "minC": 750,
+            "izg": 0.3,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 80,
+            "tlMax": null
+          },
+          "txt": {}
+        }
+      },
+      "meda": {
+        "clanak": "46.a",
+        "min": 4,
+        "opis": "h/2 od susjedne građevine, najmanje 4 m od međe (bez otvora najmanje 1 m)",
+        "opisIznimka": "",
+        "txt": "Udaljenost svih građevina smještenih na građevnoj čestici od granice građevne čestice ne može biti manje od 4,0m."
+      },
+      "regulacija": {
+        "clanak": "46.a",
+        "ostale": 4,
+        "razvrstane": 6,
+        "opis": "razvrstana cesta 6 m; nerazvrstana 4 m ako ima kolnik i nogostup",
+        "txt": "Udaljenost svih građevina smještenih na građevnoj čestici od regulacijskog pravca razvrstane ceste ne može biti manja od 6m"
+      },
+      "zelenilo": {
+        "clanak": "46.a",
+        "min": 0.4,
+        "txt": "Najmanje 40% građevne čestice obiteljske kuće sa jednom stambenom jedinicom odnosno 30% građevne čestice obiteljske kuće sa najviše tri stambene jedinice mora biti ozelenjeno."
+      },
+      "pristup": {
+        "napomena": "Javna prometnica najmanje 5,5 m ili pristupni put najmanje 3,5 m i najviše 100 m (dulji 4,5 m) (čl. 46.a)."
+      },
+      "napomene": [
+        "Krov kosi, nagiba većeg od 20° (čl. 46.a; OCR).",
+        "Višestambene građevine (Klana, Škalnica, Studena) nisu obrađene."
+      ]
     }
   },
   "oblici": [
