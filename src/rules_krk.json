@@ -4605,6 +4605,115 @@
         "Krov kosi, u pravilu dvostrešan, 25–40° (čl. 23.).",
         "Višeobiteljske građevine samo posredno (UPU) nisu obrađene."
       ]
+    },
+    "VRBOVSKO": {
+      "kod": "PPUG Vrbovsko",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Grada Vrbovskog, Odluka o VII. izmjenama i dopunama (Službene novine Grada Vrbovskog 6/2024), kojom su članci 16.–44.b o stambenim građevinama doneseni u novom tekstu",
+        "sn": "Službene novine Grada Vrbovskog 6/2024 (VII. izmjene i dopune)",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1617",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1617/ppug-vrbovskog-vii-id.pdf",
+        "status": "na snazi (VII. izmjene i dopune 2024.)",
+        "provjera": "Čl. 16.–18., 24., 28., 31., 37.–40. i 44.b u tekstu iz VII. izmjena (PDF Zavoda, tekst izvučen strojno), preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Tekst članaka iz odluke o izmjenama; ostali članci nisu provjereni."
+        }
+      },
+      "oblici": [
+        [
+          "slob",
+          "samostojeća"
+        ],
+        [
+          "dvoj",
+          "poluugrađena (dvojna)"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "16.",
+        "txt": "Neposrednom provedbom ovog Plana, omogućava se ishođenje akata za provedbu prostornih planova za gradnju novih i rekonstrukciju postojećih građevina, unutar svih građevinskih područja naselja osim",
+        "msg": "Neposredno u svim građevinskim područjima osim obuhvata UPU 1, DPU 4, UPU 9 i UPU 10 (čl. 16.). Provjeri u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "Poluugrađene kuće i nizovi samo u naseljima gdje takve već postoje (čl. 18.). Kuće u nizu: prizemne 200 m², jednokatne 120 m², kig 0,5, kis 1,0 (čl. 24., 37.) — aplikacija ih ne nudi jer su minimalne površine u tablici neuobičajene, provjeri u planu."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća",
+          "opis": "najviše tri samostalne uporabne jedinice (čl. 17.)",
+          "clanak": "17.–39.",
+          "gbpMax": null,
+          "etaze": "Po/Su+P+1+Pk",
+          "visina": 7.5,
+          "visinaOpis": "7,5 m do vijenca",
+          "slob": {
+            "minC": 540,
+            "maxC": 1800,
+            "izg": 0.3,
+            "kis": 0.6,
+            "kisPodrum": 0.6,
+            "tlMin": 60,
+            "tlMax": null,
+            "napomena": "Za jednokatnu kuću 540 m² (širina 16 m, dubina 30 m); za prizemnu 400 m² (14 × 20 m) (čl. 24.)."
+          },
+          "dvoj": {
+            "minC": 420,
+            "maxC": 1350,
+            "izg": 0.4,
+            "kis": 0.8,
+            "kisPodrum": 0.8,
+            "tlMin": 60,
+            "tlMax": null,
+            "napomena": "Za jednokatnu 420 m² (14 × 35 m); za prizemnu 300 m² (10 × 25 m) (čl. 24.)."
+          },
+          "txt": {
+            "izg": "0,3 - za gradnju obiteljskih kuća na samostojeći način",
+            "kis": "0,6 - za gradnju obiteljskih kuća na samostojeći način",
+            "tl": "Minimalna površina tlocrtne projekcije za nove građevine je 60 m",
+            "visina": "Najveća dozvoljena visina obiteljskih kuća (stambenih i stambeno-poslovnih) je 7,5 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "28.",
+        "min": 3,
+        "opis": "najmanje 3 m (interpolacija jednom stranom 1 m, bez otvora)",
+        "opisIznimka": "",
+        "txt": "Obiteljske kuće koje se grade na samostojeći način, moraju biti udaljene najmanje 3,0 m od"
+      },
+      "regulacija": {
+        "clanak": "31.",
+        "ostale": 5,
+        "opis": "najmanje 5 m",
+        "txt": "Najmanja dozvoljena udaljenost obiteljske kuće i višestambene građevine od regulacijske linije je"
+      },
+      "zelenilo": {
+        "clanak": "44.b",
+        "min": 0.3,
+        "txt": "Najmanje 30% od ukupne površine građevne čestice mora biti ozelenjeno, odnosno uređeni"
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "40.",
+          "nagibMin": 0,
+          "nagibMax": 60,
+          "ravniDopusten": true
+        }
+      },
+      "pristup": {
+        "napomena": "Podaci nisu dostupni (uvjeti pristupa nisu izdvojeni)."
+      },
+      "napomene": [
+        "U posebnoj zoni oblikovanja naselja Vrbovsko nagib krova najviše »45%« (tako u tekstu) (čl. 40.).",
+        "Višestambene građevine samo u Moravicama (N60–N62) nisu obrađene."
+      ]
     }
   },
   "oblici": [
