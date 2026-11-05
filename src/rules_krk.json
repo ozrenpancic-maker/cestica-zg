@@ -3351,6 +3351,140 @@
       "napomene": [
         "Višestambene i stambeno-poslovne građevine (čl. 32. i dalje) nisu obrađene."
       ]
+    },
+    "MALI LOŠINJ": {
+      "kod": "PPUG Mali Lošinj",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Grada Malog Lošinja, odredbe za provođenje (pročišćeni tekst SN PGŽ 25/2015) i Ciljane VI. izmjene i dopune (SN PGŽ 32/2016)",
+        "sn": "Službene novine PGŽ 25/2015 (pročišćeni tekst) i 32/2016 (Ciljane VI. izmjene i dopune)",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1251",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1251/ppug-mali-losinj.pdf",
+        "status": "na snazi; VII. izmjene i dopune su u izradi (odluka o izradi u Službenim novinama), odluka o donošenju nije pronađena",
+        "provjera": "Čl. 52.–61.a iz pročišćenog teksta (PDF Zavoda, tekst izvučen strojno) i izmjene čl. 52. i 54. iz Ciljanih VI. izmjena (sn.pgz.hr, id 34667), preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Pročišćeni tekst Zavoda iz 2015. dopunjen ručno izmjenama iz 2016.; službeni pročišćeni tekst nakon 2016. nije pronađen."
+        }
+      },
+      "upozorenje": "U naseljima Mali Lošinj i Osor (osim izdvojenih dijelova) obiteljske kuće ne grade se neposredno prema PPUG-u (čl. 52. i 54.); ondje vrijede urbanistički planovi.",
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ],
+        [
+          "ugr",
+          "u nizu"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "blok",
+        "clanak": "52.",
+        "txt": "Neposrednim provođenjem ovog Prostornog plana se unutar izgrađenog dijela građevinskog područja naselja mogu graditi",
+        "msg": "Neizgrađeni dio: PPUG dopušta neposrednu gradnju obiteljskih kuća samo u izgrađenom dijelu naselja (čl. 52.). U neizgrađenom dijelu gradi se prema planu užeg područja."
+      },
+      "grupe": [
+        {
+          "naselje": "^(mali losinj|osor)$",
+          "naziv": "naselja Mali Lošinj i Osor",
+          "napomena": "Neposredna gradnja obiteljskih kuća prema PPUG-u ovdje je dopuštena samo u izdvojenim dijelovima naselja (čl. 52. i 54., izmjene SN 32/2016)."
+        },
+        {
+          "naselje": ".*",
+          "naziv": "ostala naselja",
+          "napomena": "U zaštićenim i evidentiranim povijesnim cjelinama vrijede i uvjeti konzervatora (čl. 53.)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća",
+          "opis": "najviše 3 stana (čl. 55.)",
+          "clanak": "55.–57.",
+          "gbpMax": null,
+          "etaze": "podrum, dvije nadzemne etaže i tavan",
+          "visina": 6.5,
+          "visinaOpis": "6,5 m",
+          "slob": {
+            "minC": 400,
+            "maxC": 2000,
+            "izg": 0.3,
+            "kis": 0.6,
+            "kisPodrum": 0.6,
+            "tlMin": null,
+            "tlMax": 150,
+            "napomena": "Kis 0,9 uključujući tavan. Najveći tlocrt 150 m² za jednokatnu, 200 m² za prizemnu kuću (čl. 57.)."
+          },
+          "dvoj": {
+            "minC": 300,
+            "maxC": 2000,
+            "izg": 0.35,
+            "kis": 0.7,
+            "kisPodrum": 0.7,
+            "tlMin": null,
+            "tlMax": 150,
+            "napomena": "Kis 1,05 uključujući tavan. Od međe najmanje 5 m (čl. 58.)."
+          },
+          "ugr": {
+            "minC": 200,
+            "maxC": 2000,
+            "izg": 0.5,
+            "kis": 1.0,
+            "kisPodrum": 1.0,
+            "tlMin": null,
+            "tlMax": 150,
+            "napomena": "Kis 1,5 uključujući tavan. U novom nizu najviše 5 građevina (čl. 60.a)."
+          },
+          "txt": {
+            "minC": "za slobodnostojeće građevine: 400 m",
+            "maxC": "najveća dopuštena površina građevne čestice za izgradnju obiteljske kuće iznosi 2.000 m",
+            "izg": "za slobodnostojeće građevine: Kig = 0,3",
+            "kis": "za slobodnostojeće građevine: Kis = 0,6 / 0,9 uključujući tavan",
+            "tl": "za jednokatnu građevinu: 150 m",
+            "etaze": "Građevina može imati najviše podrum, dvije nadzemne etaže i tavan",
+            "visina": "najveća dopuštena visina građevine iznosi 6,5 m",
+            "dvoj": "za dvojne građevine: 300 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "58.",
+        "min": 4,
+        "opis": "h/2, najmanje 4 m (poluugrađena 5 m)",
+        "opisIznimka": "Manje uz opravdane razloge i izričitu suglasnost susjeda.",
+        "txt": "Najmanja udaljenost građevine od granice građevne čestice iznosi polovicu visine građevine, ali ne manje od 5,0 m za poluugrađenu građevinu i ne manje od 4,0 m za slobodnostojeću građevinu."
+      },
+      "regulacija": {
+        "clanak": "59.a",
+        "ostale": 5,
+        "razvrstane": 10,
+        "opis": "građevni pravac 5–15 m od regulacijskog pravca; od ruba županijske ceste 5 m, državne 10 m (čl. 59.b)",
+        "txt": "na način da je njegova udaljenost od regulacijskog pravca najmanje 5,0 m, a najviše 15,0 m"
+      },
+      "zelenilo": {
+        "clanak": "61.a",
+        "min": 0.2,
+        "txt": "Najmanje 20% građevne čestice mora se urediti visokim i niskim zelenilom"
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "60.a",
+          "nagibMin": 23,
+          "nagibMax": 23,
+          "ravniDopusten": true
+        }
+      },
+      "pristup": {
+        "napomena": "Na čestici jedna stambena građevina, uz pomoćnu ili manju poslovnu (čl. 59.c)."
+      },
+      "napomene": [
+        "Krov kosi s nagibom 23°; ravni krov dopušten samo izvan povijesnih graditeljskih cjelina (čl. 60.a).",
+        "Međusobna udaljenost građevina najmanje visina više građevine, ne manje od 6 m (prizemne) i 8 m (jednokatne) (čl. 58.)."
+      ]
     }
   },
   "oblici": [
