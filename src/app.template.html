@@ -490,6 +490,10 @@ ul.risk small{color:var(--muted)}
 .rpt-date{margin:2mm 0 0;color:var(--r-mut);font-size:9pt}
 .rpt-map{flex:1 1 auto;min-height:95mm;max-height:120mm;border:1px solid var(--r-gold);outline:4px solid #fff;outline-offset:-6px;position:relative;overflow:hidden}
 .rpt-map #map.in-print{position:absolute!important;inset:0!important;width:100%!important;height:100%!important}
+.rpt-map.rpt-map-nk{border:0;outline:0;overflow:visible;max-height:none;min-height:0;flex:0 0 auto}
+.rpt-nk-r{display:flex;gap:4mm}.rpt-nk{flex:1;margin:0;min-width:0}.rpt-nk>div{position:relative;line-height:0;aspect-ratio:1/1;border:1px solid var(--r-gold,#b9a27a);overflow:hidden}
+.rpt-nk-kat>div{background:#f6dcc0}.rpt-nk-dof>div{background:#e9e4da}.rpt-nk img,.rpt-nk svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.rpt-nk figcaption{font-size:9pt;text-align:center;margin-top:2mm;color:#5a4a33}
 .rpt-kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:7mm 0 5mm;border-top:1px solid var(--r-line)}
 .rpt-kpi div{padding:3.5mm 3mm 3.5mm 0;border-bottom:1px solid var(--r-line)}
 .rpt-kpi small{display:block;font-size:7.5pt;letter-spacing:.16em;text-transform:uppercase;color:var(--r-mut)}
@@ -8125,6 +8129,23 @@ function dosjePovijest(parcel){
   el.innerHTML=`<div class="rpt-pov-r">${fig(a)}${fig(b)}</div><p class="meta">Državna geodetska uprava, digitalni ortofoto 1:5000 (servisi za anonimne korisnike). Žuto: granica čestice iz katastra. Usporedba ne dokazuje je li gradnja zakonita.</p>`;
   return el;
 }
+// naslovnica dosjea: čestica istaknuta među susjednim česticama, na katastarskom planu i na ortofotu DGU-a (statične slike, bez slojeva simulatora)
+function dosjeNaslovnaKarta(parcel){
+  const bb=turf.bbox(parcel), c=[(bb[0]+bb[2])/2,(bb[1]+bb[3])/2], mx=111320*Math.cos(c[1]*Math.PI/180), my=110540;
+  const ext=Math.max((bb[2]-bb[0])*mx,(bb[3]-bb[1])*my), half=Math.max(80,ext*2.3), W=800; // okolica: oko 4,5 puta veličina čestice, najmanje 160 m
+  const B={x0:c[0]-half/mx,x1:c[0]+half/mx,y0:c[1]-half/my,y1:c[1]+half/my};
+  // katastar u EPSG:3857 (kao slojevi karte); isti okvir kao ortofoto u CRS:84 (pravokutnik u stupnjevima je pravokutnik i u Mercatoru)
+  const p0=L.CRS.EPSG3857.project(L.latLng(B.y0,B.x0)), p1=L.CRS.EPSG3857.project(L.latLng(B.y1,B.x1));
+  const kat=new URLSearchParams({SERVICE:"WMS",VERSION:"1.1.1",REQUEST:"GetMap",LAYERS:"oss:BZP_CESTICE",STYLES:"",SRS:"EPSG:3857",BBOX:[p0.x,p0.y,p1.x,p1.y].map(v=>v.toFixed(2)).join(","),WIDTH:String(W),HEIGHT:String(W),FORMAT:"image/png",TRANSPARENT:"true"});
+  const katUrl=KATW_URL+"?"+kat.toString(), poly=povPoly(parcel,B,W);
+  let tc=null; try{const p=turf.pointOnFeature(parcel).geometry.coordinates; tc=[((p[0]-B.x0)/(B.x1-B.x0)*W).toFixed(1),((B.y1-p[1])/(B.y1-B.y0)*W).toFixed(1)];}catch(e){}
+  const obris=(halo)=>poly.map(pts=>(halo?`<polygon points="${pts}" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round" opacity=".85"/>`:"")+`<polygon points="${pts}" fill="none" stroke="#2b1d12" stroke-width="4" stroke-linejoin="round"/>`).join("")+(tc?`<circle cx="${tc[0]}" cy="${tc[1]}" r="7" fill="#fff" stroke="#2b1d12" stroke-width="2.5"/>`:"");
+  const fig=(cls,pod,nat,halo)=>`<figure class="rpt-nk ${cls}"><div>${pod}<img alt="Katastarske čestice (DGU)" src="${esc(katUrl)}" onerror="this.remove()"><svg viewBox="0 0 ${W} ${W}" aria-hidden="true">${obris(halo)}</svg></div><figcaption>${esc(nat)}</figcaption></figure>`;
+  const el=document.createElement("div"); el.className="rpt-nk-r";
+  el.innerHTML=fig("rpt-nk-kat","",`Katastarski plan (DGU) · prikaz oko ${fmt(Math.round(half*2/10)*10)} m`,false)+
+    fig("rpt-nk-dof",DOF_SLOJEVI.map(d=>`<img alt="Digitalni ortofoto ${esc(d.g)} (DGU)" src="${esc(povUrl({u:d.u,l:"OI.OrthoimageCoverage"},B,W).replace("FORMAT=image%2Fjpeg","FORMAT=image%2Fpng&TRANSPARENT=true"))}" onerror="this.remove()">`).join(""),`Digitalni ortofoto ${DOF_SLOJEVI.map(d=>d.g).join(" i ")} (DGU) s katastrom`,true);
+  return el;
+}
 // svi izvori iz registra pouzdanosti (jedinstveni), s brojem stavki i najslabijom oznakom
 function dosjeIzvori(){
   const M=new Map(); for(const it of PZREG.items.values()){ const z=String(it.izvor||"").trim(); if(!z) continue; const m=M.get(z)||{n:0,raz:"A",st:[]}; m.n++; if(it.raz>m.raz) m.raz=it.raz; if(m.st.length<4) m.st.push(it.naziv); M.set(z,m); }
@@ -8182,11 +8203,13 @@ function rptPrint(){
   sheet.querySelectorAll("details").forEach(d=>d.open=true);
   try{skicaRender()}catch(e){}
   const R=buildReport(); document.body.classList.add("print-report");
-  const pm=document.getElementById("rpMap"); pm.appendChild(mapEl); mapEl.classList.add("in-print"); map.invalidateSize();
-  if(window.__lastBounds) map.fitBounds(window.__lastBounds,{padding:[30,30],maxZoom:19}); else if(window.__lastLL) map.setView(window.__lastLL,18);
+  const pm=document.getElementById("rpMap"), Dp=(curData()||{}).parcel;
+  if(Dp){pm.classList.add("rpt-map-nk"); pm.appendChild(dosjeNaslovnaKarta(Dp));}
+  else{pm.appendChild(mapEl); mapEl.classList.add("in-print"); map.invalidateSize();
+    if(window.__lastBounds) map.fitBounds(window.__lastBounds,{padding:[30,30],maxZoom:19}); else if(window.__lastLL) map.setView(window.__lastLL,18);}
   const base=map.hasLayer(sat)?sat:osm;
   const slike=[...R.querySelectorAll("img")].map(im=>im.complete?Promise.resolve():new Promise(r=>{im.onload=im.onerror=r;}));
-  return Promise.all([new Promise(res=>{let done=false;const fin=()=>{if(!done){done=true;setTimeout(res,400)}};base.once("load",fin);setTimeout(fin,3000);}),Promise.race([Promise.all(slike),new Promise(r=>setTimeout(r,6000))])]).then(()=>{dosjeProg(null); window.print();});
+  return Promise.all([Dp?Promise.resolve():new Promise(res=>{let done=false;const fin=()=>{if(!done){done=true;setTimeout(res,400)}};base.once("load",fin);setTimeout(fin,3000);}),Promise.race([Promise.all(slike),new Promise(r=>setTimeout(r,6000))])]).then(()=>{dosjeProg(null); window.print();});
 }
 function rptDone(){ if(!document.body.classList.contains("print-report")) return; document.body.classList.remove("print-report");
   if(mapEl.classList.contains("in-print")){mapEl.classList.remove("in-print"); mapHome.insertBefore(mapEl,mapNext); map.invalidateSize();}

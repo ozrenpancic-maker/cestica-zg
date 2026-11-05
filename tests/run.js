@@ -2351,6 +2351,13 @@ async function upu2PravnaTests(){
   // M2 i zona zaštite C: isto (pravilo B, odabiri C)
   E("krkZonaSet")("M2"); E("krkZastSet")("C"); E("renderKrk")(d); await tick();
   ok(R().get("pravilo").raz==="B"&&R().get("zona-korisnik").raz==="C"&&R().get("zast-korisnik").raz==="C"&&R().get("calc-tlocrt").raz==="C"&&pv()&&zn(),"735/76, M2 i zaštita C: pravilo B, odabrana zona i zona zaštite C, izračun C");
+  // naslovnica dosjea: čestica među susjednim česticama (katastar DGU i ortofoto), bez slojeva simulatora
+  {const el=E("dosjeNaslovnaKarta")(d.parcel), figs=el.querySelectorAll("figure.rpt-nk"), ki=el.querySelector(".rpt-nk-kat img"), di=el.querySelector(".rpt-nk-dof img");
+   const ku=ki&&new URL(ki.getAttribute("src")), bb=ku&&ku.searchParams.get("BBOX").split(",").map(Number), sir=bb?(bb[2]-bb[0])*Math.cos(45.044*Math.PI/180):0;
+   const pts=[...el.querySelectorAll(".rpt-nk-kat svg polygon")].flatMap(p=>p.getAttribute("points").split(" ").map(xy=>xy.split(",").map(Number)));
+   const xs=pts.map(p=>p[0]), ys=pts.map(p=>p[1]), sx=Math.max(...xs)-Math.min(...xs), cx=(Math.max(...xs)+Math.min(...xs))/2, cy=(Math.max(...ys)+Math.min(...ys))/2;
+   ok(figs.length===2&&ku.searchParams.get("LAYERS")==="oss:BZP_CESTICE"&&ku.searchParams.get("SRS")==="EPSG:3857"&&[...el.querySelectorAll(".rpt-nk-dof img")].map(i=>i.getAttribute("src")).join(" ").match(/orthophoto_20(21_2022|23_2024)/g).length===2&&sir>=160&&sir<260,"Dosje, naslovnica: dvije karte (katastarski plan DGU i ortofoto 2023./24. s katastrom), prikaz oko "+Math.round(sir)+" m oko čestice");
+   ok(pts.length>=8&&sx>80&&sx<400&&Math.abs(cx-400)<60&&Math.abs(cy-400)<60&&!el.querySelector(".leaflet-container"),"Dosje, naslovnica: čestica istaknuta obrisom u sredini prikaza (širina "+Math.round(sx)+" od 800 px), bez karte sa slojevima simulatora");}
   // dosje: obje napomene i razine
   {const Rp=E("buildReport")(), t2=Rp.textContent;
    ok(/Pravna aktualnost nije neovisno potvrđena\. Objave nakon SN PGŽ 19\/16/.test(t2)&&/Zona čestice nije automatski potvrđena/.test(t2),"735/76: dosje sadrži upozorenje o pravnoj aktualnosti UPU-a 2 i odvojeno upozorenje o zoni"); Rp.remove();}
