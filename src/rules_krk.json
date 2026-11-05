@@ -3823,6 +3823,128 @@
         "Ravni krov samo kao terasa ili krovni vrt u kombinaciji s kosim krovom (čl. 35.a).",
         "Vile i višestambene građevine nisu obrađene."
       ]
+    },
+    "BAKAR": {
+      "kod": "PPUG Bakar",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Grada Bakra, odredbe za provođenje iz elaborata V. izmjena i dopuna (SN PGŽ 3/2024)",
+        "sn": "Službene novine PGŽ 3/2024 (V. izmjene i dopune)",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1754",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1754/ppug-bakra-v-id.pdf",
+        "status": "na snazi (V. izmjene i dopune 2024.)",
+        "provjera": "Čl. 3., 19.–23., 28. i 29. iz elaborata V. izmjena (PDF Zavoda, cijele odredbe, tekst izvučen strojno), preuzeto 5. 11. 2026. Precrtani tekst se pri strojnom čitanju ne razlikuje od važećeg (npr. »do 400 500 m²« u čl. 3.).",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Elaborat izmjena, ne službeni pročišćeni tekst."
+        }
+      },
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "poluotvorena (dvojna)"
+        ],
+        [
+          "ugr",
+          "u nizu"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "20.",
+        "txt": "unutar izgrađenih i neizgrađenih uređenih dijelova građevinskih područja naselja za koja je propisana obvezna izrada urbanističkog plana uređenja (definirano člankom 163.), ali isti nije donesen",
+        "msg": "Neposredno se gradi gdje UPU nije propisan te u izgrađenom i uređenom neizgrađenom dijelu ondje gdje je propisan, a još nije donesen (čl. 20.). Provjeri u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "Uz izgradnju na regulacijskom pravcu u izgrađenom dijelu kig do 0,6, kod interpolacije do 0,8 (čl. 21.–23.)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Stambena građevina",
+          "opis": "najviše 4 stana, površina do 500 m² (čl. 3.; u elaboratu »400 500«, precrtana vrijednost nije prepoznata)",
+          "clanak": "20.–23.",
+          "gbpMax": 500,
+          "etaze": "3 nadzemne etaže i podzemne",
+          "visina": 11.5,
+          "visinaOpis": "11,5 m",
+          "slob": {
+            "minC": 300,
+            "izg": 0.4,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 64,
+            "tlMax": 500,
+            "napomena": "Širina čestice najmanje 12 m (čl. 21.)."
+          },
+          "dvoj": {
+            "minC": 250,
+            "izg": 0.4,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 64,
+            "tlMax": 500,
+            "napomena": "Širina čestice najmanje 12 m (čl. 22.)."
+          },
+          "ugr": {
+            "minC": 200,
+            "izg": 0.5,
+            "kis": 1.5,
+            "kisPodrum": 1.5,
+            "tlMin": 64,
+            "tlMax": 500,
+            "napomena": "Širina čestice najmanje 9 m (čl. 23.)."
+          },
+          "txt": {
+            "minC": "površina čestice: minimalno 300 m",
+            "izg": "najveći dopušteni koeficijent izgrađenosti: 0,4",
+            "kis": "najveći dopušteni koeficijent iskorištenosti: 1,2",
+            "tl": "najmanja dopuštena tlocrtna površina nove stambene građevine: 64 m",
+            "etaze": "najveći dopušteni broj etaža: 3 nadzemne etaže",
+            "visina": "najveća visina stambene građevine: 11,5 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "21.",
+        "min": 3,
+        "opis": "h/2 od susjedne građevine, najmanje 3 m od međe",
+        "opisIznimka": "",
+        "txt": "od susjedne građevine osnovne namjene i ne manje od 3,0 m od granice susjedne građevne čestice"
+      },
+      "regulacija": {
+        "clanak": "19.",
+        "ostale": 6,
+        "opis": "6 m od granice čestice javne ili nerazvrstane ceste",
+        "txt": "Udaljenost građevine osnovne namjene i pomoćnih građevina od granice građevne čestice javnih i nerazvrstanih"
+      },
+      "zelenilo": {
+        "clanak": "29.",
+        "min": 0.2,
+        "txt": "Najmanje 20% građevne čestice mora se urediti visokim i niskim zelenilom."
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "28.",
+          "nagibMin": 17,
+          "nagibMax": 30,
+          "ravniDopusten": true
+        }
+      },
+      "pristup": {
+        "napomena": "Priključak izravno ili prometnicom najmanje 5,5 m (dvosmjerna) odnosno 4,5 m (jednosmjerna) (čl. 18.)."
+      },
+      "napomene": [
+        "Ravni krov samo izvan povijesnih graditeljskih cjelina (čl. 28.).",
+        "Višestambene građevine (Bakar NA1, Plase) nisu obrađene."
+      ]
     }
   },
   "oblici": [

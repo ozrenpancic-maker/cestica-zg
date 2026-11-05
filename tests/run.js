@@ -1375,6 +1375,10 @@ async function krkTests(){
   Object.assign(gp,{OPCINA_GRAD:"MOŠĆENIČKA DRAGA",OZNAKA_NAMJENE:"NA",NASELJE:"Sveta Jelena",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
   tm=await reinspect(); M=w.__krkCalc;
   ok(M&&M.plan==="PPUO Mošćenička Draga"&&M.minOk&&Math.abs(M.tl-Math.min(200,0.25*M.A))<0.6&&Math.abs(M.gbpN-Math.min(400,0.5*M.A))<1.5&&/7,5 m/.test(tm)&&/30 ?%/.test(tm),"Mošćenička Draga samostojeća: kig 0,25, kis 0,5, GBP do 400 m², visina 7,5 m, zelenilo 30 % (SN 13/2024)");
+  // Bakar: PPUG (V. izmjene SN 3/2024), čl. 19.–29.
+  Object.assign(gp,{OPCINA_GRAD:"BAKAR",OZNAKA_NAMJENE:"NA",NASELJE:"Praputnjak",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
+  tm=await reinspect(); M=w.__krkCalc;
+  ok(M&&M.plan==="PPUG Bakar"&&M.minOk&&Math.abs(M.tl-Math.min(500,0.4*M.A))<0.6&&Math.abs(M.gbpN-Math.min(500,1.2*M.A))<1.5&&/11,5 m/.test(tm),"Bakar samostojeća: kig 0,4, kis 1,2, najviše 500 m², visina 11,5 m (SN 3/2024)");
   // UPU 1 Vrbnik (pročišćeni tekst 2019. + izmjene SN 34/2024), čl. 83.
   plans.push({GRAD_OPCINA:"Vrbnik",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Urbanistički plan uređenja UPU 1 Vrbnik – NA 1 Odredbe za provedbu (pročišćeni tekst)",SN_BROJ:"2024-46"});
   Object.assign(gp,{OPCINA_GRAD:"VRBNIK",OZNAKA_NAMJENE:"NA1",NASELJE:"Vrbnik",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
@@ -2255,7 +2259,7 @@ async function formulaTests(){
   // Plan Integrity v10: novo polje »citati« (doslovni navodi iz objave) ne mijenja postojeće brojke ni tekstove; ne ulazi u sažetak,
   // a njegovu doslovnost provjerava zaseban test (»PI v10 navodi«) prema tekstu SN PGŽ 19/2016
   // Sljedeća faza: »legenda« (boje polja legende karte 4 za pilot prijedloga zone) i »provjereno« (stručno provjereni obuhvati) nisu pravila; ne ulaze u sažetak
-  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik"&&k!=="OPATIJA"&&k!=="RAB"&&k!=="NOVI VINODOLSKI"&&k!=="CRIKVENICA"&&k!=="MALI LOŠINJ"&&k!=="LOPAR"&&k!=="KRALJEVICA"&&k!=="MOŠĆENIČKA DRAGA").map(([k,v])=>[k,bezPP(v)])):o;
+  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik"&&k!=="OPATIJA"&&k!=="RAB"&&k!=="NOVI VINODOLSKI"&&k!=="CRIKVENICA"&&k!=="MALI LOŠINJ"&&k!=="LOPAR"&&k!=="KRALJEVICA"&&k!=="MOŠĆENIČKA DRAGA"&&k!=="BAKAR").map(([k,v])=>[k,bezPP(v)])):o;
   const sha=crypto.createHash("sha256").update(JSON.stringify(bezPP(JSON.parse(fs.readFileSync(path.join(__dirname,"..","src","rules_krk.json"),"utf8"))))).digest("hex");
   ok(sha==="de538e7ddc17cdc11746acbca3217b77569881a269c740457be9e5bc7a615f82","Pravila: src/rules_krk.json bez oznaka pravne provjere nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
   // nova i izmijenjena pravila (Omišalj, Dobrinj, Vrbnik 2024.): izvan sažetka; svaka brojka mora biti u svom doslovnom navodu
