@@ -6233,6 +6233,199 @@
         "Krov kosi, nagiba većeg od 20° (čl. 46.a; OCR).",
         "Višestambene građevine (Klana, Škalnica, Studena) nisu obrađene."
       ]
+    },
+    "KOSTRENA": {
+      "kod": "PPUO Kostrena",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Kostrena, odredbe iz elaborata IV. izmjena i dopuna (SN PGŽ 6/2024)",
+        "sn": "Službene novine PGŽ 6/2024 (IV. izmjene i dopune)",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1630",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1630/ppuo-kostrena-iv-id.pdf",
+        "status": "na snazi (IV. izmjene i dopune 2024.)",
+        "provjera": "Čl. 19.b–19.k iz elaborata IV. izmjena (PDF Zavoda, cijele odredbe, tekst izvučen strojno); županijski sloj navodi SN 06/24. Preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Elaborat izmjena, ne službeni pročišćeni tekst."
+        }
+      },
+      "upozorenje": "Tip kuće (A, A-d, B, C, C-d, D) određuje kartografski prikaz 4c/4d »Urbana pravila«, koji aplikacija nema: odaberi tip u izborniku prema karti ili lokacijskoj informaciji. Veći dio građevinskih područja pokrivaju i UPU-ovi naselja N-1, N-2 i N-3.",
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "—",
+        "txt": "",
+        "msg": "Neizgrađeni dio: provjeri obvezu UPU-a u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "Tip A: dijelovi N2, N4 i N6; tip B: dijelovi N1 i N3; tip C: zaštićene povijesne jezgre; tip C-d: N4, N7, N9; tip D: dijelovi N1, N2, N4 (čl. 19.f–19.k)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Tip A, »zelena Kostrena« (vila)",
+          "opis": "do dva stana, samostojeća (čl. 19.f)",
+          "clanak": "19.f",
+          "gbpMax": 400,
+          "etaze": "podrum i dvije nadzemne (na nagibu >12 % suteren i dvije, 9,6 m)",
+          "visina": 7.8,
+          "visinaOpis": "7,8 m",
+          "slob": {
+            "minC": 800,
+            "minCIznimno": 600,
+            "izg": 0.25,
+            "kis": 0.75,
+            "kisPodrum": 0.75,
+            "tlMin": 80,
+            "tlMax": null,
+            "napomena": "600 m² u izgrađenom dijelu; od međe 4 m, od susjednih građevina 6 m; zelenilo 40 %; krov do 23° ili ravni."
+          },
+          "txt": {}
+        },
+        "tipAd": {
+          "naziv": "Tip A-d (dvojna)",
+          "opis": "dvojna kuća (čl. 19.g)",
+          "clanak": "19.g",
+          "gbpMax": 200,
+          "etaze": "podrum i dvije nadzemne",
+          "visina": 7.0,
+          "visinaOpis": "7,0 m",
+          "dvoj": {
+            "minC": 400,
+            "izg": 0.2,
+            "kis": 0.4,
+            "kisPodrum": 0.4,
+            "tlMin": null,
+            "tlMax": null,
+            "napomena": "GBP po jedinici dvojne kuće 200 m²."
+          },
+          "txt": {}
+        },
+        "tipB": {
+          "naziv": "Tip B, »plava Kostrena« (vila)",
+          "opis": "do dva stana, samostojeća (čl. 19.h)",
+          "clanak": "19.h",
+          "gbpMax": 400,
+          "etaze": "podrum i dvije nadzemne",
+          "visina": 7.8,
+          "visinaOpis": "7,8 m",
+          "slob": {
+            "minC": 1000,
+            "minCIznimno": 800,
+            "izg": 0.25,
+            "kis": 0.75,
+            "kisPodrum": 0.75,
+            "tlMin": 80,
+            "tlMax": null,
+            "napomena": "800 m² u izgrađenom dijelu; od međe 4 m; zelenilo 40 %; krov do 23° ili ravni."
+          },
+          "txt": {}
+        },
+        "tipC": {
+          "naziv": "Tip C, »bijela Kostrena« (povijesne jezgre)",
+          "opis": "jedan stan (čl. 19.i)",
+          "clanak": "19.i",
+          "gbpMax": 300,
+          "etaze": "podrum ili suteren i dvije nadzemne",
+          "visina": 6.5,
+          "visinaOpis": "6,5 m",
+          "slob": {
+            "minC": 600,
+            "izg": 0.3,
+            "kis": 0.9,
+            "kisPodrum": 0.9,
+            "tlMin": 80,
+            "tlMax": null,
+            "napomena": "Od međe 3 m; zelenilo 30 %."
+          },
+          "txt": {}
+        },
+        "tipCd": {
+          "naziv": "Tip C-d (dvojna)",
+          "opis": "dvojna kuća (čl. 19.j)",
+          "clanak": "19.j",
+          "gbpMax": 200,
+          "etaze": "podrum i dvije nadzemne",
+          "visina": 6.5,
+          "visinaOpis": "6,5 m",
+          "dvoj": {
+            "minC": 400,
+            "minCIznimno": 300,
+            "izg": 0.2,
+            "kis": 0.4,
+            "kisPodrum": 0.4,
+            "tlMin": null,
+            "tlMax": null,
+            "napomena": "300 m² u izgrađenom dijelu; GBP po jedinici 200 m²."
+          },
+          "txt": {}
+        },
+        "tipD": {
+          "naziv": "Tip D, »žuta Kostrena« (višeobiteljska)",
+          "opis": "do tri stana (čl. 19.k)",
+          "clanak": "19.k",
+          "gbpMax": 500,
+          "etaze": "podrum i tri nadzemne",
+          "visina": 9.0,
+          "visinaOpis": "9,0 m",
+          "slob": {
+            "minC": 1000,
+            "minCIznimno": 800,
+            "izg": 0.3,
+            "kis": 0.9,
+            "kisPodrum": 0.9,
+            "tlMin": null,
+            "tlMax": null,
+            "napomena": "800 m² u izgrađenom dijelu; od međe 5 m; zelenilo 30 %."
+          },
+          "txt": {}
+        }
+      },
+      "meda": {
+        "clanak": "19.f–19.k",
+        "min": 4,
+        "opis": "tip A i B 4 m, tip C 3 m, tip D 5 m",
+        "opisIznimka": "",
+        "txt": "Stambene građevine osnovne namjene moraju biti udaljene najmanje 4 m od granica građevne čestice sa svih strana"
+      },
+      "regulacija": {
+        "clanak": "19.f–19.k",
+        "ostale": 6,
+        "opis": "najmanje 6 m od granice čestice uz prometnicu ili javnu površinu",
+        "txt": "Minimalna udaljenost građevine osnovne namjene od granice građevne čestice uz prometnicu ili javnu površinu iznosi 6 m."
+      },
+      "zelenilo": {
+        "clanak": "19.f–19.k",
+        "min": 0.3,
+        "txt": "",
+        "opisNaziv": "Zelenilo (tip A i B 40 %, tip C i D 30 %)"
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "19.f",
+          "nagibMin": 0,
+          "nagibMax": 23,
+          "ravniDopusten": true
+        }
+      },
+      "pristup": {
+        "napomena": "Podaci nisu dostupni."
+      },
+      "napomene": [
+        "Višestambene građevine (tip E) nisu obrađene."
+      ]
     }
   },
   "oblici": [
