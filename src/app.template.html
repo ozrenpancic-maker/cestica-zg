@@ -4227,15 +4227,15 @@ async function zg3dOsm(parcel,c){
     list.push({y:0,wall:H.h,foot:[foot],faces:[],c:ct,dist}); }
   return {st:"ok",tip:"osm",list,godine:{},pret};
 }
-function zg3dLoad(parcel){
-  const key=zg3dKey(parcel); if(!key||!parcel) return Promise.resolve({st:"nema",list:[]});
+function zg3dLoad(parcel,Rm){
+  const RR=Rm||ZG3D.R, key=zg3dKey(parcel)+(Rm?"|"+Rm:""); if(!zg3dKey(parcel)||!parcel) return Promise.resolve({st:"nema",list:[]});
   if(ZG3D.cache.has(key)) return ZG3D.cache.get(key);
   const pr=(async()=>{
     const c=turf.centroid(parcel).geometry.coordinates; let idx=null, base="", have=null;
     for(const b of ZG3D.izv){ const ix=await zg3dIdx(b); if(!ix) continue; const h=new Set(ix.kvadrati);
       if(h.has(Math.floor(c[1]/ix.dlat)+"_"+Math.floor(c[0]/ix.dlon))){ idx=ix; base=b; have=h; break; } }
     if(!idx) return zg3dOsm(parcel,c);
-    const bb=turf.bbox(turf.buffer(parcel,ZG3D.R/1000,{units:"kilometers"})), keys=[];
+    const bb=turf.bbox(turf.buffer(parcel,RR/1000,{units:"kilometers"})), keys=[];
     for(let i=Math.floor(bb[1]/idx.dlat);i<=Math.floor(bb[3]/idx.dlat);i++) for(let j=Math.floor(bb[0]/idx.dlon);j<=Math.floor(bb[2]/idx.dlon);j++) if(have.has(i+"_"+j)) keys.push(i+"_"+j);
     const all=(await Promise.all(keys.map(k=>zg3dTile(base,k,idx)))).flat(), rings=skRings(parcel.geometry), list=[];
     for(const b of all){
@@ -4243,8 +4243,8 @@ function zg3dLoad(parcel){
       let inside=false; try{inside=turf.booleanPointInPolygon(turf.point(b.c),parcel)}catch(e){}
       if(inside) continue; // postojeća zgrada na samoj čestici: ne prikazuje se (kuća iz simulatora se crta zasebno)
       let dist=1e9; for(const q of b.foot[0]) dist=Math.min(dist,zg3dDist(rings,q));
-      if(dist<=ZG3D.R){ b.dist=dist; list.push(b); } }
-    return {st:"ok",tip:idx.tip||"zg3d",list,godine:list.reduce((a,b)=>{a[b.y]=(a[b.y]||0)+1; return a;},{})};
+      if(dist<=RR){ b.dist=dist; list.push(b); } }
+    return {st:"ok",tip:idx.tip||"zg3d",R:RR,list,godine:list.reduce((a,b)=>{a[b.y]=(a[b.y]||0)+1; return a;},{})};
   })().then(r=>{ZG3D.res.set(key,r); return r;}).catch(()=>{const r={st:"nema",list:[]}; ZG3D.res.set(key,r); return r;});
   ZG3D.cache.set(key,pr); return pr;
 }
@@ -4272,10 +4272,10 @@ function zg3dFeatures(list){
 }
 function zg3dNapomena(Z){
   if(!Z||!Z.list||!Z.list.length) return "";
-  if(Z.tip==="dkp") return `Okolne zgrade: tlocrti iz digitalnog katastarskog plana DGU-a, ${Z.list.length} zgrada u krugu do ${ZG3D.R} m. Katastar ne sadrži visine ni oblik krova, pa su visine PRETPOSTAVLJENE prema vrsti zgrade (kuća oko 6,5 m, pomoćne zgrade oko 3 m) i zgrade su nacrtane kao kvadri bez krova. Samo ilustracija okoline; zgrade na samoj čestici nisu prikazane.`;
-  if(Z.tip==="osm") return `Okolne zgrade: tlocrti iz OpenStreetMapa (volonterski karta, može biti nepotpuna), ${Z.list.length} zgrada u krugu do ${ZG3D.R} m. Visine su ${Z.pret<Z.list.length?"gdje postoje preuzete iz oznaka (visina, broj etaža), a inače ":""}PRETPOSTAVLJENE prema vrsti zgrade, bez oblika krova. Samo ilustracija okoline; zgrade na samoj čestici nisu prikazane.`;
+  if(Z.tip==="dkp") return `Okolne zgrade: tlocrti iz digitalnog katastarskog plana DGU-a, ${Z.list.length} zgrada u krugu do ${Z.R||ZG3D.R} m. Katastar ne sadrži visine ni oblik krova, pa su visine PRETPOSTAVLJENE prema vrsti zgrade (kuća oko 6,5 m, pomoćne zgrade oko 3 m) i zgrade su nacrtane kao kvadri bez krova. Samo ilustracija okoline; zgrade na samoj čestici nisu prikazane.`;
+  if(Z.tip==="osm") return `Okolne zgrade: tlocrti iz OpenStreetMapa (volonterski karta, može biti nepotpuna), ${Z.list.length} zgrada u krugu do ${Z.R||ZG3D.R} m. Visine su ${Z.pret<Z.list.length?"gdje postoje preuzete iz oznaka (visina, broj etaža), a inače ":""}PRETPOSTAVLJENE prema vrsti zgrade, bez oblika krova. Samo ilustracija okoline; zgrade na samoj čestici nisu prikazane.`;
   const g=Z.godine||{}, god=Object.keys(g).sort().map(k=>(2000+ +k)+". ("+g[k]+")").join(", ");
-  return `Okolne zgrade: neslužbeni 3D model Grada Zagreba (ZG3D, Otvorena dozvola), ${Z.list.length} zgrada u krugu do ${ZG3D.R} m; godina snimanja ${god}. Visine i krovovi su prema modelu i ne moraju odgovarati današnjem stanju; zgrade na samoj čestici nisu prikazane.`;
+  return `Okolne zgrade: neslužbeni 3D model Grada Zagreba (ZG3D, Otvorena dozvola), ${Z.list.length} zgrada u krugu do ${Z.R||ZG3D.R} m; godina snimanja ${god}. Visine i krovovi su prema modelu i ne moraju odgovarati današnjem stanju; zgrade na samoj čestici nisu prikazane.`;
 }
 // --- koridori: dohvat linija u krugu i provjera stvarne udaljenosti
 async function corridorQuery(c,parcel,ll){
@@ -7346,6 +7346,8 @@ function v3dData(){
     gp:G&&G.geom?{type:"Feature",geometry:G.geom,properties:{}}:{type:"FeatureCollection",features:[]},
     broj:(d.parcel.properties.KATASTARSKA_CESTICA||d.parcel.properties.broj||""),key,krk:!!(d.krk||window.__cur&&(window.__cur.region==="krk"||window.__cur.region==="hr"))};
 }
+// 3D pogled: okolne zgrade do 250 m (ostale analize ostaju na 80 m), čestica i 30 m okolice u kadru, zum najviše 19, nagib 58°
+const V3D_OKOL_R=250, V3D_OKVIR_M=30, V3D_MAXZ=19, V3D_NAGIB=58;
 function v3dStyle(D){
   const ex=(id,flt,z)=>({id,type:"fill-extrusion",source:"kuca",filter:flt,...z,paint:{"fill-extrusion-color":["get","c"],"fill-extrusion-height":["get","h"],"fill-extrusion-base":["get","b"],"fill-extrusion-opacity":1,"fill-extrusion-vertical-gradient":true}});
   return {version:8,sources:{
@@ -7375,21 +7377,23 @@ async function v3dOpen(){
   document.getElementById("v3dTtl").textContent="3D pogled · čestica "+D.broj;
   note.textContent="Učitavam 3D pogled…";
   try{await v3dLib();}catch(e){note.textContent="3D pogled nije dostupan: "+e.message+"."; return;}
-  { try{await Promise.race([zg3dLoad(D.parcel),new Promise(r=>setTimeout(r,4000))]);}catch(e){} const Z=zg3dGet(D.parcel); if(Z&&Z.list.length){D.okol={type:"FeatureCollection",features:zg3dFeatures(Z.list)}; D.okolN=Z; } }
+  { let Z=null; try{Z=await Promise.race([zg3dLoad(D.parcel,V3D_OKOL_R),new Promise(r=>setTimeout(r,5000))]);}catch(e){} if(Z&&Z.list.length){D.okol={type:"FeatureCollection",features:zg3dFeatures(Z.list)}; D.okolN=Z; } }
   {const ol=document.getElementById("v3dOkolL"); ol.hidden=!D.okolN; document.getElementById("v3dOkol").checked=true;}
   const gl=(()=>{try{const c=document.createElement("canvas"); return !!(c.getContext("webgl2")||c.getContext("webgl"));}catch(e){return false}})();
   if(!gl&&!(window.maplibregl&&maplibregl.__test)){note.textContent="Ovaj preglednik ne podržava 3D prikaz (WebGL)."; return;}
   if(V3D.map){try{V3D.map.remove()}catch(e){} V3D.map=null;}
   V3D.key=D.key;
   {const pc=document.getElementById("v3dPv"), ima=D.kuca.features.some(f=>f.properties.k==="pv"); pc.disabled=!ima; pc.parentElement.title=ima?"Solarni paneli prema odjeljku Solarna elektrana (površina i orijentacija)":"Za panele upiši površinu u odjeljku Solarna elektrana";}
-  const m=new maplibregl.Map({container:"v3dMap",style:v3dStyle(D),center:D.c,zoom:18.2,pitch:62,bearing:-20,maxPitch:78,canvasContextAttributes:{preserveDrawingBuffer:true},preserveDrawingBuffer:true,attributionControl:{compact:true}});
+  const m=new maplibregl.Map({container:"v3dMap",style:v3dStyle(D),center:D.c,zoom:18,pitch:V3D_NAGIB,bearing:-20,maxPitch:78,canvasContextAttributes:{preserveDrawingBuffer:true},preserveDrawingBuffer:true,attributionControl:{compact:true}});
   V3D.map=m; m.addControl(new maplibregl.NavigationControl({visualizePitch:true}),"top-right");
   try{const el=document.createElement("div"); el.className="v3d-lbl"; el.textContent=D.broj; new maplibregl.Marker({element:el,anchor:"bottom",offset:[0,-4]}).setLngLat(D.lbl||D.c).addTo(m);}catch(e){}
   const stop=()=>{V3D.rot=false; document.getElementById("v3dRot").textContent="Okreći";};
-  m.on("dragstart",stop); m.on("zoomstart",e=>{if(e.originalEvent) stop();}); m.on("pitchstart",e=>{if(e.originalEvent) stop();});
+  m.on("dragstart",stop); m.on("zoomstart",e=>{if(e.originalEvent) stop();}); m.on("pitchstart",e=>{if(e.originalEvent) stop();}); m.on("rotatestart",e=>{if(e.originalEvent) stop();});
+  // jumpTo (okretanje) poziva stop() i prekida korisnikov pokret, pa nagib i okret prstima ne bi radili: okretanje staje već na prvi dodir, klik ili kotačić
+  try{const cc=m.getCanvasContainer(); for(const ev of ["pointerdown","mousedown","touchstart","wheel","keydown"]) cc.addEventListener(ev,()=>{if(V3D.rot) stop();},{capture:true,passive:true});}catch(e){}
   m.on("error",e=>{const msg=e&&e.error&&e.error.message||""; if(/dem|terrarium|elevation/i.test(msg)) note.textContent="Model terena se nije učitao; prikaz je bez reljefa.";});
   // kamera: cijela čestica u kadru, pa nagib (s nagibom se kadar smanji, zato malo bliže)
-  try{const bb=turf.bbox(turf.buffer(D.parcel,0.004,{units:"kilometers"})); m.fitBounds([[bb[0],bb[1]],[bb[2],bb[3]]],{padding:30,duration:0,maxZoom:20}); m.setZoom(Math.min(20,m.getZoom()+0.4)); m.setPitch(62); m.setBearing(-20);}catch(e){}
+  try{const bb=turf.bbox(turf.buffer(D.parcel,V3D_OKVIR_M/1000,{units:"kilometers"})); m.fitBounds([[bb[0],bb[1]],[bb[2],bb[3]]],{padding:20,duration:0,maxZoom:V3D_MAXZ}); m.setZoom(Math.min(V3D_MAXZ,m.getZoom()+0.6)); m.setPitch(V3D_NAGIB); m.setBearing(-20);}catch(e){}
   let gotov=false; const fin=()=>{ if(gotov) return; gotov=true; note.textContent="Teren: model visina oko 30 m (grub, C). Kuća: pojednostavljeni model iz simulatora (visina do vijenca, krov sa strehom, prozori i ulaz prema cesti, sjena za sunce s jugozapada). Granice: katastar DGU. Satelitska snimka: Esri. Prikaz je ilustracija, ne projekt.";
     if(D.okolN) note.textContent+=" "+zg3dNapomena(D.okolN);
     try{V3D.snap.set(D.key,m.getCanvas().toDataURL("image/jpeg",0.86));}catch(e){} };

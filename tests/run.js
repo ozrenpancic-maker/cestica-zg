@@ -1709,7 +1709,7 @@ async function sazTests(){
    ok(g0.classList.contains("saz-info")&&/Namjena je potvrđena; uvjeti za konkretnu gradnju nisu potvrđeni/.test(g0.textContent),"Sažetak: potvrđena namjena bez zelene kvačice (uvjeti gradnje nisu potvrđeni)");}
   {const R=E("buildReport")(), secs=[...R.querySelectorAll(".rpt-h h2")].map(h=>h.textContent); ok(secs.includes("Uvjeti gradnje")&&secs.includes("Rizici i provjere")&&R.querySelector(".rpt-sec .rule-title"),"Izvještaj i dalje sadrži poglavlja (neovisno o izborniku)"); R.remove();}
   // 3D pogled: lažni MapLibre bilježi stil i kameru
-  {const made=[]; w.maplibregl={__test:true,Map:class{constructor(o){this.o=o; this.h={}; made.push(this);} addControl(){} on(e,f){this.h[e]=f} once(e,f){this.h["1"+e]=f} getBearing(){return 0} setBearing(){} getCanvas(){return {toDataURL:()=>"data:image/jpeg;base64,AAAA"}} remove(){} setLayoutProperty(l,k,v){this.lp=[l,k,v]}},
+  {const made=[]; w.maplibregl={__test:true,Map:class{constructor(o){this.o=o; this.h={}; made.push(this);} addControl(){} on(e,f){this.h[e]=f} once(e,f){this.h["1"+e]=f} getBearing(){return 0} setBearing(){} getCanvas(){return {toDataURL:()=>"data:image/jpeg;base64,AAAA"}} getCanvasContainer(){return this.cc||(this.cc=w.document.createElement("div"))} fitBounds(b,o){this.fb=o} getZoom(){return 21} setZoom(z){this.zz=z} setPitch(p){this.pp=p} remove(){} setLayoutProperty(l,k,v){this.lp=[l,k,v]}},
      NavigationControl:class{},Marker:class{constructor(o){this.o=o} setLngLat(){return this} addTo(){return this}}};
    const TL=E("TL"); TL.center=null; E("tDraw")(); await E("v3dOpen")(); const M=made[0], st=M&&M.o.style;
    ok(M&&!$(w,"v3d").hidden&&st.terrain&&st.terrain.source==="dem"&&st.sources.dem.encoding==="terrarium"&&st.sources.kat.tiles[0].includes("oss:BZP_CESTICE")&&st.sources.kat.tiles[0].includes("{bbox-epsg-3857}")&&st.layers.some(l=>l.type==="fill-extrusion")&&M.o.pitch>=55,"3D pogled: satelit, model terena, granice DGU i kuća kao 3D tijelo, nagnuta kamera");
@@ -1724,6 +1724,8 @@ async function sazTests(){
     ok(MK.filter(p=>p.k==="atika").length===4&&MK.some(p=>p.k==="pv")&&MK.filter(p=>p.k==="pv").every(p=>p.b>=6),"3D: ravni krov s atikom; solarni paneli na krovu kad je upisana površina panela");
     const M2=E("v3dModel")({c:TLx.center,w:12,d:9,rot:30,V:6,krov:"dvo",nagib:30,alongW:true,gar:{w:3.5,d:6,offX:7.75,offY:-1.5},etaza:{n:2,fh:3,pk:false},ulaz:"S",pv:{m2:15,az:"0"}}), P2=M2.kuca.features.map(f=>f.properties);
     ok(P2.some(p=>p.k==="garaza")&&P2.some(p=>p.k==="garazna-vrata")&&P2.filter(p=>p.k==="pv").length>=2&&P2.filter(p=>p.k==="pv").every(p=>p.b>6),"3D: garaža s vratima; paneli na kosini dvostrešnog krova");}
+   ok(M.fb&&M.fb.maxZoom===19&&M.zz===19&&M.pp>=55&&M.pp<=62,"3D pogled: čestica s okolicom u kadru, zum najviše 19 (satelit na Krku ima najviše razinu 18), nagib "+M.pp+"°");
+   ok(E("V3D").rot===true&&(M.cc.dispatchEvent(new w.Event("pointerdown")),E("V3D").rot===false),"3D pogled: automatsko okretanje staje na prvi dodir, da nagib i okret prstima ili mišem rade (okretanje inače prekida svaki pokret)");
    M.fitBounds=()=>{}; M.setZoom=()=>{}; M.getZoom=()=>18; M.setPitch=()=>{}; M.h["1idle"](); ok(E("V3D").snap.size===1,"3D pogled: nakon iscrtavanja sprema se slika za izvještaj");
    const R=E("buildReport")(); ok(R.querySelector(".rpt-3d img")&&/3D pogled/.test(R.textContent),"Izvještaj: slika 3D pogleda u poglavlju „Kuća na čestici”"); R.remove();
    $(w,"v3dClose").dispatchEvent(new w.Event("click",{bubbles:true})); ok($(w,"v3d").hidden,"3D pogled se zatvara");}
