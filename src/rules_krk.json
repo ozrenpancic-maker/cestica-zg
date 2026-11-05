@@ -3229,6 +3229,128 @@
       "napomene": [
         "Stambene građevine do 4 jedinice (čl. 28.) i višestambene nisu obrađene."
       ]
+    },
+    "CRIKVENICA": {
+      "kod": "PPUG Crikvenica",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Grada Crikvenice, odredbe za provođenje (pročišćeni tekst nakon IX. izmjena i dopuna, SN PGŽ 214/2024)",
+        "sn": "Službene novine PGŽ 2024 (IX. izmjene i dopune, pročišćeni tekst)",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1804",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1804/ppug-crikvenice-pt.pdf",
+        "status": "na snazi (pročišćeni tekst 2024.)",
+        "provjera": "Čl. 16., 19., 27.–31. i 127. iz pročišćenog teksta (PDF Zavoda za prostorno uređenje PGŽ, tekst izvučen strojno), preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Pročišćeni tekst Zavoda; usporedba s glasilom nije napravljena."
+        }
+      },
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ],
+        [
+          "ugr",
+          "u nizu (samo interpolacija)"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "16.",
+        "txt": "Unutar građevinskih područja za koja nije propisana obveza donošenja prostornog plana užeg područja gradi se neposrednom provedbom ovog Plana.",
+        "msg": "Neizgrađeni dio: neposredno se gradi samo ondje gdje nije propisana obveza plana užeg područja (čl. 16.). Provjeri u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "U Kotoru (NA19) potpuna zaštita i uvjeti konzervatora (čl. 19.); u izgrađenom dijelu Selca (NA4) uz regulacijski pravac kig do 0,8 i kis do 3,2 (čl. 29.)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća",
+          "opis": "najviše dva stana (čl. 27.)",
+          "clanak": "27.–31.",
+          "gbpMax": null,
+          "etaze": "Podaci nisu dostupni (broj etaža nije propisan u čl. 29.–31.)",
+          "visina": 7.0,
+          "visinaOpis": "7,0 m (ukupna visina 10 m)",
+          "slob": {
+            "minC": 400,
+            "izg": 0.3,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 80,
+            "tlMax": null,
+            "napomena": "Iznimno 360 m² za postojeće katastarske čestice u izgrađenom dijelu (čl. 29.)."
+          },
+          "dvoj": {
+            "minC": 400,
+            "izg": 0.3,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 60,
+            "tlMax": null
+          },
+          "ugr": {
+            "minC": 400,
+            "izg": 0.3,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 80,
+            "tlMax": null,
+            "napomena": "Samo dovršetak niza ili interpolacija između dvije postojeće građevine na granicama čestica, prema uvjetima za samostojeće kuće (čl. 31.)."
+          },
+          "txt": {
+            "minC": "Najmanja dopuštena površina građevne čestice iznosi 400 m2",
+            "izg": "Najveći dopušteni koeficijent izgrađenosti (kig) građevne čestice iznosi 0,3",
+            "kis": "Najveći dopušteni koeficijent iskoristivosti građevne čestice (kis) iznosi 1,2",
+            "tl": "Najmanja dopuštena površina tlocrtne projekcije obiteljske kuće iznosi 80 m",
+            "visina": "Najveća dopuštena visina obiteljske kuće iznosi 7,0 m, dok ukupna visina iznosi 10 m",
+            "dvoj": "Najmanja dopuštena površina građevne čestice (jednog dijela dvojne građevine) iznosi 400 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "29.",
+        "min": 4,
+        "minBezOtvora": 3,
+        "opis": "h/2, najmanje 4 m (bez otvora 3 m)",
+        "opisIznimka": "",
+        "txt": "ne manje od 4,0 m od granice građevne čestice, ukoliko građevina ima otvore, prohodne terase i otvorena stubišta"
+      },
+      "regulacija": {
+        "clanak": "127.",
+        "opis": "najmanje 5 m od nerazvrstane ceste, 6 m od razvrstane",
+        "txt": "Udaljenost građevine od regulacijskog pravca za nerazvrstane ceste ne može biti manja od 5 m.",
+        "ostale": 5,
+        "razvrstane": 6
+      },
+      "zelenilo": {
+        "clanak": "29.",
+        "min": 0.2,
+        "txt": "Najmanje 20% građevne čestice mora se urediti visokim i niskim zelenilom"
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "29.",
+          "nagibMin": 17,
+          "nagibMax": 23,
+          "ravniDopusten": true
+        }
+      },
+      "pristup": {
+        "napomena": "Prometnica najmanje 5,5 m (jednosmjerna 4,5 m) ili pristupni put najmanje 3 m, najviše 70 m, za najviše dvije stambene građevine (čl. 127.)."
+      },
+      "napomene": [
+        "Višestambene i stambeno-poslovne građevine (čl. 32. i dalje) nisu obrađene."
+      ]
     }
   },
   "oblici": [

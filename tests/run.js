@@ -1286,7 +1286,7 @@ async function krkTests(){
   // točka unutar obuhvata, ali u drugoj jedinici (kopno)
   mode="crikvenica"; E("NET").cache.clear(); w.localStorage.clear();
   await E("inspect")(w.L.latLng(45.17,14.69)); await tick(50);
-  ok(/Primorsko-goranska županija · Crikvenica/.test(txt(w,"sheet"))&&/Uvjeti gradnje za Crikvenica još nisu obrađeni/.test(txt(w,"sheet")),"točka na kopnu (Crikvenica): županijska analiza uz jasno da uvjeti gradnje nisu obrađeni");
+  ok(/Primorsko-goranska županija · Crikvenica/.test(txt(w,"sheet"))&&/PPUG Crikvenica/.test(txt(w,"sheet"))&&!/Uvjeti gradnje za Crikvenica još nisu obrađeni/.test(txt(w,"sheet")),"točka na kopnu (Crikvenica): županijska analiza i uvjeti iz PPUG-a Crikvenice");
   // jedinica bez obrađenih pravila (nepoznata oznaka jedinice): bez uvjeta gradnje iz PPUG-a Krka
   mode="ok"; gp.OPCINA_GRAD="NEPOZNATA"; ag.OPCINA_GRAD="NEPOZNATA"; gp.IZGRADJENOST="izgrađeno"; E("NET").cache.clear(); w.localStorage.clear();
   await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50);
@@ -1352,6 +1352,10 @@ async function krkTests(){
   Object.assign(gp,{OPCINA_GRAD:"NOVI VINODOLSKI",OZNAKA_NAMJENE:"NA16",NASELJE:"Povile",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
   tm=await reinspect(); M=w.__krkCalc;
   ok(M&&M.plan==="PPUG Novi Vinodolski"&&M.minOk&&Math.abs(M.tl-0.3*M.A)<0.6&&Math.abs(M.gbpN-1.5*M.A)<1.5&&/11,5 m/.test(tm)&&/D8/.test(tm),"Novi Vinodolski samostojeća 600 m²: kig 0,3, kis 1,5, visina 11,5 m, upozorenje o cesti D8 (SN 18/2025)");
+  // Crikvenica: PPUG (pročišćeni tekst 2024.), čl. 27.–31., 127.
+  Object.assign(gp,{OPCINA_GRAD:"CRIKVENICA",OZNAKA_NAMJENE:"NA31",NASELJE:"Dramalj",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
+  tm=await reinspect(); M=w.__krkCalc;
+  ok(M&&M.plan==="PPUG Crikvenica"&&M.minOk&&Math.abs(M.tl-0.3*M.A)<0.6&&Math.abs(M.gbpN-1.2*M.A)<1.5&&/7,0 m/.test(tm)&&/5 m od nerazvrstane/.test(tm),"Crikvenica samostojeća 600 m²: kig 0,3, kis 1,2, visina 7 m, 5 m od ceste (pročišćeni tekst 2024.)");
   // UPU 1 Vrbnik (pročišćeni tekst 2019. + izmjene SN 34/2024), čl. 83.
   plans.push({GRAD_OPCINA:"Vrbnik",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Urbanistički plan uređenja UPU 1 Vrbnik – NA 1 Odredbe za provedbu (pročišćeni tekst)",SN_BROJ:"2024-46"});
   Object.assign(gp,{OPCINA_GRAD:"VRBNIK",OZNAKA_NAMJENE:"NA1",NASELJE:"Vrbnik",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
@@ -2232,7 +2236,7 @@ async function formulaTests(){
   // Plan Integrity v10: novo polje »citati« (doslovni navodi iz objave) ne mijenja postojeće brojke ni tekstove; ne ulazi u sažetak,
   // a njegovu doslovnost provjerava zaseban test (»PI v10 navodi«) prema tekstu SN PGŽ 19/2016
   // Sljedeća faza: »legenda« (boje polja legende karte 4 za pilot prijedloga zone) i »provjereno« (stručno provjereni obuhvati) nisu pravila; ne ulaze u sažetak
-  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik"&&k!=="OPATIJA"&&k!=="RAB"&&k!=="NOVI VINODOLSKI").map(([k,v])=>[k,bezPP(v)])):o;
+  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik"&&k!=="OPATIJA"&&k!=="RAB"&&k!=="NOVI VINODOLSKI"&&k!=="CRIKVENICA").map(([k,v])=>[k,bezPP(v)])):o;
   const sha=crypto.createHash("sha256").update(JSON.stringify(bezPP(JSON.parse(fs.readFileSync(path.join(__dirname,"..","src","rules_krk.json"),"utf8"))))).digest("hex");
   ok(sha==="de538e7ddc17cdc11746acbca3217b77569881a269c740457be9e5bc7a615f82","Pravila: src/rules_krk.json bez oznaka pravne provjere nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
   // nova i izmijenjena pravila (Omišalj, Dobrinj, Vrbnik 2024.): izvan sažetka; svaka brojka mora biti u svom doslovnom navodu
