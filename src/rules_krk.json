@@ -3006,6 +3006,127 @@
         "Kis se odnosi na nadzemni dio građevine (kisn).",
         "Višestambene građevine samo unutar UPU-ova Opatije, Ičića i Ike-Oprića (čl. 29.)."
       ]
+    },
+    "RAB": {
+      "kod": "PPUG Rab",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Grada Raba, odredbe za provedbu (pročišćeni tekst, SN PGŽ 15/2025)",
+        "sn": "Službene novine PGŽ 55/2024 (izmjene i dopune) i 15/2025 (pročišćeni tekst)",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1811",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1811/ppug-raba-pt.pdf",
+        "status": "na snazi (pročišćeni tekst SN 15/2025)",
+        "provjera": "Čl. 18.–23. iz pročišćenog teksta (PDF Zavoda za prostorno uređenje PGŽ, tekst izvučen strojno), preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Pročišćeni tekst Zavoda; usporedba s glasilom nije napravljena."
+        }
+      },
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna (poluotvorena)"
+        ],
+        [
+          "ugr",
+          "jedinica niza"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "18.",
+        "txt": "Neposredna provedba Plana moguća je i u izgrađenim dijelovima naselja za koja je potrebna izrada plana užeg područja, ako Odlukom o izradi Plana užeg područja nije drugačije određeno.",
+        "msg": "Neizgrađeni dio: neposredna provedba dopuštena je u cijelim građevinskim područjima naselja navedenim u čl. 18. st. 1. (dijelovi Barbata, Banjola, Palita-Mundanija, Kampora i Supetarske Drage), a drugdje samo u izgrađenom dijelu. Provjeri oznaku GP-a u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "građevinska područja naselja Grada Raba",
+          "napomena": "Neposredna provedba u cijelom GP-u samo za područja iz čl. 18. st. 1.; ostala naselja u neizgrađenom dijelu prema planu užeg područja."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Stambena građevina",
+          "opis": "slobodnostojeća do 3 stana, GBP manji od 400 m² (čl. 19., 21.)",
+          "clanak": "19.–23.",
+          "gbpMax": 400,
+          "etaze": "3 nadzemne etaže i podrum (niz: 2 i podrum)",
+          "visina": 9,
+          "visinaOpis": "9,0 m (ukupna 13,0 m); niz 6 m",
+          "slob": {
+            "minC": 500,
+            "izg": 0.3,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 64,
+            "tlMax": 200
+          },
+          "dvoj": {
+            "minC": 400,
+            "izg": 0.4,
+            "kis": 1.6,
+            "kisPodrum": 1.6,
+            "tlMin": 64,
+            "tlMax": 120
+          },
+          "ugr": {
+            "minC": 200,
+            "izg": 0.45,
+            "kis": 1.35,
+            "kisPodrum": 1.35,
+            "tlMin": 64,
+            "tlMax": 100,
+            "napomena": "Jedinica niza: najviše 2 nadzemne etaže, visina 6 m, 5 m od međe (čl. 23.)."
+          },
+          "txt": {
+            "minC": "površina građevinske čestice ne može biti manja od 500 m 2 , uz uvjet da širina građevinske čestice, mjerena na mjestu građevinskog pravca građevine, ne može biti manja od 16 m",
+            "izg": "najveći dopušteni koeficijent izgrađenosti iznosi 0,3",
+            "kis": "najveći dopušteni koeficijent iskorištenosti jest 1,2 + neaktivno potkrovlje",
+            "tl": "najmanja tlocrtna projekcija nove stambene građevine iznosi 64 m 2 , • najveća dopuštena tlocrtna površina iznosi 200 m 2",
+            "etaze": "najveći broj etaža građevine je 3 nadzemne etaže i podrum",
+            "visina": "visina građevine (h), iznosi 9,0 m (ukupna visna 13,0 m)",
+            "gbp": "slobodnostojeće stambene građevine bruto izgrađene površine manje od 400 m 2",
+            "dvoj": "površina građevinske čestice ne može biti manja od 400 m 2 , uz uvjet da širina građevinske čestice, mjerena na mjestu građevinskog pravca građevine, ne može biti manja od 14 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "21.–23.",
+        "min": 3,
+        "opis": "h/2, najmanje 3 m od međe i 6 m od susjedne građevine (niz: 5 m)",
+        "opisIznimka": "Iznimno manje u izgrađenim dijelovima naselja prema planu užeg područja.",
+        "txt": "građevine moraju biti udaljene najmanje pola visine (h/ 2) ali ne manje od 6 m od susjedne građevine osnovne namjene i ne manje od 3 m od granice susjedne građevinske čestice"
+      },
+      "regulacija": {
+        "clanak": "—",
+        "opis": "Podaci nisu dostupni (udaljenost stambene građevine od regulacijskog pravca nije pronađena u čl. 18.–23.)",
+        "txt": ""
+      },
+      "zelenilo": {
+        "clanak": "20.",
+        "min": 0.2,
+        "txt": "Najmanje 20% građevne čestice mora se urediti visokim i niskim zelenilom"
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "20.",
+          "nagibMin": 18,
+          "nagibMax": 22,
+          "ravniDopusten": true
+        }
+      },
+      "pristup": {
+        "napomena": "Pristup kolnom prometnicom; iznimno u izgrađenim dijelovima pristupni put najmanje 3,0 m širine i do 50 m dužine (čl. 20.)."
+      },
+      "napomene": [
+        "Kis vrijedi uz neaktivno potkrovlje (čl. 21.–23.).",
+        "U izgrađenim dijelovima naselja uz gradnju na regulacijskoj liniji kig do 0,5."
+      ]
     }
   },
   "oblici": [

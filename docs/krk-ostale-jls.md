@@ -122,5 +122,7 @@ Redoslijed prema Ozrenovu izboru (5. 11. 2026.): najprije obala i otoci, pa zale
 | Jedinica | Stanje |
 |---|---|
 | Opatija | Obrađeno uz upozorenje: PPUG, pročišćeni tekst SN 8/2016 + III. izmjene SN 10/2021, čl. 20., 23., 24. i 125. Samo samostojeća kuća (nove dvojne samo kroz UPU, ugrađene samo rekonstrukcija); čestica 600 m², kig 0,3, kis nadzemni 0,9, visina 9 m (ukupna 11 m), od međa 4 m, od ceste 6 m, zelenilo 50 %. Oznake točaka čl. 24. u odluci iz 2021. ne podudaraju se s pročišćenim tekstom. |
-| Lovran, Mošćenička Draga, Kostrena, Bakar, Kraljevica, Crikvenica, Novi Vinodolski, Rab, Lopar, Cres, Mali Lošinj | sljedeće |
+| Rab | Obrađeno uz upozorenje: PPUG, pročišćeni tekst SN 15/2025 (PDF Zavoda), čl. 18.–23.: samostojeća 500 m² (širina 16 m), kig 0,3, kis 1,2, tlocrt 64–200 m², GBP manji od 400 m²; dvojna 400 m², kig 0,4, do 120 m²; niz 200 m², kig 0,45, do 100 m²; visina 9 m (niz 6 m); h/2, najmanje 3 m od međe; zelenilo 20 %. Udaljenost od ceste nije pronađena. |
+| Lovran | U radu: osnovni tekst (2009., 2011.) + II. izmjene 2020. (Zavod, id 1431); neposredna gradnja uglavnom samo interpolacija i rekonstrukcija (čl. 14. i 18.a). |
+| Mošćenička Draga, Kostrena, Bakar, Kraljevica, Crikvenica, Novi Vinodolski, Lopar, Cres, Mali Lošinj | sljedeće (popis tekstova u `docs/pgz-registar-zzpu.md`) |
 | Rijeka (GUP), Matulji, Kastav, Viškovo, Čavle, Jelenje, Klana, Vinodolska općina, Gorski kotar | poslije |
