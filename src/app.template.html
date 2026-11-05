@@ -8548,13 +8548,30 @@ setTimeout(async()=>{
 // --- pretraga po broju katastarske čestice (npr. "Šestine 4027/1" ili "kč 123 Sesvete")
 const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/gi,"d").toUpperCase().replace(/[^A-Z0-9 ]/g," ").replace(/\s+/g," ").trim();
 function parcelQuery(q){
-  const isParcel=/\d+\/\d+/.test(q)||/^\s*(k\.?\s*č\.?|kc|kč|čest|cest)/i.test(q)||/k\.\s*o\./i.test(q);
+  const isParcel=/\d+\/\d+/.test(q)||/^\s*(k\.?\s*č\.?|kc|kč|čest|cest)/i.test(q)||/k\.\s*o\./i.test(q)||/\*\s*\d/.test(q);
   if(!isParcel) return null;
-  const m=q.match(/(\d+(?:\/\d+)?)/); if(!m) return null;
+  const m=q.match(/(\*?\s*\d+(?:\/\d+)?)/); if(!m) return null;
   const ko=q.replace(m[0]," ").replace(/k\.?\s*č\.?|\bkc\b|\bkč\b|čestica|cestica|k\.\s*o\.|\bko\b/gi," ").trim();
-  return {kc:m[1],ko};
+  return {kc:m[1].replace(/\s+/g,""),ko};
 }
+// --- Krk: čestica po broju i k.o. iz indeksa brojeva (data/kat_krk/brojevi/<k.o.>.json, tools/katastar/indeks_brojeva.py)
+async function krkKoTrazi(ko){ if(!ko) return []; let I; try{I=await katIndex()}catch(e){return []}
+  const k=norm(ko), all=Object.entries(I.ko||{}).map(([mb,v])=>({mb,naziv:v.naziv}));
+  const tocno=all.filter(x=>norm(x.naziv)===k); if(tocno.length) return tocno;
+  return all.filter(x=>norm(x.naziv).split(" ").includes(k)||norm(x.naziv).startsWith(k+" ")||(k.length>=4&&norm(x.naziv).includes(k)));}
+async function searchParcelKrk(pq,kos){
+  sheet.innerHTML='<p class="hint"><span class="spin"></span>Tražim česticu '+esc(pq.kc)+' (k.o. '+esc(kos.map(x=>x.naziv).join(", "))+')…</p>';
+  const brojevi=pq.kc.startsWith("*")?[pq.kc]:[pq.kc,"*"+pq.kc], hits=[];
+  for(const K of kos){let X; try{X=await skiFetch(KAT.base+"brojevi/"+K.mb+".json",20000)}catch(e){continue}
+    for(const b of brojevi){const ix=X&&X.c&&X.c[b]; if(!ix) continue; const seen=new Set();
+      for(const i of ix){const arr=await katTile(X.kv[i]); for(const [id,broj,ko,pov,P] of arr) if(broj===b&&ko===K.mb&&!seen.has(id)){seen.add(id); hits.push({type:"Feature",geometry:katGeom(P),properties:{broj,ko:K.naziv,pov}});}}}}
+  if(!hits.length){sheet.innerHTML=`<p class="err">Čestica ${esc(pq.kc)} nije nađena u k.o. ${esc(kos.map(x=>x.naziv).join(", "))} (katastarski plan DGU, stanje ${esc((KAT.idx&&KAT.idx.preuzeto)||"")}). Provjeri broj i katastarsku općinu.</p>`; return;}
+  if(hits.length>1){window.__choices=hits;
+    sheet.innerHTML=`<p class="eyebrow">Pronađeno više čestica</p><div class="choices">${hits.map((x,i)=>`<button type="button" class="ib" data-pick="${i}">${esc(x.properties.broj)} · k.o. ${esc(x.properties.ko)}${x.properties.pov?" · "+fmt(x.properties.pov)+" m²":""}</button>`).join("")}</div>`; return;}
+  goToFeature(hits[0]);}
 async function searchParcel(pq){
+  {const kos=await krkKoTrazi(pq.ko); if(kos.length) return searchParcelKrk(pq,kos);}
+  if(pq.kc.startsWith("*")) pq={...pq,kc:pq.kc.slice(1)};
   sheet.innerHTML='<p class="hint"><span class="spin"></span>Tražim česticu '+esc(pq.kc)+'…</p>';
   const p=new URLSearchParams({where:"KATASTARSKA_CESTICA='"+pq.kc.replace(/'/g,"")+"'",outFields:"KATASTARSKA_OPCINA,KATASTARSKA_CESTICA",returnGeometry:"true",outSR:"4326",f:"geojson",resultRecordCount:"200"});
   const g=await getJSON(SRC.cestice+"?"+p.toString());

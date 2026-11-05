@@ -970,6 +970,7 @@ async function krkTests(){
       for(let i=1;i<W.length;i++) enc.push(W[i][0]-W[i-1][0],W[i][1]-W[i-1][1]);
       const key=Math.floor(ll.lat/0.009)+"_"+Math.floor(ll.lng/0.013);
       if(u.endsWith("index.json")) return okj({v:1,podrucje:"krk",preuzeto:"2026-10-19",dlat:0.009,dlon:0.013,prednost:["338427"],ko:{"315907":{naziv:"KORNIĆ"},"338427":{naziv:"OMIŠALJ-NJIVICE"}},kvadrati:[key]});
+      if(u.endsWith("brojevi/315907.json")) return okj({v:1,ko:"315907",kv:[key],c:{"2345/6":[0],"9/9":[0]}});
       if(u.endsWith(key+".json")) return okj([[1,"2345/6","315907",600,[[enc]]],[2,"9/9","315907",50,[[[W[0][0]+5000,W[0][1]+5000,100,0,0,100,-100,0]]]]]);
       return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null)}); }
     if(u.includes("NAMJENA_POVRSINA_NOVO")){ const poly=/esriGeometryPolygon/.test(o.body||"");
@@ -1359,6 +1360,12 @@ async function krkTests(){
    const T=U.tipovi.obit, chk=[["slob","minC",T.slob.minC],["slob","izg",T.slob.izg],["slob","kis",T.slob.kis],["slob","kisNeizgr",T.slob.kisNeizgr],["slob","tl",T.slob.tlMax],["slob","tlVelika",T.slob.tlVelika.tl],["dvoj","minC",T.dvoj.minC],["dvoj","izg",T.dvoj.izg],["dvoj","kis",T.dvoj.kis],["dvoj","tl",T.dvoj.tlMax],["ugr","minC",T.ugr.minC],["ugr","izg",T.ugr.izg],["ugr","kis",T.ugr.kis],["slob","visina","9,0"],["slob","visinaNeizgr","7,00"]];
    ok(all.length>=25&&!bad.length&&chk.every(([g,k,v])=>nb(g,k,v)),"UPU 3 Punat: "+all.length+" navoda jednako je bazi s citatima (izvor i provjera izvora), a svaka brojka izračuna je u svom navodu"+(bad.length?": "+bad.map(b=>b[0]+"."+b[1]).join(","):"")+chk.filter(([g,k,v])=>!nb(g,k,v)).map(c=>" ✗"+c.join(".")).join(""));}
   Object.assign(gp,{OPCINA_GRAD:"KRK",OZNAKA_NAMJENE:"GPN-1",NASELJE:"Kornić",IZGRADJENOST:"izgrađeno"}); ag.OPCINA_GRAD="KRK"; mode="ok";
+  // pretraga po broju čestice i k.o. na Krku (indeks brojeva)
+  {const pq=E("parcelQuery")("Kornić 2345/6"); ok(pq&&pq.kc==="2345/6"&&pq.ko==="Kornić"&&E("parcelQuery")("Punat 4381/3").ko==="Punat"&&E("parcelQuery")("Kornić *171").kc==="*171","Pretraga Krk: »Kornić 2345/6«, »Punat 4381/3« i »Kornić *171« prepoznaju se kao broj čestice i k.o.");
+   w.document.getElementById("q").value="Kornić 2345/6"; await E("search")(); await tick(80);
+   ok(E("window.__cur")&&E("window.__cur").ces==="2345/6"&&/KORNI/.test(E("window.__cur").ko||txt(w,"sheet")),"Pretraga Krk: »Kornić 2345/6« otvara česticu iz katastra DGU (indeks brojeva k.o. Kornić)");
+   w.document.getElementById("q").value="Kornić 7777/7"; await E("search")(); await tick(30);
+   ok(/nije nađena u k\.o\. KORNIĆ/.test(txt(w,"sheet")),"Pretraga Krk: nepostojeći broj javlja da čestica nije nađena u k.o. Kornić");}
   // pretraga adrese: naselje na Krku traži se u obuhvatu otoka
   let nomi=null; w.fetch=(u)=>{u=String(u); if(u.includes("nominatim")){nomi=new URL(u); return okj([])} return Promise.reject(new Error("x"))};
   w.document.getElementById("q").value="Kornić 12"; await E("search")(); 
@@ -2490,6 +2497,19 @@ async function piTests(){
   ok(errs.length===0,"bez JS grešaka (Plan Integrity): "+errs.join(" | "));
 }
 
+// pretraga po broju čestice na Krku sa stvarnim indeksom i kvadratom katastra (data/kat_krk), bez mreže
+async function krkBrojTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), D=path.join(__dirname,"..","data","kat_krk");
+  w.fetch=u=>{u=String(u); const m=u.match(/data\/kat_krk\/(.+\.json)$/); if(!m) return Promise.reject(new Error("bez mreže"));
+    const f=path.join(D,m[1]); return fs.existsSync(f)?Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(f,"utf8")))}):Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null)});};
+  let got=null; w.goToFeature=f=>{got=f;}; E("goToFeature=f=>{window.__got=f}");
+  const kos=await E("krkKoTrazi")("Punat"); await E("searchParcelKrk")(E("parcelQuery")("Punat 4381/3"),kos); got=E("window.__got");
+  let c=null; try{c=w.turf.pointOnFeature(got).geometry.coordinates}catch(e){}
+  ok(kos.length===1&&kos[0].mb==="315974"&&got&&got.properties.broj==="4381/3"&&got.properties.ko==="PUNAT"&&c&&c[0]>14.6&&c[0]<14.7&&c[1]>44.95&&c[1]<45.05,"Pretraga Krk (stvarni podaci): »Punat 4381/3« nalazi česticu u k.o. Punat (DGU DKP) na području Punta");
+  const om=await E("krkKoTrazi")("Omišalj"); ok(om.length===1&&om[0].naziv==="OMIŠALJ"&&(await E("krkKoTrazi")("Njivice")).some(x=>x.naziv==="OMIŠALJ-NJIVICE")&&!(await E("krkKoTrazi")("Ilica")).length,"Pretraga Krk: k.o. se prepoznaje po nazivu (Omišalj, Njivice); ulica u Zagrebu nije k.o. na Krku");
+  ok(errs.length===0,"bez JS grešaka (pretraga po broju na Krku): "+errs.join(" | "));
+}
+
 // Sljedeća faza, FAZA 3–4: pilot prijedloga detaljne zone iz rastera (čiste funkcije na sintetičkim slikama, sučelje, izvor nedostupan)
 async function uzTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x), tick=(ms=30)=>new Promise(r=>setTimeout(r,ms));
@@ -2748,7 +2768,7 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(piTests).then(uzTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
+netTests().then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
