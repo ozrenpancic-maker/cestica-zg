@@ -3945,6 +3945,149 @@
         "Ravni krov samo izvan povijesnih graditeljskih cjelina (čl. 28.).",
         "Višestambene građevine (Bakar NA1, Plase) nisu obrađene."
       ]
+    },
+    "KASTAV": {
+      "kod": "PPUG Kastav",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Grada Kastva, pročišćeni tekst nakon V. izmjena i dopuna (Službene novine Grada Kastva 3/2026)",
+        "sn": "Službene novine Grada Kastva 3/2026 (pročišćeni tekst)",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1847",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1847/ppug-kastva-pt.pdf",
+        "status": "na snazi (pročišćeni tekst ožujak 2026.)",
+        "provjera": "Čl. 23.–30. iz pročišćenog teksta (PDF Zavoda, tekst izvučen strojno), preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Pročišćeni tekst; usporedba s odlukama o izmjenama nije napravljena."
+        }
+      },
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ],
+        [
+          "ugr",
+          "u nizu"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "23.",
+        "txt": "Neposredna provedba na temelju ovoga Plana odnosi se na gradnju, interpolacije i rekonstrukcije u izgrađenom i uređenom dijelu neizgrađenog građevinskog područja.",
+        "msg": "Neizgrađeni dio: neposredno samo u uređenom dijelu; u neuređenom se do donošenja UPU-a ne izdaju akti za nove građevine (čl. 23.). Provjeri u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "građevinsko područje naselja Kastav",
+          "napomena": "Uvjeti vrijede za zone N1-a do N1-7c; kuće u nizu samo u N1-a i N1-3; u zoni N1-c višeobiteljska kuća najviše 6,5 m i kis 0,9 (čl. 27.–30.)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća",
+          "opis": "jedna stambena jedinica (čl. 25.)",
+          "clanak": "27., 29. i 30.",
+          "gbpMax": 400,
+          "etaze": "podrum i dvije nadzemne etaže",
+          "visina": 6.5,
+          "visinaOpis": "6,5 m",
+          "slob": {
+            "minC": 600,
+            "izg": 0.3,
+            "kis": 0.9,
+            "kisPodrum": 0.9,
+            "tlMin": 80,
+            "tlMax": null
+          },
+          "dvoj": {
+            "minC": 500,
+            "izg": 0.4,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 65,
+            "tlMax": null
+          },
+          "ugr": {
+            "minC": 250,
+            "izg": 0.5,
+            "kis": 1.0,
+            "kisPodrum": 1.0,
+            "tlMin": 60,
+            "tlMax": null,
+            "napomena": "Kuća u nizu: GBP najviše 250 m² (čl. 30.); aplikacija primjenjuje opću granicu 400 m², pa provjeri ručno."
+          },
+          "txt": {
+            "minC": "najmanja površina građevne čestice iznosi 600,0 m",
+            "izg": "najveći koeficijent izgrađenosti građevne čestice kig iznosi 0,3,",
+            "kis": "najveći koeficijent iskorištenosti građevne čestice kis iznosi 0,9,",
+            "visina": "najviša visina građevine iznosi 6,5 m,",
+            "etaze": "najveći broj etaža: podrum i dvije nadzemne,",
+            "gbp": "najveća građevinska bruto površina slobodnostojeće stambene građevine iznosi 400 m",
+            "tl": "najmanja bruto tlocrtna površina osnovne građevine iznosi 80,0 m"
+          }
+        },
+        "visobit": {
+          "naziv": "Višeobiteljska kuća",
+          "opis": "do 3 stambene jedinice ili 2 i poslovni prostor (čl. 25.)",
+          "clanak": "28.",
+          "gbpMax": 600,
+          "etaze": "podrum i 3 nadzemne etaže (N1-c: podrum i 2)",
+          "visina": 9.5,
+          "visinaOpis": "9,5 m (u zoni N1-c 6,5 m)",
+          "slob": {
+            "minC": 800,
+            "izg": 0.3,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 80,
+            "tlMax": null,
+            "napomena": "U zoni N1-c kis 0,9 (čl. 28.)."
+          },
+          "txt": {
+            "minC": "najmanja površina građevne čestice iznosi 800,0 m",
+            "kis": "najveći koeficijent iskorištenosti građevne čestice kis iznosi 1,2, (0,9 za N1-c)",
+            "visina": "najviša visina građevine iznosi 9,5 m, (6,5m za N1-c)"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "27.",
+        "min": 4,
+        "opis": "4 m od ruba čestice, 6 m od susjednih građevina",
+        "opisIznimka": "",
+        "txt": "Građevina mora biti udaljena 4,0 m od ruba građevne čestice, a najmanje 6,0 m, mjereno od"
+      },
+      "regulacija": {
+        "clanak": "27.",
+        "ostale": 6,
+        "opis": "najmanje 6 m od regulacijskog pravca",
+        "txt": "nalazi uz prometnicu ili javnu površinu iznosi 6,0 m."
+      },
+      "zelenilo": {
+        "clanak": "27.",
+        "min": 0.3,
+        "txt": "najmanje 30% ukupne površine građevne čestice mora biti uređena površina zelenila"
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "27.",
+          "nagibMin": 0,
+          "nagibMax": 23,
+          "ravniDopusten": true
+        }
+      },
+      "pristup": {
+        "napomena": "Svaka čestica mora imati priključak na javnu prometnu površinu (čl. 27.)."
+      },
+      "napomene": [
+        "Višestambene građevine samo u zoni N1-VS (čl. 31.) nisu obrađene."
+      ]
     }
   },
   "oblici": [
