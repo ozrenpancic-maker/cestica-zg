@@ -1042,7 +1042,7 @@ function piLanacHtml(){return "";}
 function krkSazKontekst(){return window.__krkKont||"";}
 // strukturirani izvještaj o integritetu (JSON): pokazatelji, pravila, izvori, usklađenost, status, blokade, otvoreni uvjeti.
 // Bez osobnih podataka: nema vlasnika, ZK tereta, bilješki, financija ni korisničkih unosa izvan odabira za izračun.
-const PI_ULAZI=/^(pravilo|pravilo-karta|zona|zona-korisnik|zast-korisnik|namjena|namjena-udio|izgradenost|plan-|upu-|pov-graf|pov-kat|pov-zk)/;
+const PI_ULAZI=/^(pravilo|pravilo-karta|zona|zona-korisnik|zast-korisnik|dio-gp|namjena|namjena-udio|izgradenost|plan-|upu-|pov-graf|pov-kat|pov-zk)/;
 function piReport(){
   const L=pzList(), cur=window.__cur||{};
   const ind=L.filter(x=>/^(calc-|blok-)/.test(x.id)).map(x=>{const o=piObjava(x)||{razina:null,zasto:["pokazatelj nema dokaznog lanca"]}, lan=x.lanac||[];
@@ -1200,6 +1200,15 @@ const KRK_TIP={tip:"obit",oblik:"slob"};
 function krkZonaKey(){return window.__cur&&window.__cur.key?"krkZona:"+window.__cur.key:null}
 function krkZonaGet(){const k=krkZonaKey(); try{return k?localStorage.getItem(k)||"":""}catch(e){return ""}}
 function krkZonaSet(v){const k=krkZonaKey(); try{if(k){if(v) localStorage.setItem(k,v); else localStorage.removeItem(k)}}catch(e){}}
+// dio građevinskog područja (izgrađeni / neizgrađeni) za UPU-ove kod kojih o tome ovise uvjeti (npr. UPU 3 Punat), posebno za svaku česticu
+function krkDioKey(){return window.__cur&&window.__cur.key?"krkDio:"+window.__cur.key:null}
+function krkDioGet(){const k=krkDioKey(); try{return k?localStorage.getItem(k)||"":""}catch(e){return ""}}
+function krkDioSet(v){const k=krkDioKey(); try{if(k){if(v) localStorage.setItem(k,v); else localStorage.removeItem(k)}}catch(e){}}
+// vrijednosti za neizgrađeni dio (kisNeizgr, visinaNeizgr i odgovarajući navodi) zamjenjuju one za izgrađeni dio
+function krkDioPrimijeni(RS,dio){if(dio!=="neizgradeni") return RS; const X=JSON.parse(JSON.stringify(RS));
+  for(const T of Object.values(X.tipovi||{})){if(T.visinaNeizgr!=null) T.visina=T.visinaNeizgr; for(const o of ["slob","dvoj","ugr"]) if(T[o]&&T[o].kisNeizgr!=null) T[o].kis=T[o].kisNeizgr;}
+  for(const g of Object.values(X.citati||{})) if(g&&typeof g==="object"){if(g.kisNeizgr) g.kis=g.kisNeizgr; if(g.visinaNeizgr) g.visina=g.visinaNeizgr;}
+  return X;}
 // zona zaštite baštine (npr. karta 3A UPU-a 2) koju je korisnik odabrao, također posebno za svaku česticu
 function krkZastKey(){return window.__cur&&window.__cur.key?"krkZast:"+window.__cur.key:null}
 function krkZastGet(){const k=krkZastKey(); try{return k?localStorage.getItem(k)||"":""}catch(e){return ""}}
@@ -1268,7 +1277,11 @@ function krkRuleStateJls(d,jls){
   const gpn=d.rows.filter(r=>krkKind(r.p)==="gpn");
   if(!gpn.length) return {st:"ne",msg:"Lokacija nije u građevinskom području naselja, pa uvjeti za stambene građevine ovdje ne vrijede."};
   const K=d.pl&&d.pl.v?krkPlans(d.pl.v):null;
-  if(K&&K.upu.length) return {st:"upuNe",msg:"Na lokaciji vrijedi "+K.upu.map(p=>p.VRSTA_PP+(p.NAZIV?" ("+String(p.NAZIV).slice(0,80)+")":"")).join(", ")+". Uvjete gradnje propisuje taj plan, a aplikacija ga još nije obradila."};
+  if(K&&K.upu.length){
+    // obrađeni UPU u ovoj jedinici (rules_krk.json → upu, s poljem jls): svi važeći UPU-ovi na točki moraju biti isti obrađeni plan
+    const kn=K.upu.map(p=>krkUpuRule(p)), u0=kn[0];
+    if(u0&&u0.jls===jls&&u0.obradeno!==false&&kn.every(u=>u&&u.k===u0.k)) return {st:"upu",RS:u0,izgr:gpn,notes:[],plan:K.upu[0]};
+    return {st:"upuNe",msg:"Na lokaciji vrijedi "+K.upu.map(p=>p.VRSTA_PP+(p.NAZIV?" ("+String(p.NAZIV).slice(0,80)+")":"")).join(", ")+". Uvjete gradnje propisuje taj plan, a aplikacija ga još nije obradila."};}
   const RS=krkRuleSetJls(jls,gpn[0]), notes=[];
   if(!RS.grupa) return {st:"ne",msg:`Skupina naselja (${gpn[0].p.OZNAKA_NAMJENE||gpn[0].p.NASELJE||"?"}) nije prepoznata u planu ${RS.kod}; uvjeti se ne mogu odrediti.`};
   if(d.pl&&d.pl.e) notes.push("Evidencija planova nije odgovorila, pa nije provjereno vrijedi li na lokaciji UPU.");
@@ -1294,8 +1307,8 @@ function krkZahvatUvjet(){ if(!KRK_ZAHVAT) return [{tekst:"vrsta zahvata nije od
 const krkZahvatNaziv=()=>KRK_ZAHVAT?((ZAHVATI.find(x=>x[0]===KRK_ZAHVAT)||[])[1]||null):null;
 // doslovni navodi iz plana (rules_krk.json → upu.<plan>.citati): za tip i način gradnje; null ako navod nije pripremljen
 function krkCitKey(RS,key){const C=RS&&RS.citati; return C&&C[key]&&C[key].x?C[key]:null;}
-function krkCit(RS,tip,oblik,key){const C=RS&&RS.citati; if(!C) return null; const g=C[tip==="stamb"?"stamb":oblik==="slob"?"slob":"dvoj"]; if(!g||!g[key]) return null;
-  const v=key==="minC"?(g.minC[tip]||null):g[key]; return v&&v.x?{clanak:g.clanak,t:v.t,x:v.x}:null;}
+function krkCit(RS,tip,oblik,key){const C=RS&&RS.citati; if(!C) return null; const g=C[tip==="stamb"?"stamb":C[oblik]&&oblik!=="slob"?oblik:oblik==="slob"?"slob":"dvoj"]; if(!g||!g[key]) return null;
+  const v=key==="minC"?(g.minC[tip]||null):g[key]; return v&&v.x?{clanak:String(v.clanak||g.clanak),t:v.t,x:v.x,sn:v.sn||null,izvorTeksta:v.izvorTeksta||null,potvrdenIzvor:v.potvrdenIzvor!==false}:null;}
 // zajedničke karike dokaznog lanca za Krk: čestica, plan (revizija i usklađenost), GIS zona iz vektora
 function piBase(RS,I){
   const plan=RS&&I?{karika:"plan",vrijednost:(RS.kod||I.naziv)+(I.sn?" ("+I.sn+")":""),raz:/^\s*(na snazi|važeći)/i.test(String(I.status||""))?(pravnaNepotvrdena(I)?"B":"A"):"C",izvor:I.naziv,revizija:I.sn||null,status:I.status||null,
@@ -1329,6 +1342,15 @@ function krkRulesHtml(d){
     const sel0=(id,opts,v)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===v?" selected":""}>${esc(o[1])}</option>`).join("")}</select>`;
     return h+`<p class="rule-title"><span class="rule-code">${esc(RS.kod)}</span></p><p class="meta">Izvor: <a href="${esc(I.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(I.naziv)}</a>, ${esc(I.sn)}</p><div class="kd" style="margin:6px 0"><label for="krkZona">Zona u UPU-u</label>${sel0("krkZona",RS.zone,zona)}</div><p class="meta">${esc(RS.zonaNapomena)}</p><p class="hint">${esc(RS.drugaZona||"Za ovu zonu uvjeti za obiteljske i višeobiteljske kuće nisu obrađeni.")}</p>`;
   }
+  // izgrađeni ili neizgrađeni dio GP-a: tvoj odabir, inače atribut županijskog sloja (PPUO); bez oboje nema izračuna
+  let dioUI="", dioNema=false; pzDel("dio-gp");
+  if(RS.dioGP){const at=(S.izgr||[]).map(r=>String(r.p.IZGRADJENOST||"")), izSloj=at.length&&at.every(x=>/neizgr/i.test(x))?"neizgradeni":at.length&&at.every(x=>x&&!/neizgr/i.test(x))?"izgradeni":null;
+    const dSel=krkDioGet(), dio=["izgradeni","neizgradeni"].includes(dSel)?dSel:izSloj, nazD={izgradeni:"izgrađeni dio",neizgradeni:"neizgrađeni dio"};
+    dioUI=`<div class="kd" style="margin:6px 0"><label for="krkDio">Dio građevinskog područja</label><select id="krkDio" class="bsel">${RS.dioGP.opcije.map(o=>`<option value="${esc(o[0])}"${o[0]===(dSel||"")?" selected":""}>${esc(o[1])}${!o[0]&&izSloj?" ("+esc(nazD[izSloj])+")":""}</option>`).join("")}</select></div><p class="meta" data-krk-dio="${esc(dio||"nepoznat")}">${esc(RS.dioGP.napomena)} ${dio?(dSel?"Odabrao si: "+nazD[dio]+".":"Prema županijskom sloju namjene (PPUO): "+nazD[dio]+"; granica prema UPU-u nije potvrđena."):"Županijski sloj ne daje jednoznačan podatak za česticu; odaberi dio prema grafičkom dijelu plana."}</p>`;
+    if(dio){pzSet("dio-gp","Dio građevinskog područja (UPU)",nazD[dio],dSel?pzUser({provjera:"grafički dio UPU-a, lokacijska informacija"}):pz("B",{izvor:"PGŽ, sloj namjene (PPUO), atribut izgrađenosti",razlog:"granica izgrađenog dijela prema UPU-u nije potvrđena"}));
+      if(!dSel) S.notes=[...(S.notes||[]),"dio građevinskog područja ("+nazD[dio]+") preuzet je iz županijskog sloja PPUO-a; granica prema grafičkom dijelu UPU-a nije potvrđena"];
+      RS=krkDioPrimijeni(RS,dio);}
+    else dioNema=true;}
   const src=`<p class="meta">Izvor: <a href="${esc(I.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(I.naziv)}</a>, ${esc(I.sn)} · status: ${esc(I.status)}</p>`;
   const T=RS.tipovi[KRK_TIP.tip]||RS.tipovi.obit||Object.values(RS.tipovi)[0], P=T[KRK_TIP.oblik]||T.dvoj||T.slob, area=d.area;
   h+=`<p class="rule-title"><span class="rule-code">${esc(RS.kod)}</span>${esc(T.naziv)}, čl. ${esc(T.clanak)}${/\.$/.test(T.clanak)?"":"."}${S.na?" · naselje "+esc(S.na):""}${S.grupa?" · "+esc(S.grupa):""}</p>`+src+krkPravnaHtml(I);
@@ -1346,6 +1368,8 @@ function krkRulesHtml(d){
       if(zv==="B"&&ZS.B){h+=`<div class="verdict v-warn">${esc(ZS.B.napomena)}</div>`; piBlok("blok-uvjeti","Uvjeti gradnje (izračun)","zona zaštite »B«: uvjeti gradnje ovise o posebnim konzervatorskim uvjetima (čl. "+(ZS.B.clanak||"")+".); izračun se ne prikazuje",[...piBase(RS,I),piK("detaljna zona",PZREG.items.get("zona-korisnik")),piK("zona zaštite",PZREG.items.get("zast-korisnik"))]); return h;}
     }
   }
+  if(dioUI) h+=dioUI;
+  if(dioNema){piBlok("blok-uvjeti","Uvjeti gradnje (izračun)","nije poznato je li čestica u izgrađenom ili neizgrađenom dijelu građevinskog područja; o tome ovise kis i visina",[...piBase(RS,I),piK("detaljna zona",PZREG.items.get("zona-korisnik"))]); return h+`<div class="verdict v-warn">Odaberi dio građevinskog područja; dotad se uvjeti ne računaju.</div>`;}
   h+=`<div class="kd" style="margin:6px 0"><label for="krkZahvat">Vrsta zahvata</label><select id="krkZahvat" class="bsel">${[["","— odaberi zahvat —"],...ZAHVATI].map(o=>`<option value="${o[0]}"${o[0]===KRK_ZAHVAT?" selected":""}>${esc(o[1])}</option>`).join("")}</select></div>`;
   if(!KRK_ZAHVAT) h+=`<p class="meta" data-krk-zahvat="nije-odabran">Vrsta zahvata nije odabrana. Uvjeti ispod vrijede za novu gradnju; za dogradnju, rekonstrukciju ili zamjensku građevinu plan ima posebne odredbe.</p>`;
   else if(KRK_ZAHVAT!=="nova") h+=`<div class="verdict v-warn" data-krk-zahvat="${esc(KRK_ZAHVAT)}" style="margin:4px 0">${esc(krkZahvatNaziv())}: potrebna dodatna provjera. Za taj zahvat vrijede posebne odredbe plana; brojke ispod su za novu gradnju.</div>`;
@@ -1403,13 +1427,16 @@ function krkProstorNapomena(RS,RD,G1,G2){
   h+=`</p>`;
   if(krkH2(RS)) h+=`<p class="meta" data-krk-h2="1"><b>Pravilo h/2.</b> Plan uz udaljenost od međe navodi h/2 (pola visine građevine), uz najmanju udaljenost od ${RS.meda.min} m${RS.meda.opisIznimka&&/h\s*\/\s*2/i.test(RS.meda.opisIznimka)?" ili u posebnim područjima ("+esc(RS.meda.opisIznimka)+")":""}. Aplikacija h/2 ne izračunava dok se ne potvrdi kako plan određuje visinu h i gdje se pravilo primjenjuje. Prikazani prostor koristi samo najmanju udaljenost, pa uz višu građevinu stvarni odmak može biti veći.</p>`;
   return h; }
+// najveći tlocrt ovisno o površini (npr. UPU 3 Punat, čl. 46.: na česticama većim od 1000 m² 200 m² umjesto 150 m²)
+const krkTlMax=(P,a)=>P.tlVelika&&a>P.tlVelika.prag?P.tlVelika.tl:P.tlMax;
 function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   const R=RULES_KRK, area=d.area, I=RS.izvor||R.izvor; let h="";
   const base=isUpu?S.izgr:S.izgr;
   const A0=area?(base.every(r=>r.share!=null)?Math.min(1,base.reduce((a,r)=>a+r.share,0))*area:area):null;
   const PP=d.parcel?d.parcel.properties:null, AS=PP&&area?areaSel(PP,area):null, A=A0&&AS?A0*AS.f:A0, Aall=AS?AS.a:area;
   if(!A){h+=`<p class="meta">Čestica nije pronađena u katastru, pa se izračun ne može napraviti. Pravila: najmanja čestica ${fmt(P.minC)} m², kig ${dec(P.izg)}, kis ${dec(P.kis)}, visina ${dec(T.visina)} m.</p>`; return h;}
-  const slope=d.slope&&d.slope.v?d.slope.v.slope:null, kosi=T.kosi&&slope!=null&&slope>T.kosi.nagib;
+  const slope=d.slope&&d.slope.v?d.slope.v.slope:null, kosi=T.kosi&&slope!=null&&slope>T.kosi.nagib, tlV=!!(P.tlVelika&&A>P.tlVelika.prag);
+  if(tlV) P={...P,tlMax:P.tlVelika.tl};
   const tl=Math.min(A*P.izg,P.tlMax||Infinity), gbpN=Math.min(A*P.kis,T.gbpMax||Infinity), gbpP=RS.kisUkupni?null:Math.min(A*P.kisPodrum,T.gbpUkupno&&T.gbpMax?T.gbpMax:Infinity);
   const minOk=A>=P.minC, minEx=!minOk&&!!P.minCIznimno&&A>=P.minCIznimno, tlOk=tl>=P.tlMin;
   // prostor za kuću: najmanja udaljenost od međa, na dijelu čestice u GP-u naselja
@@ -1428,10 +1455,13 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   const piL=[piK("čestica",pzA),...piBase(RS,I).filter(k=>k.karika!=="čestica")];
   if(isUpu){piL.push(piK("detaljna zona",pzZ,{izvor:"tvoj odabir prema karti plana"})); const ul=PZREG.items.get("upu-list"), ua=PZREG.items.get("upu-aktualnost");
     if(ul) piL.push(piK("kartografski prikaz",ul,ua?{status:ua.vrijednost,uskladenost:ua.raz==="A"?"kompatibilno":"nepoznata",razlogUsk:ua.razlog||null}:{uskladenost:"nepoznata"}));}
+  const pzD=RS.dioGP?PZREG.items.get("dio-gp"):null; if(pzD) piL.push(piK("dio građevinskog područja",pzD,{izvor:pzD.korisnik?"tvoj odabir prema grafičkom dijelu plana":"PGŽ, sloj namjene (PPUO)"}));
   if(ZS0) piL.push(zv0?piK("zona zaštite",PZREG.items.get("zast-korisnik"),{izvor:"tvoj odabir prema karti "+ZS0.karta}):{karika:"zona zaštite",vrijednost:"nije odabrana",raz:"C",razlog:"karta "+ZS0.karta+": granice zona »B« i »C« nisu potvrđene za česticu (čl. "+ZS0.clanak+".)"});
   // navod iz plana: doslovni citat (RS.citati, provjeren prema objavi) ili sažetak iz aplikacije (označen kao takav)
   const tipK=Object.keys(RS.tipovi).find(k=>RS.tipovi[k]===T)||KRK_TIP.tip, NAZ_O={slob:"slobodnostojeća",dvoj:"dvojna",ugr:"ugrađena"};
-  const cl=(key,fallback)=>{const c=krkCit(RS,tipK,oblSel,key); if(c) return {karika:"članak",vrijednost:"čl. "+c.clanak+(c.t?" "+c.t:""),citat:c.x,citatVrsta:"doslovni navod (provjeren prema "+(I.sn||"objavi")+")",raz:pzR.raz,izvor:I.naziv+(I.sn?", "+I.sn:"")};
+  const cl=(key,fallback)=>{const c=krkCit(RS,tipK,oblSel,key); if(c) return {karika:"članak",vrijednost:"čl. "+c.clanak+(c.t?" "+c.t:"")+(c.sn?" ("+c.sn+")":""),citat:c.x,
+      citatVrsta:c.potvrdenIzvor?"doslovni navod (provjeren prema "+(c.sn||I.sn||"objavi")+(c.izvorTeksta?", "+c.izvorTeksta:"")+")":"navod iz "+(c.izvorTeksta||"neprovjerenog teksta")+(c.sn?" ("+c.sn+")":""),
+      ...(c.potvrdenIzvor?{}:{uskladenost:"nepoznata",razlogUsk:"tekst odluke "+(c.sn||"")+" nije uspoređen sa službenom objavom"}),raz:pzR.raz,izvor:I.naziv+(I.sn?", "+I.sn:"")};
     return {karika:"članak",vrijednost:"čl. "+String(T.clanak).replace(/\.$/,"")+".",citat:fallback||null,citatVrsta:fallback?"sažetak iz aplikacije, nije doslovni navod":null,raz:pzR.raz,izvor:I.naziv+(I.sn?", "+I.sn:"")};};
   // osnovica izračuna: precizna površina i pravilo zaokruživanja (uspoređuje se nezaokružena vrijednost)
   const d1=x=>(Math.round(x*10)/10).toLocaleString("hr-HR",{minimumFractionDigits:1,maximumFractionDigits:1});
@@ -1441,19 +1471,19 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
     raz:Math.abs(udioGP-1)>1e-6?"B":(pzA?pzA.raz:"C"),izvor:(pzA&&pzA.izvor||"")+(Math.abs(udioGP-1)>1e-6?"; udio iz GIS presjeka granice čestice i sloja namjene PGŽ":""),
     razlog:izvan.length?"izvan građevinskog područja: "+izvan.map(r=>(r.p.OZNAKA_NAMJENE||"?")+" "+(r.share*100).toFixed(2).replace(".",",")+" %").join(", ")+" (rubni dodir granica slojeva ili stvarni dio; nije potvrđeno)":null,
     pravilo:"usporedba i izračun s nezaokruženom površinom; prikaz na 0,1 m², u tablicama na cijeli m²; površina iz koordinata računa se na elipsoidu WGS84 (Turf), pa se može razlikovati od atributa katastra za nekoliko desetinki m²"};
-  const piU=[...(S.st==="provjera"?[{tekst:S.msg||"potrebna dodatna provjera",razrijeseno:false}]:[]),...(S.notes||[]).map(n=>({tekst:n,razrijeseno:false})),...krkZahvatUvjet()];
-  const ul0=[pzA,pzR,pzZ,pzS,ZS0&&!zv0?pz("C",{naziv:"Zona zaštite",razlog:"nije odabrana"}):null];
+  const piU=[...(S.st==="provjera"?[{tekst:S.msg||"potrebna dodatna provjera",razrijeseno:false}]:[]),...(S.notes||[]).map(n=>({tekst:n,razrijeseno:false})),...(P.uvjeti||[]).map(t=>({tekst:t,razrijeseno:false})),...krkZahvatUvjet()];
+  const ul0=[pzA,pzR,pzZ,pzS,pzD,ZS0&&!zv0?pz("C",{naziv:"Zona zaštite",razlog:"nije odabrana"}):null];
   const kat=T.naziv.toLowerCase()+", "+(NAZ_O[oblSel]||oblSel);
   window.__krkKont=kat+(isUpu&&krkZonaGet()?", zona "+krkZonaGet():"")+(zv0?", zona zaštite »"+zv0+"«":"");
   const pzM=pzSet("calc-min","Najmanja površina čestice ("+kat+")",(minOk?"ispunjeno":minEx?"samo prag iznimke":"nije ispunjeno")+": "+d1(A)+" m² "+(minOk?"≥":"<")+" "+fmt(P.minC)+" m²"+(minEx?" (iznimno "+fmt(P.minCIznimno)+" m²); primjenjivost iznimke nije potvrđena":""),
     piWith(pzCalc({metoda:"površina "+d1(A)+" m² prema najmanjoj "+fmt(P.minC)+" m² za "+kat},ul0),{lanac:[...piL,osn,cl("minC",tx.minC)],
     uvjeti:[...(minEx?[{tekst:"Površina zadovoljava brojčani prag iznimke, ali primjenjivost iznimke nije potvrđena (iznimka "+fmt(P.minCIznimno)+" m²"+(tx.minCIznimno?": "+tx.minCIznimno:"")+")",razrijeseno:false}]:[]),...piU]}));
   pzM.sazetak=fmt(P.minC)+" m²"+(P.minCIznimno?", iznimno "+fmt(P.minCIznimno)+" m²":"")+" · čestica "+d1(A)+" m²";
-  if(T.visina){const vis=pzSet("calc-visina","Najveća visina građevine ("+kat+")",dec(T.visina)+" m",piWith(pzCalc({metoda:"vrijednost iz plana za "+kat+"; ne ovisi o površini čestice"},[pzR,pzZ,pzS,ZS0&&!zv0?pz("C",{naziv:"Zona zaštite",razlog:"nije odabrana"}):null]),{lanac:[...piL,cl("visina",null)],
-    uvjeti:[{tekst:"najniža kota zaravnatog terena uz građevinu smije biti najviše 1,5 m iznad kote prirodnog terena: nije provjereno",razrijeseno:false},
-      ...(tipK!=="obit"?[{tekst:"na kosom terenu (nagib prirodnog terena veći od 12 %) plan propisuje drugu visinu (10,5 m) i broj etaža; nagib terena nije potvrđen",razrijeseno:false}]:[]),
+  if(T.visina){const vis=pzSet("calc-visina","Najveća visina građevine ("+kat+")",dec(T.visina)+" m",piWith(pzCalc({metoda:"vrijednost iz plana za "+kat+"; ne ovisi o površini čestice"},[pzR,pzZ,pzS,pzD,ZS0&&!zv0?pz("C",{naziv:"Zona zaštite",razlog:"nije odabrana"}):null]),{lanac:[...piL,cl("visina",null)],
+    uvjeti:[...((c=>c&&/zaravnatog terena[^.]*1,5 m/.test(c.x))(krkCit(RS,tipK,oblSel,"visina"))?[{tekst:"najniža kota zaravnatog terena uz građevinu smije biti najviše 1,5 m iznad kote prirodnog terena: nije provjereno",razrijeseno:false}]:[]),
+      ...(T.kosi?[{tekst:"na kosom terenu (nagib prirodnog terena veći od "+T.kosi.nagib+" %) plan propisuje drugu visinu ("+dec(T.kosi.visina)+" m) i broj etaža; nagib terena nije potvrđen",razrijeseno:false}]:[]),
       ...(zv0==="C"?[{tekst:"zona zaštite »C« (čl. 85. st. 2.): najviše dvije nadzemne etaže, bez povišenja nadozida za potkrovlje",razrijeseno:false}]:[]),...piU]})); vis.sazetak=dec(T.visina)+" m"+(T.etaze?" · "+T.etaze:"");}
-  const pzT=pzSet("calc-tlocrt","Najveći tlocrt (teorijski, kig)",fmt(tl)+" m²",piWith(pzCalc({metoda:"površina "+d1(A)+" m² × kig "+dec(P.izg)+" = "+d1(A*P.izg)+" m²"+(P.tlMax?", najviše "+fmt(P.tlMax)+" m²":"")},ul0),{lanac:[...piL,osn,cl("izg",tx.izg),cl("tl",tx.tl)],uvjeti:piU}));
+  const pzT=pzSet("calc-tlocrt","Najveći tlocrt (teorijski, kig)",fmt(tl)+" m²",piWith(pzCalc({metoda:"površina "+d1(A)+" m² × kig "+dec(P.izg)+" = "+d1(A*P.izg)+" m²"+(P.tlMax?", najviše "+fmt(P.tlMax)+" m²":"")},ul0),{lanac:[...piL,osn,cl("izg",tx.izg),tlV?cl("tlVelika",tx.tl):cl("tl",tx.tl)],uvjeti:[...piU,...(P.tlVelika?[{tekst:tlV?"najveći tlocrt "+fmt(P.tlVelika.tl)+" m² vrijedi jer je čestica veća od "+fmt(P.tlVelika.prag)+" m²; ovisi o površini građevne čestice":"na česticama većim od "+fmt(P.tlVelika.prag)+" m² najveći tlocrt je "+fmt(P.tlVelika.tl)+" m²",razrijeseno:!tlV}]:[])]}));
   const pzG=pzSet("calc-gbp","Najveći GBP (teorijski, kis)",fmt(gbpN)+" m²",piWith(pzCalc({metoda:"površina "+d1(A)+" m² × kis "+dec(P.kis)+" = "+d1(A*P.kis)+" m²"+(T.gbpMax?", najviše "+fmt(T.gbpMax)+" m²":"")},ul0),{lanac:[...piL,osn,cl("kis",tx.kis),cl("gbp",tx.gbp)],uvjeti:piU}));
   if(env) pzSet("calc-prostor","Prostor za građevinu nakon odmaka od međa",fmt(env.area)+" m²",piWith(pzCalc({metoda:RS.meda.min+" m od međa, bez regulacijskog pravca"},[pzA,pzR,pzZ]),{lanac:[...piL,cl("meda",RS.meda.txt)],
     uvjeti:[{tekst:"regulacijski pravac i kategorija ceste nisu uračunati",razrijeseno:false},...(krkH2(RS)?[{tekst:"pravilo h/2 nije uračunato",razrijeseno:false}]:[]),...piU]}));
@@ -1468,7 +1498,7 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   {const zab=RS.grupa&&RS.grupa.zabranjeno||[], rows=[], ON={slob:"slobodnostojeća",dvoj:"dvojna",ugr:"ugrađena"};
    for(const [k,T2] of Object.entries(RS.tipovi||{})){
      const ob=(T2.oblici||RS.oblici||[["slob"],["dvoj"],["ugr"]]).map(o=>o[0]).filter(o=>T2[o]&&typeof T2[o]==="object");
-     for(const o of ob){const P2=T2[o], t2=Math.min(A*P2.izg,P2.tlMax||Infinity), g2=Math.min(A*P2.kis,T2.gbpMax||Infinity), mOk=A>=P2.minC, mEx=!mOk&&!!P2.minCIznimno&&A>=P2.minCIznimno;
+     for(const o of ob){const P2=T2[o], t2=Math.min(A*P2.izg,krkTlMax(P2,A)||Infinity), g2=Math.min(A*P2.kis,T2.gbpMax||Infinity), mOk=A>=P2.minC, mEx=!mOk&&!!P2.minCIznimno&&A>=P2.minCIznimno;
        const stanje=zab.includes(o)?"zabr":!mOk&&!mEx?"mala":P2.tlMin&&t2<P2.tlMin?"tl":P2.maxC&&A>P2.maxC?"vel":mEx?"izn":"ok";
        rows.push({key:"krk|"+k+"|"+o,naziv:T2.naziv,oblik:ON[o]||o,minC:P2.minC,minCIzn:P2.minCIznimno,tl:t2,gbp:g2,visina:T2.visina,etaze:T2.etaze,stanje,odabran:T2===T&&o===oblSel,pz:pzCalc({},[pzA,pzR,pzZ,pzS])});}}
    window.__tipCmp=rows; h+=tipCmpHtml(rows,A,AS&&AS.naziv?AS.naziv+" površina":null);}
@@ -1478,7 +1508,7 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   h+=`<div class="chips">${chips.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`;
   const row=(l,v,cls="")=>`<div class="row"><span>${l}</span><span class="${cls}">${v}</span></div>`;
   h+=`<details class="acc" data-k="krkCalc" open><summary><span>Izračun za ovu česticu</span><b class="${minOk&&tlOk?"good":minEx?"":"bad"}">${esc(chips.slice(0,3).join(" · "))}</b></summary><div class="calc">`;
-  if(PP){const sh=A0/area, calcK=a=>({min:a>=P.minC?true:P.minCIznimno&&a>=P.minCIznimno?"izn":false,tl:Math.min(a*P.izg,P.tlMax||Infinity),gbp:Math.min(a*P.kis,T.gbpMax||Infinity)});
+  if(PP){const sh=A0/area, calcK=a=>({min:a>=P.minC?true:P.minCIznimno&&a>=P.minCIznimno?"izn":false,tl:Math.min(a*P.izg,krkTlMax(P,a)||Infinity),gbp:Math.min(a*P.kis,T.gbpMax||Infinity)});
     window.__areaCmp={P:PP,area,share:sh,calc:calcK,rerender:()=>{if(KRK_CUR) renderKrk(KRK_CUR)}}; h+=areaCmpHtml(PP,area,sh,calcK);}
   if(Math.abs(A0-area)>1) h+=row(isUpu?"Dio čestice u GP-u naselja":"Izgrađeni dio GP-a naselja na čestici",`${fmt(A)} od ${fmt(Aall)} m²`);
   if(AS&&Math.abs(AS.f-1)>0.001) h+=`<p class="meta" data-povrsina-izvor="1">Izračun koristi ${esc(AS.naziv||"odabranu")} površinu (${fmt(Aall)} m²)${Math.abs(A0-area)>1?`; udio dijela u građevinskom području (${Math.round(A0/area*100)} %) određen je iz grafičke granice i primijenjen na tu površinu, uz pretpostavku istog postotka`:""}. Teorijski obris na karti uvijek je iz grafičke granice čestice.</p>`;
@@ -1564,7 +1594,8 @@ function krkKdUpdate(){
 sheet.addEventListener("input",e=>{ if(/^krkKd/.test(e.target.id||"")) krkKdUpdate(); });
 sheet.addEventListener("change",e=>{ if(/^krkKd/.test(e.target.id||"")) krkKdUpdate(); });
 sheet.addEventListener("change",e=>{
-  if((e.target.id==="krkTip"||e.target.id==="krkOblik"||e.target.id==="krkZona"||e.target.id==="krkZast"||e.target.id==="krkZahvat")&&KRK_CUR){
+  if((e.target.id==="krkTip"||e.target.id==="krkOblik"||e.target.id==="krkZona"||e.target.id==="krkZast"||e.target.id==="krkZahvat"||e.target.id==="krkDio")&&KRK_CUR){
+    if(e.target.id==="krkDio"){krkDioSet(e.target.value); renderKrk(KRK_CUR); return;}
     if(e.target.id==="krkZona"){krkZonaSet(e.target.value); try{localStorage.removeItem("krkZonaIzvor:"+window.__cur.key)}catch(err){}}
     else if(e.target.id==="krkZahvat"){KRK_ZAHVAT=e.target.value; try{localStorage.setItem("krkZahvat",KRK_ZAHVAT)}catch(err){}}
     else if(e.target.id==="krkZast") krkZastSet(e.target.value);
@@ -2171,7 +2202,7 @@ const RK_PIX={async share(blob,polys,W,H){
 // korisnik ga prihvaća, mijenja ili odbija. Pragovi su određeni na kalibracijskoj polovici referentnog skupa i provjereni
 // na drugoj polovici (docs/upu-zona/README.md); bez dovoljnog dokaza algoritam odustaje i ostaje ručni odabir.
 // parametri odabrani na razvojnom skupu (42 čestice), provjereni na slijepom skupu (40 čestica), docs/upu-zona/rezultati_2026-10-27.json
-const UZ_PARAM={tamno:96,bijelo:224,sivo:24,prostor:"hsv",tezV:0.3,boja:40,razmak:0,unutra:1,prsten:6,minUzoraka:400,minBoje:0.6,maxBijelo:0.2,minDom:0.8,prstenDrugo:0.1,verzija:"2026-10-27"};
+const UZ_PARAM={tamno:96,bijelo:224,sivo:24,prostor:"hsv",tezV:0.3,boja:40,razmak:0,unutra:1,prsten:6,minUzoraka:400,minBoje:0.6,maxBijelo:0.2,minDom:0.8,prstenDrugo:0.1,maxTamno:0.4,drugaUnutra:0.1,drugaPrsten:0.25,verzija:"2026-10-27b"};
 // histogram boja (4 bita po kanalu) unutar čestice (dalje od granice za »unutra« m), uz rub i u prstenu do »prsten« m izvan granice
 function uzHist(d,W,H,polys,mpx,P){P=P||UZ_PARAM; const rin=P.unutra/mpx, rout=P.prsten/mpx, pts=polys.flat(), xs=pts.map(p=>p[0]), ys=pts.map(p=>p[1]);
   const x0=Math.max(0,Math.floor(Math.min(...xs)-rout)),x1=Math.min(W-1,Math.ceil(Math.max(...xs)+rout)),y0=Math.max(0,Math.floor(Math.min(...ys)-rout)),y1=Math.min(H-1,Math.ceil(Math.max(...ys)+rout));
@@ -2200,11 +2231,15 @@ function uzOdluka(Hs,leg,P){P=P||UZ_PARAM; const zone=leg.map(l=>l.zona);
   const nt=n-(C.c.tamno||0)-(C.c.prozirno||0), dokaz={uzorci:n,boje:nt>0?boje/nt:0,bijelo:u("bijelo"),tamno:u("tamno"),sivo:u("sivo"),nepoznato:u("nepoznato")+u("dvojbeno"),prozirno:u("prozirno"),
     udjeli:Object.fromEntries(zc.map(([k,v])=>[k,v/boje])),prsten:Object.fromEntries(zr.map(([k,v])=>[k,v/rb])),mpx:Hs.mpx};
   const D=zc.length?zc[0][0]:null, dom=D?zc[0][1]/boje:0; let razlog=null;
+  // druga zona: druga po udjelu unutar čestice; ako je ista zona izražena i u pojasu oko čestice, granica zone prolazi kroz česticu
+  const D2=zc.length>1?zc[1][0]:null, d2u=D2?zc[1][1]/boje:0, d2p=D2&&rb?(dokaz.prsten[D2]||0):0;
   if(n<P.minUzoraka) razlog="premalo uzoraka unutar čestice (čestica je premala za izrez ili je izvan lista)";
   else if(dokaz.prozirno>0.5) razlog="list na čestici nema sadržaja";
   else if(dokaz.boje<P.minBoje) razlog="prepoznato je premalo boja iz legende (linije, oznake, šrafura ili nečitljiv dio rastera)";
   else if(dokaz.bijelo>P.maxBijelo) razlog="dio čestice je na bijeloj površini (prometnica ili površina bez boje zone)";
   else if(dom<P.minDom) razlog="unutar čestice je više boja zona (mješovito ili granica zone)";
+  else if(P.maxTamno!=null&&dokaz.tamno>P.maxTamno) razlog="velik dio čestice prekriva tamna površina (granica obuhvata plana, zgrade ili oznake), pa se zona za taj dio ne može očitati";
+  else if(P.drugaUnutra!=null&&D2&&d2u>=P.drugaUnutra&&d2p>=P.drugaPrsten) razlog="granica zone prolazi kroz česticu: zona "+D2+" zauzima dio čestice i pojas uz nju";
   const drugo=D&&rb?1-(dokaz.prsten[D]||0):0;
   return {kandidat:razlog?null:D,najcesca:D,udioNajcesce:dom,razlog,blizuGranice:drugo>=P.prstenDrugo,drugoUPrstenu:drugo,dokaz,parametri:P};}
 // pilot je isključen za sve korisnike (FEATURES.upuZona=false) dok točnost na slijepom skupu nije dovoljna; ispitivač ga uključuje

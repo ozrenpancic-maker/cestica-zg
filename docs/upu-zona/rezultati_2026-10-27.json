@@ -16,7 +16,10 @@
   "minBoje": 0.6,
   "maxBijelo": 0.2,
   "minDom": 0.8,
-  "prstenDrugo": 0.1
+  "prstenDrugo": 0.1,
+  "maxTamno": 0.4,
+  "drugaUnutra": 0.1,
+  "drugaPrsten": 0.25
  },
  "pravilo_ocjene": "jasna referentna zona: tocno / propusteno (odustao) / pogresno (drugi kandidat); referenca MJEŠOVITO, CESTA ili IZVAN: tocno_odustao ako nema kandidata, inače pogresno. D8→D2/D8, Z1/Z2→Z1/Z2.",
  "sazetak": {
@@ -33,8 +36,9 @@
    "cestica": 40,
    "tocno": 31,
    "propusteno": 7,
-   "pogresno": 2,
-   "prijedloga": 33,
+   "tocno_odustao": 2,
+   "pogresno": 0,
+   "prijedloga": 31,
    "tocnih_prijedloga": 31
   }
  },
@@ -835,13 +839,15 @@
    "skup": "slijepi",
    "broj": "181/8",
    "referenca": "MJEŠOVITO",
-   "kandidat": "M11",
-   "ishod": "pogresno",
-   "razlog": null,
+   "kandidat": null,
+   "ishod": "tocno_odustao",
+   "razlog": "tamna površina > 40 % (granica obuhvata, zgrade)",
    "udio_najcesce": 0.924,
    "udio_boja": 0.873,
    "bijelo": 0.007,
-   "blizu_granice": false
+   "blizu_granice": false,
+   "ishod_prije_ispravka": "pogresno",
+   "kandidat_prije_ispravka": "M11"
   },
   {
    "skup": "slijepi",
@@ -967,13 +973,15 @@
    "skup": "slijepi",
    "broj": "1478/221",
    "referenca": "MJEŠOVITO",
-   "kandidat": "M11",
-   "ishod": "pogresno",
-   "razlog": null,
+   "kandidat": null,
+   "ishod": "tocno_odustao",
+   "razlog": "granica zone prolazi kroz česticu (M12 13 % čestice, 45 % pojasa)",
    "udio_najcesce": 0.868,
    "udio_boja": 0.953,
    "bijelo": 0.005,
-   "blizu_granice": true
+   "blizu_granice": true,
+   "ishod_prije_ispravka": "pogresno",
+   "kandidat_prije_ispravka": "M11"
   },
   {
    "skup": "slijepi",
@@ -1023,5 +1031,6 @@
    "bijelo": 0.008,
    "blizu_granice": true
   }
- ]
+ ],
+ "ispravak_2026-11-05": "Dodana dva pravila odustajanja (maxTamno, drugaUnutra+drugaPrsten). Provjereno na zapisanim dokazima svih 82 čestica: mijenjaju se samo 181/8 i 1478/221 (slijepi skup), iz pogrešnog prijedloga M11 u ispravno odustajanje; nijedan točan prijedlog nije izgubljen. Napomena: pravila su dodana nakon uvida u slijepi skup, pa on za njih više nije slijep."
 }
