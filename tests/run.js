@@ -1454,6 +1454,10 @@ async function krkTests(){
   Object.assign(gp,{OPCINA_GRAD:"ČABAR",OZNAKA_NAMJENE:"N",NASELJE:"Gerovo",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
   tm=await reinspect(); M=w.__krkCalc;
   ok(M&&M.plan==="PPUG Čabar"&&M.minOk&&Math.abs(M.tl-0.3*M.A)<0.6&&M.gbpN===400&&!/NaN|null/.test(tm),"Čabar obiteljska kuća: izgrađenost 30 %, bez kis-a, GBP svih građevina do 400 m² (SN 19/2013)");
+  // Lokve: PPUO (2004. + 2017. + 2025.), čl. 29.–35.
+  Object.assign(gp,{OPCINA_GRAD:"LOKVE",OZNAKA_NAMJENE:"N",NASELJE:"Lokve",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
+  tm=await reinspect(); M=w.__krkCalc;
+  ok(M&&M.plan==="PPUO Lokve"&&M.minOk&&Math.abs(M.tl-0.3*M.A)<0.6&&Math.abs(M.gbpN-0.7*M.A)<1.5&&/8 m/.test(tm),"Lokve obiteljska samostojeća: kig 0,3, kis 0,7, visina 8 m (izmjene 2017.)");
   // UPU 1 Vrbnik (pročišćeni tekst 2019. + izmjene SN 34/2024), čl. 83.
   plans.push({GRAD_OPCINA:"Vrbnik",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Urbanistički plan uređenja UPU 1 Vrbnik – NA 1 Odredbe za provedbu (pročišćeni tekst)",SN_BROJ:"2024-46"});
   Object.assign(gp,{OPCINA_GRAD:"VRBNIK",OZNAKA_NAMJENE:"NA1",NASELJE:"Vrbnik",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
@@ -2334,7 +2338,7 @@ async function formulaTests(){
   // Plan Integrity v10: novo polje »citati« (doslovni navodi iz objave) ne mijenja postojeće brojke ni tekstove; ne ulazi u sažetak,
   // a njegovu doslovnost provjerava zaseban test (»PI v10 navodi«) prema tekstu SN PGŽ 19/2016
   // Sljedeća faza: »legenda« (boje polja legende karte 4 za pilot prijedloga zone) i »provjereno« (stručno provjereni obuhvati) nisu pravila; ne ulaze u sažetak
-  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik"&&k!=="OPATIJA"&&k!=="RAB"&&k!=="NOVI VINODOLSKI"&&k!=="CRIKVENICA"&&k!=="MALI LOŠINJ"&&k!=="LOPAR"&&k!=="KRALJEVICA"&&k!=="MOŠĆENIČKA DRAGA"&&k!=="BAKAR"&&k!=="KASTAV"&&k!=="VIŠKOVO"&&k!=="JELENJE"&&k!=="ČAVLE"&&k!=="RAVNA GORA"&&k!=="VRBOVSKO"&&k!=="BROD MORAVICE"&&k!=="DELNICE"&&k!=="SKRAD"&&k!=="VINODOLSKA OPĆINA"&&k!=="CRES"&&k!=="LOVRAN"&&k!=="MATULJI"&&k!=="FUŽINE"&&k!=="MRKOPALJ"&&k!=="ČABAR").map(([k,v])=>[k,bezPP(v)])):o;
+  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik"&&k!=="OPATIJA"&&k!=="RAB"&&k!=="NOVI VINODOLSKI"&&k!=="CRIKVENICA"&&k!=="MALI LOŠINJ"&&k!=="LOPAR"&&k!=="KRALJEVICA"&&k!=="MOŠĆENIČKA DRAGA"&&k!=="BAKAR"&&k!=="KASTAV"&&k!=="VIŠKOVO"&&k!=="JELENJE"&&k!=="ČAVLE"&&k!=="RAVNA GORA"&&k!=="VRBOVSKO"&&k!=="BROD MORAVICE"&&k!=="DELNICE"&&k!=="SKRAD"&&k!=="VINODOLSKA OPĆINA"&&k!=="CRES"&&k!=="LOVRAN"&&k!=="MATULJI"&&k!=="FUŽINE"&&k!=="MRKOPALJ"&&k!=="ČABAR"&&k!=="LOKVE").map(([k,v])=>[k,bezPP(v)])):o;
   const sha=crypto.createHash("sha256").update(JSON.stringify(bezPP(JSON.parse(fs.readFileSync(path.join(__dirname,"..","src","rules_krk.json"),"utf8"))))).digest("hex");
   ok(sha==="de538e7ddc17cdc11746acbca3217b77569881a269c740457be9e5bc7a615f82","Pravila: src/rules_krk.json bez oznaka pravne provjere nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
   // nova i izmijenjena pravila (Omišalj, Dobrinj, Vrbnik 2024.): izvan sažetka; svaka brojka mora biti u svom doslovnom navodu

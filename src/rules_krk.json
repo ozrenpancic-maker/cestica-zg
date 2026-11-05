@@ -6022,6 +6022,105 @@
         "Oblikovanje i nagib krova: čl. 62. (goranska tradicijska gradnja), nije obrađeno.",
         "Višestambene građevine (Čabar, Gerovo, Tršće, Prezid) nisu obrađene."
       ]
+    },
+    "LOKVE": {
+      "kod": "PPUO Lokve",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Lokve (SN PGŽ 43/2004) s I. izmjenama (Službene novine Općine Lokve 2/2017) i II. izmjenama (4/2025); članci o obiteljskim građevinama spojeni ručno",
+        "sn": "Službene novine PGŽ 43/2004; Službene novine Općine Lokve 2/2017 i 4/2025",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1593",
+        "pdf": "https://zavod.pgz.hr/sn_jls/Lokve/2025_04_1593_donosenje.pdf",
+        "status": "na snazi (II. izmjene 2025.)",
+        "provjera": "Čl. 29.–35. osnovnog teksta (sn.pgz.hr id 2926), izmjene čl. 25., 30., 31., 33. iz I. izmjena 2017. (PDF Zavoda id 1262) i odluka o II. izmjenama 2025. (čl. 26., 26.a, 34., 43.a — ne mijenjaju uvjete za obiteljske građevine). Županijski sloj navodi SN 04/25. Preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Tekst je ručno spojen iz tri glasila; elaborat II. izmjena kod Zavoda nema čitljiv tekst."
+        }
+      },
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "29.",
+        "txt": "Neposrednim provođenjem odredbi ovog Plana unutar građevnih područja naselja grade se obiteljske građevine i višeobiteljske građevine do tri stana.",
+        "msg": "Neizgrađeni dio: provjeri obvezu UPU-a (čl. 179., izmjena 2025.) u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "Za prizemnu kuću manja čestica: samostojeća 300 m² (širina 15 m), dvojna 240 m² (11 m); prizemne kuće 3 m od međe (čl. 30., 32.)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska građevina",
+          "opis": "najviše dva stana (čl. 25., izmjena 2017.)",
+          "clanak": "30.–33.",
+          "gbpMax": null,
+          "etaze": "najviše 3 nadzemne etaže (izmjena 2017.)",
+          "visina": 8.0,
+          "visinaOpis": "8 m do vijenca (izmjena 2017.)",
+          "slob": {
+            "minC": 320,
+            "izg": 0.3,
+            "kis": 0.7,
+            "kisPodrum": 0.7,
+            "tlMin": 70,
+            "tlMax": null,
+            "napomena": "Za P+1 i više; širina čestice 16 m, građevine najmanje 8 m (čl. 30.)."
+          },
+          "dvoj": {
+            "minC": 260,
+            "izg": 0.4,
+            "kis": 0.7,
+            "kisPodrum": 0.7,
+            "tlMin": 60,
+            "tlMax": null,
+            "napomena": "Za P+1; širina čestice 12 m (čl. 30.)."
+          },
+          "txt": {
+            "izg": "za slobodnostojeće građevine: 0,3",
+            "kis": "za slobodnostojeće građevine: 0,7"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "32.",
+        "min": 4,
+        "opis": "h/2, najmanje 4 m (bez otvora 3 m; prizemne 3 m)",
+        "opisIznimka": "Osim unutar povijesne seoske cjeline.",
+        "txt": "i ne manje od 4 metra od granice građevne čestice"
+      },
+      "regulacija": {
+        "clanak": "35.",
+        "ostale": 6,
+        "opis": "građevni pravac najmanje 6 m od ruba ceste",
+        "txt": "Građevni pravac, za građevine uz ostale ceste, minimalno je udaljen 6 m od ruba ceste."
+      },
+      "zelenilo": {
+        "clanak": "—",
+        "min": null,
+        "opisNaziv": "Zelenilo (nije pronađeno)",
+        "txt": ""
+      },
+      "pristup": {
+        "napomena": "Podaci nisu dostupni."
+      },
+      "napomene": [
+        "Visina 8 m i tri nadzemne etaže iz I. izmjena 2017. (čl. 33. odluke: u čl. 31. broj »7« zamjenjuje se brojem »8«).",
+        "Krov u pravilu dvostrešan, nagib prema susjednim građevinama (čl. 27.).",
+        "Višeobiteljske i višestambene građevine nisu obrađene."
+      ]
     }
   },
   "oblici": [
