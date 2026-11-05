@@ -1428,6 +1428,12 @@ async function krkTests(){
   // Mali Lošinj: skupina naselja Mali Lošinj i Osor prepoznaje se po nazivu naselja
   Object.assign(gp,{OPCINA_GRAD:"MALI LOŠINJ",NASELJE:"Mali Lošinj"}); tm=await reinspect();
   ok(/samo u izdvojenim dijelovima naselja/.test(tm),"Mali Lošinj, naselje Mali Lošinj: napomena o izdvojenim dijelovima (čl. 52. i 54.)");
+  // Lovran: PPUO (SN 38/2007, 37/2010, 12/2020), čl. 20.–27.
+  Object.assign(gp,{OPCINA_GRAD:"LOVRAN",OZNAKA_NAMJENE:"NA",NASELJE:"Medveja",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
+  tm=await reinspect(); M=w.__krkCalc;
+  ok(M&&M.plan==="PPUO Lovran"&&!M.minOk&&Math.abs(M.tl-Math.min(180,0.3*M.A))<0.6&&Math.abs(M.gbpN-0.6*M.A)<1.5&&/9 m, ukupna 11 m/.test(tm),"Lovran samostojeća: čestica 599 m² manja od 600 m², kig 0,3, tlocrt do 180 m², kis 0,6, 9 m (SN 12/2020)");
+  gp.NASELJE="Lovran"; tm=await reinspect();
+  ok(/ne grade se neposredno prema PPUO-u/.test(tm),"Lovran, naselje Lovran: kuće prema UPU-u (čl. 21.)");
   // UPU 1 Vrbnik (pročišćeni tekst 2019. + izmjene SN 34/2024), čl. 83.
   plans.push({GRAD_OPCINA:"Vrbnik",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Urbanistički plan uređenja UPU 1 Vrbnik – NA 1 Odredbe za provedbu (pročišćeni tekst)",SN_BROJ:"2024-46"});
   Object.assign(gp,{OPCINA_GRAD:"VRBNIK",OZNAKA_NAMJENE:"NA1",NASELJE:"Vrbnik",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
@@ -2308,7 +2314,7 @@ async function formulaTests(){
   // Plan Integrity v10: novo polje »citati« (doslovni navodi iz objave) ne mijenja postojeće brojke ni tekstove; ne ulazi u sažetak,
   // a njegovu doslovnost provjerava zaseban test (»PI v10 navodi«) prema tekstu SN PGŽ 19/2016
   // Sljedeća faza: »legenda« (boje polja legende karte 4 za pilot prijedloga zone) i »provjereno« (stručno provjereni obuhvati) nisu pravila; ne ulaze u sažetak
-  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik"&&k!=="OPATIJA"&&k!=="RAB"&&k!=="NOVI VINODOLSKI"&&k!=="CRIKVENICA"&&k!=="MALI LOŠINJ"&&k!=="LOPAR"&&k!=="KRALJEVICA"&&k!=="MOŠĆENIČKA DRAGA"&&k!=="BAKAR"&&k!=="KASTAV"&&k!=="VIŠKOVO"&&k!=="JELENJE"&&k!=="ČAVLE"&&k!=="RAVNA GORA"&&k!=="VRBOVSKO"&&k!=="BROD MORAVICE"&&k!=="DELNICE"&&k!=="SKRAD"&&k!=="VINODOLSKA OPĆINA"&&k!=="CRES").map(([k,v])=>[k,bezPP(v)])):o;
+  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik"&&k!=="OPATIJA"&&k!=="RAB"&&k!=="NOVI VINODOLSKI"&&k!=="CRIKVENICA"&&k!=="MALI LOŠINJ"&&k!=="LOPAR"&&k!=="KRALJEVICA"&&k!=="MOŠĆENIČKA DRAGA"&&k!=="BAKAR"&&k!=="KASTAV"&&k!=="VIŠKOVO"&&k!=="JELENJE"&&k!=="ČAVLE"&&k!=="RAVNA GORA"&&k!=="VRBOVSKO"&&k!=="BROD MORAVICE"&&k!=="DELNICE"&&k!=="SKRAD"&&k!=="VINODOLSKA OPĆINA"&&k!=="CRES"&&k!=="LOVRAN").map(([k,v])=>[k,bezPP(v)])):o;
   const sha=crypto.createHash("sha256").update(JSON.stringify(bezPP(JSON.parse(fs.readFileSync(path.join(__dirname,"..","src","rules_krk.json"),"utf8"))))).digest("hex");
   ok(sha==="de538e7ddc17cdc11746acbca3217b77569881a269c740457be9e5bc7a615f82","Pravila: src/rules_krk.json bez oznaka pravne provjere nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
   // nova i izmijenjena pravila (Omišalj, Dobrinj, Vrbnik 2024.): izvan sažetka; svaka brojka mora biti u svom doslovnom navodu

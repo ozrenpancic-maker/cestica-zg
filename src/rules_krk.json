@@ -5287,6 +5287,115 @@
         "Krov kosi; u dijelu naselja do 30° (vidi skupinu naselja).",
         "Stambene (do 6 jedinica) i višestambene građevine samo posredno nisu obrađene."
       ]
+    },
+    "LOVRAN": {
+      "kod": "PPUO Lovran",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Lovran: osnovni tekst (SN PGŽ 38/2007) s izmjenama (SN PGŽ 37/2010) i II. izmjenama (SN PGŽ 12/2020), članci 14., 18.a i 20.–27. spojeni ručno",
+        "sn": "Službene novine PGŽ 38/2007, 37/2010 i 12/2020",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1431",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1431/ppuo-lovran-ii-id.pdf",
+        "status": "na snazi (II. izmjene i dopune 2020.)",
+        "provjera": "Čl. 20.–27. osnovnog teksta (sn.pgz.hr, id 13193) uz izmjene čl. 11.–15. Odluke iz 2010. (id 20661) i čl. 16.–21. Odluke iz 2020. (PDF Zavoda); županijski sloj navodi SN 12/20 kao zadnje glasilo. Preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Tekst je ručno spojen iz tri glasila; pročišćeni tekst nije pronađen."
+        }
+      },
+      "upozorenje": "Plan ne vrijedi za naselje Lovranska Draga (PP Parka prirode Učka i DPU). U prostoru ograničenja (ZOP) obiteljske kuće grade se neposredno samo u izgrađenom dijelu i ne u naselju Lovran; ondje i kod obveze UPU-a gradi se prema UPU-u (čl. 21.).",
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "14., 18.a i 21.",
+        "txt": "U građevinskim područjima naselja na području Općine Lovran koja se nalaze u ZOP-u za koja nije donesen urbanistički plan uređenja, ne može se graditi nova, rekonstruirati, odnosno zamijeniti postojeća pojedinačna ili više građevina na neizgrađenom i neuređenom građevinskom zemljištu.",
+        "msg": "Neizgrađeni dio: u prostoru ograničenja samo na uređenoj čestici, inače prema UPU-u (čl. 14., 18.a, 21.). Provjeri u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": "^LOVRAN$",
+          "naziv": "naselje Lovran",
+          "napomena": "U naselju Lovran obiteljske kuće ne grade se neposredno prema PPUO-u nego prema UPU-u (čl. 21.); u »Starom gradu« kig do 1,0 (čl. 22.)."
+        },
+        {
+          "naselje": "^LOVRANSKA DRAGA$",
+          "naziv": "Lovranska Draga",
+          "napomena": "Za Lovransku Dragu vrijede PP Parka prirode Učka i DPU Lovranska Draga, ne ovaj plan (čl. 21.)."
+        },
+        {
+          "naselje": ".*",
+          "naziv": "ostala naselja",
+          "napomena": "Najveći tlocrt 180 m² uključuje i pomoćne građevine na čestici (čl. 22.)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća",
+          "opis": "do 3 stana (čl. 20., izmjena 2010.)",
+          "clanak": "20.–23.",
+          "gbpMax": null,
+          "etaze": "tri nadzemne etaže i jedna pretežito ukopana ispod suterena ili prizemlja",
+          "visina": 9.0,
+          "visinaOpis": "9 m, ukupna 11 m",
+          "slob": {
+            "minC": 600,
+            "izg": 0.3,
+            "kis": 0.6,
+            "kisPodrum": 0.6,
+            "tlMin": 80,
+            "tlMax": 180
+          },
+          "dvoj": {
+            "minC": 400,
+            "izg": 0.4,
+            "kis": 0.8,
+            "kisPodrum": 0.8,
+            "tlMin": 60,
+            "tlMax": 180
+          },
+          "txt": {
+            "minC": "za slobodnostojeće građevine 600 m",
+            "izg": "za slobodnostojeće građevine 0,3",
+            "kis": "za slobodnostojeće građevine 0,6",
+            "tl": "iznosi 180 m 2 za oba tipa gradnje",
+            "visina": "najveća dopuštena visina iznosi 9,0 m - najveća dopuštena ukupna visina iznosi 11,0 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "27.",
+        "min": 4,
+        "opis": "najmanje 4 m",
+        "opisIznimka": "U »Starom gradu« prema lokalnim uvjetima.",
+        "txt": "moraju biti udaljene najmanje 4 metra od granice građevne čestice"
+      },
+      "regulacija": {
+        "clanak": "—",
+        "opis": "Podaci nisu dostupni (udaljenost kuće od regulacijskog pravca nije pronađena u čl. 20.–27.)",
+        "txt": ""
+      },
+      "zelenilo": {
+        "clanak": "—",
+        "min": null,
+        "opisNaziv": "Zelenilo (nije pronađeno u čl. 20.–27.)",
+        "txt": ""
+      },
+      "pristup": {
+        "napomena": "Podaci nisu dostupni."
+      },
+      "napomene": [
+        "Krov kosi, bačvasti, ravni ili drugog oblika; nagib prema pokrovu (čl. 33., izmjena 2020.).",
+        "Stambene građevine s 4 stana i vile nisu obrađene."
+      ]
     }
   },
   "oblici": [
