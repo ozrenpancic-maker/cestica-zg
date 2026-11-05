@@ -4826,6 +4826,199 @@
         "Nagib krova plan ne propisuje brojčano (t. 24.).",
         "Višeobiteljske građevine nisu obrađene."
       ]
+    },
+    "DELNICE": {
+      "kod": "PPUG Delnice",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Grada Delnica, odredbe za provođenje iz elaborata III. izmjena i dopuna (SN PGŽ 12/2024)",
+        "sn": "Službene novine PGŽ 12/2024 (III. izmjene i dopune)",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1714",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1714/ppug-delnica-iii-id.pdf",
+        "status": "na snazi (III. izmjene i dopune 2024.)",
+        "provjera": "Čl. 22.–35. iz elaborata III. izmjena (PDF Zavoda, cijele odredbe, tekst izvučen strojno), preuzeto 5. 11. 2026. Precrtani tekst se pri strojnom čitanju ne razlikuje od važećeg.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Elaborat izmjena, ne službeni pročišćeni tekst."
+        }
+      },
+      "upozorenje": "Plan ne propisuje koeficijent iskorištenosti (kis) ni broj etaža obiteljske kuće; GBP ograničuju kig i visina 7,5 m. Najmanja čestica i udaljenost od međe ovise o tome je li kuća prizemna ili katna; aplikacija računa s katnom.",
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ],
+        [
+          "ugr",
+          "u nizu"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "22.",
+        "txt": "2.2.1. Neposredna provedba",
+        "msg": "Neizgrađeni dio: provjeri obvezu UPU-a u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "U gusto izgrađenom središtu Delnica kod interpolacije kig i kis prema susjednim građevinama, određuje UPU (čl. 26.–28.). U izdvojenom dijelu Dedin (N4-5) posebni uvjeti (čl. 41.a)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća",
+          "opis": "najviše dvije stambene jedinice (čl. 24.)",
+          "clanak": "26.–28.",
+          "gbpMax": null,
+          "etaze": "Podaci nisu dostupni (plan razlikuje prizemne i katne kuće; nadozid potkrovlja do 1,2 m)",
+          "visina": 7.5,
+          "visinaOpis": "7,5 m od najnižeg terena do vrha nadozida potkrovlja",
+          "slob": {
+            "minC": 320,
+            "izg": 0.3,
+            "kis": null,
+            "kisPodrum": null,
+            "tlMin": null,
+            "tlMax": null,
+            "napomena": "Katna: 320 m², širina 16 m, od međe 4 m; prizemna: 280 m², širina 14 m, od međe 3 m; dubina čestice najmanje 20 m (čl. 26.)."
+          },
+          "dvoj": {
+            "minC": 220,
+            "izg": 0.4,
+            "kis": null,
+            "kisPodrum": null,
+            "tlMin": null,
+            "tlMax": null,
+            "napomena": "Katna 220 m² (širina 11 m), prizemna 200 m² (širina 10 m) (čl. 27.)."
+          },
+          "ugr": {
+            "minC": 150,
+            "izg": 0.5,
+            "kis": null,
+            "kisPodrum": null,
+            "tlMin": null,
+            "tlMax": null,
+            "napomena": "Širina čestice najmanje 5 m (čl. 28.)."
+          },
+          "txt": {
+            "minC": "minimalna površina građevne čestice - 320 m2",
+            "izg": "kig max. = 0,30",
+            "visina": "Maksimalna visina građevine - 7,5 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "26.",
+        "min": 4,
+        "opis": "katna kuća 4 m, prizemna 3 m",
+        "opisIznimka": "",
+        "txt": "udaljenost građevine od ruba građevne čestice – minimalno 4 m"
+      },
+      "regulacija": {
+        "clanak": "30.",
+        "ostale": 6,
+        "opis": "najmanje 6 m od ruba čestice nerazvrstane ceste; uz državne i županijske ceste prema propisima o cestama",
+        "txt": "Građevinski pravac, za građevine uz nerazvrstane ceste, minimalno je udaljen 6m od ruba građevne čestice"
+      },
+      "zelenilo": {
+        "clanak": "34.",
+        "min": 0.25,
+        "txt": "Ozelenjena površina građevne čestice ne smije biti manja od 25 %."
+      },
+      "pristup": {
+        "napomena": "Priključak na javnu prometnu površinu; u izgrađenom dijelu iznimno samo pješački pristup najmanje 2 m, najviše 30 m (čl. 35.)."
+      },
+      "napomene": [
+        "Krov ravni ili kosi; kosi najmanje 30°, najveći nagib nije propisan (čl. 32.).",
+        "Višestambene građevine nisu obrađene."
+      ]
+    },
+    "SKRAD": {
+      "kod": "PPUO Skrad",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Skrad, odredbe za provođenje iz elaborata II. izmjena i dopuna (SN PGŽ 3/2021)",
+        "sn": "Službene novine PGŽ 3/2021 (II. izmjene i dopune)",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1520",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1520/ppuo-skrad-ii-id.pdf",
+        "status": "na snazi (II. izmjene i dopune 2021.)",
+        "provjera": "Čl. 4.–9. iz elaborata II. izmjena (PDF Zavoda, tekst izvučen strojno), preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Elaborat izmjena, ne službeni pročišćeni tekst."
+        }
+      },
+      "upozorenje": "Plan propisuje uvjete u tablici (Pmin, širina, kig, zelenilo, katnost, udaljenosti) i ne propisuje kis ni visinu u metrima. Za površine isključivo stambene namjene (oznaka S) vrijedi strože: 600 m², kig 0,25, zelenilo 40 %, 10 m od ceste (čl. 9.).",
+      "oblici": [
+        [
+          "slob",
+          "samostojeća"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "4.",
+        "txt": "Neposredna provedba plana moguća je na svim površinama za koje ovim Planom nije određena obaveza izrade Urbanističkog plana uređenja.",
+        "msg": "Neposredno svugdje gdje nije propisan UPU (čl. 4.). Provjeri u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "mješovita, pretežito stambena namjena",
+          "napomena": "Za izgrađene čestice mogu se zadržati postojeća površina, širina i udaljenosti (čl. 7.). Najviše 1 stan na 100 m² čestice."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Stambena građevina",
+          "opis": "najviše 1 stan na 100 m² čestice (čl. 7.)",
+          "clanak": "7.",
+          "gbpMax": null,
+          "etaze": "P+1",
+          "visina": null,
+          "visinaOpis": "Podaci nisu dostupni (katnost P+1)",
+          "slob": {
+            "minC": 300,
+            "izg": 0.4,
+            "kis": null,
+            "kisPodrum": null,
+            "tlMin": null,
+            "tlMax": null,
+            "napomena": "Širina čestice na regulacijskom pravcu najmanje 12 m (čl. 7.)."
+          },
+          "txt": {}
+        }
+      },
+      "meda": {
+        "clanak": "7.",
+        "min": 3,
+        "opis": "najmanje 3 m",
+        "opisIznimka": "Na strmim terenima uz suglasnost i manje.",
+        "txt": ""
+      },
+      "regulacija": {
+        "clanak": "7.",
+        "ostale": 5,
+        "opis": "najmanje 5 m",
+        "txt": ""
+      },
+      "zelenilo": {
+        "clanak": "7.",
+        "min": 0.2,
+        "txt": ""
+      },
+      "pristup": {
+        "napomena": "Podaci nisu dostupni."
+      },
+      "napomene": [
+        "Vrijednosti su iz tablice čl. 7. (strojno izvučena tablica)."
+      ]
     }
   },
   "oblici": [

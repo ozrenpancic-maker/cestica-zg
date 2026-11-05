@@ -1452,11 +1452,12 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   const base=isUpu?S.izgr:S.izgr;
   const A0=area?(base.every(r=>r.share!=null)?Math.min(1,base.reduce((a,r)=>a+r.share,0))*area:area):null;
   const PP=d.parcel?d.parcel.properties:null, AS=PP&&area?areaSel(PP,area):null, A=A0&&AS?A0*AS.f:A0, Aall=AS?AS.a:area;
-  if(!A){h+=`<p class="meta">Čestica nije pronađena u katastru, pa se izračun ne može napraviti. Pravila: najmanja čestica ${fmt(P.minC)} m², kig ${dec(P.izg)}, kis ${dec(P.kis)}, visina ${dec(T.visina)} m.</p>`; return h;}
+  if(!A){h+=`<p class="meta">Čestica nije pronađena u katastru, pa se izračun ne može napraviti. Pravila: najmanja čestica ${fmt(P.minC)} m², kig ${dec(P.izg)}, ${P.kis==null?"kis nije propisan":"kis "+dec(P.kis)}, visina ${T.visina!=null?dec(T.visina)+" m":"nije propisana"}.</p>`; return h;}
   const slope=d.slope&&d.slope.v?d.slope.v.slope:null, kosi=T.kosi&&slope!=null&&slope>T.kosi.nagib, tlV=!!(P.tlVelika&&A>P.tlVelika.prag);
   if(tlV) P={...P,tlMax:P.tlVelika.tl};
   if(P.izgVelika&&A>P.izgVelika.prag) P={...P,izg:P.izgVelika.izg};
-  const tl=Math.min(A*P.izg,P.tlMax||Infinity), gbpN=Math.min(A*P.kis,T.gbpMax||Infinity), gbpP=RS.kisUkupni?null:Math.min(A*P.kisPodrum,T.gbpUkupno&&T.gbpMax?T.gbpMax:Infinity);
+  const noKis=P.kis==null; // plan ne propisuje kis (npr. PPUG Delnice, PPUO Skrad): GBP se ne računa
+  const tl=Math.min(A*P.izg,P.tlMax||Infinity), gbpN=noKis?(T.gbpMax||null):Math.min(A*P.kis,T.gbpMax||Infinity), gbpP=RS.kisUkupni||noKis?null:Math.min(A*P.kisPodrum,T.gbpUkupno&&T.gbpMax?T.gbpMax:Infinity);
   const minOk=A>=P.minC, minEx=!minOk&&!!P.minCIznimno&&A>=P.minCIznimno, tlOk=tl>=P.tlMin;
   // prostor za kuću: najmanja udaljenost od međa, na dijelu čestice u GP-u naselja
   let env=null; try{if(d.parcel){let g=turf.buffer(d.parcel,-RS.meda.min/1000,{units:"kilometers"});
@@ -1503,7 +1504,7 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
       ...(T.kosi?[{tekst:"na kosom terenu (nagib prirodnog terena veći od "+T.kosi.nagib+" %) plan propisuje drugu visinu ("+dec(T.kosi.visina)+" m) i broj etaža; nagib terena nije potvrđen",razrijeseno:false}]:[]),
       ...(zv0==="C"?[{tekst:"zona zaštite »C« (čl. 85. st. 2.): najviše dvije nadzemne etaže, bez povišenja nadozida za potkrovlje",razrijeseno:false}]:[]),...piU]})); vis.sazetak=dec(T.visina)+" m"+(T.etaze?" · "+T.etaze:"");}
   const pzT=pzSet("calc-tlocrt","Najveći tlocrt (teorijski, kig)",fmt(tl)+" m²",piWith(pzCalc({metoda:"površina "+d1(A)+" m² × kig "+dec(P.izg)+" = "+d1(A*P.izg)+" m²"+(P.tlMax?", najviše "+fmt(P.tlMax)+" m²":"")},ul0),{lanac:[...piL,osn,cl("izg",tx.izg),tlV?cl("tlVelika",tx.tl):cl("tl",tx.tl)],uvjeti:[...piU,...(P.tlVelika?[{tekst:tlV?"najveći tlocrt "+fmt(P.tlVelika.tl)+" m² vrijedi jer je čestica veća od "+fmt(P.tlVelika.prag)+" m²; ovisi o površini građevne čestice":"na česticama većim od "+fmt(P.tlVelika.prag)+" m² najveći tlocrt je "+fmt(P.tlVelika.tl)+" m²",razrijeseno:!tlV}]:[])]}));
-  const pzG=pzSet("calc-gbp","Najveći GBP (teorijski, kis)",fmt(gbpN)+" m²",piWith(pzCalc({metoda:"površina "+d1(A)+" m² × kis "+dec(P.kis)+" = "+d1(A*P.kis)+" m²"+(T.gbpMax?", najviše "+fmt(T.gbpMax)+" m²":"")},ul0),{lanac:[...piL,osn,cl("kis",tx.kis),cl("gbp",tx.gbp)],uvjeti:piU}));
+  const pzG=noKis?null:pzSet("calc-gbp","Najveći GBP (teorijski, kis)",fmt(gbpN)+" m²",piWith(pzCalc({metoda:"površina "+d1(A)+" m² × kis "+dec(P.kis)+" = "+d1(A*P.kis)+" m²"+(T.gbpMax?", najviše "+fmt(T.gbpMax)+" m²":"")},ul0),{lanac:[...piL,osn,cl("kis",tx.kis),cl("gbp",tx.gbp)],uvjeti:piU}));
   if(env) pzSet("calc-prostor","Prostor za građevinu nakon odmaka od međa",fmt(env.area)+" m²",piWith(pzCalc({metoda:RS.meda.min+" m od međa, bez regulacijskog pravca"},[pzA,pzR,pzZ]),{lanac:[...piL,cl("meda",RS.meda.txt)],
     uvjeti:[{tekst:"regulacijski pravac i kategorija ceste nisu uračunati",razrijeseno:false},...(krkH2(RS)?[{tekst:"pravilo h/2 nije uračunato",razrijeseno:false}]:[]),...piU]}));
   // sukob pravila istog plana: nagib krova u zoni zaštite »C« (čl. 85. st. 2.) i opće pravilo krova (čl. 38. d); prednost nije utvrđena (docs/plan-integrity/cl38-cl85.md)
@@ -1523,7 +1524,7 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
    window.__tipCmp=rows; h+=tipCmpHtml(rows,A,AS&&AS.naziv?AS.naziv+" površina":null);}
   if(env){const RD=krkRegDist(RS), roads=d.env&&d.env.v?d.env.v.roadLines:null, G1=gradivo(d.parcel,env.geom,RS.meda.min,RD?RD.d:null,roads), G2=RD&&RD.max?gradivo(d.parcel,env.geom,RS.meda.min,RD.max,roads):null;
     h+=gpHtml(G1,tl,`${RS.meda.min} m od međa (${RS.meda.opis||""}, čl. ${RS.meda.clanak})`,RD?`prvi scenarij ${RD.d} m${RD.max?", drugi "+RD.max+" m":""}; plan: ${RS.regulacija.opis} (čl. ${RS.regulacija.clanak})`:"",{alt:G2?{G:G2,d:RD.max,naziv:"razvrstana ili javna cesta"}:null,napomena:krkProstorNapomena(RS,RD,G1,G2)});}
-  const chips=[(minOk?"čestica dovoljna":minEx?"čestica: samo prag iznimke":"čestica premala"),"tlocrt do "+fmt(tl)+" m²","GBP do "+fmt(gbpN)+" m²","visina "+dec(T.visina)+" m"];
+  const chips=[(minOk?"čestica dovoljna":minEx?"čestica: samo prag iznimke":"čestica premala"),"tlocrt do "+fmt(tl)+" m²",noKis?(gbpN?"GBP do "+fmt(gbpN)+" m²":"kis nije propisan"):"GBP do "+fmt(gbpN)+" m²",T.visina!=null?"visina "+dec(T.visina)+" m":"visina nije propisana"];
   h+=`<div class="chips">${chips.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`;
   const row=(l,v,cls="")=>`<div class="row"><span>${l}</span><span class="${cls}">${v}</span></div>`;
   h+=`<details class="acc" data-k="krkCalc" open><summary><span>Izračun za ovu česticu</span><b class="${minOk&&tlOk?"good":minEx?"":"bad"}">${esc(chips.slice(0,3).join(" · "))}</b></summary><div class="calc">`;
@@ -1538,7 +1539,8 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   else h+=`<p class="meta" style="margin:4px 0">Teorijski izračun iz kig-a i kis-a ${pzTag(pzT)}. Ne uzima u obzir pristup, parkiranje, komunalnu opremljenost ni regulacijski pravac (vidi „Pouzdanost podataka”).</p>`;
   h+=row(`Najveći tlocrt (kig ${dec(P.izg)}${P.tlMax?", najviše "+fmt(P.tlMax)+" m²":""}) ${pzTag(pzT)}`,fmt(tl)+" m²",tlOk?"":"bad");
   if(!tlOk) h+=`<p class="meta">Najmanji dopušteni tlocrt je ${fmt(P.tlMin)} m², a ova čestica dopušta manje; gradnja ovog tipa nije moguća.</p>`;
-  if(RS.kisUkupni){h+=row(`Najveći GBP (kis ${dec(P.kis)}${T.gbpMax?", najviše "+fmt(T.gbpMax)+" m²":""}) ${pzTag(pzG)}`,fmt(gbpN)+" m²");
+  if(noKis){h+=row("Najveći GBP",gbpN?"najviše "+fmt(gbpN)+" m²":"Podaci nisu dostupni")+`<p class="meta">Plan ne propisuje koeficijent iskorištenosti (kis); GBP ograničuju tlocrt, broj etaža i visina.</p>`;}
+  else if(RS.kisUkupni){h+=row(`Najveći GBP (kis ${dec(P.kis)}${T.gbpMax?", najviše "+fmt(T.gbpMax)+" m²":""}) ${pzTag(pzG)}`,fmt(gbpN)+" m²");
     if(T.kosi&&T.kosi.kis) h+=`<p class="meta">Na terenu nagiba većem od ${T.kosi.nagib} % kis može biti ${dec(T.kosi.kis)} (GBP do ${fmt(Math.min(A*T.kosi.kis,T.gbpMax))} m²).</p>`;}
   else{h+=row(`Najveći GBP nadzemno (kis ${dec(P.kis)}${T.gbpMax?", najviše "+fmt(T.gbpMax)+" m²":""}) ${pzTag(pzG)}`,fmt(gbpN)+" m²")+row(`GBP s podrumom (kis ${dec(P.kisPodrum)}${T.gbpUkupno&&T.gbpMax?", ukupno najviše "+fmt(T.gbpMax)+" m²":""})`,fmt(gbpP)+" m²");
     if(T.gbpNapomena) h+=`<p class="meta">${esc(T.gbpNapomena)}</p>`;}
@@ -1574,14 +1576,14 @@ function krkCostHtml(d,inPilot,jlsName){
   const K=RULES_KRK&&RULES_KRK.komunalniDoprinos;
   const pr=naHtml("Priključci i dozvole","Naknade za priključenje (vodovod, kanalizacija, struja) još nisu obrađene.");
   if(!inPilot||!K) return h+naHtml("Komunalni doprinos",`Komunalni doprinos prema odluci jedinice lokalne samouprave${jlsName?" ("+jlsName+")":""} još nije obrađen.`)+pr;
-  const c=window.__krkCalc, vol0=c?Math.round(c.gbpN*3):"", Z=krkKdZona(d), eur=Z?Math.round(Z.z[2]/K.tecaj*100)/100:null;
+  const c=window.__krkCalc, vol0=c&&c.gbpN?Math.round(c.gbpN*3):"", Z=krkKdZona(d), eur=Z?Math.round(Z.z[2]/K.tecaj*100)/100:null;
   let st={}; try{st=JSON.parse(localStorage.getItem("krkKd")||"{}")||{}}catch(e){}
   h+=`<details class="acc" data-k="krkKd" open><summary><span>Komunalni doprinos (Grad Krk)</span><b id="krkKdSum"></b></summary><div class="acc-body">`;
   h+=`<p class="meta" style="margin-top:0"><a href="${esc(K.url)}" target="_blank" rel="noopener" style="color:var(--accent)">${esc(K.odluka)}</a>, ${esc(K.sn)}, čl. 6. ${esc(K.napomena)}</p>`;
   if(Z) h+=`<p class="meta"><b>${esc(Z.z[0])}. zona</b> (${esc(Z.why)}): ${dec(Z.z[2].toFixed(2))} kn/m³ = <b>${dec(eur.toFixed(2))} €/m³</b>.</p>`;
   else h+=`<p class="meta">Zona nije prepoznata iz naselja; izaberi je u tablici ispod i upiši iznos.</p>`;
   h+=`<div class="kd"><label for="krkKdVol">Obujam građevine</label><input id="krkKdVol" type="number" inputmode="decimal" min="0" step="1" value="${esc(vol0)}"><span>m³</span></div>`;
-  h+=`<p class="meta" id="krkKdVolNote">${c?`Prijedlog obujma (samo informativna procjena aplikacije, nije propis): najveći nadzemni GBP (${fmt(c.gbpN)} m²) × 3 m. `:""}Kad postaviš kuću u simulatoru, obujam se računa iz njezina modela. Službeno se obračunava obujam iz projekta (čl. 4.).</p>`;
+  h+=`<p class="meta" id="krkKdVolNote">${c&&c.gbpN?`Prijedlog obujma (samo informativna procjena aplikacije, nije propis): najveći nadzemni GBP (${fmt(c.gbpN)} m²) × 3 m. `:""}Kad postaviš kuću u simulatoru, obujam se računa iz njezina modela. Službeno se obračunava obujam iz projekta (čl. 4.).</p>`;
   h+=`<div class="kd"><label for="krkKdRate">Iznos</label><input id="krkKdRate" type="number" inputmode="decimal" min="0" step="0.01" placeholder="€/m³" value="${esc(eur!=null?eur:"")}"><span>€/m³</span></div>`;
   h+=`<div class="kd"><label for="krkKdRed">Umanjenje</label><select id="krkKdRed" class="bsel">${[["1","puni obračun (bez povlastice)"],["0.3","povlašteni obračun (čl. 10.)"]].map(o=>`<option value="${o[0]}"${String(st.red||"1")===o[0]?" selected":""}>${o[1]}</option>`).join("")}</select></div>`;
   const chk=(id,on,t)=>`<label style="display:flex;gap:10px;align-items:center;margin:6px 0"><input type="checkbox" id="${id}"${on?" checked":""} style="flex:0 0 auto"><span>${t}</span></label>`;
