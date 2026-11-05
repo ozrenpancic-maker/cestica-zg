@@ -1878,6 +1878,189 @@
         "U zoni M-2 grade se višestambene i stambeno-poslovne građevine (čl. 47.), koje nisu obrađene.",
         "Potporni zidovi do 1,5 m, iznimno kaskadno (čl. 46.)."
       ]
+    },
+    "UPU 1 Vrbnik": {
+      "kod": "UPU 1 Vrbnik",
+      "jls": "VRBNIK",
+      "prepoznaj": "UPU\\s*1\\s*Vrbnik|naselja\\s+Vrbnik\\s*\\(NA\\s*1\\)",
+      "izvor": {
+        "naziv": "Urbanistički plan uređenja UPU 1 Vrbnik – NA 1, odredbe za provedbu (pročišćeni tekst SN PGŽ 11/2019) s izmjenama SN PGŽ 34/2024",
+        "sn": "Službene novine PGŽ 33/09, 35/17, 2/18 (pročišćeni tekst), 7/19, 11/19 (pročišćeni tekst) i 34/2024",
+        "url": "http://www.sn.pgz.hr/default.asp?Link=odluke&id=48255",
+        "status": "na snazi (izmjene SN 34/2024; pročišćeni tekst SN 46/2024 nije pregledan)",
+        "provjera": "Čl. 16., 19., 27., 79. i 83. iz pročišćenog teksta SN 11/2019 (mrežni tekst), s izmjenama iz SN 34/2024 (mrežni tekst) primijenjenima ručno. Preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Izmjene 2024. primijenjene su ručno; pročišćeni tekst SN 46/2024 nije pregledan."
+        }
+      },
+      "upozorenja": [
+        "Izmjene iz 2024. (SN PGŽ 34/2024) primijenjene su ručno na pročišćeni tekst iz 2019."
+      ],
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ]
+      ],
+      "kisUkupni": true,
+      "zone": [
+        [
+          "M1-1",
+          "M1-1 – mješovita, pretežito stambena (čl. 79., 83.)"
+        ],
+        [
+          "M1-2",
+          "M1-2 – mješovita, pretežito stambena (čl. 79., 83.)"
+        ],
+        [
+          "druga",
+          "druga zona (npr. T1: stambene zgrade nisu moguće)"
+        ]
+      ],
+      "zonaNapomena": "Obiteljske kuće grade se u zonama M1-1 i M1-2 (čl. 79. i 83.); u zoni T1 stambene zgrade nisu moguće. Zona se ne može odrediti automatski; provjeri je na kartografskom prikazu UPU-a ili u lokacijskoj informaciji.",
+      "pristup": {
+        "napomena": "Na čestici većoj od 1500 m² prizemlje do 350 m² (čl. 83., SN 34/2024). U povijesnoj graditeljskoj cjelini uz gradnju na regulacijskom pravcu kig do 1,0; vrijede konzervatorski uvjeti (čl. 80., 83.)."
+      },
+      "napomene": [
+        "Kis je nadzemni (čl. 83.); podrum ne ulazi u njega.",
+        "Krov kosi, nagib 17–22° (čl. 84.).",
+        "Višeobiteljske zgrade (čl. 85.) brisane su izmjenama 2024."
+      ],
+      "simulator": {
+        "krov": {
+          "clanak": "84.",
+          "nagibMin": 17,
+          "nagibMax": 22,
+          "ravniDopusten": false
+        }
+      },
+      "zoneSet": {
+        "M1-1": {
+          "tipovi": {
+            "obit": {
+              "naziv": "Obiteljska kuća",
+              "opis": "samostojeća ili dvojna (čl. 83.; nizovi brisani izmjenama 2024.)",
+              "clanak": "83.",
+              "gbpMax": null,
+              "etaze": "2 nadzemne etaže i podrum",
+              "visina": 6.5,
+              "visinaOpis": "6,5 m do vijenca",
+              "kosi": {
+                "nagib": 12,
+                "visina": 9.5,
+                "etaze": "podrum i 3 nadzemne etaže, od kojih je jedna obvezno suteren"
+              },
+              "slob": {
+                "minC": 400,
+                "izg": 0.3,
+                "kis": 0.6,
+                "kisPodrum": 0.6,
+                "tlMin": 80,
+                "tlMax": 200
+              },
+              "dvoj": {
+                "minC": 300,
+                "izg": 0.4,
+                "kis": 0.8,
+                "kisPodrum": 0.8,
+                "tlMin": 60,
+                "tlMax": 200
+              },
+              "txt": {
+                "minC": "najmanja dopuštena površina građevne čestice iznosi: - za slobodnostojeće zgrade: 400 m2, - za dvojne zgrade: 300 m2",
+                "tl": "najmanja dopuštena površina tlocrtne projekcije nove obiteljske kuće iznosi: - za slobodnostojeće zgrade: 80 m2, - za dvojne zgrade: 60 m2 … najveća dopuštena površina tlocrtne projekcije nove obiteljske kuće iznosi 200 m2 za sve tipove gradnje",
+                "izg": "najveći dopušteni koeficijent izgrađenost građevne čestice (Kig): - za slobodnostojeće zgrade 0,30, - za dvojne zgrade 0,40",
+                "kis": "najveći dopušteni koeficijent iskorištenosti (Kis) nadzemno iznosi: - za slobodnostojeće zgrade 0,60, - za dvojne zgrade 0,80",
+                "visina": "najveća dopuštena visina zgrade iznosi 6,50 m, mjereno od kote konačno zaravnatog terena do gornjeg ruba krovnog vijenca za zgrade sa 2 nadzemne etaže",
+                "kosi": "U točki i) broj \"10,5\" zamjenjuje se brojem \"9,5\", a broj \"1,50\" brojem \"0,50\".",
+                "dvoj": "za dvojne zgrade: 300 m2"
+              }
+            }
+          },
+          "meda": {
+            "clanak": "16.",
+            "min": 4,
+            "opis": "h/2, najmanje 4 m",
+            "opisIznimka": "Osim unutar povijesnih graditeljskih cjelina.",
+            "txt": "moraju biti udaljene najmanje pola visine (h/2) od susjedne zgrade i ne manje od 4,0 m od granice građevne čestice"
+          },
+          "regulacija": {
+            "clanak": "19.",
+            "opis": "4 m (nerazvrstane, lokalne i županijske ceste)",
+            "txt": "U članku 19. stavak 1. broj 5,0 zamjenjuje se brojem 4,0."
+          },
+          "zelenilo": {
+            "clanak": "27.",
+            "min": 0.2,
+            "txt": "najmanje 20% građevne čestice mora se urediti visokim i niskim zelenilom"
+          }
+        },
+        "M1-2": {
+          "tipovi": {
+            "obit": {
+              "naziv": "Obiteljska kuća",
+              "opis": "samostojeća ili dvojna (čl. 83.; nizovi brisani izmjenama 2024.)",
+              "clanak": "83.",
+              "gbpMax": null,
+              "etaze": "2 nadzemne etaže i podrum",
+              "visina": 6.5,
+              "visinaOpis": "6,5 m do vijenca",
+              "kosi": {
+                "nagib": 12,
+                "visina": 9.5,
+                "etaze": "podrum i 3 nadzemne etaže, od kojih je jedna obvezno suteren"
+              },
+              "slob": {
+                "minC": 400,
+                "izg": 0.3,
+                "kis": 0.6,
+                "kisPodrum": 0.6,
+                "tlMin": 80,
+                "tlMax": 200
+              },
+              "dvoj": {
+                "minC": 300,
+                "izg": 0.4,
+                "kis": 0.8,
+                "kisPodrum": 0.8,
+                "tlMin": 60,
+                "tlMax": 200
+              },
+              "txt": {
+                "minC": "najmanja dopuštena površina građevne čestice iznosi: - za slobodnostojeće zgrade: 400 m2, - za dvojne zgrade: 300 m2",
+                "tl": "najmanja dopuštena površina tlocrtne projekcije nove obiteljske kuće iznosi: - za slobodnostojeće zgrade: 80 m2, - za dvojne zgrade: 60 m2 … najveća dopuštena površina tlocrtne projekcije nove obiteljske kuće iznosi 200 m2 za sve tipove gradnje",
+                "izg": "najveći dopušteni koeficijent izgrađenost građevne čestice (Kig): - za slobodnostojeće zgrade 0,30, - za dvojne zgrade 0,40",
+                "kis": "najveći dopušteni koeficijent iskorištenosti (Kis) nadzemno iznosi: - za slobodnostojeće zgrade 0,60, - za dvojne zgrade 0,80",
+                "visina": "najveća dopuštena visina zgrade iznosi 6,50 m, mjereno od kote konačno zaravnatog terena do gornjeg ruba krovnog vijenca za zgrade sa 2 nadzemne etaže",
+                "kosi": "U točki i) broj \"10,5\" zamjenjuje se brojem \"9,5\", a broj \"1,50\" brojem \"0,50\".",
+                "dvoj": "za dvojne zgrade: 300 m2"
+              }
+            }
+          },
+          "meda": {
+            "clanak": "16.",
+            "min": 4,
+            "opis": "h/2, najmanje 4 m",
+            "opisIznimka": "Osim unutar povijesnih graditeljskih cjelina.",
+            "txt": "moraju biti udaljene najmanje pola visine (h/2) od susjedne zgrade i ne manje od 4,0 m od granice građevne čestice"
+          },
+          "regulacija": {
+            "clanak": "19.",
+            "opis": "4 m (nerazvrstane, lokalne i županijske ceste)",
+            "txt": "U članku 19. stavak 1. broj 5,0 zamjenjuje se brojem 4,0."
+          },
+          "zelenilo": {
+            "clanak": "27.",
+            "min": 0.2,
+            "txt": "najmanje 20% građevne čestice mora se urediti visokim i niskim zelenilom"
+          }
+        }
+      }
     }
   },
   "ostaleJls": {
