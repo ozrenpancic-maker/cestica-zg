@@ -82,3 +82,17 @@ Bez izračunatih uvjeta gradnje usporedbe nema.
 - postavljanje u simulator i napomene;
 - spremanje;
 - izgled u 3D.
+
+## Ponovna provjera 5. 11. 2026. poslijepodne
+
+Sve stranice proizvođača ponovno su otvorene i uspoređene s katalogom. Objavljene površine, sobe, visine, zemljište i nagibi podudaraju se. Jedino se Partas Q 230 tada nije mogao ponovno otvoriti, pa su njegove vrijednosti iz prvog preuzimanja istog dana.
+
+S detaljnih stranica dopunjeno je:
+- **Neto površina po etažama za kuće s potkrovljem i dvije katnice Domprojekta.** Tlocrt se sada procjenjuje iz neto površine prizemlja. To je donja granica: stvarni vanjski tlocrt veći je za debljinu zidova.
+- **Krov iz opisa modela:**
+  - dvostrešni: Doris, Alma, Ema, Lena, Laura (nagib nije naveden);
+  - višestrešni: Marinela (u simulatoru četverostrešni);
+  - ravni: Elena, Gloria.
+  - Venera, Leonida, Renata, Emanuela i Ingrid ne navode krov.
+- **Balkon ili lođa:** iz opisa modela. 3D pogled tada crta balkon sa staklenom ogradom.
+- **Broj soba:** Marinela 3, Ingrid 3, Lina 4 spavaće sobe, Petra 4 sobe na katu.

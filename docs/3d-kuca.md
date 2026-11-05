@@ -11,6 +11,8 @@ Model ima:
 - **zidove:** od žbuke s podnožjem; drvena obloga u izgledu »moderni s drvenom oblogom«;
 - **otvore:** prozore s okvirom, klupčicom i roletom; ulaz s vratima i nadstrešnicom (kosom ili ravnom) i podestom; staklenu stijenu u prizemlju prema vrtu; prozore u zabatima kad je krov visok;
 - **ostalo:** garažu s ravnim krovom i sekcijskim vratima, solarne panele (na ravnom krovu na nosačima, na kosom na kosini prema odabranoj orijentaciji);
+- **okoliš:** terasa prema vrtu (kad okućnica nema svoju), kod modernog ravnog krova s pergolom, šljunčani rub uz zidove, kontaktna sjena;
+- **balkon** sa staklenom ogradom kad ga model iz kataloga ima: kod katnice na katu prema vrtu, kod kuće s potkrovljem na zabatu;
 - **svjetlo:** sunce s istim smjerom kao sjena na tlu, sjene na samoj kući (streha na zidu, nadstrešnica, dimnjak).
 
 Mjere su iste kao u simulatoru: širina, dubina, visina do vijenca, nagib, smjer sljemena i okret. Materijali i raspored prozora samo su ilustracija.
@@ -26,4 +28,4 @@ Bez WebGL-a, ili ako se biblioteka ne učita, ostaje dosadašnji model od kvadar
 - zidovi prema simulatoru;
 - ulaz, staklena stijena, obloga, garaža, paneli.
 
-Ukupno 1101 / 1101.
+Ukupno 1107 / 1107.

@@ -6,6 +6,8 @@ Partas neto, bruto, visinu zgrade i najmanju širinu i duljinu zemljišta."""
 import json, pathlib
 root = pathlib.Path(__file__).resolve().parents[2]
 D = "2026-11-05"
+# ponovna provjera svih stranica 5. 11. 2026. poslijepodne: sve vrijednosti iste; dopunjeno: neto po etažama, krov, balkon, sobe.
+# Partas Q 230 tada se nije mogao ponovno učitati (stranica nije odgovarala); vrijednosti su iz prvog preuzimanja istog dana.
 
 def partas(q, neto, bruto, sobe, vis, sir, dul, nagib, krov, kat, katIzvor, nap=None):
     return dict(id=f"partas-q{q}", proizvodjac="Partas", naziv=f"Q {q}", kategorija=kat, kategorijaIzvor=katIzvor,
@@ -13,16 +15,16 @@ def partas(q, neto, bruto, sobe, vis, sir, dul, nagib, krov, kat, katIzvor, nap=
                 krov={"tip": krov, "nagib": nagib, "opis": ("ravni krov" if krov == "ravni" else "kosi krov") + f", nagib {str(nagib).replace('.', ',')}°"},
                 url=f"https://partas.hr/q-{q}/", preuzeto=D, napomena=nap)
 
-def dom(slug, naziv, neto, sobe, kat, krov=None, krovOpis=None, katIzvor="kategorija na stranici proizvođača"):
+def dom(slug, naziv, neto, sobe, kat, krov=None, krovOpis=None, katIzvor="kategorija na stranici proizvođača", np=None, ng=None, balkon=None):
     return dict(id="domprojekt-" + naziv.lower(), proizvodjac="Domprojekt", naziv=naziv, kategorija=kat, kategorijaIzvor=katIzvor,
-                neto=neto, bruto=None, sobe=sobe, sobeVrsta="spavaće sobe" if sobe else None, visina=None, minZemljiste=None,
+                neto=neto, netoPrizemlje=np, netoGore=ng, balkon=balkon, bruto=None, sobe=sobe, sobeVrsta="spavaće sobe" if sobe else None, visina=None, minZemljiste=None,
                 krov={"tip": krov, "nagib": 0 if krov == "ravni" else None, "opis": krovOpis} if krov else None,
                 url="https://www.domprojekt.hr/" + slug, preuzeto=D,
-                napomena="Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene.")
+                napomena="Proizvođač objavljuje ukupnu neto površinu" + (" i neto površinu po etažama" if np else "") + "; bruto površina, vanjske mjere i visina nisu objavljene.")
 
-def icon(slug, naziv, bruto, kat, krov, nagib, opis, katIzvor):
+def icon(slug, naziv, bruto, kat, krov, nagib, opis, katIzvor, sobe=None, sobeVrsta=None):
     return dict(id="icon-" + slug, proizvodjac="Icon Group", naziv=naziv, kategorija=kat, kategorijaIzvor=katIzvor,
-                neto=None, bruto=bruto, sobe=None, visina=None, minZemljiste=None,
+                neto=None, bruto=bruto, sobe=sobe, sobeVrsta=sobeVrsta, visina=None, minZemljiste=None,
                 krov={"tip": krov, "nagib": nagib, "opis": opis}, url=f"https://www.icon-group.hr/{slug}/", preuzeto=D,
                 napomena="Proizvođač objavljuje bruto površinu; vanjske mjere i visina nisu objavljene.")
 
@@ -35,8 +37,8 @@ P = [
     partas(140, 165.00, 209.55, 3, 5.05, 22.70, 25.30, 2, "ravni", "P", H1.format("5,05")),
     partas(120, 185.14, 227.00, 3, 4.62, 20.31, 28.81, 1, "ravni", "P", H1.format("4,62")),
     dom("nives-niskoenergetska-montazna-kuca", "Nives", 118.54, 2, "P", "ravni", "ravni krov (opis modela)"),
-    dom("marinela-niskoenergetska-montazna-kuca", "Marinela", 103.25, None, "P"),
-    dom("ingrid-niskoenergetska-montazna-kuca", "Ingrid", 115.93, None, "P"),
+    dom("marinela-niskoenergetska-montazna-kuca", "Marinela", 103.25, 3, "P", "cet", "višestrešni krov (opis modela); u simulatoru četverostrešni"),
+    dom("ingrid-niskoenergetska-montazna-kuca", "Ingrid", 115.93, 3, "P"),
 ]
 K2 = "opis modela: prizemlje i kat"
 K = [
@@ -45,14 +47,16 @@ K = [
     partas(230, 209.10, 265.55, 4, 8.62, 21.75, 24.35, 20, "kosi", "P1", K2, "iznad kata tavanski prostor"),
     partas(250, 229.62, 282.43, 5, 9.15, 20.08, 24.29, 40, "kosi", "P1", K2, "iznad kata tavanski dio"),
     partas(300, 233.60, 297.00, 5, 8.85, 21.90, 28.40, 25, "kosi", "P1", K2, "iznad kata slobodan tavanski prostor"),
-    icon("lina", "Lina", 198.07, "P1", "cet", 25, "četverovodni krov 25° ili ravni krov", "tlocrti na stranici: »Prizemlje« i »Kat«"),
-    icon("petra", "Petra", 209.63, "P1", None, None, "ravni, četverovodni, jednovodni ili dvovodni krov (nagib nije naveden)", "tlocrti na stranici: »Prizemlje« i »Kat«"),
-    dom("elena-niskoenergetska-katnica", "Elena", 140.11, 3, "P1", "ravni", "katnice s ravnim krovom (opis kategorije)"),
-    dom("gloria-niskoenergetska-katnica", "Gloria", 147.71, 3, "P1", "ravni", "katnice s ravnim krovom (opis kategorije)"),
+    icon("lina", "Lina", 198.07, "P1", "cet", 25, "četverovodni krov 25° ili ravni krov", "tlocrti na stranici: »Prizemlje« i »Kat«", 4, "spavaće sobe"),
+    icon("petra", "Petra", 209.63, "P1", None, None, "ravni, četverovodni, jednovodni ili dvovodni krov (nagib nije naveden)", "tlocrti na stranici: »Prizemlje« i »Kat«", 4, "sobe na katu"),
+    dom("elena-niskoenergetska-katnica", "Elena", 140.11, 3, "P1", "ravni", "ravni krov (opis modela)", np=66.69, ng=73.42, balkon="natkrivena terasa na katu"),
+    dom("gloria-niskoenergetska-katnica", "Gloria", 147.71, 3, "P1", "ravni", "ravni krov (opis modela)", np=77.86, ng=69.85, balkon="natkrivena terasa na katu"),
 ]
-PK = [dom(f"{n.lower()}-montazne-kuce-potkrovlje", n, a, s, "PPk") for n, a, s in [
-    ("Alma", 110.12, 3), ("Venera", 126.81, 4), ("Doris", 134.54, 4), ("Leonida", 145.43, 4), ("Ema", 160.90, 3),
-    ("Renata", 161.08, 4), ("Emanuela", 165.07, 3), ("Lena", 167.86, 4), ("Laura", 176.40, 4)]]
+DV = ("dvo", "dvostrešni krov (opis modela); nagib nije naveden")
+PK = [dom(f"{n.lower()}-montazne-kuce-potkrovlje", n, a, so, "PPk", *(kr or (None, None)), np=p0, ng=p1, balkon=bk) for n, a, so, p0, p1, kr, bk in [
+    ("Alma", 110.12, 3, 54.61, 55.51, DV, "balkon"), ("Venera", 126.81, 4, 63.02, 63.79, None, "balkon"), ("Doris", 134.54, 4, 66.54, 68.00, DV, "balkon 4,88 m²"),
+    ("Leonida", 145.43, 4, 74.33, 71.10, None, "balkon 7,60 m²"), ("Ema", 160.90, 3, 78.22, 82.68, DV, "lođa 11,40 m²"), ("Renata", 161.08, 4, 79.47, 81.63, None, "balkon"),
+    ("Emanuela", 165.07, 3, 82.05, 83.02, None, "francuski balkon"), ("Lena", 167.86, 4, 83.28, 84.58, DV, "balkon"), ("Laura", 176.40, 4, 89.36, 87.04, DV, "lođa")]]
 
 out = {
     "v": 1, "preuzeto": D,

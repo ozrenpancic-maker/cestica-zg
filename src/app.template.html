@@ -3423,7 +3423,7 @@ function mkProcjena(m,G){
   if(G.gbpMax){
     if(m.bruto!=null) add(`bruto ${mkN(m.bruto)} m² od najviše ${fmt(G.gbpMax)} m² nadzemnog GBP-a`,m.bruto<=G.gbpMax?"ok":"no");
     else if(m.neto!=null) add(m.neto>G.gbpMax?`već neto površina ${mkN(m.neto)} m² veća je od ${fmt(G.gbpMax)} m² dopuštenog nadzemnog GBP-a`:`objavljena je samo neto površina (${mkN(m.neto)} m²); bruto je veći, a dopušteno je ${fmt(G.gbpMax)} m² nadzemnog GBP-a`,m.neto>G.gbpMax?"no":"warn"); }
-  if(G.tlMax){ const vrsta=(m.bruto!=null?"bruto":"neto")+(raz===1?" prizemnice":" ÷ "+raz+" razine"), lb=(m.bruto!=null?m.bruto:m.neto)/raz;
+  if(G.tlMax){ const np=m.netoPrizemlje!=null&&m.bruto==null, vrsta=np?"neto prizemlja":(m.bruto!=null?"bruto":"neto")+(raz===1?" prizemnice":" ÷ "+raz+" razine"), lb=np?m.netoPrizemlje:(m.bruto!=null?m.bruto:m.neto)/raz;
     if(lb>G.tlMax) add(`tlocrt najmanje ${fmt(lb)} m² (${vrsta}), a dopušteno je ${fmt(G.tlMax)} m²`,"no");
     else if(m.bruto!=null&&raz===1) add(`tlocrt oko ${fmt(lb)} m² (bruto prizemnice) od najviše ${fmt(G.tlMax)} m²`,"ok");
     else add(`tlocrt nije objavljen; procjena ${m.bruto!=null?"oko":"najmanje"} ${fmt(lb)} m² (${vrsta}) od najviše ${fmt(G.tlMax)} m²`,"warn"); }
@@ -3440,7 +3440,7 @@ function mkHtml(){
   let h=`<div class="mk"><div class="mk-tabs" role="tablist" aria-label="Vrsta kuće">${MONTAZNE.kategorije.map(([k,n])=>`<button type="button" role="tab" class="ib${k===MK.kat?" on":""}" aria-selected="${k===MK.kat}" data-mkkat="${k}">${esc(n)}</button>`).join("")}</div>`;
   h+=`<p class="meta">${G&&G.A?`Čestica ${fmt(G.A)} m²${G.plan?", "+esc(G.plan):""}: `:""}${G&&(G.tlMax||G.gbpMax||G.etMax)?`${br("ok")} stane, ${br("warn")} moguće uz provjeru, ${br("no")} ne stane. `:""}Uspoređuje se samo ono što proizvođač objavljuje. Vanjske mjere tlocrta ne objavljuje nijedan od tri proizvođača, pa je tlocrt procjena iz površine.</p><ul class="mk-list">`;
   for(const {m,P} of L){
-    const pod=[m.bruto!=null?`bruto ${mkN(m.bruto)} m²`:null,m.neto!=null?`neto ${mkN(m.neto)} m²`:null,m.sobe?`${m.sobe} ${m.sobeVrsta||"sobe"}`:null,m.visina!=null?`visina ${mkN(m.visina)} m`:null,m.krov&&m.krov.opis?m.krov.opis:"krov: Podaci nisu dostupni"].filter(Boolean).join(" · ");
+    const pod=[m.bruto!=null?`bruto ${mkN(m.bruto)} m²`:null,m.neto!=null?`neto ${mkN(m.neto)} m²`+(m.netoPrizemlje!=null?` (prizemlje ${mkN(m.netoPrizemlje)}, ${m.kategorija==="PPk"?"potkrovlje":"kat"} ${mkN(m.netoGore)})`:""):null,m.sobe?`${m.sobe} ${m.sobeVrsta||"sobe"}`:null,m.visina!=null?`visina ${mkN(m.visina)} m`:null,m.krov&&m.krov.opis?m.krov.opis:"krov: Podaci nisu dostupni",m.balkon||null].filter(Boolean).join(" · ");
     h+=`<li class="mk-card mk-c-${P.st}"><div class="mk-h"><b>${esc(m.naziv)}</b><span class="meta">${esc(m.proizvodjac)}</span><span class="mk-st mk-s-${P.st}">${MK_ST[P.st]}</span></div><p class="mk-pod">${esc(pod)}</p>`+
       `<ul class="mk-r">${P.R.map(r=>`<li class="mk-s-${r.st}">${esc(r.t)}</li>`).join("")}</ul>`+
       `<p class="meta">Etaže: ${esc(m.kategorijaIzvor)}.${m.napomena?" "+esc(mkTocka(m.napomena.charAt(0).toUpperCase()+m.napomena.slice(1))):""}</p>`+
@@ -3449,9 +3449,10 @@ function mkHtml(){
   return h;
 }
 function mkOsvjezi(){ const o=document.getElementById("mkOut"); if(o) o.innerHTML=MK.open?mkHtml():""; }
-function mkNote(m){ const P=predlozakDims(m.bruto!=null?m.bruto:m.neto,MK_FL[m.kategorija]), F=FLOOR_OPTS.find(x=>x[0]===MK_FL[m.kategorija]), k=m.krov||{};
-  return `${m.proizvodjac} ${m.naziv}, ${F[1]}: proizvođač ne objavljuje vanjske mjere, pa je tlocrt ${String(P.w).replace(".",",")} × ${String(P.d).replace(".",",")} m PROCJENA iz ${m.bruto!=null?"bruto":"neto"} površine ${mkN(m.bruto!=null?m.bruto:m.neto)} m² (omjer stranica oko 4 : 3${m.kategorija==="PPk"?", potkrovlje kao 75 % tlocrta":""}).`+
-    (m.bruto==null?" Neto površina manja je od bruto, pa je stvarna kuća veća.":"")+
+function mkDims(m){ return m.bruto==null&&m.netoPrizemlje!=null?predlozakDims(m.netoPrizemlje,"1"):predlozakDims(m.bruto!=null?m.bruto:m.neto,MK_FL[m.kategorija]); }
+function mkNote(m){ const P=mkDims(m), F=FLOOR_OPTS.find(x=>x[0]===MK_FL[m.kategorija]), k=m.krov||{}, np=m.bruto==null&&m.netoPrizemlje!=null;
+  return `${m.proizvodjac} ${m.naziv}, ${F[1]}: proizvođač ne objavljuje vanjske mjere, pa je tlocrt ${String(P.w).replace(".",",")} × ${String(P.d).replace(".",",")} m PROCJENA iz ${np?"neto površine prizemlja":m.bruto!=null?"bruto površine":"neto površine"} ${mkN(np?m.netoPrizemlje:m.bruto!=null?m.bruto:m.neto)} m² (omjer stranica oko 4 : 3${!np&&m.kategorija==="PPk"?", potkrovlje kao 75 % tlocrta":""}).`+
+    (m.bruto==null?" Neto površina manja je od bruto (zidovi), pa je stvarna kuća nešto veća.":"")+(k.tip&&k.tip!=="ravni"&&k.nagib==null?" Nagib krova nije naveden; zadržan je nagib iz simulatora.":"")+
     (k.tip==="kosi"?" Vrsta kosog krova nije navedena; prikazan je dvostrešni.":!k.tip?" Krov nije jednoznačno naveden; zadržan je odabrani krov.":"")+
     ` Izvor: ${m.url}`; }
 function mkPrimijeni(id){
@@ -3461,7 +3462,7 @@ function mkPrimijeni(id){
   if(k.tip==="ravni") TL.krov="ravni"; else if(k.tip==="cet"||k.tip==="dvo") TL.krov=k.tip; else if(k.tip==="kosi") TL.krov="dvo";
   if(k.tip&&k.tip!=="ravni"&&k.nagib!=null) TL.nagib=k.nagib;
   if(TL.stil==="klasicni") TL.stil=TL.krov==="ravni"?"moderni":"drvo";
-  const P=predlozakDims(m.bruto!=null?m.bruto:m.neto,TL.fl); TL.w=P.w; TL.d=P.d;
+  const P=mkDims(m); TL.w=P.w; TL.d=P.d;
   const set=(id,v,dis)=>{const e=document.getElementById(id); if(e){e.value=v; if(dis!=null) e.disabled=dis;}};
   set("tW",TL.w); set("tD",TL.d); set("tFl",TL.fl); set("tPred",""); set("tKrov",TL.krov); set("tNagib",TL.krov==="ravni"?0:TL.nagib,TL.krov==="ravni"); set("tSlj",TL.sljeme,TL.krov!=="dvo"); set("tStil",TL.stil);
   const n=document.getElementById("tPredNote"); if(n) n.textContent=mkNote(m);
@@ -7439,6 +7440,7 @@ function v3dData(){
   if(OKU.res&&OKU.res.ll&&OKU.key===key&&M){ // terasa (ploča 15 cm) i pomoćni objekt (2,5 m) kao tijela uz kuću
     if(OKU.res.ll.terasa) M.kuca.features.push({type:"Feature",geometry:OKU.res.ll.terasa,properties:{b:0,h:0.15,c:okuV("terasa").c,lod:0,k:"terasa"}});
     if(OKU.res.ll.pomocni) M.kuca.features.push({type:"Feature",geometry:OKU.res.ll.pomocni,properties:{b:0,h:2.5,c:"#d8d0c4",lod:0,k:"pomocni"}},{type:"Feature",geometry:OKU.res.ll.pomocni,properties:{b:2.5,h:2.7,c:okuV("pomocni").c,lod:0,k:"pomocni-krov"}}); }
+  if(MO){ MO.terasa=!(OKU.res&&OKU.res.ll&&OKU.key===key&&OKU.res.ll.terasa); const km=TL.model&&mkModel(TL.model); MO.balkon=!!(km&&km.balkon); }
   if(oku.features.some(f=>f.properties.k==="prilaz")) prilaz=prazno; // prilaz iz prijedloga okućnice zamjenjuje onaj iz procjene gradnje
   return {parcel:d.parcel,c:turf.centroid(d.parcel).geometry.coordinates,model:MO,kuca:M?M.kuca:prazno,oku,sjena:M?M.sjena:prazno,prilaz,terasa:prazno,lbl,ulaz,
     sljeme:M&&M.ridge?{type:"Feature",geometry:{type:"LineString",coordinates:M.ridge},properties:{}}:null,
@@ -7527,7 +7529,7 @@ function triKuca(T,o){
   const B=triBoje(o.stil,o.krov), G=new T.Group(); G.name="kuca";
   const mat=(c,x={})=>new T.MeshStandardMaterial({color:c,roughness:x.r??0.9,metalness:x.m??0,map:x.map||null,side:x.side||T.FrontSide});
   const tz=triTex(T,"zbuka"), tc=triTex(T,"crijep"), td=triTex(T,"drvo");
-  const M={zid:mat(B.zid,{map:tz,r:.95}),zabat:mat(B.zid,{map:tz,r:.95,side:T.DoubleSide}),podnozje:mat(B.podnozje,{r:1}),crijep:mat(B.crijep,{map:tc,r:.75,side:T.DoubleSide}),podgled:mat("#f1f0ec",{side:T.DoubleSide}),
+  const M={zid:mat(B.zid,{map:tz,r:.95}),zabat:mat(B.zid,{map:tz,r:.95,side:T.DoubleSide}),podnozje:mat(B.podnozje,{r:1}),crijep:Object.assign(mat(B.crijep,{map:tc,r:.75,side:T.DoubleSide}),tc?{bumpMap:tc,bumpScale:0.04}:{}),podgled:mat("#f1f0ec",{side:T.DoubleSide}),
     sljeme:mat(B.sljeme,{r:.7}),limarija:mat(B.limarija,{r:.5,m:.2}),oluk:mat(B.oluk,{r:.4,m:.4}),okvir:mat(B.okvir,{r:.5,m:.1}),rolete:mat(B.rolete,{r:.6}),vrata:mat(B.vrata,{r:.6}),
     staklo:(()=>{ const ts=triTex(T,"staklo"); return new T.MeshStandardMaterial({color:ts?"#ffffff":B.staklo,map:ts,roughness:.12,metalness:.2,emissive:"#1a2630",emissiveIntensity:.25}); })(),atika:mat(B.atika,{r:.6,m:.1}),ravni:mat(B.ravni,{map:triTex(T,"sljunak"),r:1}),
     drvo:mat(td?"#ffffff":"#a87a4f",{map:td,r:.85}),garaza:mat(B.garaza,{r:.6}),pv:new T.MeshStandardMaterial({color:"#16233a",roughness:.25,metalness:.5}),pvOkvir:mat("#c8ccd0",{r:.4,m:.6})};
@@ -7584,6 +7586,22 @@ function triKuca(T,o){
   // otvori: prozori s okvirom, klupčicom i roletom; ulaz s vratima i nadstrešnicom; prema vrtu staklena stijena
   const strane={S:{len:w,os:"x",pos:d/2,n:[0,1]},N:{len:w,os:"x",pos:-d/2,n:[0,-1]},E:{len:d,os:"z",pos:w/2,n:[1,0]},W:{len:d,os:"z",pos:-w/2,n:[-1,0]}};
   const suprotno={S:"N",N:"S",E:"W",W:"E"}, vrt=suprotno[o.ulaz||"S"];
+  // balkon: ploča 1,3 m, staklena ograda 1,0 m s rukohvatom (kao kod kataloških kuća)
+  const Mog=new T.MeshStandardMaterial({color:"#b9d2dc",roughness:.05,metalness:.1,transparent:true,opacity:.32,depthWrite:false});
+  function balkon(st,u,y,sir=3.4){ const S0=strane[st], n=S0.n, dep=1.3, put=(du,dn,ww,hh,dd,yy,m,ime)=>{ const [x,z]=S0.os==="x"?[u+du,S0.pos+n[1]*dn]:[S0.pos+n[0]*dn,u+du]; return box(S0.os==="x"?ww:dd,hh,S0.os==="x"?dd:ww,x,yy,z,m,ime); };
+    put(0,dep/2,sir,0.2,dep,y-0.1,B.mod?M.atika:M.podnozje,"balkon");
+    put(0,dep-0.03,sir,1.0,0.02,y+0.5,Mog,"balkon-ograda"); put(0,dep-0.03,sir+0.04,0.05,0.06,y+1.02,M.okvir,"balkon-ograda");
+    for(const sd of [-1,1]){ put(sd*(sir/2-0.01),dep/2,0.02,1.0,dep,y+0.5,Mog,"balkon-ograda"); put(sd*(sir/2),dep/2,0.05,0.05,dep,y+1.02,M.okvir,"balkon-ograda"); } }
+  // kontaktna sjena (tamnjenje tla uz kuću) i šljunčani rub uz zidove
+  { const tx=(()=>{ try{ const c=document.createElement("canvas"); c.width=c.height=128; const g=c.getContext("2d"); if(!g||typeof g.createRadialGradient!=="function") return null; const gr=g.createRadialGradient(64,64,20,64,64,64); gr.addColorStop(0,"rgba(0,0,0,.55)"); gr.addColorStop(.6,"rgba(0,0,0,.25)"); gr.addColorStop(1,"rgba(0,0,0,0)"); g.fillStyle=gr; g.fillRect(0,0,128,128); return new T.CanvasTexture(c); }catch(e){ return null; } })();
+    if(tx){ const pl=new T.Mesh(new T.PlaneGeometry(w+3.2,d+3.2),new T.MeshBasicMaterial({map:tx,transparent:true,depthWrite:false,color:"#000000"})); pl.rotation.x=-Math.PI/2; pl.position.y=0.03; pl.name="kontaktna-sjena"; pl.renderOrder=-1; G.add(pl); }
+    const gs=M.ravni, b=0.45; for(const [ww,dd,x,z] of [[w+2*b,b,0,d/2+b/2],[w+2*b,b,0,-d/2-b/2],[b,d,w/2+b/2,0],[b,d,-w/2-b/2,0]]) box(ww,0.04,dd,x,0.02,z,gs,"sljunak"); }
+  // terasa prema vrtu (kad okućnica nema svoju): ploča u razini poda, uz drvenu oblogu drvena, s pergolom kod ravnog krova
+  if(o.terasa!==false){ const S0=strane[vrt], n=S0.n, dep=3.0, sir=Math.min(S0.len*0.7,6.5), mt=o.stil==="drvo"?M.drvo:mat("#cfc9bd",{r:.9}), c=S0.os==="x"?[0,S0.pos+n[1]*dep/2]:[S0.pos+n[0]*dep/2,0];
+    box(S0.os==="x"?sir:dep,P-0.05,S0.os==="x"?dep:sir,c[0],(P-0.05)/2,c[1],mt,"terasa");
+    if(o.krov==="ravni"&&B.mod&&!(o.balkon&&E.n>=2)){ const ph=Math.min(2.9,V-0.4), pm=M.atika; for(const sd of [-1,1]){ const [px,pz]=S0.os==="x"?[sd*(sir/2-0.1),S0.pos+n[1]*(dep-0.1)]:[S0.pos+n[0]*(dep-0.1),sd*(sir/2-0.1)]; box(0.12,ph,0.12,px,ph/2,pz,pm,"pergola"); }
+      const [bx,bz]=S0.os==="x"?[0,S0.pos+n[1]*(dep-0.1)]:[S0.pos+n[0]*(dep-0.1),0]; box(S0.os==="x"?sir:0.12,0.18,S0.os==="x"?0.12:sir,bx,ph+0.09,bz,pm,"pergola");
+      for(let i=0;i<Math.floor(sir/0.35);i++){ const t=-sir/2+0.17+i*0.35, [lx,lz]=S0.os==="x"?[t,S0.pos+n[1]*dep/2]:[S0.pos+n[0]*dep/2,t]; box(S0.os==="x"?0.06:dep,0.14,S0.os==="x"?dep:0.06,lx,ph+0.12,lz,pm,"pergola"); } } }
   const otvor=(st,u,y0,h,sw,vrsta)=>{ const S0=strane[st], n=S0.n, at=(du,dn)=>S0.os==="x"?[u+du,S0.pos+n[1]*dn]:[S0.pos+n[0]*dn,u+du];
     const dim=(a,b,c)=>S0.os==="x"?[a,b,c]:[c,b,a], fw=0.07, dep=0.12;
     const put=(du,dy,ww,hh,dn,m,ime,dd=dep)=>{ const [x,z]=at(du,dn), [bw,bh,bd]=dim(ww,hh,dd); return box(bw,bh,bd,x,y0+dy,z,m,ime); };
@@ -7599,10 +7617,13 @@ function triKuca(T,o){
       for(let j=0;j<n;j++){ const u=-S0.len/2+step*(j+0.5);
         if(k===0&&st===(o.ulaz||"S")&&j===Math.floor((n-1)/2)){ otvor(st,u,P+0.02,2.2,1.1,"vrata"); continue; }
         if(k===0&&st===vrt&&y+2.3<V-0.25) { otvor(st,u,P+0.02,2.3,Math.min(2.6,step-0.7),"stijena"); continue; }
+        if(k>=1&&k===E.n-1&&o.balkon&&!E.pk&&st===vrt&&j===Math.floor((n-1)/2)&&y+2.2<V-0.2){ otvor(st,u,y+0.02,2.15,Math.min(2.0,step-0.9),"stijena"); balkon(st,u,y); continue; }
         const sw=B.mod?Math.min(1.8,step-0.9):1.2, h=Math.min(B.mod?1.5:1.35,V-0.3-(y+0.85)-0.2);
         if(h>=0.9) otvor(st,u,y+0.85,h,sw,"prozor"); } } }
-  // potkrovlje ili visok krov: prozori u zabatima (dvostrešni)
-  if(o.krov==="dvo"&&R>2.2){ for(const s of [-1,1]){ const st=alongW?(s>0?"E":"W"):(s>0?"S":"N"), h=Math.min(1.3,R-1.2); if(h>0.6) otvor(st,0,V+0.35,h,1.0,"prozor"); } }
+  // potkrovlje ili visok krov: prozori u zabatima (dvostrešni); s balkonom u potkrovlju jedan zabat dobiva vrata i balkon
+  if(o.krov==="dvo"&&R>2.2){ const zb=[-1,1].map(s=>alongW?(s>0?"E":"W"):(s>0?"S":"N")), bz=o.balkon&&E.pk?(zb.includes(vrt)?vrt:zb[0]):null, ya=P+E.n*E.fh;
+    for(const st of zb){ if(st===bz&&R>2.6){ const ys=Math.max(ya,V-1.2)+0.02; otvor(st,0,ys,Math.min(2.15,V+R-ys-0.9),1.6,"stijena"); balkon(st,0,ys-0.02,2.8); continue; }
+      const h=Math.min(1.3,R-1.2); if(h>0.6) otvor(st,0,V+0.35,h,1.0,"prozor"); } }
   // nadstrešnica nad ulazom
   { const st=o.ulaz||"S", S0=strane[st], n=S0.n, dep=1.4, wd=2.2, yT=P+2.55;
     const c=S0.os==="x"?[0,S0.pos+n[1]*dep/2]:[S0.pos+n[0]*dep/2,0];
@@ -7673,7 +7694,7 @@ async function v3dOpen(){
   if(V3D.map){try{V3D.map.remove()}catch(e){} V3D.map=null;}
   V3D.key=D.key; V3D.tri=false; TRI.grp=null;
   {const pc=document.getElementById("v3dPv"), ima=D.kuca.features.some(f=>f.properties.k==="pv"); pc.disabled=!ima; pc.parentElement.title=ima?"Solarni paneli prema odjeljku Solarna elektrana (površina i orijentacija)":"Za panele upiši površinu u odjeljku Solarna elektrana";}
-  const m=new maplibregl.Map({container:"v3dMap",style:v3dStyle(D),center:D.c,zoom:18,pitch:V3D_NAGIB,bearing:-20,maxPitch:78,canvasContextAttributes:{preserveDrawingBuffer:true},preserveDrawingBuffer:true,attributionControl:{compact:true}});
+  const m=new maplibregl.Map({container:"v3dMap",style:v3dStyle(D),center:D.c,zoom:18,pitch:V3D_NAGIB,bearing:-20,maxPitch:78,canvasContextAttributes:{preserveDrawingBuffer:true,antialias:true},preserveDrawingBuffer:true,antialias:true,attributionControl:{compact:true}});
   V3D.map=m; m.addControl(new maplibregl.NavigationControl({visualizePitch:true}),"top-right");
   try{const el=document.createElement("div"); el.className="v3d-lbl"; el.textContent=D.broj; new maplibregl.Marker({element:el,anchor:"bottom",offset:[0,-4]}).setLngLat(D.lbl||D.c).addTo(m);}catch(e){}
   const stop=()=>{V3D.rot=false; document.getElementById("v3dRot").textContent="Okreći";};

@@ -182,7 +182,7 @@
    },
    "url": "https://www.domprojekt.hr/nives-niskoenergetska-montazna-kuca",
    "preuzeto": "2026-11-05",
-   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+   "napomena": "Proizvođač objavljuje ukupnu neto površinu; bruto površina, vanjske mjere i visina nisu objavljene."
   },
   {
    "id": "domprojekt-marinela",
@@ -191,9 +191,16 @@
    "kategorija": "P",
    "kategorijaIzvor": "kategorija na stranici proizvođača",
    "neto": 103.25,
+   "sobe": 3,
+   "sobeVrsta": "spavaće sobe",
+   "krov": {
+    "tip": "cet",
+    "nagib": null,
+    "opis": "višestrešni krov (opis modela); u simulatoru četverostrešni"
+   },
    "url": "https://www.domprojekt.hr/marinela-niskoenergetska-montazna-kuca",
    "preuzeto": "2026-11-05",
-   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+   "napomena": "Proizvođač objavljuje ukupnu neto površinu; bruto površina, vanjske mjere i visina nisu objavljene."
   },
   {
    "id": "domprojekt-ingrid",
@@ -202,9 +209,11 @@
    "kategorija": "P",
    "kategorijaIzvor": "kategorija na stranici proizvođača",
    "neto": 115.93,
+   "sobe": 3,
+   "sobeVrsta": "spavaće sobe",
    "url": "https://www.domprojekt.hr/ingrid-niskoenergetska-montazna-kuca",
    "preuzeto": "2026-11-05",
-   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+   "napomena": "Proizvođač objavljuje ukupnu neto površinu; bruto površina, vanjske mjere i visina nisu objavljene."
   },
   {
    "id": "partas-q210",
@@ -326,6 +335,8 @@
    "kategorija": "P1",
    "kategorijaIzvor": "tlocrti na stranici: »Prizemlje« i »Kat«",
    "bruto": 198.07,
+   "sobe": 4,
+   "sobeVrsta": "spavaće sobe",
    "krov": {
     "tip": "cet",
     "nagib": 25,
@@ -342,6 +353,8 @@
    "kategorija": "P1",
    "kategorijaIzvor": "tlocrti na stranici: »Prizemlje« i »Kat«",
    "bruto": 209.63,
+   "sobe": 4,
+   "sobeVrsta": "sobe na katu",
    "krov": {
     "tip": null,
     "nagib": null,
@@ -358,16 +371,19 @@
    "kategorija": "P1",
    "kategorijaIzvor": "kategorija na stranici proizvođača",
    "neto": 140.11,
+   "netoPrizemlje": 66.69,
+   "netoGore": 73.42,
+   "balkon": "natkrivena terasa na katu",
    "sobe": 3,
    "sobeVrsta": "spavaće sobe",
    "krov": {
     "tip": "ravni",
     "nagib": 0,
-    "opis": "katnice s ravnim krovom (opis kategorije)"
+    "opis": "ravni krov (opis modela)"
    },
    "url": "https://www.domprojekt.hr/elena-niskoenergetska-katnica",
    "preuzeto": "2026-11-05",
-   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+   "napomena": "Proizvođač objavljuje ukupnu neto površinu i neto površinu po etažama; bruto površina, vanjske mjere i visina nisu objavljene."
   },
   {
    "id": "domprojekt-gloria",
@@ -376,16 +392,19 @@
    "kategorija": "P1",
    "kategorijaIzvor": "kategorija na stranici proizvođača",
    "neto": 147.71,
+   "netoPrizemlje": 77.86,
+   "netoGore": 69.85,
+   "balkon": "natkrivena terasa na katu",
    "sobe": 3,
    "sobeVrsta": "spavaće sobe",
    "krov": {
     "tip": "ravni",
     "nagib": 0,
-    "opis": "katnice s ravnim krovom (opis kategorije)"
+    "opis": "ravni krov (opis modela)"
    },
    "url": "https://www.domprojekt.hr/gloria-niskoenergetska-katnica",
    "preuzeto": "2026-11-05",
-   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+   "napomena": "Proizvođač objavljuje ukupnu neto površinu i neto površinu po etažama; bruto površina, vanjske mjere i visina nisu objavljene."
   },
   {
    "id": "domprojekt-alma",
@@ -394,11 +413,19 @@
    "kategorija": "PPk",
    "kategorijaIzvor": "kategorija na stranici proizvođača",
    "neto": 110.12,
+   "netoPrizemlje": 54.61,
+   "netoGore": 55.51,
+   "balkon": "balkon",
    "sobe": 3,
    "sobeVrsta": "spavaće sobe",
+   "krov": {
+    "tip": "dvo",
+    "nagib": null,
+    "opis": "dvostrešni krov (opis modela); nagib nije naveden"
+   },
    "url": "https://www.domprojekt.hr/alma-montazne-kuce-potkrovlje",
    "preuzeto": "2026-11-05",
-   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+   "napomena": "Proizvođač objavljuje ukupnu neto površinu i neto površinu po etažama; bruto površina, vanjske mjere i visina nisu objavljene."
   },
   {
    "id": "domprojekt-venera",
@@ -407,11 +434,14 @@
    "kategorija": "PPk",
    "kategorijaIzvor": "kategorija na stranici proizvođača",
    "neto": 126.81,
+   "netoPrizemlje": 63.02,
+   "netoGore": 63.79,
+   "balkon": "balkon",
    "sobe": 4,
    "sobeVrsta": "spavaće sobe",
    "url": "https://www.domprojekt.hr/venera-montazne-kuce-potkrovlje",
    "preuzeto": "2026-11-05",
-   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+   "napomena": "Proizvođač objavljuje ukupnu neto površinu i neto površinu po etažama; bruto površina, vanjske mjere i visina nisu objavljene."
   },
   {
    "id": "domprojekt-doris",
@@ -420,11 +450,19 @@
    "kategorija": "PPk",
    "kategorijaIzvor": "kategorija na stranici proizvođača",
    "neto": 134.54,
+   "netoPrizemlje": 66.54,
+   "netoGore": 68.0,
+   "balkon": "balkon 4,88 m²",
    "sobe": 4,
    "sobeVrsta": "spavaće sobe",
+   "krov": {
+    "tip": "dvo",
+    "nagib": null,
+    "opis": "dvostrešni krov (opis modela); nagib nije naveden"
+   },
    "url": "https://www.domprojekt.hr/doris-montazne-kuce-potkrovlje",
    "preuzeto": "2026-11-05",
-   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+   "napomena": "Proizvođač objavljuje ukupnu neto površinu i neto površinu po etažama; bruto površina, vanjske mjere i visina nisu objavljene."
   },
   {
    "id": "domprojekt-leonida",
@@ -433,11 +471,14 @@
    "kategorija": "PPk",
    "kategorijaIzvor": "kategorija na stranici proizvođača",
    "neto": 145.43,
+   "netoPrizemlje": 74.33,
+   "netoGore": 71.1,
+   "balkon": "balkon 7,60 m²",
    "sobe": 4,
    "sobeVrsta": "spavaće sobe",
    "url": "https://www.domprojekt.hr/leonida-montazne-kuce-potkrovlje",
    "preuzeto": "2026-11-05",
-   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+   "napomena": "Proizvođač objavljuje ukupnu neto površinu i neto površinu po etažama; bruto površina, vanjske mjere i visina nisu objavljene."
   },
   {
    "id": "domprojekt-ema",
@@ -446,11 +487,19 @@
    "kategorija": "PPk",
    "kategorijaIzvor": "kategorija na stranici proizvođača",
    "neto": 160.9,
+   "netoPrizemlje": 78.22,
+   "netoGore": 82.68,
+   "balkon": "lođa 11,40 m²",
    "sobe": 3,
    "sobeVrsta": "spavaće sobe",
+   "krov": {
+    "tip": "dvo",
+    "nagib": null,
+    "opis": "dvostrešni krov (opis modela); nagib nije naveden"
+   },
    "url": "https://www.domprojekt.hr/ema-montazne-kuce-potkrovlje",
    "preuzeto": "2026-11-05",
-   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+   "napomena": "Proizvođač objavljuje ukupnu neto površinu i neto površinu po etažama; bruto površina, vanjske mjere i visina nisu objavljene."
   },
   {
    "id": "domprojekt-renata",
@@ -459,11 +508,14 @@
    "kategorija": "PPk",
    "kategorijaIzvor": "kategorija na stranici proizvođača",
    "neto": 161.08,
+   "netoPrizemlje": 79.47,
+   "netoGore": 81.63,
+   "balkon": "balkon",
    "sobe": 4,
    "sobeVrsta": "spavaće sobe",
    "url": "https://www.domprojekt.hr/renata-montazne-kuce-potkrovlje",
    "preuzeto": "2026-11-05",
-   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+   "napomena": "Proizvođač objavljuje ukupnu neto površinu i neto površinu po etažama; bruto površina, vanjske mjere i visina nisu objavljene."
   },
   {
    "id": "domprojekt-emanuela",
@@ -472,11 +524,14 @@
    "kategorija": "PPk",
    "kategorijaIzvor": "kategorija na stranici proizvođača",
    "neto": 165.07,
+   "netoPrizemlje": 82.05,
+   "netoGore": 83.02,
+   "balkon": "francuski balkon",
    "sobe": 3,
    "sobeVrsta": "spavaće sobe",
    "url": "https://www.domprojekt.hr/emanuela-montazne-kuce-potkrovlje",
    "preuzeto": "2026-11-05",
-   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+   "napomena": "Proizvođač objavljuje ukupnu neto površinu i neto površinu po etažama; bruto površina, vanjske mjere i visina nisu objavljene."
   },
   {
    "id": "domprojekt-lena",
@@ -485,11 +540,19 @@
    "kategorija": "PPk",
    "kategorijaIzvor": "kategorija na stranici proizvođača",
    "neto": 167.86,
+   "netoPrizemlje": 83.28,
+   "netoGore": 84.58,
+   "balkon": "balkon",
    "sobe": 4,
    "sobeVrsta": "spavaće sobe",
+   "krov": {
+    "tip": "dvo",
+    "nagib": null,
+    "opis": "dvostrešni krov (opis modela); nagib nije naveden"
+   },
    "url": "https://www.domprojekt.hr/lena-montazne-kuce-potkrovlje",
    "preuzeto": "2026-11-05",
-   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+   "napomena": "Proizvođač objavljuje ukupnu neto površinu i neto površinu po etažama; bruto površina, vanjske mjere i visina nisu objavljene."
   },
   {
    "id": "domprojekt-laura",
@@ -498,11 +561,19 @@
    "kategorija": "PPk",
    "kategorijaIzvor": "kategorija na stranici proizvođača",
    "neto": 176.4,
+   "netoPrizemlje": 89.36,
+   "netoGore": 87.04,
+   "balkon": "lođa",
    "sobe": 4,
    "sobeVrsta": "spavaće sobe",
+   "krov": {
+    "tip": "dvo",
+    "nagib": null,
+    "opis": "dvostrešni krov (opis modela); nagib nije naveden"
+   },
    "url": "https://www.domprojekt.hr/laura-montazne-kuce-potkrovlje",
    "preuzeto": "2026-11-05",
-   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+   "napomena": "Proizvođač objavljuje ukupnu neto površinu i neto površinu po etažama; bruto površina, vanjske mjere i visina nisu objavljene."
   }
  ]
 }

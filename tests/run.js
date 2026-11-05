@@ -2792,7 +2792,7 @@ async function montazneTests(){
   {const P=E("mkProcjena"), G={A:600,tlMax:150,gbpMax:200,etMax:2,visMax:7,obb:[20,30]}, st=(id,g=G)=>P(q(id),g);
    const a=st("partas-q405"); ok(a.st==="ok"&&a.R.length===5&&a.R.every(r=>r.st==="ok"),"Usporedba: Q 405 (bruto 107,2 m², visina 3,95 m, zemljište 19,34 × 18,70 m) stane na 600 m² uz tlocrt 150, GBP 200");
    const b=st("partas-q120"); ok(b.st==="no"&&b.R.filter(r=>r.st==="no"&&/(GBP|tlocrt)/.test(r.t)).length===2&&b.R.some(r=>/227/.test(r.t)),"Usporedba: Q 120 (bruto 227 m²) ne stane: premašuje GBP i tlocrt");
-   const c=st("domprojekt-alma"); ok(c.st==="warn"&&c.R.some(r=>r.st==="warn"&&/samo neto/.test(r.t))&&c.R.some(r=>/najmanje 55 m²/.test(r.t)),"Usporedba: Domprojekt Alma (samo neto) – moguće uz provjeru, tlocrt kao donja granica");
+   const c=st("domprojekt-alma"); ok(c.st==="warn"&&c.R.some(r=>r.st==="warn"&&/samo neto/.test(r.t))&&c.R.some(r=>/najmanje 55 m² \(neto prizemlja\)/.test(r.t)),"Usporedba: Domprojekt Alma (samo neto) – moguće uz provjeru, tlocrt najmanje neto prizemlja");
    const d=st("partas-q400",{...G,obb:[17,30]}); ok(d.st==="no"&&d.R.some(r=>r.st==="no"&&/18,22/.test(r.t)),"Usporedba: Q 400 traži zemljište širine 18,22 m, čestica široka 17 m – ne stane");
    const e=st("partas-q250",{...G,gbpMax:400,tlMax:300}); ok(e.R.some(r=>r.st==="warn"&&/9,15 m/.test(r.t)&&/vijenca/.test(r.t)),"Usporedba: visina zgrade iznad visine iz plana samo upozorava (vijenac ili sljeme nije naveden)");
    const f=st("domprojekt-laura",{...G,etMax:1}); ok(f.st==="no"&&f.R.some(r=>r.st==="no"&&/etaže: 2 od najviše 1/.test(r.t)),"Usporedba: kuća s potkrovljem ne stane kad plan dopušta jednu etažu");
@@ -2811,8 +2811,10 @@ async function montazneTests(){
   ok(TL.model==="icon-lina"&&TL.fl==="2"&&TL.krov==="cet"&&TL.nagib===25&&Math.abs(TL.w*TL.d-99)<6&&$(w,"tFl").value==="2"&&+$(w,"tW").value===TL.w&&TL.stil==="drvo","Postavi u simulator: Lina → P + 1, četverostrešni 25°, tlocrt oko 99 m² ("+TL.w+" × "+TL.d+" m), moderni izgled s drvom");
   ok(/PROCJENA iz bruto površine 198,07 m²/.test(txt(w,"tPredNote"))&&/icon-group\.hr\/lina/.test(txt(w,"tPredNote"))&&/✓ U simulatoru/.test(txt(w,"mkOut")),"Postavi u simulator: napomena da je tlocrt procjena, s izvorom");
   ok(w.__sim&&w.__sim.C.some(c=>c.label==="GBP nadzemno"&&/198/.test(c.val)),"Simulator provjerava postavljeni model (GBP oko 198 m²)");
-  w.document.querySelector('#mkOut [data-mkkat="PPk"]').click(); w.document.querySelector('#mkOut [data-mk="domprojekt-alma"]').click();
-  ok(TL.fl==="1.5"&&TL.krov==="cet"&&/Neto površina manja je od bruto/.test(txt(w,"tPredNote"))&&/zadržan je odabrani krov/.test(txt(w,"tPredNote")),"Postavi u simulator: Alma (s potkrovljem, samo neto, krov nije naveden) – upozorenja");
+  w.document.querySelector('#mkOut [data-mkkat="PPk"]').click(); w.document.querySelector('#mkOut [data-mk="domprojekt-venera"]').click();
+  ok(TL.fl==="1.5"&&TL.krov==="cet"&&/Neto površina manja je od bruto/.test(txt(w,"tPredNote"))&&/zadržan je odabrani krov/.test(txt(w,"tPredNote"))&&/neto površine prizemlja 63,02 m²/.test(txt(w,"tPredNote"))&&Math.abs(TL.w*TL.d-63)<4,"Postavi u simulator: Venera (s potkrovljem, samo neto, krov nije naveden) – tlocrt iz neto prizemlja, upozorenja");
+  w.document.querySelector('#mkOut [data-mk="domprojekt-doris"]').click();
+  ok(TL.krov==="dvo"&&/Nagib krova nije naveden/.test(txt(w,"tPredNote"))&&/balkon 4,88 m²/.test(txt(w,"mkOut"))&&/prizemlje 66,54, potkrovlje 68/.test(txt(w,"mkOut")),"Postavi u simulator: Doris – dvostrešni krov iz opisa modela, nagib nije naveden; balkon i neto po etažama u katalogu");
   setv(w,"tW","11"); ok(TL.model===""&&!w.document.querySelector('#mkOut [aria-pressed="true"]'),"Ručna promjena širine odvaja kuću od modela iz kataloga");
   // spremanje
   {const S=E("projCleanSim"); const s=S({w:10,d:9,fl:"2",stil:"drvo",model:"icon-lina"}), s2=S({w:10,d:9,fl:"2",stil:"xx",model:"nepostoji"});
@@ -2848,6 +2850,11 @@ async function tri3dTests(){
   {const G=K(T,{...o0,gar:{w:3.5,d:6,offX:6.75,offY:-1}}), c=dijelovi(G), g=bb(G,"garaza"); ok(c.garaza===1&&Math.abs(g.max.y-2.8)<1e-6&&Math.abs((g.min.x+g.max.x)/2-6.75)<1e-6,"3D garaža uz desni bok, visina 2,8 m");}
   {const G=K(T,{...o0,pv:{m2:12,az:"0"}}), c=dijelovi(G); let z=0; G.traverse(x=>{ if(x.name==="pv") z+=x.position.z; }); ok(c.pv===6&&z>0,"3D solarni paneli: 12 m² → 6 panela na južnoj kosini");}
   {const G=K(T,{...o0,krov:"ravni",nagib:0,pv:{m2:8,az:"0"}}), c=dijelovi(G); ok(c.pv===4,"3D solarni paneli na ravnom krovu");}
+  {const c=dijelovi(K(T,o0)); ok(c.terasa===1&&c.sljunak===4&&!c.balkon,"3D: terasa prema vrtu i šljunčani rub uz zidove");
+   const c2=dijelovi(K(T,{...o0,terasa:false})); ok(!c2.terasa,"3D: bez vlastite terase kad okućnica ima terasu");
+   const G3=K(T,{...o0,balkon:true}), c3=dijelovi(G3), bk=bb(G3,"balkon"); ok(c3.balkon===1&&c3["balkon-ograda"]>=4&&bk.max.z<-3.99&&Math.abs(bk.max.y-3.45)<0.01,"3D: balkon sa staklenom ogradom na katu prema vrtu");
+   const G4=K(T,{...o0,V:4.2,etaza:{n:1,fh:3,pk:true},nagib:40,balkon:true}), c4=dijelovi(G4); ok(c4.balkon===1,"3D: kuća s potkrovljem – balkon na zabatu");
+   const c5=dijelovi(K(T,{...o0,krov:"ravni",nagib:0,stil:"moderni"})); ok(c5.pergola>5,"3D: pergola nad terasom kod modernog ravnog krova");}
   {const L=E("triSloj")(o0); ok(L.id==="kuca3d"&&L.type==="custom"&&L.renderingMode==="3d","3D: kuća je zaseban sloj MapLibrea (dijeli dubinu s terenom i okolnim zgradama)");
    ok(["zid","krov","pv","prozor","garaza"].every(k=>E("TRI_K").has(k)),"3D: dijelovi koje crta three.js izbacuju se iz modela od kvadara");}
   ok(errs.length===0,"bez JS grešaka (3D three.js): "+errs.join(" | "));
