@@ -4495,6 +4495,116 @@
         "Krov kosi 17–22°; ravni ili prohodni dio najviše 20 % površine krova (čl. 23.).",
         "Višestambene građevine (TIP VS) nisu obrađene."
       ]
+    },
+    "RAVNA GORA": {
+      "kod": "PPUO Ravna Gora",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Ravna Gora, odredbe za provedbu iz elaborata VI. izmjena i dopuna (Službene novine Općine Ravna Gora 4/2025; ispravak 10/2025 odnosi se samo na tumač kartografskog prikaza 4.5)",
+        "sn": "Službene novine Općine Ravna Gora 4/2025 i 10/2025 (ispravak)",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1730",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1730/ppuo-ravna-gora-vi-id.pdf",
+        "status": "na snazi (VI. izmjene i dopune 2025.)",
+        "provjera": "Čl. 19.–24. i 121. iz elaborata VI. izmjena (PDF Zavoda, cijele odredbe, tekst izvučen strojno), preuzeto 5. 11. 2026. Precrtani tekst se pri strojnom čitanju ne razlikuje od važećeg.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Elaborat izmjena, ne službeni pročišćeni tekst."
+        }
+      },
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "19.",
+        "txt": "Neposrednom provedbom Plana, u građevinskim područjima naselja za koja nije određena obveza izrade plana užeg područja, mogu se graditi",
+        "msg": "Neizgrađeni dio: neposredno samo gdje nije propisan plan užeg područja; neuređeni dio traži UPU (čl. 2., 19.). Provjeri u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "U ruralnim i etnološkim cjelinama uz konzervatorske uvjete (čl. 18.). Uz glavne prometnice u N12, N13, N2, N52 i N61 obvezna uzdužna orijentacija sljemena, inače najmanje 16 m od regulacijskog pravca (čl. 22.). Nove kuće u nizu nisu dopuštene (čl. 21.)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska stambena građevina",
+          "opis": "najviše 3 stana (čl. 20.)",
+          "clanak": "20.–21.",
+          "gbpMax": 400,
+          "etaze": "Po(S)+P+1+Pk",
+          "visina": 9.0,
+          "visinaOpis": "9 m do vijenca",
+          "slob": {
+            "minC": 400,
+            "izg": 0.3,
+            "kis": 0.8,
+            "kisPodrum": 0.8,
+            "tlMin": 60,
+            "tlMax": null,
+            "napomena": "Kig 0,5 ako se gradi i poljoprivredna ili poslovna pomoćna građevina; na regulacijskoj liniji 0,6 (čl. 21.)."
+          },
+          "dvoj": {
+            "minC": 250,
+            "izg": 0.4,
+            "kis": 0.8,
+            "kisPodrum": 0.8,
+            "tlMin": 60,
+            "tlMax": null,
+            "napomena": "Za jednu stambenu jedinicu; nove dvojne samo istodobno (čl. 21.)."
+          },
+          "txt": {
+            "minC": "najmanja površina građevne čestice iznosi 400 m",
+            "izg": "najveći koeficijent izgrađenosti je kig=0,3",
+            "kis": "najveći koeficijent iskorištenosti kis=0,8",
+            "gbp": "najveća bruto razvijena površina građevine je 400 m",
+            "etaze": "najveća katnost (broj etaža) je Po(S)+P+1+Pk",
+            "visina": "najveća visina građevine je 9,0 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "22.",
+        "min": 3,
+        "opis": "h/2, najmanje 3 m",
+        "opisIznimka": "",
+        "txt": "najmanje pola visine građevine (h/2), ali ne manje od 3 metra"
+      },
+      "regulacija": {
+        "clanak": "121.",
+        "ostale": 6,
+        "razvrstane": 6,
+        "opis": "najmanje 6 m",
+        "txt": "Udaljenost građevine od regulacijske linije za nerazvrstane ceste ne može biti manja od 6 metara"
+      },
+      "zelenilo": {
+        "clanak": "24.",
+        "min": 0.2,
+        "txt": "Ozelenjena površina građevne čestice ne smije biti manja od 20% ukupne površine građevne čestice."
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "23.",
+          "nagibMin": 25,
+          "nagibMax": 40,
+          "ravniDopusten": false
+        }
+      },
+      "pristup": {
+        "napomena": "Kolno-pješački prilaz najmanje 3,5 m, najviše 50 m od javne ceste (čl. 121.)."
+      },
+      "napomene": [
+        "Krov kosi, u pravilu dvostrešan, 25–40° (čl. 23.).",
+        "Višeobiteljske građevine samo posredno (UPU) nisu obrađene."
+      ]
     }
   },
   "oblici": [
