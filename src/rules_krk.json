@@ -1282,6 +1282,419 @@
         "U zoni M12 nema iznimke od 400 m² za samostojeću obiteljsku kuću."
       ],
       "drugaZona": "UPU 5 smješta stambene građevine samo u zone M11 i M12 (čl. 31.)."
+    },
+    "UPU 3": {
+      "kod": "UPU 3 Punat",
+      "prepoznaj": "UPU\\s*3\\b[^|]*Punat",
+      "jls": "PUNAT",
+      "izvor": {
+        "naziv": "Urbanistički plan uređenja UPU 3 – građevinsko područje naselja N1 – centralno naselje Punat, odredbe za provođenje",
+        "sn": "Službene novine PGŽ 34/2010, izmjene 13/2016 i 3/2020",
+        "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=41087",
+        "status": "na snazi (zadnje II. izmjene i dopune, SN PGŽ 3/2020); III. izmjene i dopune u izradi",
+        "provjera": "Vrijednosti i navodi preuzeti su iz baze data/pravila-sn/punat-upu3.json. Čl. 46. i točke čl. 46a.–46c. koje su mijenjane 2020. potječu iz cijelog teksta II. izmjena (SN PGŽ 3/2020) sa sn.pgz.hr. Najmanja čestica, kig, kis, visina i odmaci (čl. 46a.–46c., t. 1–3, nisu mijenjani 2020.) potječu iz teksta ciljanih izmjena 2016. (SN PGŽ 13/2016) iz izvoza treće strane, koji nije uspoređen sa sn.pgz.hr.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "razlog": "Pročišćeni tekst UPU-a 3 nije dostupan; stanje odredbi složeno je iz osnovnog teksta 2010., ciljanih izmjena 2016. i II. izmjena 2020. Tekst iz 2016. nije uspoređen sa sn.pgz.hr, a vjerodostojno tumačenje iz 2012. nije pronađeno.",
+          "napomena": "Pravna aktualnost UPU-a 3 Punat nije neovisno potvrđena: stanje odredbi složeno je iz više odluka, tekst izmjena iz 2016. nije uspoređen sa službenom objavom, a III. izmjene i dopune su u izradi. Uvjeti gradnje služe za orijentaciju; mjerodavna je lokacijska informacija."
+        }
+      },
+      "zone": [
+        [
+          "S1",
+          "S1 (čl. 46.–46c.)"
+        ],
+        [
+          "S2",
+          "S2 (čl. 46.–46c.)"
+        ],
+        [
+          "M1",
+          "M1 (čl. 46.–46c.)"
+        ],
+        [
+          "M2",
+          "M2 (uvjeti čl. 54c.–54e. nisu obrađeni)"
+        ],
+        [
+          "druga",
+          "druga zona"
+        ]
+      ],
+      "zoneSet": {
+        "M2": {
+          "tipovi": null,
+          "drugaZona": "Uvjeti za zonu M2 (čl. 54c.–54e. UPU-a 3) aplikacija još nije obradila."
+        },
+        "S1": {
+          "upozorenja": [
+            "Osnovne vrijednosti (najmanja čestica, kig, kis, visina, odmaci) iz ciljanih izmjena 2016. preuzete su iz izvoza teksta treće strane i nisu uspoređene sa Službenim novinama PGŽ.",
+            "Definicije podruma i obračuna etaža (čl. 3. i 5. odredbi), parkiranje (poglavlje 5.) i udaljenost od regulacijskog pravca nisu izdvojeni, pa nisu u izračunu.",
+            "III. izmjene i dopune UPU-a 3 su u izradi; vrijednosti se mogu promijeniti.",
+            "Zona S1: poslovni dio stambene građevine ne smije prelaziti 10 % GBP-a (čl. 46a.): „čija površina ne smije prelaziti 10% ukupne razvijene površine (GBP) stambene građevine”."
+          ]
+        }
+      },
+      "zonaNapomena": "Obiteljske kuće (slobodnostojeće, dvojne, u nizu) prema čl. 46.–46c. grade se u zonama S1, S2 i M1. Zona se ne može odrediti automatski: prikazana je samo na grafičkom prikazu br. 4 UPU-a 3 (raster), bez vektorskog sloja; provjeri je na prikazu plana ili u lokacijskoj informaciji.",
+      "drugaZona": "Za odabranu zonu uvjeti za obiteljske kuće iz UPU-a 3 nisu obrađeni.",
+      "dioGP": {
+        "opcije": [
+          [
+            "",
+            "— prema županijskom sloju —"
+          ],
+          [
+            "izgradeni",
+            "izgrađeni dio"
+          ],
+          [
+            "neizgradeni",
+            "neizgrađeni dio"
+          ]
+        ],
+        "napomena": "Koeficijent iskoristivosti (kis) i najveća visina ovise o tome je li čestica u izgrađenom ili neizgrađenom dijelu građevinskog područja naselja. Granica je na grafičkom dijelu plana, ne u tekstu."
+      },
+      "upozorenja": [
+        "Osnovne vrijednosti (najmanja čestica, kig, kis, visina, odmaci) iz ciljanih izmjena 2016. preuzete su iz izvoza teksta treće strane i nisu uspoređene sa Službenim novinama PGŽ.",
+        "Definicije podruma i obračuna etaža (čl. 3. i 5. odredbi), parkiranje (poglavlje 5.) i udaljenost od regulacijskog pravca nisu izdvojeni, pa nisu u izračunu.",
+        "III. izmjene i dopune UPU-a 3 su u izradi; vrijednosti se mogu promijeniti."
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća",
+          "opis": "slobodnostojeća najviše tri stana (ili dva stana i poslovni prostor); svaka jedinica dvojne kuće najviše jedna stambena jedinica",
+          "clanak": "46. i 46a.–46c.",
+          "gbpMax": null,
+          "etaze": "tri nadzemne etaže (slobodnostojeća i dvojna, čl. 46a.–46b.; za niz nije izdvojeno)",
+          "visina": 9.0,
+          "visinaNeizgr": 7.0,
+          "oblici": [
+            [
+              "slob",
+              "slobodnostojeća"
+            ],
+            [
+              "dvoj",
+              "dvojna"
+            ],
+            [
+              "ugr",
+              "jedinica niza (nije završna)"
+            ]
+          ],
+          "slob": {
+            "minC": 450,
+            "minCIznimno": 405.0,
+            "izg": 0.25,
+            "kis": 1.0,
+            "kisNeizgr": 0.85,
+            "tlMin": 60,
+            "tlMax": 150,
+            "tlVelika": {
+              "prag": 1000,
+              "tl": 200
+            }
+          },
+          "dvoj": {
+            "minC": 225,
+            "izg": 0.3,
+            "kis": 1.3,
+            "kisNeizgr": 1.05,
+            "tlMax": 75
+          },
+          "ugr": {
+            "minC": 150,
+            "izg": 0.4,
+            "kis": 1.8,
+            "kisNeizgr": 1.4,
+            "napomena": "Za završnu (zadnju) jedinicu niza plan propisuje druge uvjete: čestica 225 m², kig 0,3, kis 1,3 u izgrađenom i 1,05 u neizgrađenom dijelu (čl. 46c.). Izračun je za jedinicu niza koja nije završna. Najveći tlocrt za građevine u nizu nije izdvojen iz čl. 46.; prikazan je samo tlocrt iz kig-a.",
+            "uvjeti": [
+              "najveći tlocrt za građevine u nizu nije izdvojen iz čl. 46.; prikazan je samo tlocrt iz kig-a",
+              "za završnu jedinicu niza vrijede drugi uvjeti (čl. 46c.); izračun je za jedinicu niza koja nije završna",
+              "najveći broj etaža za građevine u nizu nije izdvojen iz čl. 46c."
+            ]
+          },
+          "txt": {
+            "tl": "Najveća tlocrtna površina građevine iznosi 150 m2 za građevine slobodnostojećeg načina gradnje",
+            "minCIznimno": "Interpolaciju građevina u izgrađenim i već formiranim dijelovima naselja moguće je planirati na parcelama 10% manjim od propisanih (SN PGŽ 3/2020, čl. 46a. t. 8)"
+          }
+        }
+      },
+      "kisUkupni": true,
+      "meda": {
+        "clanak": "46a.–46c.",
+        "min": 3,
+        "opis": "h/2, najmanje 3 m; najmanje 6 m od susjednih građevina",
+        "txt": "pola vlastite visine, ali ne manje od 3m, od granice građevne čestice, a najmanje 6m od susjednih građevina"
+      },
+      "regulacija": {
+        "clanak": null,
+        "opis": "udaljenost od regulacijskog pravca nije izdvojena iz odredbi UPU-a 3 (Podaci nisu dostupni)",
+        "txt": ""
+      },
+      "zelenilo": {
+        "clanak": "46a.–46c.",
+        "min": 0.4,
+        "txt": "obavezna površina zelenila: slobodnostojeća 40 %, dvojna 30 %, u nizu 20 % (završna jedinica 30 %), čl. 46a.–46c. t. 4 (SN PGŽ 3/2020)"
+      },
+      "pristup": {
+        "napomena": "Parkiranje i pristup prema poglavlju 5. odredbi UPU-a 3 (nije izdvojeno)."
+      },
+      "napomene": [
+        "Pojedine čestice imaju posebne uvjete (npr. k.č. 3307 k.o. Punat, čl. 46a. t. 8); aplikacija ih ne primjenjuje."
+      ],
+      "citati": {
+        "izvor": "data/pravila-sn/punat-upu3.json (navodi provjereni skriptom tools/sn-pgz/provjeri_citate.py u tekstu odluke, 21. 10. 2026.)",
+        "slob": {
+          "clanak": "46a.",
+          "minC": {
+            "obit": {
+              "t": "t. 1",
+              "x": "Najmanja površina građevne čestice iznosi 450m 2",
+              "sn": "SN PGŽ 13/2016",
+              "pravilo": "p3-46a-cestica-min",
+              "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+              "potvrdenIzvor": false,
+              "clanak": "46a."
+            }
+          },
+          "izg": {
+            "t": "t. 2",
+            "x": "je 0,25, a maksimalni koeficijent iskoristivosti građevinske čestice (k is ) je u:",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46a-kig",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46a."
+          },
+          "kis": {
+            "t": "t. 2",
+            "x": "izgrađenom dijelu građevinskog područja naselja 1,0",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46a-kis-izg",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46a."
+          },
+          "kisNeizgr": {
+            "t": "t. 2",
+            "x": "neizgrađenom dijelu građevinskog područja naselja 0,85",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46a-kis-neizg",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46a."
+          },
+          "visina": {
+            "t": "t. 2",
+            "x": "iznosi maksimalno 9,0 m",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46a-visina-izg",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46a."
+          },
+          "visinaNeizgr": {
+            "t": "t. 2",
+            "x": "iznosi najviše 7,00 m",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46a-visina-neizg",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46a."
+          },
+          "meda": {
+            "t": "t. 3",
+            "x": "pola vlastite visine, ali ne manje od 3m, od granice građevne čestice",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46a-odmak-meda",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46a."
+          },
+          "tl": {
+            "t": "st. 2",
+            "x": "Najveća tlocrtna površina građevine iznosi 150 m2 za građevine slobodnostojećeg načina gradnje",
+            "sn": "SN PGŽ 3/2020",
+            "pravilo": "p3-46-tl-slob",
+            "izvorTeksta": "cijeli tekst odluke sa sn.pgz.hr",
+            "potvrdenIzvor": true,
+            "clanak": "46."
+          },
+          "tlVelika": {
+            "t": "st. 2",
+            "x": "Iznimno, na građevnim česticama većim od 1000 m2, najveća tlocrtna površina slobodnostojeće građevine iznosi 200 m2",
+            "sn": "SN PGŽ 3/2020",
+            "pravilo": "p3-46-tl-slob-velika",
+            "izvorTeksta": "cijeli tekst odluke sa sn.pgz.hr",
+            "potvrdenIzvor": true,
+            "clanak": "46."
+          },
+          "tlMin": {
+            "t": "st. 3",
+            "x": "Minimalna tlocrtna površina obiteljske (slobodnostojeće) građevine iznosi 60 m2",
+            "sn": "SN PGŽ 3/2020",
+            "pravilo": "p3-46-tl-min",
+            "izvorTeksta": "cijeli tekst odluke sa sn.pgz.hr",
+            "potvrdenIzvor": true,
+            "clanak": "46."
+          },
+          "minCIznimno": {
+            "t": "t. 8",
+            "x": "Interpolaciju građevina u izgrađenim i već formiranim dijelovima naselja moguće je planirati na parcelama 10% manjim od propisanih",
+            "sn": "SN PGŽ 3/2020",
+            "pravilo": "p3-46a-interpolacija",
+            "izvorTeksta": "cijeli tekst odluke sa sn.pgz.hr",
+            "potvrdenIzvor": true,
+            "clanak": "46a."
+          }
+        },
+        "dvoj": {
+          "clanak": "46b.",
+          "minC": {
+            "obit": {
+              "t": "t. 1",
+              "x": "Najmanja površina građevne čestice iznosi 225m 2",
+              "sn": "SN PGŽ 13/2016",
+              "pravilo": "p3-46b-cestica-min",
+              "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+              "potvrdenIzvor": false,
+              "clanak": "46b."
+            }
+          },
+          "izg": {
+            "t": "t. 2",
+            "x": "(kig) je 0,3, a maksimalni koeficijent iskoristivosti građevinske čestice (kis) je u:",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46b-kig",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46b."
+          },
+          "kis": {
+            "t": "t. 2",
+            "x": "izgrađenom dijelu građevinskog područja naselja 1,3",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46b-kis-izg",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46b."
+          },
+          "kisNeizgr": {
+            "t": "t. 2",
+            "x": "neizgrađenom dijelu građevinskog područja naselja 1,05",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46b-kis-neizg",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46b."
+          },
+          "visina": {
+            "t": "t. 2",
+            "x": "iznosi maksimalno 9,0 m",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46b-visina-izg",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46b."
+          },
+          "visinaNeizgr": {
+            "t": "t. 2",
+            "x": "iznosi najviše 7,00 m",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46b-visina-neizg",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46b."
+          },
+          "meda": {
+            "t": "t. 3",
+            "x": "pola vlastite visine, ali ne manje od 3m, od granice građevne čestice",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46b-odmak-meda",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46b."
+          },
+          "tl": {
+            "t": "st. 2",
+            "x": "odnosno 75 m2 za građevine dvojnog načina gradnje",
+            "sn": "SN PGŽ 3/2020",
+            "pravilo": "p3-46-tl-dvoj",
+            "izvorTeksta": "cijeli tekst odluke sa sn.pgz.hr",
+            "potvrdenIzvor": true,
+            "clanak": "46."
+          }
+        },
+        "ugr": {
+          "clanak": "46c.",
+          "minC": {
+            "obit": {
+              "t": "t. 1",
+              "x": "Najmanja površina građevne čestice iznosi 150 (225 za zadnju građevinu niza) m 2",
+              "sn": "SN PGŽ 13/2016",
+              "pravilo": "p3-46c-cestica-min",
+              "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+              "potvrdenIzvor": false,
+              "clanak": "46c."
+            }
+          },
+          "izg": {
+            "t": "t. 2",
+            "x": "(kig) je 0,4 (0,3 za zadnju građevinu u nizu)",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46c-kig",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46c."
+          },
+          "kis": {
+            "t": "t. 2",
+            "x": "izgrađenom dijelu građevinskog područja naselja 1,8 (1,3 za zadnju",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46c-kis-izg",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46c."
+          },
+          "kisNeizgr": {
+            "t": "t. 2",
+            "x": "neizgrađenom dijelu građevinskog područja naselja 1,4 (1,05 za zadnju",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46c-kis-neizg",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46c."
+          },
+          "visina": {
+            "t": "t. 2",
+            "x": "iznosi maksimalno 9,0 m",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46c-visina-izg",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46c."
+          },
+          "visinaNeizgr": {
+            "t": "t. 2",
+            "x": "iznosi najviše 7,00 m",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46c-visina-neizg",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46c."
+          },
+          "meda": {
+            "t": "t. 3",
+            "x": "pola vlastite visine, ali ne manje od 3m, od granice građevne čestice",
+            "sn": "SN PGŽ 13/2016",
+            "pravilo": "p3-46c-odmak-meda",
+            "izvorTeksta": "izvoz teksta treće strane, nije uspoređen sa sn.pgz.hr",
+            "potvrdenIzvor": false,
+            "clanak": "46c."
+          }
+        }
+      }
     }
   },
   "ostaleJls": {

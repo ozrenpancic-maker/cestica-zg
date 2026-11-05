@@ -1322,6 +1322,42 @@ async function krkTests(){
   setv(w,"krkOblik","dvoj","change"); M=w.__krkCalc; ok(M&&M.oblik==="dvoj"&&Math.abs(M.tl-180)<0.5&&M.minOk,"Punat, dvojna: kig 0,3 → tlocrt 180 m²");
   E("KRK_TIP").oblik="slob"; gp.IZGRADJENOST="neizgrađeno"; tm=await reinspect(); ok(w.__krkCalc===null&&/niže vrijednosti/.test(tm),"Punat, neizgrađeni dio: bez izračuna za izgrađeni dio (čl. 22.)");
   gp.IZGRADJENOST="izgrađeno";
+  // Punat, UPU 3 (centralno naselje N1): pravila iz data/pravila-sn/punat-upu3.json, zonu i dio GP-a bira korisnik
+  {const U3={GRAD_OPCINA:"Punat",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Odluka o donošenju II. Izmjena i dopuna Urbanističkog plana uređenja (UPU 3) građevinskog područja naselja N1 - centralno naselje Punat",SN_BROJ:"2020-03"};
+   plans.push(U3); Object.assign(gp,{OPCINA_GRAD:"PUNAT",OZNAKA_NAMJENE:"NA1",NASELJE:"Punat",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
+   for(const k of Object.keys(w.localStorage)) if(/^krk(Zona|Dio|Zast)/.test(k)) w.localStorage.removeItem(k);
+   const RK=()=>E("PZREG").items, OB=id=>{const it=RK().get(id); return it?E("piObjava")(it):null;};
+   tm=await reinspect(); M=w.__krkCalc;
+   ok(M===null&&/UPU 3 Punat/.test(tm)&&/Zona u UPU-u/.test(tm)&&/S1/.test(tm)&&!/PPUO Punat/.test(tm.split("Uvjeti gradnje")[1]||""),"Punat UPU 3: plan prepoznat iz evidencije, bez odabrane zone nema izračuna (ni PPUO umjesto UPU-a)");
+   setv(w,"krkZona","S2","change"); M=w.__krkCalc; tm=txt(w,"sheet");
+   ok(M&&M.plan==="UPU 3 Punat"&&M.minOk&&Math.abs(M.tl-Math.min(150,M.A*0.25))<0.01&&M.tl>149&&Math.abs(M.gbpN-M.A*1.0)<0.01&&M.gbpP==null&&/9,0 m/.test(tm),"Punat UPU 3, S2, slobodnostojeća ≈ 600 m², izgrađeni dio: najmanja 450 m² ispunjeno, tlocrt 0,25 × A (najviše 150 m²), GBP 1,0 × A (kis 1,0), visina 9,0 m");
+   const dg=RK().get("dio-gp"), L=(RK().get("calc-gbp")||{}).lanac||[], kc=L.filter(k=>k.karika==="članak");
+   ok(dg&&dg.raz==="B"&&/izgrađeni dio/.test(dg.vrijednost)&&L.some(k=>k.karika==="dio građevinskog područja")&&(RK().get("calc-gbp").uvjeti||[]).some(u=>/preuzet je iz županijskog sloja/.test(u.tekst)&&!u.razrijeseno),"Punat UPU 3: dio GP-a iz županijskog sloja (B) je karika lanca i otvoren uvjet");
+   ok(kc.some(k=>/46a\. t\. 2 \(SN PGŽ 13\/2016\)/.test(k.vrijednost)&&k.uskladenost==="nepoznata"&&/izvoz teksta treće strane/.test(k.citatVrsta))&&["calc-min","calc-tlocrt","calc-gbp","calc-visina"].every(i=>OB(i)&&OB(i).razina==="uvjetno"&&RK().get(i).raz==="C"),"Punat UPU 3: navodi iz 2016. označeni kao neuspoređeni s objavom; pokazatelji su uvjetni (C)");
+   ok(((RK().get("calc-tlocrt")||{}).lanac||[]).some(k=>k.karika==="članak"&&/čl\. 46\. st\. 2 \(SN PGŽ 3\/2020\)/.test(k.vrijednost)&&/doslovni navod/.test(k.citatVrsta)&&!k.uskladenost),"Punat UPU 3: najveći tlocrt iz čl. 46. (SN PGŽ 3/2020, cijeli tekst) kao doslovni navod");
+   ok(/Pravna aktualnost nije neovisno potvrđena/.test(tm)&&/izvoza teksta treće strane/.test(tm)&&/III\. izmjene i dopune/.test(tm)&&!/najniža kota zaravnatog terena/.test(tm),"Punat UPU 3: upozorenja o pravnoj aktualnosti, izvoru teksta 2016. i izmjenama u izradi; bez uvjeta iz UPU-a 2 (kota terena)");
+   setv(w,"krkDio","neizgradeni","change"); M=w.__krkCalc; tm=txt(w,"sheet");
+   ok(M&&Math.abs(M.gbpN-M.A*0.85)<0.01&&RK().get("calc-visina").vrijednost==="7 m"&&/najviše 7,00 m/.test(tm)&&RK().get("dio-gp").raz==="C"&&RK().get("dio-gp").korisnik,"Punat UPU 3, neizgrađeni dio (tvoj odabir, C): kis 0,85 → GBP 0,85 × A, visina 7,0 m");
+   setv(w,"krkDio","izgradeni","change"); setv(w,"krkOblik","dvoj","change"); M=w.__krkCalc;
+   ok(M&&M.oblik==="dvoj"&&Math.abs(M.tl-75)<0.01&&Math.abs(M.gbpN-M.A*1.3)<0.01&&M.minOk,"Punat UPU 3, dvojna: tlocrt 75 m² (čl. 46.), kis 1,3 → GBP 1,3 × A, najmanja 225 m²");
+   setv(w,"krkOblik","ugr","change"); M=w.__krkCalc;
+   ok(M&&M.oblik==="ugr"&&Math.abs(M.tl-M.A*0.4)<0.01&&(RK().get("calc-tlocrt").uvjeti||[]).some(u=>/u nizu nije izdvojen/.test(u.tekst))&&/završn/.test(txt(w,"sheet")),"Punat UPU 3, jedinica niza: tlocrt iz kig-a 0,4 × A uz otvoren uvjet (najveći tlocrt za niz nije izdvojen), napomena o završnoj jedinici");
+   setv(w,"krkOblik","slob","change");
+   ok(w.__areaCmp&&w.__areaCmp.calc(420).min==="izn"&&w.__areaCmp.calc(400).min===false&&E("krkTlMax")({tlMax:150,tlVelika:{prag:1000,tl:200}},1200)===200&&E("krkTlMax")({tlMax:150,tlVelika:{prag:1000,tl:200}},1000)===150,"Punat UPU 3: interpolacija 10 % (405 m²) kao prag iznimke; tlocrt 200 m² tek na česticama većim od 1000 m²");
+   setv(w,"krkZona","M2","change"); tm=txt(w,"sheet"); ok(w.__krkCalc===null&&/54c/.test(tm),"Punat UPU 3, zona M2: uvjeti (čl. 54c.–54e.) nisu obrađeni, nema izračuna");
+   setv(w,"krkZona","S1","change"); ok(w.__krkCalc&&/10 % GBP-a/.test(txt(w,"sheet"))&&/izvoza teksta treće strane/.test(txt(w,"sheet")),"Punat UPU 3, zona S1: dodatno upozorenje o poslovnom dijelu (10 % GBP-a) uz zajednička upozorenja");
+   gp.IZGRADJENOST=""; w.localStorage.removeItem(E("krkDioKey()")); await reinspect(); setv(w,"krkZona","S1","change"); tm=txt(w,"sheet");
+   ok(w.__krkCalc===null&&/Odaberi dio građevinskog područja/.test(tm)&&OB("blok-uvjeti")&&OB("blok-uvjeti").razina==="blokirano","Punat UPU 3: bez podatka o izgrađenosti i bez odabira nema izračuna (kis i visina ovise o dijelu GP-a)");
+   ok(E("krkUpuRule")({NAZIV:"UPU 3 – Jurandvor sjever (N2)"})===null&&E("krkUpuRule")({NAZIV:"Odluka o donošenju UPU 3 - građevinsko područje naselje N1 - Centralno naselje Punat"}).k==="UPU 3","Punat UPU 3: prepoznaje se samo UPU 3 Punta (ne UPU 3 Jurandvor u Baški)");
+   plans.splice(plans.indexOf(U3),1); gp.IZGRADJENOST="izgrađeno"; for(const k of Object.keys(w.localStorage)) if(/^krk(Zona|Dio)/.test(k)) w.localStorage.removeItem(k);
+   tm=await reinspect(); ok(w.__krkCalc&&w.__krkCalc.plan==="PPUO Punat","Punat izvan UPU-a 3: i dalje PPUO Punat");}
+  // UPU 3 u rules_krk.json: svaki navod jednak je navodu iz baze, a vrijednost je u navodu
+  {const U=E("RULES_KRK").upu["UPU 3"], B=JSON.parse(fs.readFileSync(path.join(__dirname,"../data/pravila-sn/punat-upu3.json"),"utf8")), BP=Object.fromEntries(B.pravila.map(r=>[r.id,r])), all=[];
+   for(const g of ["slob","dvoj","ugr"]) for(const [k,c] of Object.entries(U.citati[g])) if(k!=="clanak") (k==="minC"?Object.values(c):[c]).forEach(x=>all.push([g,k,x]));
+   const bad=all.filter(([g,k,x])=>!BP[x.pravilo]||BP[x.pravilo].izvor.citat!==x.x||(x.potvrdenIzvor!==(BP[x.pravilo].izvor.odluka_id===41087)));
+   const nb=(g,k,val)=>{const x=k==="minC"?U.citati[g].minC.obit:U.citati[g][k]; return x&&new RegExp(String(val).replace(".",",")).test(x.x.replace(/\s/g,"").replace(/m2/g,""));};
+   const T=U.tipovi.obit, chk=[["slob","minC",T.slob.minC],["slob","izg",T.slob.izg],["slob","kis",T.slob.kis],["slob","kisNeizgr",T.slob.kisNeizgr],["slob","tl",T.slob.tlMax],["slob","tlVelika",T.slob.tlVelika.tl],["dvoj","minC",T.dvoj.minC],["dvoj","izg",T.dvoj.izg],["dvoj","kis",T.dvoj.kis],["dvoj","tl",T.dvoj.tlMax],["ugr","minC",T.ugr.minC],["ugr","izg",T.ugr.izg],["ugr","kis",T.ugr.kis],["slob","visina","9,0"],["slob","visinaNeizgr","7,00"]];
+   ok(all.length>=25&&!bad.length&&chk.every(([g,k,v])=>nb(g,k,v)),"UPU 3 Punat: "+all.length+" navoda jednako je bazi s citatima (izvor i provjera izvora), a svaka brojka izračuna je u svom navodu"+(bad.length?": "+bad.map(b=>b[0]+"."+b[1]).join(","):"")+chk.filter(([g,k,v])=>!nb(g,k,v)).map(c=>" ✗"+c.join(".")).join(""));}
   Object.assign(gp,{OPCINA_GRAD:"KRK",OZNAKA_NAMJENE:"GPN-1",NASELJE:"Kornić",IZGRADJENOST:"izgrađeno"}); ag.OPCINA_GRAD="KRK"; mode="ok";
   // pretraga adrese: naselje na Krku traži se u obuhvatu otoka
   let nomi=null; w.fetch=(u)=>{u=String(u); if(u.includes("nominatim")){nomi=new URL(u); return okj([])} return Promise.reject(new Error("x"))};
@@ -2141,7 +2177,7 @@ async function formulaTests(){
   // Plan Integrity v10: novo polje »citati« (doslovni navodi iz objave) ne mijenja postojeće brojke ni tekstove; ne ulazi u sažetak,
   // a njegovu doslovnost provjerava zaseban test (»PI v10 navodi«) prema tekstu SN PGŽ 19/2016
   // Sljedeća faza: »legenda« (boje polja legende karte 4 za pilot prijedloga zone) i »provjereno« (stručno provjereni obuhvati) nisu pravila; ne ulaze u sažetak
-  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno").map(([k,v])=>[k,bezPP(v)])):o;
+  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3").map(([k,v])=>[k,bezPP(v)])):o;
   const sha=crypto.createHash("sha256").update(JSON.stringify(bezPP(JSON.parse(fs.readFileSync(path.join(__dirname,"..","src","rules_krk.json"),"utf8"))))).digest("hex");
   ok(sha==="6c6741620a351ab6058812f2aba8f3723534ef42a17c8b6013fd42e829e9d166","Pravila: src/rules_krk.json bez oznaka pravne provjere nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
   const t0=R.tipovi.obit, u2=R.upu["UPU 2"];
