@@ -82,7 +82,8 @@ if ispu_path.exists():
     print(f"ISPU šifre: {sum(1 for z in _is['zapisi'] if z.get('status') == 'potvrđeno')} potvrđenih")
 import datetime
 ver = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=2))).strftime("%d.%m.%Y. %H:%M")
-(root / "index.html").write_text(tpl.replace("/*RULES*/null", data).replace("/*RULES_SE*/null", data_se).replace("/*RULES_PP*/null", data_pp).replace("/*RULES_META*/null", data_meta).replace("/*RULES_KRK*/null", data_krk).replace("/*RULES_DB*/null", data_db).replace("/*ISPU_SIFRE*/null", data_ispu).replace("/*VERSION*/", ver), encoding="utf-8")
+data_mk = json.dumps(json.loads((root / "src/montazne_kuce.json").read_text(encoding="utf-8")), ensure_ascii=False).replace("</", "<\\/")
+(root / "index.html").write_text(tpl.replace("/*MONTAZNE*/null", data_mk).replace("/*RULES*/null", data).replace("/*RULES_SE*/null", data_se).replace("/*RULES_PP*/null", data_pp).replace("/*RULES_META*/null", data_meta).replace("/*RULES_KRK*/null", data_krk).replace("/*RULES_DB*/null", data_db).replace("/*ISPU_SIFRE*/null", data_ispu).replace("/*VERSION*/", ver), encoding="utf-8")
 # service worker: verzija = sažetak sadržaja stranice i ljuske, pa svaka promjena aplikacije daje novi sw.js
 import hashlib
 h = hashlib.sha256()

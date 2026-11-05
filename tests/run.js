@@ -2777,7 +2777,56 @@ async function pvLiveTests(){
   ok(errs.length===0,"bez JS grešaka (elektrana uživo): "+errs.join(" | "));
 }
 
-netTests().then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
+// ---------------- katalog montažnih kuća: podaci, usporedba s uvjetima, primjena u simulatoru, izgled u 3D
+async function montazneTests(){
+  const {w,errs}=boot(); try{w.localStorage.clear()}catch(e){}
+  const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  const K=E("MONTAZNE"), q=id=>K.modeli.find(m=>m.id===id);
+  ok(K&&K.modeli.length===27&&["P","P1","PPk"].every(c=>K.modeli.filter(m=>m.kategorija===c).length===9)&&new Set(K.modeli.map(m=>m.id)).size===27,"Montažne kuće: 27 modela, po 9 prizemnica, katnica i kuća s potkrovljem");
+  ok(K.modeli.every(m=>/^https:\/\/(partas\.hr|www\.domprojekt\.hr|www\.icon-group\.hr)\//.test(m.url)&&(m.bruto>0||m.neto>0)&&m.kategorijaIzvor&&m.preuzeto==="2026-11-05"&&!["sirina","duljina","tlocrt","w","d"].some(k=>k in m)),"Montažne kuće: svaki model ima stranicu proizvođača, objavljenu površinu i izvor etaža; vanjske mjere tlocrta se ne upisuju");
+  ok(q("partas-q405").bruto===107.2&&q("partas-q405").minZemljiste.sirina===19.34&&q("partas-q405").visina===3.95&&q("domprojekt-nives").neto===118.54&&!("bruto" in q("domprojekt-nives"))&&q("icon-lina").bruto===198.07&&q("icon-lina").krov.nagib===25,"Montažne kuće: vrijednosti kao na stranicama (Partas Q 405, Domprojekt Nives, Icon Lina)");
+  ok(new Set(K.modeli.map(m=>m.proizvodjac)).size===3,"Montažne kuće: sva tri proizvođača u katalogu");
+  // najmanji opisani pravokutnik čestice
+  {const ob=E("mkObb")(parcelRect(30,25)); ok(ob&&Math.abs(ob[0]-25)<0.3&&Math.abs(ob[1]-30)<0.3,"Montažne kuće: čestica 30 × 25 m stane u pravokutnik "+(ob||[]).map(x=>x.toFixed(1)).join(" × "));}
+  // usporedba s uvjetima
+  {const P=E("mkProcjena"), G={A:600,tlMax:150,gbpMax:200,etMax:2,visMax:7,obb:[20,30]}, st=(id,g=G)=>P(q(id),g);
+   const a=st("partas-q405"); ok(a.st==="ok"&&a.R.length===5&&a.R.every(r=>r.st==="ok"),"Usporedba: Q 405 (bruto 107,2 m², visina 3,95 m, zemljište 19,34 × 18,70 m) stane na 600 m² uz tlocrt 150, GBP 200");
+   const b=st("partas-q120"); ok(b.st==="no"&&b.R.filter(r=>r.st==="no"&&/(GBP|tlocrt)/.test(r.t)).length===2&&b.R.some(r=>/227/.test(r.t)),"Usporedba: Q 120 (bruto 227 m²) ne stane: premašuje GBP i tlocrt");
+   const c=st("domprojekt-alma"); ok(c.st==="warn"&&c.R.some(r=>r.st==="warn"&&/samo neto/.test(r.t))&&c.R.some(r=>/najmanje 55 m²/.test(r.t)),"Usporedba: Domprojekt Alma (samo neto) – moguće uz provjeru, tlocrt kao donja granica");
+   const d=st("partas-q400",{...G,obb:[17,30]}); ok(d.st==="no"&&d.R.some(r=>r.st==="no"&&/18,22/.test(r.t)),"Usporedba: Q 400 traži zemljište širine 18,22 m, čestica široka 17 m – ne stane");
+   const e=st("partas-q250",{...G,gbpMax:400,tlMax:300}); ok(e.R.some(r=>r.st==="warn"&&/9,15 m/.test(r.t)&&/vijenca/.test(r.t)),"Usporedba: visina zgrade iznad visine iz plana samo upozorava (vijenac ili sljeme nije naveden)");
+   const f=st("domprojekt-laura",{...G,etMax:1}); ok(f.st==="no"&&f.R.some(r=>r.st==="no"&&/etaže: 2 od najviše 1/.test(r.t)),"Usporedba: kuća s potkrovljem ne stane kad plan dopušta jednu etažu");
+   ok(P(q("icon-lina"),{}).st==="na"&&P(q("icon-lina"),null).st==="na","Usporedba: bez uvjeta gradnje nema ocjene");}
+  // sučelje u simulatoru (Zagreb, 30 × 25 m)
+  const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"77/1",KATASTARSKA_OPCINA:"REMETE"}), dd=data(w,A,"2.2.");
+  w.__env=dd.envelope; E("OPEN").add("tloc"); E("render")(dd); await tick(10);
+  ok(!!$(w,"mkOpen")&&$(w,"mkOut").innerHTML==="","Simulator: gumb kataloga montažnih kuća, katalog zatvoren dok se ne otvori");
+  $(w,"mkOpen").click();
+  let cards=w.document.querySelectorAll("#mkOut .mk-card");
+  ok(cards.length===9&&/stane|ne stane|moguće/.test(txt(w,"mkOut"))&&/Podaci nisu dostupni|ravni krov|kosi krov/.test(txt(w,"mkOut"))&&w.document.querySelectorAll('#mkOut a[href^="https://"][target="_blank"]').length===9,"Katalog: 9 prizemnica s ocjenom i poveznicom na proizvođača");
+  w.document.querySelector('#mkOut [data-mkkat="P1"]').click(); cards=w.document.querySelectorAll("#mkOut .mk-card");
+  ok(cards.length===9&&/Lina/.test(txt(w,"mkOut"))&&w.document.querySelector('#mkOut [data-mkkat="P1"]').getAttribute("aria-selected")==="true","Katalog: kartica Katnice");
+  w.document.querySelector('#mkOut [data-mk="icon-lina"]').click(); await tick(10);
+  const TL=E("TL");
+  ok(TL.model==="icon-lina"&&TL.fl==="2"&&TL.krov==="cet"&&TL.nagib===25&&Math.abs(TL.w*TL.d-99)<6&&$(w,"tFl").value==="2"&&+$(w,"tW").value===TL.w&&TL.stil==="drvo","Postavi u simulator: Lina → P + 1, četverostrešni 25°, tlocrt oko 99 m² ("+TL.w+" × "+TL.d+" m), moderni izgled s drvom");
+  ok(/PROCJENA iz bruto površine 198,07 m²/.test(txt(w,"tPredNote"))&&/icon-group\.hr\/lina/.test(txt(w,"tPredNote"))&&/✓ U simulatoru/.test(txt(w,"mkOut")),"Postavi u simulator: napomena da je tlocrt procjena, s izvorom");
+  ok(w.__sim&&w.__sim.C.some(c=>c.label==="GBP nadzemno"&&/198/.test(c.val)),"Simulator provjerava postavljeni model (GBP oko 198 m²)");
+  w.document.querySelector('#mkOut [data-mkkat="PPk"]').click(); w.document.querySelector('#mkOut [data-mk="domprojekt-alma"]').click();
+  ok(TL.fl==="1.5"&&TL.krov==="cet"&&/Neto površina manja je od bruto/.test(txt(w,"tPredNote"))&&/zadržan je odabrani krov/.test(txt(w,"tPredNote")),"Postavi u simulator: Alma (s potkrovljem, samo neto, krov nije naveden) – upozorenja");
+  setv(w,"tW","11"); ok(TL.model===""&&!w.document.querySelector('#mkOut [aria-pressed="true"]'),"Ručna promjena širine odvaja kuću od modela iz kataloga");
+  // spremanje
+  {const S=E("projCleanSim"); const s=S({w:10,d:9,fl:"2",stil:"drvo",model:"icon-lina"}), s2=S({w:10,d:9,fl:"2",stil:"xx",model:"nepostoji"});
+   ok(s.stil==="drvo"&&s.model==="icon-lina"&&s2.stil==="klasicni"&&s2.model==="","Spremanje simulatora: izgled i model iz kataloga, nepoznate vrijednosti odbačene");}
+  // izgled u 3D
+  {const V=E("v3dModel"), o={c:[15.97,45.84],w:12,d:9,rot:0,V:6,krov:"dvo",nagib:25,alongW:true,gar:null,etaza:{n:2,fh:3,pk:false},ulaz:"S",pv:null};
+   const k0=V(o).kuca.features.map(f=>f.properties), k1=V({...o,stil:"drvo"}).kuca.features.map(f=>f.properties), k2=V({...o,stil:"moderni",krov:"ravni"}).kuca.features.map(f=>f.properties);
+   const ob=k1.find(p=>p.k==="obloga");
+   ok(!k0.some(p=>p.k==="obloga")&&ob&&ob.c==="#a87a4f"&&Math.abs(ob.b-3.45)<0.01&&k1.find(p=>p.k==="krov").c==="#3f4347"&&k0.find(p=>p.k==="krov").c==="#a9472a","3D: izgled s drvenom oblogom na katu i antracitnim krovom; klasični ostaje s crijepom");
+   ok(k2.find(p=>p.k==="atika").c==="#3a3d41"&&k2.find(p=>p.k==="zid").c==="#f6f5f2"&&k2.filter(p=>p.k==="prozor").length>0&&k2.find(p=>p.k==="prozor").h-k2.find(p=>p.k==="prozor").b>2,"3D: moderni izgled – bijela žbuka, antracitna atika, visoki prozori");}
+  ok(errs.length===0,"bez JS grešaka (montažne kuće): "+errs.join(" | "));
+}
+
+netTests().then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

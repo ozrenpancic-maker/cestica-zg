@@ -1,0 +1,508 @@
+{
+ "v": 1,
+ "preuzeto": "2026-11-05",
+ "opis": "Interni katalog montažnih kuća. Vrijednosti su prepisane sa stranica proizvođača; vanjske mjere tlocrta nijedan proizvođač ne objavljuje.",
+ "kategorije": [
+  [
+   "P",
+   "Prizemnice"
+  ],
+  [
+   "P1",
+   "Katnice"
+  ],
+  [
+   "PPk",
+   "S potkrovljem"
+  ]
+ ],
+ "izvori": [
+  {
+   "proizvodjac": "Partas",
+   "katalog": "https://partas.hr/katalog/",
+   "objavljuje": "neto i bruto površina, broj soba, visina zgrade, najmanja širina i duljina zemljišta, nagib i vrsta krova"
+  },
+  {
+   "proizvodjac": "Domprojekt",
+   "katalog": "https://www.domprojekt.hr/",
+   "objavljuje": "neto površina, broj spavaćih soba, kategorija (prizemna, katna, s potkrovljem)"
+  },
+  {
+   "proizvodjac": "Icon Group",
+   "katalog": "https://www.icon-group.hr/montazne-kuce/obiteljske-kuce/",
+   "objavljuje": "bruto površina, vrsta i nagib krova; etaže prema nazivima tlocrta"
+  }
+ ],
+ "modeli": [
+  {
+   "id": "partas-q405",
+   "proizvodjac": "Partas",
+   "naziv": "Q 405",
+   "kategorija": "P",
+   "kategorijaIzvor": "izvedeno: visina zgrade 3,95 m premala je za dvije etaže",
+   "neto": 85.8,
+   "bruto": 107.2,
+   "sobe": 3,
+   "visina": 3.95,
+   "minZemljiste": {
+    "sirina": 19.34,
+    "duljina": 18.7
+   },
+   "krov": {
+    "tip": "ravni",
+    "nagib": 2,
+    "opis": "ravni krov, nagib 2°"
+   },
+   "url": "https://partas.hr/q-405/",
+   "preuzeto": "2026-11-05"
+  },
+  {
+   "id": "partas-q410",
+   "proizvodjac": "Partas",
+   "naziv": "Q 410",
+   "kategorija": "P",
+   "kategorijaIzvor": "izvedeno: visina zgrade 4,53 m premala je za dvije etaže",
+   "neto": 83.2,
+   "bruto": 132.0,
+   "sobe": 3,
+   "visina": 4.53,
+   "minZemljiste": {
+    "sirina": 18.0,
+    "duljina": 19.86
+   },
+   "krov": {
+    "tip": "ravni",
+    "nagib": 2,
+    "opis": "ravni krov, nagib 2°"
+   },
+   "url": "https://partas.hr/q-410/",
+   "preuzeto": "2026-11-05"
+  },
+  {
+   "id": "partas-q400",
+   "proizvodjac": "Partas",
+   "naziv": "Q 400",
+   "kategorija": "P",
+   "kategorijaIzvor": "izvedeno: visina zgrade 5,48 m premala je za dvije etaže",
+   "neto": 106.7,
+   "bruto": 135.5,
+   "sobe": 4,
+   "visina": 5.48,
+   "minZemljiste": {
+    "sirina": 20.52,
+    "duljina": 18.22
+   },
+   "krov": {
+    "tip": "kosi",
+    "nagib": 22,
+    "opis": "kosi krov, nagib 22°"
+   },
+   "url": "https://partas.hr/q-400/",
+   "preuzeto": "2026-11-05"
+  },
+  {
+   "id": "partas-q520",
+   "proizvodjac": "Partas",
+   "naziv": "Q 520",
+   "kategorija": "P",
+   "kategorijaIzvor": "izvedeno: visina zgrade 5,33 m premala je za dvije etaže",
+   "neto": 106.3,
+   "bruto": 134.87,
+   "sobe": 4,
+   "visina": 5.33,
+   "minZemljiste": {
+    "sirina": 22.08,
+    "duljina": 16.28
+   },
+   "krov": {
+    "tip": "kosi",
+    "nagib": 22,
+    "opis": "kosi krov, nagib 22°"
+   },
+   "url": "https://partas.hr/q-520/",
+   "preuzeto": "2026-11-05"
+  },
+  {
+   "id": "partas-q140",
+   "proizvodjac": "Partas",
+   "naziv": "Q 140",
+   "kategorija": "P",
+   "kategorijaIzvor": "izvedeno: visina zgrade 5,05 m premala je za dvije etaže",
+   "neto": 165.0,
+   "bruto": 209.55,
+   "sobe": 3,
+   "visina": 5.05,
+   "minZemljiste": {
+    "sirina": 22.7,
+    "duljina": 25.3
+   },
+   "krov": {
+    "tip": "ravni",
+    "nagib": 2,
+    "opis": "ravni krov, nagib 2°"
+   },
+   "url": "https://partas.hr/q-140/",
+   "preuzeto": "2026-11-05"
+  },
+  {
+   "id": "partas-q120",
+   "proizvodjac": "Partas",
+   "naziv": "Q 120",
+   "kategorija": "P",
+   "kategorijaIzvor": "izvedeno: visina zgrade 4,62 m premala je za dvije etaže",
+   "neto": 185.14,
+   "bruto": 227.0,
+   "sobe": 3,
+   "visina": 4.62,
+   "minZemljiste": {
+    "sirina": 20.31,
+    "duljina": 28.81
+   },
+   "krov": {
+    "tip": "ravni",
+    "nagib": 1,
+    "opis": "ravni krov, nagib 1°"
+   },
+   "url": "https://partas.hr/q-120/",
+   "preuzeto": "2026-11-05"
+  },
+  {
+   "id": "domprojekt-nives",
+   "proizvodjac": "Domprojekt",
+   "naziv": "Nives",
+   "kategorija": "P",
+   "kategorijaIzvor": "kategorija na stranici proizvođača",
+   "neto": 118.54,
+   "sobe": 2,
+   "sobeVrsta": "spavaće sobe",
+   "krov": {
+    "tip": "ravni",
+    "nagib": 0,
+    "opis": "ravni krov (opis modela)"
+   },
+   "url": "https://www.domprojekt.hr/nives-niskoenergetska-montazna-kuca",
+   "preuzeto": "2026-11-05",
+   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+  },
+  {
+   "id": "domprojekt-marinela",
+   "proizvodjac": "Domprojekt",
+   "naziv": "Marinela",
+   "kategorija": "P",
+   "kategorijaIzvor": "kategorija na stranici proizvođača",
+   "neto": 103.25,
+   "url": "https://www.domprojekt.hr/marinela-niskoenergetska-montazna-kuca",
+   "preuzeto": "2026-11-05",
+   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+  },
+  {
+   "id": "domprojekt-ingrid",
+   "proizvodjac": "Domprojekt",
+   "naziv": "Ingrid",
+   "kategorija": "P",
+   "kategorijaIzvor": "kategorija na stranici proizvođača",
+   "neto": 115.93,
+   "url": "https://www.domprojekt.hr/ingrid-niskoenergetska-montazna-kuca",
+   "preuzeto": "2026-11-05",
+   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+  },
+  {
+   "id": "partas-q210",
+   "proizvodjac": "Partas",
+   "naziv": "Q 210",
+   "kategorija": "P1",
+   "kategorijaIzvor": "opis modela: prizemlje i kat",
+   "neto": 187.88,
+   "bruto": 238.32,
+   "sobe": 5,
+   "visina": 8.65,
+   "minZemljiste": {
+    "sirina": 19.64,
+    "duljina": 19.6
+   },
+   "krov": {
+    "tip": "kosi",
+    "nagib": 25,
+    "opis": "kosi krov, nagib 25°"
+   },
+   "url": "https://partas.hr/q-210/",
+   "preuzeto": "2026-11-05"
+  },
+  {
+   "id": "partas-q220",
+   "proizvodjac": "Partas",
+   "naziv": "Q 220",
+   "kategorija": "P1",
+   "kategorijaIzvor": "opis modela: prizemlje i kat",
+   "neto": 216.2,
+   "bruto": 265.92,
+   "sobe": 5,
+   "visina": 8.67,
+   "minZemljiste": {
+    "sirina": 24.33,
+    "duljina": 20.28
+   },
+   "krov": {
+    "tip": "kosi",
+    "nagib": 24,
+    "opis": "kosi krov, nagib 24°"
+   },
+   "url": "https://partas.hr/q-220/",
+   "preuzeto": "2026-11-05"
+  },
+  {
+   "id": "partas-q230",
+   "proizvodjac": "Partas",
+   "naziv": "Q 230",
+   "kategorija": "P1",
+   "kategorijaIzvor": "opis modela: prizemlje i kat",
+   "neto": 209.1,
+   "bruto": 265.55,
+   "sobe": 4,
+   "visina": 8.62,
+   "minZemljiste": {
+    "sirina": 21.75,
+    "duljina": 24.35
+   },
+   "krov": {
+    "tip": "kosi",
+    "nagib": 20,
+    "opis": "kosi krov, nagib 20°"
+   },
+   "url": "https://partas.hr/q-230/",
+   "preuzeto": "2026-11-05",
+   "napomena": "iznad kata tavanski prostor"
+  },
+  {
+   "id": "partas-q250",
+   "proizvodjac": "Partas",
+   "naziv": "Q 250",
+   "kategorija": "P1",
+   "kategorijaIzvor": "opis modela: prizemlje i kat",
+   "neto": 229.62,
+   "bruto": 282.43,
+   "sobe": 5,
+   "visina": 9.15,
+   "minZemljiste": {
+    "sirina": 20.08,
+    "duljina": 24.29
+   },
+   "krov": {
+    "tip": "kosi",
+    "nagib": 40,
+    "opis": "kosi krov, nagib 40°"
+   },
+   "url": "https://partas.hr/q-250/",
+   "preuzeto": "2026-11-05",
+   "napomena": "iznad kata tavanski dio"
+  },
+  {
+   "id": "partas-q300",
+   "proizvodjac": "Partas",
+   "naziv": "Q 300",
+   "kategorija": "P1",
+   "kategorijaIzvor": "opis modela: prizemlje i kat",
+   "neto": 233.6,
+   "bruto": 297.0,
+   "sobe": 5,
+   "visina": 8.85,
+   "minZemljiste": {
+    "sirina": 21.9,
+    "duljina": 28.4
+   },
+   "krov": {
+    "tip": "kosi",
+    "nagib": 25,
+    "opis": "kosi krov, nagib 25°"
+   },
+   "url": "https://partas.hr/q-300/",
+   "preuzeto": "2026-11-05",
+   "napomena": "iznad kata slobodan tavanski prostor"
+  },
+  {
+   "id": "icon-lina",
+   "proizvodjac": "Icon Group",
+   "naziv": "Lina",
+   "kategorija": "P1",
+   "kategorijaIzvor": "tlocrti na stranici: »Prizemlje« i »Kat«",
+   "bruto": 198.07,
+   "krov": {
+    "tip": "cet",
+    "nagib": 25,
+    "opis": "četverovodni krov 25° ili ravni krov"
+   },
+   "url": "https://www.icon-group.hr/lina/",
+   "preuzeto": "2026-11-05",
+   "napomena": "Proizvođač objavljuje bruto površinu; vanjske mjere i visina nisu objavljene."
+  },
+  {
+   "id": "icon-petra",
+   "proizvodjac": "Icon Group",
+   "naziv": "Petra",
+   "kategorija": "P1",
+   "kategorijaIzvor": "tlocrti na stranici: »Prizemlje« i »Kat«",
+   "bruto": 209.63,
+   "krov": {
+    "tip": null,
+    "nagib": null,
+    "opis": "ravni, četverovodni, jednovodni ili dvovodni krov (nagib nije naveden)"
+   },
+   "url": "https://www.icon-group.hr/petra/",
+   "preuzeto": "2026-11-05",
+   "napomena": "Proizvođač objavljuje bruto površinu; vanjske mjere i visina nisu objavljene."
+  },
+  {
+   "id": "domprojekt-elena",
+   "proizvodjac": "Domprojekt",
+   "naziv": "Elena",
+   "kategorija": "P1",
+   "kategorijaIzvor": "kategorija na stranici proizvođača",
+   "neto": 140.11,
+   "sobe": 3,
+   "sobeVrsta": "spavaće sobe",
+   "krov": {
+    "tip": "ravni",
+    "nagib": 0,
+    "opis": "katnice s ravnim krovom (opis kategorije)"
+   },
+   "url": "https://www.domprojekt.hr/elena-niskoenergetska-katnica",
+   "preuzeto": "2026-11-05",
+   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+  },
+  {
+   "id": "domprojekt-gloria",
+   "proizvodjac": "Domprojekt",
+   "naziv": "Gloria",
+   "kategorija": "P1",
+   "kategorijaIzvor": "kategorija na stranici proizvođača",
+   "neto": 147.71,
+   "sobe": 3,
+   "sobeVrsta": "spavaće sobe",
+   "krov": {
+    "tip": "ravni",
+    "nagib": 0,
+    "opis": "katnice s ravnim krovom (opis kategorije)"
+   },
+   "url": "https://www.domprojekt.hr/gloria-niskoenergetska-katnica",
+   "preuzeto": "2026-11-05",
+   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+  },
+  {
+   "id": "domprojekt-alma",
+   "proizvodjac": "Domprojekt",
+   "naziv": "Alma",
+   "kategorija": "PPk",
+   "kategorijaIzvor": "kategorija na stranici proizvođača",
+   "neto": 110.12,
+   "sobe": 3,
+   "sobeVrsta": "spavaće sobe",
+   "url": "https://www.domprojekt.hr/alma-montazne-kuce-potkrovlje",
+   "preuzeto": "2026-11-05",
+   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+  },
+  {
+   "id": "domprojekt-venera",
+   "proizvodjac": "Domprojekt",
+   "naziv": "Venera",
+   "kategorija": "PPk",
+   "kategorijaIzvor": "kategorija na stranici proizvođača",
+   "neto": 126.81,
+   "sobe": 4,
+   "sobeVrsta": "spavaće sobe",
+   "url": "https://www.domprojekt.hr/venera-montazne-kuce-potkrovlje",
+   "preuzeto": "2026-11-05",
+   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+  },
+  {
+   "id": "domprojekt-doris",
+   "proizvodjac": "Domprojekt",
+   "naziv": "Doris",
+   "kategorija": "PPk",
+   "kategorijaIzvor": "kategorija na stranici proizvođača",
+   "neto": 134.54,
+   "sobe": 4,
+   "sobeVrsta": "spavaće sobe",
+   "url": "https://www.domprojekt.hr/doris-montazne-kuce-potkrovlje",
+   "preuzeto": "2026-11-05",
+   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+  },
+  {
+   "id": "domprojekt-leonida",
+   "proizvodjac": "Domprojekt",
+   "naziv": "Leonida",
+   "kategorija": "PPk",
+   "kategorijaIzvor": "kategorija na stranici proizvođača",
+   "neto": 145.43,
+   "sobe": 4,
+   "sobeVrsta": "spavaće sobe",
+   "url": "https://www.domprojekt.hr/leonida-montazne-kuce-potkrovlje",
+   "preuzeto": "2026-11-05",
+   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+  },
+  {
+   "id": "domprojekt-ema",
+   "proizvodjac": "Domprojekt",
+   "naziv": "Ema",
+   "kategorija": "PPk",
+   "kategorijaIzvor": "kategorija na stranici proizvođača",
+   "neto": 160.9,
+   "sobe": 3,
+   "sobeVrsta": "spavaće sobe",
+   "url": "https://www.domprojekt.hr/ema-montazne-kuce-potkrovlje",
+   "preuzeto": "2026-11-05",
+   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+  },
+  {
+   "id": "domprojekt-renata",
+   "proizvodjac": "Domprojekt",
+   "naziv": "Renata",
+   "kategorija": "PPk",
+   "kategorijaIzvor": "kategorija na stranici proizvođača",
+   "neto": 161.08,
+   "sobe": 4,
+   "sobeVrsta": "spavaće sobe",
+   "url": "https://www.domprojekt.hr/renata-montazne-kuce-potkrovlje",
+   "preuzeto": "2026-11-05",
+   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+  },
+  {
+   "id": "domprojekt-emanuela",
+   "proizvodjac": "Domprojekt",
+   "naziv": "Emanuela",
+   "kategorija": "PPk",
+   "kategorijaIzvor": "kategorija na stranici proizvođača",
+   "neto": 165.07,
+   "sobe": 3,
+   "sobeVrsta": "spavaće sobe",
+   "url": "https://www.domprojekt.hr/emanuela-montazne-kuce-potkrovlje",
+   "preuzeto": "2026-11-05",
+   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+  },
+  {
+   "id": "domprojekt-lena",
+   "proizvodjac": "Domprojekt",
+   "naziv": "Lena",
+   "kategorija": "PPk",
+   "kategorijaIzvor": "kategorija na stranici proizvođača",
+   "neto": 167.86,
+   "sobe": 4,
+   "sobeVrsta": "spavaće sobe",
+   "url": "https://www.domprojekt.hr/lena-montazne-kuce-potkrovlje",
+   "preuzeto": "2026-11-05",
+   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+  },
+  {
+   "id": "domprojekt-laura",
+   "proizvodjac": "Domprojekt",
+   "naziv": "Laura",
+   "kategorija": "PPk",
+   "kategorijaIzvor": "kategorija na stranici proizvođača",
+   "neto": 176.4,
+   "sobe": 4,
+   "sobeVrsta": "spavaće sobe",
+   "url": "https://www.domprojekt.hr/laura-montazne-kuce-potkrovlje",
+   "preuzeto": "2026-11-05",
+   "napomena": "Proizvođač objavljuje neto površinu (na stranici modela Nives: »Ukupna neto površina«); bruto površina, vanjske mjere i visina nisu objavljene."
+  }
+ ]
+}
