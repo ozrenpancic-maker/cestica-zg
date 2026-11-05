@@ -1,0 +1,11 @@
+{"opis":"Regresija za mješovite čestice slijepog skupa (27. 10. 2026.): histogrami rekonstruirani iz izmjerenih broja uzoraka po razredu (uzHist/uzBoja u pregledniku, karta 4 UPU-a 2, PP_RASTERI/5:7104). Svaki razred predstavlja jedna reprezentativna boja (ed5 = M11, ec7 = M12, 577 = K2, dec = Z, ada = Z1/Z2, 222 = tamno, 999 = sivo, eee = bijelo, bb9 = nepoznato); udjeli razreda jednaki su izmjerenima. Nije sirovi raster.",
+ "cestice":[
+ {"br":"181/8","referenca":"MJEŠOVITO (M11 55 %, izvan obuhvata 45 %)","mpx":0.075,
+  "izmjereno":{"uzorci":2812,"tamno":0.527,"udjeli":{"M11":0.924,"M12":0.074,"K2":0.002},"prsten":{"M11":0.918,"M12":0.075,"K2":0.006}},
+  "hc":{"ed5":1074,"ec7":86,"577":2,"eee":21,"bb9":1,"999":147,"222":1481},
+  "hr":{"ed5":3672,"ec7":300,"577":24}},
+ {"br":"1478/221","referenca":"MJEŠOVITO (M11 65 %, M12 20 %, cesta 15 %)","mpx":0.075,
+  "izmjereno":{"uzorci":5062,"tamno":0.182,"bijelo":0.005,"boje":0.953,"udjeli":{"M11":0.868,"M12":0.127,"Z":0.005},"prsten":{"M12":0.446,"M11":0.419,"Z1/Z2":0.071,"Z":0.031}},
+  "hc":{"ed5":3425,"ec7":501,"dec":20,"222":921,"eee":25,"999":170},
+  "hr":{"ec7":2676,"ed5":2514,"ada":426,"dec":186}}
+ ]}

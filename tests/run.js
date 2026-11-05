@@ -2494,6 +2494,16 @@ async function uzTests(){
    const t0=Date.now(), Hs=E("uzHist")(w.Uint8ClampedArray.from(d),Wp,Hp,w.JSON.parse(JSON.stringify([ring])),mpx,P), od=E("uzOdluka")(Hs,LEG.boje,P), ms=Date.now()-t0;
    ok(Wp===800&&Hp===800&&od.kandidat==="M11"&&od.dokaz.udjeli.M11>0.85&&od.dokaz.uzorci>=P.minUzoraka,"Zona (pilot): spremljeni izrez karte 4 (0,225 m/px) → 735/76 kandidat M11 ("+Math.round(od.dokaz.udjeli.M11*100)+" % boja zona, "+od.dokaz.uzorci+" uzoraka, "+ms+" ms)");
    ok(ms<1500,"Zona (pilot): histogram i odluka za česticu traju "+ms+" ms (manje od 1,5 s)");}
+  // regresija: mješovite čestice slijepog skupa (181/8, 1478/221) više ne dobivaju jednoznačan prijedlog M11
+  {const F=JSON.parse(fs.readFileSync(path.join(__dirname,"pgz-odgovori/upu2-karta4-histogrami-2026-10-27/mjesovite_181-8_1478-221.json"),"utf8")).cestice;
+   const od=(x,PP)=>E("uzOdluka")(w.JSON.parse(JSON.stringify(x)),LEG.boje,w.JSON.parse(JSON.stringify(PP))), st={...P,maxTamno:null,drugaUnutra:null};
+   const [a,b]=F.map(x=>od(x,P)), [a0,b0]=F.map(x=>od(x,st)), bl=(o,x)=>Math.abs(o.dokaz.tamno-x.izmjereno.tamno)<0.002&&Math.abs(o.dokaz.udjeli.M11-x.izmjereno.udjeli.M11)<0.002;
+   ok(bl(a,F[0])&&bl(b,F[1]),"Zona (pilot), regresija: rekonstruirani histogrami 181/8 i 1478/221 daju izmjerene udjele (tamno, M11)");
+   ok(a0.kandidat==="M11"&&b0.kandidat==="M11","Zona (pilot), regresija: s ranijim pravilima obje mješovite čestice dobivaju M11 (uzrok pogreške potvrđen)");
+   ok(a.kandidat===null&&/tamna površina/.test(a.razlog)&&a.najcesca==="M11","Zona (pilot), regresija 181/8: više od 40 % čestice je tamno (granica obuhvata i zgrade), pa odustaje: "+a.razlog);
+   ok(b.kandidat===null&&/granica zone prolazi kroz česticu: zona M12/.test(b.razlog),"Zona (pilot), regresija 1478/221: M12 zauzima 13 % čestice i 45 % pojasa uz nju, pa odustaje: "+b.razlog);
+   const H735=JSON.parse(fs.readFileSync(path.join(__dirname,"pgz-odgovori/upu2-karta4-histogrami-2026-10-27/735-76_88-7.json"),"utf8")).cestice[0];
+   ok(od(H735,P).kandidat==="M11","Zona (pilot), regresija: 735/76 i dalje dobiva M11 uz nova pravila odustajanja");}
   // sučelje: prijedlog, prihvati / promijeni / odbij; prihvaćeno ostaje C i vrijedi samo za tu česticu
   const it={a:{KARTA_SIFRA:"618_karta4",Name:"618_karta4_i",STANJE_1212:"x"},plan:"UPU 2 - Kornić",OBJECTID:7104,_sloj:{id:5},zona:true};
   const LG=E("uzLegenda")(w.JSON.parse(JSON.stringify(it))); ok(LG&&LG.kod==="UPU 2"&&LG.list==="4","Zona (pilot): legenda se veže samo uz list 4 UPU-a 2 (prepoznavanje plana i lista)");

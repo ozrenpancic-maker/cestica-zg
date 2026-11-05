@@ -146,3 +146,32 @@ Pojedinosti po čestici su u `rezultati_2026-10-27.json`. Odabrani parametri su 
   - izračun traje do oko 0,5 s na glavnoj niti; za veće čestice bolji je Web Worker;
   - u osnovnom prikazu prijedlog je u „Uvjetima gradnje”; puni izrez karte vidi se tek u naprednom prikazu.
 - **Pravno:** prihvaćena zona i dalje je pretpostavka korisnika (C). Mjerodavna je lokacijska informacija. Pravno potvrđenih pravila ostaje 0.
+
+## 6. Ispravak 5. 11. 2026.: mješovite čestice
+
+**Uzrok.** Obje pogreške slijepog skupa imale su visok udio najčešće zone među *obojenim* uzorcima (više od 80 %), pa je pravilo `minDom` prošlo. Mješovitost se nije vidjela u boji:
+- **181/8**: 53 % uzoraka unutar čestice je tamno (debela linija granice obuhvata plana i zgrade). Dio izvan obuhvata nema boje zone, a tamni pikseli su se jednostavno izostavljali, pa je preostali žuti dio izgledao kao »čisti M11«.
+- **1478/221**: M12 zauzima 13 % obojenih uzoraka, ispod granice od 20 % (`minDom` 80 %). U pojasu uz česticu, međutim, M12 čini 45 %, što pokazuje da granica M11/M12 prolazi kroz česticu.
+
+**Ispravak** (samo `uzOdluka`, nova polja u `UZ_PARAM`, verzija `2026-10-27b`):
+- `maxTamno` 0,4: ako je više od 40 % uzoraka unutar čestice tamno, zona se za taj dio ne može očitati i algoritam odustaje;
+- `drugaUnutra` 0,1 i `drugaPrsten` 0,25: ako druga zona zauzima barem 10 % obojenih uzoraka čestice i barem 25 % pojasa uz nju, granica zone prolazi kroz česticu i algoritam odustaje.
+
+**Učinak na zapisanim dokazima** (82 čestice, bez novog dohvaćanja):
+
+| | Razvojni (42) | Slijepi (40) |
+|---|---|---|
+| točnih prijedloga | 34 (bez promjene) | 31 (bez promjene) |
+| pogrešnih prijedloga | 1 (1482/1, bez promjene) | **0** (prije 2) |
+| ispravno odustao (mješovito / cesta) | 4 od 5 | **2 od 2** (prije 0) |
+
+Pravila su dodana nakon uvida u slijepi skup, pa taj skup za njih više nije slijep; za novu ocjenu treba treći neovisno označeni skup. 1482/1 (razvojni) ostaje pogrešan: na izrezu nema ni tamnog ni bijelog dijela, a druga zona je ispod praga.
+
+**Testovi** (samo skupina pilota zone, jer zajednička logika nije mijenjana): `tests/pgz-odgovori/upu2-karta4-histogrami-2026-10-27/mjesovite_181-8_1478-221.json` (histogrami rekonstruirani iz izmjerenih broja uzoraka po razredu) i pet regresijskih provjera u `uzTests`:
+- rekonstrukcija daje izmjerene udjele;
+- stara pravila daju M11 (uzrok potvrđen);
+- 181/8 odustaje zbog tamne površine;
+- 1478/221 odustaje jer granica zone prolazi kroz česticu;
+- 735/76 i dalje dobiva M11.
+
+Pilot ostaje isključen po zadanom (`?pilot=zona`).
