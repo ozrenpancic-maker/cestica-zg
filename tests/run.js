@@ -2896,6 +2896,10 @@ async function tri3dTests(){
   {const P=E("triTocke")({...o0,rot:90}), P2=E("triTocke")({...o0,gar:{w:3.5,d:6,offX:6.75,offY:-1}}), m=(a,b)=>w.turf.distance(a,b,{units:"kilometers"})*1000;
    ok(P.length===5&&P2.length===9&&Math.abs(m(P[1],P[2])-10)<0.15&&Math.abs(m(P[2],P[3])-8)<0.15&&Math.abs(P[1][1]-P[2][1])>Math.abs(P[1][0]-P[2][0]),"3D: visina terena uzima se u središtu i kutovima tlocrta (okret 90°: širina 10 m ide sjever–jug), uz garažu i njezine kutove");
    }
+  {const G=K(T,o0); G.userData.teren(2); let pod=null, slj=null; G.traverse(x=>{ if(x.name==="podnozje"&&!pod) pod=x; if(x.name==="sljunak"&&!slj) slj=x; });
+   const dno=pod.position.y-pod.scale.y/2, vrh=pod.position.y+pod.scale.y/2;
+   ok(Math.abs(vrh-0.45)<1e-6&&Math.abs(dno+2.4)<1e-6&&slj.visible===false,"3D: na kosom terenu (2 m razlike) temelj seže 2,4 m ispod poda do terena; šljunak na tlu skriven");
+   G.userData.teren(0); ok(Math.abs(pod.position.y-pod.scale.y/2+0.4)<1e-6&&slj.visible===true,"3D: na ravnom terenu temelj 0,4 m ispod tla, šljunak vidljiv");}
   {const L=E("triSloj")(o0); ok(L.id==="kuca3d"&&L.type==="custom"&&L.renderingMode==="3d","3D: kuća je zaseban sloj MapLibrea (dijeli dubinu s terenom i okolnim zgradama)");
    ok(["zid","krov","pv","prozor","garaza"].every(k=>E("TRI_K").has(k)),"3D: dijelovi koje crta three.js izbacuju se iz modela od kvadara");}
   ok(errs.length===0,"bez JS grešaka (3D three.js): "+errs.join(" | "));

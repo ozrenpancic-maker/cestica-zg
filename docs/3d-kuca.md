@@ -17,6 +17,8 @@ Model ima:
 
 Mjere su iste kao u simulatoru: širina, dubina, visina do vijenca, nagib, smjer sljemena i okret. Materijali i raspored prozora samo su ilustracija.
 
+**Teren:** kuća stoji na najvišoj točki terena ispod tlocrta. Temelj se spušta do najniže točke, kao podzid. Visina se uzima iz pločice terena koju karta u tom trenutku crta: kad se odzumira, karta crta grublji teren (osobito na mobitelu), pa bi kuća inače lebdjela.
+
 Bez WebGL-a, ili ako se biblioteka ne učita, ostaje dosadašnji model od kvadara.
 
 ## Testovi
