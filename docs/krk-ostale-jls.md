@@ -80,3 +80,29 @@ Novi pročišćeni tekst nije pronađen u Službenim novinama PGŽ. Odluka o tra
 - Izmijenjeni testovi za Vrbnik.
 - Provjera da je svaka brojka u svom doslovnom navodu.
 - Sažetak (sha256) ostatka `rules_krk.json`: dokazano je da su stari i novi sadržaj isti bez triju izmijenjenih jedinica.
+
+## UPU-ovi u ostalim jedinicama (u tijeku)
+
+Popis važećih UPU-ova na Krku dohvaćen je iz evidencije planova PGŽ (IZRADA_PP, 78 zapisa) 5. 11. 2026.
+
+**Obrađeno:** UPU 9 Stara Baška (Punat, SN 21/2016), čl. 46.
+- Zone: M-1 (nova gradnja) te S-P i M-P (interpolacija).
+- Najmanja čestica: 450 m² (samostojeća), 225 m² (dvojna i završna jedinica niza), 150 m² (jedinica niza).
+- kig 0,25 / 0,3 / 0,4, uz najveći tlocrt 150 m²; kis 0,75 / 1,0 / 1,4.
+- Visina 9,0 m; 4 nadzemne etaže, od kojih je četvrta potkrovlje.
+- Od međe h/2, najmanje 3 m; od ceste 6 m ili 5 m; zelenilo 40 %.
+- Stavak 1. čl. 46. u mrežnom tekstu nedostaje.
+
+**Bez stambene gradnje (provjereno u tekstu):** UPU 23 Torkul (čl. 18.) i UPU 26 Dunat (čl. 49.). Oni nisu u građevinskom području naselja, pa aplikacija već javlja da uvjeti za kuće ondje ne vrijede.
+
+**Ostaju:**
+
+| UPU | Stanje |
+|---|---|
+| UPU 3–9 u Baški | U mrežnom tekstu nema tablice veličine i izgrađenosti čestice (čl. 14.), a PDF-a nema; treba PDF ili elaborat sa zavod.pgz.hr. |
+| UPU 1 Baška i UPU 2 Baška–Zarok | Pročišćeni tekst SN 6/2018. |
+| UPU 1 Malinska, Radići | SN 14/2013 + izmjene 2014., 2015., 2017. |
+| UPU 3 Dobrinčevo i UPU 4 Rova | SN 7/2012 i 12/2012. |
+| UPU 2 Njivice i UPU Njivice – naselje | SN 38/2025 (pročišćeni tekst) i SN 12/2022. |
+| UPU 1 Vrbnik | Pročišćeni tekst SN 46/2024. |
+| UPU 2, 7 i 11 Risika | Vrbnik, 2009. |

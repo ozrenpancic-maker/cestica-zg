@@ -1328,6 +1328,14 @@ async function krkTests(){
   ok(M&&M.plan==="PPUO Dobrinj"&&M.st==="provjera"&&Math.abs(M.tl-0.3*M.A)<0.6&&Math.abs(M.gbpN-Math.min(450,0.75*M.A))<0.01&&M.minOk&&/8,5 m/.test(tm)&&/24\/08/.test(tm)&&/2022/.test(tm),"Dobrinj samostojeća 600 m²: kig 0,30 (čestica veća od 500 m²) → 180 m², kis 0,75 → GBP 450 m² (najviše 450), visina 8,5 m, upozorenje o usklađenju 2022.");
   {const P=E("RULES_KRK").ostaleJls.DOBRINJ.tipovi.obit.slob, kI=E("krkIzg"); ok(kI(P,450)===0.25&&kI(P,600)===0.3,"Dobrinj: kig 0,25 na čestici do 500 m², 0,30 na većoj (čl. 70.)");}
   gp.IZGRADJENOST="neizgrađeno"; tm=await reinspect(); ok(w.__krkCalc===null&&/urbanistički plan/.test(tm),"Dobrinj, neizgrađeni dio: bez neposredne gradnje (čl. 34.)");
+  // UPU 9 Stara Baška (Punat, SN 21/2016), čl. 46.: zona M-1 nova gradnja, S-P / M-P interpolacija
+  gp.IZGRADJENOST="izgrađeno"; plans.push({GRAD_OPCINA:"Punat",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Odluka o donošenju UPU 9 - građevinsko područje naselja N2-Stara Baška sa pripadajućim građevinskim područjem sportsko-rekreacijske namjene R7a",SN_BROJ:"2016-21"});
+  Object.assign(gp,{OPCINA_GRAD:"PUNAT",OZNAKA_NAMJENE:"N2",NASELJE:"Stara Baška"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
+  tm=await reinspect(); await tick(150); setv(w,"krkZona","M-1","change"); M=w.__krkCalc; tm=txt(w,"sheet");
+  ok(M&&M.plan==="UPU 9 Stara Baška"&&Math.abs(M.tl-Math.min(150,0.25*M.A))<0.01&&Math.abs(M.gbpN-0.75*M.A)<1&&M.minOk&&/9,0 m/.test(tm)&&/21\/2016/.test(tm),"UPU 9 Stara Baška, zona M-1, 600 m²: kig 0,25 uz najviše 150 m² tlocrta, kis 0,75, visina 9,0 m (čl. 46.)");
+  setv(w,"krkOblik","ugr","change"); M=w.__krkCalc; ok(M&&Math.abs(M.tl-150)<0.01&&Math.abs(M.gbpN-1.4*M.A)<1.5,"UPU 9, jedinica niza: kig 0,4, najviše 150 m², kis 1,4");
+  setv(w,"krkOblik","slob","change"); setv(w,"krkZona","druga","change"); ok(w.__krkCalc===null,"UPU 9, druga zona (npr. M-2): bez izračuna za obiteljsku kuću");
+  plans.pop();
   gp.IZGRADJENOST="izgrađeno";
   // Punat: PPUO (pročišćeni tekst 2010.), čl. 24.-29.
   Object.assign(gp,{OPCINA_GRAD:"PUNAT",OZNAKA_NAMJENE:"NA1",NASELJE:"Punat",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
@@ -2200,7 +2208,7 @@ async function formulaTests(){
   // Plan Integrity v10: novo polje »citati« (doslovni navodi iz objave) ne mijenja postojeće brojke ni tekstove; ne ulazi u sažetak,
   // a njegovu doslovnost provjerava zaseban test (»PI v10 navodi«) prema tekstu SN PGŽ 19/2016
   // Sljedeća faza: »legenda« (boje polja legende karte 4 za pilot prijedloga zone) i »provjereno« (stručno provjereni obuhvati) nisu pravila; ne ulaze u sažetak
-  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK").map(([k,v])=>[k,bezPP(v)])):o;
+  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="UPU 9 Punat").map(([k,v])=>[k,bezPP(v)])):o;
   const sha=crypto.createHash("sha256").update(JSON.stringify(bezPP(JSON.parse(fs.readFileSync(path.join(__dirname,"..","src","rules_krk.json"),"utf8"))))).digest("hex");
   ok(sha==="de538e7ddc17cdc11746acbca3217b77569881a269c740457be9e5bc7a615f82","Pravila: src/rules_krk.json bez oznaka pravne provjere nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
   // nova i izmijenjena pravila (Omišalj, Dobrinj, Vrbnik 2024.): izvan sažetka; svaka brojka mora biti u svom doslovnom navodu

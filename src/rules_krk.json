@@ -1695,6 +1695,189 @@
           }
         }
       }
+    },
+    "UPU 9 Punat": {
+      "kod": "UPU 9 Stara Baška",
+      "jls": "PUNAT",
+      "prepoznaj": "UPU\\s*-?\\s*9\\b[^|]*Stara\\s+Ba",
+      "izvor": {
+        "naziv": "Urbanistički plan uređenja UPU 9 – građevinsko područje naselja N2 Stara Baška, odredbe za provođenje",
+        "sn": "Službene novine PGŽ 21/2016",
+        "url": "http://www.sn.pgz.hr/default.asp?Link=odluke&id=34173",
+        "status": "na snazi (evidencija planova PGŽ, stanje 5. 11. 2026.: bez izmjena)",
+        "provjera": "Čl. 46. preuzet s mrežne stranice Službenih novina 5. 11. 2026.; stavak 1. čl. 46. u mrežnom tekstu nedostaje (tekst počinje stavkom 2.).",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Lanac objava nije neovisno provjeren; stavak 1. čl. 46. nije vidljiv u mrežnom tekstu."
+        }
+      },
+      "zone": [
+        [
+          "M-1",
+          "M-1 – mješovita namjena, nova gradnja (čl. 46.)"
+        ],
+        [
+          "S-P",
+          "S-P / M-P – postojeća izgradnja, interpolacija (čl. 46.)"
+        ],
+        [
+          "druga",
+          "druga zona (npr. M-2: višestambene, čl. 47.)"
+        ]
+      ],
+      "zonaNapomena": "Obiteljske kuće grade se novom gradnjom u zoni M-1 i interpolacijom u zonama S-P i M-P (naslov 4.1.3.2 i čl. 46.). Zona se ne može odrediti automatski; provjeri je na kartografskom prikazu br. 4 UPU-a ili u lokacijskoj informaciji.",
+      "zoneSet": {
+        "M-1": {
+          "tipovi": {
+            "obit": {
+              "naziv": "Obiteljska kuća",
+              "opis": "slobodnostojeća i dvojna najviše 3 stana, u nizu 1 stan (čl. 46.)",
+              "clanak": "46.",
+              "gbpMax": null,
+              "etaze": "4 nadzemne etaže (četvrta potkrovna, nadozid do 1,2 m) i podrum",
+              "visina": 9.0,
+              "visinaOpis": "9,0 m",
+              "slob": {
+                "minC": 450,
+                "izg": 0.25,
+                "kis": 0.75,
+                "kisPodrum": 0.75,
+                "tlMin": null,
+                "tlMax": 150
+              },
+              "dvoj": {
+                "minC": 225,
+                "izg": 0.3,
+                "kis": 1.0,
+                "kisPodrum": 1.0,
+                "tlMin": null,
+                "tlMax": 150
+              },
+              "ugr": {
+                "minC": 150,
+                "izg": 0.4,
+                "kis": 1.4,
+                "kisPodrum": 1.4,
+                "tlMin": null,
+                "tlMax": 150,
+                "napomena": "Planirani niz najviše 5 jedinica (čl. 46. st. 2)."
+              },
+              "txt": {
+                "minC": "najmanja površina građevne čestice je: .za slobodnostojeću obiteljsku kuću 450 m2, .za jedinicu dvojnog objekta i završnu jedinicu niza 225 m2, .za jednu jedinicu niza 150 m2.",
+                "izg": "maksimalni koeficijent izgrađenosti građevne čestice (kig) je: .za slobodnostojeću obiteljsku kuću - 0,25 .za jedinicu dvojnog objekta i završnu jedinicu niza - 0,3 .za jednu jedinicu niza - 0,4 sve uz najveću tlocrtnu površinu od 150 m2.",
+                "kis": "Maksimalni koeficijent iskoristivosti građevne čestice (kis) je: .za slobodnostojeću obiteljsku kuću - 0,75 .za jedinicu dvojnog objekta i završnu jedinicu niza - 1,0 .za jednu jedinicu niza - 1,4",
+                "tl": "sve uz najveću tlocrtnu površinu od 150 m2",
+                "visina": "Visina obiteljske kuće u sklopu ruralne cjeline naselja Stara Baška iznosi najviše 9,0 m.",
+                "etaze": "Najveći broj etaža u izgrađenom dijelu građevinskog područja naselja su četiri nadzemne etaže uz mogućnost gradnje etaže podruma. Četvrta nadzemna etaža je potkrovna etaža sa maksimalnom visinom nadozida od 1,2 m.",
+                "dvoj": "za jedinicu dvojnog objekta i završnu jedinicu niza 225 m2"
+              }
+            }
+          },
+          "meda": {
+            "clanak": "46.",
+            "min": 3,
+            "opis": "h/2, najmanje 3 m; 6 m od susjednih građevina",
+            "opisIznimka": "",
+            "txt": "građevina mora biti udaljena pola vlastite visine, ali ne manje od 3 m, od granice građevne čestice, a najmanje 6 m od susjednih građevina"
+          },
+          "regulacija": {
+            "clanak": "46.",
+            "opis": "6 m od glavne mjesne ulice, 5 m od ostalih javnih prometnih površina",
+            "txt": "Najmanja udaljenost građevine od granice građevne čestice koja se nalazi uz prometnicu ili javnu površinu iznosi 6,0 m od glavne mjesne ulice te 5,0 m od ostalih javnih prometnih površina."
+          },
+          "zelenilo": {
+            "clanak": "46.",
+            "min": 0.4,
+            "txt": "Neizgrađeni dio građevne čestice mora biti uređen, a površina zelenila mora biti: .za slobodnostojeću obiteljsku kuću - 40%"
+          }
+        },
+        "S-P": {
+          "tipovi": {
+            "obit": {
+              "naziv": "Obiteljska kuća",
+              "opis": "slobodnostojeća i dvojna najviše 3 stana, u nizu 1 stan (čl. 46.)",
+              "clanak": "46.",
+              "gbpMax": null,
+              "etaze": "4 nadzemne etaže (četvrta potkrovna, nadozid do 1,2 m) i podrum",
+              "visina": 9.0,
+              "visinaOpis": "9,0 m",
+              "slob": {
+                "minC": 450,
+                "izg": 0.25,
+                "kis": 0.75,
+                "kisPodrum": 0.75,
+                "tlMin": null,
+                "tlMax": 150
+              },
+              "dvoj": {
+                "minC": 225,
+                "izg": 0.3,
+                "kis": 1.0,
+                "kisPodrum": 1.0,
+                "tlMin": null,
+                "tlMax": 150
+              },
+              "ugr": {
+                "minC": 150,
+                "izg": 0.4,
+                "kis": 1.4,
+                "kisPodrum": 1.4,
+                "tlMin": null,
+                "tlMax": 150,
+                "napomena": "Planirani niz najviše 5 jedinica (čl. 46. st. 2)."
+              },
+              "txt": {
+                "minC": "najmanja površina građevne čestice je: .za slobodnostojeću obiteljsku kuću 450 m2, .za jedinicu dvojnog objekta i završnu jedinicu niza 225 m2, .za jednu jedinicu niza 150 m2.",
+                "izg": "maksimalni koeficijent izgrađenosti građevne čestice (kig) je: .za slobodnostojeću obiteljsku kuću - 0,25 .za jedinicu dvojnog objekta i završnu jedinicu niza - 0,3 .za jednu jedinicu niza - 0,4 sve uz najveću tlocrtnu površinu od 150 m2.",
+                "kis": "Maksimalni koeficijent iskoristivosti građevne čestice (kis) je: .za slobodnostojeću obiteljsku kuću - 0,75 .za jedinicu dvojnog objekta i završnu jedinicu niza - 1,0 .za jednu jedinicu niza - 1,4",
+                "tl": "sve uz najveću tlocrtnu površinu od 150 m2",
+                "visina": "Visina obiteljske kuće u sklopu ruralne cjeline naselja Stara Baška iznosi najviše 9,0 m.",
+                "etaze": "Najveći broj etaža u izgrađenom dijelu građevinskog područja naselja su četiri nadzemne etaže uz mogućnost gradnje etaže podruma. Četvrta nadzemna etaža je potkrovna etaža sa maksimalnom visinom nadozida od 1,2 m.",
+                "dvoj": "za jedinicu dvojnog objekta i završnu jedinicu niza 225 m2"
+              }
+            }
+          },
+          "meda": {
+            "clanak": "46.",
+            "min": 3,
+            "opis": "h/2, najmanje 3 m; 6 m od susjednih građevina",
+            "opisIznimka": "",
+            "txt": "građevina mora biti udaljena pola vlastite visine, ali ne manje od 3 m, od granice građevne čestice, a najmanje 6 m od susjednih građevina"
+          },
+          "regulacija": {
+            "clanak": "46.",
+            "opis": "6 m od glavne mjesne ulice, 5 m od ostalih javnih prometnih površina",
+            "txt": "Najmanja udaljenost građevine od granice građevne čestice koja se nalazi uz prometnicu ili javnu površinu iznosi 6,0 m od glavne mjesne ulice te 5,0 m od ostalih javnih prometnih površina."
+          },
+          "zelenilo": {
+            "clanak": "46.",
+            "min": 0.4,
+            "txt": "Neizgrađeni dio građevne čestice mora biti uređen, a površina zelenila mora biti: .za slobodnostojeću obiteljsku kuću - 40%"
+          }
+        }
+      },
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna (poluugrađena)"
+        ],
+        [
+          "ugr",
+          "jedinica niza"
+        ]
+      ],
+      "kisUkupni": true,
+      "pristup": {
+        "napomena": "Parkiranje unutar građevne čestice prema točki 5.1.3. plana (čl. 46. st. 12); priključenje prema kartografskim prikazima 2 i 4."
+      },
+      "napomene": [
+        "U zoni M-2 grade se višestambene i stambeno-poslovne građevine (čl. 47.), koje nisu obrađene.",
+        "Potporni zidovi do 1,5 m, iznimno kaskadno (čl. 46.)."
+      ]
     }
   },
   "ostaleJls": {
