@@ -4714,6 +4714,118 @@
         "U posebnoj zoni oblikovanja naselja Vrbovsko nagib krova najviše »45%« (tako u tekstu) (čl. 40.).",
         "Višestambene građevine samo u Moravicama (N60–N62) nisu obrađene."
       ]
+    },
+    "BROD MORAVICE": {
+      "kod": "PPUO Brod Moravice",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Brod Moravice, odredbe za provođenje iz II. izmjena i dopuna (SN PGŽ 19/2018), kojima su točke 20.–30. o stanovanju donesene u novom tekstu",
+        "sn": "Službene novine PGŽ 19/2018 (II. izmjene i dopune)",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1306",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1306/ppuo-brod-moravice-II-id.pdf",
+        "status": "na snazi (II. izmjene i dopune 2018.)",
+        "provjera": "Točke 20.–25. iz elaborata II. izmjena (PDF Zavoda, tekst izvučen strojno), preuzeto 5. 11. 2026. Točka 88. (udaljenost od ceste) nije mijenjana tim izmjenama i nije pročitana.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Tekst točaka iz izmjena; osnovni tekst nije pregledan."
+        }
+      },
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ],
+        [
+          "ugr",
+          "u nizu"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "20.",
+        "txt": "Neposrednom provedbom Plana, unutar građevinskih područja naselja mogu se graditi",
+        "msg": "Neizgrađeni dio: provjeri obvezu plana užeg područja u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "Ruralne i etnološke cjeline uz konzervatorske uvjete (t. 20.); tradicijsko oblikovanje osobito u Delačima, Maklenu, Moravičkim Selima, Dolušu i Gornjim Kutima (t. 24.)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska stambena građevina",
+          "opis": "najviše 3 stana (t. 21.)",
+          "clanak": "t. 21.–22.",
+          "gbpMax": 400,
+          "etaze": "Po(S)+P+1+Pk",
+          "visina": 9.0,
+          "visinaOpis": "9 m do vijenca",
+          "slob": {
+            "minC": 400,
+            "izg": 0.3,
+            "kis": 0.8,
+            "kisPodrum": 0.8,
+            "tlMin": null,
+            "tlMax": null,
+            "napomena": "Kig 0,5 ako se gradi i poljoprivredna ili poslovna pomoćna građevina (t. 22.)."
+          },
+          "dvoj": {
+            "minC": 250,
+            "izg": 0.4,
+            "kis": 0.8,
+            "kisPodrum": 0.8,
+            "tlMin": null,
+            "tlMax": null
+          },
+          "ugr": {
+            "minC": 200,
+            "izg": 0.5,
+            "kis": 0.8,
+            "kisPodrum": 0.8,
+            "tlMin": null,
+            "tlMax": null,
+            "napomena": "Završna kuća niza 250 m²; niz od 3 do 8 jedinica (t. 21.–22.)."
+          },
+          "txt": {
+            "minC": "najmanja površina građevne čestice iznosi 400 m2",
+            "izg": "najveći koeficijent izgrađenosti je kig=0,3",
+            "kis": "najveći koeficijent iskorištenosti kis=0,8",
+            "gbp": "najveća bruto razvijena površina građevine je 400 m",
+            "etaze": "najveća katnost (broj etaža) je Po(S)+P+1+Pk",
+            "visina": "najveća visina građevine je 9,0 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "t. 23.",
+        "min": 3,
+        "opis": "h/2, najmanje 3 m",
+        "opisIznimka": "Manje kod interpolacije.",
+        "txt": "mora biti najmanje pola visine građevine (h/2), ali ne manje od 3 metra"
+      },
+      "regulacija": {
+        "clanak": "—",
+        "opis": "Podaci nisu dostupni (određeno u t. 88. osnovnog teksta, koja nije pročitana)",
+        "txt": ""
+      },
+      "zelenilo": {
+        "clanak": "t. 25.",
+        "min": 0.2,
+        "txt": "Ozelenjena površina građevne čestice ne smije biti manja od 20% ukupne površine građevne čestice."
+      },
+      "pristup": {
+        "napomena": "Podaci nisu dostupni."
+      },
+      "napomene": [
+        "Nagib krova plan ne propisuje brojčano (t. 24.).",
+        "Višeobiteljske građevine nisu obrađene."
+      ]
     }
   },
   "oblici": [
