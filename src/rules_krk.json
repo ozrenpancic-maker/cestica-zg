@@ -4088,6 +4088,124 @@
       "napomene": [
         "Višestambene građevine samo u zoni N1-VS (čl. 31.) nisu obrađene."
       ]
+    },
+    "VIŠKOVO": {
+      "kod": "PPUO Viškovo",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Viškovo, pročišćeni tekst nakon III. izmjena i dopuna (SN PGŽ 2/2026)",
+        "sn": "Službene novine PGŽ 2/2026 (pročišćeni tekst)",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1846",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1846/ppuo-viskovo-pt.pdf",
+        "status": "na snazi (pročišćeni tekst ožujak 2026.)",
+        "provjera": "Čl. 20.–25. iz pročišćenog teksta (PDF Zavoda, tekst izvučen strojno), preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Pročišćeni tekst; usporedba s odlukama o izmjenama nije napravljena."
+        }
+      },
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "20.",
+        "txt": "Uvjeti za neposredno provođenje određuju se za izgrađeni dio i uređeni dio neizgrađenog građevinskog područja naselja",
+        "msg": "Neizgrađeni dio: neposredno samo u uređenom dijelu (čl. 20.). Provjeri u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "Nove dvojne kuće i kuće u nizu ne grade se; postojeće se samo rekonstruiraju u postojećim gabaritima (čl. 22.). Uz proširenje ceste iznimno čestica 500 m², kig 0,36, kis 1,08, zelenilo 30 % (čl. 24.)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća",
+          "opis": "jedna stambena jedinica (čl. 21., 24.)",
+          "clanak": "24.",
+          "gbpMax": 400,
+          "etaze": "dvije nadzemne i jedna podrumska etaža",
+          "visina": 6.5,
+          "visinaOpis": "6,5 m do vijenca",
+          "slob": {
+            "minC": 600,
+            "izg": 0.3,
+            "kis": 0.9,
+            "kisPodrum": 0.9,
+            "tlMin": 60,
+            "tlMax": 180
+          },
+          "txt": {
+            "minC": "Najmanja površina građevne čestice iznosi 600 m",
+            "izg": "Maksimalni koeficijent izgrađenosti građevinske čestice (k ig ) je 0,3",
+            "tl": "Najveća dopuštena površina tlocrtne projekcije građevine iznosi 180 m",
+            "gbp": "Najveća dopuštena građevinska (bruto) površina građevine obiteljske kuće slobodnostojeće tipologije iznosi 400 m",
+            "kis": "Najveći dopušteni koeficijent iskoristivosti građevinske čestice (k is ) je 0,9",
+            "etaze": "Najveći dopušteni broj etaža su dvije nadzemne etaže i jedna podrumska etaža",
+            "visina": "Najveća dopuštena visina građevine iznosi 6,5 m"
+          }
+        },
+        "visobit": {
+          "naziv": "Višeobiteljska građevina",
+          "opis": "do 3 stambene jedinice (čl. 21., 25.)",
+          "clanak": "25.",
+          "gbpMax": 600,
+          "etaze": "tri nadzemne i jedna podrumska etaža",
+          "visina": 9.0,
+          "visinaOpis": "9 m do vijenca",
+          "slob": {
+            "minC": 800,
+            "izg": 0.3,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 60,
+            "tlMax": 250
+          },
+          "txt": {
+            "minC": "Najmanja površina građevne čestice iznosi 800 m",
+            "kis": "Najveći dopušteni koeficijent iskoristivosti građevinske čestice (k is ) je 1,2",
+            "visina": "Najveća dopuštena visina građevine iznosi 9 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "24.",
+        "min": 4,
+        "opis": "h/2, najmanje 4 m",
+        "opisIznimka": "",
+        "txt": "ruba građevne čestice najmanje pola visine građevine (h/2), ali ne manje od 4 m sa svih strana"
+      },
+      "regulacija": {
+        "clanak": "24.",
+        "ostale": 7,
+        "opis": "najmanje 7 m od ruba čestice prema javnoj prometnoj površini",
+        "txt": "Površina za građenje udaljena je minimalno 7,0 m od ruba građevne čestice prema javnoj prometnoj površini."
+      },
+      "zelenilo": {
+        "clanak": "24.",
+        "min": 0.4,
+        "txt": "Minimalna površina tla pod zelenilom je 40% površine građevne čestice."
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "24.",
+          "nagibMin": 0,
+          "nagibMax": 25,
+          "ravniDopusten": true
+        }
+      },
+      "pristup": {
+        "napomena": "Priključak prema poglavlju 5. odredbi (prometna i komunalna infrastruktura)."
+      },
+      "napomene": [
+        "Višestambene građevine do 6 stanova nisu obrađene.",
+        "Parkirne površine ne ulaze u zelenilo (čl. 24.)."
+      ]
     }
   },
   "oblici": [
