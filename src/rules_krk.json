@@ -5886,6 +5886,142 @@
         "Krov kosi, u pravilu dvostrešan; najmanji nagib iz osnovnog teksta (45°) izmjenama 2020. više nije naveden (čl. 39.).",
         "Višestambene građevine (samo N5 Mrkopalj) nisu obrađene."
       ]
+    },
+    "ČABAR": {
+      "kod": "PPUG Čabar",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Grada Čabra, odredbe iz II. izmjena i dopuna (SN PGŽ 19/2013); usklađenje 2017. i III. izmjene (SN PGŽ 3/2024) ne mijenjaju članke o stambenim građevinama",
+        "sn": "Službene novine PGŽ 19/2013, 4/2017 i 3/2024",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=950",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/950/ppug-cabra-id-ii.pdf",
+        "status": "na snazi (III. izmjene 2024.)",
+        "provjera": "Čl. 32., 39., 43.–45. iz II. izmjena 2013. (PDF Zavoda, cijele odredbe); usklađenje 2017. (uređenost građevinskih područja) i III. izmjene 2024. (čl. 80., 115., 119., 171., 172.) provjereno ne mijenjaju te članke. Županijski sloj navodi SN 03/24. Preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Tekst iz elaborata 2013.; kasnije izmjene provjerene ručno."
+        }
+      },
+      "upozorenje": "Plan ne propisuje koeficijent iskorištenosti (kis), nego najveću izgrađenost i najveći GBP svih građevina na čestici 400 m² (čl. 45.).",
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna ili završna u nizu"
+        ],
+        [
+          "ugr",
+          "u nizu"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "—",
+        "txt": "",
+        "msg": "Neizgrađeni dio: provjeri uređenost i obvezu plana užeg područja u lokacijskoj informaciji (usklađenje 2017.)."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "Obiteljska kuća (1 stan) samo samostojeća, najviše 2 nadzemne etaže, 300 m² (prizemna 280 m²). U gusto izgrađenim dijelovima interpolacija od 150 m², izgrađenost do 60 % (čl. 44.)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća",
+          "opis": "jedan stan (čl. 43.)",
+          "clanak": "43., 45.",
+          "gbpMax": 400,
+          "etaze": "najviše 2 nadzemne etaže i podrum",
+          "visina": null,
+          "visinaOpis": "Podaci nisu dostupni (plan ograničava broj etaža)",
+          "slob": {
+            "minC": 300,
+            "maxC": 2000,
+            "izg": 0.3,
+            "kis": null,
+            "kisPodrum": null,
+            "tlMin": 60,
+            "tlMax": null,
+            "napomena": "Širina čestice 15 m; za prizemnu kuću 280 m² i 14 m (čl. 43.)."
+          },
+          "txt": {
+            "minC": "za građevinu visine dvije nadzemne etaže : 300 m",
+            "izg": "maksimalna izgrađenost : 30 %",
+            "gbp": "Maksimalna bruto razvijena površina svih tipova stambenih građevina u građevinskom"
+          }
+        },
+        "stamb": {
+          "naziv": "Stambena kuća",
+          "opis": "najviše tri stana (čl. 44.)",
+          "clanak": "44.–45.",
+          "gbpMax": 400,
+          "etaze": "najviše 3 nadzemne etaže i podrum",
+          "visina": null,
+          "visinaOpis": "Podaci nisu dostupni (plan ograničava broj etaža)",
+          "slob": {
+            "minC": 320,
+            "maxC": 2000,
+            "izg": 0.3,
+            "kis": null,
+            "kisPodrum": null,
+            "tlMin": 60,
+            "tlMax": null,
+            "napomena": "Za 2–3 etaže 320 m² i širina 16 m; prizemna 280 m² (čl. 44.)."
+          },
+          "dvoj": {
+            "minC": 240,
+            "maxC": 1200,
+            "izg": 0.4,
+            "kis": null,
+            "kisPodrum": null,
+            "tlMin": 60,
+            "tlMax": null
+          },
+          "ugr": {
+            "minC": 150,
+            "maxC": 600,
+            "izg": 0.5,
+            "kis": null,
+            "kisPodrum": null,
+            "tlMin": 60,
+            "tlMax": null,
+            "napomena": "Širina čestice najmanje 5 m (čl. 44.)."
+          },
+          "txt": {
+            "minC": "za građevinu visine dvije ili tri nadzemne etaže : 320 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "39.",
+        "min": 4,
+        "opis": "najmanje 4 m (prizemna kuća 3 m); 6 m od susjednih građevina",
+        "opisIznimka": "",
+        "txt": "Slobodnostojeće građevine stambene namjene moraju biti udaljene min. 4,0 m od granica građevne čestice sa svih strana"
+      },
+      "regulacija": {
+        "clanak": "32.",
+        "opis": "od kolnika nerazvrstane ceste u pravilu najmanje 5 m, županijske 6 m, državne 10 m (mjereno od kolnika)",
+        "txt": "Udaljenost građevina stambene namjene od kolnika nerazvrstane ceste u pravilu ne može biti manja od 5,0 metara"
+      },
+      "zelenilo": {
+        "clanak": "—",
+        "min": null,
+        "opisNaziv": "Zelenilo (nije propisano za stambene građevine)",
+        "txt": ""
+      },
+      "pristup": {
+        "napomena": "Podaci nisu dostupni."
+      },
+      "napomene": [
+        "Oblikovanje i nagib krova: čl. 62. (goranska tradicijska gradnja), nije obrađeno.",
+        "Višestambene građevine (Čabar, Gerovo, Tršće, Prezid) nisu obrađene."
+      ]
     }
   },
   "oblici": [
