@@ -71,7 +71,7 @@ Usporedba prije i poslije za 735/76, 735/54 i Zagreb 1541/2: svi pokazatelji su 
 
 ## Testovi
 
-`tests/run.js`: 1050 / 1050. Novih testova za UPU 3 ima 14:
+`tests/run.js`: 1050 / 1050. Novih testova za UPU 3 ima 16:
 - prepoznavanje plana i obvezan izbor zone;
 - izračun u izgrađenom i neizgrađenom dijelu;
 - dvojna kuća i niz;
