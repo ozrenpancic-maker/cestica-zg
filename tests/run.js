@@ -1336,6 +1336,12 @@ async function krkTests(){
   setv(w,"krkOblik","ugr","change"); M=w.__krkCalc; ok(M&&Math.abs(M.tl-150)<0.01&&Math.abs(M.gbpN-1.4*M.A)<1.5,"UPU 9, jedinica niza: kig 0,4, najviše 150 m², kis 1,4");
   setv(w,"krkOblik","slob","change"); setv(w,"krkZona","druga","change"); ok(w.__krkCalc===null,"UPU 9, druga zona (npr. M-2): bez izračuna za obiteljsku kuću");
   plans.pop();
+  // Opatija: PPUG (pročišćeni tekst SN 8/2016 + III. izmjene SN 10/2021), čl. 24.
+  Object.assign(gp,{OPCINA_GRAD:"OPATIJA",OZNAKA_NAMJENE:"GP",NASELJE:"Opatija",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
+  tm=await reinspect(); M=w.__krkCalc;
+  ok(M&&M.plan==="PPUG Opatija"&&M.st==="provjera"&&!M.minOk&&Math.abs(M.tl-0.3*M.A)<0.6&&Math.abs(M.gbpN-0.9*M.A)<1&&/600 m²/.test(tm)&&/10\/21/.test(tm)&&/9 m/.test(tm),"Opatija, 600 m² (grafički 599): najmanja čestica 600 m² nije ispunjena; kig 0,3, kis nadzemni 0,9, visina 9 m (SN 10/2021)");
+  gp.IZGRADJENOST="neizgrađeno"; tm=await reinspect(); ok(w.__krkCalc===null&&/posrednom primjenom/.test(tm),"Opatija, neizgrađeni dio: posredna primjena (UPU)");
+  gp.IZGRADJENOST="izgrađeno";
   // UPU 1 Vrbnik (pročišćeni tekst 2019. + izmjene SN 34/2024), čl. 83.
   plans.push({GRAD_OPCINA:"Vrbnik",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Urbanistički plan uređenja UPU 1 Vrbnik – NA 1 Odredbe za provedbu (pročišćeni tekst)",SN_BROJ:"2024-46"});
   Object.assign(gp,{OPCINA_GRAD:"VRBNIK",OZNAKA_NAMJENE:"NA1",NASELJE:"Vrbnik",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
@@ -2216,7 +2222,7 @@ async function formulaTests(){
   // Plan Integrity v10: novo polje »citati« (doslovni navodi iz objave) ne mijenja postojeće brojke ni tekstove; ne ulazi u sažetak,
   // a njegovu doslovnost provjerava zaseban test (»PI v10 navodi«) prema tekstu SN PGŽ 19/2016
   // Sljedeća faza: »legenda« (boje polja legende karte 4 za pilot prijedloga zone) i »provjereno« (stručno provjereni obuhvati) nisu pravila; ne ulaze u sažetak
-  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik").map(([k,v])=>[k,bezPP(v)])):o;
+  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik"&&k!=="OPATIJA").map(([k,v])=>[k,bezPP(v)])):o;
   const sha=crypto.createHash("sha256").update(JSON.stringify(bezPP(JSON.parse(fs.readFileSync(path.join(__dirname,"..","src","rules_krk.json"),"utf8"))))).digest("hex");
   ok(sha==="de538e7ddc17cdc11746acbca3217b77569881a269c740457be9e5bc7a615f82","Pravila: src/rules_krk.json bez oznaka pravne provjere nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
   // nova i izmijenjena pravila (Omišalj, Dobrinj, Vrbnik 2024.): izvan sažetka; svaka brojka mora biti u svom doslovnom navodu

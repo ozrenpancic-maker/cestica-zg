@@ -2920,6 +2920,92 @@
         "Krov: dvostrešni ili složen od više ploha, nagib 20–23°; ravni krov ili krovna terasa najviše na 20 % krovnih ploha (čl. 54.).",
         "Višestambene građevine nisu obrađene."
       ]
+    },
+    "OPATIJA": {
+      "kod": "PPUG Opatija",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Grada Opatije, odredbe za provođenje (pročišćeni tekst SN PGŽ 8/2016) s III. izmjenama i dopunama (SN PGŽ 10/2021)",
+        "sn": "Službene novine PGŽ 1/07, 56/12, 4/16, 8/16 (pročišćeni tekst) i 10/21",
+        "url": "http://www.sn.pgz.hr/default.asp?Link=odluke&id=43074",
+        "status": "na snazi (III. izmjene i dopune SN 10/2021)",
+        "provjera": "Čl. 20., 23., 24. i 125. iz pročišćenog teksta SN 8/2016 (mrežni tekst), s izmjenama iz SN 10/2021 (mrežni tekst) primijenjenima ručno. Oznake točaka u odluci iz 2021. ne podudaraju se posve s mrežnim pročišćenim tekstom (npr. etažnost je u 2016. točka g, a odluka 2021. mijenja točku h). Preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Izmjene 2021. primijenjene ručno; oznake točaka čl. 24. u odluci 2021. ne podudaraju se s pročišćenim tekstom 2016., pa je tumačenje etažnosti i visine nesigurno."
+        }
+      },
+      "upozorenje": "Pravila su iz pročišćenog teksta 2016. s ručno primijenjenim izmjenama 2021.; tumačenje visine (9 m, ukupna 11 m) nije sigurno. Za Park prirode Učka i zaštićena povijesna seoska naselja (zone C i C1, kartografski prikaz 4B) vrijede drukčiji uvjeti.",
+      "oblici": [
+        [
+          "slob",
+          "samostojeća"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "blok",
+        "clanak": "24.",
+        "txt": "Za posrednu primjenu Plana unutar dijelova građevinskog područja naselja s obvezom izrade provedbenih dokumenata prostornog uređenja",
+        "msg": "Neizgrađeni dio građevinskog područja: gradi se posrednom primjenom plana, tj. prema provedbenom dokumentu (UPU), s drukčijim graničnim vrijednostima (čl. 24. st. 2)."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "građevinsko područje naselja izvan Parka prirode Učka",
+          "napomena": "U zaštićenim povijesnim seoskim naseljima (zone C i C1, kartografski prikaz 4B; npr. Poljane, Veprinac, Dobreć, Mala Učka) vrijede dvije nadzemne etaže, visina 7 m, kis nadzemni 0,60 i 4 m od međe, uz konzervatorske uvjete (čl. 125.). U Parku prirode Učka vrijede uvjeti PPPP Učka (čl. 25.)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Individualna stambena građevina",
+          "opis": "samostojeća; nove dvojne samo posredno (UPU), ugrađene samo rekonstrukcija (čl. 20.)",
+          "clanak": "20., 23. i 24.",
+          "gbpMax": null,
+          "etaze": "3 nadzemne etaže i jedna ili više podrumskih",
+          "visina": 9,
+          "visinaOpis": "9 m (ukupna visina 11 m)",
+          "slob": {
+            "minC": 600,
+            "izg": 0.3,
+            "kis": 0.9,
+            "kisPodrum": 0.9,
+            "tlMin": 80,
+            "tlMax": null
+          },
+          "txt": {
+            "minC": "za individualnu stambenu građevinu – 600 m2",
+            "izg": "najveći dopušteni koeficijent izgrađenosti (kig) određuje se: –za samostojeće građevine 0,3",
+            "kis": "najveći dopušteni koeficijent iskorištenosti nadzemnim dijelom građevine (kisn) iznosi: –za samostojeće građevine 0,9",
+            "tl": "za samostojeće građevine 80 m2 izvan prostora ograničenja, a 100 m2 u prostoru ograničenja",
+            "etaze": "najveća dopuštena etažnost individualne stambene građevine ograničava se na tri nadzemne etaže te jedna ili više podrumskih etaža",
+            "visina": "a visina iznosi v=9,00 m ili ukupna visina V=11,00 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "24.",
+        "min": 4,
+        "opis": "4 m od međa",
+        "opisIznimka": "",
+        "txt": "do granica građevne čestice, za novu gradnju iznosi najmanje 4,0 m"
+      },
+      "regulacija": {
+        "clanak": "24.",
+        "opis": "6 m od regulacijskog pravca (4 m od pješačke staze)",
+        "txt": "do regulacijskog pravca za novu gradnju iznosi najmanje 6,0 m … osim do pješačkih staza kada je najmanje 4,00 m"
+      },
+      "zelenilo": {
+        "clanak": "30. (SN 10/2021)",
+        "min": 0.5,
+        "txt": "zelenilo mora zauzimati najmanje 50% površine građevne čestice"
+      },
+      "pristup": {
+        "napomena": "Najveća dužina građevine 20 m; podzemne etaže svaka do 50 % površine čestice, najmanje 4 m od međa (čl. 24., SN 10/2021). U ZOP-u najmanji tlocrt 100 m²."
+      },
+      "napomene": [
+        "Kis se odnosi na nadzemni dio građevine (kisn).",
+        "Višestambene građevine samo unutar UPU-ova Opatije, Ičića i Ike-Oprića (čl. 29.)."
+      ]
     }
   },
   "oblici": [

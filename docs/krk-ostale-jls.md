@@ -114,3 +114,13 @@ Popis važećih UPU-ova na Krku dohvaćen je iz evidencije planova PGŽ (IZRADA_
 | UPU 3 Dobrinčevo i UPU 4 Rova | SN 7/2012 i 12/2012. |
 | UPU 2 Njivice i UPU Njivice – naselje | SN 38/2025 (pročišćeni tekst) i SN 12/2022. |
 | UPU 2, 7 i 11 Risika | Vrbnik, 2009. |
+
+## Primorsko-goranska županija: prostorni planovi gradova i općina
+
+Redoslijed prema Ozrenovu izboru (5. 11. 2026.): najprije obala i otoci, pa zaleđe i Gorski kotar; prvo PPU svih mjesta, UPU-ovi poslije. Popis jedinica i zadnje glasilo plana iz županijskog sloja namjene (atribut IZVOR_PODATAKA).
+
+| Jedinica | Stanje |
+|---|---|
+| Opatija | Obrađeno uz upozorenje: PPUG, pročišćeni tekst SN 8/2016 + III. izmjene SN 10/2021, čl. 20., 23., 24. i 125. Samo samostojeća kuća (nove dvojne samo kroz UPU, ugrađene samo rekonstrukcija); čestica 600 m², kig 0,3, kis nadzemni 0,9, visina 9 m (ukupna 11 m), od međa 4 m, od ceste 6 m, zelenilo 50 %. Oznake točaka čl. 24. u odluci iz 2021. ne podudaraju se s pročišćenim tekstom. |
+| Lovran, Mošćenička Draga, Kostrena, Bakar, Kraljevica, Crikvenica, Novi Vinodolski, Rab, Lopar, Cres, Mali Lošinj | sljedeće |
+| Rijeka (GUP), Matulji, Kastav, Viškovo, Čavle, Jelenje, Klana, Vinodolska općina, Gorski kotar | poslije |
