@@ -5019,6 +5019,123 @@
       "napomene": [
         "Vrijednosti su iz tablice čl. 7. (strojno izvučena tablica)."
       ]
+    },
+    "VINODOLSKA OPĆINA": {
+      "kod": "PPUO Vinodolska općina",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Vinodolske općine, Odluka o II. izmjeni i dopuni (SN PGŽ 13/2015), kojom su članci 22.–43. zamijenjeni novim člancima 20.–27., s ispravkom (SN PGŽ 21/2016)",
+        "sn": "Službene novine PGŽ 1/2011 (pročišćeni tekst), 13/2015 (II. izmjene i dopune) i 21/2016 (ispravak)",
+        "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=32164",
+        "pdf": "https://www.sn.pgz.hr/download.asp?id=27371",
+        "status": "na snazi; III. izmjene i dopune su u izradi",
+        "provjera": "Novi čl. 18.–22. iz Odluke SN 13/2015 (PDF Službenih novina, tekst izvučen strojno) i ispravak SN 21/2016, preuzeto 5. 11. 2026. Županijski sloj namjene navodi SN 13/15 kao zadnje glasilo plana.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Tekst iz odluke o izmjenama; pročišćeni tekst nakon 2015. nije pronađen."
+        }
+      },
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "poluotvorena (dvojna)"
+        ],
+        [
+          "ugr",
+          "u nizu"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "17.–18.",
+        "txt": "Unutar građevinskog područja naselja, neposrednom provedbom ovog Plana, mogu se graditi osnovne vrste građevina",
+        "msg": "Neizgrađeni dio: provjeri obvezu plana užeg područja u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "Za Drivenik, Tribalj, Grižane i Lukovo vrijede i zasebni uvjeti (čl. 19.); u koridoru planirane željezničke pruge gradnja prema posebnim uvjetima (čl. 19.)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska stambena građevina",
+          "opis": "stanovanje jedne obitelji (čl. 20.)",
+          "clanak": "20.–22.",
+          "gbpMax": null,
+          "etaze": "podrum i tri nadzemne etaže (suteren ili prizemlje, kat ili prizemlje, potkrovlje)",
+          "visina": 7.5,
+          "visinaOpis": "7,5 m, ukupna 10,5 m",
+          "slob": {
+            "minC": 250,
+            "izg": 0.3,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 60,
+            "tlMax": null
+          },
+          "dvoj": {
+            "minC": 200,
+            "izg": 0.4,
+            "kis": 1.6,
+            "kisPodrum": 1.6,
+            "tlMin": 60,
+            "tlMax": null
+          },
+          "ugr": {
+            "minC": 150,
+            "izg": 0.5,
+            "kis": 2.0,
+            "kisPodrum": 2.0,
+            "tlMin": 50,
+            "tlMax": null
+          },
+          "txt": {
+            "minC": "Najmanja dopuštena površina građevne čestice iznosi 250m",
+            "izg": "Najveći dopušteni koeficijent izgrađenosti (k ig) građevne čestice iznosi 0,3.",
+            "kis": "Najveći dopušteni koeficijent iskoristivosti građevne čestice (k is) iznosi 1,2.",
+            "tl": "Najmanja dopuštena površina tlocrtne projekcije obiteljske stambene građevine iznosi 60m",
+            "visina": "Najveća dopuštena visina građevine iznosi 7,5m, dok ukupna visina iznosi 10,5m."
+          }
+        }
+      },
+      "meda": {
+        "clanak": "20.",
+        "min": 3,
+        "opis": "h/2 od susjedne građevine, najmanje 3 m od međe (bez otvora 1 m)",
+        "opisIznimka": "",
+        "txt": "najmanje pola svoje visine (h/2) i ne manje od 3,0m od granice građevne čestice"
+      },
+      "regulacija": {
+        "clanak": "20.",
+        "ostale": 6,
+        "opis": "najmanje 6 m (na strmom terenu manje, prema susjednim građevinama; ispravak SN 21/2016)",
+        "txt": "Udaljenost osnovne građevine od regulacijskog pravca javne prometne površine ne može biti manja od 6m."
+      },
+      "zelenilo": {
+        "clanak": "20.",
+        "min": 0.2,
+        "txt": "Najmanje 20% građevne čestice mora se urediti visokim i niskim zelenilom."
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "20.",
+          "nagibMin": 22,
+          "nagibMax": 30,
+          "ravniDopusten": true
+        }
+      },
+      "pristup": {
+        "napomena": "Kolni pristup prometnicom najmanje 4,5 m ili pristupnim putem najmanje 3 m, najviše 50 m (čl. 20.)."
+      },
+      "napomene": [
+        "Višeobiteljske i višestambene građevine nisu obrađene."
+      ]
     }
   },
   "oblici": [
