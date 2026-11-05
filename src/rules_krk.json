@@ -4206,6 +4206,173 @@
         "Višestambene građevine do 6 stanova nisu obrađene.",
         "Parkirne površine ne ulaze u zelenilo (čl. 24.)."
       ]
+    },
+    "JELENJE": {
+      "kod": "PPUO Jelenje",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Jelenje, odredbe za provedbu iz elaborata IV. izmjena i dopuna (SN PGŽ 58/2023)",
+        "sn": "Službene novine PGŽ 58/2023 (IV. izmjene i dopune)",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1586",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1586/ppuo-jelenje-iv-id.pdf",
+        "status": "na snazi (IV. izmjene i dopune 2023.)",
+        "provjera": "Čl. 8., 13. i 14. iz elaborata IV. izmjena (PDF Zavoda, cijele odredbe, tekst izvučen strojno), preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Elaborat izmjena, ne službeni pročišćeni tekst."
+        }
+      },
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "poluugrađena"
+        ],
+        [
+          "ugr",
+          "ugrađena (u nizu)"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "8.",
+        "txt": "u neizgrađenim uređenim dijelovima građevinskih područja",
+        "msg": "Neizgrađeni dio: neposredno samo u uređenom dijelu; neuređeni se provodi kroz UPU (čl. 8.). Provjeri u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "U povijesnim graditeljskim cjelinama i u II. zoni sanitarne zaštite izvorišta vrijede dodatna ograničenja (čl. 13.–14.)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Jednostambena zgrada",
+          "opis": "jedan stan (čl. 13.)",
+          "clanak": "13.–14.",
+          "gbpMax": 300,
+          "etaze": "podrum i tri nadzemne etaže",
+          "visina": 9.0,
+          "visinaOpis": "9 m, ukupna 11,5 m",
+          "slob": {
+            "minC": 600,
+            "izg": 0.3,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 64,
+            "tlMax": 250,
+            "napomena": "U II. zoni sanitarne zaštite izvorišta kis 0,9 i bez podruma (čl. 14.)."
+          },
+          "dvoj": {
+            "minC": 400,
+            "izg": 0.3,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 60,
+            "tlMax": 250,
+            "napomena": "Poluugrađena samo uz postojeću ili odobrenu poluugrađenu/ugrađenu zgradu na susjednoj čestici (čl. 13. st. 7)."
+          },
+          "ugr": {
+            "minC": 300,
+            "izg": 0.4,
+            "kis": 1.6,
+            "kisPodrum": 1.6,
+            "tlMin": 60,
+            "tlMax": 250,
+            "napomena": "U II. zoni sanitarne zaštite kis 1,2; niz najviše 6 ugrađenih zgrada (čl. 14.)."
+          },
+          "txt": {
+            "minC": "najmanja površina građevne čestice iznosi 600 m²",
+            "izg": "najveći koeficijent izgrađenosti građevne čestice iznosi 0,3",
+            "kis": "najveći koeficijent iskorištenosti građevne čestice iznosi 1,2, a iznimno 0,9 ako se zgrada",
+            "tl": "najveća tlocrtna površina zgrade iznosi 250 m²",
+            "etaze": "najveći broj etaža zgrade iznosi podrum i tri nadzemne etaže",
+            "visina": "najveća visina zgrade iznosi 9 m, a najveća ukupna visina zgrade iznosi 11,5 m.",
+            "gbp": "najveći GBP zgrade iznosi 300 m"
+          }
+        },
+        "visobit": {
+          "naziv": "Manja višestambena zgrada",
+          "opis": "dva ili tri stana (čl. 13.)",
+          "clanak": "13.–14.",
+          "gbpMax": 400,
+          "etaze": "podrum i tri nadzemne etaže",
+          "visina": 9.0,
+          "visinaOpis": "9 m, ukupna 11,5 m",
+          "slob": {
+            "minC": 600,
+            "izg": 0.3,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 64,
+            "tlMax": 250,
+            "napomena": "U II. zoni sanitarne zaštite izvorišta kis 0,9 i bez podruma (čl. 14.)."
+          },
+          "dvoj": {
+            "minC": 400,
+            "izg": 0.3,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 60,
+            "tlMax": 250,
+            "napomena": "Poluugrađena samo uz postojeću ili odobrenu poluugrađenu/ugrađenu zgradu na susjednoj čestici (čl. 13. st. 7)."
+          },
+          "ugr": {
+            "minC": 300,
+            "izg": 0.4,
+            "kis": 1.6,
+            "kisPodrum": 1.6,
+            "tlMin": 60,
+            "tlMax": 250,
+            "napomena": "U II. zoni sanitarne zaštite kis 1,2; niz najviše 6 ugrađenih zgrada (čl. 14.)."
+          },
+          "txt": {
+            "minC": "najmanja površina građevne čestice iznosi 600 m²",
+            "izg": "najveći koeficijent izgrađenosti građevne čestice iznosi 0,3",
+            "kis": "najveći koeficijent iskorištenosti građevne čestice iznosi 1,2, a iznimno 0,9 ako se zgrada",
+            "tl": "najveća tlocrtna površina zgrade iznosi 250 m²",
+            "etaze": "najveći broj etaža zgrade iznosi podrum i tri nadzemne etaže",
+            "visina": "najveća visina zgrade iznosi 9 m, a najveća ukupna visina zgrade iznosi 11,5 m.",
+            "gbp": "odnosno 400 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "14.",
+        "min": 3,
+        "opis": "h/2, najmanje 3 m",
+        "opisIznimka": "",
+        "txt": "najmanja udaljenost zgrade od ostalih granica građevne čestice iznosi pola visine"
+      },
+      "regulacija": {
+        "clanak": "14.",
+        "ostale": 6,
+        "opis": "najmanje 6 m (uz nerazvrstanu cestu iznimno h/2, najmanje 4 m)",
+        "txt": "najmanja udaljenost zgrade od regulacijske linije iznosi 6 m"
+      },
+      "zelenilo": {
+        "clanak": "14.",
+        "min": 0.4,
+        "txt": "najmanje 40 % ukupne površine konačno uređenog terena građevne čestice mora biti prirodan i/ili hortikulturno uređen dio"
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "14.",
+          "nagibMin": 0,
+          "nagibMax": 35,
+          "ravniDopusten": true
+        }
+      },
+      "pristup": {
+        "napomena": "Na čestici jedna glavna zgrada i jedna pomoćna (iznimno dvije uz garažu) (čl. 13.)."
+      },
+      "napomene": [
+        "Višestambene zgrade (4 i više stanova) nisu obrađene."
+      ]
     }
   },
   "oblici": [
