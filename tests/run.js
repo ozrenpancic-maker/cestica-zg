@@ -1287,10 +1287,10 @@ async function krkTests(){
   mode="crikvenica"; E("NET").cache.clear(); w.localStorage.clear();
   await E("inspect")(w.L.latLng(45.17,14.69)); await tick(50);
   ok(/Primorsko-goranska županija · Crikvenica/.test(txt(w,"sheet"))&&/Uvjeti gradnje za Crikvenica još nisu obrađeni/.test(txt(w,"sheet")),"točka na kopnu (Crikvenica): županijska analiza uz jasno da uvjeti gradnje nisu obrađeni");
-  // druga jedinica na otoku: prikaz uz napomenu da pilot nije provjeren
-  mode="ok"; gp.OPCINA_GRAD="OMIŠALJ"; ag.OPCINA_GRAD="OMIŠALJ"; gp.IZGRADJENOST="izgrađeno"; E("NET").cache.clear(); w.localStorage.clear();
+  // jedinica bez obrađenih pravila (nepoznata oznaka jedinice): bez uvjeta gradnje iz PPUG-a Krka
+  mode="ok"; gp.OPCINA_GRAD="NEPOZNATA"; ag.OPCINA_GRAD="NEPOZNATA"; gp.IZGRADJENOST="izgrađeno"; E("NET").cache.clear(); w.localStorage.clear();
   await E("inspect")(w.L.latLng(ll.lat,ll.lng)); await tick(50);
-  ok(/Pravila gradnje provjerena su samo za Grad Krk/.test(txt(w,"sheet"))&&/Općina Omišalj/.test(txt(w,"sheet"))&&/samo za Grad Krk/.test(txt(w,"sheet"))&&w.__krkCalc===null,"druga jedinica na otoku: prikaz uz napomenu izvan pilota, bez uvjeta gradnje iz PPUG-a Krka");
+  ok(w.__krkCalc===null,"jedinica bez obrađenih pravila: nema uvjeta gradnje iz PPUG-a Krka");
   // Malinska-Dubašnica: PPUO (SN 15/2023), skupine naselja po oznaci GPN iz županijskog sloja
   mode="full"; Object.assign(gp,{OPCINA_GRAD:"MALINSKA-DUBAŠNICA",OZNAKA_NAMJENE:"GPN-1",NASELJE:"Malinska, Radići",IZGRADJENOST:"izgrađeno"});
   let tm=await reinspect(), M=w.__krkCalc;
@@ -1313,9 +1313,22 @@ async function krkTests(){
   // Vrbnik: PPUO (pročišćeni tekst 2019.), uz upozorenje da su izmjene 2024. neprovjerene
   Object.assign(gp,{OPCINA_GRAD:"VRBNIK",OZNAKA_NAMJENE:"GPN-1",NASELJE:"Garica",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").oblik="slob";
   tm=await reinspect(); M=w.__krkCalc;
-  ok(M&&M.plan==="PPUO Vrbnik"&&M.st==="provjera"&&Math.abs(M.tl-180)<0.6&&Math.abs(M.gbpN-540)<1.5&&/izmijenjen 2024/.test(tm)&&/6,5 m do vijenca/.test(tm)&&/20 %/.test(tm),"Vrbnik, 600 m²: kig 0,3 → tlocrt 180 m², kis 0,9 → GBP 540 m², visina 6,5 m, zelenilo 20 %, upozorenje o izmjenama 2024.");
-  setv(w,"krkOblik","dvoj","change"); M=w.__krkCalc; ok(M&&Math.abs(M.tl-240)<0.6&&/ne propisuje najveći tlocrt/.test(txt(w,"sheet")),"Vrbnik, dvojna: kig 0,4 → tlocrt 240 m² (plan ne propisuje najveći tlocrt)");
-  E("KRK_TIP").oblik="slob";
+  ok(M&&M.plan==="PPUO Vrbnik"&&M.st==="provjera"&&Math.abs(M.tl-180)<0.6&&Math.abs(M.gbpN-540)<1.5&&/34\/2024/.test(tm)&&/6,5 m do vijenca/.test(tm)&&/20 %/.test(tm)&&/4 m \(nerazvrstane/.test(tm),"Vrbnik, 600 m²: kig 0,3 → tlocrt 180 m², kis 0,9 → GBP 540 m², visina 6,5 m, zelenilo 20 %, od ceste 4 m (izmjene SN 34/2024)");
+  setv(w,"krkOblik","dvoj","change"); M=w.__krkCalc; ok(M&&Math.abs(M.tl-100)<0.01&&/100 m²/.test(txt(w,"sheet")),"Vrbnik, dvojna: najveći tlocrt 100 m² na čestici (čl. 23.b, SN 34/2024)");
+  E("KRK_TIP").oblik="slob"; ok(E("RULES_KRK").ostaleJls.VRBNIK.tipovi.obit.kosi.visina===9.5&&/9,5 m/.test(E("RULES_KRK").ostaleJls.VRBNIK.tipovi.obit.txt.kosi),"Vrbnik: na kosom terenu (> 12 %) najviše 9,5 m (SN 34/2024)");
+  // Omišalj: PPUO, čl. 44.a i 45. (SN 19/2013 i 9/2017)
+  Object.assign(gp,{OPCINA_GRAD:"OMIŠALJ",OZNAKA_NAMJENE:"NA3",NASELJE:"Omišalj",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
+  tm=await reinspect(); M=w.__krkCalc;
+  ok(M&&M.plan==="PPUO Omišalj"&&M.st==="provjera"&&Math.abs(M.tl-0.35*M.A)<0.6&&Math.abs(M.gbpN-0.6*M.A)<1&&M.minOk&&/9 m/.test(tm)&&/7 m/.test(tm)&&/9\/2017/.test(tm),"Omišalj samostojeća 600 m²: kig 0,35 → tlocrt 210 m², kis 0,6 → GBP 360 m², visina 9 m (7 m u zoni reducirane visine), izvor SN 9/2017");
+  setv(w,"krkOblik","dvoj","change"); M=w.__krkCalc; ok(M&&Math.abs(M.tl-250)<0.01,"Omišalj, poluugrađena: kig 0,5, ali najviše 250 m² pod građevinom");
+  E("KRK_TIP").oblik="slob"; gp.IZGRADJENOST="neizgrađeno"; tm=await reinspect(); ok(w.__krkCalc===null&&/izgrađenom i uređenom dijelu/.test(tm),"Omišalj, neizgrađeni dio: bez neposredne gradnje (čl. 45.)");
+  // Dobrinj: PPUO 2008. (SN 24/2008), čl. 37.–71.; kig ovisi o površini čestice
+  Object.assign(gp,{OPCINA_GRAD:"DOBRINJ",OZNAKA_NAMJENE:"N-161",NASELJE:"Sveti Ivan Dobrinjski",IZGRADJENOST:"izgrađeno"});
+  tm=await reinspect(); M=w.__krkCalc;
+  ok(M&&M.plan==="PPUO Dobrinj"&&M.st==="provjera"&&Math.abs(M.tl-0.3*M.A)<0.6&&Math.abs(M.gbpN-Math.min(450,0.75*M.A))<0.01&&M.minOk&&/8,5 m/.test(tm)&&/24\/08/.test(tm)&&/2022/.test(tm),"Dobrinj samostojeća 600 m²: kig 0,30 (čestica veća od 500 m²) → 180 m², kis 0,75 → GBP 450 m² (najviše 450), visina 8,5 m, upozorenje o usklađenju 2022.");
+  {const P=E("RULES_KRK").ostaleJls.DOBRINJ.tipovi.obit.slob, kI=E("krkIzg"); ok(kI(P,450)===0.25&&kI(P,600)===0.3,"Dobrinj: kig 0,25 na čestici do 500 m², 0,30 na većoj (čl. 70.)");}
+  gp.IZGRADJENOST="neizgrađeno"; tm=await reinspect(); ok(w.__krkCalc===null&&/urbanistički plan/.test(tm),"Dobrinj, neizgrađeni dio: bez neposredne gradnje (čl. 34.)");
+  gp.IZGRADJENOST="izgrađeno";
   // Punat: PPUO (pročišćeni tekst 2010.), čl. 24.-29.
   Object.assign(gp,{OPCINA_GRAD:"PUNAT",OZNAKA_NAMJENE:"NA1",NASELJE:"Punat",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
   tm=await reinspect(); M=w.__krkCalc;
@@ -2183,12 +2196,21 @@ async function formulaTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x), R=E("RULES_KRK"), T=w.turf, fs=require("fs"), crypto=require("crypto");
   // očuvanje pravila: rules_krk.json se u ovoj verziji ne mijenja (promjena tek nakon neovisne provjere)
   // sažetak pravila bez oznaka pravne provjere (status provjere smije se mijenjati, brojke i tekstovi pravila ne)
+  // 5. 11. 2026.: OMIŠALJ, DOBRINJ (nova pravila) i VRBNIK (izmjene SN 34/2024) izvan sažetka; ostatak datoteke dokazano isti (isti sažetak starog i novog sadržaja)
   // Plan Integrity v10: novo polje »citati« (doslovni navodi iz objave) ne mijenja postojeće brojke ni tekstove; ne ulazi u sažetak,
   // a njegovu doslovnost provjerava zaseban test (»PI v10 navodi«) prema tekstu SN PGŽ 19/2016
   // Sljedeća faza: »legenda« (boje polja legende karte 4 za pilot prijedloga zone) i »provjereno« (stručno provjereni obuhvati) nisu pravila; ne ulaze u sažetak
-  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3").map(([k,v])=>[k,bezPP(v)])):o;
+  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK").map(([k,v])=>[k,bezPP(v)])):o;
   const sha=crypto.createHash("sha256").update(JSON.stringify(bezPP(JSON.parse(fs.readFileSync(path.join(__dirname,"..","src","rules_krk.json"),"utf8"))))).digest("hex");
-  ok(sha==="6c6741620a351ab6058812f2aba8f3723534ef42a17c8b6013fd42e829e9d166","Pravila: src/rules_krk.json bez oznaka pravne provjere nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
+  ok(sha==="de538e7ddc17cdc11746acbca3217b77569881a269c740457be9e5bc7a615f82","Pravila: src/rules_krk.json bez oznaka pravne provjere nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
+  // nova i izmijenjena pravila (Omišalj, Dobrinj, Vrbnik 2024.): izvan sažetka; svaka brojka mora biti u svom doslovnom navodu
+  {const J=R.ostaleJls, has=(t,...x)=>x.every(v=>String(t||"").includes(v));
+   const O=J["OMIŠALJ"].tipovi.obit, Ot=O.txt, D=J.DOBRINJ.tipovi.obit, Dt=D.txt, V=J.VRBNIK.tipovi.obit;
+   ok(has(Ot.minC,"250/2000")&&has(Ot.maxC,"250/2000","250/600","150/400")&&has(Ot.izg,"0,35","0,5","0,2/0,5")&&has(Ot.kis,"0,6","0,8")&&has(Ot.tl,"250 m2","60 m2")&&has(Ot.visina,"9 m","7 m")&&has(Ot.gbp,"400 m2")&&has(J["OMIŠALJ"].zelenilo.txt,"30%")&&has(J["OMIŠALJ"].regulacija.txt,"6 m","4 m")
+      &&O.slob.minC===250&&O.slob.maxC===2000&&O.slob.izg===0.35&&O.dvoj.izg===0.5&&O.ugr.kis===0.8&&O.slob.tlMax===250&&O.gbpMax===400&&O.visina===9,"Omišalj: brojke pravila podudaraju se s doslovnim navodima (čl. 44.a, 45.)");
+   ok(has(Dt.minC,"400 m2")&&has(Dt.maxC,"500 m2","300 m2")&&has(Dt.izg,"0,25","0,30")&&has(Dt.kis,"0,75","450 m2")&&has(Dt.visina,"8,5 m")&&has(Dt.gbp,"450 m2")&&has(Dt.tl,"64 m2")&&has(J.DOBRINJ.meda.txt,"3,0 m")&&has(J.DOBRINJ.zelenilo.txt,"30%")
+      &&D.slob.minC===400&&D.slob.izg===0.25&&D.slob.izgVelika.prag===500&&D.slob.izgVelika.izg===0.3&&D.slob.kis===0.75&&D.dvoj.kis===0.9&&D.gbpMax===450&&D.visina===8.5&&D.dvoj.maxC===500&&D.ugr.maxC===300,"Dobrinj: brojke pravila podudaraju se s doslovnim navodima (čl. 37.–71.)");
+   ok(has(V.txt.kosi,"12%","9,5 m")&&has(V.txt.dvoj,"100 m2")&&has(V.txt.visina,"6,50 m")&&V.dvoj.tlMax===100&&V.kosi.visina===9.5&&J.VRBNIK.izvor.sn.includes("34/2024")&&["OMIŠALJ","DOBRINJ","VRBNIK"].every(k=>J[k].izvor.pravna_provjera.status==="NIJE_POTVRDENO"),"Vrbnik 2024.: izmijenjene brojke u navodima iz SN 34/2024; pravna provjera sve tri jedinice NIJE_POTVRDENO");}
   const t0=R.tipovi.obit, u2=R.upu["UPU 2"];
   ok(t0.slob.minC===500&&t0.slob.minCIznimno===400&&t0.slob.izg===0.25&&t0.slob.kis===0.5&&t0.slob.kisPodrum===0.75&&t0.slob.tlMax===200&&t0.gbpMax===200&&t0.visina===6.5&&R.meda.min===4&&R.regulacija.ostale===4&&R.regulacija.razvrstane===6&&u2.tipovi.obit.slob.kis===0.75&&u2.kisUkupni===true&&R.komunalniDoprinos.tecaj===7.5345,"Pravila: učitane vrijednosti PPUG-a i UPU-a 2 jednake su dosadašnjima");
   // komunalni doprinos: 9 slučajeva iz neovisnog audita v0.24.18 (krkKdTotal)

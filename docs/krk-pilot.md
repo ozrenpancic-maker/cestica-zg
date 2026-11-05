@@ -70,10 +70,10 @@ Zona unutar UPU-a ne može se odrediti automatski (grafički dio nije dostupan k
 |---|---|---|
 | Malinska-Dubašnica | PPUO, pročišćeni tekst SN 15/2023 | obrađeno: stambena građevina (do 2 jedinice), skupine GPN-1/2 (čl. 31.), GPN-3 (čl. 34.), GPN-4 (čl. 35.), GPN-5 do 12 (čl. 37.); skupina se čita iz oznake županijskog sloja; neizgrađeni dio uz provjeru uređenosti (čl. 27.) |
 | Baška | PPUO, pročišćeni tekst SN 26/2020 | obrađeno: obiteljska kuća samostojeća, dvojna, skupna (čl. 30.–32.), najveća čestica 1350 m², u naselju Baška bez novih dvojnih i skupnih; neizgrađeni dio blokiran (čl. 19., 28.) |
-| Vrbnik | PPUO, pročišćeni tekst SN 46/2024 | nije obrađeno: tekst je samo u PDF-u |
+| Vrbnik | PPUO, pročišćeni tekst SN 11/2020 + V. izmjene SN 34/2024 | obrađeno uz upozorenje (5. 11. 2026.): čl. 23.a i 23.b s izmjenama iz 2024. primijenjenima ručno (od ceste 4 m, kosi teren 9,5 m, dvojna najviše 100 m² tlocrta, niz i višeobiteljske brisani) |
 | Punat | PPUO, pročišćeni tekst 2010. + izmjene 2015., 2018., 2021. | obrađeno uz upozorenje (21. 10. 2026.): čl. 24.–29. za naselja N1 i N2 (obiteljska kuća slobodnostojeća, dvojna, niz; višestambena do 4 stana); izmjene 2015. nisu provjerene; neizgrađeni dio blokiran; UPU 3 (središte Punta) nije obrađen, jer su čl. 46a–46c iz 2016. nepoznati |
-| Omišalj | PPUO, pročišćeni tekst 2014. + izmjene 2015., 2017. | nije obrađeno: isto |
-| Dobrinj | PPUO 2008. + usklađenje 2022. (PDF) | nije obrađeno: tekst je samo u PDF-u |
+| Omišalj | PPUO, SN 19/2013, pročišćeni tekst 43/2014, izmjene 17/2015 i 9/2017 | obrađeno uz upozorenje (5. 11. 2026.): čl. 44.a, 44.b i 45. (samostojeća, poluugrađena, niz; obiteljska i višeobiteljska); tablica iz 2017. prepisana sa slike PDF-a; zona reducirane visine (7 m) nije dostupna kao karta; neizgrađeni dio blokiran |
+| Dobrinj | PPUO SN 24/2008 (+ ispravak 7/2009) + usklađenje 2022. | obrađeno uz upozorenje (5. 11. 2026.): čl. 34.–71. (individualna stambena građevina do 3 stana i 450 m²); usklađenje iz 2022. nije pregledano; neizgrađeni dio blokiran |
 
 UPU-ovi u tim općinama (npr. UPU 1 Malinska, Radići; UPU-1 Baška; UPU 1 Vrbnik) nisu obrađeni: na njihovom obuhvatu piše da uvjete propisuje UPU.
 

@@ -2037,13 +2037,17 @@
     "VRBNIK": {
       "kod": "PPUO Vrbnik",
       "izvor": {
-        "naziv": "Prostorni plan uređenja Općine Vrbnik, odredbe za provedbu (pročišćeni elaborat, svibanj 2019.)",
-        "sn": "Službeni glasnik Općine Vrbnik 16/04, 43/07, 53/07, 22/16, 11/17 i 7/19",
-        "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&izdanje=2352&mjesto=51516&odluka=33",
-        "status": "zamijenjeno: izmjene i dopune 2024. (SN PGŽ 34/2024) i novi pročišćeni tekst (SN PGŽ 46/2024) nisu provjereni",
-        "provjera": "Vrijednosti su provjerene s pročišćenim elaboratom iz svibnja 2019. Plan je izmijenjen 2024., pa su moguće razlike."
+        "naziv": "Prostorni plan uređenja Općine Vrbnik, odredbe za provedbu (pročišćeni tekst SN PGŽ 11/2020) s V. izmjenama i dopunama (SN PGŽ 34/2024)",
+        "sn": "Službene novine PGŽ 16/04, 43/07, 53/07, 22/16, 26/16, 11/17, 28/17, 7/19, 11/19 (pročišćeni tekst), 7/20, 11/20 (pročišćeni tekst) i 34/2024",
+        "url": "http://www.sn.pgz.hr/default.asp?Link=odluke&id=48254",
+        "status": "na snazi (V. izmjene i dopune SN 34/2024; odluka o transformaciji plana SN 39/2024)",
+        "provjera": "Čl. 23., 23.a i 23.b iz pročišćenog teksta SN 11/2020 (mrežni tekst), s izmjenama iz SN 34/2024 (mrežni tekst, čl. 13.–17.), primijenjenima ručno. Preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Izmjene iz 2024. primijenjene su ručno na pročišćeni tekst iz 2020.; novi pročišćeni tekst nije pronađen u Službenim novinama PGŽ. Vrijednosti nisu neovisno provjerene."
+        }
       },
-      "upozorenje": "Pravila su iz pročišćenog teksta iz 2019. Plan je izmijenjen 2024. (SN PGŽ 34/2024, pročišćeni tekst SN 46/2024), a te izmjene nisu provjerene; vrijednosti se mogu razlikovati.",
+      "upozorenje": "Izmjene iz 2024. (SN PGŽ 34/2024) primijenjene su ručno na pročišćeni tekst iz 2020.; novi pročišćeni tekst nije pregledan.",
       "oblici": [
         [
           "slob",
@@ -2071,7 +2075,7 @@
       "tipovi": {
         "obit": {
           "naziv": "Obiteljska kuća",
-          "opis": "najviše 2 stambene jedinice (čl. 22.)",
+          "opis": "najviše 2 stambene jedinice (čl. 23.)",
           "clanak": "23.a i 23.b",
           "gbpMax": null,
           "etaze": "2 nadzemne etaže i podrum",
@@ -2079,8 +2083,8 @@
           "visinaOpis": "6,5 m do vijenca",
           "kosi": {
             "nagib": 12,
-            "visina": 10.5,
-            "etaze": "podrum i 3 nadzemne etaže, od kojih je jedna suteren"
+            "visina": 9.5,
+            "etaze": "3 nadzemne etaže od kojih je jedna obvezno suteren, s mogućnošću izgradnje podruma"
           },
           "slob": {
             "minC": 400,
@@ -2096,15 +2100,17 @@
             "kis": 0.8,
             "kisPodrum": 0.8,
             "tlMin": 60,
-            "tlMax": null,
-            "napomena": "Za dvojne kuće plan ne propisuje najveći tlocrt; ograničava ga kig 0,4."
+            "tlMax": 100,
+            "napomena": "Dvojna kuća: najveći tlocrt 100 m² na jednoj čestici i najviše jedna stambena jedinica u svakoj polovici (čl. 23.b, SN 34/2024)."
           },
           "txt": {
             "minC": "Najmanja dopuštena površina građevne čestice: 400 m 2 (dvojne: 300 m2)",
             "izg": "Najveći dopušteni koeficijent izgrađenosti (Kig) 0,3",
             "kis": "Najveći dopušteni koeficijent iskorištenosti (Kis) iznosi: 0,9",
             "tl": "Najmanja dopuštena površina tlocrtne projekcije nove građevine - obiteljske kuće - iznosi 80 m2 … Najveća … iznosi 200 m 2.",
-            "visina": "Najveća dopuštena visina građevine iznosi 6,50 metara, mjereno od kote konačno zaravnatog terena do gornjeg ruba krovnog vijenca"
+            "visina": "najveća dopuštena visina građevine iznosi 6,50 m, mjereno od kote konačno zaravnanog i uređenog terena uz pročelje građevine na njegovom najnižem dijelu do gornjeg ruba krovnog vijenca za građevine sa 2 nadzemne etaže.",
+            "kosi": "ako se građevina gradi na iznimno kosom terenu gdje je nagib prirodnog terena veći od 12%, najveći broj etaža građevine iznosi 3 nadzemne etaže od kojih je jedna obvezno suteren, s mogućnošću izgradnje podruma, a najveća visina građevine iznosi 9,5 m",
+            "dvoj": "najveća dopuštena površina tlocrtne projekcije nove građevine - obiteljske kuće dvojne tipologije na jednoj građevnoj čestici iznosi 100 m2"
           }
         }
       },
@@ -2116,9 +2122,9 @@
         "txt": "Građevine moraju biti udaljene najmanje pola visine (h/2) od susjedne građevine i ne manje od 4 metra od granice građevne čestice"
       },
       "regulacija": {
-        "clanak": "19. i 23.a",
-        "opis": "5 m (nerazvrstane, lokalne i županijske ceste), 10 m od državne ceste",
-        "txt": "za nerazvrstane ceste ne može biti manja od 5,0 metara"
+        "clanak": "23.a",
+        "opis": "4 m (nerazvrstane, lokalne i županijske ceste), 10 m od državne ceste",
+        "txt": "U točki 4. alineja 2. i 3. riječi \"5,0 metara\" zamjenjuje se riječima \"4,0 m\"."
       },
       "zelenilo": {
         "clanak": "23.a",
@@ -2126,12 +2132,20 @@
         "txt": "Najmanje 20% građevne čestice mora se urediti visokim i niskim zelenilom."
       },
       "pristup": {
-        "napomena": "Pristup širine najmanje 4,5 m (čl. 18.). Parkiranje: 1 mjesto za stan do 50 m², 2 mjesta za veći stan (čl. 126.). Iznimno na česticama većim od 2000 m² u drugom redu tlocrt prizemlja do 250 m² (čl. 23.a)."
+        "napomena": "Pristup širine najmanje 4,5 m (čl. 18.); iznimno u izgrađenim dijelovima pristup služnošću preko jedne čestice (SN 34/2024). Parkiranje: 1 mjesto za stan do 50 m², 2 mjesta za veći stan (čl. 126.). Na česticama većim od 1500 m² tlocrt prizemlja do 350 m² (čl. 23.a, SN 34/2024)."
       },
       "napomene": [
         "U izgrađenim dijelovima naselja (povijesne graditeljske cjeline) uz gradnju na regulacijskom pravcu kig može biti do 1,0 (čl. 23.a).",
-        "Višeobiteljske građevine (3–4 stana) nisu obrađene."
-      ]
+        "Višeobiteljske građevine i nizovi brisani su izmjenama 2024. (čl. 22. i 23.); višestambene samo prema programu POS."
+      ],
+      "simulator": {
+        "krov": {
+          "clanak": "23.a",
+          "nagibMin": 17,
+          "nagibMax": 22,
+          "ravniDopusten": false
+        }
+      }
     },
     "PUNAT": {
       "kod": "PPUO Punat",
@@ -2256,6 +2270,289 @@
         "Za središte Punta (naselje N1) vrijedi UPU 3, koji aplikacija još nije obradila; ovi uvjeti vrijede gdje UPU nije na snazi.",
         "Zelenilo: 40 % (slobodnostojeća), 30 % (dvojna i završna jedinica niza), 20 % (jedna jedinica niza), čl. 28.",
         "Najveći tlocrt, udaljenost od ceste i parkiranje nisu uključeni u izračun."
+      ]
+    },
+    "OMIŠALJ": {
+      "kod": "PPUO Omišalj",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Omišalj, odredbe za provođenje (čl. 44.a–45. u tekstu izmjena 2013. i 2017.)",
+        "sn": "Službene novine PGŽ 52/07, 33/09, 14/10, 37/11, 19/13, 43/14 (pročišćeni tekst), 17/15 i 9/17",
+        "url": "http://www.sn.pgz.hr/default.asp?Link=odluke&id=35378",
+        "status": "na snazi (zadnje izmjene i dopune SN 9/2017); izmjene i dopune u izradi (odluka SN 29/2025)",
+        "provjera": "Čl. 44.a i 45. preuzeti iz izmjena SN 19/2013 (mrežni tekst), izmjene čl. 45. iz SN 9/2017 (mrežni tekst); tablica čl. 45. t. (1) iz 2017. postoji samo kao slika u PDF-u izdanja i prepisana je sa slike. Pročišćeni tekst SN 43/2014 na mreži nije cjelovit. Preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Lanac objava sastavljen iz popisa u odluci SN 31/2020 (52/07 … 9/17). Vrijednosti nisu neovisno provjerene; tablica iz PDF-a prepisana je sa slike."
+        }
+      },
+      "upozorenje": "Tablica najmanje i najveće čestice, kig i udaljenosti (čl. 45. t. 1, SN 9/2017) prepisana je sa slike u PDF-u izdanja; zona reducirane visine (kartografski prikaz br. 3) nije dostupna kao karta.",
+      "oblici": [
+        [
+          "slob",
+          "samostojeća"
+        ],
+        [
+          "dvoj",
+          "poluugrađena (dvojna)"
+        ],
+        [
+          "ugr",
+          "u nizu"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "blok",
+        "clanak": "45.",
+        "txt": "Neposrednom provedbom ovog Plana moguće je u izgrađenom i uređenom dijelu građevinskog područja naselja stambene građevine obiteljske i višeobiteljsketipologije, graditi prema sljedećim uvjetima",
+        "msg": "Neizgrađeni dio građevinskog područja: plan neposredno dopušta gradnju samo u izgrađenom i uređenom dijelu (čl. 45.); za ostalo vrijedi plan užeg područja."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "NA1 Njivice, NA2 Lučica, NA3 Omišalj, NA4 Stran, NA5 Štalice",
+          "napomena": "Povijesno središte Omišlja (čl. 39.) i zona reducirane visine (kartografski prikaz br. 3: najviše 2 nadzemne etaže i 7 m) imaju posebne uvjete. U Njivicama (NA1) vrijedi UPU 2 Njivice, kad ga evidencija planova pokaže na lokaciji."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska građevina",
+          "opis": "najviše 3 stana, GBP do 400 m² s pomoćnim građevinama (čl. 44.a)",
+          "clanak": "44.a i 45.",
+          "gbpMax": 400,
+          "etaze": "podrum ili suteren i 2 nadzemne etaže",
+          "visina": 9,
+          "visinaOpis": "9 m (u zoni reducirane visine 7 m)",
+          "slob": {
+            "minC": 250,
+            "maxC": 2000,
+            "izg": 0.35,
+            "kis": 0.6,
+            "kisPodrum": 0.6,
+            "tlMin": 60,
+            "tlMax": 250
+          },
+          "dvoj": {
+            "minC": 250,
+            "maxC": 600,
+            "izg": 0.5,
+            "kis": 0.6,
+            "kisPodrum": 0.6,
+            "tlMin": 60,
+            "tlMax": 250,
+            "napomena": "Nova poluugrađena kuća samo kao nedostajuća druga polovica dvojne (čl. 45. t. 5)."
+          },
+          "ugr": {
+            "minC": 150,
+            "maxC": 400,
+            "izg": 0.5,
+            "kis": 0.8,
+            "kisPodrum": 0.8,
+            "tlMin": 60,
+            "tlMax": 250,
+            "napomena": "Samo interpolacija nedostajuće građevine u izgrađenom nizu; niz najviše 5 jedinica (čl. 44.a, 45. t. 5)."
+          },
+          "txt": {
+            "minC": "Slobodnostojeće 250/2000 (površina građevne čestice min/max, m²; tablica čl. 45. t. 1, SN 9/2017)",
+            "maxC": "Slobodnostojeće 250/2000; Poluugrađene 250/600; U nizu 150/400",
+            "izg": "Koeficijent izgrađenosti min/max (kig): Slobodnostojeće 0,15/0,35; Poluugrađene 0,15/0,5; U nizu 0,2/0,5",
+            "kis": "Najveći koeficijent iskoristivosti (kis) za slobodnostojeću i poluugrađenu građevinu iznosi 0,6, a za građevinu u nizu 0,8.",
+            "tl": "Najveća dozvoljena površina pod građevinom iznosi 250 m2. … Najmanja tlocrtna površina građevine iznosi 60 m2",
+            "etaze": "Građevine mogu imati najviše sljedeće etaže: podrum ili suteren te još dvije nadzemne etaže.",
+            "visina": "Najveća dozvoljena visina građevine iznosi 9 m. Iznimno, u zoni reducirane visine građevina prikazanoj na kartografskom prikazu br. 3., dozvoljava se izgradnja najviše 2 nadzemne etaže i najveća dozvoljena visina 7 m.",
+            "gbp": "Obiteljska građevina je građevina s najviše 3 stana, građevinske brutto površine do 400 m2 (uključivo površinu pomoćnih građevina)",
+            "dvoj": "Poluugrađene 250/600 … 0,15/0,5"
+          }
+        },
+        "visobit": {
+          "naziv": "Višeobiteljska građevina",
+          "opis": "4 do 6 stanova, GBP do 600 m² s pomoćnim građevinama (čl. 44.b)",
+          "clanak": "44.b i 45.",
+          "gbpMax": 600,
+          "etaze": "podrum ili suteren i 2 nadzemne etaže",
+          "visina": 9,
+          "visinaOpis": "9 m (u zoni reducirane visine 7 m)",
+          "slob": {
+            "minC": 250,
+            "maxC": 2000,
+            "izg": 0.35,
+            "kis": 0.6,
+            "kisPodrum": 0.6,
+            "tlMin": 60,
+            "tlMax": 250
+          },
+          "dvoj": {
+            "minC": 250,
+            "maxC": 600,
+            "izg": 0.5,
+            "kis": 0.6,
+            "kisPodrum": 0.6,
+            "tlMin": 60,
+            "tlMax": 250,
+            "napomena": "Nova poluugrađena kuća samo kao nedostajuća druga polovica dvojne (čl. 45. t. 5)."
+          },
+          "txt": {
+            "minC": "Slobodnostojeće 250/2000 (tablica čl. 45. t. 1, SN 9/2017)",
+            "maxC": "Slobodnostojeće 250/2000; Poluugrađene 250/600",
+            "izg": "Slobodnostojeće 0,15/0,35; Poluugrađene 0,15/0,5",
+            "kis": "Najveći koeficijent iskoristivosti (kis) za slobodnostojeću i poluugrađenu građevinu iznosi 0,6, a za građevinu u nizu 0,8.",
+            "tl": "Najveća dozvoljena površina pod građevinom iznosi 250 m2.",
+            "etaze": "Građevine mogu imati najviše sljedeće etaže: podrum ili suteren te još dvije nadzemne etaže.",
+            "visina": "Najveća dozvoljena visina građevine iznosi 9 m.",
+            "gbp": "Višeobiteljska građevina može se planirati u najvećem opsegu od 600 m2 građevinske brutto površine, uključivo površinu pomoćnih građevina."
+          }
+        }
+      },
+      "meda": {
+        "clanak": "45.",
+        "min": 4,
+        "opis": "4 m od granica čestice (iznimno 3 m)",
+        "opisIznimka": "Iznimno 3 m, ako širina čestice to traži (garaža tada u sklopu kuće) ili kad nagib terena omogućuje pogled preko niže susjedne građevine.",
+        "txt": "Udaljenost do granica čestice GP/RP (m): Slobodnostojeće 4/4/4/6 (i) … Udaljenost građevine do ruba parcele može se smanjiti na iznimno 3 m"
+      },
+      "regulacija": {
+        "clanak": "45.",
+        "opis": "6 m od regulacijske linije (iznimno 4 m)",
+        "txt": "Udaljenost građevine do ruba regulacijske linije u pravilu iznosi 6 m, no ova se udaljenost može smanjiti na najviše 4 m"
+      },
+      "zelenilo": {
+        "clanak": "45.",
+        "min": 0.3,
+        "txt": "Najmanje 30% površine čestice potrebno je ozeleniti."
+      },
+      "pristup": {
+        "napomena": "Na jednoj čestici jedna građevina; garaža do 2 parkirna mjesta; bazen najmanje 3 m od granica čestice (čl. 45.). Pristup i parkiranje prema čl. 148. i točki 5.1."
+      },
+      "napomene": [
+        "Plan propisuje i najmanji kig (0,15 za samostojeće i poluugrađene, 0,2 za niz); aplikacija računa samo najveći.",
+        "Višestambene građevine (7–12 stanova) grade se samo prema planu užeg područja (čl. 44.d) i nisu obrađene."
+      ]
+    },
+    "DOBRINJ": {
+      "kod": "PPUO Dobrinj",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Dobrinj, odredbe za provođenje (2008.)",
+        "sn": "Službene novine PGŽ 24/08, ispravak 7/09; usklađenje sa Zakonom (Službene novine Općine Dobrinj 5/2022)",
+        "url": "http://www.sn.pgz.hr/default.asp?Link=odluke&id=14853",
+        "status": "na snazi; izmjene i dopune u izradi (odluka 2024.)",
+        "provjera": "Čl. 34.–72. preuzeti s mrežne stranice Službenih novina PGŽ (24/2008), 5. 11. 2026. Usklađenje sa Zakonom iz 2022. (Službene novine Općine Dobrinj 5/2022) nije pregledano: priloženi dokument sadržavao je samo odluku, ne izmijenjene odredbe.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Usklađenje iz 2022. nije pregledano; usklađenje iz 2020. (SN PGŽ 38/2020) stavljeno je izvan snage (SN PGŽ 44/2020). Vrijednosti nisu neovisno provjerene."
+        }
+      },
+      "upozorenje": "Pravila su iz plana iz 2008. Usklađenje sa Zakonom iz 2022. nije pregledano, pa vrijednosti mogu biti drukčije.",
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "poluugrađena (dvojna)"
+        ],
+        [
+          "ugr",
+          "ugrađena (u nizu)"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "blok",
+        "clanak": "34.",
+        "txt": "Do izrade urbanističkog plana uređenja naselja dozvoljena je neposredna provedba Plana za gradnju nove i rekonstrukciju postojeće pojedinačne ili više građevina na građevnoj čestici ili prostornoj cjelini izgrađenog dijela građevinskog područja naselja, manjoj od 5.000 m2",
+        "msg": "Neizgrađeni dio građevinskog područja: neposredna gradnja dopuštena je samo u izgrađenom dijelu (čl. 34. i 69.); za neizgrađeni dio vrijedi urbanistički plan uređenja."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva naselja",
+          "napomena": "U obalnim naseljima Šilo, Čižići i Soline u pojasu od najmanje 70 m od obalne crte vrijede ograničenja (čl. 32.). Neposredna provedba vrijedi za čestice ili cjeline manje od 5.000 m² (čl. 34.)."
+        }
+      ],
+      "simulator": {
+        "krov": {
+          "clanak": "54.",
+          "nagibMin": 20,
+          "nagibMax": 23,
+          "ravniDopusten": false
+        }
+      },
+      "tipovi": {
+        "obit": {
+          "naziv": "Individualna stambena građevina",
+          "opis": "najviše 3 stana, GBP do 450 m² (čl. 68. i 69.)",
+          "clanak": "37.–71.",
+          "gbpMax": 450,
+          "etaze": "najviše 3 etaže (P+2)",
+          "visina": 8.5,
+          "visinaOpis": "8,5 m",
+          "slob": {
+            "minC": 400,
+            "izg": 0.25,
+            "izgVelika": {
+              "prag": 500,
+              "izg": 0.3
+            },
+            "kis": 0.75,
+            "kisPodrum": 0.75,
+            "tlMin": 64,
+            "tlMax": null
+          },
+          "dvoj": {
+            "minC": 300,
+            "maxC": 500,
+            "izg": 0.3,
+            "kis": 0.9,
+            "kisPodrum": 0.9,
+            "tlMin": 64,
+            "tlMax": null
+          },
+          "ugr": {
+            "minC": 250,
+            "maxC": 300,
+            "izg": 0.3,
+            "kis": 0.9,
+            "kisPodrum": 0.9,
+            "tlMin": 64,
+            "tlMax": null
+          },
+          "txt": {
+            "minC": "za gradnju slobodnostojeće građevine 400 m2 uz uvjet da širina građevne čestice na građevnom pravcu ne bude 5 14,0 m",
+            "maxC": "500 m2 za gradnju poluugrađene građevine (dvojne), - 300 m2 za gradnju ugrađene građevine (u nizu)",
+            "izg": "slobodnostojeća građevina na građevnoj čestici površine 400-500 m2 kig max = 0,25 - slobodnostojeća građevina na građevnoj čestici površine 4 500 m2 kig max = 0,30",
+            "kis": "za slobodnostojeće građevine kis max = 0,75 uz građevinsku (bruto) površinu max. 450 m2",
+            "tl": "Min. površina zemljišta pod građevinom je 64 m2 bez obzira na veličinu građevne čestice.",
+            "etaze": "može se u naselju graditi, odnosno rekonstruirati max. kao troetažna građevina P+2",
+            "visina": "Stambena, manja proizvodna, poslovna, te ugostiteljsko-turistička građevina, može se u naselju graditi max. do visine 8,5 m.",
+            "gbp": "utvrđuju lokacijski uvjeti za gradnju nove i rekonstrukciju postojeće individualne stambene građevine građevinske (bruto) površine do 450 m2",
+            "dvoj": "za gradnju poluugrađene građevine (dvojna) 300 m2 uz uvjet da širina građevne čestice na građevnom pravcu ne bude 5 11,0 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "40.",
+        "min": 3,
+        "opis": "3 m od granica čestice",
+        "opisIznimka": "Iznimno manje u tradicionalno »zgusnutim« dijelovima naselja, bez otvora prema susjedu.",
+        "txt": "Min. udaljenost građevine od granica građevne čestice iznosi 3,0 m, mjereno od najistaknutijih dijelova."
+      },
+      "regulacija": {
+        "clanak": "43.",
+        "opis": "6 m od razvrstane ceste, 5 m od nerazvrstane",
+        "txt": "Udaljenost osnovne građevine od regulacijskog pravca razvrstane ceste ne može biti manja od 6,0 m … od regulacijskog pravca nerazvrstane ceste ne može biti manja od 5,0 m."
+      },
+      "zelenilo": {
+        "clanak": "58.",
+        "min": 0.3,
+        "txt": "Min. 30% površine građevne čestice potrebno je urediti parkovnim nasadima i prirodnim zelenilom."
+      },
+      "pristup": {
+        "napomena": "Parkiranje: 1 PM po stanu (čl. 62.). Najmanja širina čestice na građevnom pravcu: 14 m (samostojeća), 11 m (dvojna), 8 m (niz) (čl. 37.)."
+      },
+      "napomene": [
+        "Krov: dvostrešni ili složen od više ploha, nagib 20–23°; ravni krov ili krovna terasa najviše na 20 % krovnih ploha (čl. 54.).",
+        "Višestambene građevine nisu obrađene."
       ]
     }
   },

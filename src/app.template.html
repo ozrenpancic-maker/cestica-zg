@@ -1445,6 +1445,8 @@ function krkProstorNapomena(RS,RD,G1,G2){
   return h; }
 // najveći tlocrt ovisno o površini (npr. UPU 3 Punat, čl. 46.: na česticama većim od 1000 m² 200 m² umjesto 150 m²)
 const krkTlMax=(P,a)=>P.tlVelika&&a>P.tlVelika.prag?P.tlVelika.tl:P.tlMax;
+// kig ovisan o površini čestice (npr. PPUO Dobrinj, čl. 70.: samostojeća na čestici do 500 m² 0,25, na većoj 0,30)
+const krkIzg=(P,a)=>P.izgVelika&&a>P.izgVelika.prag?P.izgVelika.izg:P.izg;
 function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   const R=RULES_KRK, area=d.area, I=RS.izvor||R.izvor; let h="";
   const base=isUpu?S.izgr:S.izgr;
@@ -1453,6 +1455,7 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   if(!A){h+=`<p class="meta">Čestica nije pronađena u katastru, pa se izračun ne može napraviti. Pravila: najmanja čestica ${fmt(P.minC)} m², kig ${dec(P.izg)}, kis ${dec(P.kis)}, visina ${dec(T.visina)} m.</p>`; return h;}
   const slope=d.slope&&d.slope.v?d.slope.v.slope:null, kosi=T.kosi&&slope!=null&&slope>T.kosi.nagib, tlV=!!(P.tlVelika&&A>P.tlVelika.prag);
   if(tlV) P={...P,tlMax:P.tlVelika.tl};
+  if(P.izgVelika&&A>P.izgVelika.prag) P={...P,izg:P.izgVelika.izg};
   const tl=Math.min(A*P.izg,P.tlMax||Infinity), gbpN=Math.min(A*P.kis,T.gbpMax||Infinity), gbpP=RS.kisUkupni?null:Math.min(A*P.kisPodrum,T.gbpUkupno&&T.gbpMax?T.gbpMax:Infinity);
   const minOk=A>=P.minC, minEx=!minOk&&!!P.minCIznimno&&A>=P.minCIznimno, tlOk=tl>=P.tlMin;
   // prostor za kuću: najmanja udaljenost od međa, na dijelu čestice u GP-u naselja
@@ -1514,7 +1517,7 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   {const zab=RS.grupa&&RS.grupa.zabranjeno||[], rows=[], ON={slob:"slobodnostojeća",dvoj:"dvojna",ugr:"ugrađena"};
    for(const [k,T2] of Object.entries(RS.tipovi||{})){
      const ob=(T2.oblici||RS.oblici||[["slob"],["dvoj"],["ugr"]]).map(o=>o[0]).filter(o=>T2[o]&&typeof T2[o]==="object");
-     for(const o of ob){const P2=T2[o], t2=Math.min(A*P2.izg,krkTlMax(P2,A)||Infinity), g2=Math.min(A*P2.kis,T2.gbpMax||Infinity), mOk=A>=P2.minC, mEx=!mOk&&!!P2.minCIznimno&&A>=P2.minCIznimno;
+     for(const o of ob){const P2=T2[o], t2=Math.min(A*krkIzg(P2,A),krkTlMax(P2,A)||Infinity), g2=Math.min(A*P2.kis,T2.gbpMax||Infinity), mOk=A>=P2.minC, mEx=!mOk&&!!P2.minCIznimno&&A>=P2.minCIznimno;
        const stanje=zab.includes(o)?"zabr":!mOk&&!mEx?"mala":P2.tlMin&&t2<P2.tlMin?"tl":P2.maxC&&A>P2.maxC?"vel":mEx?"izn":"ok";
        rows.push({key:"krk|"+k+"|"+o,naziv:T2.naziv,oblik:ON[o]||o,minC:P2.minC,minCIzn:P2.minCIznimno,tl:t2,gbp:g2,visina:T2.visina,etaze:T2.etaze,stanje,odabran:T2===T&&o===oblSel,pz:pzCalc({},[pzA,pzR,pzZ,pzS])});}}
    window.__tipCmp=rows; h+=tipCmpHtml(rows,A,AS&&AS.naziv?AS.naziv+" površina":null);}
@@ -1524,7 +1527,7 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   h+=`<div class="chips">${chips.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`;
   const row=(l,v,cls="")=>`<div class="row"><span>${l}</span><span class="${cls}">${v}</span></div>`;
   h+=`<details class="acc" data-k="krkCalc" open><summary><span>Izračun za ovu česticu</span><b class="${minOk&&tlOk?"good":minEx?"":"bad"}">${esc(chips.slice(0,3).join(" · "))}</b></summary><div class="calc">`;
-  if(PP){const sh=A0/area, calcK=a=>({min:a>=P.minC?true:P.minCIznimno&&a>=P.minCIznimno?"izn":false,tl:Math.min(a*P.izg,krkTlMax(P,a)||Infinity),gbp:Math.min(a*P.kis,T.gbpMax||Infinity)});
+  if(PP){const sh=A0/area, calcK=a=>({min:a>=P.minC?true:P.minCIznimno&&a>=P.minCIznimno?"izn":false,tl:Math.min(a*krkIzg(P,a),krkTlMax(P,a)||Infinity),gbp:Math.min(a*P.kis,T.gbpMax||Infinity)});
     window.__areaCmp={P:PP,area,share:sh,calc:calcK,rerender:()=>{if(KRK_CUR) renderKrk(KRK_CUR)}}; h+=areaCmpHtml(PP,area,sh,calcK);}
   if(Math.abs(A0-area)>1) h+=row(isUpu?"Dio čestice u GP-u naselja":"Izgrađeni dio GP-a naselja na čestici",`${fmt(A)} od ${fmt(Aall)} m²`);
   if(AS&&Math.abs(AS.f-1)>0.001) h+=`<p class="meta" data-povrsina-izvor="1">Izračun koristi ${esc(AS.naziv||"odabranu")} površinu (${fmt(Aall)} m²)${Math.abs(A0-area)>1?`; udio dijela u građevinskom području (${Math.round(A0/area*100)} %) određen je iz grafičke granice i primijenjen na tu površinu, uz pretpostavku istog postotka`:""}. Teorijski obris na karti uvijek je iz grafičke granice čestice.</p>`;
