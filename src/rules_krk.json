@@ -3127,6 +3127,108 @@
         "Kis vrijedi uz neaktivno potkrovlje (čl. 21.–23.).",
         "U izgrađenim dijelovima naselja uz gradnju na regulacijskoj liniji kig do 0,5."
       ]
+    },
+    "NOVI VINODOLSKI": {
+      "kod": "PPUG Novi Vinodolski",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Grada Novi Vinodolski, odredbe za provođenje (pročišćeni tekst, SN PGŽ 18/2025)",
+        "sn": "Službene novine PGŽ 52/2024 (VI. izmjene i dopune) i 18/2025 (pročišćeni tekst)",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1813",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1813/ppug-novi-vinodolski-pt.pdf",
+        "status": "na snazi (pročišćeni tekst SN 18/2025)",
+        "provjera": "Čl. 25.–29. iz pročišćenog teksta (PDF Zavoda za prostorno uređenje PGŽ, tekst izvučen strojno), preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Pročišćeni tekst Zavoda; usporedba s glasilom nije napravljena."
+        }
+      },
+      "upozorenje": "Kig i kis ovise o položaju prema državnoj cesti D8 (sjeverno od D8 u izgrađenom dijelu kig 0,4 i kis 2,0); aplikacija to ne zna, pa računa s nižim vrijednostima (0,3 i 1,5).",
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "poluugrađena ili u nizu"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "27.",
+        "txt": "Utvrđuju se slijedeće granične vrijednosti za građevne čestice u postojećim, izgrađenim dijelovima naselja ili u planiranim, neizgrađenim dijelovima građevinskog područja naselja za izgradnju slobodnostojećih građevina",
+        "msg": "Neizgrađeni dio: samostojeće kuće grade se i ondje (čl. 27. st. 2), uz širinu čestice najmanje 14 m; poluugrađene i nizovi samo prema planu užeg područja (čl. 27. st. 3). Provjeri obvezu UPU-a u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "U zoni 1.1 naselja Novi Vinodolski (NA11) najviše 8,5 m i tri nadzemne etaže; u povijesnoj graditeljskoj cjelini (zone 14A–14E) vrijede uvjeti konzervatora (čl. 27., 29.)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća",
+          "opis": "najviše 3 stana (čl. 25.)",
+          "clanak": "25.–29.",
+          "gbpMax": null,
+          "etaze": "1 podzemna i 4 nadzemne etaže (četvrta potkrovlje ili krovna terasa)",
+          "visina": 11.5,
+          "visinaOpis": "11,5 m (u zoni 1.1 naselja Novi Vinodolski 8,5 m)",
+          "slob": {
+            "minC": 400,
+            "izg": 0.3,
+            "kis": 1.5,
+            "kisPodrum": 1.5,
+            "tlMin": 60,
+            "tlMax": null
+          },
+          "dvoj": {
+            "minC": 200,
+            "izg": 0.4,
+            "kis": 2.0,
+            "kisPodrum": 2.0,
+            "tlMin": 50,
+            "tlMax": null,
+            "napomena": "U izgrađenom dijelu samo uz česticu na kojoj je već izgrađena poluugrađena građevina; u neizgrađenom samo prema planu užeg područja (čl. 27. st. 3)."
+          },
+          "txt": {
+            "minC": "najmanja dopuštena površina građevne čestice iznosi 400 m 2",
+            "izg": "najveći dopušteni koeficijent izgrađenosti (Kig) određuje se 0,3, odnosno, 0,4 unutar izgrađenih dijelova svih građevinskih područja naselja koji se nalaze sjeverno od državne ceste D8",
+            "kis": "najveći dopušteni koeficijent iskorištenosti (Kis) iznosi 1,5 unutar neizgrađenog dijela građevinskog područja naselja odnosno, 2,0 unutar izgrađenih dijelova svih građevinskih područja naselja koji se nalaze iznad državne ceste D8",
+            "tl": "najmanja dopuštena površina tlocrtne projekcije pojedine nove građevine iznosi 60 m 2",
+            "etaze": "najveći dopušteni broj etaža iznosi pet etaža (jedna podzemna etaža i četiri nadzemne etaže)",
+            "visina": "najveće dopuštene visine 11,5 m",
+            "dvoj": "najmanja dopuštena površina građevne čestice iznosi 200 m 2"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "29.",
+        "min": 4,
+        "minBezOtvora": 3,
+        "opis": "h/2, najmanje 4 m (bez otvora 3 m)",
+        "opisIznimka": "Osim unutar povijesnih graditeljskih cjelina.",
+        "txt": "moraju biti udaljene najmanje pola visine (h/2) od susjedne građevine ali ne manje od 4 metra od granice susjedne građevne čestice s otvorima, odnosno ne manje od 3 metra bez otvora"
+      },
+      "regulacija": {
+        "clanak": "—",
+        "opis": "Podaci nisu dostupni (udaljenost od regulacijskog pravca nije pronađena u čl. 25.–29.)",
+        "txt": ""
+      },
+      "zelenilo": {
+        "clanak": "—",
+        "min": null,
+        "opisNaziv": "Zelenilo (nije izdvojeno iz plana)",
+        "txt": ""
+      },
+      "pristup": {
+        "napomena": "Jedna obiteljska kuća ili stambena građevina na čestici, uz pomoćne građevine (čl. 26.)."
+      },
+      "napomene": [
+        "Stambene građevine do 4 jedinice (čl. 28.) i višestambene nisu obrađene."
+      ]
     }
   },
   "oblici": [
