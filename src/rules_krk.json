@@ -5396,6 +5396,194 @@
         "Krov kosi, bačvasti, ravni ili drugog oblika; nagib prema pokrovu (čl. 33., izmjena 2020.).",
         "Stambene građevine s 4 stana i vile nisu obrađene."
       ]
+    },
+    "MATULJI": {
+      "kod": "PPUO Matulji",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Matulji, pročišćeni tekst odredbi iz elaborata II. izmjena i dopuna (SN PGŽ 27/2016), uz usklađenje (31/2017), III. (3/2019) i IV. izmjene (6/2021) koje članke o stambenim građevinama ne mijenjaju",
+        "sn": "Službene novine PGŽ 27/2016, 31/2017, 3/2019 i 6/2021",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1172",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1172/ppuo-matulji-II-id.pdf",
+        "status": "na snazi (IV. izmjene i dopune 2021.); V. izmjene u izradi",
+        "provjera": "Odredbe o stambenim i stambeno-poslovnim građevinama (čl. 38., 47.–59.) iz pročišćenog teksta 2016. (PDF Zavoda); provjereno da usklađenje 2017. (čl. 41., 42., 59. — bez promjene vrijednosti), III. izmjene 2019. (čl. 65. i dalje) i IV. izmjene 2021. (samo mjerenje visine podzida) ne mijenjaju ove vrijednosti. Preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Pročišćeni tekst 2016. s označenim izmjenama; kasnije izmjene provjerene ručno."
+        }
+      },
+      "upozorenje": "Uvjeti ovise o tipu naselja (čl. 38.): stambena, stambeno-poslovna ili mješovito-ruralna; aplikacija tip određuje po nazivu naselja. U izdvojenim dijelovima Jurdana, Kućela, Rukavca (Perčići) i Mučića (Škalniško) najviše dvije nadzemne etaže.",
+      "oblici": [
+        [
+          "slob",
+          "samostojeća"
+        ]
+      ],
+      "kisUkupni": false,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "47.",
+        "txt": "Neposrednom provedbom plana u građevinskim područjima naselja za koja nije određena obveza izrade plana užeg područja mogu se graditi",
+        "msg": "Neposredno samo gdje nije propisan UPU (čl. 292.); neuređeni dio neizgrađenog područja traži UPU. Provjeri u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": "^(BREGI|RUKAVAC|KUCELI|MATULJI|MIHOTICI|JUSICI|JURDANI)$",
+          "naziv": "stambena naselja (čl. 38.)",
+          "napomena": "Stambeno naselje: 800–1400 m², kig 0,25, kis 0,5 (0,75 s podrumom ili tavanom).",
+          "tipovi": {
+            "obit": {
+              "naziv": "Stambena građevina",
+              "opis": "najviše 3 stana, ili 2 stana i poslovni prostor (čl. 47.)",
+              "clanak": "47.–59.",
+              "gbpMax": 600,
+              "etaze": "podrum, 3 nadzemne etaže i tavan",
+              "visina": 9.0,
+              "visinaOpis": "9 m s tri nadzemne etaže (ukupna 12 m); 7 m s dvije (ukupna 10 m)",
+              "slob": {
+                "minC": 800,
+                "maxC": 1400,
+                "izg": 0.25,
+                "kis": 0.5,
+                "kisPodrum": 0.75,
+                "tlMin": 64,
+                "tlMax": 300,
+                "napomena": "Širina čestice najmanje 15 m, omjer širine i dužine najviše 1 : 3; tlocrt 300 m² i GBP 600 m² odnose se na sve građevine na čestici."
+              },
+              "txt": {
+                "izg": "Najveći dopušteni koeficijent izgrađenosti (kig) građevne čestice je za:",
+                "kis": "Najveći dopušteni koeficijent iskorištenosti (kis) građevne čestice je za:",
+                "gbp": "Najveća građevinska bruto površina svih građevina na građevnoj čestici je 600 m 2"
+              }
+            }
+          }
+        },
+        {
+          "naselje": "^(MUCICI|PERMANI|RUZICI|BRESCA|VELI BRGUD|MALI BRGUD|RUPA|SAPJANE)$",
+          "naziv": "stambeno-poslovna naselja (čl. 38.)",
+          "napomena": "Stambeno-poslovno naselje: 800–2000 m², kig 0,25, kis 0,5 (0,75).",
+          "tipovi": {
+            "obit": {
+              "naziv": "Stambena građevina",
+              "opis": "najviše 3 stana, ili 2 stana i poslovni prostor (čl. 47.)",
+              "clanak": "47.–59.",
+              "gbpMax": 600,
+              "etaze": "podrum, 3 nadzemne etaže i tavan",
+              "visina": 9.0,
+              "visinaOpis": "9 m s tri nadzemne etaže (ukupna 12 m); 7 m s dvije (ukupna 10 m)",
+              "slob": {
+                "minC": 800,
+                "maxC": 2000,
+                "izg": 0.25,
+                "kis": 0.5,
+                "kisPodrum": 0.75,
+                "tlMin": 64,
+                "tlMax": 300,
+                "napomena": "Širina čestice najmanje 15 m, omjer širine i dužine najviše 1 : 3; tlocrt 300 m² i GBP 600 m² odnose se na sve građevine na čestici."
+              },
+              "txt": {
+                "izg": "Najveći dopušteni koeficijent izgrađenosti (kig) građevne čestice je za:",
+                "kis": "Najveći dopušteni koeficijent iskorištenosti (kis) građevne čestice je za:",
+                "gbp": "Najveća građevinska bruto površina svih građevina na građevnoj čestici je 600 m 2"
+              }
+            }
+          }
+        },
+        {
+          "naselje": "^(VELE MUNE|MALE MUNE|ZEJANE|ZVONECA|ZALUKI|LIPA|PASJAK|BRDCE)$",
+          "naziv": "mješovito-ruralna naselja (čl. 38.)",
+          "napomena": "Mješovito-ruralno naselje: najmanje 600 m², kig 0,3, kis 0,6 (0,9), dvije nadzemne etaže.",
+          "tipovi": {
+            "obit": {
+              "naziv": "Stambena građevina",
+              "opis": "najviše 3 stana, ili 2 stana i poslovni prostor (čl. 47.)",
+              "clanak": "47.–59.",
+              "gbpMax": 600,
+              "etaze": "podrum, 2 nadzemne etaže i tavan",
+              "visina": 7.0,
+              "visinaOpis": "7 m (ukupna 10 m)",
+              "slob": {
+                "minC": 600,
+                "izg": 0.3,
+                "kis": 0.6,
+                "kisPodrum": 0.9,
+                "tlMin": 64,
+                "tlMax": 300,
+                "napomena": "Širina čestice najmanje 15 m, omjer širine i dužine najviše 1 : 3; tlocrt 300 m² i GBP 600 m² odnose se na sve građevine na čestici."
+              },
+              "txt": {
+                "izg": "Najveći dopušteni koeficijent izgrađenosti (kig) građevne čestice je za:",
+                "kis": "Najveći dopušteni koeficijent iskorištenosti (kis) građevne čestice je za:",
+                "gbp": "Najveća građevinska bruto površina svih građevina na građevnoj čestici je 600 m 2"
+              }
+            }
+          }
+        },
+        {
+          "naselje": ".*",
+          "naziv": "naselje nije prepoznato",
+          "napomena": "Naziv naselja nije u popisu tipova naselja (čl. 38.); prikazani su uvjeti za stambena naselja. Provjeri tip naselja u planu."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Stambena građevina",
+          "opis": "najviše 3 stana, ili 2 stana i poslovni prostor (čl. 47.)",
+          "clanak": "47.–59.",
+          "gbpMax": 600,
+          "etaze": "podrum, 3 nadzemne etaže i tavan",
+          "visina": 9.0,
+          "visinaOpis": "9 m s tri nadzemne etaže (ukupna 12 m); 7 m s dvije (ukupna 10 m)",
+          "slob": {
+            "minC": 800,
+            "maxC": 1400,
+            "izg": 0.25,
+            "kis": 0.5,
+            "kisPodrum": 0.75,
+            "tlMin": 64,
+            "tlMax": 300,
+            "napomena": "Širina čestice najmanje 15 m, omjer širine i dužine najviše 1 : 3; tlocrt 300 m² i GBP 600 m² odnose se na sve građevine na čestici."
+          },
+          "txt": {
+            "izg": "Najveći dopušteni koeficijent izgrađenosti (kig) građevne čestice je za:",
+            "kis": "Najveći dopušteni koeficijent iskorištenosti (kis) građevne čestice je za:",
+            "gbp": "Najveća građevinska bruto površina svih građevina na građevnoj čestici je 600 m 2"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "47.–59.",
+        "min": 4,
+        "opis": "4 m za građevine s 3 nadzemne etaže, 3 m do 2 nadzemne etaže",
+        "opisIznimka": "",
+        "txt": "Granica gradivog dijela čestice prema susjednim česticama udaljena je najmanje 3 m od granice građevne čestice za građevine do 2 nadzemne etaže, odnosno 4 m s za građevine s 3 nadzemne etaže."
+      },
+      "regulacija": {
+        "clanak": "42., 47.–59.",
+        "ostale": 6,
+        "razvrstane": 10,
+        "opis": "najmanje 6 m (državne ceste 10 m)",
+        "txt": "Građevni pravac svih građevina na građevnoj čestici mora biti udaljen od regulacijskog pravca najmanje 6 m."
+      },
+      "zelenilo": {
+        "clanak": "47.–59.",
+        "min": 0.3,
+        "txt": "Najmanja veličina uređene zelene površine u sklopu građevne čestice je 30 % površine građevne čestice."
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "47.–59.",
+          "nagibMin": 0,
+          "nagibMax": 25,
+          "ravniDopusten": false
+        }
+      },
+      "pristup": {
+        "napomena": "Na čestici jedna osnovna građevina i najviše 2 ostale (pomoćne, manja poslovna, poljoprivredna)."
+      },
+      "napomene": [
+        "Nove dvojne i skupne građevine samo kao interpolacija (čl. 60.); u gusto građenim jezgrama posebni uvjeti.",
+        "Krovovi kosi, nagiba do 25°."
+      ]
     }
   },
   "oblici": [
