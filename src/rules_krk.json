@@ -3390,7 +3390,7 @@
       },
       "grupe": [
         {
-          "naselje": "^(mali losinj|osor)$",
+          "naselje": "^(MALI LOSINJ|OSOR)$",
           "naziv": "naselja Mali Lošinj i Osor",
           "napomena": "Neposredna gradnja obiteljskih kuća prema PPUG-u ovdje je dopuštena samo u izdvojenim dijelovima naselja (čl. 52. i 54., izmjene SN 32/2016)."
         },
@@ -5135,6 +5135,157 @@
       },
       "napomene": [
         "Višeobiteljske i višestambene građevine nisu obrađene."
+      ]
+    },
+    "CRES": {
+      "kod": "PPUG Cres",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja područja Grada Cresa, Odluka o II. izmjenama i dopunama (SN PGŽ 42/2018), kojom su odredbe o stanovanju donesene u novom tekstu",
+        "sn": "Službene novine PGŽ 42/2018 (II. izmjene i dopune)",
+        "url": "https://www.sn.pgz.hr/default.asp?Link=odluke&id=39203",
+        "status": "na snazi (II. izmjene i dopune 2018.); III. izmjene su u izradi",
+        "provjera": "Čl. 20.–28. iz Odluke SN 42/2018 (Službene novine PGŽ, tekst izvučen strojno), preuzeto 5. 11. 2026. Županijski sloj namjene navodi SN 42/18 kao zadnje glasilo plana.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Tekst iz odluke o izmjenama; pročišćeni tekst nije pronađen."
+        }
+      },
+      "upozorenje": "Neposredna gradnja kuća propisana je samo za naselja Beli, Dragozetići, Filozići, Predoščica, Sveti Petar, Vodice, Loznati, Lubenice, Pernat, Vidovići, Stivan, Zbičina, Ivanje, Važminec, Merag, Krčina i Hrasta (čl. 22.). U Cresu, Martinščici, Valunu, Miholaščici i ostalim naseljima gradi se prema planu užeg područja.",
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ],
+        [
+          "ugr",
+          "u nizu"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "22.",
+        "txt": "Uvjeti za neposredno provođenje određuju se za izgrađeni dio i uređeni dio neizgrađenog građevinskog područja naselja",
+        "msg": "Neizgrađeni dio: neposredno samo u uređenom dijelu (čl. 22.). Provjeri u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": "^(BELI|DRAGOZETICI|FILOZICI|PREDOSCICA|SVETI PETAR|SV PETAR|VODICE|LOZNATI|LUBENICE|PERNAT|VIDOVICI|STIVAN|ZBICINA|IVANJE|VAZMINEC|MERAG|KRCINA|HRASTA)$",
+          "naziv": "naselja s neposrednom provedbom (čl. 22.)",
+          "napomena": "Krov 17–22° u Filozićima, Sv. Petru, Vodicama, Loznatima, Stivanu, Zbičini, Ivanju, Meragu, Krčini i Hrasti; 18–30° u Belom, Dragozetićima, Predoščici, Lubenicama, Pernatu, Vidovićima i Važmincu (čl. 25.)."
+        },
+        {
+          "naselje": ".*",
+          "naziv": "ostala naselja",
+          "napomena": "PPUG za ovo naselje ne propisuje neposrednu gradnju kuća (čl. 22.); vrijedi plan užeg područja (npr. UPU naselja Cres NA 7). Vrijednosti ispod su iz čl. 25.–28. i ovdje se ne primjenjuju izravno."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća",
+          "opis": "jedna stambena jedinica (čl. 25.)",
+          "clanak": "25.–27.",
+          "gbpMax": null,
+          "etaze": "tri etaže",
+          "visina": 6.5,
+          "visinaOpis": "6,5 m do vijenca",
+          "slob": {
+            "minC": 250,
+            "maxC": 1000,
+            "izg": 0.3,
+            "kis": 0.9,
+            "kisPodrum": 0.9,
+            "tlMin": 80,
+            "tlMax": 150
+          },
+          "dvoj": {
+            "minC": 250,
+            "maxC": 1000,
+            "izg": 0.4,
+            "kis": 1.2,
+            "kisPodrum": 1.2,
+            "tlMin": 60,
+            "tlMax": 150
+          },
+          "ugr": {
+            "minC": 250,
+            "maxC": 1000,
+            "izg": 0.5,
+            "kis": 1.5,
+            "kisPodrum": 1.5,
+            "tlMin": 50,
+            "tlMax": 150,
+            "napomena": "Niz najviše pet jedinica (čl. 27.)."
+          },
+          "txt": {
+            "minC": "Najmanja površina građevne čestice iznosi 250 m 2 , a najveća dopuštena površina građevne čestice iznosi 1000 m 2",
+            "izg": "Maksimalni koeficijent izgrađenosti građevinske čestice (k ig ) je 0,3.",
+            "kis": "Najveći dopušteni koeficijent iskoristivosti građevinske čestice (k is ) je 0,9",
+            "tl": "Najveća dopuštena površina tlocrtne projekcije građevine iznosi 150 m 2",
+            "etaze": "Najveći dopušteni broj etaža su tri etaže.",
+            "visina": "Najveća dopuštena visina građevine iznosi 6,50 m"
+          }
+        },
+        "visobit": {
+          "naziv": "Višeobiteljska građevina",
+          "opis": "dvije ili tri stambene jedinice (čl. 28.)",
+          "clanak": "28.",
+          "gbpMax": null,
+          "etaze": "četiri etaže",
+          "visina": 8.0,
+          "visinaOpis": "8 m do vijenca",
+          "slob": {
+            "minC": 600,
+            "maxC": 1400,
+            "izg": 0.3,
+            "kis": 0.8,
+            "kisPodrum": 0.8,
+            "tlMin": 80,
+            "tlMax": 180
+          },
+          "txt": {
+            "minC": "Najmanja površina građevne čestice iznosi 600 m",
+            "kis": "k is ) je 0,8",
+            "visina": "visina građevine iznosi 8,0 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "25.",
+        "min": 4,
+        "opis": "h/2, najmanje 4 m",
+        "opisIznimka": "",
+        "txt": "ruba građevne čestice pola visine građevine (h/2), ali ne manje od 4 m sa svih strana"
+      },
+      "regulacija": {
+        "clanak": "25.",
+        "ostale": 5,
+        "opis": "najmanje 5 m od ruba čestice prema javnoj prometnoj površini",
+        "txt": "Površina za građenje udaljena je minimalno 5,0 m od ruba građevne čestice prema javnoj prometnoj površini."
+      },
+      "zelenilo": {
+        "clanak": "25.",
+        "min": 0.2,
+        "txt": "Minimalna površina tla pod zelenilom je 20% površine građevne čestice."
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "25.",
+          "nagibMin": 17,
+          "nagibMax": 22,
+          "ravniDopusten": false
+        }
+      },
+      "pristup": {
+        "napomena": "Prema poglavlju 5. odredbi."
+      },
+      "napomene": [
+        "Krov kosi; u dijelu naselja do 30° (vidi skupinu naselja).",
+        "Stambene (do 6 jedinica) i višestambene građevine samo posredno nisu obrađene."
       ]
     }
   },

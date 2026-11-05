@@ -1419,6 +1419,15 @@ async function krkTests(){
   Object.assign(gp,{OPCINA_GRAD:"VINODOLSKA OPĆINA",OZNAKA_NAMJENE:"NA",NASELJE:"Bribir",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
   tm=await reinspect(); M=w.__krkCalc;
   ok(M&&M.plan==="PPUO Vinodolska općina"&&M.minOk&&Math.abs(M.tl-0.3*M.A)<0.6&&Math.abs(M.gbpN-1.2*M.A)<1.5&&/7,5 m/.test(tm),"Vinodolska općina samostojeća: kig 0,3, kis 1,2, visina 7,5 m (SN 13/2015)");
+  // Cres: PPUG (II. izmjene SN 42/2018), čl. 20.–28.
+  Object.assign(gp,{OPCINA_GRAD:"CRES",OZNAKA_NAMJENE:"NA",NASELJE:"Lubenice",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
+  tm=await reinspect(); M=w.__krkCalc;
+  ok(M&&M.plan==="PPUG Cres"&&M.minOk&&Math.abs(M.tl-Math.min(150,0.3*M.A))<0.6&&/6,5 m/.test(tm)&&/čl\. 22\./.test(tm)&&/18–30°/.test(tm),"Cres, Lubenice: kig 0,3, tlocrt do 150 m², visina 6,5 m, skupina naselja s krovom 18–30° (SN 42/2018)");
+  gp.NASELJE="Cres"; tm=await reinspect();
+  ok(/ne propisuje neposrednu gradnju kuća/.test(tm),"Cres, naselje Cres: napomena da PPUG ne propisuje neposrednu gradnju (čl. 22.)");
+  // Mali Lošinj: skupina naselja Mali Lošinj i Osor prepoznaje se po nazivu naselja
+  Object.assign(gp,{OPCINA_GRAD:"MALI LOŠINJ",NASELJE:"Mali Lošinj"}); tm=await reinspect();
+  ok(/samo u izdvojenim dijelovima naselja/.test(tm),"Mali Lošinj, naselje Mali Lošinj: napomena o izdvojenim dijelovima (čl. 52. i 54.)");
   // UPU 1 Vrbnik (pročišćeni tekst 2019. + izmjene SN 34/2024), čl. 83.
   plans.push({GRAD_OPCINA:"Vrbnik",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Urbanistički plan uređenja UPU 1 Vrbnik – NA 1 Odredbe za provedbu (pročišćeni tekst)",SN_BROJ:"2024-46"});
   Object.assign(gp,{OPCINA_GRAD:"VRBNIK",OZNAKA_NAMJENE:"NA1",NASELJE:"Vrbnik",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
@@ -2299,7 +2308,7 @@ async function formulaTests(){
   // Plan Integrity v10: novo polje »citati« (doslovni navodi iz objave) ne mijenja postojeće brojke ni tekstove; ne ulazi u sažetak,
   // a njegovu doslovnost provjerava zaseban test (»PI v10 navodi«) prema tekstu SN PGŽ 19/2016
   // Sljedeća faza: »legenda« (boje polja legende karte 4 za pilot prijedloga zone) i »provjereno« (stručno provjereni obuhvati) nisu pravila; ne ulaze u sažetak
-  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik"&&k!=="OPATIJA"&&k!=="RAB"&&k!=="NOVI VINODOLSKI"&&k!=="CRIKVENICA"&&k!=="MALI LOŠINJ"&&k!=="LOPAR"&&k!=="KRALJEVICA"&&k!=="MOŠĆENIČKA DRAGA"&&k!=="BAKAR"&&k!=="KASTAV"&&k!=="VIŠKOVO"&&k!=="JELENJE"&&k!=="ČAVLE"&&k!=="RAVNA GORA"&&k!=="VRBOVSKO"&&k!=="BROD MORAVICE"&&k!=="DELNICE"&&k!=="SKRAD"&&k!=="VINODOLSKA OPĆINA").map(([k,v])=>[k,bezPP(v)])):o;
+  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik"&&k!=="OPATIJA"&&k!=="RAB"&&k!=="NOVI VINODOLSKI"&&k!=="CRIKVENICA"&&k!=="MALI LOŠINJ"&&k!=="LOPAR"&&k!=="KRALJEVICA"&&k!=="MOŠĆENIČKA DRAGA"&&k!=="BAKAR"&&k!=="KASTAV"&&k!=="VIŠKOVO"&&k!=="JELENJE"&&k!=="ČAVLE"&&k!=="RAVNA GORA"&&k!=="VRBOVSKO"&&k!=="BROD MORAVICE"&&k!=="DELNICE"&&k!=="SKRAD"&&k!=="VINODOLSKA OPĆINA"&&k!=="CRES").map(([k,v])=>[k,bezPP(v)])):o;
   const sha=crypto.createHash("sha256").update(JSON.stringify(bezPP(JSON.parse(fs.readFileSync(path.join(__dirname,"..","src","rules_krk.json"),"utf8"))))).digest("hex");
   ok(sha==="de538e7ddc17cdc11746acbca3217b77569881a269c740457be9e5bc7a615f82","Pravila: src/rules_krk.json bez oznaka pravne provjere nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
   // nova i izmijenjena pravila (Omišalj, Dobrinj, Vrbnik 2024.): izvan sažetka; svaka brojka mora biti u svom doslovnom navodu
