@@ -4373,6 +4373,128 @@
       "napomene": [
         "Višestambene zgrade (4 i više stanova) nisu obrađene."
       ]
+    },
+    "ČAVLE": {
+      "kod": "PPUO Čavle",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Čavle, odredbe za provođenje iz elaborata VII. izmjena i dopuna (Službene novine Općine Čavle 8/2024); izmjene iz 10/2024 odnose se samo na čl. 88. (poslovna namjena)",
+        "sn": "Službene novine Općine Čavle 8/2024 (VII. izmjene i dopune) i 10/2024",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1611",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1611/ppuo-cavle-vii-id.pdf",
+        "status": "na snazi (VII. izmjene i dopune 2024.)",
+        "provjera": "Čl. 21.–23. i 30. iz elaborata VII. izmjena (PDF Zavoda, cijele odredbe, tekst izvučen strojno) i odluka iz 10/2024, preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Elaborat izmjena, ne službeni pročišćeni tekst."
+        }
+      },
+      "upozorenje": "Uvjeti su za TIP 1_OK i TIP 1_VO (Čavle, Korleovac, Buzdohanj, Hrastenica, Podrvanj, Cernik-Mavrinci, Grobnik, Kačani, Mikelji, Zastenice, Jezero, Škaroni, Soboli, Bukvina, Kosovo, Kalčić, Ograde, Ilovik). Za Mali Platak, Krušvicu, Kuhinju, Kripanj, ruralne cjeline i Grad Grobnik plan ima druge tipove koje aplikacija ne računa.",
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "21.",
+        "txt": "Neposrednom provedbom ovog plana se sve nove građevine stambene namjene grade isključivo kao slobodnostojeće.",
+        "msg": "Neizgrađeni dio: provjeri obvezu UPU-a u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "građevinska područja naselja (TIP 1)",
+          "napomena": "Nove kuće samo slobodnostojeće; dvojne i nizovi samo rekonstrukcija (čl. 21.–22.). Na ruralnim površinama s kartografskog prikaza 4 tlocrt svih građevina do 300 m² i GBP do 600 m² (čl. 23.)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska kuća (TIP 1_OK)",
+          "opis": "jedna stambena jedinica (čl. 21., 23.)",
+          "clanak": "23.",
+          "gbpMax": 400,
+          "etaze": "tri etaže",
+          "visina": 9.0,
+          "visinaOpis": "9 m do vijenca",
+          "slob": {
+            "minC": 650,
+            "izg": 0.2,
+            "kis": 0.5,
+            "kisPodrum": 0.5,
+            "tlMin": 60,
+            "tlMax": 210,
+            "napomena": "Širina čestice najmanje 16 m; tlocrt svih građevina do 250 m² (čl. 23.)."
+          },
+          "txt": {
+            "minC": "Najmanja površina građevne čestice iznosi 650 m2",
+            "izg": "Najveći dopušteni koeficijent izgrađenosti građevinske čestice (kig) je 0,2",
+            "kis": "Najveći dopušteni koeficijent iskoristivosti građevinske čestice (kis) je 0,5",
+            "tl": "Najveća dopuštena površina tlocrtne projekcija osnovne građevine iznosi 210 m2",
+            "gbp": "Najveća dopuštena bruto razvijena površina građevine iznosi 400 m2",
+            "etaze": "Najveći dopušteni broj etaža su tri etaže.",
+            "visina": "Najveća dopuštena visina građevine iznosi 9 m"
+          }
+        },
+        "visobit": {
+          "naziv": "Višeobiteljska građevina (TIP 1_VO)",
+          "opis": "tri stana ili dva stana i poslovni prostor (čl. 30.)",
+          "clanak": "30.",
+          "gbpMax": 600,
+          "etaze": "četiri etaže",
+          "visina": 12.0,
+          "visinaOpis": "12 m do vijenca",
+          "slob": {
+            "minC": 1000,
+            "izg": 0.2,
+            "kis": 0.6,
+            "kisPodrum": 0.6,
+            "tlMin": 80,
+            "tlMax": 210,
+            "napomena": "Širina čestice najmanje 20 m; na čestici manjoj od 1000 m² najviše 2 stana i poslovni prostor (čl. 30.)."
+          },
+          "txt": {
+            "minC": "Najmanja površina građevne čestice iznosi 1000 m",
+            "kis": "(kis) je 0,6",
+            "visina": "visina građevine iznosi 12 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "23.",
+        "min": 4,
+        "opis": "h/2, najmanje 4 m",
+        "opisIznimka": "",
+        "txt": "ruba građevne čestice pola visine građevine (h/2), ali ne manje od 4 m sa svih strana"
+      },
+      "regulacija": {
+        "clanak": "23.",
+        "ostale": 5,
+        "razvrstane": 6,
+        "opis": "najmanje 6 m od javne prometne površine (5 m uz nerazvrstanu cestu ili kolno-pješački prilaz)",
+        "txt": "iznimno najmanje 5 m ako je nerazvrstana cesta"
+      },
+      "zelenilo": {
+        "clanak": "23.",
+        "min": 0.2,
+        "txt": "Najmanje 20% građevne čestice mora se urediti zelenilom."
+      },
+      "simulator": {
+        "krov": {
+          "clanak": "23.",
+          "nagibMin": 17,
+          "nagibMax": 22,
+          "ravniDopusten": false
+        }
+      },
+      "pristup": {
+        "napomena": "Priključak prema poglavlju 5. odredbi."
+      },
+      "napomene": [
+        "Krov kosi 17–22°; ravni ili prohodni dio najviše 20 % površine krova (čl. 23.).",
+        "Višestambene građevine (TIP VS) nisu obrađene."
+      ]
     }
   },
   "oblici": [
