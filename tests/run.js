@@ -1411,6 +1411,7 @@ async function krkTests(){
   Object.assign(gp,{OPCINA_GRAD:"DELNICE",OZNAKA_NAMJENE:"N",NASELJE:"Delnice",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
   tm=await reinspect(); M=w.__krkCalc;
   ok(M&&M.plan==="PPUG Delnice"&&M.minOk&&Math.abs(M.tl-0.3*M.A)<0.6&&M.gbpN===null&&M.kis==null&&/ne propisuje koeficijent iskorištenosti/.test(tm)&&!/NaN/.test(tm),"Delnice: kig 0,3, plan bez kis-a - GBP se ne računa i piše da kis nije propisan (SN 12/2024)");
+  ok((w.__tipCmp||[]).length>0&&(w.__tipCmp||[]).every(r=>r.gbp===null),"Delnice: u usporedbi tipova GBP nije 0 nego nije izračunat");
   // Skrad: PPUO (II. izmjene SN 3/2021) - tablica bez kis-a
   Object.assign(gp,{OPCINA_GRAD:"SKRAD",NASELJE:"Skrad"});
   tm=await reinspect(); M=w.__krkCalc;
@@ -1444,6 +1445,11 @@ async function krkTests(){
   Object.assign(gp,{OPCINA_GRAD:"FUŽINE",OZNAKA_NAMJENE:"NA",NASELJE:"Lič",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
   tm=await reinspect(); M=w.__krkCalc;
   ok(M&&M.plan==="PPUO Fužine"&&M.minOk&&Math.abs(M.tl-0.3*M.A)<0.6&&Math.abs(M.gbpN-1.2*M.A)<1.5&&/6,5 m/.test(tm),"Fužine obiteljska samostojeća: kig 0,3, kis 1,2, visina 6,5 m (8/2022)");
+  // Mrkopalj: PPUO (spojeno iz 2004.–2024.), najveći GBP po obliku kuće
+  Object.assign(gp,{OPCINA_GRAD:"MRKOPALJ",OZNAKA_NAMJENE:"N",NASELJE:"Sunger",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
+  tm=await reinspect(); M=w.__krkCalc;
+  ok(M&&M.plan==="PPUO Mrkopalj"&&M.minOk&&Math.abs(M.tl-0.3*M.A)<0.6&&M.gbpN===250&&M.tip==="obit","Mrkopalj obiteljska samostojeća: kig 0,3, GBP najviše 250 m² (čl. 43., SN 39/2020)");
+  {const r=(w.__tipCmp||[]).find(x=>x.key==="krk|obit|dvoj"); ok(r&&r.gbp===200&&(w.__tipCmp||[]).find(x=>x.key==="krk|visobit|slob").gbp===400,"Mrkopalj: usporedba tipova koristi GBP po obliku (dvojna 200, višeobiteljska 400 m²)");}
   // UPU 1 Vrbnik (pročišćeni tekst 2019. + izmjene SN 34/2024), čl. 83.
   plans.push({GRAD_OPCINA:"Vrbnik",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"Urbanistički plan uređenja UPU 1 Vrbnik – NA 1 Odredbe za provedbu (pročišćeni tekst)",SN_BROJ:"2024-46"});
   Object.assign(gp,{OPCINA_GRAD:"VRBNIK",OZNAKA_NAMJENE:"NA1",NASELJE:"Vrbnik",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
@@ -2324,7 +2330,7 @@ async function formulaTests(){
   // Plan Integrity v10: novo polje »citati« (doslovni navodi iz objave) ne mijenja postojeće brojke ni tekstove; ne ulazi u sažetak,
   // a njegovu doslovnost provjerava zaseban test (»PI v10 navodi«) prema tekstu SN PGŽ 19/2016
   // Sljedeća faza: »legenda« (boje polja legende karte 4 za pilot prijedloga zone) i »provjereno« (stručno provjereni obuhvati) nisu pravila; ne ulaze u sažetak
-  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik"&&k!=="OPATIJA"&&k!=="RAB"&&k!=="NOVI VINODOLSKI"&&k!=="CRIKVENICA"&&k!=="MALI LOŠINJ"&&k!=="LOPAR"&&k!=="KRALJEVICA"&&k!=="MOŠĆENIČKA DRAGA"&&k!=="BAKAR"&&k!=="KASTAV"&&k!=="VIŠKOVO"&&k!=="JELENJE"&&k!=="ČAVLE"&&k!=="RAVNA GORA"&&k!=="VRBOVSKO"&&k!=="BROD MORAVICE"&&k!=="DELNICE"&&k!=="SKRAD"&&k!=="VINODOLSKA OPĆINA"&&k!=="CRES"&&k!=="LOVRAN"&&k!=="MATULJI"&&k!=="FUŽINE").map(([k,v])=>[k,bezPP(v)])):o;
+  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik"&&k!=="OPATIJA"&&k!=="RAB"&&k!=="NOVI VINODOLSKI"&&k!=="CRIKVENICA"&&k!=="MALI LOŠINJ"&&k!=="LOPAR"&&k!=="KRALJEVICA"&&k!=="MOŠĆENIČKA DRAGA"&&k!=="BAKAR"&&k!=="KASTAV"&&k!=="VIŠKOVO"&&k!=="JELENJE"&&k!=="ČAVLE"&&k!=="RAVNA GORA"&&k!=="VRBOVSKO"&&k!=="BROD MORAVICE"&&k!=="DELNICE"&&k!=="SKRAD"&&k!=="VINODOLSKA OPĆINA"&&k!=="CRES"&&k!=="LOVRAN"&&k!=="MATULJI"&&k!=="FUŽINE"&&k!=="MRKOPALJ").map(([k,v])=>[k,bezPP(v)])):o;
   const sha=crypto.createHash("sha256").update(JSON.stringify(bezPP(JSON.parse(fs.readFileSync(path.join(__dirname,"..","src","rules_krk.json"),"utf8"))))).digest("hex");
   ok(sha==="de538e7ddc17cdc11746acbca3217b77569881a269c740457be9e5bc7a615f82","Pravila: src/rules_krk.json bez oznaka pravne provjere nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
   // nova i izmijenjena pravila (Omišalj, Dobrinj, Vrbnik 2024.): izvan sažetka; svaka brojka mora biti u svom doslovnom navodu

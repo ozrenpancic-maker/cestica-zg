@@ -1448,6 +1448,7 @@ const krkTlMax=(P,a)=>P.tlVelika&&a>P.tlVelika.prag?P.tlVelika.tl:P.tlMax;
 // kig ovisan o površini čestice (npr. PPUO Dobrinj, čl. 70.: samostojeća na čestici do 500 m² 0,25, na većoj 0,30)
 const krkIzg=(P,a)=>P.izgVelika&&a>P.izgVelika.prag?P.izgVelika.izg:P.izg;
 function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
+  const T0=T; if(P&&P.gbpMax!=null) T={...T,gbpMax:P.gbpMax}; // najveći GBP može biti propisan po obliku kuće (npr. PPUO Mrkopalj)
   const R=RULES_KRK, area=d.area, I=RS.izvor||R.izvor; let h="";
   const base=isUpu?S.izgr:S.izgr;
   const A0=area?(base.every(r=>r.share!=null)?Math.min(1,base.reduce((a,r)=>a+r.share,0))*area:area):null;
@@ -1464,7 +1465,7 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
     if(g&&base.length<d.rows.length&&base.every(r=>r.geom)){let u=null; for(const r of base){u=u?turf.union(u,turf.feature(r.geom)):turf.feature(r.geom)} g=u?turf.intersect(g,u):g;}
     if(g&&g.geometry) env={geom:g.geometry,area:turf.area(g)};}}catch(e){}
   window.__env=env?{geom:env.geom,area:env.area}:null; // za simulator kuće (isti kao za Zagreb)
-  window.__krkCalc={plan:RS.kod,A,tl,gbpN,gbpP,kis:P.kis,minOk,minEx,env:env?Math.round(env.area):null,tip:Object.keys(RS.tipovi).find(k=>RS.tipovi[k]===T),oblik:oblSel,st:S.st,kosi};
+  window.__krkCalc={plan:RS.kod,A,tl,gbpN,gbpP,kis:P.kis,minOk,minEx,env:env?Math.round(env.area):null,tip:Object.keys(RS.tipovi).find(k=>RS.tipovi[k]===T0),oblik:oblSel,st:S.st,kosi};
   window.__krkLim=krkSimLim(RS,T,kosi);
   if(window.__krkLim.zast&&window.__krkLim.zast.v==="C"&&T.kosi) h+=`<p class="flag">U zoni »C« najviše su dvije nadzemne etaže (čl. 85.), pa iznimka za kosi teren (${esc(T.kosi.etaze)}, ${dec(T.kosi.visina)} m) ovdje ne vrijedi.</p>`;
   // pouzdanost izračuna: nikad bolja od B; zona koju je korisnik odabrao (UPU) ili nepotvrđen uvjet daje C
@@ -1478,7 +1479,7 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   const pzD=RS.dioGP?PZREG.items.get("dio-gp"):null; if(pzD) piL.push(piK("dio građevinskog područja",pzD,{izvor:pzD.korisnik?"tvoj odabir prema grafičkom dijelu plana":"PGŽ, sloj namjene (PPUO)"}));
   if(ZS0) piL.push(zv0?piK("zona zaštite",PZREG.items.get("zast-korisnik"),{izvor:"tvoj odabir prema karti "+ZS0.karta}):{karika:"zona zaštite",vrijednost:"nije odabrana",raz:"C",razlog:"karta "+ZS0.karta+": granice zona »B« i »C« nisu potvrđene za česticu (čl. "+ZS0.clanak+".)"});
   // navod iz plana: doslovni citat (RS.citati, provjeren prema objavi) ili sažetak iz aplikacije (označen kao takav)
-  const tipK=Object.keys(RS.tipovi).find(k=>RS.tipovi[k]===T)||KRK_TIP.tip, NAZ_O={slob:"slobodnostojeća",dvoj:"dvojna",ugr:"ugrađena"};
+  const tipK=Object.keys(RS.tipovi).find(k=>RS.tipovi[k]===T0)||KRK_TIP.tip, NAZ_O={slob:"slobodnostojeća",dvoj:"dvojna",ugr:"ugrađena"};
   const cl=(key,fallback)=>{const c=krkCit(RS,tipK,oblSel,key); if(c) return {karika:"članak",vrijednost:"čl. "+c.clanak+(c.t?" "+c.t:"")+(c.sn?" ("+c.sn+")":""),citat:c.x,
       citatVrsta:c.potvrdenIzvor?"doslovni navod (provjeren prema "+(c.sn||I.sn||"objavi")+(c.izvorTeksta?", "+c.izvorTeksta:"")+")":"navod iz "+(c.izvorTeksta||"neprovjerenog teksta")+(c.sn?" ("+c.sn+")":""),
       ...(c.potvrdenIzvor?{}:{uskladenost:"nepoznata",razlogUsk:"tekst odluke "+(c.sn||"")+" nije uspoređen sa službenom objavom"}),raz:pzR.raz,izvor:I.naziv+(I.sn?", "+I.sn:"")};
@@ -1518,9 +1519,9 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   {const zab=RS.grupa&&RS.grupa.zabranjeno||[], rows=[], ON={slob:"slobodnostojeća",dvoj:"dvojna",ugr:"ugrađena"};
    for(const [k,T2] of Object.entries(RS.tipovi||{})){
      const ob=(T2.oblici||RS.oblici||[["slob"],["dvoj"],["ugr"]]).map(o=>o[0]).filter(o=>T2[o]&&typeof T2[o]==="object");
-     for(const o of ob){const P2=T2[o], t2=Math.min(A*krkIzg(P2,A),krkTlMax(P2,A)||Infinity), g2=Math.min(A*P2.kis,T2.gbpMax||Infinity), mOk=A>=P2.minC, mEx=!mOk&&!!P2.minCIznimno&&A>=P2.minCIznimno;
+     for(const o of ob){const P2=T2[o], t2=Math.min(A*krkIzg(P2,A),krkTlMax(P2,A)||Infinity), gM2=P2.gbpMax!=null?P2.gbpMax:T2.gbpMax, g2=P2.kis==null?(gM2||null):Math.min(A*P2.kis,gM2||Infinity), mOk=A>=P2.minC, mEx=!mOk&&!!P2.minCIznimno&&A>=P2.minCIznimno;
        const stanje=zab.includes(o)?"zabr":!mOk&&!mEx?"mala":P2.tlMin&&t2<P2.tlMin?"tl":P2.maxC&&A>P2.maxC?"vel":mEx?"izn":"ok";
-       rows.push({key:"krk|"+k+"|"+o,naziv:T2.naziv,oblik:ON[o]||o,minC:P2.minC,minCIzn:P2.minCIznimno,tl:t2,gbp:g2,visina:T2.visina,etaze:T2.etaze,stanje,odabran:T2===T&&o===oblSel,pz:pzCalc({},[pzA,pzR,pzZ,pzS])});}}
+       rows.push({key:"krk|"+k+"|"+o,naziv:T2.naziv,oblik:ON[o]||o,minC:P2.minC,minCIzn:P2.minCIznimno,tl:t2,gbp:g2,visina:T2.visina,etaze:T2.etaze,stanje,odabran:T2===T0&&o===oblSel,pz:pzCalc({},[pzA,pzR,pzZ,pzS])});}}
    window.__tipCmp=rows; h+=tipCmpHtml(rows,A,AS&&AS.naziv?AS.naziv+" površina":null);}
   if(env){const RD=krkRegDist(RS), roads=d.env&&d.env.v?d.env.v.roadLines:null, G1=gradivo(d.parcel,env.geom,RS.meda.min,RD?RD.d:null,roads), G2=RD&&RD.max?gradivo(d.parcel,env.geom,RS.meda.min,RD.max,roads):null;
     h+=gpHtml(G1,tl,`${RS.meda.min} m od međa (${RS.meda.opis||""}, čl. ${RS.meda.clanak})`,RD?`prvi scenarij ${RD.d} m${RD.max?", drugi "+RD.max+" m":""}; plan: ${RS.regulacija.opis} (čl. ${RS.regulacija.clanak})`:"",{alt:G2?{G:G2,d:RD.max,naziv:"razvrstana ili javna cesta"}:null,napomena:krkProstorNapomena(RS,RD,G1,G2)});}
@@ -1528,7 +1529,7 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   h+=`<div class="chips">${chips.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`;
   const row=(l,v,cls="")=>`<div class="row"><span>${l}</span><span class="${cls}">${v}</span></div>`;
   h+=`<details class="acc" data-k="krkCalc" open><summary><span>Izračun za ovu česticu</span><b class="${minOk&&tlOk?"good":minEx?"":"bad"}">${esc(chips.slice(0,3).join(" · "))}</b></summary><div class="calc">`;
-  if(PP){const sh=A0/area, calcK=a=>({min:a>=P.minC?true:P.minCIznimno&&a>=P.minCIznimno?"izn":false,tl:Math.min(a*krkIzg(P,a),krkTlMax(P,a)||Infinity),gbp:Math.min(a*P.kis,T.gbpMax||Infinity)});
+  if(PP){const sh=A0/area, calcK=a=>({min:a>=P.minC?true:P.minCIznimno&&a>=P.minCIznimno?"izn":false,tl:Math.min(a*krkIzg(P,a),krkTlMax(P,a)||Infinity),gbp:P.kis==null?(T.gbpMax||null):Math.min(a*P.kis,T.gbpMax||Infinity)});
     window.__areaCmp={P:PP,area,share:sh,calc:calcK,rerender:()=>{if(KRK_CUR) renderKrk(KRK_CUR)}}; h+=areaCmpHtml(PP,area,sh,calcK);}
   if(Math.abs(A0-area)>1) h+=row(isUpu?"Dio čestice u GP-u naselja":"Izgrađeni dio GP-a naselja na čestici",`${fmt(A)} od ${fmt(Aall)} m²`);
   if(AS&&Math.abs(AS.f-1)>0.001) h+=`<p class="meta" data-povrsina-izvor="1">Izračun koristi ${esc(AS.naziv||"odabranu")} površinu (${fmt(Aall)} m²)${Math.abs(A0-area)>1?`; udio dijela u građevinskom području (${Math.round(A0/area*100)} %) određen je iz grafičke granice i primijenjen na tu površinu, uz pretpostavku istog postotka`:""}. Teorijski obris na karti uvijek je iz grafičke granice čestice.</p>`;

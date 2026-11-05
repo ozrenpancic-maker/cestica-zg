@@ -5746,6 +5746,146 @@
         "Krov kosi 25–45°, crijep tamne boje (čl. 28.).",
         "Višestambene građevine (Fužine, Lič, Banovina, Vrata) nisu obrađene."
       ]
+    },
+    "MRKOPALJ": {
+      "kod": "PPUO Mrkopalj",
+      "izvor": {
+        "naziv": "Prostorni plan uređenja Općine Mrkopalj (SN PGŽ 46/2004) s izmjenama 26/2007, II. izmjenama 39/2020 (novi čl. 43. i 44. st. 2), III. izmjenama 43/2022 i IV. izmjenama 20/2024; članci o kućama spojeni ručno",
+        "sn": "Službene novine PGŽ 46/2004, 26/2007, 39/2020, 43/2022 i 20/2024",
+        "url": "https://zavod.pgz.hr/pdfList.aspx?tip=docsplanovigrad&id=1380",
+        "pdf": "https://zavod.pgz.hr/docs/zzpuHR/docsplanovigrad/1380/ppuo-mrkopalj-ii-id.pdf",
+        "status": "na snazi (IV. izmjene 2024.)",
+        "provjera": "Čl. 33.–35., 40., 43.–45. iz osnovnog teksta (sn.pgz.hr id 3061) i izmjena 2007. (id 12738), čl. 43.–44. iz II. izmjena 2020. (PDF Zavoda); III. (2022.) i IV. izmjene (2024.) provjereno ne mijenjaju te članke. Županijski sloj navodi SN 43/22. Preuzeto 5. 11. 2026.",
+        "pravna_provjera": {
+          "status": "NIJE_POTVRDENO",
+          "napomena": "Tekst je ručno spojen iz pet glasila; dio PDF-a iz 2024. ima pogrešno kodiran font."
+        }
+      },
+      "upozorenje": "Najveći GBP ovisi o obliku: obiteljska samostojeća 250 m², dvojna 200 m²; višeobiteljska 400 m², dvojna 360 m² (čl. 43.–44.).",
+      "oblici": [
+        [
+          "slob",
+          "slobodnostojeća"
+        ],
+        [
+          "dvoj",
+          "dvojna"
+        ]
+      ],
+      "kisUkupni": true,
+      "neizgradeni": {
+        "mod": "provjera",
+        "clanak": "33.",
+        "txt": "Građenje osnovnih građevina i uređenje površina u građevinskim područjima naselja vrši se neposrednim provođenjem odredbi Plana, a tamo gdje se vrši posredno, temeljem urbanističkog plana uređenja ili detaljnog plana uređenja.",
+        "msg": "Neposredno gdje nije propisan UPU ili DPU (čl. 33.); za središte Mrkopalj (N5) vrijedi UPU. Provjeri u lokacijskoj informaciji."
+      },
+      "grupe": [
+        {
+          "naselje": ".*",
+          "naziv": "sva građevinska područja naselja",
+          "napomena": "U gusto izgrađenim dijelovima zelenilo najmanje 10 % (čl. 40.); uvjeti oblikovanja u jezgri Mrkopalj prema UPU-u i konzervatoru (čl. 39.)."
+        }
+      ],
+      "tipovi": {
+        "obit": {
+          "naziv": "Obiteljska stambena kuća",
+          "opis": "jedna stambena jedinica (čl. 42.–43.)",
+          "clanak": "43.",
+          "gbpMax": 250,
+          "etaze": "podrum i najviše 2 nadzemne etaže (iznimno 3 ako su 2 u potkrovlju)",
+          "visina": 6.0,
+          "visinaOpis": "6 m do krovnog vijenca",
+          "slob": {
+            "minC": 300,
+            "maxC": 2000,
+            "izg": 0.3,
+            "kis": 0.8,
+            "kisPodrum": 0.8,
+            "tlMin": 60,
+            "tlMax": null,
+            "gbpMax": 250,
+            "napomena": "Širina čestice najmanje 15 m (čl. 43.)."
+          },
+          "dvoj": {
+            "minC": 250,
+            "maxC": 1200,
+            "izg": 0.4,
+            "kis": 0.8,
+            "kisPodrum": 0.8,
+            "tlMin": 60,
+            "tlMax": null,
+            "gbpMax": 200,
+            "napomena": "Širina čestice najmanje 12 m (čl. 43.)."
+          },
+          "txt": {
+            "minC": "minimalna površina građevne čestice: 300 m2",
+            "izg": "koeficijent izgrađenosti (Kig): 0,3",
+            "kis": "koeficijent iskorištenosti (Kis): 0,8",
+            "gbp": "maksimalna građevinska bruto površina građevine: 250 m2",
+            "visina": "visina do krovnog vijenca (donjeg ruba podrožnice kosog krova): max. 6,0 m"
+          }
+        },
+        "visobit": {
+          "naziv": "Višeobiteljska stambena kuća",
+          "opis": "najviše tri stambene jedinice (čl. 42., 44.)",
+          "clanak": "44.",
+          "gbpMax": 400,
+          "etaze": "podrum i najviše 3 nadzemne etaže (iznimno 4 ako su 2 u potkrovlju)",
+          "visina": 8.0,
+          "visinaOpis": "8 m do krovnog vijenca",
+          "slob": {
+            "minC": 400,
+            "maxC": 2000,
+            "izg": 0.3,
+            "kis": 0.8,
+            "kisPodrum": 0.8,
+            "tlMin": 60,
+            "tlMax": null,
+            "gbpMax": 400,
+            "napomena": "Širina čestice najmanje 18 m (čl. 44.)."
+          },
+          "dvoj": {
+            "minC": 300,
+            "maxC": 1200,
+            "izg": 0.4,
+            "kis": 0.8,
+            "kisPodrum": 0.8,
+            "tlMin": 60,
+            "tlMax": null,
+            "gbpMax": 360,
+            "napomena": "Širina čestice najmanje 14 m (čl. 44.)."
+          },
+          "txt": {
+            "minC": "minimalna površina građevne čestice: 400 m2",
+            "gbp": "maksimalna građevinska bruto površina građevine: 400 m2",
+            "visina": "max. 8,0 m"
+          }
+        }
+      },
+      "meda": {
+        "clanak": "35.",
+        "min": 3,
+        "opis": "h/2, najmanje 3 m; najmanje 6 m od susjednih građevina",
+        "opisIznimka": "",
+        "txt": "udaljenost slobodnostojećih građevina stambene namjene, osim višestambenih građevina, od granica građevne čestice mora biti najmanje pola visine građevine (h/2), ali ne manje od 3 metra"
+      },
+      "regulacija": {
+        "clanak": "34.",
+        "opis": "od kolnika lokalne i nerazvrstane ceste u pravilu najmanje 5 m, od kolnika državne i županijske 6 m (mjereno od kolnika, ne od regulacijskog pravca)",
+        "txt": "udaljenost građevina stambene namjene, osim višestambene građevine, od kolnika lokalne i nerazvrstane ceste u pravilu ne može biti manja od 5,0 metara"
+      },
+      "zelenilo": {
+        "clanak": "40.",
+        "min": 0.2,
+        "txt": "Minimalno 20 % mora biti uređena zelena površina, osim za čestice u gusto izgrađenim naseljima gdje mora biti min. 10%."
+      },
+      "pristup": {
+        "napomena": "Kolni prilaz za obiteljsku kuću najmanje 3 m (II. izmjene)."
+      },
+      "napomene": [
+        "Krov kosi, u pravilu dvostrešan; najmanji nagib iz osnovnog teksta (45°) izmjenama 2020. više nije naveden (čl. 39.).",
+        "Višestambene građevine (samo N5 Mrkopalj) nisu obrađene."
+      ]
     }
   },
   "oblici": [
