@@ -3161,7 +3161,9 @@ async function inspect(ll){
 // Zone na karti: zeleno = prostor unutar udaljenosti od međa; narančasto = pojas uz ulicu do udaljenosti građevnog pravca
 // (ulica procijenjena iz OpenStreetMapa, regulacijska linija nije poznata); crveno = kuća izvan dopuštenog prostora.
 const TL={w:12,d:9,rot:0,center:null,layer:null,marker:null,fl:"1",fh:3.0,podrum:false,gar:false,gw:3.5,gd:6,zones:null};
-const FLOOR_OPTS=[["1","prizemnica (P)",1,0],["1.5","P + potkrovlje",1,1],["2","P + 1",2,0],["2.5","P + 1 + potkrovlje",2,1],["3","P + 2",3,0]];
+// katnost: jedna oznaka svugdje (simulator, procjena gradnje, materijal, izvještaj): P, P+Pk, P+1, P+1+Pk, P+2
+const FLOOR_OPTS=[["1","P (prizemnica)",1,0],["1.5","P+Pk (s potkrovljem)",1,1],["2","P+1",2,0],["2.5","P+1+Pk",2,1],["3","P+2",3,0]];
+const katOzn=fl=>({"1":"P","1.5":"P+Pk","2":"P+1","2.5":"P+1+Pk","3":"P+2",P:"P",PPk:"P+Pk",P1:"P+1",P1Pk:"P+1+Pk",P2:"P+2"})[fl]||null;
 const PK_SHARE=0.75; // potkrovlje u GBP-u kao 75 % tlocrta (procjena; točno ovisi o nadozidu i nagibu krova)
 function tFloors(){const o=FLOOR_OPTS.find(x=>x[0]===TL.fl)||FLOOR_OPTS[0]; return {full:o[2],pk:o[3],et:o[2]+o[3],label:o[1]}}
 // ================= ZAJEDNIČKI MODEL GRAĐEVINE („Moja investicija”, faza I) =================
@@ -3428,7 +3430,7 @@ function tDraw(){
     `<table class="rp"><tbody>${R.C.map(c=>`<tr><th>${esc(c.label)}</th><td><b>${esc(c.val)}</b> <em class="kind st-${ST[c.st][0]}">${ST[c.st][1]}</em>${c.note?`<small class="fx">${esc(c.note)}</small>`:""}</td></tr>`).join("")}</tbody></table>`+
     tDistHtml()+(curData()&&curData().krk?"":`<div class="kd"><button type="button" class="ib" id="tToFin">Prenesi kuću u procjenu troškova</button></div>`);
   if(s){s.textContent=`${String(TL.w).replace(".",",")} × ${String(TL.d).replace(".",",")} m, ${R.F.label}: ${ST[R.st][1]}`; s.className=R.st==="no"?"bad":"";}
-  window.__sim=R; projSaveSimSoon(); zgSync(); skicaUpdate(); okuSoon(); pvLiveSoon(); iskSoon(); osunSoon(); pogSoon(); eneSoon(); kisSoon();
+  window.__sim=R; projSaveSimSoon(); zgSync(); skicaUpdate(); okuSoon(); matSoon(); pvLiveSoon(); iskSoon(); osunSoon(); pogSoon(); eneSoon(); kisSoon();
 }
 function predNote(){const P=predlozakDims(+TL.pred,TL.fl), F=tFloors();
   return `Predložak ${TL.pred} m² nadzemnog GBP-a, ${F.label}: tlocrt oko ${fmt(P.tl)} m² → predloženo ${String(P.w).replace(".",",")} × ${String(P.d).replace(".",",")} m (${fmt(P.w*P.d)} m²). Dimenzije možeš promijeniti; tada predložak prelazi u vlastite dimenzije.`;}
@@ -3812,10 +3814,12 @@ function simHtml(pp,A,area,gbpMax,RP,lim){
   h+=`<label for="tGar">Garaža</label><span><input type="checkbox" id="tGar"${TL.gar?" checked":""}> prizemna, uz desni bok kuće</span>`;
   h+=`</div><div class="bgrid" id="tGarBox" style="${TL.gar?"":"display:none"}"><label for="tGw">Garaža širina</label><span><input id="tGw" type="number" inputmode="decimal" min="2.5" step="0.5" value="${TL.gw}"> m</span><label for="tGd">Garaža dubina</label><span><input id="tGd" type="number" inputmode="decimal" min="4" step="0.5" value="${TL.gd}"> m</span></div>`;
   h+=`<div id="mkOut">${MK.open?mkHtml():""}</div><p class="meta" id="tPredNote">${TL.model&&mkModel(TL.model)?mkNote(mkModel(TL.model)):TL.pred?predNote():"Predložak predlaže pravokutni tlocrt za ciljnu nadzemnu bruto površinu (GBP); dimenzije možeš mijenjati."}</p>`;
+  h+=`<div class="kd"><button type="button" class="ib" id="tMat">Izračunaj materijal za ovu kuću</button></div>`;
   h+=`<div class="kd"><button type="button" class="ib" id="tEdit">Uredi na karti</button><button type="button" class="ib" id="tCenterBtn">Vrati u sredinu</button><button type="button" class="ib" id="tOpt" title="Položaj i okret s najmanje zemljanih radova, najviše sunca na krovu i kompromis">Predloži položaj</button><button type="button" class="ib" id="arBtn" title="Na Androidu s Chromeom: kuća, granica čestice i prostor za gradnju u stvarnoj veličini kroz kameru">Kuća kroz kameru (AR)</button></div>${expHtml()}<p id="arMsg" class="flag" hidden></p><div id="tOptOut">${OPT.res&&OPT.key&&window.__cur&&OPT.key===window.__cur.key?optHtmlRez():""}</div><div id="tOut"></div>`;
   h+=`<p class="meta">Skica tlocrta i presjeka (za izvještaj) je u odjeljku „Skica kuće na terenu” ispod.</p>`;
   h+=`<p class="meta">Na karti kuću pomičeš povlačenjem oznake ✥, a okrećeš povlačenjem oznake ↻; dok držiš oznaku, karta miruje. Na karti: zeleno je prostor unutar udaljenosti od međa, narančasto pojas uz ulicu do udaljenosti građevnog pravca (ulica procijenjena iz OpenStreetMapa), a kuća postaje crvena kad izađe iz dopuštenog prostora. Tip kuće bira se u "Izračunu za ovu česticu".</p></div></details>`;
   h+=okuHtml();
+  h+=matHtml();
   h+=iskHtml();
   h+=osunHtml();
   h+=pogHtml();
@@ -4128,6 +4132,159 @@ sheet.addEventListener("change",e=>{ const id=e.target.id;
   if(id==="okuTer"){ okuSet({terasa:numv("okuTer")??0}); okuSoon(); return; }
   if(id==="okuPomM2"){ okuSet({pomM2:numv("okuPomM2")}); okuSoon(); return; }
   if(id==="okuMj") okuSet({mjesta:Math.max(0,Math.min(OKU_MJ.max,Math.round(numv("okuMj")??0)))}); else if(id==="okuPrW") okuSet({prW:numv("okuPrW")}); else if(id==="okuVrt") okuSet({vrt:numv("okuVrt")??0}); else return; okuSoon(); });
+
+// ================= KALKULATOR GRAĐEVINSKOG MATERIJALA (okvirne količine za planiranje i upit dobavljaču) =================
+// Geometrija i katnost dolaze iz simulatora kuće (isti izvor kao simulator, procjena gradnje i izvještaj: TL i katOzn).
+// Konstrukcijske dimenzije (debljine ploča, serklaži, temelji, stupovi), otvori, potrošnja blokova i pokrova su ulazni podaci:
+// bez njih stavka ima status „Čeka projekt ili unos” i ne broji se kao 0. Ništa od ovoga nije projekt ni troškovnik.
+const MAT_POLJA=[
+  // [id, oznaka, jedinica, skupina]
+  ["plocaD","Debljina temeljne ploče","m","beton"],["medjD","Debljina međukatne ploče","m","beton"],
+  ["serB","Serklaž: širina","m","beton"],["serH","Serklaž: visina","m","beton"],
+  ["trakB","Temeljna traka: širina","m","beton"],["trakH","Temeljna traka: visina","m","beton"],["trakL","Temeljne trake: ukupna duljina","m","beton"],
+  ["stupN","Stupovi: broj","kom","beton"],["stupA","Stup: presjek a","m","beton"],["stupB","Stup: presjek b","m","beton"],["stupH","Stup: visina","m","beton"],["stepV","Stepenice: volumen","m³","beton"],
+  ["visE","Visina etaže (ako nije iz simulatora)","m","zidovi"],["otvori","Otvori u vanjskim zidovima, ukupno","m²","zidovi"],["blok","Potrošnja bloka (vanjski zidovi)","kom/m²","zidovi"],
+  ["otpad","Dodatak za otpad","%","zidovi"],["paleta","Pakiranje: blokova na paleti","kom","zidovi"],
+  ["pregL","Pregradni zidovi: ukupna duljina","m","zidovi"],["pregH","Pregradni zidovi: visina","m","zidovi"],["pregOtv","Pregradni zidovi: otvori","m²","zidovi"],["pregBlok","Potrošnja bloka (pregradni)","kom/m²","zidovi"],
+  ["spalO","Špalete: ukupni opseg otvora","m","fasada"],["spalD","Špalete: dubina","m","fasada"],
+  ["streha","Streha (prepust krova)","m","krov"],["krovA","Površina krova (ručni unos za složeni krov)","m²","krov"],["pokrov","Potrošnja pokrova","kom/m²","krov"]];
+const MAT_TROSAK=[["rad","Rad (ponuda)","€"],["dostava","Dostava","€"],["pumpa","Pumpa za beton","€"],["pdv","PDV","%"]];
+const MAT_IZV={sim:"iz simulatora",unos:"ručni unos",pret:"pretpostavka"};
+function matStore(){try{return JSON.parse(localStorage.getItem("mat")||"{}")}catch(e){return {}}}
+function matGet(k){const o=(matStore()[k]||{}); const U={}; for(const [id] of MAT_POLJA) U[id]=o[id]>0&&o[id]<1e6?+o[id]:null; if(o.otpad===0) U.otpad=0;
+  U.cij={}; for(const [kk,v] of Object.entries(o.cij||{})) if(v>0&&v<1e7) U.cij[kk]=+v; U.tr={}; for(const [kk] of MAT_TROSAK) if((o.tr||{})[kk]>0) U.tr[kk]=+o.tr[kk];
+  U.A=o.A||null; U.B=o.B||null; return U;}
+function matSet(k,ch){try{const s=matStore(); s[k]={...(s[k]||{}),...ch}; localStorage.setItem("mat",JSON.stringify(s))}catch(e){}}
+// geometrija kuće iz simulatora: pravokutni tlocrt (garaža se ne broji), katnost, visina etaže, krov
+function matGeo(){ if(!TL.center) return null; const o=FLOOR_OPTS.find(x=>x[0]===TL.fl)||FLOOR_OPTS[0];
+  const alongW=TL.sljeme==="duz"?TL.w>=TL.d:TL.w<TL.d;
+  return {w:TL.w,d:TL.d,A:TL.w*TL.d,O:2*(TL.w+TL.d),fl:TL.fl,kat:katOzn(TL.fl),pune:o[2],pk:o[3],fh:TL.fh,krov:TL.krov,nagib:TL.krov==="ravni"?0:TL.nagib,raspon:TL.krov==="dvo"?(alongW?TL.d:TL.w):null}; }
+const mN=(v,d=2)=>v==null?"—":(Math.round(v*Math.pow(10,d))/Math.pow(10,d)).toLocaleString("hr-HR",{maximumFractionDigits:d});
+// čisti izračun: G = geometrija (matGeo), U = unosi (matGet). Vraća stavke {k, sk, n, kol, jed, f, izv[], st, nedostaje, info, red}
+function matIzracun(G,U){
+  const it=[], err=[], add=(o)=>{it.push({izv:[],st:"ok",...o}); return o;};
+  const ceka=(k,sk,n,jed,ned)=>add({k,sk,n,kol:null,jed,st:"ceka",nedostaje:ned,f:""});
+  if(!G){ return {items:[],err:["Kuća nije postavljena u simulatoru: postavi kuću i dimenzije."],geo:null}; }
+  const h=U.visE||G.fh, hIzv=U.visE?"unos":"sim", nE=G.pune, nad=G.pk?1.2:0;
+  // --- beton
+  if(U.plocaD) add({k:"b_tem",sk:"beton",n:"Temeljna ploča",kol:G.A*U.plocaD,jed:"m³",f:`${mN(G.w)} × ${mN(G.d)} m = ${mN(G.A)} m² × ${mN(U.plocaD,3)} m`,izv:["sim","unos"]});
+  else ceka("b_tem","beton","Temeljna ploča","m³","debljina temeljne ploče");
+  const nPl=nE-1+(G.pk?1:0);
+  if(nPl>0){ if(U.medjD) add({k:"b_medj",sk:"beton",n:`Međukatne ploče (${nPl})`,kol:nPl*G.A*U.medjD,jed:"m³",f:`${nPl} × ${mN(G.A)} m² × ${mN(U.medjD,3)} m`,izv:["sim","unos"]});
+    else ceka("b_medj","beton",`Međukatne ploče (${nPl})`,"m³","debljina međukatne ploče"); }
+  if(U.serB&&U.serH){ const n=nE+(G.pk?1:0), L=G.O*n; add({k:"b_ser",sk:"beton",n:"Serklaži vanjskih zidova",kol:L*U.serB*U.serH,jed:"m³",f:`opseg ${mN(G.O)} m × ${n} × ${mN(U.serB,3)} × ${mN(U.serH,3)} m`,izv:["sim","unos"]}); }
+  if(U.trakB&&U.trakH){ const L=U.trakL||G.O; add({k:"b_trak",sk:"beton",n:"Temeljne trake",kol:L*U.trakB*U.trakH,jed:"m³",f:`${mN(L)} m × ${mN(U.trakB,3)} × ${mN(U.trakH,3)} m${U.trakL?"":" (duljina = opseg kuće)"}`,izv:U.trakL?["unos"]:["sim","unos"]}); }
+  if(U.stupN&&U.stupA&&U.stupB&&U.stupH) add({k:"b_stup",sk:"beton",n:"Stupovi",kol:U.stupN*U.stupA*U.stupB*U.stupH,jed:"m³",f:`${U.stupN} × ${mN(U.stupA,3)} × ${mN(U.stupB,3)} × ${mN(U.stupH)} m`,izv:["unos"]});
+  if(U.stepV) add({k:"b_step",sk:"beton",n:"Stepenice",kol:U.stepV,jed:"m³",f:"ručni unos",izv:["unos"]});
+  // --- vanjski zidovi
+  const zBr=G.O*h*nE+G.O*nad, otv=U.otvori;
+  add({k:"z_br",sk:"zidovi",n:"Vanjski zidovi, bruto",kol:zBr,jed:"m²",f:`opseg ${mN(G.O)} m × ${mN(h)} m × ${nE} ${nE===1?"etaža":"etaže"}${nad?` + opseg × nadozid ${mN(nad)} m`:""}; bez zabata`,izv:[hIzv==="sim"?"sim":"unos",...(nad?["pret"]:["sim"])].filter((v,i,a)=>a.indexOf(v)===i),info:true});
+  let zNeto=null;
+  if(otv==null) ceka("z_neto","zidovi","Vanjski zidovi, neto (bez otvora)","m²","površina otvora");
+  else if(otv>zBr){ err.push(`Površina otvora (${mN(otv)} m²) veća je od bruto površine vanjskih zidova (${mN(zBr)} m²). Provjeri unos.`); add({k:"z_neto",sk:"zidovi",n:"Vanjski zidovi, neto (bez otvora)",kol:null,jed:"m²",st:"greska",nedostaje:"otvori veći od zida"}); }
+  else { zNeto=zBr-otv; add({k:"z_neto",sk:"zidovi",n:"Vanjski zidovi, neto (bez otvora)",kol:zNeto,jed:"m²",f:`${mN(zBr)} − ${mN(otv)} m² otvora`,izv:["sim","unos"],info:true}); }
+  const otp=U.otpad!=null?U.otpad:0, blokovi=(k,n,A,pot,ned)=>{ if(A==null||!pot){ ceka(k,"zidovi",n,"kom",[A==null?ned:null,!pot?"potrošnja bloka (kom/m²)":null].filter(Boolean).join(", ")); return; }
+    const k0=A*pot, k1=k0*(1+otp/100), nar=Math.ceil(k1-1e-9), pal=U.paleta?Math.ceil(nar/U.paleta):null;
+    add({k,sk:"zidovi",n,kol:k0,jed:"kom",f:`${mN(A)} m² × ${mN(pot)} kom/m²`,izv:["sim","unos"],red:{prije:k0,otpad:otp,poslije:k1,narudzba:nar,palete:pal,paleta:U.paleta}}); };
+  blokovi("z_blok","Zidni blokovi, vanjski zidovi",zNeto,U.blok,"neto površina vanjskih zidova");
+  if(U.pregL){ const pa=U.pregL*(U.pregH||h), po=U.pregOtv||0;
+    if(po>pa){ err.push(`Otvori u pregradnim zidovima (${mN(po)} m²) veći su od površine pregradnih zidova (${mN(pa)} m²).`); }
+    else { add({k:"z_preg",sk:"zidovi",n:"Pregradni zidovi, neto",kol:pa-po,jed:"m²",f:`${mN(U.pregL)} m × ${mN(U.pregH||h)} m${po?` − ${mN(po)} m² otvora`:""}`,izv:U.pregH?["unos"]:["unos",hIzv]}); blokovi("z_pblok","Blokovi, pregradni zidovi",pa-po,U.pregBlok,"pregradni zidovi"); } }
+  // --- fasada
+  const zab=G.krov==="dvo"&&G.raspon&&G.nagib>0?2*0.5*G.raspon*(G.raspon/2*Math.tan(G.nagib*Math.PI/180)):0;
+  if(zab) add({k:"f_zab",sk:"fasada",n:"Zabati (2)",kol:zab,jed:"m²",f:`2 × ½ × raspon ${mN(G.raspon)} m × ${mN(G.raspon/2)} m × tg ${mN(G.nagib,0)}°`,izv:["sim"],info:true});
+  const fBr=zBr+zab;
+  add({k:"f_br",sk:"fasada",n:"Fasada, bruto",kol:fBr,jed:"m²",f:`vanjski zidovi ${mN(zBr)} m²${zab?` + zabati ${mN(zab)} m²`:""}`,izv:["sim"],info:true});
+  if(otv==null) ceka("f_neto","fasada","Fasada, neto (izolacija)","m²","površina otvora");
+  else if(otv<=fBr) add({k:"f_neto",sk:"fasada",n:"Fasada, neto (izolacija)",kol:fBr-otv,jed:"m²",f:`${mN(fBr)} − ${mN(otv)} m² otvora`,izv:["sim","unos"]});
+  if(U.spalO&&U.spalD) add({k:"f_spal",sk:"fasada",n:"Špalete",kol:U.spalO*U.spalD,jed:"m²",f:`${mN(U.spalO)} m × ${mN(U.spalD,3)} m`,izv:["unos"]});
+  // --- krov
+  let kA=null;
+  if(U.krovA){ kA=U.krovA; add({k:"k_pov",sk:"krov",n:"Krov, površina ploha",kol:kA,jed:"m²",f:"ručni unos (složeni krov)",izv:["unos"]}); }
+  else { const s=U.streha||0, P=(G.w+2*s)*(G.d+2*s), c=Math.cos(G.nagib*Math.PI/180); kA=P/c;
+    add({k:"k_pov",sk:"krov",n:`Krov, površina ploha (${({dvo:"dvostrešni",cet:"četverostrešni",ravni:"ravni"})[G.krov]||G.krov})`,kol:kA,jed:"m²",f:`(${mN(G.w)}${s?" + 2 × "+mN(s):""}) × (${mN(G.d)}${s?" + 2 × "+mN(s):""}) m = ${mN(P)} m²${G.nagib?` ÷ cos ${mN(G.nagib,0)}°`:" (ravni krov: tlocrtna projekcija)"}${s?"":"; streha nije unesena"}`,izv:U.streha?["sim","unos"]:["sim"]}); }
+  if(U.pokrov) add({k:"k_pok",sk:"krov",n:"Pokrov",kol:kA*U.pokrov,jed:"kom",f:`${mN(kA)} m² × ${mN(U.pokrov)} kom/m²`,izv:["unos"],red:{narudzba:Math.ceil(kA*U.pokrov*(1+otp/100)-1e-9),otpad:otp,prije:kA*U.pokrov,poslije:kA*U.pokrov*(1+otp/100)}});
+  else ceka("k_pok","krov","Pokrov","kom","potrošnja pokrova (kom/m²)");
+  return {items:it,err,geo:G,h,hIzv};
+}
+// iznosi: samo za stavke s unesenom jediničnom cijenom; rad, dostava, pumpa i PDV odvojeno; ne zbraja se s procjenom gradnje
+function matIznosi(R,U){ const rows=[]; let sum=0, nep=false;
+  for(const i of R.items){ if(i.info) continue; const q=i.red?i.red.narudzba:i.kol, c=U.cij[i.k];
+    if(q==null){ nep=true; rows.push({i,iznos:null,razlog:"količina čeka unos"}); continue; }
+    if(!c){ nep=true; rows.push({i,iznos:null,razlog:"Cijena nije unesena"}); continue; }
+    rows.push({i,iznos:q*c,c}); sum+=q*c; }
+  const tr=U.tr||{}, dod=(tr.rad||0)+(tr.dostava||0)+(tr.pumpa||0), pdv=tr.pdv?(sum+dod)*tr.pdv/100:0;
+  return {rows,sum,dod,pdv,ukupno:sum+dod+pdv,nep}; }
+function matKolTxt(i){ if(i.kol==null) return i.st==="greska"?"provjeri unos":"Čeka projekt ili unos"; const d=i.jed==="kom"?0:i.jed==="m³"?3:2; return mN(i.kol,d)+" "+i.jed; }
+function matHtml(){ return `<details class="acc" data-k="mat"${OPEN.has("mat")?" open":""}><summary><span>Materijal: okvirne količine</span><b id="matSum">otvori za izračun</b></summary><div class="acc-body" id="matBody"></div></details>`; }
+function matFormHtml(U){ const inp=(id,l,j)=>`<label for="mat_${id}">${esc(l)}</label><span><input id="mat_${id}" type="number" inputmode="decimal" min="0" step="any" value="${U[id]!=null?U[id]:""}" placeholder="${id==="visE"?"iz simulatora":id==="otpad"?"0":"unos"}"> ${esc(j)}</span>`;
+  const grp=(sk,nas)=>`<p class="eyebrow" style="margin:10px 0 4px">${nas}</p><div class="bgrid">${MAT_POLJA.filter(p=>p[3]===sk).map(p=>inp(p[0],p[1],p[2])).join("")}</div>`;
+  return grp("beton","Beton: konstrukcijske dimenzije")+grp("zidovi","Zidovi i blokovi")+grp("fasada","Fasada")+grp("krov","Krov"); }
+function matTabHtml(R,U){ const SK={beton:"Beton",zidovi:"Zidni blokovi i zidovi",fasada:"Fasada",krov:"Krov"}, iz=i=>i.izv.map(x=>`<em class="kind kind-${x==="sim"?"propis":x==="unos"?"unos":"procjena"}">${MAT_IZV[x]}</em>`).join(" ");
+  let h=""; for(const [sk,nas] of Object.entries(SK)){ const L=R.items.filter(i=>i.sk===sk); if(!L.length) continue;
+    h+=`<p class="eyebrow" style="margin:10px 0 4px">${nas}</p><table class="rp" data-mat-sk="${sk}"><tbody>`;
+    for(const i of L){ h+=`<tr data-mat="${i.k}"${i.st!=="ok"?` data-mat-st="${i.st}"`:""}><th>${esc(i.n)}</th><td><b>${esc(matKolTxt(i))}</b>${i.st==="ceka"?` <small class="fx">nedostaje: ${esc(i.nedostaje)}</small>`:""}${i.f?`<small class="fx">${esc(i.f)}</small>`:""}${i.red?`<small class="fx">prije otpada ${mN(i.red.prije,0)} kom; otpad ${mN(i.red.otpad,1)} %: ${mN(i.red.poslije,1)} kom; za narudžbu <b>${fmt(i.red.narudzba)} kom</b>${i.red.palete?` (${i.red.palete} ${i.red.palete===1?"paleta":"palete"} po ${fmt(i.red.paleta)} kom)`:""}</small>`:""}${i.izv.length?`<small class="fx">${iz(i)}</small>`:""}</td></tr>`; }
+    h+=`</tbody></table>`; }
+  return h; }
+function matCijHtml(R,U){ const Z=matIznosi(R,U);
+  let h=`<p class="eyebrow" style="margin:12px 0 4px">Cijene materijala (tvoj unos)</p><table class="rp" id="matCij"><tbody>`;
+  for(const r of Z.rows){ const i=r.i, jd=i.jed==="kom"?"kom":i.jed; h+=`<tr><th>${esc(i.n)}</th><td><span class="kd" style="margin:0"><input id="matc_${i.k}" type="number" inputmode="decimal" min="0" step="any" placeholder="€/${jd}" value="${U.cij[i.k]||""}" style="width:6.5em"> €/${jd}</span> <b>${r.iznos!=null?fmt(r.iznos)+" €":esc(r.razlog)}</b></td></tr>`; }
+  h+=`</tbody></table><div class="bgrid">${MAT_TROSAK.map(([k,l,j])=>`<label for="matt_${k}">${l}</label><span><input id="matt_${k}" type="number" inputmode="decimal" min="0" step="any" value="${U.tr[k]||""}" placeholder="unos"> ${j}</span>`).join("")}</div>`;
+  h+=`<div class="calc" style="background:var(--panel);margin-top:6px">${frow("Materijal s unesenim cijenama",fmt(Z.sum)+" €")}${frow("Rad, dostava i pumpa",fmt(Z.dod)+" €")}${frow("PDV",Z.pdv?fmt(Z.pdv)+" €":"nije unesen")}${frow("Ukupno"+(Z.nep?" (djelomično)":""),fmt(Z.ukupno)+" €",{bold:true})}</div>`;
+  h+=`<p class="meta">${Z.nep?"Zbroj je djelomičan: neke stavke nemaju cijenu ili količinu. ":""}Iznosi materijala ne pribrajaju se „Procjeni cijene gradnje”, jer cijena gradnje po m² već može uključivati materijal.</p>`;
+  return h; }
+// usporedba dviju spremljenih verzija kuće
+function matSnap(R){ const o={}; for(const i of R.items) o[i.k]={n:i.n,kol:i.kol,jed:i.jed,nar:i.red?i.red.narudzba:null}; return {ts:new Date().toISOString(),opis:`${mN(R.geo.w)} × ${mN(R.geo.d)} m, ${R.geo.kat}`,s:o}; }
+function matCmpHtml(U){ if(!U.A&&!U.B) return `<p class="meta">Spremi trenutnu kuću kao verziju A, promijeni je (npr. dimenzije ili katnost) i spremi kao B da vidiš razliku po stavkama.</p>`;
+  const ks=[...new Set([...Object.keys((U.A||{}).s||{}),...Object.keys((U.B||{}).s||{})])];
+  let h=`<p class="meta">A: ${U.A?esc(U.A.opis):"nije spremljena"} · B: ${U.B?esc(U.B.opis):"nije spremljena"}</p><table class="rp" id="matCmp"><tbody>`;
+  for(const k of ks){ const a=U.A&&U.A.s[k], b=U.B&&U.B.s[k], x=a||b, d=x.jed==="kom"?0:x.jed==="m³"?3:2, q=v=>v&&v.kol!=null?mN(v.kol,d)+" "+x.jed:"—";
+    const df=a&&b&&a.kol!=null&&b.kol!=null?b.kol-a.kol:null;
+    h+=`<tr data-cmp="${k}"><th>${esc(x.n)}</th><td>A ${q(a)} · B ${q(b)} · <b>B − A: ${df!=null?(df>0?"+":df<0?"−":"")+mN(Math.abs(df),d)+" "+x.jed:"razlika se još ne može izračunati"}</b></td></tr>`; }
+  return h+`</tbody></table>`; }
+function matUpdate(){ const b=document.getElementById("matBody"), k=window.__cur&&window.__cur.key; if(!b||!k) return;
+  const U=matGet(k), R=matIzracun(matGeo(),U); window.__mat={R,U};
+  const s=document.getElementById("matSum"); if(s) s.textContent=R.geo?`${mN(R.geo.w)} × ${mN(R.geo.d)} m, ${R.geo.kat}${R.items.some(i=>i.st!=="ok")?" · djelomično":""}`:"postavi kuću";
+  const foc=document.activeElement&&document.activeElement.id;
+  let h=`<p class="oku-badge">Okvirne količine za planiranje i upit dobavljaču</p>`;
+  if(!R.geo){ b.innerHTML=h+`<p class="meta">${esc(R.err[0])}</p>`; return; }
+  h+=`<p class="meta" style="margin-top:0">Kuća iz simulatora: <b>${mN(R.geo.w)} × ${mN(R.geo.d)} m, ${esc(R.geo.kat)}</b>, tlocrt ${mN(R.geo.A)} m², opseg vanjskih zidova ${mN(R.geo.O)} m, visina etaže ${mN(R.h)} m (${MAT_IZV[R.hIzv]}), krov ${esc(({dvo:"dvostrešni",cet:"četverostrešni",ravni:"ravni"})[R.geo.krov]||R.geo.krov)}${R.geo.nagib?" "+mN(R.geo.nagib,0)+"°":""}. Tlocrt je pravokutnik iz simulatora; garaža nije uračunata.</p>`;
+  if(R.err.length) h+=`<ul class="checks">${R.err.map(t=>`<li class="chk chk-warn" data-mat-err="1"><b>!</b><span>${esc(t)}</span></li>`).join("")}</ul>`;
+  h+=matTabHtml(R,U);
+  if(R.items.some(i=>i.st!=="ok")) h+=`<p class="meta" data-mat-djel="1">Izračun je djelomičan: stavke sa statusom „Čeka projekt ili unos” trebaju podatke iz projekta ili tvoj unos.</p>`;
+  h+=`<details${OPEN.has("matUnos")?" open":""} data-k="matUnos"><summary>Ulazni podaci (konstrukcija, otvori, potrošnja)</summary>${matFormHtml(U)}</details>`;
+  h+=matCijHtml(R,U);
+  h+=`<p class="eyebrow" style="margin:12px 0 4px">Usporedba verzija A i B</p><div class="kd"><button type="button" class="ib" id="matSpA">Spremi kao A</button><button type="button" class="ib" id="matSpB">Spremi kao B</button>${U.A||U.B?`<button type="button" class="ib" id="matBris">Obriši A i B</button>`:""}</div>`+matCmpHtml(U);
+  h+=`<div class="kd"><button type="button" class="ib" id="matPdf">PDF: Okvirne količine za upit</button></div>`;
+  h+=`<p class="meta">Formule su pojednostavljene: zidovi = opseg × visina etaže × broj etaža (bez zabata, koji su posebno u fasadi), ploče = tlocrt × debljina. Količine nisu iz projekta; za narudžbu traži iskaz količina od projektanta ili dobavljača.</p>`;
+  keepPos(()=>{b.innerHTML=h;}); if(foc){const e=document.getElementById(foc); if(e&&e.focus) try{e.focus()}catch(x){}} }
+let matT=0; function matSoon(){ clearTimeout(matT); matT=setTimeout(()=>{try{matUpdate()}catch(e){console.error(e)}},120); }
+sheet.addEventListener("change",e=>{ const id=e.target.id||"", k=window.__cur&&window.__cur.key; if(!k||!/^mat[ct_]/.test(id)) return; const v=numv(id);
+  if(id.startsWith("mat_")){ const f=id.slice(4); matSet(k,{[f]:v!=null&&v>=0?v:null}); }
+  else if(id.startsWith("matc_")){ const s=matStore()[k]||{}; matSet(k,{cij:{...(s.cij||{}),[id.slice(5)]:v>0?v:null}}); }
+  else if(id.startsWith("matt_")){ const s=matStore()[k]||{}; matSet(k,{tr:{...(s.tr||{}),[id.slice(5)]:v>0?v:null}}); }
+  matUpdate(); });
+sheet.addEventListener("click",e=>{ const id=e.target.id, k=window.__cur&&window.__cur.key; if(!k) return;
+  if(id==="tMat"){ OPEN.add("mat"); const d=document.querySelector('details[data-k="mat"]'); if(d){ d.open=true; matUpdate(); try{d.scrollIntoView({behavior:"smooth",block:"start"})}catch(x){} } return; }
+  if(id==="matSpA"||id==="matSpB"){ const R=matIzracun(matGeo(),matGet(k)); if(R.geo) matSet(k,{[id==="matSpA"?"A":"B"]:matSnap(R)}); matUpdate(); }
+  if(id==="matBris"){ matSet(k,{A:null,B:null}); matUpdate(); }
+  if(id==="matPdf") matPrint(); });
+sheet.addEventListener("toggle",e=>{ const d=e.target; if(d&&d.dataset&&d.dataset.k==="mat"&&d.open) matUpdate(); },true);
+// PDF „Okvirne količine za upit”: isti ispis kao dosje (stil .rpt, A4), samo materijal i odabrani scenarij
+function matPrintHtml(){ const k=window.__cur&&window.__cur.key, U=matGet(k), R=matIzracun(matGeo(),U), c=window.__cur||{}, S=odmCur();
+  let h=`<section class="rpt-sec"><div class="rpt-h"><span>M</span><h2>Okvirne količine za upit</h2></div><p class="oku-badge">Okvirne količine za planiranje i upit dobavljaču</p>`;
+  h+=`<p>Čestica ${esc(c.ces||"?")}${c.ko?", k.o. "+esc(c.ko):""} · ${new Date().toLocaleDateString("hr-HR")}${S?` · scenarij odmaka od ceste ${String(S.d).replace(".",",")} m`:""}</p>`;
+  if(!R.geo) return h+`<p>Podaci nisu dostupni: kuća nije postavljena u simulatoru.</p></section>`;
+  h+=`<p><b>Kuća: ${mN(R.geo.w)} × ${mN(R.geo.d)} m, ${esc(R.geo.kat)}</b>; tlocrt ${mN(R.geo.A)} m², opseg ${mN(R.geo.O)} m, visina etaže ${mN(R.h)} m, krov ${esc(({dvo:"dvostrešni",cet:"četverostrešni",ravni:"ravni"})[R.geo.krov]||R.geo.krov)}${R.geo.nagib?" "+mN(R.geo.nagib,0)+"°":""}.</p>`;
+  if(R.err.length) h+=`<p><b>Upozorenja:</b> ${R.err.map(esc).join(" ")}</p>`;
+  h+=matTabHtml(R,U);
+  const pret=[`otpad ${mN(U.otpad!=null?U.otpad:0,1)} %`,R.geo.pk?"nadozid potkrovlja 1,2 m (pretpostavka)":null,"tlocrt je pravokutnik iz simulatora, garaža nije uračunata","zidovi bez zabata; zabati u fasadi kad je krov dvostrešni"].filter(Boolean);
+  h+=`<p><b>Pretpostavke:</b> ${pret.map(esc).join("; ")}.</p>`;
+  const ce=R.items.filter(i=>i.st==="ceka"); if(ce.length) h+=`<p><b>Čeka podatke:</b> ${ce.map(i=>esc(i.n)+" ("+esc(i.nedostaje)+")").join("; ")}.</p>`;
+  h+=`<p class="meta">Količine nisu iz projekta ni troškovnika. Za narudžbu traži iskaz količina od projektanta ili dobavljača.</p></section>`;
+  return h; }
+function matPrint(){ let R=document.getElementById("report"); if(R) R.remove(); R=document.createElement("div"); R.id="report"; R.className="rpt"; R.innerHTML=matPrintHtml();
+  document.body.appendChild(R); document.body.classList.add("print-report"); setTimeout(()=>window.print(),50); }
 
 // ================= SKICA KUĆE NA TERENU (tlocrt i presjek; ulazi u ispis / PDF) =================
 // Tlocrt: međe s duljinama stranica, područje za gradnju, kuća iz simulatora s krovom i udaljenostima od međa,
@@ -5903,7 +6060,7 @@ function grRegija(){
   const c=window.__cur, key=c&&c.key, ru=key?grRegRucnoGet(key):null, A=ru?{k:ru,kako:"tvoj odabir"}:grRegAuto(); if(!A) return null;
   const v=GR_REG[A.k], lo=1+v.r[0]/100, hi=1+v.r[1]/100; return {...A,n:v.n,r:v.r,o:v.o,f:[lo,(lo+hi)/2,hi],rucno:!!ru};
 }
-const FLOORS={P:{f:1.00,n:1,label:"prizemnica"},PPk:{f:0.96,n:1.75,label:"P + potkrovlje"},P1:{f:0.93,n:2,label:"P + 1"},P1Pk:{f:0.91,n:2.75,label:"P + 1 + Pk"},P2:{f:0.90,n:3,label:"P + 2"}}; // n = broj tlocrta u GBP-u (potkrovlje 75 %, kao u simulatoru); P2: nastavak trenda (procjena)
+const FLOORS={P:{f:1.00,n:1,label:"P (prizemnica)"},PPk:{f:0.96,n:1.75,label:"P+Pk"},P1:{f:0.93,n:2,label:"P+1"},P1Pk:{f:0.91,n:2.75,label:"P+1+Pk"},P2:{f:0.90,n:3,label:"P+2"}}; // n = broj tlocrta u GBP-u (potkrovlje 75 %, kao u simulatoru); P2: nastavak trenda (procjena)
 const PODRUM_EUR={kljuc:850, roh:550}; // procjena po m² podruma
 // Raspodjela cijene gradnje po fazama: PRETPOSTAVKA APLIKACIJE (orijentacijski udjeli, nisu iz cjenika), uskladena s
 // omjerom roh-bau / ključ u ruke za klasičnu gradnju (600 / 1.400 €/m² ≈ 43 %: faze 1–4 zajedno 43 %).
@@ -6022,7 +6179,7 @@ function buildHtml(gbpMax,tlocrt){
   h+=`<p class="meta" id="bLink" style="margin-top:0"></p>`;
   h+=`<div class="bgrid" data-gbp="${gbpMax?Math.round(gbpMax):""}" data-tlocrt="${tlocrt?Math.round(tlocrt):""}">`;
   h+=`<label for="bArea">Površina kuće (bruto)</label><span><input id="bArea" type="number" inputmode="decimal" min="20" step="1" value="${H0}"> m²</span>`;
-  h+=`<label for="bFloors">Katnost</label>${sel("bFloors",[["P","prizemnica (P)"],["PPk","P + potkrovlje"],["P1","P + 1 kat"],["P1Pk","P + 1 + potkrovlje"],["P2","P + 2 kata"]],"P")}`;
+  h+=`<label for="bFloors">Katnost</label>${sel("bFloors",[["P","P (prizemnica)"],["PPk","P+Pk (s potkrovljem)"],["P1","P+1"],["P1Pk","P+1+Pk"],["P2","P+2"]],"P")}`;
   h+=`<label for="bType">Gradnja</label>${sel("bType",[["klas","klasična (zidana)"],["mont","montažna"]],"klas")}`;
   h+=`<label for="bStd">Standard</label>${sel("bStd",[["osn","ekonomični (× 0,85)"],["sred","standardni (× 1,0)"],["vis","viši (× 1,3)"]],"sred")}`;
   h+=`<label for="bPhase">Faza</label>${sel("bPhase",[["kljuc","ključ u ruke"],["roh","roh-bau"]],"kljuc")}`;
@@ -8832,7 +8989,7 @@ function buildReport(){
     ["Sažetak: prije svega provjeri",[rptQ(".prek"),rptQ("#pzBox .verdict")],true],
     ["Čestica i namjena",(()=>{const g=sheet.querySelector(".grp"); return g?[...g.children].filter(e=>!e.matches(".actions,#printHead,#printMap,.cards,.parcel")&&!(e.classList.contains("eyebrow")&&/čestica/i.test(e.textContent))):[];})()],
     ["Uvjeti gradnje",rptAfter(rptH2("Uvjeti gradnje")).filter(e=>!e.matches(".prek,[data-k=gp],[data-k=tloc],[data-k=skica]")&&!e.matches(RPT_VLASTITA)),true],
-    ["Kuća na čestici",[rptQ('[data-k="tloc"] #tOut'),rptQ('[data-k="gp"]'),"LEGENDA",rptQ('[data-k="skica"]'),rptQ('[data-k="oku"]'),"3D"],true],
+    ["Kuća na čestici",[rptQ('[data-k="tloc"] #tOut'),rptQ('[data-k="gp"]'),"LEGENDA",rptQ('[data-k="skica"]'),rptQ('[data-k="oku"]'),"3D",rptQ('[data-k="mat"] #matBody')],true],
     ["Rizici i provjere",[...rptAfter(rptH2("Rizici")),...rptAfter(rptH2("Provjere"))].filter(e=>!e.matches(RPT_VLASTITA))],
     ["Infrastruktura, pristup i okolina",[...rptAfter(rptH2("Komunalna infrastruktura")),...rptAfter(rptH2("Pristup i okolina")),...rptAfter(rptH2("Karte prostornog plana"))].filter(e=>!e.matches(RPT_VLASTITA))],
     ["Povijest lokacije (snimke iz zraka)",[D.parcel?dosjePovijest(D.parcel):null]],

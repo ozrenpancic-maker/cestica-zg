@@ -2013,6 +2013,37 @@ async function okuTests(){
    const Rp=E("buildReport")(); ok(Rp.querySelector('.rpt-blk polyline[data-net="vodovod"]')&&/Priključci \(ilustrativno\)/.test(Rp.textContent)&&/Tlocrt/.test(Rp.textContent),"Izvještaj: skica s priključcima i tablica priključaka"); Rp.remove();
    w.__ski={e:"mreža"}; E("skicaRender")(); ok(/Priključci \(ilustrativno\)\s*\S*\s*Podaci nisu dostupni/.test($(w,"skicaOut").textContent)&&!$(w,"skicaOut").querySelector("[data-prik]")&&E("v3dData")().vod.features.length===0,"Priključci: kad se katastar infrastrukture ne učita, piše „Podaci nisu dostupni” i ništa se ne crta");
    w.__ski=null;}
+  // kalkulator materijala (primjer Ledine 22): 11,5 × 8,6 m, P+1, etaže 3 m, ploča 0,25 m, otvori 40 m², 10 blokova/m², bez otpada
+  {const TLm=E("TL"), k=E("window.__cur.key"), I=it=>w.__mat.R.items.find(x=>x.k===it);
+   Object.assign(TLm,{w:11.5,d:8.6,fl:"2",fh:3,krov:"dvo",nagib:30,sljeme:"duz",pred:"",model:""}); E("tDraw")();
+   ok(!!$(w,"tMat")&&/Izračunaj materijal za ovu kuću/.test($(w,"tMat").textContent),"Materijal: gumb „Izračunaj materijal za ovu kuću” u simulatoru");
+   $(w,"tMat").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(200);
+   ok(I("b_tem").st==="ceka"&&I("b_tem").kol==null&&/Čeka projekt ili unos/.test(txt(w,"matBody"))&&/debljina temeljne ploče/.test(txt(w,"matBody"))&&$(w,"matBody").querySelector("[data-mat-djel]"),"Materijal: bez debljine ploče nema 0 m³, nego „Čeka projekt ili unos” i djelomičan izračun");
+   ok(/11,5 × 8,6 m, P\+1/.test(txt(w,"matBody"))&&/Okvirne količine za planiranje i upit dobavljaču/.test(txt(w,"matBody")),"Materijal: kuća iz simulatora prikazana kao P+1, uz oznaku okvirnih količina");
+   setv(w,"mat_plocaD","0.25","change"); setv(w,"mat_otvori","40","change"); setv(w,"mat_blok","10","change"); await tick(50);
+   ok(Math.abs(I("b_tem").kol-24.725)<1e-9&&/24,725 m³/.test(txt(w,"matBody")),"Materijal: temeljna ploča 11,5 × 8,6 × 0,25 = 24,725 m³");
+   ok(Math.abs(I("z_br").kol-241.2)<1e-9&&Math.abs(I("z_neto").kol-201.2)<1e-9&&!I("z_br").f.includes("nadozid"),"Materijal: vanjski zidovi 241,2 m² bruto, 201,2 m² neto, bez zabata");
+   ok(Math.round(I("z_blok").kol)===2012&&I("z_blok").red.narudzba===2012&&/za narudžbu 2\.012 kom/.test(txt(w,"matBody")),"Materijal: 2.012 zidnih blokova (bez otpada)");
+   ok(I("b_tem").izv.includes("sim")&&I("b_tem").izv.includes("unos")&&/iz simulatora/.test(txt(w,"matBody"))&&/ručni unos/.test(txt(w,"matBody")),"Materijal: izvor podataka označen (iz simulatora / ručni unos)");
+   ok(I("f_zab")&&I("f_br").kol>241.2&&I("k_pov")&&/cos 30°/.test(I("k_pov").f),"Materijal: zabati dvostrešnog krova u fasadi; krov = projekcija ÷ cos nagiba");
+   setv(w,"mat_otpad","5","change"); await tick(30); ok(I("z_blok").red.narudzba===Math.ceil(2012*1.05)&&/prije otpada 2\.012 kom/.test(txt(w,"matBody")),"Materijal: otpad 5 %: količina prije i poslije, narudžba zaokružena naviše");
+   setv(w,"mat_paleta","60","change"); await tick(30); ok(I("z_blok").red.palete===Math.ceil(Math.ceil(2012*1.05)/60),"Materijal: broj paleta uz poznato pakiranje");
+   setv(w,"mat_otpad","0","change"); setv(w,"mat_paleta","","change"); await tick(30);
+   $(w,"matSpA").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(30);
+   TLm.w=10.5; E("tDraw")(); await tick(300); ok(Math.abs(I("b_tem").kol-22.575)<1e-9,"Materijal: izračun se osvježi nakon promjene tlocrta (10,5 m → 22,575 m³)");
+   $(w,"matSpB").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(30);
+   const U=E("matGet")(k), dt=U.B.s.b_tem.kol-U.A.s.b_tem.kol, rw=$(w,"matCmp").querySelector('[data-cmp="b_tem"]').textContent;
+   ok(Math.abs(dt+2.15)<1e-9&&/−2,15 m³/.test(rw)&&/B − A: −2,15 m³/.test(rw),"Materijal: usporedba A i B, temeljna ploča B − A = −2,15 m³");
+   ok(/razlika se još ne može izračunati/.test($(w,"matCmp").querySelector('[data-cmp="k_pok"]').textContent),"Materijal: stavka bez količine: razlika se još ne može izračunati");
+   setv(w,"mat_otvori","500","change"); await tick(30); ok($(w,"matBody").querySelector("[data-mat-err]")&&/veća je od bruto površine vanjskih zidova/.test(txt(w,"matBody"))&&I("z_neto").kol==null&&!I("z_blok").kol,"Materijal: otvori veći od zida daju jasnu poruku, bez negativne količine");
+   setv(w,"mat_otvori","40","change"); await tick(30);
+   ok(/Cijena nije unesena/.test(txt(w,"matCij"))&&/djelomično/.test(txt(w,"matBody")),"Materijal: bez cijene piše „Cijena nije unesena”, zbroj djelomičan");
+   setv(w,"matc_b_tem","120","change"); setv(w,"matt_pumpa","300","change"); setv(w,"matt_pdv","25","change"); await tick(30);
+   const Z=E("matIznosi")(w.__mat.R,w.__mat.U); ok(Math.abs(Z.sum-22.575*120)<1e-6&&Z.dod===300&&Math.abs(Z.pdv-(22.575*120+300)*0.25)<1e-6&&!w.__fin.items.some(i=>/materijal/i.test(i.label)),"Materijal: iznos po stavci, pumpa i PDV odvojeno; ne pribraja se procjeni gradnje");
+   const ph=E("matPrintHtml")(); ok(/Okvirne količine za upit/.test(ph)&&/10,5 × 8,6 m, P\+1/.test(ph)&&/22,575 m³/.test(ph)&&/otpad 0 %/.test(ph)&&/Čeka podatke:/.test(ph)&&/Pokrov/.test(ph),"PDF „Okvirne količine za upit”: iste količine i katnost kao u aplikaciji, pretpostavke, otpad i stavke koje čekaju");
+   E("matPrint")(); ok(w.document.getElementById("report")&&w.document.body.classList.contains("print-report"),"PDF materijala: ispis kroz postojeći izvoz (stil izvještaja)"); E("rptDone")();
+   ok(E("katOzn")("2")==="P+1"&&E("FLOOR_OPTS").find(o=>o[0]==="2")[1]==="P+1"&&E("FLOORS").P1.label==="P+1"&&[...$(w,"bFloors").options].find(o=>o.value==="P1").textContent==="P+1","Katnost: P+1 jednako u simulatoru, procjeni gradnje i materijalu");
+   Object.assign(TLm,{w:10,d:8,fl:"2",krov:"dvo"}); E("tDraw")(); await tick(200);}
   $(w,"okuOff").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(250);
   ok(!E("OKU.res")&&!E("OKU.layer")&&!!$(w,"okuGo"),"Okućnica: „Ukloni prijedlog” briše prikaz; kuća i simulator ostaju");
   ok(errs.length===0,"Okućnica: bez JS grešaka "+errs.join(" | "));
