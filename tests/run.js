@@ -1996,6 +1996,21 @@ async function okuTests(){
    setv(w,"okuBazCij","25000","change"); await tick(300); const bz3=E("okuTrosak")(k).items.find(i=>i.k==="oku_bazen"); ok(bz3&&bz3.lo===25000&&bz3.kind==="unos"&&E("window.__fin").items.some(i=>i.k==="oku_bazen"&&i.group==="okucnica"),"Okućnica: ponuda za bazen zamjenjuje procjenu i ulazi u financijski model pod okućnicom");
    setv(w,"okuBazW","3","change"); await tick(300); ok(Math.abs(E("OKU.res").povrsine.bazen-24)<0.1,"Okućnica: promjena širine bazena preračuna prijedlog (3 × 8 m)");
    setv(w,"okuBaz",false,"change"); await tick(300); ok(!E("OKU.res").items.bazen&&!E("okuTrosak")(k).items.some(i=>i.k==="oku_bazen")&&!E("v3dData")().kuca.features.some(f=>f.properties.k==="bazen"),"Okućnica: isključen bazen nestaje iz prijedloga, troška i 3D-a");}
+  // priključci: najbliži evidentirani vodovi i trasa od kuće na skici, u tablici i u 3D-u
+  {const yv=c[0][1]-dy, vodG={type:"LineString",coordinates:[[c[0][0]-0.001,yv],[c[1][0]+0.001,yv]]}, Dp=E("curData")().parcel;
+   w.__ski={v:{mreze:{vodovod:{d:4,geom:vodG},kanalizacija:{d:4.5,geom:{type:"LineString",coordinates:[[c[0][0]-0.001,yv-0.5/110540],[c[1][0]+0.001,yv-0.5/110540]]}},struja:{none:true}},izvor:"DGU SKI (test)",podrucje:"zagreb"}};
+   const PR=E("prikPrijedlog")(E("curData")()), vv=PR.mreze.find(m=>m.net==="vodovod"), st=PR.mreze.find(m=>m.net==="struja");
+   const rubD=w.turf.pointToLineDistance(w.turf.point(vv.granica),w.turf.polygonToLine(Dp),{units:"meters"}), hc=E("TL").center;
+   ok(PR.stanje==="ok"&&PR.kuca&&vv&&!vv.nema&&vv.duljina>4&&vv.duljina<40&&rubD<0.2&&w.turf.distance(vv.start,hc)*1000<8&&st.nema&&/nema evidentiranog voda/.test(st.razlog),"Priključci: trasa od zida kuće do najbližeg voda, mjesto prelaska granice čestice; bez voda u krugu piše razlog");
+   E("skicaRender")(); const sk=$(w,"skicaOut"), tx=sk.textContent;
+   ok(sk.querySelector('polyline[data-net="vodovod"]')&&sk.querySelector('line[data-prik="vodovod"]')&&sk.querySelector('rect[data-okno="kanalizacija"]')&&!sk.querySelector('[data-net="struja"]')&&/vodovod \d+ m/.test(tx),"Priključci na skici: vod, isprekidana trasa s duljinom i mjesto na granici čestice");
+   ok(/Priključci \(ilustrativno\)/.test(tx)&&/Vodovod\s*oko 4 m\s*oko \d+ m/.test(tx)&&/Kanalizacija\s*oko 5 m/.test(tx),"Priključci: tablica s udaljenošću voda od granice i duljinom trase");
+   ok(/Struja\s*Podaci nisu dostupni/.test(tx)&&E("PZREG").items.get("sk-prik").raz==="C"&&/Priključci na skici i u 3D-u/.test(E("legendaHtml")({skica:true})),"Priključci: bez podatka piše „Podaci nisu dostupni”; pouzdanost C; u legendi skice");
+   const V=E("v3dData")().vod.features, st3=E("v3dStyle")(E("v3dData")());
+   ok(V.some(f=>f.properties.t==="vod"&&f.properties.net==="vodovod")&&V.some(f=>f.properties.t==="prik"&&f.properties.net==="kanalizacija")&&V.filter(f=>f.properties.t==="okno").length===2&&["vod","vod-prik","vod-okno"].every(id=>st3.layers.some(l=>l.id===id)),"Priključci u 3D-u: vodovi, trase i mjesta na granici kao slojevi na terenu");
+   const Rp=E("buildReport")(); ok(Rp.querySelector('.rpt-blk polyline[data-net="vodovod"]')&&/Priključci \(ilustrativno\)/.test(Rp.textContent)&&/Tlocrt/.test(Rp.textContent),"Izvještaj: skica s priključcima i tablica priključaka"); Rp.remove();
+   w.__ski={e:"mreža"}; E("skicaRender")(); ok(/Priključci \(ilustrativno\)\s*\S*\s*Podaci nisu dostupni/.test($(w,"skicaOut").textContent)&&!$(w,"skicaOut").querySelector("[data-prik]")&&E("v3dData")().vod.features.length===0,"Priključci: kad se katastar infrastrukture ne učita, piše „Podaci nisu dostupni” i ništa se ne crta");
+   w.__ski=null;}
   $(w,"okuOff").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(250);
   ok(!E("OKU.res")&&!E("OKU.layer")&&!!$(w,"okuGo"),"Okućnica: „Ukloni prijedlog” briše prikaz; kuća i simulator ostaju");
   ok(errs.length===0,"Okućnica: bez JS grešaka "+errs.join(" | "));

@@ -4109,7 +4109,7 @@ function skicaUpdate(){ clearTimeout(SK.t); SK.t=setTimeout(()=>{try{skicaRender
 function skicaRender(){
   const o=document.getElementById("skicaOut"); if(!o) return; const d=curData(); if(!d||!d.parcel){o.innerHTML=`<p class="meta">Podaci nisu dostupni.</p>`; return;}
   const T=skTeren(d), hasH=!!TL.center;
-  let h=skicaPlan(d,T)+(hasH?skicaPresjek(d,T)+skica3D(d,T):`<p class="meta">Za presjek i 3D prikaz postavi kuću u „Simulatoru kuće na čestici”.</p>`);
+  let h=skicaPlan(d,T)+prikHtml(prikPrijedlog(d))+(hasH?skicaPresjek(d,T)+skica3D(d,T):`<p class="meta">Za presjek i 3D prikaz postavi kuću u „Simulatoru kuće na čestici”.</p>`);
   const pz1=pzSet("sk-teren","Teren na skici (izohipse i presjek)",T?`nagib oko ${Math.round(T.slope)} %`:null,pz("C",{izvor:"Copernicus DEM preko Open-Meteo (rezolucija oko 90 m)",metoda:"ravnina iz nagiba u okolini čestice",razlog:"model visina ne vidi teren same čestice",provjera:"geodetski snimak"}));
   h+=`<p class="meta">${pzTag(pz1)} ${T?`Teren je nacrtan kao ravnina s nagibom oko ${skN(T.slope,0)} % prema ${COMP(T.az)} (model visina rezolucije oko 90 m, Copernicus DEM preko Open-Meteo). Stvarni teren čestice može biti drukčiji; za projekt treba geodetski snimak.`:"Nagib terena: Podaci nisu dostupni; teren je nacrtan kao ravan."} ±0,00 je teren u sredini kuće (pretpostavka). Granice su iz katastra (grafički prikaz), kuća iz simulatora. Skica nije projekt ni dokaz da je gradnja dopuštena.</p>`;
   o.innerHTML=h; const sm=document.getElementById("skSum"); if(sm) sm.textContent=hasH?"tlocrt, presjek i 3D":"tlocrt";
@@ -4133,6 +4133,9 @@ function skicaPlan(d,T){
   const all=rings.flat().concat(hR||[],gR||[]); let x0=Math.min(...all.map(p=>p[0])), x1=Math.max(...all.map(p=>p[0])), y0=Math.min(...all.map(p=>p[1])), y1=Math.max(...all.map(p=>p[1]));
   // okvir se proširi do 12 m na strane gdje je cesta, da se vidi i cesta
   const CE=skCeste(d,c0,[x0-12,y0-12,x1+12,y1+12]); if(CE.length){const cp=CE.flatMap(c=>c.polys.flat()); if(cp.length){x0=Math.max(x0-12,Math.min(x0,...cp.map(p=>p[0]))); x1=Math.min(x1+12,Math.max(x1,...cp.map(p=>p[0]))); y0=Math.max(y0-12,Math.min(y0,...cp.map(p=>p[1]))); y1=Math.min(y1+12,Math.max(y1,...cp.map(p=>p[1])));}}
+  // okvir se proširi do 25 m prema vodu na koji se trasa priključka spaja
+  const PR=prikPrijedlog(d), PRm=PR&&PR.stanje==="ok"?PR.mreze.filter(m=>!m.nema):[];
+  for(const m of PRm){ const q=P(m.cilj); x0=Math.min(x0,Math.max(q[0]-2,x0-25)); x1=Math.max(x1,Math.min(q[0]+2,x1+25)); y0=Math.min(y0,Math.max(q[1]-2,y0-25)); y1=Math.max(y1,Math.min(q[1]+2,y1+25)); }
   const W=640, M=46, bw=Math.max(x1-x0,5), bh=Math.max(y1-y0,5), sc=Math.min((W-2*M)/bw,(560-2*M)/bh), H=Math.round(bh*sc+2*M+18);
   const X=x=>M+(x-x0)*sc+((W-2*M)-bw*sc)/2, Y=y=>M+(y1-y)*sc, pt=p=>X(p[0]).toFixed(1)+","+Y(p[1]).toFixed(1), path=r=>"M"+r.map(pt).join("L")+"Z";
   let g="";
@@ -4164,6 +4167,18 @@ function skicaPlan(d,T){
     g+=`<path d="${skRings(gg).map(r=>path(r.map(P))).join("")}" fill="${V.sk}" fill-opacity="${k==="travnjak"?.55:.8}" stroke="${V.c}" stroke-width="0.8"${k==="vrt"?' stroke-dasharray="3 2"':""} fill-rule="evenodd"/>`;
     if(k==="parking"){const c=turf.centroid({type:"Feature",geometry:gg,properties:{}}).geometry.coordinates, q=P(c); g+=`<text x="${X(q[0]).toFixed(1)}" y="${(Y(q[1])+5).toFixed(1)}" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">P</text>`;} }
   g+=`<path d="${rings.map(path).join("")}" fill="none" stroke="#4a2f14" stroke-width="2.2" fill-rule="evenodd"/>`;
+  // priključci: najbliži evidentirani vodovi i ravna trasa do njih (ilustrativno)
+  if(PRm.length){ const bx=[x0-1,y0-1,x1+1,y1+1], klip=c=>{try{const r=turf.bboxClip(c.length>1?turf.lineString(c):turf.point(c[0]),bx).geometry; return r.type==="MultiLineString"?r.coordinates:r.type==="LineString"?[r.coordinates]:[];}catch(e){return []}};
+    g+=`<defs><clipPath id="skBoxV"><rect x="${X(x0)}" y="${Y(y1)}" width="${(x1-x0)*sc}" height="${(y1-y0)*sc}"/></clipPath></defs><g clip-path="url(#skBoxV)" class="sk-prik">`;
+    PRm.forEach((m,i)=>{ const gc=m.geom.type==="Point"?null:(m.geom.type==="LineString"?[m.geom.coordinates]:m.geom.coordinates);
+      if(gc) for(const ln of gc) for(const part of klip(ln.map(P))) if(part.length>1) g+=`<polyline points="${part.map(pt).join(" ")}" fill="none" stroke="${m.col}" stroke-width="3.5" stroke-opacity=".9" stroke-linecap="round" data-net="${m.net}"/>`;
+      if(!gc){ const q=P(m.geom.coordinates); g+=`<circle cx="${X(q[0]).toFixed(1)}" cy="${Y(q[1]).toFixed(1)}" r="4" fill="${m.col}"/>`; }
+      const a=P(m.start), b=P(m.cilj); if(Math.hypot(b[0]-a[0],b[1]-a[1])>0.3) g+=`<line x1="${X(a[0]).toFixed(1)}" y1="${Y(a[1]).toFixed(1)}" x2="${X(b[0]).toFixed(1)}" y2="${Y(b[1]).toFixed(1)}" stroke="${m.col}" stroke-width="2" stroke-dasharray="6 3" data-prik="${m.net}"/>`;
+      g+=`<circle cx="${X(a[0]).toFixed(1)}" cy="${Y(a[1]).toFixed(1)}" r="2.6" fill="${m.col}"/>`;
+      if(m.granica){ const q=P(m.granica); g+=`<rect x="${(X(q[0])-3.5).toFixed(1)}" y="${(Y(q[1])-3.5).toFixed(1)}" width="7" height="7" fill="#fff" stroke="${m.col}" stroke-width="1.8" data-okno="${m.net}"/>`; }
+      const vis=klip([a,b])[0]||[a,a], mid=[(vis[0][0]+vis[vis.length-1][0])/2,(vis[0][1]+vis[vis.length-1][1])/2];
+      g+=`<text x="${(X(mid[0])+6).toFixed(1)}" y="${(Y(mid[1])-6+i*12).toFixed(1)}" font-size="11" font-weight="600" fill="${m.col}" stroke="#fff" stroke-width="3" paint-order="stroke">${esc(m.lbl.toLowerCase())} ${fmt(Math.max(1,Math.round(m.duljina)))} m</text>`; });
+    g+=`</g>`; }
   // duljine stranica (međe)
   const outer=rings[0]||[], cx0=outer.reduce((a,p)=>a+p[0],0)/Math.max(1,outer.length), cy0=outer.reduce((a,p)=>a+p[1],0)/Math.max(1,outer.length);
   const edges=[]; for(const r of rings) for(let i=0;i<r.length-1;i++){const a=r[i],b=r[i+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]); edges.push({a,b,L});}
@@ -4612,7 +4627,7 @@ function skiText(r,lbl){
 }
 const skiLayer=L.layerGroup();
 function skiDraw(ski){
-  skiLayer.clearLayers(); const M=ski&&ski.v&&ski.v.mreze; if(!M) return;
+  skiLayer.clearLayers(); try{ if(typeof skicaUpdate==="function"&&document.getElementById("skicaOut")) skicaUpdate(); }catch(e){} const M=ski&&ski.v&&ski.v.mreze; if(!M) return;
   const krk=ski.v.podrucje==="krk"; // Zagreb ostaje kao prije; za Krk klik na vod pokazuje izvor i stanje podataka
   for(const [net,lbl,opis,col] of SKI.NETS){const r=M[net]; if(!r||!r.geom) continue;
     const g=L.geoJSON(r.geom,{style:{color:col,weight:krk?5:4,opacity:.9},interactive:krk}).addTo(skiLayer);
@@ -4620,6 +4635,39 @@ function skiDraw(ski){
 }
 // legenda slojeva vodova (Krk)
 function skiLegendHtml(){return `<p class="meta">${SKI.NETS.map(([,l,,c])=>`<span style="display:inline-block;width:14px;height:4px;background:${c};vertical-align:middle;margin-right:4px"></span>${esc(l)}`).join(" &nbsp; ")} · na karti: sloj „Najbliži vodovi (DGU)”</p>`}
+// priključci (ilustrativno): za vodovod, kanalizaciju i struju najbliži evidentirani vod (DGU SKI) i ravna trasa od kuće
+// (bez kuće od granice čestice) do najbliže točke voda, s mjestom gdje trasa prelazi granicu čestice. Ista trasa crta se na
+// skici i u 3D-u. Udaljenost nije potvrda da je priključak moguć; trasu i mjesto priključka određuje distributer.
+function prikPrijedlog(d){
+  if(!d||!d.parcel) return null; const S=window.__ski, M=S&&S.v&&S.v.mreze;
+  if(!S) return {stanje:"ucitava",mreze:[]}; if(S.e||!M) return {stanje:"nema",mreze:[],razlog:S.e?"podaci katastra infrastrukture se nisu učitali":SKI_NP};
+  const house=TL.center?tRect():null, rub=turf.polygonToLine(d.parcel), rubL=rub.type==="FeatureCollection"?rub.features:[rub];
+  const ref=house?TL.center:turf.centroid(d.parcel).geometry.coordinates, out={stanje:"ok",mreze:[],izvor:S.v.izvor||"DGU, katastar infrastrukture",kuca:!!house};
+  const blizu=(g,p)=>g.type==="Point"?g.coordinates:turf.nearestPointOnLine(g.type==="LineString"?turf.lineString(g.coordinates):turf.multiLineString(g.coordinates),turf.point(p)).geometry.coordinates;
+  const naRubu=p=>{let b=null; for(const l of rubL){const q=turf.nearestPointOnLine(l,turf.point(p)); if(!b||q.properties.dist<b.properties.dist) b=q;} return b.geometry.coordinates;};
+  SKI.NETS.forEach(([net,lbl,,col],ni)=>{ const r=M[net];
+    if(!r||!r.geom){ out.mreze.push({net,lbl,col,nema:true,razlog:r&&r.none?`u krugu od ${SKI.R} m nema evidentiranog voda`:"podaci se nisu učitali"}); return; }
+    try{ let cilj=blizu(r.geom,ref), start;
+      if(house){ start=turf.nearestPointOnLine(turf.polygonToLine(house),turf.point(cilj)).geometry.coordinates; cilj=blizu(r.geom,start);
+        // vodovod, kanalizacija i struja izlaze iz kuće 1,2 m razmaknuti (uzduž zida), da se trase ne preklapaju
+        const off=(ni-1)*1.2; if(off){ const b=turf.bearing(start,cilj); start=turf.destination(start,Math.abs(off)/1000,b+(off>0?90:-90),{units:"kilometers"}).geometry.coordinates; cilj=blizu(r.geom,start); } }
+      else start=naRubu(cilj);
+      const uC=r.d<0.5, seg=turf.lineString([start,cilj]); let granica=null;
+      if(!uC){ if(house){ const x=turf.lineIntersect(seg,d.parcel).features.map(f=>f.geometry.coordinates).sort((a,b)=>turf.distance(a,start)-turf.distance(b,start)); granica=x[0]||null; } else granica=start; }
+      out.mreze.push({net,lbl,col,d:r.d,geom:r.geom,start,cilj,granica,duljina:turf.length(seg)*1000,uCestici:uC}); }
+    catch(e){ out.mreze.push({net,lbl,col,nema:true,razlog:"trasa se nije mogla izračunati"}); } });
+  return out;
+}
+function prikHtml(PR){
+  const pz1=pzSet("sk-prik","Priključci na skici i u 3D-u","ilustrativno",pz("C",{izvor:"Državna geodetska uprava, katastar infrastrukture (najbliži evidentirani vod)",metoda:"ravna crta od kuće do najbliže točke voda",razlog:"evidencija može biti nepotpuna; blizina voda nije potvrda mogućnosti priključka",provjera:"posebni uvjeti distributera (vodovod, odvodnja, HEP ODS)"}));
+  let h=`<p class="eyebrow" style="margin:10px 0 4px">Priključci (ilustrativno)</p>`;
+  if(!PR||PR.stanje!=="ok") return h+`<p class="meta">${pzTag(pz1)} Podaci nisu dostupni${PR&&PR.razlog?" ("+esc(PR.razlog)+")":PR&&PR.stanje==="ucitava"?" (katastar infrastrukture se učitava)":""}.</p>`;
+  h+=`<table class="rp"><thead><tr><th>Mreža</th><th>Najbliži evidentirani vod od granice čestice</th><th>${PR.kuca?"Trasa od kuće do voda":"Trasa od granice do voda"}</th></tr></thead><tbody>`;
+  for(const m of PR.mreze) h+=`<tr><th><i style="display:inline-block;width:14px;height:4px;background:${m.col};vertical-align:middle;margin-right:6px"></i>${esc(m.lbl)}</th>`+(m.nema?`<td colspan="2">Podaci nisu dostupni <small class="fx">${esc(m.razlog)}</small></td>`:
+    `<td><b>${m.uCestici?"0 m":m.d<1?"manje od 1 m":"oko "+fmt(Math.round(m.d))+" m"}</b>${m.uCestici?` <small class="fx">vod prolazi česticom ili granicom</small>`:""}</td><td><b>oko ${fmt(Math.max(1,Math.round(m.duljina)))} m</b> <small class="fx">ravna crta</small></td>`)+`</tr>`;
+  h+=`</tbody></table><p class="meta">${pzTag(pz1)} Na skici i u 3D-u: puna crta je najbliži evidentirani vod, isprekidana ravna trasa ${PR.kuca?"od kuće ":""}do njega, kvadratić mjesto gdje trasa prelazi granicu čestice (orijentacijski položaj vodomjernog okna ili priključnog ormarića). Stvarnu trasu, mjesto priključka i je li priključenje moguće određuju distributeri u posebnim uvjetima. Izvor: ${esc(PR.izvor)}.</p>`;
+  return h;
+}
 function krkInfraHtml(ski){
   let h=`<h2>Komunalna infrastruktura</h2>`;
   if(!ski) return h+`<p class="hint"><span class="spin"></span>Učitavam katastar infrastrukture…</p>`;
@@ -7496,8 +7544,16 @@ function v3dData(){
       if(rub) M.kuca.features.push({type:"Feature",geometry:rub,properties:{b:0,h:0.2,c:"#e7e2d6",lod:0,k:"bazen-rub"}});
       M.kuca.features.push({type:"Feature",geometry:OKU.res.ll.bazen,properties:{b:0,h:0.15,c:okuV("bazen").c,lod:0,k:"bazen"}}); } }
   if(MO){ MO.terasa=!(OKU.res&&OKU.res.ll&&OKU.key===key&&OKU.res.ll.terasa); const km=TL.model&&mkModel(TL.model); MO.balkon=!!(km&&km.balkon); }
+  // priključci: vod (izrezan na okolicu čestice), trasa i mjesto na granici, iste kao na skici
+  const vod={type:"FeatureCollection",features:[]};
+  try{ const PR=prikPrijedlog(d); if(PR&&PR.stanje==="ok"){ const bb=turf.bbox(turf.buffer(d.parcel,0.06,{units:"kilometers"}));
+    for(const m of PR.mreze){ if(m.nema) continue;
+      if(m.geom.type!=="Point"){ try{ const c=turf.bboxClip({type:"Feature",geometry:m.geom,properties:{}},bb).geometry; if(c&&c.coordinates&&c.coordinates.length) vod.features.push({type:"Feature",geometry:c,properties:{c:m.col,t:"vod",net:m.net}}); }catch(e){} }
+      else vod.features.push({type:"Feature",geometry:m.geom,properties:{c:m.col,t:"okno",net:m.net}});
+      if(turf.distance(m.start,m.cilj)*1000>0.3) vod.features.push({type:"Feature",geometry:{type:"LineString",coordinates:[m.start,m.cilj]},properties:{c:m.col,t:"prik",net:m.net}});
+      if(m.granica) vod.features.push({type:"Feature",geometry:{type:"Point",coordinates:m.granica},properties:{c:m.col,t:"okno",net:m.net}}); } } }catch(e){}
   if(oku.features.some(f=>f.properties.k==="prilaz")) prilaz=prazno; // prilaz iz prijedloga okućnice zamjenjuje onaj iz procjene gradnje
-  return {parcel:d.parcel,c:turf.centroid(d.parcel).geometry.coordinates,model:MO,kuca:M?M.kuca:prazno,oku,sjena:M?M.sjena:prazno,prilaz,terasa:prazno,lbl,ulaz,
+  return {parcel:d.parcel,c:turf.centroid(d.parcel).geometry.coordinates,model:MO,kuca:M?M.kuca:prazno,oku,vod,sjena:M?M.sjena:prazno,prilaz,terasa:prazno,lbl,ulaz,
     sljeme:M&&M.ridge?{type:"Feature",geometry:{type:"LineString",coordinates:M.ridge},properties:{}}:null,
     gp:G&&G.geom?{type:"Feature",geometry:G.geom,properties:{}}:{type:"FeatureCollection",features:[]},
     broj:(d.parcel.properties.KATASTARSKA_CESTICA||d.parcel.properties.broj||""),key,krk:!!(d.krk||window.__cur&&(window.__cur.region==="krk"||window.__cur.region==="hr"))};
@@ -7511,12 +7567,15 @@ function v3dStyle(D){
       osm:{type:"raster",tiles:["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],tileSize:256,maxzoom:19,attribution:"© OpenStreetMap"},
       dem:{type:"raster-dem",tiles:["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],tileSize:256,maxzoom:15,encoding:"terrarium",attribution:"Teren: Terrain Tiles (Mapzen, AWS)"},
       kat:{type:"raster",tiles:["https://wms1-gs-oss.uredjenazemlja.hr/ows2-m/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=oss:BZP_CESTICE&STYLES=&SRS=EPSG:3857&BBOX={bbox-epsg-3857}&WIDTH=512&HEIGHT=512&FORMAT=image/png&TRANSPARENT=true"],tileSize:512,minzoom:15,attribution:"Katastar © DGU"},
-      parcel:{type:"geojson",data:D.parcel},okol:{type:"geojson",data:D.okol||{type:"FeatureCollection",features:[]}},gp:{type:"geojson",data:D.gp},kuca:{type:"geojson",data:D.kuca},sjena:{type:"geojson",data:D.sjena},prilaz:{type:"geojson",data:D.prilaz},terasa:{type:"geojson",data:D.terasa},oku:{type:"geojson",data:D.oku||{type:"FeatureCollection",features:[]}}},
+      parcel:{type:"geojson",data:D.parcel},okol:{type:"geojson",data:D.okol||{type:"FeatureCollection",features:[]}},gp:{type:"geojson",data:D.gp},kuca:{type:"geojson",data:D.kuca},sjena:{type:"geojson",data:D.sjena},prilaz:{type:"geojson",data:D.prilaz},terasa:{type:"geojson",data:D.terasa},oku:{type:"geojson",data:D.oku||{type:"FeatureCollection",features:[]}},vod:{type:"geojson",data:D.vod||{type:"FeatureCollection",features:[]}}},
     layers:[{id:"sat",type:"raster",source:"sat",layout:{visibility:V3D.pod==="sat"?"visible":"none"}},{id:"osm",type:"raster",source:"osm",layout:{visibility:V3D.pod==="osm"?"visible":"none"}},
       {id:"kat",type:"raster",source:"kat",paint:{"raster-opacity":0.75}},
       {id:"gp",type:"fill",source:"gp",paint:{"fill-color":"#22a35a","fill-opacity":0.2}},
       {id:"parcel-line",type:"line",source:"parcel",paint:{"line-color":"#ffd84d","line-width":["interpolate",["linear"],["zoom"],16,2,20,4]}},
       {id:"oku",type:"fill",source:"oku",paint:{"fill-color":["get","c"],"fill-opacity":0.85}},
+      {id:"vod",type:"line",source:"vod",filter:["==",["get","t"],"vod"],layout:{"line-cap":"round"},paint:{"line-color":["get","c"],"line-width":["interpolate",["linear"],["zoom"],16,2.5,20,7],"line-opacity":0.95}},
+      {id:"vod-prik",type:"line",source:"vod",filter:["==",["get","t"],"prik"],paint:{"line-color":["get","c"],"line-width":["interpolate",["linear"],["zoom"],16,1.8,20,4.5],"line-dasharray":[2,1.2]}},
+      {id:"vod-okno",type:"circle",source:"vod",filter:["==",["get","t"],"okno"],paint:{"circle-color":"#ffffff","circle-stroke-color":["get","c"],"circle-stroke-width":2.5,"circle-radius":["interpolate",["linear"],["zoom"],16,3,20,7]}},
       {id:"prilaz",type:"fill",source:"prilaz",paint:{"fill-color":["get","c"],"fill-opacity":0.92}},
       {id:"terasa",type:"fill",source:"terasa",paint:{"fill-color":"#c9c2b4","fill-opacity":0.95}},
       {id:"sjena",type:"fill",source:"sjena",paint:{"fill-color":"#141414","fill-opacity":["get","op"],"fill-antialias":false}},
@@ -7863,10 +7922,11 @@ const LGD=[
   {k:"kor",n:"Koridori i ograničenja iz provjera (dalekovodi, plinovodi i sl.)",sw:'<i class="sw ln" style="border-color:#b3261e;border-style:dashed;border-width:3px"></i>'},
   {k:"cesta",n:"Cesta iz OpenStreetMapa (kolnik; širina procijenjena prema vrsti ceste)",sw:'<i class="sw" style="background:#a9a9a9;border:1px solid #7d7d7d"></i>',skica:true},
   {k:"iso",n:"Izohipse na skici (visina prema sredini kuće)",sw:'<i class="sw ln" style="border-color:#a07b4f;border-style:dashed"></i>',skica:true},
-  {k:"odm",n:"Udaljenost kuće od međe na skici",sw:'<i class="sw ln" style="border-color:#b3261e"></i>',skica:true}];
+  {k:"odm",n:"Udaljenost kuće od međe na skici",sw:'<i class="sw ln" style="border-color:#b3261e"></i>',skica:true},
+  {k:"prik",n:"Priključci na skici i u 3D-u: najbliži evidentirani vod (puna crta: plavo vodovod, smeđe kanalizacija, crveno struja), ravna trasa od kuće (isprekidano), granica čestice (kvadratić); ilustrativno",sw:'<i class="sw ln" style="border-color:#1e6fd9;border-style:dashed"></i>',skica:true}];
 function legendaHtml(opt={}){
   const G=window.__gp, pd=G&&G.pravacD?G.pravacD:null;
-  const items=LGD.filter(x=>opt.skica?["sel","gp","band","kuca","cesta","iso","odm"].includes(x.k):!x.skica);
+  const items=LGD.filter(x=>opt.skica?["sel","gp","band","kuca","cesta","iso","odm","prik"].includes(x.k):!x.skica);
   let h=`<ul class="lgd">${items.map(x=>`<li>${x.sw}<span>${esc(typeof x.n==="function"?x.n(pd):x.n)}</span></li>`).join("")}`;
   if(typeof OKU!=="undefined"&&OKU.res&&window.__cur&&OKU.key===window.__cur.key) h+=Object.keys(OKU_VRSTE).filter(k=>OKU.res.ll&&OKU.res.ll[k]).map(k=>[k,okuV(k)]).map(([k,V])=>`<li><i class="sw" style="background:${V.c};opacity:${Math.min(1,V.o+.15)};border:1px solid ${V.c}${k==="vrt"?";border-style:dashed":""}"></i><span>${esc(V.n)} (prijedlog okućnice, ilustrativno)</span></li>`).join("");
   h+=`</ul>`;
@@ -8518,10 +8578,11 @@ async function dosjePripremi(){
   pok(()=>osunUpdate()); pok(()=>vjetUpdate()); pok(()=>kisUpdate()); pok(()=>eneUpdate()); pok(()=>pogUpdate()); pok(()=>{iskStart(); iskUpdate();});
   await Promise.race([Promise.all(z),new Promise(r=>setTimeout(r,15000))]);
   const key=window.__cur&&window.__cur.key;
-  if(TL.center&&key&&!V3D.snap.has(key)&&document.getElementById("v3dBtn")){
+  if(TL.center&&key&&document.getElementById("v3dBtn")){ const staro=V3D.snap.get(key); V3D.snap.delete(key); // uvijek svježa slika: s okućnicom, bazenom i priključcima kakvi su sada
     dosjeProg("snimam 3D pogled…");
     try{ await Promise.race([v3dOpen(),new Promise(r=>setTimeout(r,9000))]); if(V3D.map) await new Promise(r=>{ const t0=Date.now(), f=()=>{ if(V3D.snap.has(key)||Date.now()-t0>10000) r(); else setTimeout(f,300); }; f(); }); }catch(e){}
     try{ v3dClose(); }catch(e){}
+    if(!V3D.snap.has(key)&&staro) V3D.snap.set(key,staro);
   }
   dosjeProg("slažem dosje i karte…");
 }
@@ -8593,7 +8654,7 @@ function buildReport(){
   const prazno=e=>e&&e.matches&&(e.matches('details[data-k="scen"],details[data-k="proj"]')||(e.matches('details[data-k="zk"]')&&!e.querySelector(".zkoss,#zkOut *"))||(e.matches("details")&&/upiši cijenu|nije uneseno|nema spremljenih/.test(((e.querySelector(":scope>summary>b")||{}).textContent||"")))||(e.matches("details[data-k]")&&/Otvori odjeljak|Postavi kuću u simulatoru|Učitavam|Dohvaćam|Prvo smjesti/.test((e.querySelector(":scope>.acc-body")||e).textContent)&&!e.querySelector("table")));
   for(const [t,els,brk] of parts){ const list=els.filter(e=>e==="3D"?V3D.snap.has(cur.key):e&&!prazno(e)); if(!list.length) continue; no++;
     const sec=document.createElement("section"); sec.className="rpt-sec"+(brk?" rpt-brk":""); sec.innerHTML=`<div class="rpt-h"><span>${String(no).padStart(2,"0")}</span><h2>${esc(t)}</h2></div>`;
-    for(const e of list){ if(e==="3D"){const im=V3D.snap.get(cur.key); if(im){const f=document.createElement("figure"); f.className="rpt-3d"; f.innerHTML=`<h4><span>3D pogled</span></h4><img alt="3D pogled na česticu" src="${im}"><figcaption>Satelitska snimka (Esri) s modelom terena oko 30 m, granice čestica DGU, kuća iz simulatora. Ilustracija, ne projekt.</figcaption>`; sec.appendChild(f);} continue;}
+    for(const e of list){ if(e==="3D"){const im=V3D.snap.get(cur.key); if(im){const f=document.createElement("figure"); f.className="rpt-3d"; f.innerHTML=`<h4><span>3D pogled</span></h4><img alt="3D pogled na česticu" src="${im}"><figcaption>Satelitska snimka (Esri) s modelom terena oko 30 m, granice čestica DGU, kuća iz simulatora${(curData()&&(prikPrijedlog(curData())||{}).stanje==="ok")?", najbliži evidentirani vodovi i ravne trase priključaka (DGU, katastar infrastrukture; ilustrativno)":""}. Ilustracija, ne projekt.</figcaption>`; sec.appendChild(f);} continue;}
       if(e==="LEGENDA"){const l=document.createElement("div"); l.className="rpt-lgd"; l.innerHTML=`<h4><span>Legenda boja</span></h4>`+legendaHtml({skica:true}); sec.appendChild(l); continue;} sec.appendChild(rptClean(e)); }
     R.appendChild(sec); }
   document.body.appendChild(R); return R;
