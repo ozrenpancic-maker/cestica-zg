@@ -596,6 +596,7 @@ const RULES_PP = /*RULES_PP*/null;
 const RULES_META = /*RULES_META*/null; // izvor, verzija i status svake datoteke pravila (src/rules_meta.json)
 const ISPU_SIFRE = /*ISPU_SIFRE*/null; // potvrđene šifre listova ISPU-a (src/ispu_sifre.json; planovi-test.html, tools/ispu/provjeri_sifre.py)
 const RULES_DB = /*RULES_DB*/null; // baza urbanističkih pravila iz ČesticaHR Data Managera (src/baza/baza.json; docs/baza-uvoz.md)
+const KD_HR = /*KD_HR*/null; // komunalni doprinos izvan Zagreba i Krka, src/kd_hr.json (tools/kd_hr/pripremi.py)
 const RULES_KRK = /*RULES_KRK*/null; // PPUG Grada Krka (pilot), src/rules_krk.json
 const APP_VERSION = "/*VERSION*/";
 
@@ -1576,7 +1577,7 @@ function krkCostHtml(d,inPilot,jlsName){
   {const c=window.__krkCalc; h+=buildHtml(c&&c.gbpN||null,c&&c.tl||null);}
   const K=RULES_KRK&&RULES_KRK.komunalniDoprinos;
   const pr=naHtml("Priključci i dozvole","Naknade za priključenje (vodovod, kanalizacija, struja) još nisu obrađene.");
-  if(!inPilot||!K) return h+naHtml("Komunalni doprinos",`Komunalni doprinos prema odluci jedinice lokalne samouprave${jlsName?" ("+jlsName+")":""} još nije obrađen.`)+pr;
+  if(!inPilot||!K) return h+kdHrHtml()+pr;
   const c=window.__krkCalc, vol0=c&&c.gbpN?Math.round(c.gbpN*3):"", Z=krkKdZona(d), eur=Z?Math.round(Z.z[2]/K.tecaj*100)/100:null;
   let st={}; try{st=JSON.parse(localStorage.getItem("krkKd")||"{}")||{}}catch(e){}
   h+=`<details class="acc" data-k="krkKd" open><summary><span>Komunalni doprinos (Grad Krk)</span><b id="krkKdSum"></b></summary><div class="acc-body">`;
@@ -3031,7 +3032,7 @@ function renderHR(d){
   h+=naHtml("Namjena, klizišta i druga ograničenja iz plana","Za područja izvan Grada Zagreba i otoka Krka aplikacija još ne provjerava slojeve plana (kulturna dobra iz Registra i geološka podloga provjeravaju se iznad). Namjenu i ograničenja provjeri u ISPU-u (ispu.mgipu.hr) i u prostornom planu općine ili grada.");
   h+=env?envHtml(env):envHtml(null);
   if(parcel) h+=naHtml("Postojeće zgrade i uvjeti gradnje","Uvjeti gradnje (izgrađenost, visina, katnost) i izračun smjestivosti kuće nisu obrađeni za ovo područje. Okolne zgrade u 3D pogledu preuzete su iz OpenStreetMapa i samo su ilustracija.");
-  if(parcel) h+=`<h2 id="sec-troskovi" class="m-only">Gradnja</h2>`+buildHtml(null,null);
+  if(parcel) h+=`<h2 id="sec-troskovi" class="m-only">Gradnja</h2>`+buildHtml(null,null)+kdHrHtml();
   if(parcel) h+=moneyHtml(key,area);
   h+=G("analiza");
   if(parcel){ h+=`<h2 id="sec-sunce">Sunce i energija</h2>`+sunHtml()+pvHtml(); if(FEATURES.seis) h+=seisHtml(ll); }
@@ -5743,6 +5744,65 @@ function render(d){
   if(isMobile()){ if(!UI.hadParcel&&parcel){UI.hadParcel=true; if(UI.state==="peek") setState("half"); else setState(UI.state,{keepScroll:true});} else setState(UI.state,{keepScroll:true}); }
 }
 
+
+// ================= KOMUNALNI DOPRINOS IZVAN ZAGREBA I GRADA KRKA =================
+// Iz korisnikove tablice (verzija 3): iznos se računa samo za grad ili općinu s potvrđenom tarifom po zonama (Bjelovar,
+// Dubrovnik, Rakovec, Split, Zaprešić); za ostale piše status izvora i „Podaci nisu dostupni”, uz mogućnost upisa iznosa
+// iz odluke. Zona se ne pogađa: bira je korisnik. Posebna pravila (npr. Zaprešić 75 % do 700 m³) uključuje korisnik.
+const KDHR_ST={POTVRĐENA_TARIFA:"tarifa po zonama iz službenog akta",SEKUNDARNI_IZVOR_PROVJERITI:"samo sekundarni izvor (vijest sa sjednice); iznos treba potvrditi u odluci",
+  SLUŽBENI_DOKUMENT_PROVJERITI_AKTUALNOST:"službeni dokument, aktualnost iznosa nije potvrđena",POTVRĐEN_IZVOR_ALI_TARIFE_PO_ZONAMA_NISU_IŠČITANE:"izvor potvrđen, iznosi po zonama nisu iščitani",
+  SLUŽBENA_ODLUKA_2018_TARIFE_NEIŠČITANE_I_AKTUALNOST_NEPOTVRĐENA:"službena odluka iz 2018., iznosi nisu iščitani, aktualnost nije potvrđena",SLUŽBENI_AKTI_POTVRĐENI_TARIFE_NISU_IŠČITANE:"službeni akti poznati, iznosi nisu iščitani",
+  SLUŽBENI_AKTI_IZMJENA_POTVRĐENI_TARIFE_NISU_IŠČITANE:"izmjene akta poznate, iznosi nisu iščitani",ODLUKA_ILI_PORTAL_TARIFA_NEPOTVRĐENA:"odluka ili gradski portal poznati, iznos nije potvrđen",
+  ODLUKA_ILI_PRIPREMNI_AKT_TARIFA_NEPOTVRĐENA:"odluka poznata, tarifna tablica nije provjerena",GRAD_U_POPISU_CIJENA_NEPOTVRĐENA:"grad je u popisu, iznos nije istražen"};
+function kdHrJls(){
+  const c=window.__cur; if(!c||!(c.region==="krk"||c.region==="hr")) return null; let J=null; try{J=ptnJls()}catch(e){}
+  const ime=J&&J.red?String(J.red[2]):(c.jlsHint||null), zup=J&&J.red?String(J.red[1]):(c.jlsZup||null); if(!ime) return {ime:null};
+  const n=ptnNorm(ime), z=zup?ptnNorm(zup).replace(/ŽUPANIJA$/,""):null;
+  const e=KD_HR&&KD_HR.jls.find(x=>ptnNorm(x.jls)===n&&(!z||ptnNorm(x.zup)===z))||null;
+  return {ime:krkJlsNaziv(ime),zup,e,kako:J&&J.kako||null};
+}
+function hkdStore(){try{return JSON.parse(localStorage.getItem("hkd")||"{}")}catch(e){return {}}}
+function hkdGet(k){const o=hkdStore()[k]||{}; return {zona:typeof o.zona==="string"?o.zona:"",vol:o.vol>0&&o.vol<1e6?+o.vol:null,zap:o.zap===true,rate:o.rate>0&&o.rate<=40?+o.rate:null};}
+function hkdSet(k,ch){try{const s=hkdStore(); s[k]={...hkdGet(k),...ch}; localStorage.setItem("hkd",JSON.stringify(s));}catch(e){}}
+// ulaz za financijski model: {rate, vol, zap, label, kind, izvor} ili null
+function kdHrUlaz(){
+  const J=kdHrJls(), k=window.__cur&&window.__cur.key; if(!J||!k) return null; const S=hkdGet(k), E=J.e;
+  if(E&&E.zone.length&&S.zona){ const z=E.zone.find(x=>x[0]===S.zona); if(z) return {rate:z[1],vol:S.vol,zap:!!(S.zap&&E.jls==="Zaprešić"),label:`Komunalni doprinos (${E.jls}, ${z[0]})`,kind:"propis",izvor:E.akt}; }
+  if(S.rate>0) return {rate:S.rate,vol:S.vol,zap:false,label:`Komunalni doprinos (${J.ime||"grad ili općina"})`,kind:"unos",izvor:"tvoj upis iz odluke"};
+  return null;
+}
+function kdHrBody(){
+  const J=kdHrJls(), k=window.__cur&&window.__cur.key, S=k?hkdGet(k):{}; let h="";
+  const rIn=`<div class="kd"><label for="hkdRate">Iznos iz odluke</label><input id="hkdRate" type="number" inputmode="decimal" min="0" max="40" step="0.01" placeholder="€/m³" value="${S.rate||""}"><span>€/m³</span></div>`;
+  const vIn=`<div class="kd"><label for="hkdVol">Obujam građevine</label><input id="hkdVol" type="number" inputmode="decimal" min="0" step="1" placeholder="iz kuće" value="${S.vol||""}"><span>m³</span></div><p class="meta" id="hkdVolNote"></p>`;
+  const out=`<div class="kd"><span>Ukupno:</span><output id="hkdOut"></output></div>`;
+  if(!J||!J.ime) return h+`<p class="meta">Grad ili općina za ovu česticu još nije prepoznat (prepoznaje se iz plana ili adrese; možeš ga odabrati u odjeljku „Cijene zemljišta u općini”). Komunalni doprinos: Podaci nisu dostupni.</p>`+rIn+vIn+out;
+  const E=J.e;
+  if(!E) return h+`<p class="meta"><b>${esc(J.ime)}</b>: komunalni doprinos nije u tablici gradova i općina, pa iznos nije poznat: Podaci nisu dostupni. Iznos po m³ piše u odluci o komunalnom doprinosu tvog grada ili općine; ako ga znaš, upiši ga.</p>`+rIn+vIn+out;
+  const pzz=pzSet("kd-hr","Komunalni doprinos ("+E.jls+")",E.zone.length?"tarifa po zonama":"Podaci nisu dostupni",pz(E.zone.length&&/^provjereno/.test(E.provjera||"")?"B":"C",{izvor:E.akt||KD_HR.izvor,datum:E.dat,razlog:E.zone.length?(E.provjera||""):(KDHR_ST[E.status]||E.status),provjera:"upravni odjel grada ili općine (zona i iznos za tvoju česticu)"}));
+  const izv=`${esc(E.akt||"akt nije naveden")}${E.url?` · <a href="${esc(E.url)}" target="_blank" rel="noopener" style="color:var(--accent)">izvor</a>`:""}`;
+  if(E.zone.length){
+    h+=`<p class="meta" style="margin-top:0">${pzTag(pzz)} <b>${esc(E.jls)}</b>: ${izv}. ${esc(E.provjera||"")}.</p>`;
+    h+=`<div class="kd"><label for="hkdZone">Zona</label><select id="hkdZone" class="bsel"><option value="">izaberi zonu</option>${E.zone.map(z=>`<option value="${esc(z[0])}"${S.zona===z[0]?" selected":""}>${esc(z[0])}: ${dec(z[1].toFixed(2))} €/m³</option>`).join("")}</select></div>`;
+    if(E.jls==="Zaprešić") h+=`<label style="display:flex;gap:10px;align-items:center;margin:6px 0"><input type="checkbox" id="hkdZap"${S.zap?" checked":""} style="flex:0 0 auto"><span>individualna stambena zgrada s jednom stambenom jedinicom: obujam do 700 m³ obračunava se u 75 % iznosa (čl. 7.)</span></label>`;
+    h+=vIn+out+(S.zona?"":rIn.replace("Iznos iz odluke","ili upiši iznos"));
+    h+=`<p class="meta">Zonu provjeri u odluci ili u gradu; aplikacija je ne određuje iz položaja čestice.${E.nap?" "+esc(E.nap):""}</p>`;
+  } else {
+    h+=`<p class="meta" style="margin-top:0">${pzTag(pzz)} <b>${esc(E.jls)}</b>: iznos komunalnog doprinosa: <b>Podaci nisu dostupni</b> (${esc(KDHR_ST[E.status]||E.status)}). Poznati izvor: ${izv}.</p>`;
+    if(E.info&&E.info.length) h+=`<details><summary>Iznosi iz izvora koji se ne primjenjuju automatski (${E.info.length})</summary><ul class="zi">${E.info.map(i=>`<li>${esc(i.zona)}: ${i.iznos!=null?dec(i.iznos.toFixed(2))+" €/m³":"bez iznosa"}${i.prim?" ("+esc(i.prim)+")":""}</li>`).join("")}</ul></details>`;
+    if(E.nap) h+=`<p class="meta">${esc(E.nap)}</p>`;
+    h+=rIn+vIn+out;
+  }
+  if(E.pravila&&E.pravila.length) h+=`<details><summary>Posebna pravila iz tablice (${E.pravila.length})</summary><ul class="zi">${E.pravila.map(p=>`<li>${esc(p.zona)}: ${esc(p.uvjet)} (${esc(p.akt)})</li>`).join("")}</ul><p class="meta">Ne primjenjuju se automatski.</p></details>`;
+  h+=`<p class="meta">Izvor popisa: ${esc(KD_HR.izvor)}. ${esc(KD_HR.upozorenje)}</p>`;
+  return h;
+}
+function kdHrHtml(){ const J=kdHrJls(); return `<details class="acc" data-k="hkd"><summary><span>Komunalni doprinos</span><b id="hkdSum"></b></summary><div class="acc-body" id="hkdBody" data-jls="${esc(J&&J.e?J.e.jls:J&&J.ime||"")}">${kdHrBody()}</div></details>`; }
+function kdHrRefresh(){ const b=document.getElementById("hkdBody"); if(!b) return; const J=kdHrJls(), id=J&&J.e?J.e.jls:J&&J.ime||""; if(b.dataset.jls===id) return; b.dataset.jls=id; keepPos(()=>{b.innerHTML=kdHrBody();}); }
+sheet.addEventListener("change",e=>{ const id=e.target.id, k=window.__cur&&window.__cur.key; if(!k||!/^hkd/.test(id)) return;
+  if(id==="hkdZone"){ hkdSet(k,{zona:e.target.value}); const b=document.getElementById("hkdBody"); if(b) keepPos(()=>{b.innerHTML=kdHrBody();}); }
+  else if(id==="hkdZap") hkdSet(k,{zap:e.target.checked}); else if(id==="hkdVol") hkdSet(k,{vol:numv("hkdVol")}); else if(id==="hkdRate") hkdSet(k,{rate:numv("hkdRate")});
+  finUpdate(); try{projSaveHouse()}catch(err){} });
 // --- procjena cijene gradnje (tržište, okolica Zagreba, 2026.)
 // Izvori: trebam.hr (2026: Zagreb okolica, ključ u ruke prizemnica 1.400, katnica 1.300, montažna 1.600 €/m²; roh-bau 500–700 €/m²);
 // montazneidrvenekuce.info, Q1 2026 (montažne: ključ u ruke prosjek 1.600, visoki roh-bau 1.100 €/m², bez temeljne ploče 55–120 €/m²);
@@ -5918,7 +5978,7 @@ function buyGet(k){const o=buyStore()[k]||{}; if(o.price==null){const lp=landPri
 function buySet(k,o){try{const s=buyStore(); s[k]=o; localStorage.setItem("buy",JSON.stringify(s))}catch(e){}}
 
 // ulazi o kući iz polja kalkulatora (jedan izvor za trenutni prikaz; scenariji spremaju isti oblik objekta)
-const HOUSE_KEYS=["hA","t","std","ph","fl","base","yard","volManual","vol","kW","gas","works","septic","well","unitM","faze","rucno","tem","temL","prV","prL","prW","reg","zg"];
+const HOUSE_KEYS=["hA","t","std","ph","fl","base","yard","volManual","vol","kW","gas","works","septic","well","unitM","faze","rucno","tem","temL","prV","prL","prW","reg","zg","kdHr"];
 // obrazac „Procjena cijene gradnje”: isti za Zagreb, Krk, PGŽ i ostatak Hrvatske (gbpMax i tlocrt samo za upozorenja; mogu biti null)
 function buildHtml(gbpMax,tlocrt){
   const sel=(id,opts,def)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===def?" selected":""}>${o[1]}</option>`).join("")}</select>`;
@@ -5955,6 +6015,7 @@ function finInputs(){
     kW:parseFloat(g("kdKw")?.value||"11.04"),gas:!!g("kdGas")?.checked,works:numv("kdWorks"),septic:numv("kdSeptic"),well:numv("kdWell"),prep:prepGet(window.__cur&&window.__cur.key),oku:okuTrosak(window.__cur&&window.__cur.key),
     tem:pick("bTem",{ploca:1,trake:1},"ploca"),temL:numv("bTemL"),prV:pick("bPrV",PRILAZ,""),prL:numv("bPrL"),prW:numv("bPrW"),
     model:g("bArea").dataset.rucno!=="1"&&window.__zgrada?window.__zgrada:null,prAuto:prilazAuto(),
+    kdHr:kdHrUlaz(),
     reg:(()=>{const G=grRegija(); return G?{k:G.k,n:G.n,r:G.r,f:G.f,kako:G.kako,rucno:G.rucno,nap:G.nap||null}:null})(),zg:!(window.__cur&&(window.__cur.region==="krk"||window.__cur.region==="hr")),
     unitM:numv("bUnit"),faze:(()=>{const o={}; for(const [k] of FAZE){const v=numv("bF_"+k); if(v!=null&&v>=0) o[k]=v} return Object.keys(o).length?o:null})(),rucno:g("bArea").dataset.rucno==="1"};
 }
@@ -5995,6 +6056,10 @@ function finHouse(I,rate){
   if(yard!=null&&yard>0&&OK) warn.push("Ručno upisano uređenje okoliša nije uključeno jer je uključena okućnica.");
   if(OK) for(const x of OK.items) items.push({...x,group:"okucnica"});
   if(kd!=null) P("kd","Komunalni doprinos",kd,kd,kd,"propis",`${fmt(vol)} m³ × ${String(rate).replace(".",",")} €/m³`,"naknade");
+  let kdHr=null; // izvan Zagreba: iz tablice gradova i općina ili tvog upisa
+  if(I.zg===false&&I.kdHr&&I.kdHr.rate>0){ const v=I.kdHr.vol>0?I.kdHr.vol:autoVol, r=I.kdHr.rate, rs=String(r).replace(".",",");
+    let a, f; if(I.kdHr.zap){ const v1=Math.min(v,700), v2=Math.max(0,v-700); a=v1*r*0.75+v2*r; f=`${fmt(v1)} m³ × ${rs} €/m³ × 75 %${v2?` + ${fmt(v2)} m³ × ${rs} €/m³`:""}`; } else { a=v*r; f=`${fmt(v)} m³ × ${rs} €/m³`; }
+    kdHr={a,v,f}; P("kd",I.kdHr.label,a,a,a,I.kdHr.kind,f+(I.kdHr.vol>0?" (tvoj obujam)":" (obujam iz kuće)")+"; "+I.kdHr.izvor,"naknade"); }
   P("vodni","Vodni doprinos",0,0,0,"propis","ukinut od 1. 7. 2024.","naknade");
   P("hep","Priključak struje (HEP)",hep,hep,hep,"propis",`${String(kW).replace(".",",")} kW × ${HEP_EUR_KW} €/kW + 25 % PDV`,"naknade");
   if(I.zg!==false) P("vio","Priključak vode i kanalizacije (ViO)",0,0,0,"propis","za kućanstva plaća Grad","naknade");
@@ -6003,12 +6068,12 @@ function finHouse(I,rate){
   for(const [k,l] of [["works","Radovi na kućnim priključcima"],["septic","Sabirna jama ili pročistač"],["well","Bunar"]]){const v=I[k]; if(v>0) P({works:"kdWorks",septic:"kdSeptic",well:"kdWell"}[k],l,v,v,v,"unos","iz ponude","naknade");}
   P("prist","Pristojba za građevinsku dozvolu",prist,prist,prist,"propis",hA>600?"0,25 ‰ troškova gradnje, najmanje 132,72 €":"zgrada do 600 m² (e-zahtjev 15 % manje)","naknade");
   if(I.prep) for(const it of prepItems(I.prep)) items.push({...it,group:"priprema"});
-  if(kd==null) warn.push(I.zg===false?"Komunalni doprinos nije uključen u ovaj zbroj (izvan Zagreba računa se u odjeljku jedinice lokalne samouprave, ako je obrađen).":"Komunalni doprinos nije uključen: izaberi zonu.");
+  if(kd==null&&!kdHr) warn.push(I.zg===false?"Komunalni doprinos nije uključen: u odjeljku „Komunalni doprinos” izaberi zonu ili upiši iznos (izvan Zagreba poznat je samo za neke gradove i općine).":"Komunalni doprinos nije uključen: izaberi zonu.");
   if(!RG&&!unitM&&I.zg===false) warn.push("Područje za cijenu gradnje nije prepoznato: računa se cijena za okolicu Zagreba. Odaberi područje u polju „Područje cijene”.");
   if(RG&&RG.nap&&!unitM) warn.push(RG.nap);
   if(prV&&!prL) warn.push("Prilaz nije uključen: upiši duljinu (ili postavi kuću u simulatoru, pa se procijeni iz udaljenosti do ceste).");
   if(yard==null&&!OK) warn.push("Uređenje okoliša nije uključeno: upiši iznos ako ga znaš ili uključi trošak prijedloga okućnice.");
-  const house={hA,foot,unit,unitAuto,unitZg,reg:RG,unitM,faze,gradnja,autoVol,vol,rate,kd,kW,gas,hep,prist,base,t,fl,flK,std,ph,yard,manualVol:!!I.volManual,tm:TM,ob:OB,prilaz,prAuto:I.prAuto,skala};
+  const house={hA,foot,unit,unitAuto,unitZg,reg:RG,kdHr,unitM,faze,gradnja,autoVol,vol,rate,kd,kW,gas,hep,prist,base,t,fl,flK,std,ph,yard,manualVol:!!I.volManual,tm:TM,ob:OB,prilaz,prAuto:I.prAuto,skala};
   const sum=(f,grp)=>items.filter(i=>!grp||i.group===grp).reduce((s,i)=>s+f(i),0);
   const build={base:sum(i=>i.base),lo:sum(i=>i.lo),hi:sum(i=>i.hi),naknade:sum(i=>i.base,"naknade"),naknadeLo:sum(i=>i.lo,"naknade"),naknadeHi:sum(i=>i.hi,"naknade"),priprema:sum(i=>i.base,"priprema"),pripremaLo:sum(i=>i.lo,"priprema"),pripremaHi:sum(i=>i.hi,"priprema"),
     okucnica:sum(i=>i.base,"okucnica"),okucnicaLo:sum(i=>i.lo,"okucnica"),okucnicaHi:sum(i=>i.hi,"okucnica"),rez:(sum(i=>i.base,"gradnja")+sum(i=>i.base,"priprema")+sum(i=>i.base,"okucnica"))*0.15};
@@ -6092,6 +6157,11 @@ function finUpdate(){
       const T=(f.k==="zem"||f.k==="tem")?H.tm[f.k]:null;
       if(o) o.innerHTML=f.rucno!=null?`tvoj unos (automatski bi bilo ${fmt(f.auto)} €)`:f.k==="zem"&&H.base?"iskop je u podrumu (2a)":T?`procjena ${fmt(T.lo)}–${fmt(T.hi)} € (sredina ${fmt(T.v)} €):<br>${T.items.map(x=>esc(x.n)+": "+fmt(x.lo)+"–"+fmt(x.hi)+" € ("+esc(x.f)+")").join("<br>")}`:f.ukljuceno?`procjena: ${fmt(f.auto)} €${f.k==="pod"?` (${fmt(H.foot)} m² × ${fmt(PODRUM_EUR[H.ph]*STD[H.std])} €/m²)`:""}`:f.k==="pod"?"bez podruma":"nije uključeno u roh-bau";}
     const n=g("bFazeNote"); if(n) n.innerHTML=`Zbroj faza 1–8: <b>${fmt(H.gradnja)} €</b>. Jedinična cijena ${fmt(H.unit)} €/m² GBP${H.unitM?" (tvoja)":` = ${fmt(BUILD[H.t][H.ph])} €/m² (${H.t==="mont"?"montažna":"klasična"}, ${H.ph==="roh"?"roh-bau":"ključ u ruke"}) × ${String(STD[H.std]).replace(".",",")} (${STD_NAZ[H.std]}) × ${String(H.fl.f).replace(".",",")} (${H.fl.label})`}. Faze 1 i 2 računaju se iz stavki za ${fmt(H.tm.foot)} m² tlocrta (opseg ${fmt(H.tm.opseg)} m; cijene: ${TEM_SRC}). ${H.t==="mont"?"Cijena montažne kuće ne uključuje temelje, pa se dodaju uz ostale faze.":"Cijena klasične gradnje po m² uključuje temelje, pa se njihov udio (12 %) zamjenjuje izračunom."} Udjeli ostalih faza (${FAZE.filter(f=>f[2]>0&&f[0]!=="zem"&&f[0]!=="tem").map(f=>Math.round(f[2]*100)+" %").join(", ")}) su pretpostavka aplikacije, a ne cjenik. Podrum je posebna stavka (2a), nije dio temelja. Faza 1 obuhvaća samo iskop i nasip za temelje; dodatni zemljani radovi upisuju se u „Pripremi terena”. Uređenje okoliša (faza 9) te projekti, nadzor i rezerva (faza 10) posebne su stavke, pa se ništa ne broji dvaput.`;}
+  if(g("hkdOut")&&F.house){ const K=F.house.kdHr, J=kdHrJls(), bj=J&&J.e&&J.e.jls==="Bjelovar";
+    g("hkdOut").textContent=K?fmt(K.a)+" €"+(bj?` (uz 10 % umanjenja za jednokratno plaćanje: ${fmt(K.a*0.9)} €)`:""):"Podaci nisu dostupni"+(J&&J.e&&J.e.zone.length?": izaberi zonu":"");
+    const n=g("hkdVolNote"); if(n) n.textContent=K?`Obračun: ${K.f}. `+(hkdGet(window.__cur.key).vol?"Obujam si upisao ručno.":"Obujam iz „Procjene cijene gradnje” (kuća iz simulatora ili površina × 3 m). Službeno se obračunava obujam iz projekta."):`Obujam iz kuće: ${fmt(F.house.autoVol)} m³.`;
+    const hv=g("hkdVol"); if(hv) hv.placeholder=fmt(F.house.autoVol);
+    if(g("hkdSum")) g("hkdSum").textContent=K?fmt(K.a)+" €":"Podaci nisu dostupni"; }
   {const s=g("bReg"); if(s&&s.options[0]){const A=grRegAuto(); s.options[0].textContent=A?"automatski: "+GR_REG[A.k].n:"automatski: Podaci nisu dostupni";}}
   if(g("bOut")&&F.house){
     const H=F.house, grid=document.querySelector(".bgrid[data-gbp]"), gbp=grid?+grid.dataset.gbp||0:0, tl=grid?+grid.dataset.tlocrt||0:0;
@@ -8285,7 +8355,7 @@ function ptnRez(){
   if(!PTN.data) return null; const J=ptnJls(); if(!J) return null; const r=J.red, S=ptnStat(r[3],r[4]), A=window.__cur&&window.__cur.area;
   return {J,S,A,pol:r[5]?ptnStat(r[5],r[6]):null};
 }
-function ptnUpdate(){ ptnUpdate0(); try{ppvUpdate()}catch(e){console.error(e)} try{ if(window.__cur&&(window.__cur.region==="krk"||window.__cur.region==="hr")&&document.getElementById("bArea")) finUpdate(); }catch(e){console.error(e)} }
+function ptnUpdate(){ ptnUpdate0(); try{ppvUpdate()}catch(e){console.error(e)} try{ kdHrRefresh(); if(window.__cur&&(window.__cur.region==="krk"||window.__cur.region==="hr")&&document.getElementById("bArea")) finUpdate(); }catch(e){console.error(e)} }
 function ptnUpdate0(){
   const o=document.getElementById("ptnOut"); ptnLoad(); if(!o) return; const sum=document.getElementById("ptnSum"), k=window.__cur&&window.__cur.key;
   if(PTN.st==="err"){ o.innerHTML=`<p class="flag">Podaci nisu dostupni (${esc(PTN.err)}).</p>`; return; }

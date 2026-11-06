@@ -62,6 +62,8 @@ def check_krk(r):
     if errs: print("\n".join(errs)); sys.exit(1)
 rules_krk = json.loads((root / "src/rules_krk.json").read_text(encoding="utf-8")); check_krk(rules_krk)
 data_krk = json.dumps(rules_krk, ensure_ascii=False).replace("</", "<\\/")
+# komunalni doprinos izvan Zagreba i Krka (tools/kd_hr/pripremi.py iz korisnikove tablice)
+data_kdhr = json.dumps(json.loads((root / "src/kd_hr.json").read_text(encoding="utf-8")), ensure_ascii=False).replace("</", "<\\/")
 # baza pravila iz ČesticaHR Data Managera (nije obavezna): provjera prije ugradnje (tools/baza/provjeri.py)
 data_db = "null"
 db_path = root / "src/baza/baza.json"
@@ -83,7 +85,7 @@ if ispu_path.exists():
 import datetime
 ver = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=2))).strftime("%d.%m.%Y. %H:%M")
 data_mk = json.dumps(json.loads((root / "src/montazne_kuce.json").read_text(encoding="utf-8")), ensure_ascii=False).replace("</", "<\\/")
-(root / "index.html").write_text(tpl.replace("/*MONTAZNE*/null", data_mk).replace("/*RULES*/null", data).replace("/*RULES_SE*/null", data_se).replace("/*RULES_PP*/null", data_pp).replace("/*RULES_META*/null", data_meta).replace("/*RULES_KRK*/null", data_krk).replace("/*RULES_DB*/null", data_db).replace("/*ISPU_SIFRE*/null", data_ispu).replace("/*VERSION*/", ver), encoding="utf-8")
+(root / "index.html").write_text(tpl.replace("/*MONTAZNE*/null", data_mk).replace("/*RULES*/null", data).replace("/*RULES_SE*/null", data_se).replace("/*RULES_PP*/null", data_pp).replace("/*RULES_META*/null", data_meta).replace("/*RULES_KRK*/null", data_krk).replace("/*KD_HR*/null", data_kdhr).replace("/*RULES_DB*/null", data_db).replace("/*ISPU_SIFRE*/null", data_ispu).replace("/*VERSION*/", ver), encoding="utf-8")
 # service worker: verzija = sažetak sadržaja stranice i ljuske, pa svaka promjena aplikacije daje novi sw.js
 import hashlib
 h = hashlib.sha256()

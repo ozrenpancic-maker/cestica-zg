@@ -1772,6 +1772,7 @@ async function hrTests(){
   const Z=await E("zg3dLoad")(E("KRK_CUR").parcel);
   ok(Z.st==="ok"&&Z.tip==="osm"&&Z.list.length===2&&Z.list.some(b=>Math.abs(b.wall-7)<0.01)&&Z.list.some(b=>Math.abs(b.wall-2.8)<0.01)&&/OpenStreetMap/.test(E("zg3dNapomena")(Z)),"Hrvatska: okolne zgrade iz OSM-a (visina iz broja etaža, inače pretpostavka po vrsti) uz napomenu o izvoru");
   ok(E("window.__cur").region==="hr"&&!!E("window.__areaCtx"),"Hrvatska: kontekst čestice postavljen (spremi, podijeli, ZK izvadak)");
+  ok(!!$(w,"bArea")&&!!$(w,"bReg")&&!!$(w,"hkdBody")&&/Komunalni doprinos/.test(t)&&/Podaci nisu dostupni/.test(txt(w,"hkdBody")),"Hrvatska: procjena cijene gradnje i odjeljak komunalnog doprinosa (bez poznatog iznosa: „Podaci nisu dostupni”)");
   // katastar ne odgovara: poruka, bez rušenja
   w.fetch=()=>Promise.resolve({ok:false,status:500,json:()=>Promise.resolve(null)}); await E("inspect")({lat:lat+0.2,lng:lon}); await tick(100);
   ok(/Podaci nisu dostupni/.test(w.document.getElementById("sheet").textContent),"Hrvatska: kad DGU ne odgovara, piše „Podaci nisu dostupni”");
@@ -2266,6 +2267,17 @@ async function ptnTests(){
    setv(w,"bReg","o1","change"); H=w.__fin.house; ok(H.reg.k==="o1"&&H.reg.rucno&&near(H.unitAuto,1400*1.325)&&E("grRegRucnoGet")("hr:test")==="o1","Gradnja: ručni odabir područja (ekstremno udaljeni otoci +25 do +40 %) se pamti");
    setv(w,"bUnit","1000","change"); H=w.__fin.house; ok(H.unit===1000&&!/× 1,325/.test(w.__fin.items.find(i=>i.k==="gradnja").formula),"Gradnja: tvoja cijena po m² se ne množi odstupanjem");
    setv(w,"bUnit","","change"); setv(w,"bReg","","change"); ok(E("grRegRucnoGet")("hr:test")===null,"Gradnja: povratak na automatski odabir područja");
+   // komunalni doprinos izvan Zagreba iz tablice gradova i općina (računa se samo iz potvrđene tarife; zonu bira korisnik)
+   D.jls.push([4001,"Bjelovarsko-bilogorska","BJELOVAR",[1],[1],null,null],[4002,"Zagrebačka","ZAPREŠIĆ",[1],[1],null,null],[4003,"Zagrebačka","SAMOBOR",[1],[1],null,null],[4004,"Bjelovarsko-bilogorska","BEREK",[1],[1],null,null]);
+   const kdi=()=>w.__fin.items.find(i=>i.k==="kd"), body=()=>E("kdHrBody")().replace(/<[^>]+>/g," ").replace(/\s+/g," ");
+   H=naj(4001); ok(!kdi()&&/Bjelovar/.test(body())&&/I\. zona: 10,00 €\/m³/.test(E("kdHrBody")())&&/provjereno u službenom PDF-u/.test(body())&&w.__fin.warn.some(x=>/izaberi zonu ili upiši iznos/.test(x)),"Komunalni doprinos (Bjelovar): zone iz nove odluke (10 €/m³ u I. zoni), bez odabira zone nije uključen");
+   E("hkdSet")("hr:test",{zona:"I. zona"}); H=u(); ok(kdi()&&near(kdi().base,H.autoVol*10)&&kdi().kind==="propis"&&/Bjelovar, I\. zona/.test(kdi().label)&&E("PZREG").items.get("kd-hr").raz==="B","Komunalni doprinos (Bjelovar, I. zona): obujam × 10 €/m³ u naknadama, pouzdanost B");
+   H=naj(4002); E("hkdSet")("hr:test",{zona:"1. zona",zap:false,vol:1000}); u(); ok(near(kdi().base,18000),"Komunalni doprinos (Zaprešić, 1. zona): 1.000 m³ × 18 €/m³");
+   E("hkdSet")("hr:test",{zap:true}); u(); ok(near(kdi().base,700*18*0.75+300*18)&&/75 %/.test(kdi().formula),"Komunalni doprinos (Zaprešić): kuća s jednom stambenom jedinicom, do 700 m³ u 75 % iznosa, ostatak puni iznos");
+   E("hkdSet")("hr:test",{zona:"",zap:false,vol:null}); H=naj(4003); ok(!kdi()&&/Podaci nisu dostupni/.test(body())&&/sekundarni izvor/.test(body())&&/Ne koristiti za obiteljsku kuću/.test(body()),"Komunalni doprinos (Samobor): iznosi iz sekundarnog izvora se ne primjenjuju; piše „Podaci nisu dostupni”");
+   E("hkdSet")("hr:test",{rate:5}); u(); ok(kdi()&&near(kdi().base,H.autoVol*5)&&kdi().kind==="unos","Komunalni doprinos: upisani iznos iz odluke ulazi kao tvoj unos");
+   E("hkdSet")("hr:test",{rate:null}); H=naj(4004); ok(!kdi()&&/nije u tablici gradova i općina/.test(body()),"Komunalni doprinos: grad ili općina izvan tablice → „Podaci nisu dostupni”");
+   ok(E("KD_HR").jls.every(e=>!e.zone.length||e.status==="POTVRĐENA_TARIFA")&&!E("KD_HR").jls.some(e=>e.jls==="Zagreb"||e.jls==="Krk")&&E("KD_HR").jls.filter(e=>e.zone.length).map(e=>e.jls).join(",")==="Bjelovar,Dubrovnik,Rakovec,Split,Zaprešić","Komunalni doprinos: iznosi samo za potvrđene tarife; Zagreb i Krk ostaju na svojim odlukama");
    E("ptnRucnoSet")("hr:test",null); C.region=undefined; u();}
   ok(errs.length===0,"bez JS grešaka (cijene zemljišta): "+errs.join(" | "));
 }
