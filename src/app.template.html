@@ -256,6 +256,8 @@ details.vise[open]>summary span::after{content:" ▴"}details.vise:not([open])>s
 .lgd-wrap>summary{cursor:pointer;font-weight:600;font-size:13px}
 .lgd-nam>summary{cursor:pointer;font-size:12px;color:var(--muted);margin-top:4px}
 #report{display:none}
+.pr-box,.pr-zak{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0;background:var(--panel)}.pr-box[data-pr="zakljucano"]{border-color:var(--accent)}
+@media print{ body.pr-blok>*{display:none!important} body.pr-blok::after{content:"Dosje se ne ispisuje iz preglednika: pošalji ga na e-mail gumbom „Pošalji dosje na e-mail”.";display:block;font:14pt sans-serif;padding:20mm} }
 .sk-svg{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:8px;font-family:system-ui,sans-serif}
 .sk-svg text{font-size:13px;fill:#222;text-anchor:middle;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
 .sk-svg .sk-me{font-size:12px;fill:#4a2f14;font-weight:600}.sk-svg .sk-cesta{font-size:11.5px;fill:#333;font-style:italic}.sk-svg .sk-d{font-size:12px;fill:#b3261e;font-weight:600}.sk-svg .sk-hl{font-size:13px;fill:#0d3c7a;font-weight:700}
@@ -643,7 +645,7 @@ const CHECKS = [
 ];
 // Koridori infrastrukture (GUP čl. 50: DV 110 kV 20 m, 220 kV 25 m, 400 kV 35 m od osi; čl. 53: magistralni plinovod 30 m, VTP 10 m)
 // moduli koji su u razvoju (faze C i D) i još nisu uključeni
-const FEATURES={infra:true,seis:false,ai:false,upuZona:false}; // seis: potresna opasnost, privremeno skrivena; ai: AI asistent (AI-1/AI-2 kod postoji) privremeno isključen: nema stavke u izborniku i ništa se ne šalje; uključuje se postavljanjem na true
+const FEATURES={infra:true,seis:false,ai:false,upuZona:false,pristup:false}; // pristup: kodovi za napredne funkcije i dosje na e-mail (uključuje se kad je Worker postavljen, vidi PRISTUP.api) // seis: potresna opasnost, privremeno skrivena; ai: AI asistent (AI-1/AI-2 kod postoji) privremeno isključen: nema stavke u izborniku i ništa se ne šalje; uključuje se postavljanjem na true
 const INFRA=BASE+"GUP_Infrastruktura/FeatureServer/";
 const corrDist=(f,kind)=>{
   if(kind==="ee"){const l=String(f.LAYER||"")+String(f.EE_VODOVI_OPIS||""); return /400|440/.test(l)?35:/220/.test(l)?25:20;}
@@ -3398,7 +3400,7 @@ function tMoveSide(i,want){
 }
 function tRotHandlePos(){ const p=turf.destination(turf.point(TL.center),(TL.d/2+3)/1000,(TL.rot+180)%360,{units:"kilometers"}); return p.geometry.coordinates; }
 function tDraw(){
-  const env=window.__env&&window.__env.geom; if(!env) return;
+  const env=window.__env&&window.__env.geom; if(!env) return; if(!prOk()) return;
   if(!TL.center){const c=turf.centroid({type:"Feature",geometry:env,properties:{}}).geometry.coordinates; TL.center=c;}
   if(!TL.zones) TL.zones=tZones();
   if(TL.zl) selLayer.removeLayer(TL.zl);
@@ -4268,7 +4270,7 @@ sheet.addEventListener("click",e=>{ const id=e.target.id, k=window.__cur&&window
   if(id==="tMat"){ OPEN.add("mat"); const d=document.querySelector('details[data-k="mat"]'); if(d){ d.open=true; matUpdate(); try{d.scrollIntoView({behavior:"smooth",block:"start"})}catch(x){} } return; }
   if(id==="matSpA"||id==="matSpB"){ const R=matIzracun(matGeo(),matGet(k)); if(R.geo) matSet(k,{[id==="matSpA"?"A":"B"]:matSnap(R)}); matUpdate(); }
   if(id==="matBris"){ matSet(k,{A:null,B:null}); matUpdate(); }
-  if(id==="matPdf") matPrint(); });
+  if(id==="matPdf"){ if(prUkljuceno()) prMailOtvori("mat",e.target.closest('details[data-k="mat"]')); else matPrint(); } });
 sheet.addEventListener("toggle",e=>{ const d=e.target; if(d&&d.dataset&&d.dataset.k==="mat"&&d.open) matUpdate(); },true);
 // PDF „Okvirne količine za upit”: isti ispis kao dosje (stil .rpt, A4), samo materijal i odabrani scenarij
 function matPrintHtml(){ const k=window.__cur&&window.__cur.key, U=matGet(k), R=matIzracun(matGeo(),U), c=window.__cur||{}, S=odmCur();
@@ -4285,6 +4287,92 @@ function matPrintHtml(){ const k=window.__cur&&window.__cur.key, U=matGet(k), R=
   return h; }
 function matPrint(){ let R=document.getElementById("report"); if(R) R.remove(); R=document.createElement("div"); R.id="report"; R.className="rpt"; R.innerHTML=matPrintHtml();
   document.body.appendChild(R); document.body.classList.add("print-report"); setTimeout(()=>window.print(),50); }
+
+// ================= PRISTUP: napredne funkcije uz kod, dosje na e-mail (faza 1) =================
+// Uključuje se s FEATURES.pristup=true i adresom Workera u PRISTUP.api (worker-pristup/). Bez koda radi samo čestica, namjena
+// i osnovni uvjeti gradnje; ostali odjeljci pokazuju karticu za prijavu kodom. Token (potpisan na Workeru, s rokom) čuva se u
+// pregledniku; Worker ga provjerava pri svakom slanju dosjea, a aplikacija pri pokretanju (opozvan kod odjavljuje).
+// Faza 1 zaključava sučelje; kod naprednih funkcija i dalje je u stranici (faza 2 ga seli na poslužitelj).
+const PRISTUP={api:"",kontakt:"info@cesticahr.com",provjereno:false};
+const PR_ADV=["tloc","gp","skica","oku","mat","build","prep","kd","costs","krkKd","hkd","buy","total","scen","proj","vrij","ptn","ppv","isk","osun","pogled","ene","kis","vjet","sun","pv","bfaze","mk","cklist"];
+const prUkljuceno=()=>!!(FEATURES.pristup&&PRISTUP.api);
+function prTok(){ try{ const o=JSON.parse(localStorage.getItem("pristupTok")||"null"); return o&&o.token&&o.istice>Date.now()?o:null; }catch(e){ return null; } }
+function prOk(){ return !prUkljuceno()||!!prTok(); }
+function prPostavi(o){ try{ if(o) localStorage.setItem("pristupTok",JSON.stringify(o)); else localStorage.removeItem("pristupTok"); }catch(e){} }
+function prRerender(){ try{ const c=window.__cur||{}; if(c.region==="krk"&&KRK_CUR) renderKrk(KRK_CUR); else if(c.region==="hr"&&KRK_CUR) renderHR(KRK_CUR); else if(window.__lastData) render(window.__lastData); }catch(e){console.error(e)} }
+async function prApi(path,opt){ const t=prTok(), r=await fetch(PRISTUP.api+path,{method:opt&&opt.body?"POST":"GET",headers:{"content-type":"application/json",...(t?{authorization:"Bearer "+t.token}:{})},body:opt&&opt.body?JSON.stringify(opt.body):undefined});
+  let j=null; try{ j=await r.json(); }catch(e){} if(!r.ok){ const e=new Error(j&&j.error&&j.error.poruka||("greška "+r.status)); e.status=r.status; e.code=j&&j.error&&j.error.code; throw e; } return j; }
+function prBoxHtml(){ const t=prTok();
+  if(t) return `<div class="pr-box" id="prBox" data-pr="otkljucano"><p class="meta" style="margin:0">Napredne funkcije otključane do <b>${new Date(t.istice).toLocaleDateString("hr-HR")}</b>${t.oznaka?" ("+esc(t.oznaka)+")":""}. <button type="button" class="ib" id="prOdjava">Odjavi se</button></p></div>`;
+  return `<div class="pr-box" id="prBox" data-pr="zakljucano"><p style="margin:0 0 6px"><b>Napredne funkcije</b> (simulator kuće, troškovi, 3D, okućnica, materijal, dosje na e-mail) otključavaju se pristupnim kodom.</p>
+    <p class="meta" style="margin:0 0 8px">Kod zatraži na <a href="mailto:${esc(PRISTUP.kontakt)}?subject=Pristupni%20kod%20%C4%8Cestica%20HR">${esc(PRISTUP.kontakt)}</a>.</p>
+    <div class="kd"><label for="prKod">Pristupni kod</label><input id="prKod" type="text" inputmode="text" autocomplete="one-time-code" placeholder="XXXX-XXXX-XXXX" maxlength="20" style="text-transform:uppercase"><button type="button" class="ib" id="prPrijava">Prijavi se</button></div><p class="meta" id="prPor" aria-live="polite" style="margin:4px 0 0"></p></div>`; }
+const prZakHtml=()=>`<div class="pr-zak"><p style="margin:0 0 6px"><b>Napredna funkcija.</b> Otključava se pristupnim kodom.</p><p class="meta" style="margin:0">Kod upiši na vrhu rezultata ili ga zatraži na <a href="mailto:${esc(PRISTUP.kontakt)}?subject=Pristupni%20kod%20%C4%8Cestica%20HR">${esc(PRISTUP.kontakt)}</a>.</p></div>`;
+// nakon svakog prikaza: kartica prijave na vrhu, napredni odjeljci zaključani, gumb ispisa postaje slanje na e-mail
+function prGate(){ try{document.body.classList.toggle("pr-blok",prUkljuceno())}catch(e){} if(!prUkljuceno()) return; const s=sheet; if(!s) return;
+  const stari=document.getElementById("prBox"); if(stari) stari.remove();
+  const act=s.querySelector(".actions"), box=document.createElement("div"); box.innerHTML=prBoxHtml(); const B=box.firstElementChild;
+  if(act&&act.parentNode) act.parentNode.insertBefore(B,act.nextSibling); else s.prepend(B);
+  const pb=document.getElementById("printBtn"); if(pb) pb.textContent="Pošalji dosje na e-mail";
+  if(prTok()) return;
+  for(const d of s.querySelectorAll("details[data-k]")){ if(!PR_ADV.includes(d.dataset.k)||d.dataset.prZak) continue; d.dataset.prZak="1";
+    const b=d.querySelector(":scope>summary>b"); if(b) b.textContent="zaključano"; const body=d.querySelector(":scope>.acc-body")||d.querySelector(":scope>div");
+    if(body) body.innerHTML=prZakHtml(); else d.insertAdjacentHTML("beforeend",prZakHtml()); }
+  for(const id of ["v3dBtn","mkOpen","tMat"]){ const e=document.getElementById(id); if(e){ e.disabled=true; e.title="Napredna funkcija: otključava se pristupnim kodom"; } }
+  try{ gpLayer.clearLayers(); if(TL.layer){ selLayer.removeLayer(TL.layer); TL.layer=null; } if(TL.zl){ selLayer.removeLayer(TL.zl); TL.zl=null; } }catch(e){}
+}
+// pri pokretanju: opozvan ili istekao kod odjavljuje (bez mreže ostaje do roka u tokenu)
+async function prProvjeri(){ if(!prUkljuceno()||!prTok()||PRISTUP.provjereno) return; PRISTUP.provjereno=true;
+  try{ await prApi("/provjera"); }catch(e){ if(e.status===401){ prPostavi(null); prRerender(); } } }
+sheet.addEventListener("click",async e=>{ const id=e.target.id;
+  if(id==="prPrijava"){ const k=(document.getElementById("prKod")||{}).value||"", p=document.getElementById("prPor"); if(p) p.textContent="Provjeravam kod…";
+    try{ const j=await prApi("/prijava",{body:{kod:k}}); prPostavi({token:j.token,istice:j.istice,oznaka:j.oznaka||null}); PRISTUP.provjereno=true; prRerender(); }
+    catch(err){ if(p) p.textContent=err.message||"Prijava nije uspjela."; } }
+  if(id==="prOdjava"){ prPostavi(null); prRerender(); }
+});
+sheet.addEventListener("keydown",e=>{ if(e.target.id==="prKod"&&e.key==="Enter"){ e.preventDefault(); const b=document.getElementById("prPrijava"); if(b) b.click(); } });
+// --- dosje na e-mail: PDF se slaže u pregledniku (html2canvas + jsPDF, odjeljak po odjeljak), s vodenim žigom primatelja
+function prLib(src,glob){ if(window[glob]) return Promise.resolve(); return new Promise((res,rej)=>{ const sc=document.createElement("script"); sc.src=src; sc.onload=()=>res(); sc.onerror=()=>rej(new Error("biblioteka za PDF se nije učitala")); document.head.appendChild(sc); }); }
+async function prPdf(R,email){
+  if(window.__pdfHook) return window.__pdfHook(R,email);
+  await prLib("vendor/html2canvas-1.4.1/html2canvas.min.js","html2canvas"); await prLib("vendor/jspdf-2.5.2/jspdf.umd.min.js","jspdf");
+  const {jsPDF}=window.jspdf, doc=new jsPDF({unit:"mm",format:"a4",compress:true}), W=210, H=297, M=12, IW=W-2*M, IH=H-2*M-8, dat=new Date().toLocaleDateString("hr-HR");
+  const zig=()=>{ doc.setFontSize(7.5); doc.setTextColor(120); doc.text(`Dosje za ${email} - ${dat} - cesticahr.com - nije lokacijska informacija ni projekt`,M,H-6); };
+  R.style.cssText="display:block;position:absolute;left:-10000px;top:0;width:186mm;background:#fff"; R.classList.add("rpt-pdf");
+  let y=M, prva=true; const dijelovi=[...R.children];
+  for(const el of dijelovi){ const c=await html2canvas(el,{scale:1.6,useCORS:true,backgroundColor:"#ffffff",logging:false}); if(!c.width) continue;
+    const mmPx=IW/c.width, hMM=c.height*mmPx;
+    if(!prva&&y+Math.min(hMM,IH)>M+IH){ zig(); doc.addPage(); y=M; }
+    if(el.classList.contains("rpt-cover")&&!prva){ zig(); doc.addPage(); y=M; }
+    if(hMM<=IH){ doc.addImage(c.toDataURL("image/jpeg",0.72),"JPEG",M,y,IW,hMM); y+=hMM+4; }
+    else { // dugačak odjeljak: rez na bijelom retku (ne kroz tekst), najviše 18 % visine stranice iznad granice
+      const sliceH=Math.floor(IH/mmPx), D=c.getContext("2d").getImageData(0,0,c.width,c.height).data, bijel=r=>{ for(let x=0;x<c.width;x+=3){ const i=(r*c.width+x)*4; if(D[i]<235||D[i+1]<235||D[i+2]<235) return false; } return true; };
+      for(let s=0;s<c.height;){ if(s>0||y>M){ zig(); doc.addPage(); y=M; }
+        let e=Math.min(c.height,s+sliceH); if(e<c.height){ for(let r=e;r>e-sliceH*0.18;r--) if(bijel(r)){ e=r; break; } }
+        const cc=document.createElement("canvas"); cc.width=c.width; cc.height=e-s; cc.getContext("2d").drawImage(c,0,-s);
+        doc.addImage(cc.toDataURL("image/jpeg",0.72),"JPEG",M,y,IW,cc.height*mmPx); y+=cc.height*mmPx+4; s=e; } }
+    prva=false; if(el.classList.contains("rpt-cover")){ zig(); doc.addPage(); y=M; } }
+  zig(); return doc.output("datauristring").split(",")[1];
+}
+function prMailHtml(){ return `<div class="pr-box" id="prMail"><p style="margin:0 0 6px"><b>Pošalji dosje na e-mail</b></p><p class="meta" style="margin:0 0 8px">Dosje (PDF) stiže na upisanu adresu s oznakom primatelja. Adresu koristimo samo za ovo slanje.</p>
+  <div class="kd"><label for="prEmail">E-mail</label><input id="prEmail" type="email" autocomplete="email" placeholder="ime@primjer.hr"><button type="button" class="ib" id="prPosalji">Pošalji</button><button type="button" class="ib" id="prOdustani">Odustani</button></div><p class="meta" id="prMailPor" aria-live="polite" style="margin:4px 0 0"></p></div>`; }
+async function prPosalji(email,izvor){ const p=document.getElementById("prMailPor"), set=t=>{ if(p) p.textContent=t; };
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){ set("Upiši ispravnu e-mail adresu."); return false; }
+  if(!prTok()){ set("Za slanje dosjea potreban je pristupni kod."); return false; }
+  let R=null;
+  try{ set("Pripremam dosje…"); if(izvor==="mat"){ R=document.createElement("div"); R.id="report"; R.className="rpt"; R.innerHTML=matPrintHtml(); document.body.appendChild(R); }
+    else { await dosjePripremi(); try{skicaRender()}catch(e){} R=buildReport(); const pm=document.getElementById("rpMap"), Dp=(curData()||{}).parcel; if(pm&&Dp){ pm.classList.add("rpt-map-nk"); pm.appendChild(dosjeNaslovnaKarta(Dp)); } }
+    dosjeProg("slažem PDF…"); const pdf=await prPdf(R,email); dosjeProg("šaljem…");
+    const c=window.__cur||{}, nm=(izvor==="mat"?"okvirne-kolicine":"dosje")+"-"+String(c.ces||"cestica").replace(/[^\w-]+/g,"-")+".pdf";
+    await prApi("/izvjestaj",{body:{email,pdf,naziv:nm,naslov:(izvor==="mat"?"Okvirne količine za upit":"Dosje čestice")+(c.ces?" "+c.ces:"")+(c.ko?", k.o. "+c.ko:"")}});
+    set("Poslano na "+email+". Provjeri i mapu za neželjenu poštu."); return true; }
+  catch(err){ set(err.status===401?"Prijava je istekla: ponovno upiši kod.":(err.message||"Slanje nije uspjelo.")); if(err.status===401){ prPostavi(null); } return false; }
+  finally{ dosjeProg(null); if(R) R.remove(); } }
+sheet.addEventListener("click",e=>{ const id=e.target.id;
+  if(id==="prPosalji"){ const b=e.target; b.disabled=true; prPosalji(((document.getElementById("prEmail")||{}).value||"").trim(),PRISTUP.izvor).finally(()=>{b.disabled=false;}); }
+  if(id==="prOdustani"){ const m=document.getElementById("prMail"); if(m) m.remove(); } });
+function prMailOtvori(izvor,uz){ PRISTUP.izvor=izvor; let m=document.getElementById("prMail"); if(m) m.remove(); const t=document.createElement("div"); t.innerHTML=prMailHtml(); m=t.firstElementChild;
+  (uz&&uz.parentNode?uz.parentNode:sheet).insertBefore(m,uz?uz.nextSibling:sheet.firstChild); const i=document.getElementById("prEmail"); if(i) try{i.focus()}catch(x){} }
 
 // ================= SKICA KUĆE NA TERENU (tlocrt i presjek; ulazi u ispis / PDF) =================
 // Tlocrt: međe s duljinama stranica, područje za gradnju, kuća iz simulatora s krovom i udaljenostima od međa,
@@ -7746,6 +7834,7 @@ sheet.addEventListener("input",e=>{if(e.target.matches&&e.target.matches("[data-
 // --- ispis / PDF
 sheet.addEventListener("click",e=>{
   if(e.target.id!=="printBtn") return;
+  if(prUkljuceno()){ if(!prTok()){ const b=document.getElementById("prBox"); if(b) try{b.scrollIntoView({block:"center"})}catch(x){} const k=document.getElementById("prKod"); if(k) try{k.focus()}catch(x){} return; } prMailOtvori("dosje",e.target.closest(".actions")); return; }
   const ph=document.getElementById("printHead");
   if(ph) ph.textContent="Dosje čestice · "+new Date().toLocaleDateString("hr-HR")+" · "+(window.__lastLL?window.__lastLL.lat.toFixed(5)+", "+window.__lastLL.lng.toFixed(5):"");
   dosjePripremi().then(rptPrint).catch(err=>{console.error(err); dosjeProg(null); rptPrint();});
@@ -8404,7 +8493,7 @@ sheet.addEventListener("scroll",()=>{const b=document.getElementById("izbTop"); 
 // odmah nakon slaganja prikaza: sklapanje pojašnjenja, kategorije izbornika i sažetak (prije vraćanja položaja čitanja)
 // promjena sadržaja iznad mjesta čitanja ne smije pomaknuti tekst koji se čita (Safari nema „scroll anchoring”)
 function keepPos(fn){ const A=sheet.scrollTop>0?scrollAnchor():null; fn(); if(A) scrollRestore(A); }
-function sheetPost(){ try{scenLinkApply()}catch(e){console.error(e)} try{srchNote()}catch(e){} try{ptnUpdate()}catch(e){console.error(e)} try{viseInfo()}catch(e){} try{izbWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){} try{promSoon()}catch(e){} }
+function sheetPost(){ try{prGate(); prProvjeri()}catch(e){console.error(e)} try{scenLinkApply()}catch(e){console.error(e)} try{srchNote()}catch(e){} try{ptnUpdate()}catch(e){console.error(e)} try{viseInfo()}catch(e){} try{izbWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){} try{promSoon()}catch(e){} }
 // položaj čitanja: zadnji odjeljak čiji je vrh iznad vrha panela i koliko je pomaknut; poslije ponovnog prikaza isti odjeljak
 // vraća se na isto mjesto, i kad se visina sadržaja iznad promijeni (npr. stigne uložak ili se sklope pojašnjenja)
 function scrollAnchor(){

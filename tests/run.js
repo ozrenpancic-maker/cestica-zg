@@ -3147,7 +3147,48 @@ async function tri3dTests(){
   ok(errs.length===0,"bez JS grešaka (3D three.js): "+errs.join(" | "));
 }
 
-netTests().then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(()=>{
+// pristup (faza 1): bez koda samo čestica, namjena i osnovni uvjeti; prijava kodom; dosje na e-mail umjesto ispisa
+async function pristupTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  const A=parcelRect(30,40,{KATASTARSKA_CESTICA:"88/1",KATASTARSKA_OPCINA:"REMETE"});
+  E("render")(data(w,A,"2.2.")); await tick(50);
+  ok(!$(w,"prBox")&&$(w,"printBtn").textContent==="Ispiši / spremi PDF"&&!w.document.querySelector("[data-pr-zak]"),"Pristup isključen (zadano): aplikacija radi kao prije, bez zaključavanja");
+  const calls=[]; let opozvan=false;
+  w.fetch=async(u,o)=>{ u=String(u); const b=o&&o.body?JSON.parse(o.body):null, h=(o&&o.headers)||{}; calls.push({u,b,h});
+    const R=(st,j)=>({ok:st<400,status:st,json:async()=>j});
+    if(u==="https://p.test/prijava") return b.kod.replace(/[^A-Z0-9]/gi,"").toUpperCase()==="ABCDEFGHJKLM"?R(200,{token:"tok.sig",istice:Date.now()+86400000,oznaka:"test"}):R(401,{error:{code:"KOD",poruka:"Kod nije ispravan."}});
+    if(u==="https://p.test/provjera") return opozvan?R(401,{error:{code:"TOKEN"}}):R(200,{ok:true});
+    if(u==="https://p.test/izvjestaj") return h.authorization==="Bearer tok.sig"?R(200,{ok:true,poslano:b.email}):R(401,{error:{code:"TOKEN",poruka:"Prijava nije valjana."}});
+    return Promise.reject(new Error("bez mreže u testu")); };
+  E("FEATURES.pristup=true; PRISTUP.api='https://p.test'"); w.__areaCtx=null; w.__lastData=data(w,A,"2.2."); E("render")(w.__lastData); await tick(50);
+  const zak=[...w.document.querySelectorAll("details[data-pr-zak]")].map(d=>d.dataset.k);
+  ok($(w,"prBox")&&$(w,"prBox").dataset.pr==="zakljucano"&&["tloc","build","kd","costs"].every(k=>zak.includes(k))&&!zak.includes("calc")&&/Napredna funkcija/.test(w.document.querySelector('details[data-k="tloc"]').textContent)&&!$(w,"tW"),"Bez koda: simulator i troškovi zaključani, izračun za česticu i namjena dostupni");
+  ok(/88\/1/.test(txt(w,"sheet"))&&/Stambena/.test(txt(w,"sheet")),"Bez koda: čestica i namjena vidljive");
+  ok($(w,"v3dBtn")&&$(w,"v3dBtn").disabled&&$(w,"printBtn").textContent==="Pošalji dosje na e-mail"&&w.document.body.classList.contains("pr-blok"),"Bez koda: 3D isključen; ispis iz preglednika blokiran, gumb šalje dosje na e-mail");
+  $(w,"printBtn").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20); ok(!$(w,"prMail"),"Bez koda: slanje dosjea traži prijavu (fokus na upis koda)");
+  setv(w,"prKod","pogresan-kod1"); $(w,"prPrijava").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(50);
+  ok(/Kod nije ispravan/.test(txt(w,"prPor"))&&!E("prTok()"),"Prijava: kriv kod daje poruku s Workera");
+  setv(w,"prKod","abcd-efgh-jklm"); $(w,"prPrijava").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(80);
+  ok(E("prTok()")&&E("prTok()").token==="tok.sig"&&$(w,"prBox").dataset.pr==="otkljucano"&&!w.document.querySelector("[data-pr-zak]")&&!!$(w,"tW"),"Prijava kodom otključava napredne funkcije (prikaz se osvježi)");
+  ok(/otključane do/.test(txt(w,"prBox"))&&calls.some(c=>c.u.endsWith("/prijava")),"Otključano: rok i odjava prikazani");
+  // dosje na e-mail (PDF iz preglednika zamijenjen u testu, jsdom nema platna)
+  E("dosjePripremi=async()=>{}"); // u testu bez čekanja analiza i 3D snimke (provjerava se posebno)
+  let hook=null; w.__pdfHook=async(R,email)=>{ hook={tekst:R.textContent,email}; return "JVBERi0xLjQK"+"A".repeat(200); };
+  $(w,"printBtn").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20); ok(!!$(w,"prMail")&&$(w,"prEmail").type==="email","Otključano: gumb otvara upis e-maila za dosje");
+  setv(w,"prEmail","nije-email"); $(w,"prPosalji").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(30); ok(/ispravnu e-mail adresu/.test(txt(w,"prMailPor"))&&!calls.some(c=>c.u.endsWith("/izvjestaj")),"Dosje: neispravna adresa se ne šalje");
+  setv(w,"prEmail","kupac@primjer.hr"); $(w,"prPosalji").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(1500);
+  const s=calls.find(c=>c.u.endsWith("/izvjestaj"));
+  ok(s&&s.b.email==="kupac@primjer.hr"&&/^JVBER/.test(s.b.pdf)&&/dosje-88-1\.pdf/.test(s.b.naziv)&&/Dosje čestice 88\/1/.test(s.b.naslov)&&s.h.authorization==="Bearer tok.sig","Dosje: PDF, primatelj, naziv i token idu Workeru");
+  ok(hook&&hook.email==="kupac@primjer.hr"&&/Dosje čestice|Čestica HR/.test(hook.tekst)&&/Poslano na kupac@primjer.hr/.test(txt(w,"prMailPor"))&&!w.document.getElementById("report"),"Dosje: složen iz istog izvještaja, potvrda slanja, privremeni izvještaj uklonjen");
+  // opoziv: pri sljedećem pokretanju provjera odjavljuje
+  opozvan=true; E("PRISTUP.provjereno=false"); E("render")(w.__lastData); await tick(80);
+  ok(!E("prTok()")&&w.document.querySelector("[data-pr-zak]"),"Opozvan kod: provjera pri pokretanju odjavljuje i ponovno zaključava");
+  setv(w,"prKod","ABCD-EFGH-JKLM"); opozvan=false; $(w,"prPrijava").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(80);
+  $(w,"prOdjava").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(50); ok(!E("prTok()")&&$(w,"prBox").dataset.pr==="zakljucano","Odjava briše prijavu i zaključava");
+  ok(errs.length===0,"bez JS grešaka (pristup): "+errs.join(" | "));
+}
+
+netTests().then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
