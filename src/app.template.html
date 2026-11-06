@@ -505,6 +505,9 @@ ul.risk small{color:var(--muted)}
 .rpt-map.rpt-map-nk{border:0;outline:0;overflow:visible;max-height:none;min-height:0;flex:0 0 auto}
 .rpt-nk-r{display:flex;gap:4mm}.rpt-nk{flex:1;margin:0;min-width:0}.rpt-nk>div{position:relative;line-height:0;aspect-ratio:1/1;border:1px solid var(--r-gold,#b9a27a);overflow:hidden}
 .rpt-nk-kat>div{background:#f6dcc0}.rpt-nk-dof>div{background:#e9e4da}.rpt-nk img,.rpt-nk svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.rpt-odm-r{display:flex;gap:4mm;margin:4mm 0 0}.rpt-odm{flex:1;margin:0;min-width:0}.rpt-odm-sk svg{width:100%;height:auto;max-height:62mm;border:1px solid var(--r-line,#d9cfbd)}
+.rpt-odm figcaption{font-size:8.5pt;margin-top:1.5mm;color:#3d3426;display:flex;gap:3mm;align-items:flex-start;justify-content:space-between}.rpt-qr{flex:0 0 22mm;text-align:center}.rpt-qr svg{width:22mm;height:22mm;display:block}.rpt-qr small{font-size:6.5pt;color:#7a6b52}
+.rpt-odm-n{font-size:8pt;color:#7a6b52;margin:1.5mm 0 0}
 .rpt-nk figcaption{font-size:9pt;text-align:center;margin-top:2mm;color:#5a4a33}
 .rpt-kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:7mm 0 5mm;border-top:1px solid var(--r-line)}
 .rpt-kpi div{padding:3.5mm 3mm 3.5mm 0;border-bottom:1px solid var(--r-line)}
@@ -1140,11 +1143,35 @@ function gradivo(parcel,baseGeom,medaD,pravacD,roads){
     if(kroz&&sir<12&&kroz>=0.5*per/2) kroz=0;}catch(e){}
   return {geom:geom?geom.geometry:null,area:geom?turf.area(geom):0,baseArea,band:bi,medaD,pravacD,st,parcelArea:turf.area(parcel),kroz:kroz>=KROZ_MIN?kroz:0};
 }
+// scenariji odmaka od ceste (npr. Krk: 4 m uz ostale ceste, 6 m uz razvrstane): kategorija ceste nije poznata, pa korisnik
+// prebacuje scenarij; obris na karti, provjera kuće u simulatoru, skica i izvještaj čitaju odabrani scenarij (ODM)
+const ODM={list:null,sel:0,key:null};
+function odmSelGet(k){try{const o=JSON.parse(localStorage.getItem("odmSc")||"{}"); return o[k]===1?1:0}catch(e){return 0}}
+function odmSelSet(k,i){try{const o=JSON.parse(localStorage.getItem("odmSc")||"{}"); if(i) o[k]=1; else delete o[k]; localStorage.setItem("odmSc",JSON.stringify(o))}catch(e){}}
+function odmCur(){return ODM.list&&(ODM.key||null)===((window.__cur&&window.__cur.key)||null)?ODM.list[ODM.sel]||ODM.list[0]:null}
+// kuća (GeoJSON Feature) prema obrisu scenarija: stane li i koji dio izlazi
+function odmFit(foot,G){ if(!foot||!G||!G.geom) return null; let out=null, a=0;
+  try{ const r=turf.difference(foot,{type:"Feature",geometry:G.geom,properties:{}}); if(r){ a=turf.area(r); out=a>0.05?r:null; } }catch(e){}
+  return {stane:!out,izvan:out,povrsina:out?a:0}; }
+function odmPostavi(i){ const k=window.__cur&&window.__cur.key; if(!ODM.list||!ODM.list[i]) return; ODM.sel=i; if(k) odmSelSet(k,i);
+  window.__gp=ODM.list[i].G; gpDraw(ODM.list[i].G); document.querySelectorAll("[data-odm]").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.odm===i)));
+  const o=document.getElementById("odmOut"); if(o) o.innerHTML=odmUsporedbaHtml();
+  try{ if(TL.center&&window.__env) tDraw(); else skicaUpdate(); }catch(e){console.error(e)} try{legendaMapUpdate()}catch(e){} }
+function odmUsporedbaHtml(){ if(!ODM.list) return ""; const foot=TL.center?tFoot():null, f=v=>String(v).replace(".",",");
+  let h=`<table class="rp" data-odm-tab="1"><thead><tr><th></th>${ODM.list.map((s,i)=>`<th${i===ODM.sel?' style="color:var(--accent)"':""}>${f(s.d)} m${i===ODM.sel?" (prikazano)":""}</th>`).join("")}</tr></thead><tbody>`;
+  h+=`<tr><th>Prostor za gradnju</th>${ODM.list.map(s=>`<td><b>${fmt(s.G.area)} m²</b></td>`).join("")}</tr>`;
+  if(foot){ h+=`<tr><th>Ista kuća na istom mjestu</th>${ODM.list.map(s=>{const F=odmFit(foot,s.G); return `<td data-odm-fit="${F&&F.stane?"da":"ne"}">${F?(F.stane?`<b class="good">stane</b>`:`<b class="bad">izlazi ${skN(F.povrsina,1)} m²</b>`):"—"}</td>`;}).join("")}</tr>`; }
+  h+=`</tbody></table><p class="meta">${foot?"Kuća iz simulatora provjerena je na istom mjestu u oba scenarija; dio kuće izvan obrisa odabranog scenarija crven je na karti i na skici.":"Postavi kuću u „Simulatoru kuće na čestici” da vidiš stane li ista kuća u oba scenarija."} Koji odmak vrijedi, ovisi o kategoriji ceste (lokacijska informacija).</p>`;
+  return h; }
+sheet.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-odm]"); if(!b) return; odmPostavi(+b.dataset.odm); });
 function gpDraw(G){ gpLayer.clearLayers(); if(!G||!GP.show) return;
   if(G.band) L.geoJSON(G.band,{style:{color:"#c77700",weight:1,dashArray:"3 3",fillColor:"#f0a020",fillOpacity:.35},interactive:false}).addTo(gpLayer);
   if(G.geom) L.geoJSON(G.geom,{style:{color:"#14532d",weight:2.5,fillColor:"#22a35a",fillOpacity:.30},interactive:false}).addTo(gpLayer); }
 function gpHtml(G,tlKig,opisMeda,opisPravac,opts){
   if(!G) return "";
+  { const O0=opts||{}, k=window.__cur&&window.__cur.key;
+    if(O0.alt&&O0.alt.G&&G.st==="primijenjen"){ ODM.list=[{d:G.pravacD,G,naziv:O0.prviNaziv||"ostale ceste"},{d:O0.alt.d,G:O0.alt.G,naziv:O0.alt.naziv||"veći odmak"}]; ODM.key=k||null; ODM.sel=odmSelGet(k); G=ODM.list[ODM.sel].G; }
+    else { ODM.list=null; ODM.key=null; ODM.sel=0; } }
   window.__gp=G; gpDraw(G); try{legendaMapUpdate()}catch(e){}
   const geo=tlKig!=null?Math.min(tlKig,G.area):null, ogr=tlKig!=null&&G.area<tlKig, md=String(G.medaD).replace(".",",");
   const pzG=pzSet("gp-podrucje","Teorijski prostor za gradnju (obris na karti)",fmt(G.area)+" m²",G.kroz?pz("C",{metoda:"odmak "+md+" m od međa"+(G.st==="primijenjen"?" i "+String(G.pravacD).replace(".",",")+" m od strane uz cestu":""),razlog:"cesta u naravi prolazi kroz česticu; katastar i stvarno stanje se možda ne poklapaju",provjera:"lokacijska informacija, geodet"}):G.st==="primijenjen"?pz("C",{metoda:"odmak "+md+" m od međa i "+String(G.pravacD).replace(".",",")+" m od strane uz cestu",razlog:"strana uz cestu procijenjena iz OpenStreetMapa; regulacijski pravac nije potvrđen",provjera:"lokacijska informacija"})
@@ -1155,11 +1182,12 @@ function gpHtml(G,tlKig,opisMeda,opisPravac,opts){
   h+=`<tr><th>Nakon odmaka od međa</th><td>${fmt(G.baseArea)} m²<small class="fx">${esc(opisMeda)}; samo dio čestice u građevinskoj namjeni</small></td></tr>`;
   h+=`<tr><th>Odmak od ceste</th><td>${G.st==="primijenjen"?`${String(G.pravacD).replace(".",",")} m od ruba čestice uz cestu (narančasto)`:G.st==="nema"?"pravilo ne navodi udaljenost od regulacijskog pravca":G.st==="nije uz cestu"?"uz česticu nije prepoznata cesta; nije primijenjen":"ceste još nisu učitane; nije primijenjen"}<small class="fx">${esc(opisPravac||"")}</small></td></tr>`;
   const O=opts||{}, A2=O.alt&&O.alt.G;
-  if(A2&&G.st==="primijenjen") h+=`<tr><th>Drugi scenarij odmaka od ceste</th><td>${fmt(A2.area)} m²<small class="fx">uz odmak ${String(O.alt.d).replace(".",",")} m od regulacijskog pravca (${esc(O.alt.naziv||"veći odmak")}); kategorija ceste nije poznata, pa nijedan scenarij nije konačan</small></td></tr>`;
+  if(ODM.list) h+=`<tr><th>Odmak od ceste</th><td><span class="kd" style="margin:0">${ODM.list.map((s,i)=>`<button type="button" class="ib" data-odm="${i}" aria-pressed="${i===ODM.sel}">${String(s.d).replace(".",",")} m</button>`).join("")}</span><small class="fx">prebaci scenarij: obris na karti, provjera kuće i skica se mijenjaju</small></td></tr>`;
+  if(A2&&G.st==="primijenjen"&&!ODM.list) h+=`<tr><th>Drugi scenarij odmaka od ceste</th><td>${fmt(A2.area)} m²<small class="fx">uz odmak ${String(O.alt.d).replace(".",",")} m od regulacijskog pravca (${esc(O.alt.naziv||"veći odmak")}); kategorija ceste nije poznata, pa nijedan scenarij nije konačan</small></td></tr>`;
   if(G.kroz) h+=`<tr><th>Cesta i katastar</th><td><span class="chk-warn">!</span> ${esc(krozTekst(G.kroz))}</td></tr>`;
   h+=`<tr><th>Teorijski prostor za gradnju</th><td><b>${fmt(G.area)} m²</b> ${pzTag(pzG)}<small class="fx">zeleno na karti${A2&&G.st==="primijenjen"?"; uz odmak "+String(G.pravacD).replace(".",",")+" m":""}</small></td></tr>`;
   if(tlKig!=null) h+=`<tr><th>Gornja granica tlocrta po površini</th><td><b>do ${fmt(geo)} m²</b> ${pzTag(pzCalc({},[pzG]))}<small class="fx">${ogr?`Kig dopušta ${fmt(tlKig)} m², a površina teorijskog obrisa je ${fmt(G.area)} m², pa tlocrt ne može biti veći od ${fmt(G.area)} m².`:`Kig dopušta ${fmt(tlKig)} m²; površina obrisa je veća, pa gornju granicu po površini određuje kig.`} To je usporedba površina, a ne dokaz da kuća zadanog oblika stane u obris: u uskom ili nepravilnom obrisu i manja kuća može ne stati. Stane li kuća, provjerava simulator kad postaviš tlocrt.</small></td></tr>`;
-  h+=`</tbody></table><div class="kd"><button type="button" class="ib" id="gpTog">${GP.show?"Sakrij s karte":"Prikaži na karti"}</button></div>`;
+  h+=`</tbody></table>${ODM.list?`<div id="odmOut">${odmUsporedbaHtml()}</div>`:""}<div class="kd"><button type="button" class="ib" id="gpTog">${GP.show?"Sakrij s karte":"Prikaži na karti"}</button></div>`;
   h+=`<div class="lgd-box">${legendaHtml({skica:true})}</div>`;
   h+=`<p class="meta">Teorijski prostor je geometrijska procjena: granica čestice uvučena za propisani odmak od međa i, gdje je cesta prepoznata, za odmak od regulacijskog pravca. Nije potvrđeno dopušteno područje gradnje. Strana čestice uz cestu procijenjena je iz OpenStreetMapa (cesta do 12 m od ruba čestice). Regulacijski pravac nije u javnim podacima, pa obris nije potvrđen: mjerodavna je lokacijska informacija. Obris nije dopuštenje za gradnju.</p>${O.napomena||""}</div></details>`;
   return h;
@@ -3310,6 +3338,9 @@ function tChecks(){
   const add=(label,val,st,note)=>C.push({label,val,st,note});
   const inEnv=withinEnv(foot,env);
   add("Udaljenost od međa",inEnv?"kuća je unutar dopuštenog prostora":"kuća izlazi iz dopuštenog prostora",inEnv?"ok":"no",window.__env&&window.__env.est?"udaljenost od međa je procjena: "+window.__env.est:null);
+  {const S=odmCur(); if(S){ const fits=ODM.list.map(x=>({x,F:odmFit(foot,x.G)})), me=fits[ODM.sel], dr=fits.filter((_,i)=>i!==ODM.sel), f=v=>String(v).replace(".",",");
+    add(`Odmak od ceste (scenarij ${f(S.d)} m)`,me.F&&me.F.stane?"kuća je unutar obrisa":`kuća izlazi iz obrisa ${skN(me.F?me.F.povrsina:0,1)} m² (crveno)`,me.F&&me.F.stane?(dr.some(o=>o.F&&!o.F.stane)?"warn":"ok"):"no",
+      dr.map(o=>`uz ${f(o.x.d)} m: ${o.F&&o.F.stane?"stane":"izlazi "+skN(o.F?o.F.povrsina:0,1)+" m²"}`).join("; ")+"; kategorija ceste nije poznata, pa nijedan scenarij nije konačan"); } }
   const Z=TL.zones;
   if(Z&&Z.orange&&inEnv){let hit=false; try{hit=turf.booleanIntersects(foot,Z.orange)}catch(e){}
     add("Građevni pravac (od ulice)",hit?`kuća je u pojasu ${String(Z.pd).replace(".",",")} m od ruba čestice uz ulicu`:`kuća je izvan pojasa ${String(Z.pd).replace(".",",")} m uz ulicu`,hit?"warn":"ok","strana uz ulicu procijenjena je iz OpenStreetMapa; regulacijska linija i rezervacija proširenja ulice nisu poznate");}
@@ -3377,6 +3408,8 @@ function tDraw(){
   const col=!R?"#1565c0":R.inEnv?(R.C.some(c=>c.label.startsWith("Građevni")&&c.st==="warn")?"#c77700":"#1565c0"):"#b3261e";
   if(TL.layer) selLayer.removeLayer(TL.layer);
   TL.layer=L.geoJSON(foot,{style:{color:col,weight:2.5,fillColor:col,fillOpacity:.35},interactive:false}).addTo(selLayer);
+  {const S=odmCur(), F=S?odmFit(foot,S.G):null; if(F&&F.izvan) L.geoJSON(F.izvan,{style:{color:"#b3261e",weight:2,dashArray:"4 3",fillColor:"#b3261e",fillOpacity:.6},interactive:false}).addTo(TL.zl);
+   const o=document.getElementById("odmOut"); if(o) o.innerHTML=odmUsporedbaHtml();}
   if(!TL.marker){
     TL.marker=L.marker([TL.center[1],TL.center[0]],{draggable:true,keyboard:false,title:"Povuci za pomicanje kuće",icon:L.divIcon({className:"t-handle",html:"<span>✥</span>",iconSize:[44,44]})}).addTo(selLayer);
     TL.marker.on("drag",e=>{const p=e.target.getLatLng(); TL.center=[p.lng,p.lat]; tDraw();});
@@ -4128,7 +4161,7 @@ function skCeste(d,c0,rect){
       out.push({name:r.name,hw:r.hw,w,svc:!!r.svc,line:ln.map(P),polys:poly?skRings(poly.geometry).map(q=>q.map(P)):[],procjena:!(r.width>1)}); } }
   return out;
 }
-function skicaPlan(d,T){
+function skicaPlan(d,T,opt){ opt=opt||{};
   const pg=d.parcel.geometry, c0=turf.centroid(d.parcel).geometry.coordinates, P=skLocal(c0);
   const rings=skRings(pg).map(r=>r.map(P)), house=TL.center?tRect():null, gar=TL.center?tGarage():null;
   const hR=house?house.geometry.coordinates[0].map(P):null, gR=gar?gar.geometry.coordinates[0].map(P):null;
@@ -4161,7 +4194,7 @@ function skicaPlan(d,T){
         g+=`<text class="sk-cesta" x="${mx.toFixed(1)}" y="${(my+4).toFixed(1)}" transform="rotate(${ang.toFixed(1)} ${mx.toFixed(1)} ${(my+4).toFixed(1)})">${esc(c.name)}</text>`;}}
     g+=`</g>`; }
   // područje za gradnju i pojas uz cestu (iz analize, ako je za ovu česticu)
-  const G=window.__gp; if(G&&Math.abs(G.parcelArea-turf.area(d.parcel))<1){
+  const G=opt.G||window.__gp; if(G&&Math.abs(G.parcelArea-turf.area(d.parcel))<1){
     if(G.band) g+=`<path d="${skRings(G.band.geometry||G.band).map(r=>path(r.map(P))).join("")}" fill="#f0a020" fill-opacity=".25" stroke="#c77700" stroke-width="1" stroke-dasharray="3 3" fill-rule="evenodd"/>`;
     if(G.geom) g+=`<path d="${skRings(G.geom).map(r=>path(r.map(P))).join("")}" fill="#22a35a" fill-opacity=".14" stroke="#14532d" stroke-width="1.2" stroke-dasharray="6 3" fill-rule="evenodd"/>`;}
   // prijedlog okućnice (ilustrativno)
@@ -4196,6 +4229,7 @@ function skicaPlan(d,T){
       g+=`<g stroke="#0d3c7a" stroke-width="1.2"><line x1="${X(r1[0])}" y1="${Y(r1[1])}" x2="${X(r2[0])}" y2="${Y(r2[1])}"/>`;
       if(TL.krov==="cet") for(const q of hR.slice(0,4)){const e=(q[0]-C[0])*ux+(q[1]-C[1])*uy>0?r2:r1; g+=`<line x1="${X(q[0])}" y1="${Y(q[1])}" x2="${X(e[0])}" y2="${Y(e[1])}"/>`;}
       g+=`</g>`;}
+    {const S=opt.G?{G:opt.G}:odmCur(), F=S?odmFit(house,S.G):null; if(F&&F.izvan) g+=`<path d="${skRings(F.izvan.geometry).map(r=>path(r.map(P))).join("")}" fill="#b3261e" fill-opacity=".55" stroke="#b3261e" stroke-width="1.5" data-sk-izvan="1"/>`;}
     g+=`<text class="sk-hl" x="${X(C[0])}" y="${Y(C[1])+4}">${skN(TL.w)} × ${skN(TL.d)} m</text>`;
     // udaljenosti od međa (od sredine svake stranice okomito do granice)
     const S=sideDists()||[]; for(const sd of S){ if(sd.dist==null||sd.dist>60) continue; const half=sd.ax==="d"?TL.d/2:TL.w/2, br=sd.brg*Math.PI/180, ux=Math.sin(br), uy=Math.cos(br);
@@ -4207,6 +4241,7 @@ function skicaPlan(d,T){
   if(T&&T.g>0.005){const bx=W-56, by=H-48, a=T.az*Math.PI/180, dx=Math.sin(a)*13, dy=-Math.cos(a)*13; g+=`<line x1="${(bx-dx).toFixed(1)}" y1="${(by-dy).toFixed(1)}" x2="${(bx+dx).toFixed(1)}" y2="${(by+dy).toFixed(1)}" stroke="#7a4b16" stroke-width="2.5" marker-end="url(#skA2)"/><text x="${bx}" y="${H-12}">pad ${skN(T.slope,0)} % (${COMP(T.az)})</text>`;}
   g+=`</g>`;
   const defs=`<defs><marker id="skA" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,2L10,5L0,8z" fill="#b3261e"/></marker><marker id="skA2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,1L10,5L0,9z" fill="#7a4b16"/></marker></defs>`;
+  if(opt.samoSvg) return `<svg class="sk-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opt.naslov||"Skica tlocrta")}">${defs.replace(/id="sk(A2?)"/g,'id="sk$1_'+(opt.id||"x")+'"')}<rect width="${W}" height="${H}" fill="#fff"/>${g.replace(/url\(#sk(A2?|Clip|Box|BoxV)\)/g,"url(#sk$1_"+(opt.id||"x")+")").replace(/id="sk(Clip|Box|BoxV)"/g,'id="sk$1_'+(opt.id||"x")+'"')}</svg>`;
   return `<div class="sk-blok"><p class="eyebrow" style="margin:4px 0">Tlocrt</p><svg class="sk-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Skica tlocrta: čestica, kuća i udaljenosti od međa">${defs}<rect width="${W}" height="${H}" fill="#fff"/>${g}</svg>`+
     `<p class="meta">Smeđe: međe s duljinama stranica u metrima (iz grafičkog prikaza katastra). Plavo: kuća iz simulatora${TL.krov!=="ravni"&&TL.center?" s linijama krova":""}; crveno: udaljenosti od međa. Zeleno isprekidano: područje za gradnju; narančasto: pojas uz cestu. Smeđe isprekidano: izohipse (visine prema sredini kuće).${CE.length?` Sivo: cesta iz OpenStreetMapa (os ceste bijelo isprekidano; širina ${CE.some(c=>c.procjena)?"procijenjena prema vrsti ceste":"iz OpenStreetMapa"}).`:""}</p></div>`;
 }
@@ -7583,6 +7618,15 @@ window.addEventListener("afterprint",()=>setTimeout(restoreMap,100));
 // granicama čestica DGU i kućom iz simulatora (visina do vijenca). Pogled se polako okreće; dodir ga zaustavlja.
 // Kad se karta prvi put iscrta, sprema se slika za PDF izvještaj (ako preglednik dopusti čitanje slike).
 const V3D={map:null,rot:true,raf:0,snap:new Map(),pod:"sat",key:null,pv:false};
+function qrLib(){ if(window.qrcode) return Promise.resolve();
+  return new Promise((res,rej)=>{ const sc=document.createElement("script"); sc.src="vendor/qrcode-generator-2.0.4/qrcode.js"; sc.onload=()=>res(); sc.onerror=()=>rej(new Error("QR se nije učitao")); document.head.appendChild(sc); }); }
+function qrSvg(url){ try{ if(!window.qrcode) return null; const q=qrcode(0,"M"); q.addData(url); q.make(); return q.createSvgTag({cellSize:2,margin:0,scalable:true}); }catch(e){ return null; } }
+// naslovnica: dva scenarija odmaka od ceste jedan uz drugi (ista kuća na istom mjestu) i QR kod koji otvara odabrani scenarij
+function rptScenHtml(d){ if(!ODM.list||!TL.center||!d||!d.parcel) return ""; const T=skTeren(d), foot=tFoot(), f=v=>String(v).replace(".",",");
+  const kol=ODM.list.map((S,i)=>{ const F=odmFit(foot,S.G), qr=qrSvg(scenUrl(S.d));
+    return `<figure class="rpt-odm" data-odm-sc="${i}"><div class="rpt-odm-sk">${skicaPlan(d,T,{G:S.G,samoSvg:true,id:"o"+i,naslov:"Skica: odmak "+f(S.d)+" m od ceste"})}</div>
+      <figcaption><b>Odmak od ceste ${f(S.d)} m</b> (${esc(S.naziv)}): prostor ${fmt(S.G.area)} m² · ista kuća ${F&&F.stane?"<b>stane</b>":`<b class="bad">izlazi ${skN(F?F.povrsina:0,1)} m²</b> (crveno)`}${qr?`<span class="rpt-qr">${qr}<small>otvori ovaj scenarij</small></span>`:""}</figcaption></figure>`; }).join("");
+  return `<div class="rpt-odm-r">${kol}</div><p class="rpt-odm-n">Ista kuća iz simulatora (${f(TL.w)} × ${f(TL.d)} m) na istom mjestu. Koji odmak vrijedi, ovisi o kategoriji ceste; to potvrđuje lokacijska informacija. Obris je geometrijska procjena (C).</p>`; }
 function v3dLib(){
   if(window.maplibregl) return Promise.resolve();
   return new Promise((res,rej)=>{ const l=document.createElement("link"); l.rel="stylesheet"; l.href="vendor/maplibre-gl-4.7.1/maplibre-gl.css"; document.head.appendChild(l);
@@ -8203,7 +8247,7 @@ sheet.addEventListener("scroll",()=>{const b=document.getElementById("izbTop"); 
 // odmah nakon slaganja prikaza: sklapanje pojašnjenja, kategorije izbornika i sažetak (prije vraćanja položaja čitanja)
 // promjena sadržaja iznad mjesta čitanja ne smije pomaknuti tekst koji se čita (Safari nema „scroll anchoring”)
 function keepPos(fn){ const A=sheet.scrollTop>0?scrollAnchor():null; fn(); if(A) scrollRestore(A); }
-function sheetPost(){ try{srchNote()}catch(e){} try{ptnUpdate()}catch(e){console.error(e)} try{viseInfo()}catch(e){} try{izbWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){} try{promSoon()}catch(e){} }
+function sheetPost(){ try{scenLinkApply()}catch(e){console.error(e)} try{srchNote()}catch(e){} try{ptnUpdate()}catch(e){console.error(e)} try{viseInfo()}catch(e){} try{izbWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){} try{promSoon()}catch(e){} }
 // položaj čitanja: zadnji odjeljak čiji je vrh iznad vrha panela i koliko je pomaknut; poslije ponovnog prikaza isti odjeljak
 // vraća se na isto mjesto, i kad se visina sadržaja iznad promijeni (npr. stigne uložak ili se sklope pojašnjenja)
 function scrollAnchor(){
@@ -8732,6 +8776,7 @@ async function dosjePripremi(){
     try{ v3dClose(); }catch(e){}
     if(!V3D.snap.has(key)&&staro) V3D.snap.set(key,staro);
   }
+  try{ await Promise.race([qrLib(),new Promise(r=>setTimeout(r,4000))]); }catch(e){}
   dosjeProg("slažem dosje i karte…");
 }
 // snimke iz zraka 2011. i 2023./24. jedna uz drugu, s granicom čestice
@@ -8780,7 +8825,7 @@ function buildReport(){
   let h=`<section class="rpt-cover"><div class="rpt-band"><span class="rpt-brand">Čestica HR</span><span>Dosje čestice</span></div>
     <div class="rpt-ttl"><p class="rpt-kicker">Katastarska čestica</p><h1>${esc(ces)}</h1><p class="rpt-ko">${ko?"k.o. "+esc(ko):""}${esc(dosjePodrucje(cur))}</p>
     <p class="rpt-date">${esc(dat)}${ll?` · ${ll.lat.toFixed(5)}° N, ${ll.lng.toFixed(5)}° E`:""}</p></div>
-    <div class="rpt-map" id="rpMap"></div>
+    <div class="rpt-map" id="rpMap"></div>${rptScenHtml(D)}
     <div class="rpt-kpi">${kpi.map(([a,b])=>`<div><small>${esc(a)}</small><b>${esc(b)}</b></div>`).join("")}</div>
     <p class="rpt-disc">Izvještaj je sastavljen iz javnih podataka i izračuna aplikacije. Oznake pouzdanosti: A službeni izvor, B izračun ili preliminarni podatak, C nepotvrđeno. Izvještaj nije lokacijska informacija, izvadak iz zemljišne knjige ni projekt i ne potvrđuje da je gradnja dopuštena.</p></section>`;
   const parts=[
@@ -9154,6 +9199,18 @@ function svUrl(){ const d=curData(), ll=window.__lastLL; let t=null;
   return svUrlFor(t,d&&d.env&&d.env.v&&d.env.v.roadLines); }
 sheet.addEventListener("click",e=>{ if(e.target.id!=="svBtn") return; const u=svUrl(); if(u) window.open(u,"_blank","noopener"); });
 function shareUrl(){const ll=window.__lastLL; return location.origin+location.pathname+"?c="+ll.lat.toFixed(6)+","+ll.lng.toFixed(6);}
+// link na točno ovaj scenarij: čestica, kuća iz simulatora (središte, širina, dubina, zakret, etaže) i odmak od ceste
+function scenUrl(odm){ let u=shareUrl(); if(TL.center) u+="&k="+[TL.center[0].toFixed(7),TL.center[1].toFixed(7),TL.w,TL.d,TL.rot,TL.fl].join(","); if(odm!=null) u+="&odm="+odm; return u; }
+function scenLinkParse(q){ const k=q.get("k"), o=q.get("odm"); if(!k) return null; const a=k.split(","), n=a.slice(0,5).map(Number);
+  if(n.some(x=>!isFinite(x))||n[2]<3||n[2]>60||n[3]<3||n[3]>60||!FLOOR_OPTS.some(f=>f[0]===a[5])) return null;
+  return {c:[n[0],n[1]],w:n[2],d:n[3],rot:((n[4]%360)+360)%360,fl:a[5],odm:o!=null&&isFinite(+o)?+o:null}; }
+// primjena scenarija iz linka nakon što su čestica i obris učitani (jednom)
+function scenLinkApply(){ const P=window.__scenLink; if(!P) return; const d=curData(); if(!d||!d.parcel||!window.__env) return;
+  if(P.odm!=null&&!ODM.list&&!P.cekao){ P.cekao=true; return; } window.__scenLink=null;
+  let u=false; try{u=turf.booleanPointInPolygon(turf.point(P.c),d.parcel)}catch(e){} if(!u) return;
+  Object.assign(TL,{w:P.w,d:P.d,rot:P.rot,fl:P.fl,pred:"",model:""}); TL.center=P.c; TL.zones=null;
+  if(P.odm!=null&&ODM.list){ const i=ODM.list.findIndex(x=>Math.abs(x.d-P.odm)<0.01); if(i>=0) odmSelSet(window.__cur.key,i); }
+  const rr=window.__areaCtx&&window.__areaCtx.refresh; if(rr) setTimeout(()=>{try{rr()}catch(e){console.error(e)}},0); else tDraw(); }
 sheet.addEventListener("click",async e=>{
   if(e.target.id!=="shareBtn"||!window.__lastLL) return;
   const url=shareUrl(), c=window.__cur, title="Čestica "+(c&&c.ces?c.ces+(c.ko?", k.o. "+c.ko:""):c&&c.region==="krk"?"Krk":c&&c.region==="hr"?"Hrvatska":"Zagreb");
@@ -9162,7 +9219,7 @@ sheet.addEventListener("click",async e=>{
   setTimeout(()=>{const b=document.getElementById("shareBtn"); if(b) b.textContent="Podijeli"},4000);
 });
 (function(){ // otvaranje dijeljenog linka
-  const c=new URLSearchParams(location.search).get("c"); if(!c) return;
+  const q=new URLSearchParams(location.search), c=q.get("c"); if(!c) return; window.__scenLink=scenLinkParse(q);
   const [la,lo]=c.split(",").map(Number); if(!isFinite(la)||!isFinite(lo)) return;
   const ll=L.latLng(la,lo); map.setView(ll,18); setTimeout(()=>inspect(ll),300);
 })();

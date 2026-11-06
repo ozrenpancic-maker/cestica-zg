@@ -2452,9 +2452,25 @@ async function formulaTests(){
   // scenariji odmaka od ceste: cesta uz južnu stranu, 4 m i 6 m od regulacijskog pravca
   const c=P1.geometry.coordinates[0], dy=4/110540, road=[{ok:true,geom:[[c[0][0]-0.001,c[0][1]-dy],[c[1][0]+0.001,c[1][1]-dy]]}];
   E("pzReset")("f5"); el=prikaz(d(P1,{env:{v:{roads:[],roadLines:road,stops:[]}}})); const G1=E("window.__gp");
-  const gtx=el.textContent.replace(/\s+/g," "), m=gtx.match(/Drugi scenarij odmaka od ceste ?([\d.]+) m²/);
+  const gtx=el.textContent.replace(/\s+/g," "), tab=el.querySelector("[data-odm-tab]"), m=tab&&tab.textContent.replace(/\s+/g," ").match(/Prostor za gradnju\s*([\d.]+) m²\s*([\d.]+) m²/);
   const env=T.buffer(P1,-4/1000,{units:"kilometers"}).geometry, G4=E("gradivo")(P1,env,4,4,road), G6=E("gradivo")(P1,env,4,6,road);
-  ok(G1&&G1.st==="primijenjen"&&G1.pravacD===4&&Math.abs(G1.area-G4.area)<0.01&&G6.area<G4.area&&m&&Math.abs(+m[1].replace(/\./g,"")-Math.round(G6.area))<=1&&/nijedan scenarij nije konačan/.test(gtx)&&/Teorijski prostor za gradnju/.test(gtx),"Krk: ceste uz česticu → prvi scenarij 4 m ("+Math.round(G4.area)+" m²), drugi 6 m ("+Math.round(G6.area)+" m²), oba označena kao nekonačna");
+  ok(G1&&G1.st==="primijenjen"&&G1.pravacD===4&&Math.abs(G1.area-G4.area)<0.01&&G6.area<G4.area&&m&&Math.abs(+m[2].replace(/\./g,"")-Math.round(G6.area))<=1&&el.querySelectorAll("[data-odm]").length===2&&/ovisi o kategoriji ceste/.test(gtx)&&/Teorijski prostor za gradnju/.test(gtx),"Krk: ceste uz česticu → prvi scenarij 4 m ("+Math.round(G4.area)+" m²), drugi 6 m ("+Math.round(G6.area)+" m²), oba označena kao nekonačna");
+  // prebacivanje scenarija 4 m / 6 m: ista kuća na istom mjestu, dio izvan obrisa, skica, link i naslovnica izvještaja
+  {const TL=E("TL"), key=E("window.__cur&&window.__cur.key"), diff=T.difference({type:"Feature",geometry:G4.geom,properties:{}},{type:"Feature",geometry:G6.geom,properties:{}}), cIn=T.centroid({type:"Feature",geometry:G6.geom,properties:{}}).geometry.coordinates, cRub=T.centroid(diff).geometry.coordinates;
+   Object.assign(TL,{w:4,d:4,rot:0,fl:"1"}); TL.center=cIn; let F4=E("odmFit")(E("tFoot")(),G4), F6=E("odmFit")(E("tFoot")(),G6);
+   ok(F4.stane&&F6.stane,"Scenarij odmaka: kuća u sredini obrisa stane uz 4 m i uz 6 m");
+   TL.center=cRub; F4=E("odmFit")(E("tFoot")(),G4); F6=E("odmFit")(E("tFoot")(),G6);
+   ok(!F6.stane&&F6.povrsina>(F4.povrsina||0)+1&&F6.izvan,"Scenarij odmaka: kuća uz cestu izlazi iz obrisa 6 m više nego iz obrisa 4 m ("+F4.povrsina.toFixed(1)+" / "+F6.povrsina.toFixed(1)+" m²)");
+   E("odmPostavi")(1);
+   ok(E("window.__gp").pravacD===6&&E("ODM.sel")===1&&(!key||E("odmSelGet")(key)===1)&&/6 m \(prikazano\)/.test(E("odmUsporedbaHtml")())&&/data-odm-fit="ne"/.test(E("odmUsporedbaHtml")()),"Scenarij odmaka: prebacivanje na 6 m mijenja obris, pamti se po čestici; usporedba pokazuje da ista kuća ne stane");
+   const R=E("tChecks")(), rr=R&&R.C.find(x=>/Odmak od ceste \(scenarij 6 m\)/.test(x.label)); ok(!R||(rr&&rr.st==="no"&&/uz 4 m/.test(rr.note)),"Simulator: provjera kuće prema odabranom scenariju, uz rezultat drugog scenarija");
+   const svg=E("skicaPlan")(E("curData")()||dd,null,{G:G6,samoSvg:true,id:"t"});
+   ok(/data-sk-izvan="1"/.test(svg)&&/id="skClip_t"/.test(svg)&&!/id="skClip"/.test(svg)&&!/url\(#sk(A2?|Clip|Box|BoxV)\)/.test(svg),"Skica scenarija: dio kuće izvan obrisa crven, jedinstvene oznake za dvije skice na istoj stranici");
+   w.__lastLL={lat:45.03,lng:14.6}; const U=E("scenUrl")(6), q=new w.URLSearchParams(U.split("?")[1]), P=E("scenLinkParse")(q);
+   ok(/&odm=6$/.test(U)&&P&&Math.abs(P.c[0]-cRub[0])<1e-6&&P.w===4&&P.d===4&&P.fl==="1"&&P.odm===6&&E("scenLinkParse")(new w.URLSearchParams("c=1,2&k=1,2,99,4,0,1"))===null,"Link scenarija: kuća i odmak u adresi (provjera granica)");
+   const cov=E("rptScenHtml")(E("curData")()||dd); ok((cov.match(/class="rpt-odm"/g)||[]).length===2&&/Odmak od ceste 4 m/.test(cov)&&/Odmak od ceste 6 m/.test(cov)&&/izlazi/.test(cov),"Naslovnica izvještaja: dvije skice scenarija jedna uz drugu s ishodom za istu kuću");
+   w.eval(require("fs").readFileSync(require("path").join(ROOT,"vendor/qrcode-generator-2.0.4/qrcode.js"),"utf8")+";window.qrcode=qrcode;"); ok(/<svg[^>]*>.*<path|<rect/.test(E("qrSvg")(U)||"")&&/rpt-qr/.test(E("rptScenHtml")(E("curData")()||dd)),"Naslovnica izvještaja: QR kod za svaki scenarij");
+   E("odmPostavi")(0); TL.center=null;}
   E("pzReset")("f6"); el=prikaz(d(P1)); ok(!/Drugi scenarij odmaka/.test(el.textContent)&&/oba scenarija, 4 m i 6 m/.test(el.textContent),"Krk: bez učitanih cesta nema površine drugog scenarija, ali ograničenje je navedeno");
   // UPU 2: udaljenost od osi ceste navedena, ne računa se; h/2 iz posebnog područja
   const nap=E("krkProstorNapomena")(u2,E("krkRegDist")(u2),null,null);
