@@ -1127,7 +1127,8 @@ async function krkTests(){
   {const tu=txt(w,"sheet"), hs=[...w.document.querySelectorAll("#sheet h2")].map(x=>x.textContent);
    ok(["Provjere","Uvjeti gradnje","Gradnja i naknade","Novac i kupnja","Sunce i energija","Dokumentacija i gdje se obratiti"].every(x=>hs.includes(x)),"Krk: isti odjeljci kao Zagreb ("+hs.join(", ")+")");
    ok(!!$(w,"saveBtn")&&!!$(w,"shareBtn")&&!!$(w,"printBtn"),"Krk: spremanje, dijeljenje i ispis kao za Zagreb");
-   ok(/Procjena cijene gradnje\s*nije dostupno/.test(tu)&&/Priključci i dozvole\s*nije dostupno/.test(tu)&&/Postojeće zgrade i dogradnja\s*nije dostupno/.test(tu)&&/Podaci nisu dostupni za ovo područje/.test(tu)&&/okolicu Zagreba i ne vrijede za ovo područje/.test(tu),"Krk: odjeljci bez podataka označeni „nije dostupno” s razlogom");
+   ok(!/Procjena cijene gradnje\s*nije dostupno/.test(tu)&&!!$(w,"bArea")&&!!$(w,"bReg")&&/Priključci i dozvole\s*nije dostupno/.test(tu)&&/Postojeće zgrade i dogradnja\s*nije dostupno/.test(tu)&&/Podaci nisu dostupni za ovo područje/.test(tu),"Krk: odjeljci bez podataka označeni „nije dostupno” s razlogom");
+   {E("finUpdate")(); const H=w.__fin.house; ok(H&&H.reg&&H.reg.k==="krk"&&Math.abs(H.unitAuto-1295)<1&&/Područje cijene: Otok Krk/.test(txt(w,"bOut"))&&w.__fin.build.lo>0,"Krk: procjena cijene gradnje s odstupanjem za otok Krk (1.400 × 0,925 = 1.295 €/m²)");}
    ok(!!$(w,"svBtn")&&!!$(w,"sunDate")&&!!$(w,"pvGo"),"Krk: Street View, sunce i sunčana elektrana dostupni");
    setv(w,"yPrice","60000"); const B=w.__fin&&w.__fin.buy;
    ok(B&&near(B.rows.find(r=>r.k==="porez").v,1800)&&Math.abs(B.area-600)<1.5,"Krk: kupnja zemljišta – porez na promet 3 % od 60.000 € = 1.800 €, površina 600 m²");
@@ -2249,6 +2250,23 @@ async function ptnTests(){
   const sel=$(w,"ptnJlsSel"); sel.value="2534"; sel.dispatchEvent(new w.Event("change",{bubbles:true}));
   ok(/tvoj odabir/.test(o())&&/166 €\/m²/.test(o())&&/medijan 2024\./.test(o())&&/za 2025\. nije objavljen \(manje od 10 kupoprodaja\)/.test(o()),"cijene: ručni odabir općine i zadnja objavljena godina kad 2025. ima manje od 10 kupoprodaja");
   ok(E("ptnRucnoGet")("hr:test")===2534,"cijene: ručni odabir se pamti po čestici");
+  // cijena gradnje po području: Zagreb = 100 %, županije i skupine otoka iz korisnikove tablice odstupanja (pouzdanost C)
+  {const u=()=>{E("finUpdate")(); return w.__fin.house;}, near=(a,b)=>Math.abs(a-b)<0.6, bo=()=>txt(w,"bOut");
+   C.region=undefined; ok(u().reg.k==="zg"&&near(u().unitAuto,1400)&&!/Područje cijene:/.test(bo()),"Gradnja: Zagreb je osnovica (1.400 €/m², bez odstupanja)");
+   C.region="hr"; let H=u(); ok(H.reg.k==="krk"&&near(H.unitAuto,1400*0.925)&&/Zagreb 1\.400 €\/m² × 0,925/.test(w.__fin.items.find(i=>i.k==="gradnja").formula)&&/Područje cijene: Otok Krk/.test(bo())&&E("PZREG").items.get("gr-reg").raz==="C","Gradnja: Malinska-Dubašnica → otok Krk (−5 do −10 %, × 0,925), pouzdanost C");
+   const gr=H.faze.find(f=>f.k==="kon"); ok(near(gr.lo,gr.auto*0.9/0.925*0.9)&&near(gr.hi,gr.auto*0.95/0.925*1.1),"Gradnja: donja i gornja granica faza iz rubova raspona odstupanja");
+   ok(!w.__fin.items.some(i=>i.k==="vio")&&w.__fin.warn.some(x=>/vode i kanalizacije izvan Zagreba: Podaci nisu dostupni/.test(x)),"Gradnja izvan Zagreba: naknada ViO iz Zagreba se ne primjenjuje (Podaci nisu dostupni)");
+   D.jls.push([3001,"Osječko-baranjska","OSIJEK",[1],[1],null,null],[1538,"Splitsko-dalmatinska","HVAR",[1],[1],null,null],[9000,"Šibensko-kninska","TISNO",[1],[1],null,null],[9001,"Zadarska","PAG",[1],[1],null,null]);
+   const naj=(sf)=>{E("ptnRucnoSet")("hr:test",sf); return u();};
+   H=naj(3001); ok(H.reg.k==="obz"&&near(H.unitAuto,1400*0.775),"Gradnja: Osječko-baranjska −20 do −25 % (× 0,775)");
+   H=naj(1538); ok(H.reg.k==="o2"&&near(H.unitAuto,1400*1.2)&&/otok, Hvar/.test(H.reg.kako),"Gradnja: Hvar → srednje udaljeni otoci +15 do +25 % (× 1,2)");
+   H=naj(9000); ok(H.reg.k==="o3"&&w.__fin.warn.some(x=>/Tisno je dijelom na otoku Murteru/.test(x)),"Gradnja: Tisno → otoci blizu kopna, uz napomenu da je općina dijelom na kopnu");
+   H=naj(9001); ok(H.reg.k==="o3"&&near(H.unitAuto,1400*1.125),"Gradnja: južni Pag (most) +10 do +15 %");
+   H=naj(9999); ok(H.reg.k!=="krk","Gradnja: općina istog imena u drugoj županiji ne uzima skupinu otoka");
+   setv(w,"bReg","o1","change"); H=w.__fin.house; ok(H.reg.k==="o1"&&H.reg.rucno&&near(H.unitAuto,1400*1.325)&&E("grRegRucnoGet")("hr:test")==="o1","Gradnja: ručni odabir područja (ekstremno udaljeni otoci +25 do +40 %) se pamti");
+   setv(w,"bUnit","1000","change"); H=w.__fin.house; ok(H.unit===1000&&!/× 1,325/.test(w.__fin.items.find(i=>i.k==="gradnja").formula),"Gradnja: tvoja cijena po m² se ne množi odstupanjem");
+   setv(w,"bUnit","","change"); setv(w,"bReg","","change"); ok(E("grRegRucnoGet")("hr:test")===null,"Gradnja: povratak na automatski odabir područja");
+   E("ptnRucnoSet")("hr:test",null); C.region=undefined; u();}
   ok(errs.length===0,"bez JS grešaka (cijene zemljišta): "+errs.join(" | "));
 }
 
