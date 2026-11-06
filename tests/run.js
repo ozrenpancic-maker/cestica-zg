@@ -1930,6 +1930,14 @@ async function okuTests(){
    ok(rm.tip==="mediteranska"&&Math.abs(rm.povrsine.terasa-30)<2&&rm.items.terasa.dub===4&&rn.items.staza.sirina===1.5&&!rn.items.vrt&&E("okuV")("travnjak","mediteranska").n.startsWith("Mediteranski vrt"),"Okućnica faza 2: tipovi (mediteranska terasa 30 m² dubine 4 m i šljunak/nasadi; minimalistička bez vrta, šira staza)");
    const rz=Iz({parcel:rect(-6,-6.7,6,6.7),kuce:[kv(0,0,11,9)],kucaC:[0,0],rot:0,w:11,d:9,H:6,ceste:[[[-20,-11],[20,-11]]],nagib:null,post:{...post,terasa:20,pomocni:true}});
    ok(!rz.items.terasa&&/nema mjesta za terasu/.test(rz.napomene.join(" "))&&!rz.items.pomocni,"Okućnica faza 2: kad nema mjesta za terasu ili pomoćni objekt, to piše");}
+  // bazen: 4 × 8 m, 3 m od međe, 1,5 m od kuće, ne preklapa ostale dijelove; na maloj čestici napomena
+  {const rb=Iz({...I,post:{...post,tip:"obiteljska",terasa:20,pomocni:true,pomM2:12,bazen:true,bazW:4,bazD:8,bazOd:3}}), b=rb.items.bazen;
+   const bb=b&&w.turf.bbox({type:"Feature",geometry:b.g,properties:{}});
+   ok(b&&Math.abs(rb.povrsine.bazen-32)<0.1&&bb[0]>=-12.01&&bb[2]<=12.01&&bb[1]>=-17.01&&bb[3]<=17.01&&b.odMede===3&&/udaljenost bazena od međe/.test(rb.napomene.join(" ")),"Okućnica: bazen 4 × 8 m (32 m²), najmanje 3 m od svih međa, uz napomenu o pravilima plana");
+   const ks=Object.keys(rb.items).filter(k=>k!=="bazen"); let prek=0; for(const k of ks) prek+=oA(oX(rb.items[k].g,b.okvir));
+   ok(prek<0.5&&oA(oX(b.okvir,rect(-6.5,-1.5,6.5,9.5)))<0.01&&rb.items.terasa&&rb.items.pomocni,"Okućnica: bazen s obrubom ne preklapa terasu, pomoćni objekt, parking, stazu ni zelenilo i 1,5 m je od kuće");
+   const rs=Iz({...I,parcel:rect(-8,-10,8,10),kuce:[kv(0,0,10,8)],kucaC:[0,0],ceste:[[[-20,-12],[20,-12]]],post:{...post,mjesta:0,bazen:true,bazW:4,bazD:8,bazOd:3}}); ok(!rs.items.bazen&&/Za bazen 4 × 8 m nema mjesta/.test(rs.napomene.join(" ")),"Okućnica: kad bazen ne stane uz zadanu udaljenost od međe, to piše i ništa se ne crta");
+   const rm=Iz({...I,post:{...post,bazen:true,bazW:4,bazD:20,bazOd:6}}); ok(rm.items.bazen&&rm.items.bazen.duljina<20&&/predložen je manji/.test(rm.napomene.join(" ")),"Okućnica: predug bazen se skrati uz napomenu");}
   // kroz aplikaciju: gumb, karta, skica, 3D, izvještaj, projekt
   const A=parcelRect(30,40,{KATASTARSKA_CESTICA:"77/1",KATASTARSKA_OPCINA:"REMETE"}), c=A.geometry.coordinates[0], dy=4/110540;
   const d=data(w,A,"2.2.",{env:{v:{roads:[],roadLines:[{ok:true,hw:"residential",name:"Ulica Test",geom:[[c[0][0]-0.001,c[0][1]-dy],[c[1][0]+0.001,c[1][1]-dy]]}],stops:[]}}});
@@ -1977,6 +1985,17 @@ async function okuTests(){
    const sr=E("scRow")({name:"t",inp:E("scClean")(E("finInputs")())},0,0,{}); ok(sr.oku.length===oi.length,"Okućnica faza 3: scenariji investicije uključuju isti trošak okućnice");
    setv(w,"okuTr",false,"change"); await tick(300); const F3=E("window.__fin"); ok(!F3.items.some(i=>i.group==="okucnica")&&F3.items.some(i=>i.k==="prilaz")&&F3.items.some(i=>i.k==="okolis")&&/nije uključen/.test(txt(w,"okuCost")),"Okućnica faza 3: isključivanjem se vraćaju prilaz i uređenje okoliša iz procjene gradnje");
    setv(w,"okuTr",true,"change"); setv(w,"okuTip","mediteranska","change"); await tick(300); ok(/Mediteranski vrt \(šljunak, nasadi\): podaci nisu dostupni/.test(txt(w,"okuCost"))&&E("okuPost")(k).terMat==="aris"&&E("okuTrosak")(k).items.find(i=>i.k==="oku_terasa").formula.includes("40–85"),"Okućnica faza 3: mediteranski tip (drvena terasa 40–85 €/m²; šljunak i nasadi bez cijene u cjeniku)");}
+  // bazen u aplikaciji: postavke, površina, 3D, skica, trošak (cjenik ili ponuda)
+  setv(w,"okuTip","obiteljska","change"); await tick(300); setv(w,"okuBaz",true,"change"); await tick(400);
+  {const k=E("window.__cur.key"), R3=E("OKU.res"), P3=R3.povrsine;
+   ok(E("okuPost")(k).bazen&&R3.items.bazen&&Math.abs(P3.bazen-32)<0.1&&/Bazen32 m²/.test(txt(w,"okuOut"))&&!$(w,"okuBazW").disabled,"Okućnica: bazen uključen u postavkama, 32 m² u tablici površina");
+   const D4=E("v3dData")(); ok(D4.kuca.features.some(f=>f.properties.k==="bazen"&&f.properties.c==="#1f8fd8")&&D4.kuca.features.some(f=>f.properties.k==="bazen-rub"),"Okućnica: bazen u 3D prikazu (voda i kameni obrub)");
+   E("skicaRender")(); ok($(w,"skicaOut").querySelectorAll('path[fill="#7cc4ef"]').length===1,"Okućnica: bazen na skici");
+   const T4=E("okuTrosak")(k), bz=T4.items.find(i=>i.k==="oku_bazen"); ok(bz&&Math.abs(bz.lo-P3.bazen*780)<1&&Math.abs(bz.hi-P3.bazen*1080)<1&&bz.kind==="procjena"&&/emajstor\.hr „Bazeni”/.test(bz.formula),"Okućnica: trošak bazena iz cjenika emajstor.hr (poliesterski 780–1.080 €/m²)");
+   setv(w,"okuBazVr","beton","change"); await tick(300); const bz2=E("okuTrosak")(k).items.find(i=>i.k==="oku_bazen"); ok(bz2&&Math.abs(bz2.lo-P3.bazen*900)<1,"Okućnica: betonski bazen 900–1.250 €/m²");
+   setv(w,"okuBazCij","25000","change"); await tick(300); const bz3=E("okuTrosak")(k).items.find(i=>i.k==="oku_bazen"); ok(bz3&&bz3.lo===25000&&bz3.kind==="unos"&&E("window.__fin").items.some(i=>i.k==="oku_bazen"&&i.group==="okucnica"),"Okućnica: ponuda za bazen zamjenjuje procjenu i ulazi u financijski model pod okućnicom");
+   setv(w,"okuBazW","3","change"); await tick(300); ok(Math.abs(E("OKU.res").povrsine.bazen-24)<0.1,"Okućnica: promjena širine bazena preračuna prijedlog (3 × 8 m)");
+   setv(w,"okuBaz",false,"change"); await tick(300); ok(!E("OKU.res").items.bazen&&!E("okuTrosak")(k).items.some(i=>i.k==="oku_bazen")&&!E("v3dData")().kuca.features.some(f=>f.properties.k==="bazen"),"Okućnica: isključen bazen nestaje iz prijedloga, troška i 3D-a");}
   $(w,"okuOff").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(250);
   ok(!E("OKU.res")&&!E("OKU.layer")&&!!$(w,"okuGo"),"Okućnica: „Ukloni prijedlog” briše prikaz; kuća i simulator ostaju");
   ok(errs.length===0,"Okućnica: bez JS grešaka "+errs.join(" | "));

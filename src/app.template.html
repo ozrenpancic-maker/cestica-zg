@@ -3801,7 +3801,8 @@ const OKU_VRSTE={
   vrt:{n:"Vrt",c:"#3f7d20",o:.6,sk:"#5f9a3a"},
   travnjak:{n:"Travnjak / zelena površina",c:"#8fcf6a",o:.45,sk:"#b5df98"},
   terasa:{n:"Terasa",c:"#a9825e",o:.75,sk:"#c9a27e"},
-  pomocni:{n:"Pomoćni objekt (spremište)",c:"#5b4a3f",o:.75,sk:"#7a685b"}};
+  pomocni:{n:"Pomoćni objekt (spremište)",c:"#5b4a3f",o:.75,sk:"#7a685b"},
+  bazen:{n:"Bazen",c:"#1f8fd8",o:.85,sk:"#7cc4ef"}};
 // Faza 2: tipovi okućnice mijenjaju zadane veličine, smjer terase, širinu staze i izgled zelenila (ne pravila gradnje)
 const OKU_TIP={
   obiteljska:{n:"Obiteljska",terasa:20,vrt:30,dub:3.5,staza:1.2,smjer:180,opis:"terasa prema jugu, vrt i travnjak za igru"},
@@ -3809,7 +3810,11 @@ const OKU_TIP={
     v:{travnjak:{n:"Mediteranski vrt (šljunak, nasadi)",c:"#c9bf8f",sk:"#ddd3a6"},staza:{c:"#d2b98a",sk:"#e2cfa6"},terasa:{c:"#b5764f",sk:"#d09772"}}},
   minimalisticka:{n:"Minimalistička",terasa:15,vrt:0,dub:3,staza:1.5,smjer:180,opis:"jednostavna terasa, šira staza, bez vrta, ravni travnjak",
     v:{staza:{c:"#9e9e9e",sk:"#bdbdbd"},terasa:{c:"#8c8c8c",sk:"#b0b0b0"}}}};
-const OKU_RED=["travnjak","vrt","terasa","prilaz","parking","staza","pomocni"];
+const OKU_RED=["travnjak","vrt","terasa","bazen","prilaz","parking","staza","pomocni"];
+// bazen: pravokutnik (vodena površina) uz kuću, obrub 0,3 m; zadana udaljenost od međe 3 m (neki planovi traže 1 m, neki 3 m) mijenja se
+const OKU_BAZ={w:[2,10,4],d:[2,20,8],od:[0.5,10,3],obrub:0.3};
+// jedinične cijene: emajstor.hr, cjenik „Bazeni” (2026.), €/m² bazena
+const OKU_BAZ_VR={poliester:{l:"poliesterski (s iskopom)",r:[780,1080]},beton:{l:"betonski",r:[900,1250]},stiropor:{l:"od stiropora",r:[290,340]},montazni:{l:"montažni",r:[260,310]},prirodni:{l:"prirodni",r:[1100,1450]}};
 function okuV(k,tip){ const T=OKU_TIP[tip||(OKU.res&&OKU.res.tip)||"obiteljska"]||OKU_TIP.obiteljska; return {...OKU_VRSTE[k],...((T.v||{})[k]||{})}; }
 const OKU_MJ={w:2.5,d:5.0,max:12}, OKU={res:null,key:null,layer:null,t:0};
 function okuPost(k){const v=projRaw(k).oku; return projCleanOku(v)||projCleanOku({on:false})}
@@ -3818,7 +3823,9 @@ function projCleanOku(x){ if(!x||typeof x!=="object") return null; const n=(v,a,
   return {on:x.on===true,mjesta:Math.round(n(x.mjesta,0,OKU_MJ.max,2)),vrt:Math.round(n(x.vrt,0,400,OKU_TIP[tip].vrt)),prW:n(x.prW,2.5,5,3),pomak:Math.round(n(x.pomak,-30,30,0)),
     tip,terasa:Math.round(n(x.terasa,0,120,OKU_TIP[tip].terasa)),pomocni:x.pomocni===true,pomM2:Math.round(n(x.pomM2,4,30,12)),
     trosak:x.trosak!==false,mat:pEnum(x.mat,Object.keys(PRILAZ))||"asfalt",terMat:pEnum(x.terMat,Object.keys(OKU_TER))||OKU_TIP_MAT[tip].ter,trava:pEnum(x.trava,Object.keys(OKU_TRAVA))||OKU_TIP_MAT[tip].trava,
-    pomCij:n(x.pomCij,0,200000,0),nasadi:n(x.nasadi,0,200000,0)}; }
+    pomCij:n(x.pomCij,0,200000,0),nasadi:n(x.nasadi,0,200000,0),
+    bazen:x.bazen===true,bazW:n(x.bazW,OKU_BAZ.w[0],OKU_BAZ.w[1],OKU_BAZ.w[2]),bazD:n(x.bazD,OKU_BAZ.d[0],OKU_BAZ.d[1],OKU_BAZ.d[2]),bazOd:n(x.bazOd,OKU_BAZ.od[0],OKU_BAZ.od[1],OKU_BAZ.od[2]),
+    bazVr:pEnum(x.bazVr,Object.keys(OKU_BAZ_VR))||"poliester",bazCij:n(x.bazCij,0,500000,0)}; }
 // --- ravninska geometrija u metrima
 const oA=g=>{ if(!g) return 0; const rs=g.type==="Polygon"?[g.coordinates]:g.type==="MultiPolygon"?g.coordinates:[]; let s=0;
   for(const p of rs) p.forEach((r,i)=>{let a=0; for(let j=0;j<r.length-1;j++) a+=r[j][0]*r[j+1][1]-r[j+1][0]*r[j][1]; s+=(i?-1:1)*Math.abs(a)/2;}); return Math.max(0,s); };
@@ -3886,8 +3893,9 @@ function okuIzracun(I){
         if(g&&oA(g)>=oA(r)*0.95){ ter={g,strana:k,dub,duljina:L}; break; } } if(ter) break; } if(ter) break; }
     if(ter){ out.items.terasa=ter; F=oD(F,ter.g); if(oA(ter.g)<post.terasa*0.8) out.napomene.push(`Terasa od ${post.terasa} m² ne stane uz kuću; predložena je manja (${Math.round(oA(ter.g))} m²).`); }
     else out.napomene.push("Uz kuću nema mjesta za terasu (potrebno je barem 2,5 m dubine uz zid koji nije ulazni)."); }
+  if(post.bazen){ const b=okuBazen(I,post,P,F,out,A,T); if(b){ out.items.bazen=b; F=oD(F,b.okvir); } }
   // pomoćni objekt (Faza 2): spremište u kutu čestice dalje od ceste i kuće, 1 m od međe; nije provjereno prema pravilima plana
-  if(post.pomocni){ const pw=3, pd=Math.max(1.5,(post.pomM2||12)/pw); let Rp=F; for(const k of ["parking","prilaz","staza","terasa"]) if(out.items[k]) Rp=oD(Rp,out.items[k].g);
+  if(post.pomocni){ const pw=3, pd=Math.max(1.5,(post.pomM2||12)/pw); let Rp=F; for(const k of ["parking","prilaz","staza","terasa","bazen"]) if(out.items[k]) Rp=oD(Rp,out.items[k].g);
     let best=null;
     for(const q of B){ let nn=[-q.e[1],q.e[0]]; if(!oIn([q.p[0]+nn[0]*0.6,q.p[1]+nn[1]*0.6],P)) nn=[-nn[0],-nn[1]];
       for(const [a,b2] of [[pd,pw],[pw,pd]]){ const r=oRect(q.p,q.e,nn,-a/2,a/2,1,1+b2); if(oA(oX(r,Rp))<oA(r)*0.995) continue;
@@ -3897,7 +3905,7 @@ function okuIzracun(I){
     if(best){ out.items.pomocni={g:best.g,visina:2.5}; F=oD(F,best.g); out.napomene.push("Pomoćni objekt je nacrtan 1 m od međe samo kao prijedlog položaja; dopuštenu udaljenost od međe i ulazi li u izgrađenost čestice provjeri u pravilima plana."); }
     else out.napomene.push(`Za pomoćni objekt od ${post.pomM2||12} m² nema mjesta na čestici.`); }
   // ostatak za zelenilo
-  let R=F; for(const k of ["parking","prilaz","staza","terasa","pomocni"]) if(out.items[k]) R=oD(R,out.items[k].g);
+  let R=F; for(const k of ["parking","prilaz","staza","terasa","bazen","pomocni"]) if(out.items[k]) R=oD(R,out.items[k].okvir||out.items[k].g);
   const Ra=oA(R);
   if(Ra<8){ out.napomene.push("Za vrt i travnjak ne ostaje dovoljno prostora."); return okuZbroj(out); }
   // vrt: najsunčaniji dio, izvan sjene kuće (sunce s juga), dalje od ceste, kompaktan
@@ -3948,7 +3956,35 @@ function okuTrosak(k){
   if(P.pomocni>0){ if(post.pomCij>0) it.push({k:"oku_pomocni",label:"Okućnica: pomoćni objekt",base:post.pomCij,lo:post.pomCij,hi:post.pomCij,kind:"unos",formula:"tvoja ponuda"});
     else if(P.pomocni<=5) it.push({k:"oku_pomocni",label:"Okućnica: pomoćni objekt",base:1850,lo:1000,hi:2700,kind:"procjena",formula:"drvena vrtna šupa 2 × 2 m, dobava i montaža 1.000–2.700 €/kom"});
     else nap.push(`Pomoćni objekt (${fmt(P.pomocni)} m²): cjenik daje cijenu samo za šupu 2 × 2 m; cijena ovisi o vrsti (lim, drvo, zidano), pa upiši ponudu.`); }
-  return {items:it,napomene:nap,prilaz:pp>0,izvor:OKU_CIJ_SRC};
+  if(P.bazen>0){ if(post.bazCij>0) it.push({k:"oku_bazen",label:"Okućnica: bazen",base:post.bazCij,lo:post.bazCij,hi:post.bazCij,kind:"unos",formula:"tvoja ponuda"});
+    else { const B=OKU_BAZ_VR[post.bazVr]||OKU_BAZ_VR.poliester; add("bazen","Okućnica: bazen",P.bazen,B.r,B.l+" bazen, cjenik emajstor.hr „Bazeni” (2026.)"); }
+    nap.push("Bazen: oprema (filtracija, grijanje, pokrivač), priključci i održavanje nisu posebno iskazani; za točan iznos upiši ponudu."); }
+  return {items:it,napomene:nap,prilaz:pp>0,izvor:OKU_CIJ_SRC+(P.bazen>0?", „Bazeni” (2026.)":"")};
+}
+// bazen: pravokutnik W × D (s obrubom) u osima kuće, unutar slobodnog prostora, najmanje bazOd od svih međa i 1,5 m od zida kuće;
+// prednost ima sunčana (južna) strana, blizina terase i udaljenost od pristupa. Ako ne stane, isproba se manji (do 60 % duljine).
+const oBN=v=>skN(v,1).replace(/,0$/,"");
+function okuBazen(I,post,P,F,out,A,T){
+  let Rb=F; for(const k of ["parking","prilaz","staza","terasa"]) if(out.items[k]) Rb=oD(Rb,out.items[k].g);
+  const kz=I.kuce.reduce((g,k)=>oU(g,oPg(k.zid)),null);
+  const th=I.rot*Math.PI/180, ex=[Math.cos(th),-Math.sin(th)], ny=[Math.sin(th),Math.cos(th)], ob=OKU_BAZ.obrub, od=post.bazOd;
+  const ter=out.items.terasa?turf.centroid(oF(out.items.terasa.g)).geometry.coordinates:null;
+  const bb=turf.bbox(oF(Rb||P)), kut=(o,a,b)=>[[-a,-b],[a,-b],[a,b],[-a,b]].map(([x,y])=>[o[0]+ex[0]*x+ny[0]*y,o[1]+ex[1]*x+ny[1]*y]);
+  const odZida=(cs)=>{ if(!kz) return Infinity; let m=Infinity; for(const p of cs) for(const r of kz.coordinates) for(let j=0;j<r.length-1;j++) m=Math.min(m,oSegDist(p,r[j],r[j+1])); return m; };
+  for(const f of [1,0.85,0.7,0.6]){ const L=post.bazD*f; if(L<2) break;
+    for(const [a,b] of [[post.bazW,L],[L,post.bazW]]){ const ha=a/2+ob, hb=b/2+ob, C=[];
+      for(let x=Math.floor(bb[0]);x<=bb[2];x+=0.5) for(let y=Math.floor(bb[1]);y<=bb[3];y+=0.5){ const o=[x,y], k1=kut(o,ha,hb);
+        if(!k1.every(p=>oIn(p,Rb))||!kut(o,ha+od-ob,hb+od-ob).every(p=>oIn(p,P))) continue;
+        const dz=odZida(k1); if(dz<1.5) continue;
+        const sc=(I.kucaC[1]-y)*0.25+(ter?-Math.hypot(x-ter[0],y-ter[1])*0.3:-dz*0.15)+Math.min(20,Math.hypot(x-A.p[0],y-A.p[1]))*0.15;
+        C.push({o,sc}); }
+      C.sort((p,q)=>q.sc-p.sc);
+      for(const c of C.slice(0,60)){ const okvir=oPg(kut(c.o,ha,hb)), oko=oPg(kut(c.o,ha+od-ob,hb+od-ob));
+        if(oA(oX(okvir,Rb))<oA(okvir)*0.995||oA(oX(oko,P))<oA(oko)*0.995) continue;
+        const g=oPg(kut(c.o,a/2,b/2)); if(f<1) out.napomene.push(`Bazen ${oBN(post.bazW,1)} × ${oBN(post.bazD,1)} m ne stane uz zadanu udaljenost od međe; predložen je manji (${oBN(Math.min(a,b),1)} × ${oBN(Math.max(a,b),1)} m).`);
+        out.napomene.push(`Bazen je nacrtan ${oBN(od,1)} m od međe samo kao prijedlog položaja; propisanu udaljenost bazena od međe i ulazi li u izgrađenost čestice provjeri u pravilima plana.`);
+        return {g,okvir,sirina:Math.min(a,b),duljina:Math.max(a,b),obrub:ob,odMede:od}; } } }
+  out.napomene.push(`Za bazen ${oBN(post.bazW,1)} × ${oBN(post.bazD,1)} m nema mjesta na čestici uz udaljenost ${oBN(od,1)} m od međe i 1,5 m od kuće.`); return null;
 }
 function okuStaza(a,b,I,F,w=1.2){
   // ravna staza; ako prolazi kroz kuću, ide preko najbližeg ugla proširene kuće
@@ -3979,6 +4015,7 @@ function okuRacunaj(){
   const U=okuUlaz(); if(!U){OKU.res=null; return null;}
   let r; try{ r=okuIzracun({...U.I,post}); }catch(e){ r={items:{},napomene:["Prijedlog se nije mogao izračunati za ovaj oblik čestice."],povrsine:{}}; }
   r.ll={}; for(const [kk,it] of Object.entries(r.items)) r.ll[kk]=okuGeoLL(it.g,U.inv);
+  if(r.items.bazen) r.ll.bazenOkvir=okuGeoLL(r.items.bazen.okvir,U.inv);
   if(r.ulaz) r.ulazLL=U.inv(r.ulaz.tocka);
   OKU.res=r; OKU.key=k; window.__oku={povrsine:r.povrsine,napomene:r.napomene,ulaz:r.ulaz&&r.ulaz.strana,ilustrativno:true}; return r;
 }
@@ -4001,19 +4038,24 @@ function okuHtml(){
     h+=`<label for="okuPrW">Širina prilaza</label><span><input id="okuPrW" type="number" inputmode="decimal" min="2.5" max="5" step="0.5" value="${p.prW}"> m</span>`;
     h+=`<label for="okuVrt">Vrt</label><span><input id="okuVrt" type="number" inputmode="decimal" min="0" max="400" step="5" value="${p.vrt}"> m² <small class="meta">0 = bez vrta</small></span>`;
     h+=`<label for="okuTer">Terasa</label><span><input id="okuTer" type="number" inputmode="decimal" min="0" max="120" step="5" value="${p.terasa}"> m² <small class="meta">0 = bez terase</small></span>`;
-    h+=`<label for="okuPom">Pomoćni objekt</label><span><input type="checkbox" id="okuPom"${p.pomocni?" checked":""}> spremište <input id="okuPomM2" type="number" inputmode="decimal" min="4" max="30" step="1" value="${p.pomM2}" style="width:4.5em"${p.pomocni?"":" disabled"}> m²</span></div><div id="okuOut"></div>`;
+    h+=`<label for="okuPom">Pomoćni objekt</label><span><input type="checkbox" id="okuPom"${p.pomocni?" checked":""}> spremište <input id="okuPomM2" type="number" inputmode="decimal" min="4" max="30" step="1" value="${p.pomM2}" style="width:4.5em"${p.pomocni?"":" disabled"}> m²</span>`;
+    const bd=p.bazen?"":" disabled";
+    h+=`<label for="okuBaz">Bazen</label><span><input type="checkbox" id="okuBaz"${p.bazen?" checked":""}> <input id="okuBazW" type="number" inputmode="decimal" min="${OKU_BAZ.w[0]}" max="${OKU_BAZ.w[1]}" step="0.5" value="${p.bazW}" style="width:4.5em" aria-label="širina bazena"${bd}> × <input id="okuBazD" type="number" inputmode="decimal" min="${OKU_BAZ.d[0]}" max="${OKU_BAZ.d[1]}" step="0.5" value="${p.bazD}" style="width:4.5em" aria-label="duljina bazena"${bd}> m</span>`;
+    h+=`<label for="okuBazOd">Bazen od međe</label><span><input id="okuBazOd" type="number" inputmode="decimal" min="${OKU_BAZ.od[0]}" max="${OKU_BAZ.od[1]}" step="0.5" value="${p.bazOd}"${bd}> m <small class="meta">provjeri u pravilima plana</small></span></div><div id="okuOut"></div>`;
     const sel=(id,obj,v)=>`<select id="${id}" class="bsel">${Object.entries(obj).map(([k,o])=>`<option value="${k}"${k===v?" selected":""}>${esc(o.l)}</option>`).join("")}</select>`;
     h+=`<p class="eyebrow" style="margin:12px 0 4px">Trošak okućnice</p><div class="bgrid"><label for="okuTr">U procjeni troškova</label><span><input type="checkbox" id="okuTr"${p.trosak?" checked":""}> uključi u gradnju, ukupnu investiciju i scenarije</span>`;
     h+=`<label for="okuMat">Parking i prilaz</label>${sel("okuMat",PRILAZ,p.mat)}<label for="okuTerMat">Terasa</label>${sel("okuTerMat",OKU_TER,p.terMat)}`;
     h+=p.tip==="mediteranska"?`<label for="okuNas">Šljunak i nasadi</label><span><input id="okuNas" type="number" inputmode="decimal" min="0" step="100" placeholder="ponuda" value="${p.nasadi>0?p.nasadi:""}"> €</span>`:`<label for="okuTrava">Travnjak</label>${sel("okuTrava",OKU_TRAVA,p.trava)}`;
-    h+=`<label for="okuPomCij">Pomoćni objekt</label><span><input id="okuPomCij" type="number" inputmode="decimal" min="0" step="100" placeholder="ponuda" value="${p.pomCij>0?p.pomCij:""}"> € <small class="meta">ako imaš ponudu</small></span></div><div id="okuCost"></div>`; }
+    h+=`<label for="okuPomCij">Pomoćni objekt</label><span><input id="okuPomCij" type="number" inputmode="decimal" min="0" step="100" placeholder="ponuda" value="${p.pomCij>0?p.pomCij:""}"> € <small class="meta">ako imaš ponudu</small></span>`;
+    if(p.bazen) h+=`<label for="okuBazVr">Bazen</label>${sel("okuBazVr",OKU_BAZ_VR,p.bazVr)}<label for="okuBazCij">Ponuda za bazen</label><span><input id="okuBazCij" type="number" inputmode="decimal" min="0" step="500" placeholder="ponuda" value="${p.bazCij>0?p.bazCij:""}"> € <small class="meta">zamjenjuje procjenu iz cjenika</small></span>`;
+    h+=`</div><div id="okuCost"></div>`; }
   return h+`</div></details>`;
 }
 function okuOutHtml(){
   const r=OKU.res; if(!r) return ""; const P=r.povrsine||{}, f=v=>(Math.round(v*10)/10).toLocaleString("hr-HR",{maximumFractionDigits:1});
   const pz1=pzSet("oku","Prijedlog okućnice","ilustrativno",pz("C",{izvor:"pravila aplikacije (raspored oko kuće iz simulatora)",razlog:"ilustrativni prijedlog, nije projekt",provjera:"projektant ili krajobrazni arhitekt"}));
   let h=`<table class="rp"><tbody>`;
-  for(const k of Object.keys(OKU_VRSTE)){ const V=okuV(k); h+=`<tr><th><i class="sw" style="background:${V.c};opacity:${Math.min(1,V.o+.2)};display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px"></i>${esc(V.n)}</th><td>${P[k]?`<b>${f(P[k])} m²</b>${k==="parking"&&r.items.parking?` <small class="fx">${r.items.parking.mjesta} ${r.items.parking.mjesta===1?"mjesto":"mjesta"} 2,5 × 5 m</small>`:""}${k==="staza"&&r.items.staza?` <small class="fx">širina ${String(r.items.staza.sirina||1.2).replace(".",",")} m</small>`:""}${k==="terasa"&&r.items.terasa?` <small class="fx">uz ${({S:"južni",N:"sjeverni",E:"istočni",W:"zapadni"}[r.items.terasa.strana])} zid tlocrta, dubina ${String(r.items.terasa.dub).replace(".",",")} m</small>`:""}${k==="pomocni"&&r.items.pomocni?` <small class="fx">visina oko 2,5 m</small>`:""}`:"—"}</td></tr>`; }
+  for(const k of Object.keys(OKU_VRSTE)){ const V=okuV(k); h+=`<tr><th><i class="sw" style="background:${V.c};opacity:${Math.min(1,V.o+.2)};display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px"></i>${esc(V.n)}</th><td>${P[k]?`<b>${f(P[k])} m²</b>${k==="parking"&&r.items.parking?` <small class="fx">${r.items.parking.mjesta} ${r.items.parking.mjesta===1?"mjesto":"mjesta"} 2,5 × 5 m</small>`:""}${k==="staza"&&r.items.staza?` <small class="fx">širina ${String(r.items.staza.sirina||1.2).replace(".",",")} m</small>`:""}${k==="terasa"&&r.items.terasa?` <small class="fx">uz ${({S:"južni",N:"sjeverni",E:"istočni",W:"zapadni"}[r.items.terasa.strana])} zid tlocrta, dubina ${String(r.items.terasa.dub).replace(".",",")} m</small>`:""}${k==="pomocni"&&r.items.pomocni?` <small class="fx">visina oko 2,5 m</small>`:""}${k==="bazen"&&r.items.bazen?` <small class="fx">vodena površina ${oBN(r.items.bazen.sirina)} × ${oBN(r.items.bazen.duljina)} m, obrub 0,3 m, ${oBN(r.items.bazen.odMede)} m od međe</small>`:""}`:"—"}</td></tr>`; }
   h+=`</tbody></table>`;
   h+=`<p class="meta">${pzTag(pz1)} Slobodno oko kuće: ${f(r.slobodno||0)} m². Ulaz u kuću: strana prema pristupu${r.ulaz?" ("+({S:"južna",N:"sjeverna",E:"istočna",W:"zapadna"}[r.ulaz.strana])+" strana tlocrta)":""}. Vrt je na najsunčanijem slobodnom dijelu (izvan sjene kuće kad je sunce na jugu).</p>`;
   if(r.napomene.length) h+=`<ul class="checks">${r.napomene.map(t=>`<li class="chk chk-warn"><b>!</b><span>${esc(t)}</span></li>`).join("")}</ul>`;
@@ -4028,7 +4070,7 @@ function okuCostHtml(k){ const T=okuTrosak(k), p=k?okuPost(k):null; if(!OKU.res|
   h+=`<p class="meta">Iznosi ulaze jednom u „Procjenu cijene gradnje”, „Ukupnu investiciju” i scenarije (skupina okućnica).${T.prilaz?" Prilaz iz procjene gradnje tada se ne računa, a ručno upisano uređenje okoliša zamjenjuje se okućnicom.":""} Ne uključuje ogradu, rasvjetu, navodnjavanje ni biljke. Izvor: ${esc(T.izvor)}.</p>`;
   return h; }
 function okuUpdate(){ const r=okuRacunaj(); okuNacrtaj(); { const c=document.getElementById("okuCost"), k=window.__cur&&window.__cur.key; if(c){const nh=okuCostHtml(k); if(c.innerHTML!==nh) keepPos(()=>{c.innerHTML=nh;});} } try{ if(typeof finUpdate==="function"&&document.getElementById("bOut")) finUpdate(); }catch(e){} const o=document.getElementById("okuOut"); if(o){const nh=okuOutHtml(); if(o.innerHTML!==nh) keepPos(()=>{o.innerHTML=nh;});}
-  const s=document.getElementById("okuSum"); if(s) s.textContent=r?["parking","terasa","vrt"].filter(k=>r.povrsine[k]).map(k=>OKU_VRSTE[k].n.split(" ")[0].toLowerCase()+" "+Math.round(r.povrsine[k])+" m²").join(" · ")||"bez prostora":"nije izrađen";
+  const s=document.getElementById("okuSum"); if(s) s.textContent=r?["parking","terasa","bazen","vrt"].filter(k=>r.povrsine[k]).map(k=>OKU_VRSTE[k].n.split(" ")[0].toLowerCase()+" "+Math.round(r.povrsine[k])+" m²").join(" · ")||"bez prostora":"nije izrađen";
   if(typeof skicaUpdate==="function") skicaUpdate(); }
 function okuSoon(){ clearTimeout(OKU.t); OKU.t=setTimeout(()=>{okuUpdate(); if(typeof legendaMapUpdate==="function") legendaMapUpdate();},150); }
 function okuForma(){ const d=document.querySelector('details[data-k="oku"]'); if(!d) return; const op=d.open; const t=document.createElement("div"); t.innerHTML=okuHtml(); const n=t.firstElementChild; n.open=op||true; keepPos(()=>d.replaceWith(n)); okuUpdate(); }
@@ -4043,6 +4085,10 @@ sheet.addEventListener("change",e=>{ const id=e.target.id;
   if(id==="okuTr"){ okuSet({trosak:e.target.checked}); okuSoon(); return; }
   if(id==="okuMat"||id==="okuTerMat"||id==="okuTrava"){ okuSet({[{okuMat:"mat",okuTerMat:"terMat",okuTrava:"trava"}[id]]:e.target.value}); okuSoon(); return; }
   if(id==="okuPomCij"||id==="okuNas"){ okuSet({[id==="okuPomCij"?"pomCij":"nasadi"]:numv(id)??0}); okuSoon(); return; }
+  if(id==="okuBaz"){ okuSet({bazen:e.target.checked}); okuForma(); return; }
+  if(id==="okuBazW"||id==="okuBazD"||id==="okuBazOd"){ const v=numv(id); if(v!=null) okuSet({[{okuBazW:"bazW",okuBazD:"bazD",okuBazOd:"bazOd"}[id]]:v}); okuSoon(); return; }
+  if(id==="okuBazVr"){ okuSet({bazVr:e.target.value}); okuSoon(); return; }
+  if(id==="okuBazCij"){ okuSet({bazCij:numv(id)??0}); okuSoon(); return; }
   if(id==="okuPom"){ okuSet({pomocni:e.target.checked}); const m=document.getElementById("okuPomM2"); if(m) m.disabled=!e.target.checked; okuSoon(); return; }
   if(id==="okuTer"){ okuSet({terasa:numv("okuTer")??0}); okuSoon(); return; }
   if(id==="okuPomM2"){ okuSet({pomM2:numv("okuPomM2")}); okuSoon(); return; }
@@ -7445,7 +7491,10 @@ function v3dData(){
   const oku={type:"FeatureCollection",features:OKU.res&&OKU.res.ll&&OKU.key===key?["travnjak","vrt","prilaz","parking","staza"].filter(k=>OKU.res.ll[k]).map(k=>({type:"Feature",geometry:OKU.res.ll[k],properties:{c:okuV(k).c,k}})):[]};
   if(OKU.res&&OKU.res.ll&&OKU.key===key&&M){ // terasa (ploča 15 cm) i pomoćni objekt (2,5 m) kao tijela uz kuću
     if(OKU.res.ll.terasa) M.kuca.features.push({type:"Feature",geometry:OKU.res.ll.terasa,properties:{b:0,h:0.15,c:okuV("terasa").c,lod:0,k:"terasa"}});
-    if(OKU.res.ll.pomocni) M.kuca.features.push({type:"Feature",geometry:OKU.res.ll.pomocni,properties:{b:0,h:2.5,c:"#d8d0c4",lod:0,k:"pomocni"}},{type:"Feature",geometry:OKU.res.ll.pomocni,properties:{b:2.5,h:2.7,c:okuV("pomocni").c,lod:0,k:"pomocni-krov"}}); }
+    if(OKU.res.ll.pomocni) M.kuca.features.push({type:"Feature",geometry:OKU.res.ll.pomocni,properties:{b:0,h:2.5,c:"#d8d0c4",lod:0,k:"pomocni"}},{type:"Feature",geometry:OKU.res.ll.pomocni,properties:{b:2.5,h:2.7,c:okuV("pomocni").c,lod:0,k:"pomocni-krov"}});
+    if(OKU.res.ll.bazen){ const ok=OKU.res.ll.bazenOkvir, rub=ok?oD(ok,OKU.res.ll.bazen):null; // kameni obrub 20 cm iznad terena, voda 5 cm ispod ruba
+      if(rub) M.kuca.features.push({type:"Feature",geometry:rub,properties:{b:0,h:0.2,c:"#e7e2d6",lod:0,k:"bazen-rub"}});
+      M.kuca.features.push({type:"Feature",geometry:OKU.res.ll.bazen,properties:{b:0,h:0.15,c:okuV("bazen").c,lod:0,k:"bazen"}}); } }
   if(MO){ MO.terasa=!(OKU.res&&OKU.res.ll&&OKU.key===key&&OKU.res.ll.terasa); const km=TL.model&&mkModel(TL.model); MO.balkon=!!(km&&km.balkon); }
   if(oku.features.some(f=>f.properties.k==="prilaz")) prilaz=prazno; // prilaz iz prijedloga okućnice zamjenjuje onaj iz procjene gradnje
   return {parcel:d.parcel,c:turf.centroid(d.parcel).geometry.coordinates,model:MO,kuca:M?M.kuca:prazno,oku,sjena:M?M.sjena:prazno,prilaz,terasa:prazno,lbl,ulaz,
