@@ -494,7 +494,7 @@ ul.risk small{color:var(--muted)}
 .rpt h1,.rpt h2,.rpt h4,.rpt .rpt-brand,.rpt .rpt-kpi b{font-family:Georgia,"Times New Roman",serif}
 .rpt-cover{height:297mm;width:210mm;box-sizing:border-box;padding:0 18mm 14mm;display:flex;flex-direction:column;break-after:page;position:relative;background:#fff}
 .rpt-band{background:var(--r-green);color:#e9dcc2;margin:0 -18mm;padding:13mm 18mm 9mm;display:flex;justify-content:space-between;align-items:flex-end;font-size:8.5pt;letter-spacing:.22em;text-transform:uppercase;border-bottom:3px solid var(--r-gold)}
-.rpt-brand{font-size:15pt;letter-spacing:.32em;color:#fff}
+.rpt-brand{font-size:15pt;letter-spacing:.32em;color:#fff;display:inline-flex;align-items:center;gap:4mm}.rpt-logo{width:11mm;height:11mm;flex:0 0 auto;border-radius:2mm;box-shadow:0 0 0 .6mm rgba(255,255,255,.85)}
 .rpt-ttl{padding:12mm 0 6mm}
 .rpt-kicker{margin:0;color:var(--r-gold);letter-spacing:.24em;text-transform:uppercase;font-size:8.5pt}
 .rpt-ttl h1{font-size:44pt;line-height:1;margin:3mm 0 2mm;font-weight:400;color:var(--r-green)}
@@ -8979,7 +8979,7 @@ function buildReport(){
   const kpi=[["Površina čestice",cur.area?fmt(cur.area)+" m²":"Podaci nisu dostupni"],["Namjena",zona.replace(/\s+/g," ").replace(/\d+\s*%$/,"").trim().slice(0,60)||"Podaci nisu dostupni"],
     ["Područje za gradnju",window.__gp?fmt(window.__gp.area)+" m²":"nije izračunato"],["Izračun za česticu",sumB("calc").slice(0,70)||"—"],
     ["Ukupna investicija (procjena)",sumB("total")||"nije izračunata"],["Pouzdanost podataka",`A ${C.A} · B ${C.B} · C ${C.C}`]];
-  let h=`<section class="rpt-cover"><div class="rpt-band"><span class="rpt-brand">Čestica HR</span><span>Dosje čestice</span></div>
+  let h=`<section class="rpt-cover"><div class="rpt-band"><span class="rpt-brand"><svg class="rpt-logo" viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="96" fill="#1f6f54"/><path d="M118 360 L190 150 L392 190 L360 372 Z" fill="none" stroke="#fff" stroke-width="28" stroke-linejoin="round"/><path d="M200 300 v-60 l50-36 l50 36 v60 z" fill="#f79646"/></svg>Čestica HR</span><span>Dosje čestice</span></div>
     <div class="rpt-ttl"><p class="rpt-kicker">Katastarska čestica</p><h1>${esc(ces)}</h1><p class="rpt-ko">${ko?"k.o. "+esc(ko):""}${esc(dosjePodrucje(cur))}</p>
     <p class="rpt-date">${esc(dat)}${ll?` · ${ll.lat.toFixed(5)}° N, ${ll.lng.toFixed(5)}° E`:""}</p></div>
     <div class="rpt-map" id="rpMap"></div>${rptScenHtml(D)}
