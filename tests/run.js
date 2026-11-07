@@ -1822,7 +1822,7 @@ async function skicaTests(){
    ok(/Ulica Test/.test(s3[0].textContent)&&/cesta \(Ulica Test\)/.test(s3[1].textContent)&&[...s3[2].querySelectorAll("polygon")].some(p=>p.getAttribute("fill")==="#9b9b9b")&&/Sivo: cesta iz OpenStreetMapa/.test(t2),"Skica: cesta uz česticu ucrtana u tlocrt (s nazivom), presjek (kolnik na razini terena) i 3D prikaz");}
   {const R=E("buildReport")(), secs=[...R.querySelectorAll(".rpt-h h2")].map(h=>h.textContent);
    ok(R.querySelector(".rpt-cover h1").textContent==="95/1"&&/k\.o\. REMETE/.test(R.querySelector(".rpt-ko").textContent)&&R.querySelectorAll(".rpt-kpi div").length===6&&secs.includes("Kuća na čestici")&&secs.includes("Pouzdanost podataka")&&/^01$/.test(R.querySelector(".rpt-h span").textContent),"Izvještaj: naslovnica (čestica, k.o., 6 ključnih podataka) i numerirana poglavlja");
-   ok(!R.querySelector("input,select,textarea,button,details,summary")&&R.querySelectorAll(".sk-svg").length===3&&R.querySelector(".rpt-lgd .lgd")&&!R.querySelector("[id]:not(#rpMap)"),"Izvještaj: bez polja za unos, gumba i sklopivih odjeljaka; skica (3 crteža) i legenda boja su unutra");
+   ok(!R.querySelector("input,select,textarea,button,details,summary")&&R.querySelectorAll(".sk-svg").length===3&&R.querySelectorAll(".lgd").length===1&&!R.querySelector("[id]:not(#rpMap)"),"Izvještaj: bez polja za unos, gumba i sklopivih odjeljaka; skica (3 crteža) i legenda boja su unutra");
    ok(/Pojas uz cestu: \d+(,\d+)? m od regulacijskog pravca|Pojas uz cestu: udaljenost od regulacijskog pravca/.test(E("legendaHtml")({skica:true}))&&/Boje namjene/.test(E("legendaHtml")()),"Legenda: pojas uz cestu s udaljenošću od regulacijskog pravca; na karti i boje namjene");
    R.remove();}
   TL.sljeme="pop"; E("skicaRender")(); ok(/sljeme \+8,89/.test($(w,"skicaOut").textContent),"Sljeme uzduž kraće strane: presjek uz sljeme, sljeme 6 + tg30° × 10/2 = +8,89 m");
@@ -3160,11 +3160,11 @@ async function pristupTests(){
   E("render")(data(w,A,"2.2.")); await tick(50);
   ok(!$(w,"prBox")&&$(w,"printBtn").textContent==="Ispiši / spremi PDF"&&!w.document.querySelector("[data-pr-zak]"),"Pristup isključen (zadano): aplikacija radi kao prije, bez zaključavanja");
   const calls=[]; let opozvan=false;
-  w.fetch=async(u,o)=>{ u=String(u); const b=o&&o.body?JSON.parse(o.body):null, h=(o&&o.headers)||{}; calls.push({u,b,h});
+  w.fetch=async(u,o)=>{ u=String(u); const b=o&&typeof o.body==="string"?JSON.parse(o.body):null, h=(o&&o.headers)||{}; calls.push({u,b,h,raw:o&&o.body});
     const R=(st,j)=>({ok:st<400,status:st,json:async()=>j});
     if(u==="https://p.test/prijava") return b.kod.replace(/[^A-Z0-9]/gi,"").toUpperCase()==="ABCDEFGHJKLM"?R(200,{token:"tok.sig",istice:Date.now()+86400000,oznaka:"test"}):R(401,{error:{code:"KOD",poruka:"Kod nije ispravan."}});
     if(u==="https://p.test/provjera") return opozvan?R(401,{error:{code:"TOKEN"}}):R(200,{ok:true});
-    if(u==="https://p.test/izvjestaj") return h.authorization==="Bearer tok.sig"?R(200,{ok:true,poslano:b.email}):R(401,{error:{code:"TOKEN",poruka:"Prijava nije valjana."}});
+    if(u==="https://p.test/izvjestaj") return h.authorization==="Bearer tok.sig"?R(200,{ok:true,poslano:b?b.email:decodeURIComponent(h["x-email"]||"")}):R(401,{error:{code:"TOKEN",poruka:"Prijava nije valjana."}});
     return Promise.reject(new Error("bez mreže u testu")); };
   E("FEATURES.pristup=true; PRISTUP.api='https://p.test'"); w.__areaCtx=null; w.__lastData=data(w,A,"2.2."); E("render")(w.__lastData); await tick(50);
   E("inspect=function(){ render(window.__lastData); }"); // ponovno dohvaćanje nakon prijave/odjave: u testu isti podaci
@@ -3192,6 +3192,13 @@ async function pristupTests(){
   const s=calls.find(c=>c.u.endsWith("/izvjestaj"));
   ok(s&&s.b.email==="kupac@primjer.hr"&&/^JVBER/.test(s.b.pdf)&&/dosje-88-1\.pdf/.test(s.b.naziv)&&/Dosje čestice 88\/1/.test(s.b.naslov)&&s.h.authorization==="Bearer tok.sig","Dosje: PDF, primatelj, naziv i token idu Workeru");
   ok(hook&&hook.email==="kupac@primjer.hr"&&/Dosje čestice|Čestica HR/.test(hook.tekst)&&/Poslano na kupac@primjer.hr/.test(txt(w,"prMailPor"))&&!w.document.getElementById("report"),"Dosje: složen iz istog izvještaja, potvrda slanja, privremeni izvještaj uklonjen");
+  ok(hook&&!/Pošalji dosje na e-mail|Pripremam dosje|Napredne funkcije otključane|Zatraži besplatan napredni pristup/.test(hook.tekst),"Dosje: bez dijelova sučelja (slanje na e-mail, stanje prijave)");
+  ok(hook&&/Smije li se graditi\?/.test(hook.tekst),"Dosje: odgovori sažetka čestice su u dosjeu (nisu izbrisani s gumbima)");
+  // PDF kao bajtovi: Worker dobiva application/pdf, adresu i naslov u zaglavljima (bez JSON-a s base64)
+  {const n0=calls.length; w.__pdfHook=async()=>new Uint8Array([37,80,68,70,45,49,46,52,10,1,2,3]).buffer;
+   $(w,"printBtn").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20); setv(w,"prEmail","kupac@primjer.hr"); $(w,"prPosalji").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(1500);
+   const s2=calls.slice(n0).find(c=>c.u.endsWith("/izvjestaj"));
+   ok(s2&&s2.h["content-type"]==="application/pdf"&&decodeURIComponent(s2.h["x-email"])==="kupac@primjer.hr"&&/^Dosje čestice 88\/1/.test(decodeURIComponent(s2.h["x-naslov"]))&&s2.h.authorization==="Bearer tok.sig"&&s2.raw&&s2.raw.byteLength===12&&/Poslano na kupac@primjer.hr/.test(txt(w,"prMailPor")),"Dosje: PDF ide Workeru kao bajtovi s adresom i naslovom u zaglavljima");}
   // opoziv: pri sljedećem pokretanju provjera odjavljuje
   opozvan=true; E("PRISTUP.provjereno=false"); E("render")(w.__lastData); await tick(80);
   ok(!E("prTok()")&&E("window.__slobodno")&&!$(w,"tW")&&w.document.querySelector(".slob-f"),"Opozvan ili istekao kod: provjera pri pokretanju odjavljuje i vraća besplatni pregled");

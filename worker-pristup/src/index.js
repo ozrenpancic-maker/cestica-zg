@@ -35,7 +35,7 @@ const datum = (t) => t ? new Date(t).toLocaleDateString("hr-HR", { timeZone: "Eu
 function cors(env, req) {
   const o = req.headers.get("origin") || "", dozv = String(env.ALLOWED_ORIGINS || "").split(",").map((x) => x.trim()).filter(Boolean);
   const h = { vary: "origin" };
-  if (dozv.includes(o)) Object.assign(h, { "access-control-allow-origin": o, "access-control-allow-headers": "content-type, authorization", "access-control-allow-methods": "GET, POST, OPTIONS", "access-control-max-age": "600" });
+  if (dozv.includes(o)) Object.assign(h, { "access-control-allow-origin": o, "access-control-allow-headers": "content-type, authorization, x-email, x-naziv, x-naslov", "access-control-allow-methods": "GET, POST, OPTIONS", "access-control-max-age": "600" });
   return { h, dozvoljen: !o || dozv.includes(o) };
 }
 const SIG = { "x-content-type-options": "nosniff", "referrer-policy": "no-referrer", "strict-transport-security": "max-age=31536000" };
@@ -60,11 +60,19 @@ async function brojDogadaj(env, vrsta, dim) { await run(env, "INSERT INTO dogada
 // stanje zahtjeva prikazano administratoru (istekao se izvodi iz roka)
 function stanje(z, t) { t = t || Date.now(); if (z.status === "odobren" && z.istice && z.istice < t) return "istekao"; if (z.status === "odobren" && !z.aktiviran && z.kod_rok && z.kod_rok < t) return "istekao"; return z.status; }
 
+// Tijelo poruke za Brevo. Privitak (base64, nekoliko MB) umeće se spajanjem nizova, bez JSON.stringify i bez
+// provjera znak po znak: besplatni Worker smije potrošiti najviše 10 ms procesora po zahtjevu.
+function tijeloPoruke(o, attachment) {
+  const j = JSON.stringify(o); if (!attachment || !attachment.length) return j;
+  return j.slice(0, -1) + ',"attachment":[' + attachment.map((a) => '{"name":' + JSON.stringify(a.name) + ',"content":"' + a.content + '"}').join(",") + "]}";
+}
+// bajtovi u base64 (ugrađena funkcija ako postoji; inače u dijelovima)
+function uBase64(u8) { if (typeof u8.toBase64 === "function") return u8.toBase64(); let s = ""; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); }
 // --- e-mail (Brevo); vraća true ako je poruka predana na slanje
 async function posalji(env, to, subject, html, attachment) {
   if (!env.BREVO_KEY || !env.MAIL_FROM || !to) return false;
   const r = await fetch(env.MAIL_API || "https://api.brevo.com/v3/smtp/email", { method: "POST", headers: { "api-key": env.BREVO_KEY, "content-type": "application/json", accept: "application/json" },
-    body: JSON.stringify({ sender: { email: env.MAIL_FROM, name: "Čestica HR" }, to: [{ email: to }], replyTo: env.MAIL_REPLY ? { email: env.MAIL_REPLY } : undefined, subject, htmlContent: html, attachment }) }).catch(() => null);
+    body: tijeloPoruke({ sender: { email: env.MAIL_FROM, name: "Čestica HR" }, to: [{ email: to }], replyTo: env.MAIL_REPLY ? { email: env.MAIL_REPLY } : undefined, subject, htmlContent: html }, attachment) }).catch(() => null);
   return !!(r && r.ok);
 }
 const potpis = `<p>Čestica HR · <a href="mailto:info@cesticahr.com">info@cesticahr.com</a></p>`;
@@ -150,12 +158,28 @@ async function produzenje(env, req, H, T) {
 }
 async function izvjestaj(env, req, H, T) {
   if (!env.BREVO_KEY || !env.MAIL_FROM) return greska("NOT_CONFIGURED", "Slanje e-maila nije postavljeno.", 503, H);
-  let b; try { b = await req.json(); } catch (e) { return greska("ZAHTJEV", "Neispravan zahtjev.", 400, H); }
-  const email = String(b && b.email || "").trim(), naziv = String(b && b.naziv || "dosje-cestice.pdf").replace(/[^\w.-]/g, "_").slice(0, 80), naslov = String(b && b.naslov || "Dosje čestice").slice(0, 120);
-  if (!emailOk(email)) return greska("EMAIL", "E-mail adresa nije ispravna.", 400, H);
-  const pdf = String(b && b.pdf || ""); if (!/^[A-Za-z0-9+/=]+$/.test(pdf) || pdf.length < 100) return greska("PDF", "Dosje nije priložen.", 400, H);
-  if (pdf.length * 0.75 > MAX_PDF) return greska("PDF", "Dosje je prevelik za slanje.", 413, H);
-  if (!/^JVBER/.test(pdf)) return greska("PDF", "Privitak nije PDF.", 400, H);
+  // Aplikacija šalje PDF kao bajtove (application/pdf), a adresu i naziv u zaglavljima. Stari oblik (JSON s base64) i dalje radi.
+  let email, naziv, naslov, pdf;
+  const dek = (v) => { try { return decodeURIComponent(v || ""); } catch (e) { return ""; } };
+  if (/^application\/pdf/i.test(req.headers.get("content-type") || "")) {
+    const dulj = +req.headers.get("content-length") || 0; if (dulj > MAX_PDF) return greska("PDF", "Dosje je prevelik za slanje.", 413, H);
+    email = dek(req.headers.get("x-email")).trim(); naziv = dek(req.headers.get("x-naziv")); naslov = dek(req.headers.get("x-naslov"));
+    if (!emailOk(email)) return greska("EMAIL", "E-mail adresa nije ispravna.", 400, H);
+    const u8 = new Uint8Array(await req.arrayBuffer());
+    if (u8.length > MAX_PDF) return greska("PDF", "Dosje je prevelik za slanje.", 413, H);
+    if (u8.length < 100) return greska("PDF", "Dosje nije priložen.", 400, H);
+    if (!(u8[0] === 0x25 && u8[1] === 0x50 && u8[2] === 0x44 && u8[3] === 0x46)) return greska("PDF", "Privitak nije PDF.", 400, H);
+    pdf = uBase64(u8);
+  } else {
+    let b; try { b = await req.json(); } catch (e) { return greska("ZAHTJEV", "Neispravan zahtjev.", 400, H); }
+    email = String(b && b.email || "").trim(); naziv = b && b.naziv; naslov = b && b.naslov; pdf = String(b && b.pdf || "");
+    if (!emailOk(email)) return greska("EMAIL", "E-mail adresa nije ispravna.", 400, H);
+    if (pdf.length < 100 || !/^JVBER/.test(pdf)) return greska("PDF", "Dosje nije priložen.", 400, H);
+    if (pdf.length * 0.75 > MAX_PDF) return greska("PDF", "Dosje je prevelik za slanje.", 413, H);
+    // pdf ide u tijelo poruke bez JSON.stringify: navodnik ili kosa crta ne smiju proći (indexOf je brz i za nekoliko MB)
+    if (pdf.indexOf('"') >= 0 || pdf.indexOf("\\") >= 0 || /[^A-Za-z0-9+/=]/.test(pdf.slice(0, 4096))) return greska("PDF", "Privitak nije PDF.", 400, H);
+  }
+  naziv = String(naziv || "dosje-cestice.pdf").replace(/[^\w.-]/g, "_").slice(0, 80); naslov = String(naslov || "Dosje čestice").slice(0, 120);
   const lim = parseInt(env.IZVJESTAJA_DNEVNO || "10", 10), dk = "sl:" + T.z.id + ":" + dan();
   if ((await ogrBroj(env, dk)) >= lim) return greska("LIMIT", `Danas je poslano najviše ${lim} dosjea s ovim kodom. Pokušaj sutra.`, 429, H);
   const ok = await posalji(env, email, naslov, `<p>U privitku je dosje čestice iz aplikacije Čestica HR.</p><p>Dosje je sastavljen iz javnih podataka i izračuna aplikacije. Nije lokacijska informacija, izvadak iz zemljišne knjige ni projekt.</p>` + potpis,
@@ -163,6 +187,26 @@ async function izvjestaj(env, req, H, T) {
   if (!ok) return greska("SLANJE", "Slanje nije uspjelo. Pokušaj ponovno kasnije.", 502, H);
   await ogrPlus(env, dk, 2 * DAN);
   return json({ ok: true, poslano: email }, 200, H);
+}
+// --- javno: snimke DGU-a (ortofoto) za dosje. Geoportal DGU ne šalje CORS zaglavlja, pa ih preglednik ne smije ucrtati u
+// PDF (html2canvas). Worker ih samo prosljeđuje (tok bajtova, bez obrade): samo WMS GetMap slike s geoportal.dgu.hr, samo za
+// dopuštene stranice, s predmemorijom od jednog dana.
+const SLIKA_HOST = ["geoportal.dgu.hr"];
+async function slika(env, req, url, H) {
+  if (!H["access-control-allow-origin"]) return greska("ORIGIN", "Nedopušteno podrijetlo zahtjeva.", 403, H);
+  let u; try { u = new URL(url.searchParams.get("u") || ""); } catch (e) { return greska("ADRESA", "Neispravna adresa.", 400, H); }
+  const q = (k) => [...u.searchParams.entries()].find(([a]) => a.toLowerCase() === k)?.[1] || "";
+  if (u.protocol !== "https:" || !SLIKA_HOST.includes(u.hostname) || !/^\/services\/inspire\/[\w-]+\/(wms|ows)$/.test(u.pathname) || q("request").toLowerCase() !== "getmap" || !/^image\/(jpeg|png)$/i.test(q("format")))
+    return greska("ADRESA", "Adresa nije dopuštena.", 403, H);
+  const W = +q("width"), Hh = +q("height"); if (!(W > 0 && W <= 1200 && Hh > 0 && Hh <= 1200)) return greska("ADRESA", "Prevelika slika.", 400, H);
+  const ck = new Request("https://slika.cache/" + encodeURIComponent(u.toString())), c = typeof caches !== "undefined" ? caches.default : null;
+  let r = c ? await c.match(ck) : null;
+  if (!r) { r = await fetch(u.toString(), { cf: { cacheTtl: 86400 } }).catch(() => null);
+    if (!r || !r.ok || !/^image\//.test(r.headers.get("content-type") || "")) return greska("SLIKA", "Snimka nije dostupna.", 502, H);
+    r = new Response(r.body, { status: 200, headers: { "content-type": r.headers.get("content-type"), "cache-control": "public, max-age=86400" } });
+    if (c) await c.put(ck, r.clone()).catch(() => {}); }
+  const h = new Headers(r.headers); for (const [k, v] of Object.entries(H)) h.set(k, v); h.set("cache-control", "public, max-age=86400");
+  return new Response(r.body, { status: 200, headers: h });
 }
 // --- javno: skupna statistika. Bez kolačića i bez IP adrese u bazi; čestica se ne sprema (samo sažetak za uklanjanje
 // ponovljenih događaja, briše se nakon jednog dana); županija samo skupno. Identifikator preglednika samo uz privolu.
@@ -373,6 +417,7 @@ export default {
     if (!dozvoljen) return greska("ORIGIN", "Nedopušteno podrijetlo zahtjeva.", 403, H);
     if (url.pathname === "/zahtjev" && req.method === "POST") return zahtjev(env, req, H);
     if (url.pathname === "/dogadaj" && req.method === "POST") return dogadaj(env, req, H);
+    if (url.pathname === "/slika" && req.method === "GET") return slika(env, req, url, H);
     if (url.pathname === "/prijava" && req.method === "POST") return prijava(env, req, H);
     if (url.pathname === "/provjera" && req.method === "GET") { const T = await provjeriToken(env, req); return T ? json({ ok: true, istice: T.z.istice || null, oznaka: null, produzenje: !!T.z.trazi_produzenje }, 200, H) : greska("TOKEN", "Prijava nije valjana.", 401, H); }
     if (url.pathname === "/produzenje" && req.method === "POST") { const T = await provjeriToken(env, req); if (!T) return greska("TOKEN", "Prijava nije valjana.", 401, H); return produzenje(env, req, H, T); }

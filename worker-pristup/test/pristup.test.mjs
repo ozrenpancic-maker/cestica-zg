@@ -10,13 +10,13 @@ const ok = (c, n) => { if (c) pass++; else { fail++; fails.push(n); } };
 const COMPAT = readFileSync(new URL("../wrangler.toml", import.meta.url), "utf8").match(/compatibility_date\s*=\s*"([^"]+)"/)[1];
 const SQL = readFileSync(new URL("../migrations/0001_init.sql", import.meta.url), "utf8").replace(/--[^\n]*/g, "").split(";").map((s) => s.trim()).filter(Boolean);
 const ORIGIN = "https://app.cesticahr.com", ADMIN = "admin-tajna-za-test-1234567890", TOTP = "JBSWY3DPEHPK3PXP", W = "https://p.example";
-const brevo = { calls: [], mode: "ok" };
+const brevo = { calls: [], mode: "ok" }, dgu = { n: 0 };
 async function fakeBrevo(req) { const b = await req.json(); brevo.calls.push({ h: Object.fromEntries(req.headers), b }); return brevo.mode === "ok" ? new Response(JSON.stringify({ messageId: "x" }), { status: 201 }) : new Response("{}", { status: 500 }); }
 async function mf(vars = {}) {
   const m = new Miniflare({ modules: true, scriptPath: fileURLToPath(new URL("../src/index.js", import.meta.url)), compatibilityDate: COMPAT, d1Databases: ["DB"],
     bindings: { ALLOWED_ORIGINS: ORIGIN, MAIL_FROM: "dosje@cesticahr.com", MAIL_REPLY: "info@cesticahr.com", ADMIN_EMAIL: "info@cesticahr.com", APP_URL: "https://app.cesticahr.com/", IZVJESTAJA_DNEVNO: "2", TOKEN_EPOCH: "1", TRAJANJE_DANA: "30",
       TOKEN_SECRET: "token-tajna-test-abcdefghijklmnop", CODE_PEPPER: "pepper-test-0123456789", ADMIN_SECRET: ADMIN, ADMIN_TOTP: TOTP, BREVO_KEY: "xkeysib-TEST-NE-PRAVI", ...vars },
-    outboundService: (req) => new URL(req.url).hostname === "api.brevo.com" ? fakeBrevo(req) : new Response("blokirano u testu", { status: 599 }) });
+    outboundService: (req) => { const hn = new URL(req.url).hostname; if (hn === "api.brevo.com") return fakeBrevo(req); if (hn === "geoportal.dgu.hr") { dgu.n++; return new Response(new Uint8Array([0xff, 0xd8, 0xff, 1, 2, 3]), { headers: { "content-type": "image/jpeg" } }); } return new Response("blokirano u testu", { status: 599 }); } });
   const db = await m.getD1Database("DB"); for (const s of SQL) await db.prepare(s).run(); m.db = db; return m;
 }
 function totp(sec, off = 0) { const A = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"; let bits = ""; for (const c of sec) bits += A.indexOf(c).toString(2).padStart(5, "0"); const key = Buffer.from(bits.match(/.{8}/g).map((b) => parseInt(b, 2)));
@@ -80,6 +80,20 @@ const [pp, ss] = P.token.split("."), lazni = Buffer.from(JSON.stringify({ id: Z.
 ok((await call(m, "/provjera", { tok: lazni })).status === 401, "Krivotvoreni token odbijen");
 // dosje na e-mail (postojeća funkcija)
 ok((await call(m, "/izvjestaj", { method: "POST", tok: P.token, body: { email: "kupac@primjer.hr", pdf: PDF, naziv: "dosje 1551-4.pdf" } })).status === 200 && zadnjiMail().b.attachment[0].name === "dosje_1551-4.pdf", "Dosje na e-mail i dalje radi");
+// dosje kao PDF bajtovi (aplikacija od 11/2026): adresa i naziv u zaglavljima, privitak u base64 prema Brevu
+{ const pdfB = new TextEncoder().encode("%PDF-1.4\n" + "y".repeat(5000)), hdr = { origin: ORIGIN, "cf-connecting-ip": "1.2.3.4", authorization: "Bearer " + P.token, "content-type": "application/pdf", "x-email": encodeURIComponent("kupac@primjer.hr"), "x-naziv": encodeURIComponent("dosje-1541-2.pdf"), "x-naslov": encodeURIComponent("Dosje čestice 1541/2, k.o. Remete") };
+  const n0 = brevo.calls.length; let rr = await m.dispatchFetch(W + "/izvjestaj", { method: "POST", headers: hdr, body: pdfB }); const mb = zadnjiMail().b;
+  ok(rr.status === 200 && brevo.calls.length === n0 + 1 && mb.to[0].email === "kupac@primjer.hr" && mb.subject === "Dosje čestice 1541/2, k.o. Remete" && mb.attachment[0].name === "dosje-1541-2.pdf" && Buffer.from(mb.attachment[0].content, "base64").equals(Buffer.from(pdfB)), "Dosje kao PDF bajtovi: primatelj, naslov, naziv i isti sadržaj privitka");
+  rr = await m.dispatchFetch(W + "/izvjestaj", { method: "POST", headers: hdr, body: new TextEncoder().encode("GIF89a" + "z".repeat(500)) }); ok(rr.status === 400, "Dosje kao bajtovi: privitak koji nije PDF odbijen");
+  rr = await m.dispatchFetch(W + "/izvjestaj", { method: "POST", headers: { ...hdr, "x-email": "nije-email" }, body: pdfB }); ok(rr.status === 400, "Dosje kao bajtovi: neispravna adresa odbijena");
+  const nn = brevo.calls.length; rr = await call(m, "/izvjestaj", { method: "POST", tok: P.token, body: { email: "kupac@primjer.hr", pdf: PDF + '","to":[{"email":"zli@primjer.hr"}],"x":"' } });
+  ok(rr.status === 400 && brevo.calls.length === nn, "Stari oblik: privitak s navodnikom (umetanje primatelja) odbijen"); }
+// snimke DGU-a za dosje preko Workera (geoportal nema CORS)
+{ const gu = "https://geoportal.dgu.hr/services/inspire/orthophoto_2011/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=OrthoImagery&WIDTH=560&HEIGHT=560&FORMAT=image%2Fjpeg";
+  let rr = await call(m, "/slika?u=" + encodeURIComponent(gu)); ok(rr.status === 200 && rr.headers.get("content-type") === "image/jpeg" && rr.headers.get("access-control-allow-origin") === ORIGIN && (await rr.arrayBuffer()).byteLength === 6, "Snimka DGU-a prosljeđena s CORS zaglavljem");
+  ok((await call(m, "/slika?u=" + encodeURIComponent("https://zli.example/services/inspire/x/wms?REQUEST=GetMap&FORMAT=image/png&WIDTH=10&HEIGHT=10"))).status === 403, "Snimka: drugi poslužitelj nije dopušten");
+  ok((await call(m, "/slika?u=" + encodeURIComponent(gu.replace("GetMap", "GetCapabilities")))).status === 403, "Snimka: samo WMS GetMap slike");
+  ok((await call(m, "/slika?u=" + encodeURIComponent(gu), { origin: "https://zli.example" })).status === 403 && (await m.dispatchFetch(W + "/slika?u=" + encodeURIComponent(gu))).status === 403, "Snimka: samo za dopuštene stranice (ne za tuđe ni bez podrijetla)"); }
 // produženje na zahtjev korisnika
 ok((await call(m, "/produzenje", { method: "POST", tok: P.token, body: {} })).status === 200 && zadnjiMail().b.subject === "ČesticaHR: zahtjev za produženje pristupa", "Korisnik može zatražiti produženje; administrator dobiva obavijest");
 // administratorske radnje i dnevnik
