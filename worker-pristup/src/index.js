@@ -203,6 +203,25 @@ async function adminPrijava(env, req) {
   const tok = rnd(32), t = Date.now(); await run(env, "INSERT INTO sesija(h,istice) VALUES(?,?)", await hmac(env.CODE_PEPPER, "s:" + tok), t + 8 * SAT); await zapis(env, "admin", "prijava", null, env.ADMIN_TOTP ? "lozinka i jednokratni kod" : "samo lozinka (MFA nije uključen)");
   return json({ ok: true, mfa: !!env.ADMIN_TOTP }, 200, { "set-cookie": `${KOL}=${tok}; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=28800` });
 }
+// prijava poveznicom: jednokratna poveznica na ADMIN_EMAIL (vrijedi 10 minuta), bez lozinke; sigurnost je sigurnost tog e-maila
+async function adminPoveznica(env, req, url) {
+  const ih = await ipH(env, req), rk = "adml:" + ih;
+  if ((await ogrBroj(env, rk)) >= 3) return greska("PREVISE", "Poveznica je već poslana. Pogledaj e-mail ili pokušaj za 15 minuta.", 429);
+  await ogrPlus(env, rk, 15 * 60000);
+  if (!env.ADMIN_EMAIL || !env.BREVO_KEY) return greska("NOT_CONFIGURED", "Slanje e-maila nije postavljeno.", 503);
+  const tok = rnd(32); await run(env, "INSERT INTO sesija(h,istice) VALUES(?,?)", await hmac(env.CODE_PEPPER, "l:" + tok), Date.now() + 10 * 60000);
+  const link = url.origin + "/admin/ulaz?t=" + encodeURIComponent(tok);
+  const ok = await posalji(env, env.ADMIN_EMAIL, "ČesticaHR: prijava u administraciju", `<p>Poveznica za prijavu u administraciju ČesticaHR (vrijedi 10 minuta, samo jednom):</p><p><a href="${esc(link)}">Prijavi se u administraciju</a></p><p>Ako prijavu nisi tražio ti, zanemari ovu poruku.</p>`);
+  await zapis(env, "admin", "zatražena poveznica za prijavu", null, ok ? "poslana" : "slanje NIJE uspjelo");
+  return ok ? json({ ok: true, na: env.ADMIN_EMAIL }) : greska("SLANJE", "Slanje e-maila nije uspjelo.", 502);
+}
+async function adminUlaz(env, req, url) {
+  const t = url.searchParams.get("t") || "", h = await hmac(env.CODE_PEPPER, "l:" + t), r = await one(env, "SELECT istice FROM sesija WHERE h=?", h);
+  if (!t || !r || r.istice < Date.now()) return stranica("Poveznica nije valjana", `<p>Poveznica je istekla ili je već upotrijebljena. <a href="/admin">Zatraži novu</a>.</p>`, 400);
+  await run(env, "DELETE FROM sesija WHERE h=?", h);
+  const tok = rnd(32); await run(env, "INSERT INTO sesija(h,istice) VALUES(?,?)", await hmac(env.CODE_PEPPER, "s:" + tok), Date.now() + 8 * SAT); await zapis(env, "admin", "prijava", null, "poveznicom s e-maila");
+  return new Response(null, { status: 303, headers: { location: "/admin", "set-cookie": `${KOL}=${tok}; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=28800`, "cache-control": "no-store", ...SIG } });
+}
 function zahtjevJson(z, t) { return { id: z.id, email: z.email, namjena: z.namjena ? NAMJENE[z.namjena] : null, stanje: stanje(z, t), stvoren: z.stvoren, potvrden: z.potvrden, odluka: z.odluka, aktiviran: z.aktiviran, istice: z.istice, dana: z.dana, zadnja_akt: z.zadnja_akt, trazi_produzenje: z.trazi_produzenje, kod_rok: z.kod_rok }; }
 async function izdajKod(env, z, dana, nastavi) {
   const kod = noviKod(), t = Date.now(), rok = t + 30 * DAN;
@@ -294,7 +313,7 @@ function adminHtml(nonce) {
 table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #e3e8e5;padding:7px 4px;text-align:left;font-size:13.5px;vertical-align:top}.tw{overflow-x:auto}.st{font-weight:600}.st-ceka{color:#a86400}.st-odobren{color:#1f7a3f}.st-odbijen,.st-opozvan{color:#b3261e}.st-istekao{color:#5b6661}
 .warn{background:#fbefd9;padding:8px 10px;border-radius:8px}.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}svg{max-width:100%}label{display:block;margin:8px 0 4px}[hidden]{display:none!important}</style></head><body>
 <h1>Čestica HR · administracija</h1>
-<section id="log"><p>Prijava je samo za administratora.</p><label for="lz">Lozinka</label><input id="lz" type="password" autocomplete="current-password" style="width:100%;max-width:420px"><label for="mfa">Jednokratni kod (aplikacija za autentifikaciju)</label><input id="mfa" inputmode="numeric" autocomplete="one-time-code" maxlength="6"><p><button id="ul">Prijavi se</button></p><p id="lp" role="status"></p></section>
+<section id="log"><p>Prijava je samo za administratora.</p><p><button id="pov">Pošalji mi poveznicu za prijavu</button></p><p id="pp" role="status"></p><p style="color:#5b6661">ili lozinkom:</p><label for="lz">Lozinka</label><input id="lz" type="password" autocomplete="current-password" style="width:100%;max-width:420px"><label for="mfa">Jednokratni kod (aplikacija za autentifikaciju)</label><input id="mfa" inputmode="numeric" autocomplete="one-time-code" maxlength="6"><p><button id="ul">Prijavi se</button></p><p id="lp" role="status"></p></section>
 <section id="app" hidden><div class="row"><button class="s" id="od">Odjava</button><label for="rz" style="margin:0">Razdoblje</label><select id="rz"><option value="7">7 dana</option><option value="30" selected>30 dana</option><option value="90">90 dana</option><option value="sve">ukupno</option></select></div>
 <p id="upoz"></p><h2>Pokazatelji</h2><div class="kp" id="kp"></div><h2>Kroz vrijeme</h2><div id="gr"></div><h2>Područja (analizirane čestice po županiji)</h2><div id="reg"></div><h2>Zaključane funkcije koje zanimaju posjetitelje</h2><div id="zak"></div>
 <h2>Zahtjevi</h2><div class="row"><input id="ne" placeholder="e-mail novog korisnika" aria-label="e-mail novog korisnika"><button class="s" id="nd">Dodaj korisnika</button></div><div class="tw" id="tz"></div>
@@ -325,6 +344,7 @@ async function sve(){ const r=$("rz").value; const [P,Z,S,D]=await Promise.all([
   $("dn").innerHTML='<table><tr><th>Vrijeme</th><th>Tko</th><th>Radnja</th><th>Detalj</th></tr>'+D.dnevnik.slice(0,60).map(x=>'<tr><td>'+new Date(x.t).toLocaleString("hr-HR")+'</td><td>'+e(x.akter)+'</td><td>'+e(x.radnja)+'</td><td>'+e(x.detalj||"")+'</td></tr>').join("")+'</table>';
 }
 $("ul").onclick=async()=>{ try{ await fetch("/admin/prijava",{method:"POST",headers:{"content-type":"application/json","x-chr-admin":"1"},credentials:"same-origin",body:JSON.stringify({lozinka:$("lz").value,kod:$("mfa").value})}).then(async r=>{const j=await r.json(); if(!r.ok) throw new Error(j.error&&j.error.poruka);}); $("lz").value=""; $("mfa").value=""; $("log").hidden=true; $("app").hidden=false; await sve(); }catch(x){ $("lp").textContent=x.message||"Prijava nije uspjela."; } };
+$("pov").onclick=async()=>{ $("pp").textContent="Šaljem…"; try{ const r=await fetch("/admin/poveznica",{method:"POST",headers:{"content-type":"application/json","x-chr-admin":"1"},credentials:"same-origin",body:"{}"}); const j=await r.json(); $("pp").textContent=r.ok?"Poveznica je poslana na "+j.na+". Otvori e-mail i klikni je (vrijedi 10 minuta).":(j.error&&j.error.poruka||"Slanje nije uspjelo."); }catch(x){ $("pp").textContent="Slanje nije uspjelo."; } };
 $("od").onclick=async()=>{ await api("odjava",{}).catch(()=>{}); location.reload(); };
 $("rz").onchange=()=>sve().catch(x=>alert(x.message));
 $("ts").onclick=()=>api("postavke",{trajanje_dana:+$("tr").value}).then(sve).catch(x=>alert(x.message));
@@ -344,6 +364,8 @@ export default {
     if (req.method === "OPTIONS") return new Response(null, { status: dozvoljen ? 204 : 403, headers: H });
     if (!env.TOKEN_SECRET || !env.CODE_PEPPER || !env.DB) return greska("NOT_CONFIGURED", "Worker nije postavljen.", 503, H);
     if (url.pathname === "/admin" && req.method === "GET") { const n = rnd(16); return new Response(adminHtml(n), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "content-security-policy": `default-src 'none'; connect-src 'self'; script-src 'nonce-${n}'; style-src 'nonce-${n}'; style-src-attr 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'`, "x-frame-options": "DENY", ...SIG } }); }
+    if (url.pathname === "/admin/poveznica" && req.method === "POST") { const o = req.headers.get("origin"); if (req.headers.get("x-chr-admin") !== "1" || (o && o !== url.origin)) return greska("ADMIN", "Neovlašteno.", 403); return adminPoveznica(env, req, url); }
+    if (url.pathname === "/admin/ulaz" && req.method === "GET") return adminUlaz(env, req, url);
     if (url.pathname === "/admin/prijava" && req.method === "POST") { const o = req.headers.get("origin"); if (req.headers.get("x-chr-admin") !== "1" || (o && o !== url.origin)) return greska("ADMIN", "Neovlašteno.", 403); return adminPrijava(env, req); }
     if (url.pathname.startsWith("/admin/api/")) return adminApi(env, req, url);
     if (url.pathname.startsWith("/admin")) return greska("NEMA", "Nepoznata adresa.", 404);
