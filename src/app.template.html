@@ -2200,7 +2200,7 @@ function rkVrsta(naziv){
   return "nepoznato"; // naziv bez opisa vrste (npr. samo plan i izmjena) ne određuje vrstu karte
 }
 // Title sloja ISPU-a, npr. „GUP grada Zagreba - V. ID (dopuna) ID KN_1_1”: naziv plana i izmjena iz koje je list (metapodatak servisa)
-function ispuTitle(t){const r=String(t||"").trim(), m=r.match(/^(.*?)\s+-\s+(.*)$/), iz=r.match(/\b([IVXLC]+)\.\s*ID\b/);
+function ispuTitle(t){const r=String(t||"").trim(), m=r.match(/^(.*?)\s+-\s+(.*)$/)||r.match(/^(.*?)\s+(ID\s+[A-Z]{2}_[\d_]+)$/), iz=r.match(/\b([IVXLC]+)\.\s*ID\b/);
   return {plan:m&&!rkSamoSifra(m[1])?m[1].trim():null,izmjena:iz?iz[1]+". izmjene i dopune":null,dopuna:/\(dopuna\)/i.test(r)};}
 const rkGenericki=t=>/web map service|^wms$|geoserver/i.test(String(t||""));
 // Provjerena tablica: šifra karte u ISPU-u -> vrsta i službeni naziv, posebno za svaki plan i oznaku revizije.

@@ -3411,6 +3411,7 @@ async function ispuZupTests(){
   w.__ptnGeoHook=()=>({address:{county:"Zagrebačka županija"}});
   E("RKAT").clear(); await E("rkStart")({parcel:P,ll:{lng:15.62,lat:45.78},region:"hr"}); S=E("RKAT").get("hr:medv");
   ok(S&&S.st==="ok"&&S.items.length===2&&S.items[0].plan==="PPUG Samobor"&&S.items[1]._K&&S.items[1]._K.id==="ispu-pppo"&&pit.includes("ispu-pppo"),"Državni planovi: list parka prirode dodan iza lista plana grada, s izvorom ISPU državne razine");
+  ok(E("ispuTitle")("PPPPO PP Medvednica ID KN_1_1").plan==="PPPPO PP Medvednica"&&E("ispuTitle")("GUP grada Zagreba - V. ID (dopuna) ID KN_1_1").plan==="GUP grada Zagreba","Državni planovi: naziv plana iz naslova bez crtice (»PPPPO PP Medvednica ID KN_1_1«)");
   // tri odvojena stanja u prikazu
   {const st=x=>{ E("RKAT").set(w.__cur.key,x); return E("rkStanja")(x).replace(/<[^>]+>/g," ").replace(/\s+/g," "); };
    const K=E('RASTER_KATALOZI.find(k=>k.id==="ispu-z17")'), B=E('RASTER_KATALOZI.find(k=>k.id==="bpz")'); E("RK_CTX={region:'hr'}");
