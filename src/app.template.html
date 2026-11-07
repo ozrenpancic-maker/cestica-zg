@@ -8495,8 +8495,8 @@ function triKuca(T,o){
     for(const sd of [-1,1]){ put(sd*(sir/2-0.01),dep/2,0.02,1.0,dep,y+0.5,Mog,"balkon-ograda"); put(sd*(sir/2),dep/2,0.05,0.05,dep,y+1.02,M.okvir,"balkon-ograda"); } }
   // kontaktna sjena (tamnjenje tla uz kuću) i šljunčani rub uz zidove
   { const tx=(()=>{ try{ const c=document.createElement("canvas"); c.width=c.height=128; const g=c.getContext("2d"); if(!g||typeof g.createRadialGradient!=="function") return null; const gr=g.createRadialGradient(64,64,20,64,64,64); gr.addColorStop(0,"rgba(0,0,0,.55)"); gr.addColorStop(.6,"rgba(0,0,0,.25)"); gr.addColorStop(1,"rgba(0,0,0,0)"); g.fillStyle=gr; g.fillRect(0,0,128,128); return new T.CanvasTexture(c); }catch(e){ return null; } })();
-    if(tx){ const pl=new T.Mesh(new T.PlaneGeometry(w+3.2,d+3.2),new T.MeshBasicMaterial({map:tx,transparent:true,depthWrite:false,color:"#000000"})); pl.rotation.x=-Math.PI/2; pl.position.y=0.03; pl.name="kontaktna-sjena"; pl.userData.ravno=true; pl.renderOrder=-1; G.add(pl); }
-    const gs=M.ravni, b=0.45; for(const [ww,dd,x,z] of [[w+2*b,b,0,d/2+b/2],[w+2*b,b,0,-d/2-b/2],[b,d,w/2+b/2,0],[b,d,-w/2-b/2,0]]) box(ww,0.04,dd,x,0.02,z,gs,"sljunak").userData.ravno=true; }
+    if(tx){ const pl=new T.Mesh(new T.PlaneGeometry(w+3.2,d+3.2),new T.MeshBasicMaterial({map:tx,transparent:true,depthWrite:false,color:"#000000"})); pl.rotation.x=-Math.PI/2; pl.position.y=TEMELJ_POD-TEMELJ_NAD+0.03; pl.name="kontaktna-sjena"; pl.userData.ravno=true; pl.renderOrder=-1; G.add(pl); }
+    const gs=M.ravni, b=0.45; for(const [ww,dd,x,z] of [[w+2*b,b,0,d/2+b/2],[w+2*b,b,0,-d/2-b/2],[b,d,w/2+b/2,0],[b,d,-w/2-b/2,0]]) box(ww,0.04,dd,x,TEMELJ_POD-TEMELJ_NAD+0.02,z,gs,"sljunak").userData.ravno=true; }
   // terasa prema vrtu (kad okućnica nema svoju): ploča u razini poda, uz drvenu oblogu drvena, s pergolom kod ravnog krova
   if(o.terasa!==false){ const S0=strane[vrt], n=S0.n, dep=3.0, sir=Math.min(S0.len*0.7,6.5), mt=o.stil==="drvo"?M.drvo:mat("#cfc9bd",{r:.9}), c=S0.os==="x"?[0,S0.pos+n[1]*dep/2]:[S0.pos+n[0]*dep/2,0];
     temelj(box(S0.os==="x"?sir:dep,1,S0.os==="x"?dep:sir,c[0],P-0.55,c[1],mt,"terasa"),P-0.05);
@@ -8541,8 +8541,9 @@ function triKuca(T,o){
     const cs=S0.os==="x"?[0,S0.pos+n[1]*0.7]:[S0.pos+n[0]*0.7,0]; temelj(box(S0.os==="x"?2.4:1.4,1,S0.os==="x"?1.4:2.4,cs[0],P-0.5,cs[1],M.podnozje,"podest"),P); }
   // garaža: ravni krov s atikom, sekcijska vrata na južnoj strani
   if(o.gar){ const g=o.gar, gx=g.offX, gz=-g.offY;
-    box(g.w,2.8,g.d,gx,1.4,gz,M.zid,"garaza"); temelj(box(g.w+0.06,1,g.d+0.06,gx,-0.5,gz,M.podnozje,"podnozje"),0.02); box(g.w+0.1,0.3,g.d+0.1,gx,2.95,gz,M.atika,"garaza-krov");
-    box(g.w-0.8,2.3,0.06,gx,1.2,gz+g.d/2+0.02,M.garaza,"garazna-vrata"); for(let i=1;i<5;i++) box(g.w-0.8,0.02,0.07,gx,0.05+i*0.46,gz+g.d/2+0.03,M.limarija,"garazna-vrata"); }
+    // garaža stoji na tlu uz najvišu točku (kao i kuća, njezin temelj prati teren prema nižoj strani)
+    const g0=TEMELJ_POD-TEMELJ_NAD; box(g.w,2.8,g.d,gx,g0+1.4,gz,M.zid,"garaza"); temelj(box(g.w+0.06,1,g.d+0.06,gx,g0-0.5,gz,M.podnozje,"podnozje"),g0+0.02); box(g.w+0.1,0.3,g.d+0.1,gx,g0+2.95,gz,M.atika,"garaza-krov");
+    box(g.w-0.8,2.3,0.06,gx,g0+1.2,gz+g.d/2+0.02,M.garaza,"garazna-vrata"); for(let i=1;i<5;i++) box(g.w-0.8,0.02,0.07,gx,g0+0.05+i*0.46,gz+g.d/2+0.03,M.limarija,"garazna-vrata"); }
   // solarni paneli (kad je u odjeljku Solarna elektrana upisana površina)
   if(o.pv&&o.pv.m2>0){ const PW=1.13, PL=1.72, n=Math.max(1,Math.round(o.pv.m2/(PW*PL)));
     if(o.krov==="ravni"){ const tilt=15*Math.PI/180, cols=Math.max(1,Math.floor((w-1.2)/(PW+0.05))), rows=Math.min(Math.ceil(n/cols),Math.max(1,Math.floor((d-1.2)/2.0))); let k=0;
@@ -8557,11 +8558,13 @@ function triKuca(T,o){
       function b2(sd){ const yE=V-so*tg; const v=(S/2+so)-sd*Math.cos(nag); return {v,y:yE+sd*Math.sin(nag)}; } } }
   // dub: koliko je teren na najnižem mjestu ispod razine poda (m); temelj i podesti sežu do terena, a šljunak i sjena na tlu
   // prikazuju se samo na (gotovo) ravnom terenu
-  G.userData.teren=(dub)=>{ const D=Math.max(0,dub)+0.4; G.traverse(x=>{ if(x.userData.temelj!=null){ const top=x.userData.temelj, h=top+D; x.scale.y=h; x.position.y=top-h/2; }
+  G.userData.teren=(dub)=>{ const D=Math.max(0,dub)+0.8; G.traverse(x=>{ if(x.userData.temelj!=null){ const top=x.userData.temelj, h=top+D; x.scale.y=h; x.position.y=top-h/2; }
     else if(x.userData.ravno) x.visible=dub<0.3; }); };
   G.userData.teren(0);
   return G;
 }
+// temelj u 3D-u: pod je 30 cm iznad najviše točke terena ispod kuće; ishodište modela je TEMELJ_POD (0,45 m) ispod poda
+const TEMELJ_NAD=0.30, TEMELJ_POD=0.45;
 // sloj za MapLibre: three.js crta u isto WebGL platno, s istom dubinom (teren i okolne zgrade zaklanjaju kuću ispravno)
 function triSloj(o){
   const T=THREE; let renderer=null, scene=null, cam=null, mapa=null, mm=null, elev=null;
@@ -8574,12 +8577,17 @@ function triSloj(o){
       sun.shadow.mapSize.set(2048,2048); sun.shadow.bias=-0.0004; sun.shadow.normalBias=0.03; scene.add(sun); scene.add(sun.target); this.sun=sun;
       renderer=new T.WebGLRenderer({canvas:map.getCanvas(),context:gl,antialias:true}); renderer.autoClear=false; renderer.shadowMap.enabled=true; renderer.shadowMap.type=T.PCFSoftShadowMap; renderer.outputEncoding=T.sRGBEncoding;
       TRI.r=renderer; },
-    // visina terena: pod kuće na najnižoj točki tlocrta (kutovi, sredina, garaža), pa kuća nigdje ne lebdi iznad terena;
-    // na kosom terenu viša strana ulazi u padinu (kao ukopana kuća), a terasa i okućnica uz nižu stranu ostaju u razini poda.
-    // Visina se uzima iz pločice terena koju karta u tom trenutku crta (isti model kao teren na slici), u svakom kadru.
-    matrica(){ let e=0, dub=0; try{ const tr=mapa.transform; if(mapa.terrain){ let mn=Infinity;
-        for(const q of triTocke(o)){ const v=triTeren(mapa,q); if(v!=null&&v<mn) mn=v; }
-        if(isFinite(mn)) e=mn-tr.elevation; } else if(mapa.queryTerrainElevation) e=mapa.queryTerrainElevation(o.c)||0; }catch(x){ e=0; }
+    // visina terena: kuća stoji na temelju koji prati teren. Pod (vrh temelja) je TEMELJ_NAD m iznad NAJVIŠE točke terena
+    // ispod tlocrta (kutovi, sredina, garaža), pa kuća nigdje ne ulazi u padinu; prema nižoj strani temelj se produljuje do
+    // terena (i malo ispod njega), pa kuća ni ondje ne lebdi. Visina se uzima iz pločice terena koju karta u tom trenutku crta
+    // (isti model kao teren na slici). Kad pločica još nema model visina (često na mobitelu dok se učitava), ostaje zadnja
+    // valjana visina: kuća ne skače gore-dolje i ne poleti na 0 m.
+    matrica(){ let e=0, dub=0; try{ const tr=mapa.transform; if(mapa.terrain){ let mn=Infinity, mx=-Infinity;
+        for(const q of triTocke(o)){ const v=triTeren(mapa,q); if(v!=null){ if(v<mn) mn=v; if(v>mx) mx=v; } }
+        if(isFinite(mn)&&isFinite(mx)) this.tv={mn,mx};
+        if(this.tv){ const pod=this.tv.mx+TEMELJ_NAD, ish=pod-TEMELJ_POD; e=ish-tr.elevation; dub=ish-this.tv.mn; } }
+      else if(mapa.queryTerrainElevation) e=mapa.queryTerrainElevation(o.c)||0; }catch(x){ e=this.eZad||0; }
+      this.eZad=e;
       if(this.grp&&Math.abs(dub-(this.dub??-1))>0.05){ this.dub=dub; this.grp.userData.teren(dub); }
       if(mm&&Math.abs(e-elev)<1e-4) return mm; elev=e; const mc=maplibregl.MercatorCoordinate.fromLngLat(o.c,e), s=mc.meterInMercatorCoordinateUnits();
       mm=new T.Matrix4().makeTranslation(mc.x,mc.y,mc.z).scale(new T.Vector3(s,-s,s)).multiply(new T.Matrix4().makeRotationX(Math.PI/2)); return mm; },
