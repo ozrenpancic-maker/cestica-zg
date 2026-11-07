@@ -8258,9 +8258,10 @@ function triRub(o){ const lat=o.c[1]*Math.PI/180, mx=1/(111320*Math.cos(lat)), m
 // nego za getElevationForLngLatZoom, pa bi kuća inače lebdjela ili tonula); bez nje iz getElevationForLngLatZoom
 function triTeren(map,ll){ const te=map.terrain; if(!te) return null;
   try{ const sc=te.sourceCache, tiles=sc&&sc.getRenderableTiles?sc.getRenderableTiles():[], mc=maplibregl.MercatorCoordinate.fromLngLat(ll), X=8192; let best=null;
-    for(const t of tiles){ const c=t.tileID&&t.tileID.canonical; if(!c||!t.dem) continue; const n=2**c.z, tx=mc.x*n-c.x, ty=mc.y*n-c.y; if(tx>=0&&tx<1&&ty>=0&&ty<1&&(!best||c.z>best.c.z)) best={t,c,tx,ty}; }
+    for(const t of tiles){ const c=t.tileID&&t.tileID.canonical; if(!c) continue; let td=null; try{ td=te.getTerrainData?te.getTerrainData(t.tileID):null; }catch(e){} if(td&&td.tile&&!td.tile.dem) continue; const n=2**c.z, tx=mc.x*n-c.x, ty=mc.y*n-c.y; if(tx>=0&&tx<1&&ty>=0&&ty<1&&(!best||c.z>best.c.z)) best={t,c,tx,ty}; }
     if(best){ const v=te.getElevation(best.t.tileID,best.tx*X,best.ty*X,X); if(isFinite(v)) return v; } }catch(e){}
-  // (pločice se biraju samo ako imaju učitan model visina: bez njega MapLibre vraća 0 m i kuća bi poletjela ili potonula)
+  // (pločica za crtanje uzima se samo ako je njezin model visina učitan: bez njega MapLibre vraća 0 m i kuća bi poletjela ili potonula;
+  //  pločice za crtanje same nemaju .dem, model visina dohvaća se kroz getTerrainData, isto kao kad MapLibre crta teren)
   try{ const v=te.getElevationForLngLatZoom(new maplibregl.LngLat(ll[0],ll[1]),map.transform.tileZoom); return isFinite(v)?v:null; }catch(e){ return null; } }
 function triPv(){ try{ const g=TRI.grp; if(g) g.traverse(x=>{ if(x.name==="pv") x.visible=!!V3D.pv; }); }catch(e){} }
 const TRI_K=new Set(["podest","zid","krov","streha","sljeme","atika","okvir","prozor","vrata","nadstresnica","obloga","garaza","garazna-vrata","pv"]);
