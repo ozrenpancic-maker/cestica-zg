@@ -30,7 +30,7 @@ function boot(src,url){
   // katalozi ISPU (Zagreb i županije) u testovima su isključeni; testovi karata planova ga uključuju (__ISPU_OBUHVAT)
   try{dom.window.eval('(()=>{window.__ISPU_OB={}; for(const k of RASTER_KATALOZI.filter(k=>k.tip==="wms")){ window.__ISPU_OB[k.id]=k.obuhvat; k.obuhvat=[0,0,0,0]; } window.__ISPU_OBUHVAT=window.__ISPU_OB["ispu-z21"];})()')}catch(e){}
   // u objavljenoj aplikaciji pristup i statistika su uključeni; testovi rade s punom aplikacijom, a pristup uključuju sami
-  try{ dom.window.eval("FEATURES.pristup=false; FEATURES.analitika=false;"); }catch(e){}
+  try{ dom.window.eval("FEATURES.pristup=false; FEATURES.analitika=false; FEATURES.rkDrzavni=false; FEATURES.nam26=false;"); }catch(e){}
   return {w:dom.window, errs};
 }
 // pravokutna čestica w × d metara
@@ -3397,6 +3397,27 @@ async function ispuZupTests(){
   E("RKAT").clear(); await E("rkStart")({parcel:P,ll:{lng:16.44,lat:43.51},region:"hr"}); S=E("RKAT").get("hr:split");
   ok(S&&S.st==="err"&&/ne odgovara/.test(S.e),"ISPU županije: kad servis ne odgovori, prikazuje se greška (ne tvrdi se da lista nema)");
   {const K=E('RASTER_KATALOZI.find(k=>k.id==="ispu-z17")'), m=E("RK_TIPOVI.wms").emptyMsg(K,{}); ok(/službenom glasilu grada ili općine/.test(m.txt)&&!/Zagreb/.test(m.txt)&&/Glasniku Grada Zagreba/i.test(E("RK_TIPOVI.wms").emptyMsg(E('RASTER_KATALOZI.find(k=>k.id==="ispu-z21")'),{}).txt),"ISPU županije: upute bez Zagreba izvan Zagreba");}
+  // Brodsko-posavska: vlastiti WMS županijskog zavoda (MapGuide) prije Z12; nazivi s crticama i okviri u EPSG:3765
+  ok(ids(18.0156,45.16,"Brodsko-posavska županija")[0]==="bpz"&&ids(18.0156,45.16,"Brodsko-posavska županija")[1]==="ispu-z12","BPŽ: prvo WMS Zavoda BPŽ, zatim ISPU Z12");
+  {const I=E("ispuIme")("Karte prostornih planova/Brodsko-posavska županija/Općine/Stara Gradiška/Layers/HR-ISPU-PPGO-04120-R04-KN-1-1");
+   ok(I&&I.vrsta==="PPGO"&&I.sifra==="04120"&&I.rev===4&&I.karta==="KN_1_1"&&E("ispuIme")("HR_ISPU_GUP1_01333_R09_IS_1_1").karta==="IS_1_1","BPŽ: naziv sloja s crticama i putanjom prepoznat kao ISPU šifra (PPGO 04120, R04, KN_1_1)");
+   const [e0,n0]=E("tmFwd")(18.0,45.15), [e1,n1]=E("tmFwd")(18.03,45.17);
+   const x=`<?xml version="1.0"?><WMS_Capabilities version="1.3.0" xmlns="http://www.opengis.net/wms"><Capability><Layer><Title>WMS</Title><CRS>EPSG:3765</CRS><Layer queryable="0"><Name>Karte/Layers/HR-ISPU-PPGO-00001-R02-KN-1-1</Name><Title>SLAVONSKI BROD - PPGO - KORIŠTENJE I NAMJENA POVRŠINA</Title><CRS>EPSG:3765</CRS><BoundingBox CRS="EPSG:3765" minx="${e0}" miny="${n0}" maxx="${e1}" maxy="${n1}"/></Layer></Layer></Capability></WMS_Capabilities>`;
+   const L=E("wmsParse")(x)[0]; ok(L&&L.bb&&Math.abs(L.bb[0]-18.0)<0.002&&Math.abs(L.bb[3]-45.17)<0.002&&L.bb3765&&L.crs.includes("EPSG:3765")&&!L.crs.includes("CRS:84"),"BPŽ: okvir lista iz BoundingBox EPSG:3765 pretvoren u stupnjeve");
+   const K=E('RASTER_KATALOZI.find(k=>k.id==="bpz")'), it={s:L,crs:"EPSG:3765"}; ok(/CRS=EPSG%3A3765/.test(E("RK_WMS").fullUrl(K,it))&&/^https:\/\/wms\.bpzzpu\.hr\//.test(E("RK_WMS").fullUrl(K,it)),"BPŽ: cijeli list traži se u EPSG:3765 (servis nema CRS:84)");}
+  // planovi državne razine: dodatni listovi uz plan općine, s vlastitim izvorom
+  E("FEATURES.rkDrzavni=true"); w.__cur={key:"hr:medv"}; pit.length=0;
+  E("RK_TIPOVI.wms").query=async(K)=>{pit.push(K.id); return K.id==="ispu-z01"?{items:[{id:"HR_ISPU_PPUG1_00003_R02_KN_1_1",plan:"PPUG Samobor",karta:"KN_1_1",vrsta:"namjena"}],host:K.hosts[0]}:K.id==="ispu-pppo"?{items:[{id:"HR_ISPU_PPPPO_00010_R01_KN_1_1",plan:"PPPPO PP Žumberak-Samoborsko gorje",karta:"KN_1_1",vrsta:"namjena"}],err:[]}:{items:[]};};
+  w.__ptnGeoHook=()=>({address:{county:"Zagrebačka županija"}});
+  E("RKAT").clear(); await E("rkStart")({parcel:P,ll:{lng:15.62,lat:45.78},region:"hr"}); S=E("RKAT").get("hr:medv");
+  ok(S&&S.st==="ok"&&S.items.length===2&&S.items[0].plan==="PPUG Samobor"&&S.items[1]._K&&S.items[1]._K.id==="ispu-pppo"&&pit.includes("ispu-pppo"),"Državni planovi: list parka prirode dodan iza lista plana grada, s izvorom ISPU državne razine");
+  // tri odvojena stanja u prikazu
+  {const st=x=>{ E("RKAT").set(w.__cur.key,x); return E("rkStanja")(x).replace(/<[^>]+>/g," ").replace(/\s+/g," "); };
+   const K=E('RASTER_KATALOZI.find(k=>k.id==="ispu-z17")'), B=E('RASTER_KATALOZI.find(k=>k.id==="bpz")'); E("RK_CTX={region:'hr'}");
+   const a=st({st:"ok",K,items:[{plan:"GUP Split",karta:"KN_1_1"}],sel:0,img:{st:"ok",share:0.6}}), b=st({st:"none",K,items:[]}), c=st({st:"err",K:B,e:"x"});
+   ok(/Karta plana dostupna: GUP Split · KN_1_1 \(ISPU\)/.test(a)&&/Zona nije potvrđena/.test(a)&&/Uvjeti gradnje nisu obrađeni u aplikaciji za ovo područje/.test(a),"Stanja: karta dostupna (s nazivom lista i izvorom), zona nije potvrđena, uvjeti nisu obrađeni");
+   ok(/za česticu nije pronađen list \(ISPU\)/.test(b)&&/servis trenutačno nedostupan \(Zavod BPŽ\)/.test(c)&&/Popis važećih planova \(Zavod BPŽ\)/.test(c),"Stanja: nije pronađen list ili servis nedostupan; za BPŽ poveznica na popis važećih planova");
+   ok(/list je pronađen, ali na čestici nema sadržaja/.test(st({st:"ok",K,items:[{plan:"P",karta:"K"}],sel:0,img:{st:"ok",share:0}}))&&/Uvjeti gradnje obrađeni u aplikaciji \(GUP Grada Zagreba/.test((E("RK_CTX={region:'zg'}"),st({st:"none",K,items:[]}))),"Stanja: prazan list nije »dostupna karta«; u Zagrebu su uvjeti obrađeni");}
   ok(errs.length===0,"bez JS grešaka (ISPU županije): "+errs.join(" | "));
 }
 
