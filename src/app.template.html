@@ -667,7 +667,7 @@ const CHECKS = [
 ];
 // Koridori infrastrukture (GUP čl. 50: DV 110 kV 20 m, 220 kV 25 m, 400 kV 35 m od osi; čl. 53: magistralni plinovod 30 m, VTP 10 m)
 // moduli koji su u razvoju (faze C i D) i još nisu uključeni
-const FEATURES={infra:true,seis:false,ai:false,upuZona:false,pristup:false,analitika:false}; // pristup: kodovi za napredne funkcije i dosje na e-mail (uključuje se kad je Worker postavljen, vidi PRISTUP.api) // seis: potresna opasnost, privremeno skrivena; ai: AI asistent (AI-1/AI-2 kod postoji) privremeno isključen: nema stavke u izborniku i ništa se ne šalje; uključuje se postavljanjem na true
+const FEATURES={infra:true,seis:false,ai:false,upuZona:false,pristup:true,analitika:true}; // pristup: kodovi za napredne funkcije i dosje na e-mail (uključuje se kad je Worker postavljen, vidi PRISTUP.api) // seis: potresna opasnost, privremeno skrivena; ai: AI asistent (AI-1/AI-2 kod postoji) privremeno isključen: nema stavke u izborniku i ništa se ne šalje; uključuje se postavljanjem na true
 const INFRA=BASE+"GUP_Infrastruktura/FeatureServer/";
 const corrDist=(f,kind)=>{
   if(kind==="ee"){const l=String(f.LAYER||"")+String(f.EE_VODOVI_OPIS||""); return /400|440/.test(l)?35:/220/.test(l)?25:20;}
@@ -4362,7 +4362,7 @@ function matPrint(){ let R=document.getElementById("report"); if(R) R.remove(); 
 // i osnovni uvjeti gradnje; ostali odjeljci pokazuju karticu za prijavu kodom. Token (potpisan na Workeru, s rokom) čuva se u
 // pregledniku; Worker ga provjerava pri svakom slanju dosjea, a aplikacija pri pokretanju (opozvan kod odjavljuje).
 // Faza 1 zaključava sučelje; kod naprednih funkcija i dalje je u stranici (faza 2 ga seli na poslužitelj).
-const PRISTUP={api:"",kontakt:"info@cesticahr.com",provjereno:false};
+const PRISTUP={api:"https://cesticahr-pristup.ozren-pancic.workers.dev",kontakt:"info@cesticahr.com",provjereno:false};
 const PR_ADV=["tloc","gp","skica","oku","mat","build","prep","kd","costs","krkKd","hkd","buy","total","scen","proj","vrij","ptn","ppv","isk","osun","pogled","ene","kis","vjet","sun","pv","bfaze","mk","cklist"];
 const prUkljuceno=()=>!!(FEATURES.pristup&&PRISTUP.api);
 // istice: null = neograničen pristup (Worker ipak provjerava stanje pri svakom pokretanju)
