@@ -9441,12 +9441,13 @@ async function dosjePripremi(){
   dosjeProg("otvaram odjeljke i računam napredne analize…");
   sheet.querySelectorAll("details").forEach(d=>d.open=true);
   const z=[]; const pok=f=>{ try{ const r=f(); if(r&&r.then) z.push(r.catch(()=>{})); }catch(e){} };
-  // ceste i sadržaji u blizini (OpenStreetMap) stižu nakon ostalih podataka: bez njih pristup ostaje „podaci nisu dostupni”; čeka se usporedno s analizama
-  {const k0=window.__cur&&window.__cur.key; z.push((async()=>{ const t0=Date.now(); while(Date.now()-t0<12000){ const d=curData(); if(!d||d.env||(window.__cur&&window.__cur.key)!==k0||!/Tražim ceste|još se učitavaju/.test(sheet.textContent)) break; await new Promise(r=>setTimeout(r,400)); } })());}
+  // ceste i sadržaji u blizini (OpenStreetMap) stižu nakon ostalih podataka: bez njih pristup ostaje „podaci nisu dostupni”
+  const cekaj=[]; // čekaju usporedno s analizama i 3D snimkom
+  {const k0=window.__cur&&window.__cur.key; cekaj.push((async()=>{ const t0=Date.now(); while(Date.now()-t0<12000){ const d=curData(); if(!d||d.env||(window.__cur&&window.__cur.key)!==k0||!/Tražim ceste|još se učitavaju/.test(sheet.textContent)) break; await new Promise(r=>setTimeout(r,400)); } })());}
+  // zemljišna knjiga (javni uvid OSS) učitava se otvaranjem odjeljka: najviše 8 s, usporedno s ostalim
+  cekaj.push((async()=>{ const t0=Date.now(); await new Promise(r=>setTimeout(r,50)); while(Date.now()-t0<8000){ const z0=zkKlasaCur(), v0=window.__zkK!=null?OSSZK.get(String(window.__zkK)):null; if(!z0||z0.ucitano||!v0||!(v0.st==="load"||v0.ulLoad)) break; await new Promise(r=>setTimeout(r,300)); } })());
   pok(()=>osunUpdate()); pok(()=>vjetUpdate()); pok(()=>kisUpdate()); pok(()=>eneUpdate()); pok(()=>pogUpdate()); pok(()=>{iskStart(); iskUpdate();});
   await Promise.race([Promise.all(z),new Promise(r=>setTimeout(r,15000))]);
-  // zemljišna knjiga (javni uvid OSS) učitava se otvaranjem odjeljka: pričekaj je najviše 8 s, da tereti budu na početku dosjea
-  {const t0=Date.now(); while(Date.now()-t0<8000){ const z0=zkKlasaCur(), v0=window.__zkK!=null?OSSZK.get(String(window.__zkK)):null; if(!z0||z0.ucitano||!v0||!(v0.st==="load"||v0.ulLoad)) break; await new Promise(r=>setTimeout(r,300)); }}
   try{sazetakUpdate()}catch(e){}
   const key=window.__cur&&window.__cur.key;
   if(TL.center&&key&&document.getElementById("v3dBtn")){ const staro=V3D.snap.get(key); V3D.snap.delete(key); // uvijek svježa slika: s okućnicom, bazenom i priključcima kakvi su sada
@@ -9457,6 +9458,7 @@ async function dosjePripremi(){
     if(!V3D.snap.has(key)&&staro) V3D.snap.set(key,staro);
   }
   try{ await Promise.race([qrLib(),new Promise(r=>setTimeout(r,4000))]); }catch(e){}
+  if(cekaj.length){ dosjeProg("čekam ceste i zemljišnu knjigu…"); await Promise.all(cekaj); try{sazetakUpdate()}catch(e){} }
   dosjeProg("slažem dosje i karte…");
 }
 // snimke iz zraka 2011. i 2023./24. jedna uz drugu, s granicom čestice
