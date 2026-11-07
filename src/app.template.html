@@ -4362,7 +4362,7 @@ function matPrint(){ let R=document.getElementById("report"); if(R) R.remove(); 
 // i osnovni uvjeti gradnje; ostali odjeljci pokazuju karticu za prijavu kodom. Token (potpisan na Workeru, s rokom) čuva se u
 // pregledniku; Worker ga provjerava pri svakom slanju dosjea, a aplikacija pri pokretanju (opozvan kod odjavljuje).
 // Faza 1 zaključava sučelje; kod naprednih funkcija i dalje je u stranici (faza 2 ga seli na poslužitelj).
-const PRISTUP={api:"https://pristup.cesticahr.com",kontakt:"info@cesticahr.com",provjereno:false};
+const PRISTUP={api:"https://cesticahr-pristup.ozren-pancic.workers.dev",kontakt:"info@cesticahr.com",provjereno:false};
 const PR_ADV=["tloc","gp","skica","oku","mat","build","prep","kd","costs","krkKd","hkd","buy","total","scen","proj","vrij","ptn","ppv","isk","osun","pogled","ene","kis","vjet","sun","pv","bfaze","mk","cklist"];
 const prUkljuceno=()=>!!(FEATURES.pristup&&PRISTUP.api);
 // istice: null = neograničen pristup (Worker ipak provjerava stanje pri svakom pokretanju)
