@@ -27,8 +27,8 @@ function boot(src,url){
       w.SVGElement.prototype.createSVGRect=function(){return {}}; }});
   // posrednik prema OSS-u u testovima je isključen (testovi ga uključuju gdje treba); adresa iz aplikacije ostaje u __OSS_URL
   try{dom.window.eval('window.__OSS_URL=SRC_KRK.oss; window.__OSS2_URL=SRC_KRK.oss2; SRC_KRK.oss=""; SRC_KRK.oss2=""')}catch(e){}
-  // katalog ISPU (Zagreb) u testovima je isključen; testovi karata planova ga uključuju (__ISPU_OBUHVAT)
-  try{dom.window.eval('(()=>{const k=RASTER_KATALOZI.find(k=>k.tip==="wms"); window.__ISPU_OBUHVAT=k.obuhvat; k.obuhvat=[0,0,0,0];})()')}catch(e){}
+  // katalozi ISPU (Zagreb i županije) u testovima su isključeni; testovi karata planova ga uključuju (__ISPU_OBUHVAT)
+  try{dom.window.eval('(()=>{window.__ISPU_OB={}; for(const k of RASTER_KATALOZI.filter(k=>k.tip==="wms")){ window.__ISPU_OB[k.id]=k.obuhvat; k.obuhvat=[0,0,0,0]; } window.__ISPU_OBUHVAT=window.__ISPU_OB["ispu-z21"];})()')}catch(e){}
   // u objavljenoj aplikaciji pristup i statistika su uključeni; testovi rade s punom aplikacijom, a pristup uključuju sami
   try{ dom.window.eval("FEATURES.pristup=false; FEATURES.analitika=false;"); }catch(e){}
   return {w:dom.window, errs};
@@ -3369,7 +3369,38 @@ async function presudaTests(){
   ok(errs.length===0,"bez JS grešaka (presuda): "+errs.join(" | "));
 }
 
-netTests().then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
+// karte prostornih planova za ostale županije (ISPU PPRasterZ01…Z20): odabir kataloga po točki i prelazak na susjedni katalog
+async function ispuZupTests(){
+  const tick=ms=>new Promise(r=>setTimeout(r,ms));
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  E('for(const k of RASTER_KATALOZI) if(__ISPU_OB[k.id]) k.obuhvat=__ISPU_OB[k.id]');
+  const ids=(lng,lat,zup)=>E("rkKatalozi")({lng,lat},zup).map(k=>k.id);
+  ok(E("RASTER_KATALOZI.filter(k=>/^ispu-z\\d\\d$/.test(k.id)).length")===20&&!ids(14.69,45.17).includes("ispu-z08"),"ISPU županije: 19 županija i Grad Zagreb; za PGŽ ostaje županijski katalog (Z08 nije u popisu)");
+  ok(ids(16.44,43.51,"Splitsko-dalmatinska županija")[0]==="ispu-z17"&&ids(16.44,43.51).includes("ispu-z15")&&ids(13.85,44.87,"Istarska županija")[0]==="ispu-z18"&&ids(18.69,45.55,"Osječko-baranjska županija")[0]==="ispu-z14","ISPU županije: okviri se preklapaju (Split je i u okviru Šibensko-kninske), pa županija iz adrese odlučuje redoslijed");
+  ok(ids(14.60,45.03)[0]==="pgz"&&ids(15.98,45.81)[0]==="ispu-z21"&&ids(15.98,45.81).includes("ispu-z01"),"ISPU županije: Krk prvo PGŽ, Zagreb prvo Grad Zagreb (Zagrebačka županija kao sljedeća)");
+  {const L=ids(14.12,45.09); ok(L[0]==="pgz"&&L.includes("ispu-z18"),"ISPU županije: točka u preklopu okvira (Labin) pita PGŽ pa Istarsku");}
+  ok(E('RASTER_KATALOZI.find(k=>k.id==="ispu-z18").hosts[0]')==="https://gis2.mgipu.hr/srv1/PPRasterZ18_Public/wms"&&E('RASTER_KATALOZI.find(k=>k.id==="ispu-z18").hosts.length')===4,"ISPU županije: četiri adrese poslužitelja po županiji");
+  // prelazak: PGŽ nema lista, Istarska ima
+  const P=parcelRect(30,25); w.__cur={key:"hr:labin"}; const pit=[];
+  E("RK_TIPOVI.arcgis").query=async(K)=>{pit.push(K.id); return {items:[]};};
+  E("RK_TIPOVI.wms").query=async(K)=>{pit.push(K.id); if(K.id==="ispu-z18") return {items:[{id:"HR_ISPU_GUP1_00001_R01_KN_1_1",plan:"GUP Grada Labina",karta:"KN_1_1",vrsta:"namjena"}],host:K.hosts[0]}; return {items:[]};};
+  E("RK_TIPOVI.wms").img=async()=>{throw new Error("bez slike u testu");};
+  E("RKAT").clear(); await E("rkStart")({parcel:P,ll:{lng:14.12,lat:45.09},region:"hr"}); let S=E("RKAT").get("hr:labin");
+  ok(S&&S.st==="ok"&&S.K.id==="ispu-z18"&&pit[0]==="pgz"&&pit.includes("ispu-z18"),"ISPU županije: kad prvi katalog nema lista, uzima se sljedeći koji ga ima");
+  // svi katalozi bez odgovora: greška, ne „nema lista”
+  // Split: županija iz adrese stavlja Splitsko-dalmatinsku ispred Šibensko-kninske
+  w.__cur={key:"hr:split2"}; pit.length=0; w.__ptnGeoHook=()=>({address:{county:"Splitsko-dalmatinska županija"}});
+  E("RK_TIPOVI.wms").query=async(K)=>{pit.push(K.id); return K.id==="ispu-z17"?{items:[{id:"HR_ISPU_GUP1_00002_R06_KN_1_1",plan:"GUP Split",karta:"KN_1_1",vrsta:"namjena"}],host:K.hosts[0]}:{items:[]};};
+  E("RKAT").clear(); await E("rkStart")({parcel:P,ll:{lng:16.44,lat:43.51},region:"hr"}); S=E("RKAT").get("hr:split2");
+  ok(S&&S.K.id==="ispu-z17"&&pit[0]==="ispu-z17"&&/Splitsko/.test(S.zup),"ISPU županije: Split prvo pita katalog Splitsko-dalmatinske županije");
+  w.__cur={key:"hr:split"}; E("RK_TIPOVI.wms").query=async()=>{throw new Error("ne odgovara");};
+  E("RKAT").clear(); await E("rkStart")({parcel:P,ll:{lng:16.44,lat:43.51},region:"hr"}); S=E("RKAT").get("hr:split");
+  ok(S&&S.st==="err"&&/ne odgovara/.test(S.e),"ISPU županije: kad servis ne odgovori, prikazuje se greška (ne tvrdi se da lista nema)");
+  {const K=E('RASTER_KATALOZI.find(k=>k.id==="ispu-z17")'), m=E("RK_TIPOVI.wms").emptyMsg(K,{}); ok(/službenom glasilu grada ili općine/.test(m.txt)&&!/Zagreb/.test(m.txt)&&/Glasniku Grada Zagreba/i.test(E("RK_TIPOVI.wms").emptyMsg(E('RASTER_KATALOZI.find(k=>k.id==="ispu-z21")'),{}).txt),"ISPU županije: upute bez Zagreba izvan Zagreba");}
+  ok(errs.length===0,"bez JS grešaka (ISPU županije): "+errs.join(" | "));
+}
+
+netTests().then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
