@@ -3189,6 +3189,30 @@ async function pristupTests(){
   ok(!E("prTok()")&&w.document.querySelector("[data-pr-zak]"),"Opozvan kod: provjera pri pokretanju odjavljuje i ponovno zaključava");
   setv(w,"prKod","ABCD-EFGH-JKLM"); opozvan=false; $(w,"prPrijava").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(80);
   $(w,"prOdjava").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(50); ok(!E("prTok()")&&$(w,"prBox").dataset.pr==="zakljucano","Odjava briše prijavu i zaključava");
+  // zahtjev za pristup, aktivacija poveznicom, neograničen pristup, produženje
+  {const zc=[]; const f0=w.fetch; w.fetch=async(u,o)=>{ u=String(u); const b=o&&o.body?JSON.parse(o.body):null; if(u==="https://p.test/zahtjev"){ zc.push(b); return {ok:true,status:200,json:async()=>({ok:true,poruka:"Ako adresa još nema zahtjev, na nju stiže e-mail s poveznicom za potvrdu."})}; }
+     if(u==="https://p.test/produzenje"){ zc.push({prod:true,h:o.headers}); return {ok:true,status:200,json:async()=>({ok:true})}; }
+     if(u==="https://p.test/prijava"&&b&&b.kod==="NEOG-RANI-CENO") return {ok:true,status:200,json:async()=>({token:"tok.neog",istice:null})};
+     return f0(u,o); };
+   E("prPostavi(null)"); E("render")(w.__lastData); await tick(30);
+   ok(!!$(w,"prZatrazi")&&/Zatraži besplatan napredni pristup/.test($(w,"prZatrazi").textContent)&&w.document.querySelector(".pr-zatrazi"),"Zaključano: gumb »Zatraži besplatan napredni pristup« na vrhu i u zaključanim odjeljcima");
+   $(w,"prZatrazi").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(10);
+   ok(!!$(w,"przEmail")&&$(w,"przNam").options.length===7&&!!$(w,"przWeb")&&/besplatan/.test(txt(w,"prZah"))&&/pojedinačno/.test(txt(w,"prZah"))&&!w.document.querySelector("#prZah input[autocomplete=name],#prZah input[type=tel]"),"Obrazac: e-mail, šest odgovora za namjenu, skriveno polje za robote, obavijest o testnoj fazi; bez imena i telefona");
+   setv(w,"przEmail","nije"); $(w,"przPosalji").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(10); ok(!zc.length&&/ispravnu e-mail/.test(txt(w,"przPor")),"Obrazac: neispravan e-mail se ne šalje");
+   setv(w,"przEmail","kupac@primjer.hr"); $(w,"przNam").value="gradnja"; $(w,"przPosalji").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20);
+   ok(zc[0]&&zc[0].email==="kupac@primjer.hr"&&zc[0].namjena==="gradnja"&&zc[0].web===""&&/potvrdu/.test(txt(w,"przPor"))&&$(w,"przPosalji").disabled,"Obrazac: zahtjev poslan Workeru (e-mail, namjena), poruka o potvrdi adrese");
+   E("prPostavi(null)"); w.history.replaceState(null,"","/cestica-zg/?pristup=NEOG-RANI-CENO&x=1"); E("prUrl")(); await tick(30);
+   ok(E("prTok()")&&E("prTok()").token==="tok.neog"&&E("prTok()").istice===null&&!/pristup=/.test(w.location.search)&&/x=1/.test(w.location.search),"Poveznica ?pristup=KOD aktivira pristup i uklanja kod iz adrese; neograničen pristup (istice null) vrijedi");
+   E("render")(w.__lastData); await tick(30); ok(/bez vremenskog ograničenja/.test(txt(w,"prBox"))&&!$(w,"prProd"),"Neograničen pristup: piše »bez vremenskog ograničenja«, bez gumba za produženje");
+   E("prPostavi({token:'tok.sig',istice:Date.now()+3*86400000})"); E("render")(w.__lastData); await tick(30);
+   $(w,"prProd").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20); ok(zc.some(x=>x.prod&&x.h.authorization==="Bearer tok.sig")&&/produženje je poslan/.test(txt(w,"prProdPor")),"Korisnik s rokom može zatražiti produženje (s prijavom)");
+   E("prPostavi(null)"); w.history.replaceState(null,"","/cestica-zg/?zahtjev=1"); E("prUrl")(); await tick(10); ok(!!$(w,"przEmail")&&!/zahtjev=/.test(w.location.search),"Poveznica ?zahtjev=1 (web stranica) otvara obrazac");}
+  // skupna statistika: bez broja čestice, jednom po čestici, privola za identifikator preglednika
+  {const ev=[]; w.__anHook=b=>ev.push(b); E("FEATURES.analitika=true"); E("AN.posl.clear()"); E("render")(w.__lastData); await tick(30); E("render")(w.__lastData); await tick(30);
+   const c=ev.filter(x=>x.e==="cestica"); ok(c.length===1&&c[0].z==="Grad Zagreb"&&c[0].o&&!/88\/1|REMETE/.test(JSON.stringify(ev))&&!ev.some(x=>x.v),"Statistika: analizirana čestica jednom po učitavanju, županija skupno, bez broja čestice i bez identifikatora bez privole");
+   ok(ev.some(x=>x.e==="ocjena"),"Statistika: pregled ocjene se broji");
+   E("localStorage.setItem('anPrivola','1')"); E("AN.posl.clear()"); E("render")(w.__lastData); await tick(30); ok(ev.filter(x=>x.e==="cestica").pop().privola===true&&!!ev.filter(x=>x.e==="cestica").pop().v,"Statistika: uz privolu šalje se nasumični identifikator preglednika");
+   E("localStorage.removeItem('anPrivola')"); E("FEATURES.analitika=false"); w.__anHook=null;}
   ok(errs.length===0,"bez JS grešaka (pristup): "+errs.join(" | "));
 }
 

@@ -1,65 +1,89 @@
-# Pristupni kodovi i dosje na e-mail (faza 1): postavljanje
+# Napredni pristup, administracija i statistika: postavljanje
 
-Stanje 6. 11. 2026. Kod je na grani `pristup`. U aplikaciji je isključen (`FEATURES.pristup=false`) dok se Worker ne postavi.
+Stanje 7. 11. 2026. Sve je na grani `pristup-zahtjevi`. U aplikaciji je isključeno (`FEATURES.pristup=false`, `FEATURES.analitika=false`) dok se Worker ne postavi.
 
-## Kako radi
+## Kako radi (poluautomatsko odobravanje)
 
-| Dio | Što radi |
+1. Korisnik u aplikaciji (ili preko poveznice `…/?zahtjev=1` s web stranice) odabere **„Zatraži besplatan napredni pristup”**, upiše e-mail i po želji namjenu.
+2. Worker pošalje poruku s poveznicom za potvrdu adrese. Nepotvrđene adrese brišu se za 7 dana.
+3. Nakon potvrde zahtjev je **na čekanju**, a na info@cesticahr.com stiže „Novi zahtjev za pristup ČesticaHR-u”.
+4. U administraciji odabereš **Odobri**. Worker izda pojedinačni kod i pošalje ga korisniku s poveznicom za aktivaciju (`…/?pristup=KOD`).
+5. Pristup traje od prve prijave: zadano 30 dana. Trajanje mijenjaš u administraciji (Postavke), bez izmjene koda.
+6. Pet dana prije isteka korisnik dobije podsjetnik. U aplikaciji može zatražiti produženje; ti dobiješ obavijest.
+
+| Dio | Gdje |
 |---|---|
-| Aplikacija bez koda | Čestica, namjena i osnovni uvjeti gradnje. Ostali odjeljci (simulator, troškovi, 3D, okućnica, materijal, napredne analize) prikazuju karticu „Napredna funkcija”. Ispis iz preglednika ne prikazuje dosje. |
-| Prijava kodom | Korisnik upiše kod (`XXXX-XXXX-XXXX`). Worker vraća potpisani token s rokom koda. Pri svakom pokretanju aplikacija provjeri token, pa opozvan kod odjavljuje. |
-| Dosje na e-mail | Gumb „Pošalji dosje na e-mail”: PDF se složi u pregledniku (html2canvas + jsPDF, odjeljak po odjeljak, s podnožjem „Dosje za <e-mail>”), a Worker ga šalje preko Brevoa. Najviše 10 slanja po kodu na dan. Isto vrijedi za „Okvirne količine za upit”. |
-| Administracija | `https://<worker>/admin`: stvaranje koda (oznaka, rok u danima), popis, opoziv. Kod se vidi samo pri stvaranju; u KV-u je samo njegov sažetak. |
-
-Faza 1 zaključava sučelje. Kod naprednih funkcija još je u stranici i u javnom repozitoriju. Faza 2 ga seli iza Workera.
+| Aplikacija (GitHub Pages) | obrazac, aktivacija, zaključavanje sučelja, slanje događaja za statistiku |
+| Worker `cesticahr-pristup` (Cloudflare) | zahtjevi, kodovi, prijava, dosje na e-mail, administracija `/admin`, statistika, dnevni zadatak |
+| D1 baza `cesticahr` (Cloudflare) | zahtjevi, sažeci kodova, dnevnik radnji, sesije, ograničenja, skupna statistika |
+| Brevo | slanje e-maila |
+| Cloudflare Email Routing | primanje pošte na info@cesticahr.com (prosljeđivanje na tvoj Gmail) |
 
 ## Što trebaš napraviti (jednom)
 
-### 1. Brevo (slanje e-maila, besplatno do 300 poruka na dan)
-1. Otvori račun na brevo.com.
-2. Senders, Domains & Dedicated IPs → Domains → dodaj `cesticahr.com` i kod pružatelja domene upiši DNS zapise koje Brevo pokaže (DKIM, DMARC). Bez toga poruke idu u neželjenu poštu.
-3. SMTP & API → API Keys → Generate. Ključ kopiraj samo u korak 3 ispod, nigdje drugdje.
+### 1. Primanje pošte na info@cesticahr.com (sada NE radi: domena nema MX zapis)
+1. Cloudflare → cesticahr.com → **Email** → **Email Routing** → Get started.
+2. Custom address: `info` → Action: Send to → tvoja Gmail adresa. Potvrdi poruku koja stigne na Gmail.
+3. Cloudflare sam doda MX i SPF zapise. Provjera: pošalji poruku na info@cesticahr.com.
 
-### 2. Cloudflare Worker
-U mapi `worker-pristup` na računalu s Node.js:
+### 2. Slanje pošte (Brevo, besplatno do 300 poruka na dan)
+1. Račun na brevo.com → **Senders, Domains & Dedicated IPs** → Domains → Add `cesticahr.com`.
+2. Zapise koje Brevo pokaže (DKIM, kod za potvrdu, DMARC) upiši u Cloudflare → DNS. Ako Brevo nudi „Authenticate with Cloudflare”, iskoristi to.
+3. Senders → dodaj `dosje@cesticahr.com` (pošiljatelj) i po želji `info@cesticahr.com`.
+4. **SMTP & API → API Keys → Generate**. Ključ upisuješ samo u korak 4.
 
+### 3. Worker i baza
+U mapi `worker-pristup` (računalo s Node.js):
 ```
 npm install
 npx wrangler login
-npx wrangler kv namespace create KODOVI
+npx wrangler d1 create cesticahr
+```
+Ispisani `database_id` upiši u `wrangler.toml` umjesto `UPIŠI_ID_NAKON_wrangler_d1_create`, pa:
+```
+npx wrangler d1 migrations apply cesticahr --remote
 ```
 
-Ispisani `id` upiši u `wrangler.toml` umjesto `UPIŠI_ID_NAKON_wrangler_kv_namespace_create`.
-
-### 3. Tajne (svaka se upisuje kad naredba pita)
-
+### 4. Tajne (svaka se upisuje kad naredba pita)
 ```
-npx wrangler secret put TOKEN_SECRET     # dugi slučajni niz, npr. iz: node -e "console.log(crypto.randomUUID()+crypto.randomUUID())"
-npx wrangler secret put CODE_PEPPER      # drugi dugi slučajni niz (ne mijenjaj ga poslije: stari kodovi prestaju vrijediti)
-npx wrangler secret put ADMIN_SECRET     # tvoja administratorska lozinka (najmanje 20 znakova)
+npx wrangler secret put TOKEN_SECRET     # dugi slučajni niz: node -e "console.log(crypto.randomUUID()+crypto.randomUUID())"
+npx wrangler secret put CODE_PEPPER      # drugi dugi slučajni niz (ne mijenjaj ga poslije)
+npx wrangler secret put ADMIN_SECRET     # administratorska lozinka, najmanje 20 znakova
+npx wrangler secret put ADMIN_TOTP       # tajna za drugi korak prijave (vidi ispod)
 npx wrangler secret put BREVO_KEY        # ključ iz Breva
 npx wrangler deploy
 ```
+**ADMIN_TOTP (MFA):** u terminalu `node -e "const A='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';let s='';for(const b of crypto.getRandomValues(new Uint8Array(20)))s+=A[b&31];console.log(s)"`. Ispisani niz upiši kao tajnu i u aplikaciju za autentifikaciju na mobitelu (Google Authenticator, Microsoft Authenticator: „Unesi ključ za postavljanje”, vremenski). Bez ove tajne prijava radi samo lozinkom, a administracija to upozorava.
 
-Ispisana adresa Workera (npr. `https://cesticahr-pristup.<račun>.workers.dev`) treba aplikaciji.
+**Po želji, zaštita obrasca od robota (Cloudflare Turnstile):** Cloudflare → Turnstile → Add site, pa `npx wrangler secret put TURNSTILE_SECRET`. Bez toga obrazac štite skriveno polje, potvrda adrese i ograničenje 5 zahtjeva na sat s iste mreže.
 
-### 4. Uključivanje u aplikaciji
-U `src/app.template.html`: `PRISTUP.api` = adresa Workera i `FEATURES.pristup:true`, zatim `python3 build.py`. To ide u `main` samo uz tvoje odobrenje. U `wrangler.toml` `ALLOWED_ORIGINS` mora sadržavati adresu s koje se aplikacija otvara.
+### 5. Adresa Workera
+Preporuka: Cloudflare → Workers → `cesticahr-pristup` → Settings → Domains & Routes → Add Custom Domain → `pristup.cesticahr.com`. Administracija je tada na **https://pristup.cesticahr.com/admin**.
 
-## Svakodnevno
+### 6. Uključivanje u aplikaciji (tek nakon tvog odobrenja za `main`)
+U `src/app.template.html`: `PRISTUP.api="https://pristup.cesticahr.com"`, `FEATURES.pristup:true`, `FEATURES.analitika:true`, pa `python3 build.py`. U `wrangler.toml` `ALLOWED_ORIGINS` mora sadržavati adresu s koje se aplikacija otvara, a `APP_URL` adresu aplikacije za poveznicu u e-mailu.
 
-- Korisnik ti piše na info@cesticahr.com. Otvoriš `/admin`, upišeš lozinku, stvoriš kod (oznaka = ime ili e-mail korisnika) i pošalješ mu ga.
-- Opoziv: `/admin` → Osvježi popis → Opozovi. Korisnik se odjavljuje pri sljedećem pokretanju aplikacije.
-- Promjena `TOKEN_EPOCH` u `wrangler.toml` i ponovni `deploy` odjavljuje sve korisnike (kodovi ostaju valjani za novu prijavu).
+## Administracija (`/admin`)
 
-## Ograničenja faze 1
+- Prijava: lozinka i šesteroznamenkasti kod iz aplikacije za autentifikaciju. Nakon 5 neuspjelih prijava s iste mreže: čekanje 15 minuta. Sesija traje 8 sati (kolačić `__Host-`, HttpOnly, Secure, SameSite=Strict).
+- **Pokazatelji** za 7, 30 ili 90 dana ili ukupno, uz definiciju svakog, grafikoni po danu i županije.
+- **Zahtjevi**: e-mail, datum, namjena, status (Na čekanju, Odobren, Odbijen, Istekao, Opozvan), datum odobrenja, istek, zadnja aktivnost. Radnje: Odobri, Odbij, +30 dana, 90 dana, Neograničeno, Ponovno pošalji kod (novi kod, stari prestaje), Opozovi, Dnevnik, Obriši podatke.
+- **Dnevnik**: svaka radnja s vremenom, bez e-mail adresa i kodova.
 
-- Napredni kod je u pregledniku: vješt korisnik može zaobići zaključavanje. Faza 2 (napredni paket samo uz token, privatni repozitorij, Cloudflare Pages) to rješava.
-- Snimka zaslona uvijek je moguća; dosje koji stiže e-mailom nosi adresu primatelja u podnožju svake stranice.
-- PDF se slaže iz slike stranice: tekst u PDF-u nije pretraživ. Karte i slike s poslužitelja koji ne dopuštaju čitanje (CORS) mogu nedostajati.
-- Zaključavanje ne skriva sažetak na vrhu rezultata (osnovni način) ni karte prostornog plana.
+## Statistika i privatnost
+
+- Skupni brojevi po danu: pokretanje aplikacije, pretraga, analizirana čestica, pregled ocjene, simulator, 3D, troškovi, PDF, zahtjev, aktivacija, posjet web stranice. Uz česticu se sprema samo županija.
+- Bez kolačića i bez IP adrese u bazi. Broj čestice se ne šalje (šalje se samo sažetak za uklanjanje ponovljenih događaja, briše se nakon jednog dana).
+- Povratni korisnici: samo uz privolu u izborniku (nasumični identifikator preglednika, u bazi samo sažetak po danu, briše se nakon 90 dana).
+- Rokovi čuvanja: nepotvrđeni zahtjevi 7 dana, odbijeni 90 dana, opozvani i istekli 12 mjeseci, dnevnik 2 godine. Brisanje na zahtjev: „Obriši podatke” u administraciji.
 
 ## Testovi
 
-- `cd worker-pristup && npm install && npm test`: Miniflare, lažni Brevo (22 provjere: kodovi, prijava, krivotvoreni token, ograničenja, opoziv, epoha, nedostajuće tajne).
-- `node tests/run.js`: zaključavanje, prijava, odjava, opoziv i slanje dosjea u aplikaciji (Worker zamijenjen u testu).
+- `cd worker-pristup && npm install && npm test`: Miniflare (workerd + D1), lažni Brevo, 58 provjera.
+- `node tests/run.js`: obrazac, aktivacija poveznicom, neograničen pristup, produženje, statistika u aplikaciji (Worker zamijenjen u testu).
+
+## Otvoreno
+
+- Zaključavanje u aplikaciji je u pregledniku: kod naprednih funkcija i dalje je u javnoj stranici. Zaštita na poslužitelju traži premještanje naprednog dijela iza Workera (vidi zadatak o novom modelu pristupa).
+- Posjeti web stranice broje se tek kad objavljena stranica šalje događaj `web_posjet`.
+- Odbijeni korisnik ne dobiva e-mail (upute to nisu tražile).

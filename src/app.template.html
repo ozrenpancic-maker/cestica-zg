@@ -256,6 +256,7 @@ details.vise[open]>summary span::after{content:" ▴"}details.vise:not([open])>s
 .lgd-wrap>summary{cursor:pointer;font-weight:600;font-size:13px}
 .lgd-nam>summary{cursor:pointer;font-size:12px;color:var(--muted);margin-top:4px}
 #report{display:none}
+.pr-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}.pr-zah .kd{flex-wrap:wrap}.pr-zah input[type=email]{min-width:220px;flex:1}
 .pr-box,.pr-zak{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0;background:var(--panel)}.pr-box[data-pr="zakljucano"]{border-color:var(--accent)}
 @media print{ body.pr-blok>*{display:none!important} body.pr-blok::after{content:"Dosje se ne ispisuje iz preglednika: pošalji ga na e-mail gumbom „Pošalji dosje na e-mail”.";display:block;font:14pt sans-serif;padding:20mm} }
 .sk-svg{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:8px;font-family:system-ui,sans-serif}
@@ -568,7 +569,7 @@ ul.risk small{color:var(--muted)}
     <button class="ib" id="modBtn" type="button" role="switch" aria-pressed="false" aria-label="Napredni način"><span class="mod-sw" aria-hidden="true"></span><span class="mod-t">Napredno</span></button>
     <button class="ib" id="menuBtn" type="button" aria-label="Izbornik">☰</button>
   </header>
-  <div id="menu" hidden><p class="meta" id="ver" style="margin:0 0 6px"></p><a href="#" id="statBtn2" class="ib">Stanje servisa</a><a href="#" id="goKrk" class="ib">Otok Krk (pilot)</a><label id="aiOnRow" class="aion" hidden><input type="checkbox" id="aiOn"> AI asistent (testno)</label></div>
+  <div id="menu" hidden><p class="meta" id="ver" style="margin:0 0 6px"></p><a href="#" id="statBtn2" class="ib">Stanje servisa</a><a href="#" id="goKrk" class="ib">Otok Krk (pilot)</a><label id="aiOnRow" class="aion" hidden><input type="checkbox" id="aiOn"> AI asistent (testno)</label><a href="#" id="menuPristup" class="ib" hidden>Napredni pristup</a><label id="anRow" class="aion" hidden><input type="checkbox" id="anPrivola"> Dopusti anonimnu statistiku povrataka</label><p class="meta" id="anNap" hidden style="margin:4px 0 0">Aplikacija broji skupno koje se funkcije koriste i u kojim županijama, bez kolačića, bez IP adrese i bez broja čestice. Uz ovu privolu sprema se i nasumični identifikator preglednika, samo da bismo znali koliko se korisnika vraća. Privolu možeš povući isključivanjem.</p></div>
   <main>
     <div id="map"></div>
     <div id="v3d" hidden role="dialog" aria-label="3D pogled na česticu"><div class="v3d-bar"><b id="v3dTtl">3D pogled</b><span class="v3d-act"><button type="button" class="ib" id="v3dRot">Zaustavi</button><button type="button" class="ib" id="v3dPod">Karta</button><label><input type="checkbox" id="v3dKat" checked> Čestice</label><label id="v3dOkolL" hidden title="Okolne zgrade iz neslužbenog 3D modela Grada Zagreba (ZG3D)"><input type="checkbox" id="v3dOkol" checked> Okolne zgrade</label><label title="Solarni paneli prema odjeljku Solarna elektrana"><input type="checkbox" id="v3dPv"> Paneli</label><button type="button" class="ib" id="v3dVid" title="Video od 18 s: kamera kruži, dan prelazi u večer, spuštanje prema ulazu">🎬 Prolet</button><button type="button" class="ib" id="v3dClose" aria-label="Zatvori">✕</button></span></div><div id="v3dMap"></div><p class="v3d-note" id="v3dNote"></p></div>
@@ -662,7 +663,7 @@ const CHECKS = [
 ];
 // Koridori infrastrukture (GUP čl. 50: DV 110 kV 20 m, 220 kV 25 m, 400 kV 35 m od osi; čl. 53: magistralni plinovod 30 m, VTP 10 m)
 // moduli koji su u razvoju (faze C i D) i još nisu uključeni
-const FEATURES={infra:true,seis:false,ai:false,upuZona:false,pristup:false}; // pristup: kodovi za napredne funkcije i dosje na e-mail (uključuje se kad je Worker postavljen, vidi PRISTUP.api) // seis: potresna opasnost, privremeno skrivena; ai: AI asistent (AI-1/AI-2 kod postoji) privremeno isključen: nema stavke u izborniku i ništa se ne šalje; uključuje se postavljanjem na true
+const FEATURES={infra:true,seis:false,ai:false,upuZona:false,pristup:false,analitika:false}; // pristup: kodovi za napredne funkcije i dosje na e-mail (uključuje se kad je Worker postavljen, vidi PRISTUP.api) // seis: potresna opasnost, privremeno skrivena; ai: AI asistent (AI-1/AI-2 kod postoji) privremeno isključen: nema stavke u izborniku i ništa se ne šalje; uključuje se postavljanjem na true
 const INFRA=BASE+"GUP_Infrastruktura/FeatureServer/";
 const corrDist=(f,kind)=>{
   if(kind==="ee"){const l=String(f.LAYER||"")+String(f.EE_VODOVI_OPIS||""); return /400|440/.test(l)?35:/220/.test(l)?25:20;}
@@ -3458,7 +3459,7 @@ function tMoveSide(i,want){
 }
 function tRotHandlePos(){ const p=turf.destination(turf.point(TL.center),(TL.d/2+3)/1000,(TL.rot+180)%360,{units:"kilometers"}); return p.geometry.coordinates; }
 function tDraw(){
-  const env=window.__env&&window.__env.geom; if(!env) return; if(!prOk()) return;
+  const env=window.__env&&window.__env.geom; if(!env) return; if(!prOk()) return; try{ an("simulator",window.__cur&&window.__cur.key); }catch(e){}
   if(!TL.center){const c=turf.centroid({type:"Feature",geometry:env,properties:{}}).geometry.coordinates; TL.center=c;}
   if(!TL.zones) TL.zones=tZones();
   if(TL.zl) selLayer.removeLayer(TL.zl);
@@ -4354,18 +4355,37 @@ function matPrint(){ let R=document.getElementById("report"); if(R) R.remove(); 
 const PRISTUP={api:"",kontakt:"info@cesticahr.com",provjereno:false};
 const PR_ADV=["tloc","gp","skica","oku","mat","build","prep","kd","costs","krkKd","hkd","buy","total","scen","proj","vrij","ptn","ppv","isk","osun","pogled","ene","kis","vjet","sun","pv","bfaze","mk","cklist"];
 const prUkljuceno=()=>!!(FEATURES.pristup&&PRISTUP.api);
-function prTok(){ try{ const o=JSON.parse(localStorage.getItem("pristupTok")||"null"); return o&&o.token&&o.istice>Date.now()?o:null; }catch(e){ return null; } }
+// istice: null = neograničen pristup (Worker ipak provjerava stanje pri svakom pokretanju)
+function prTok(){ try{ const o=JSON.parse(localStorage.getItem("pristupTok")||"null"); return o&&o.token&&(o.istice==null||o.istice>Date.now())?o:null; }catch(e){ return null; } }
+const PR_NAMJENE=[["kupujem","Kupujem zemljište"],["gradnja","Planiram gradnju kuće"],["arhitekt","Arhitekt ili projektant"],["agencija","Agencija za nekretnine"],["investitor","Investitor"],["ostalo","Ostalo"]];
+// obrazac „Zatraži besplatan napredni pristup”: samo e-mail (obavezno) i namjena (neobavezno); skriveno polje za robote
+function prZahtjevHtml(){ return `<section class="pr-zah" id="prZah"><p class="eyebrow" style="margin:0 0 4px">Zatraži besplatan napredni pristup</p>
+  <p class="meta" style="margin:0 0 8px">Tijekom testne faze napredni pristup je besplatan. Zahtjeve odobravamo pojedinačno; kod stiže e-mailom nakon odobrenja.</p>
+  <div class="kd"><label for="przEmail">E-mail adresa</label><input id="przEmail" type="email" inputmode="email" autocomplete="email" required maxlength="200"></div>
+  <div class="kd"><label for="przNam">Za što želiš koristiti ČesticaHR? (neobavezno)</label><select id="przNam" class="bsel"><option value="">—</option>${PR_NAMJENE.map(([k,n])=>`<option value="${k}">${esc(n)}</option>`).join("")}</select></div>
+  <div class="pr-hp" aria-hidden="true"><label for="przWeb">Ne ispunjavaj</label><input id="przWeb" type="text" tabindex="-1" autocomplete="off"></div>
+  <p style="margin:8px 0 0"><button type="button" class="ib" id="przPosalji">Pošalji zahtjev</button></p><p class="meta" id="przPor" aria-live="polite" style="margin:6px 0 0"></p>
+  <p class="meta" style="margin:6px 0 0">Adresu koristimo samo za ovaj zahtjev i slanje koda. Nepotvrđene adrese brišemo za 7 dana. Ime, telefon i druge podatke ne tražimo.</p></section>`; }
+function prDijalog(){ const t=prTok(); auxOpen(`<p class="eyebrow">Napredni pristup</p>`+(t?prBoxHtml():`${prZahtjevHtml()}<p class="eyebrow" style="margin:16px 0 4px">Već imaš kod?</p><div class="kd"><label for="prKod2">Pristupni kod</label><input id="prKod2" type="text" autocomplete="one-time-code" placeholder="XXXX-XXXX-XXXX" maxlength="20" style="text-transform:uppercase"><button type="button" class="ib" id="prPrijava2">Aktiviraj</button></div><p class="meta" id="prPor2" aria-live="polite"></p>`)); }
+async function prZahtjevPosalji(){ const p=document.getElementById("przPor"), em=(document.getElementById("przEmail")||{}).value||"", nam=(document.getElementById("przNam")||{}).value||"", web=(document.getElementById("przWeb")||{}).value||"";
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em.trim())){ if(p) p.textContent="Upiši ispravnu e-mail adresu."; return; }
+  if(p) p.textContent="Šaljem zahtjev…";
+  try{ const j=await prApi("/zahtjev",{body:{email:em.trim(),namjena:nam||null,web}}); if(p) p.textContent=j.poruka||"Zahtjev je zaprimljen."; const b=document.getElementById("przPosalji"); if(b) b.disabled=true; }
+  catch(err){ if(p) p.textContent=err.message||"Slanje nije uspjelo."; } }
+async function prAktiviraj(kod,por){ if(por) por.textContent="Provjeravam kod…";
+  try{ const j=await prApi("/prijava",{body:{kod}}); prPostavi({token:j.token,istice:j.istice??null,oznaka:j.oznaka||null}); PRISTUP.provjereno=true; if(por) por.textContent="Napredni pristup je aktiviran."; prRerender(); return true; }
+  catch(err){ if(por) por.textContent=err.message||"Prijava nije uspjela."; return false; } }
 function prOk(){ return !prUkljuceno()||!!prTok(); }
 function prPostavi(o){ try{ if(o) localStorage.setItem("pristupTok",JSON.stringify(o)); else localStorage.removeItem("pristupTok"); }catch(e){} }
 function prRerender(){ try{ const c=window.__cur||{}; if(c.region==="krk"&&KRK_CUR) renderKrk(KRK_CUR); else if(c.region==="hr"&&KRK_CUR) renderHR(KRK_CUR); else if(window.__lastData) render(window.__lastData); }catch(e){console.error(e)} }
 async function prApi(path,opt){ const t=prTok(), r=await fetch(PRISTUP.api+path,{method:opt&&opt.body?"POST":"GET",headers:{"content-type":"application/json",...(t?{authorization:"Bearer "+t.token}:{})},body:opt&&opt.body?JSON.stringify(opt.body):undefined});
   let j=null; try{ j=await r.json(); }catch(e){} if(!r.ok){ const e=new Error(j&&j.error&&j.error.poruka||("greška "+r.status)); e.status=r.status; e.code=j&&j.error&&j.error.code; throw e; } return j; }
 function prBoxHtml(){ const t=prTok();
-  if(t) return `<div class="pr-box" id="prBox" data-pr="otkljucano"><p class="meta" style="margin:0">Napredne funkcije otključane do <b>${new Date(t.istice).toLocaleDateString("hr-HR")}</b>${t.oznaka?" ("+esc(t.oznaka)+")":""}. <button type="button" class="ib" id="prOdjava">Odjavi se</button></p></div>`;
+  if(t) return `<div class="pr-box" id="prBox" data-pr="otkljucano"><p class="meta" style="margin:0">Napredne funkcije otključane ${t.istice?`do <b>${new Date(t.istice).toLocaleDateString("hr-HR")}</b>`:"<b>bez vremenskog ograničenja</b>"}${t.oznaka?" ("+esc(t.oznaka)+")":""}. ${t.istice?`<button type="button" class="ib" id="prProd">Zatraži produženje</button> `:""}<button type="button" class="ib" id="prOdjava">Odjavi se</button></p><p class="meta" id="prProdPor" aria-live="polite" style="margin:4px 0 0"></p></div>`;
   return `<div class="pr-box" id="prBox" data-pr="zakljucano"><p style="margin:0 0 6px"><b>Napredne funkcije</b> (simulator kuće, troškovi, 3D, okućnica, materijal, dosje na e-mail) otključavaju se pristupnim kodom.</p>
-    <p class="meta" style="margin:0 0 8px">Kod zatraži na <a href="mailto:${esc(PRISTUP.kontakt)}?subject=Pristupni%20kod%20%C4%8Cestica%20HR">${esc(PRISTUP.kontakt)}</a>.</p>
+    <p style="margin:0 0 8px"><button type="button" class="ib" id="prZatrazi">Zatraži besplatan napredni pristup</button></p>
     <div class="kd"><label for="prKod">Pristupni kod</label><input id="prKod" type="text" inputmode="text" autocomplete="one-time-code" placeholder="XXXX-XXXX-XXXX" maxlength="20" style="text-transform:uppercase"><button type="button" class="ib" id="prPrijava">Prijavi se</button></div><p class="meta" id="prPor" aria-live="polite" style="margin:4px 0 0"></p></div>`; }
-const prZakHtml=()=>`<div class="pr-zak"><p style="margin:0 0 6px"><b>Napredna funkcija.</b> Otključava se pristupnim kodom.</p><p class="meta" style="margin:0">Kod upiši na vrhu rezultata ili ga zatraži na <a href="mailto:${esc(PRISTUP.kontakt)}?subject=Pristupni%20kod%20%C4%8Cestica%20HR">${esc(PRISTUP.kontakt)}</a>.</p></div>`;
+const prZakHtml=()=>`<div class="pr-zak"><p style="margin:0 0 6px"><b>Napredna funkcija.</b> Otključava se pristupnim kodom.</p><p class="meta" style="margin:0">Kod upiši na vrhu rezultata ili <button type="button" class="ib pr-zatrazi">zatraži besplatan napredni pristup</button>.</p></div>`;
 // nakon svakog prikaza: kartica prijave na vrhu, napredni odjeljci zaključani, gumb ispisa postaje slanje na e-mail
 function prGate(){ try{document.body.classList.toggle("pr-blok",prUkljuceno())}catch(e){} if(!prUkljuceno()) return; const s=sheet; if(!s) return;
   const stari=document.getElementById("prBox"); if(stari) stari.remove();
@@ -4383,12 +4403,42 @@ function prGate(){ try{document.body.classList.toggle("pr-blok",prUkljuceno())}c
 async function prProvjeri(){ if(!prUkljuceno()||!prTok()||PRISTUP.provjereno) return; PRISTUP.provjereno=true;
   try{ await prApi("/provjera"); }catch(e){ if(e.status===401){ prPostavi(null); prRerender(); } } }
 sheet.addEventListener("click",async e=>{ const id=e.target.id;
-  if(id==="prPrijava"){ const k=(document.getElementById("prKod")||{}).value||"", p=document.getElementById("prPor"); if(p) p.textContent="Provjeravam kod…";
-    try{ const j=await prApi("/prijava",{body:{kod:k}}); prPostavi({token:j.token,istice:j.istice,oznaka:j.oznaka||null}); PRISTUP.provjereno=true; prRerender(); }
-    catch(err){ if(p) p.textContent=err.message||"Prijava nije uspjela."; } }
+  if(id==="prPrijava") await prAktiviraj((document.getElementById("prKod")||{}).value||"",document.getElementById("prPor"));
   if(id==="prOdjava"){ prPostavi(null); prRerender(); }
 });
+// obrazac i aktivacija rade i u zasebnom prozoru (izbornik, poveznica ?zahtjev=1), pa slušaju na cijelom dokumentu
+document.addEventListener("click",async e=>{ const t=e.target; if(!t||!t.closest) return; const id=t.id;
+  if(id==="prZatrazi"||t.closest(".pr-zatrazi")||id==="menuPristup"){ e.preventDefault(); if(prUkljuceno()) prDijalog(); return; }
+  if(id==="przPosalji") return prZahtjevPosalji();
+  if(id==="prPrijava2") return prAktiviraj((document.getElementById("prKod2")||{}).value||"",document.getElementById("prPor2"));
+  if(id==="prProd"){ const p=document.getElementById("prProdPor"); try{ await prApi("/produzenje",{body:{}}); if(p) p.textContent="Zahtjev za produženje je poslan. Javit ćemo ti se e-mailom."; t.disabled=true; }catch(err){ if(p) p.textContent=err.message||"Slanje nije uspjelo."; } }
+});
+// poveznice iz e-maila i s web stranice: ?pristup=KOD aktivira pristup, ?zahtjev=1 otvara obrazac; kod se odmah uklanja iz adrese
+function prUrl(){ if(!prUkljuceno()) return; let q; try{ q=new URLSearchParams(location.search); }catch(e){ return; }
+  const kod=q.get("pristup"), zah=q.get("zahtjev");
+  if(kod||zah){ q.delete("pristup"); q.delete("zahtjev"); try{ history.replaceState(null,"",location.pathname+(q.toString()?"?"+q:"")+location.hash); }catch(e){} }
+  if(kod){ prDijalog(); const k=document.getElementById("prKod2"); if(k) k.value=kod; prAktiviraj(kod,document.getElementById("prPor2")); }
+  else if(zah) prDijalog(); }
+setTimeout(()=>{ try{prUrl()}catch(e){console.error(e)} },0);
 sheet.addEventListener("keydown",e=>{ if(e.target.id==="prKod"&&e.key==="Enter"){ e.preventDefault(); const b=document.getElementById("prPrijava"); if(b) b.click(); } });
+// ================= SKUPNA STATISTIKA KORIŠTENJA =================
+// Uključuje se s FEATURES.analitika=true i adresom Workera. Šalje se samo vrsta događaja, županija i (za uklanjanje
+// ponovljenih događaja) nasumični identifikator ovog učitavanja i sažetak čestice; Worker ništa od toga ne sprema uz osobu.
+// Bez kolačića; identifikator preglednika (za povratne korisnike) samo uz privolu iz izbornika. Isti događaj za istu
+// česticu šalje se jednom po učitavanju aplikacije.
+const AN={sid:(()=>{try{return [...crypto.getRandomValues(new Uint8Array(12))].map(x=>x.toString(16).padStart(2,"0")).join("")}catch(e){return String(Math.random()).slice(2)}})(),posl:new Set()};
+const anUk=()=>!!(FEATURES.analitika&&PRISTUP.api);
+function anPrivola(){ try{ return localStorage.getItem("anPrivola")==="1"; }catch(e){ return false; } }
+function anVid(){ try{ let v=localStorage.getItem("anVid"); if(!v){ v=AN.sid+Date.now().toString(36); localStorage.setItem("anVid",v); } return v; }catch(e){ return null; } }
+function anH(s){ let h=0x811c9dc5; for(const c of String(s)){ h^=c.charCodeAt(0); h=Math.imul(h,0x01000193)>>>0; } return h.toString(36); }
+function anZup(){ try{ const c=window.__cur||{}; if(!c.region) return c.key?"Grad Zagreb":""; if(c.region==="krk") return "Primorsko-goranska"; const J=ptnJls(); const z=J&&J.red?String(J.red[1]||""):""; return z.replace(/\s+županija$/i,"").replace(/^Grad Zagreb$/,"Grad Zagreb"); }catch(e){ return ""; } }
+function an(e,obj){ if(!anUk()) return; const k=e+"|"+(obj||""); if(AN.posl.has(k)) return; AN.posl.add(k);
+  const b={e,s:AN.sid,o:obj?anH(obj):"",z:anZup()}; if(anPrivola()){ const v=anVid(); if(v){ b.v=v; b.privola=true; } }
+  const u=PRISTUP.api+"/dogadaj", body=JSON.stringify(b);
+  try{ if(window.__anHook) return window.__anHook(b); if(navigator.sendBeacon&&navigator.sendBeacon(u,new Blob([body],{type:"text/plain"}))) return; fetch(u,{method:"POST",body,keepalive:true,headers:{"content-type":"text/plain"}}).catch(()=>{}); }catch(err){} }
+document.addEventListener("change",e=>{ if(e.target&&e.target.id==="anPrivola"){ try{ if(e.target.checked) localStorage.setItem("anPrivola","1"); else { localStorage.removeItem("anPrivola"); localStorage.removeItem("anVid"); } }catch(err){} } });
+function anIzbornik(){ const m=document.getElementById("menuPristup"); if(m) m.hidden=!prUkljuceno(); for(const id of ["anRow","anNap"]){ const x=document.getElementById(id); if(x) x.hidden=!anUk(); } const c=document.getElementById("anPrivola"); if(c) c.checked=anPrivola(); }
+setTimeout(()=>{ try{ anIzbornik(); an("pokretanje"); }catch(e){} },0);
 // --- dosje na e-mail: PDF se slaže u pregledniku (html2canvas + jsPDF, odjeljak po odjeljak), s vodenim žigom primatelja
 function prLib(src,glob){ if(window[glob]) return Promise.resolve(); return new Promise((res,rej)=>{ const sc=document.createElement("script"); sc.src=src; sc.onload=()=>res(); sc.onerror=()=>rej(new Error("biblioteka za PDF se nije učitala")); document.head.appendChild(sc); }); }
 async function prPdf(R,email){
@@ -6611,6 +6661,7 @@ function finUpdate(){
     h+=frow(isk.length?"Procjena investicije (nepotpuna)":"Ukupna investicija",T.lo!==T.hi?`${fmt(T.lo)} – ${fmt(T.hi)} €`:`${fmt(T.base)} €`,{bold:true,f:(isk.length?"nije uključeno: "+isk.join(", ")+" · ":"")+"osnovni iznos "+fmt(T.base)+" €"});
     if(T.rez) h+=frow("S preporučenom rezervom",`do ${fmt(T.hi+T.rez)} €`,{f:"gornja granica + rezerva 15 % ("+fmt(T.rez)+" €)"});
     h+=`</div><p class="meta">Svaka stavka se računa jednom: naknade iz "Priključci i dozvole", gradnja iz "Procjene cijene gradnje", priprema iz "Pripreme terena", okućnica iz "Prijedloga okućnice", zemljište iz "Kupnje zemljišta". Raspon dolazi samo od procjena (gradnja ±10 %, plin); iznosi prema propisu i tvoji unosi su točni brojevi.</p>`;
+    if(T.base) try{ an("troskovi",window.__cur&&window.__cur.key); }catch(e){}
     g("totOut").innerHTML=h; if(g("totSum")) g("totSum").textContent=(T.lo!==T.hi?`${fmt(T.lo)} – ${fmt(T.hi)} €`:(T.base?fmt(T.base)+" €":"upiši cijenu"))+(T.base&&isk.length?" (bez: "+isk.join(", ")+")":"");
   }
   try{cardsUpdate()}catch(e){}
@@ -8381,7 +8432,7 @@ function triTeren(map,ll){ const te=map.terrain; if(!te) return null;
   try{ const v=te.getElevationForLngLatZoom(new maplibregl.LngLat(ll[0],ll[1]),map.transform.tileZoom); return isFinite(v)?v:null; }catch(e){ return null; } }
 function triPv(){ try{ const g=TRI.grp; if(g) g.traverse(x=>{ if(x.name==="pv") x.visible=!!V3D.pv; }); }catch(e){} }
 const TRI_K=new Set(["podest","zid","krov","streha","sljeme","atika","okvir","prozor","vrata","nadstresnica","obloga","garaza","garazna-vrata","pv"]);
-async function v3dOpen(){
+async function v3dOpen(){ try{ if(!V3D.zaDosje) an("3d",window.__cur&&window.__cur.key); }catch(e){}
   const D=v3dData(), box=document.getElementById("v3d"), note=document.getElementById("v3dNote");
   if(!D){alert("Najprije odaberi česticu na karti."); return;}
   box.hidden=false; if(isMobile()) setState("min");
@@ -8623,7 +8674,7 @@ sheet.addEventListener("scroll",()=>{const b=document.getElementById("izbTop"); 
 // odmah nakon slaganja prikaza: sklapanje pojašnjenja, kategorije izbornika i sažetak (prije vraćanja položaja čitanja)
 // promjena sadržaja iznad mjesta čitanja ne smije pomaknuti tekst koji se čita (Safari nema „scroll anchoring”)
 function keepPos(fn){ const A=sheet.scrollTop>0?scrollAnchor():null; fn(); if(A) scrollRestore(A); }
-function sheetPost(){ try{prGate(); prProvjeri()}catch(e){console.error(e)} try{scenLinkApply()}catch(e){console.error(e)} try{srchNote()}catch(e){} try{ptnUpdate()}catch(e){console.error(e)} try{viseInfo()}catch(e){} try{izbWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){} try{promSoon()}catch(e){} }
+function sheetPost(){ try{prGate(); prProvjeri()}catch(e){console.error(e)} try{ const k=window.__cur&&window.__cur.key; if(k) an("cestica",k); anIzbornik(); }catch(e){} try{scenLinkApply()}catch(e){console.error(e)} try{srchNote()}catch(e){} try{ptnUpdate()}catch(e){console.error(e)} try{viseInfo()}catch(e){} try{izbWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){} try{promSoon()}catch(e){} }
 // položaj čitanja: zadnji odjeljak čiji je vrh iznad vrha panela i koliko je pomaknut; poslije ponovnog prikaza isti odjeljak
 // vraća se na isto mjesto, i kad se visina sadržaja iznad promijeni (npr. stigne uložak ili se sklope pojašnjenja)
 function scrollAnchor(){
@@ -9222,7 +9273,7 @@ function sazetakUpdate(){
    else if(T&&sheet.querySelector('details[data-k="ptn"]'))
      rows.push({src:["ppv","ptn"],st:T.S.zad||pp?"info":"?",q:"Koliko vrijedi zemljište?",a:tl?tl+(T.S.zad?" (medijan: cijeli grad ili općina, ne ova čestica)":""):"za ovaj grad ili općinu medijan nije objavljen",go:'details[data-k="ptn"]'});}
   window.__sazRows=rows;
-  let presH=""; try{ const Pz=presudaIzracun(presudaUlaz(rows,d)); window.__presuda=Pz; presH=presudaHtml(Pz); }catch(e){ console.error(e); }
+  let presH=""; try{ const Pz=presudaIzracun(presudaUlaz(rows,d)); window.__presuda=Pz; presH=presudaHtml(Pz); an("ocjena",window.__cur&&window.__cur.key); }catch(e){ console.error(e); }
   const C=[...PZREG.items.values()].filter(x=>x.raz==="C").length, ic={ok:"✓",warn:"!",no:"✕","?":"?",info:"i"};
   const srcOf=r=>{ if(r.srcTxt) return r.srcTxt; const its=(r.src||[]).map(id=>PZREG.items.get(id)).filter(Boolean); if(!its.length) return "";
     const seen=new Set(); return its.map(it=>{const t=(it.izvor||it.razlog||"").replace(/\s+/g," ").slice(0,90); const k=t+it.raz; if(seen.has(k)) return null; seen.add(k); return `${t}${it.datum?", "+it.datum.split("-").reverse().join(". ")+".":""} (${it.raz})`;}).filter(Boolean).join(" · "); };
@@ -9376,7 +9427,7 @@ function dosjeKontrola(){
 }
 // odjeljci koji imaju vlastito poglavlje u dosjeu (ne ponavljaju se u poglavlju u kojem stoje na zaslonu)
 const RPT_VLASTITA="[data-k=isk],[data-k=osun],[data-k=pogled],[data-k=ene],[data-k=kis],[data-k=vjet],[data-k=ptn],[data-k=povijest],[data-k=vrij]";
-function buildReport(){
+function buildReport(){ try{ an("pdf",(window.__cur&&window.__cur.key||"")+"|"+RPT.mode+"|"+Date.now()); }catch(e){}
   let R=document.getElementById("report"); if(R) R.remove(); R=document.createElement("div"); R.id="report"; R.className="rpt";
   const D=curData()||{}, cur=window.__cur||{}, ces=(rptQ(".parcel")||{}).textContent||"", ko=((rptQ(".eyebrow")||{}).textContent||"").replace(/^.*?k\.o\.\s*/i,"").trim();
   const dat=new Date().toLocaleDateString("hr-HR",{day:"numeric",month:"long",year:"numeric"}), ll=window.__lastLL;
@@ -10400,7 +10451,7 @@ async function adrTrazi(q,reg){
 function srchNote(){ const n=SRCH.note, d=curData(); if(!n||!d||!d.ll||!SRCH.ll||Math.abs(d.ll.lat-SRCH.ll.lat)>1e-9||Math.abs(d.ll.lng-SRCH.ll.lng)>1e-9) return;
   if(document.getElementById("srchNote")) return; const b=document.createElement("p"); b.className=n.cls||"flag"; b.id="srchNote"; b.innerHTML=n.txt; sheet.insertBefore(b,sheet.firstChild); }
 const KRK_MJESTA=/\b(KRK|MALINSKA|BASKA|PUNAT|OMISALJ|NJIVICE|VRBNIK|DOBRINJ|SILO|KORNIC|PINEZICI|KOSTERNA|BRZAC|LINARDICI|GARICA|SVETI VID|KLIMNO|SOLINE|RISIKA|STARA BASKA|DRAGA BASCANSKA|JURANDVOR|BATOMALJ|CIZICI|NENADICI|LUKEZIC|MILOHNICI)\b/;
-async function search(){
+async function search(){ try{ an("pretraga",String(Date.now())); }catch(e){}
   const q=document.getElementById("q").value.trim(); if(!q) return;
   const pq=parcelQuery(q);
   if(pq){try{await searchParcel(pq)}catch(e){sheet.innerHTML='<p class="err">Pretraga čestice nije uspjela: '+esc(e.message)+'</p>'} return;}

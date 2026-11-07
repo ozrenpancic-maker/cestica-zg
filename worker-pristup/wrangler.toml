@@ -1,5 +1,6 @@
-# Čestica HR: pristupni kodovi i slanje dosjea na e-mail. Tajne (TOKEN_SECRET, CODE_PEPPER, ADMIN_SECRET, BREVO_KEY)
-# NE upisuju se ovdje, nego naredbom `npx wrangler secret put IME` (vidi docs/pristup-postavljanje.md).
+# Čestica HR: zahtjevi za napredni pristup, kodovi, dosje na e-mail, administracija i skupna statistika.
+# Tajne (TOKEN_SECRET, CODE_PEPPER, ADMIN_SECRET, ADMIN_TOTP, BREVO_KEY, po želji TURNSTILE_SECRET) NE upisuju se ovdje,
+# nego naredbom `npx wrangler secret put IME` (vidi docs/pristup-postavljanje.md).
 name = "cesticahr-pristup"
 main = "src/index.js"
 compatibility_date = "2026-08-01"
@@ -10,7 +11,15 @@ MAIL_FROM = "dosje@cesticahr.com"      # adresa pošiljatelja (domena potvrđena
 MAIL_REPLY = "info@cesticahr.com"      # odgovori korisnika idu ovamo
 IZVJESTAJA_DNEVNO = "10"               # najviše slanja dosjea po kodu na dan
 TOKEN_EPOCH = "1"                      # promjena broja odjavljuje sve korisnike
+ADMIN_EMAIL = "info@cesticahr.com"     # obavijesti o novim zahtjevima i produženjima
+APP_URL = "https://ozrenpancic-maker.github.io/cestica-zg/"   # poveznica za aktivaciju u e-mailu (kasnije https://app.cesticahr.com/)
+TRAJANJE_DANA = "30"                   # zadano trajanje pristupa; mijenja se i u administraciji (Postavke)
 
-[[kv_namespaces]]
-binding = "KODOVI"
-id = "UPIŠI_ID_NAKON_wrangler_kv_namespace_create"
+[[d1_databases]]
+binding = "DB"
+database_name = "cesticahr"
+database_id = "UPIŠI_ID_NAKON_wrangler_d1_create"
+migrations_dir = "migrations"
+
+[triggers]
+crons = ["17 5 * * *"]                 # svaki dan oko 6:17 po našem vremenu: podsjetnici i brisanje starih podataka
