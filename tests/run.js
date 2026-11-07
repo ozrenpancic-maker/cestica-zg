@@ -15,10 +15,10 @@ const ok=(c,msg)=>{ if(c){pass++} else {fail++; fails.push(msg)} };
 const near=(a,b,eps=0.01)=>Math.abs(a-b)<=eps;
 const num=s=>{const m=String(s).replace(/ /g," ").match(/-?[\d.]+(,\d+)?/); return m?parseFloat(m[0].replace(/\./g,"").replace(",",".")):NaN};
 
-function boot(src){
+function boot(src,url){
   const vc=new VirtualConsole(); const errs=[];
   vc.on("jsdomError",e=>{errs.push(String(e.message||e)); if(process.env.DBG) console.log("JSERR",e.detail&&e.detail.stack||e.stack)}); vc.on("error",e=>errs.push(String(e)));
-  const dom=new JSDOM(src||html,{runScripts:"dangerously",pretendToBeVisual:true,url:"https://example.org/cestica-zg/",virtualConsole:vc,
+  const dom=new JSDOM(src||html,{runScripts:"dangerously",pretendToBeVisual:true,url:url||"https://example.org/cestica-zg/",virtualConsole:vc,
     beforeParse(w){ w.fetch=()=>Promise.reject(new Error("bez mreže u testu")); w.print=()=>{}; w.scrollTo=()=>{}; if(!w.TextDecoder) w.TextDecoder=require("util").TextDecoder;
       w.HTMLElement.prototype.scrollIntoView=function(){};
       // jsdom nema canvas: Leaflet crta na lažni kontekst koji prihvaća sve pozive
@@ -3192,6 +3192,16 @@ async function pristupTests(){
   ok(errs.length===0,"bez JS grešaka (pristup): "+errs.join(" | "));
 }
 
+async function linkCTests(){
+  console.log("\n# dijeljeni link ?c=");
+  const {w,errs}=boot(null,"https://example.org/cestica-zg/?c=45.044662,14.615334"); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  await tick(500);
+  let pwa=false; try{ pwa=!!E("PWA")&&typeof E("isOffline")==="function"; }catch(e){}
+  const c=E("map.getCenter()");
+  ok(pwa&&Math.abs(c.lat-45.044662)<1e-4&&Math.abs(c.lng-14.615334)<1e-4&&E("map.getZoom()")===18,"Link ?c=: skripta se učita do kraja i karta se centrira na točku");
+  ok(!errs.some(e=>/before initialization/.test(e)),"Link ?c=: bez greške »before initialization«: "+errs.join(" | "));
+}
+
 async function presudaTests(){
   console.log("\n# presuda: ocjena čestice");
   const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
@@ -3223,7 +3233,7 @@ async function presudaTests(){
   ok(errs.length===0,"bez JS grešaka (presuda): "+errs.join(" | "));
 }
 
-netTests().then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(()=>{
+netTests().then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
