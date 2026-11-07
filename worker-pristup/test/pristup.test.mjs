@@ -138,6 +138,17 @@ ok(brevo.calls.slice(nD).some((c) => c.b.to[0].email === "arhitekt@primjer.hr" &
 ok(!(await m.db.prepare("SELECT id FROM zahtjev WHERE email='x0@primjer.hr'").first()), "Dnevni zadatak: nepotvrđeni zahtjevi stariji od 7 dana brišu se");
 // brisanje osobnih podataka na zahtjev
 await adm(m, C, "radnja", { id: idO, radnja: "obrisi" }); ok(!(await m.db.prepare("SELECT id FROM zahtjev WHERE id=?").bind(idO).first()), "Brisanje osobnih podataka na zahtjev korisnika");
+// prijava poveznicom s e-maila (bez lozinke)
+{ const nP = brevo.calls.length; const rp = await m.dispatchFetch(W + "/admin/poveznica", { method: "POST", headers: { "content-type": "application/json", "x-chr-admin": "1", origin: W, "cf-connecting-ip": "4.4.4.4" }, body: "{}" });
+  const mp = brevo.calls[nP]; const lnk = linkIz(mp && mp.b.htmlContent, /href="(https:\/\/p\.example\/admin\/ulaz\?t=[^"]+)"/);
+  ok(rp.status === 200 && mp && mp.b.to[0].email === "info@cesticahr.com" && lnk, "Prijava poveznicom: poveznica stiže samo na administratorski e-mail");
+  const u1 = await m.dispatchFetch(lnk, { redirect: "manual" }), ck = (u1.headers.get("set-cookie") || "").split(";")[0];
+  ok(u1.status === 303 && u1.headers.get("location") === "/admin" && /^__Host-/.test(ck) && (await adm(m, ck, "zahtjevi")).status === 200, "Klik na poveznicu prijavljuje u administraciju");
+  ok((await m.dispatchFetch(lnk, { redirect: "manual" })).status === 400, "Poveznica vrijedi samo jednom");
+  ok((await m.dispatchFetch(W + "/admin/ulaz?t=krivo", { redirect: "manual" })).status === 400, "Kriva poveznica ne prijavljuje");
+  ok((await m.dispatchFetch(W + "/admin/poveznica", { method: "POST", headers: { "content-type": "application/json", origin: "https://zli.example" }, body: "{}" })).status === 403, "Tuđa stranica ne može tražiti poveznicu");
+  for (let i = 0; i < 3; i++) await m.dispatchFetch(W + "/admin/poveznica", { method: "POST", headers: { "content-type": "application/json", "x-chr-admin": "1", origin: W, "cf-connecting-ip": "3.3.3.3" }, body: "{}" });
+  ok((await m.dispatchFetch(W + "/admin/poveznica", { method: "POST", headers: { "content-type": "application/json", "x-chr-admin": "1", origin: W, "cf-connecting-ip": "3.3.3.3" }, body: "{}" })).status === 429, "Najviše 3 poveznice u 15 minuta"); }
 // odjava
 await adm(m, C, "odjava", {}); ok((await adm(m, C, "zahtjevi")).status === 401, "Odjava poništava sesiju");
 // greška slanja ne ruši sustav
