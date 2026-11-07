@@ -8287,7 +8287,7 @@ async function v3dOpen(){
   try{const bb=turf.bbox(turf.buffer(D.parcel,V3D_OKVIR_M/1000,{units:"kilometers"})); m.fitBounds([[bb[0],bb[1]],[bb[2],bb[3]]],{padding:20,duration:0,maxZoom:V3D_MAXZ}); m.setZoom(Math.min(V3D_MAXZ,m.getZoom()+0.6)); m.setPitch(V3D_NAGIB); m.setBearing(-20);}catch(e){}
   let gotov=false; const fin=()=>{ if(gotov) return; gotov=true; note.textContent="Teren: model visina oko 30 m (grub, C). Kuća: pojednostavljeni model iz simulatora (visina do vijenca, krov sa strehom, prozori i ulaz prema cesti, sjena za sunce s jugozapada). Granice: katastar DGU. Satelitska snimka: Esri. Prikaz je ilustracija, ne projekt."; if(V3D.tri) note.textContent=note.textContent.replace("Kuća: pojednostavljeni model iz simulatora","Kuća: 3D model iz simulatora s pravim kosim krovom, strehom, olucima, prozorima i sjenama");
     if(D.okolN) note.textContent+=" "+zg3dNapomena(D.okolN);
-    try{V3D.snap.set(D.key,m.getCanvas().toDataURL("image/jpeg",0.86));}catch(e){} };
+    if(!V3D.zaDosje) v3dSnimi(m,D.key); };
   m.once("load",()=>{try{const at=m.getContainer().querySelector(".maplibregl-ctrl-attrib"); if(at&&isMobile()) at.classList.remove("maplibregl-compact-show");}catch(e){}}); // na mobitelu izvori sklopljeni (ikona ⓘ), da ne prekrivaju model
   // realističniji model kuće (three.js); dok se ne učita ili bez njega ostaje model od kvadara
   if(D.model&&!(window.maplibregl&&maplibregl.__test)) triLib().then(()=>new Promise(r=>{ if(m.style&&m.style._loaded) r(); else m.once("style.load",r); })).then(()=>{ { if(V3D.map!==m) return; try{ m.addLayer(triSloj(D.model));
@@ -8295,8 +8295,18 @@ async function v3dOpen(){
       for(const id of ["kuca","kuca-lo","kuca-hi","kuca-det","pv"]) if(m.getLayer(id)) m.setFilter(id,["all",m.getFilter(id)||true,bez]);
       V3D.tri=true; note.textContent=note.textContent.replace("Kuća: pojednostavljeni model iz simulatora","Kuća: 3D model iz simulatora s pravim kosim krovom, strehom, olucima, prozorima i sjenama"); m.triggerRepaint(); }catch(e){ console.error(e); V3D.tri=false; } } }).catch(()=>{ V3D.tri=false; });
   m.once("idle",fin); setTimeout(fin,8000); // ako neki sloj ne odgovori, slika se ipak spremi nakon 8 s
+  if(V3D.zaDosje){ v3dCekajSnimi(m,D); return; } // za dosje: bez okretanja, slika tek kad su podloga, teren i model učitani
   V3D.rot=true; document.getElementById("v3dRot").textContent="Zaustavi"; v3dSpin();
 }
+// snimka 3D platna na svijetlu pozadinu: gdje podloga nije učitana ili iznad obzora platno je prozirno, a JPEG bi to pretvorio u crno
+function v3dSnimi(m,key,nepotpuno){ try{ const src=m.getCanvas(); const c=document.createElement("canvas"); c.width=src.width||1; c.height=src.height||1;
+  let x=null; try{ x=c.getContext("2d"); }catch(e){}
+  if(x&&src.width&&src.height){ x.fillStyle="#d7e3ea"; x.fillRect(0,0,c.width,c.height); x.drawImage(src,0,0); V3D.snap.set(key,c.toDataURL("image/jpeg",0.86)); } else V3D.snap.set(key,src.toDataURL("image/jpeg",0.86)); V3D.snapNep=V3D.snapNep||{}; V3D.snapNep[key]=!!nepotpuno; return true; }catch(e){ return false; } }
+// za dosje: čeka da karta završi učitavanje (satelitska podloga, teren, 3D model kuće) i da miruje, najviše 25 s
+async function v3dCekajSnimi(m,D){ const t0=Date.now(), MAX=25000, spremno=()=>{ try{ return m.loaded()&&m.areTilesLoaded()&&(!D.model||V3D.tri||Date.now()-t0>12000); }catch(e){ return false; } };
+  while(Date.now()-t0<MAX&&V3D.map===m){ if(spremno()){ await new Promise(r=>{ let ok=false; const f=()=>{ if(!ok){ok=true; r();} }; m.once("idle",f); m.triggerRepaint(); setTimeout(f,1500); }); if(spremno()) break; } await new Promise(r=>setTimeout(r,250)); }
+  if(V3D.map!==m) return; await new Promise(r=>{ m.once("render",r); m.triggerRepaint(); setTimeout(r,600); });
+  v3dSnimi(m,D.key,!spremno()); }
 // ================= 3D PROLET KAO VIDEO (kamera kruži, dan prelazi u večer, spuštanje prema kući) =================
 // Snima se 3D pogled (MapLibre) u pozadinsko 2D platno s natpisom, a platno se snima MediaRecorderom (MP4 gdje ga preglednik
 // podržava, inače WebM). Položaj Sunca za 21. lipnja (NOAA): svjetlo na modelu i sjena kuće pomiču se od jutra do večeri.
@@ -9018,8 +9028,9 @@ async function dosjePripremi(){
   const key=window.__cur&&window.__cur.key;
   if(TL.center&&key&&document.getElementById("v3dBtn")){ const staro=V3D.snap.get(key); V3D.snap.delete(key); // uvijek svježa slika: s okućnicom, bazenom i priključcima kakvi su sada
     dosjeProg("snimam 3D pogled…");
-    try{ await Promise.race([v3dOpen(),new Promise(r=>setTimeout(r,9000))]); if(V3D.map) await new Promise(r=>{ const t0=Date.now(), f=()=>{ if(V3D.snap.has(key)||Date.now()-t0>10000) r(); else setTimeout(f,300); }; f(); }); }catch(e){}
-    try{ v3dClose(); }catch(e){}
+    V3D.zaDosje=true;
+    try{ await Promise.race([v3dOpen(),new Promise(r=>setTimeout(r,9000))]); if(V3D.map) await new Promise(r=>{ const t0=Date.now(), f=()=>{ if(V3D.snap.has(key)||Date.now()-t0>30000) r(); else setTimeout(f,300); }; f(); }); }catch(e){}
+    V3D.zaDosje=false; try{ v3dClose(); }catch(e){}
     if(!V3D.snap.has(key)&&staro) V3D.snap.set(key,staro);
   }
   try{ await Promise.race([qrLib(),new Promise(r=>setTimeout(r,4000))]); }catch(e){}
@@ -9093,7 +9104,7 @@ function buildReport(){
   const prazno=e=>e&&e.matches&&(e.matches('details[data-k="scen"],details[data-k="proj"]')||(e.matches('details[data-k="zk"]')&&!e.querySelector(".zkoss,#zkOut *"))||(e.matches("details")&&/upiši cijenu|nije uneseno|nema spremljenih/.test(((e.querySelector(":scope>summary>b")||{}).textContent||"")))||(e.matches("details[data-k]")&&/Otvori odjeljak|Postavi kuću u simulatoru|Učitavam|Dohvaćam|Prvo smjesti/.test((e.querySelector(":scope>.acc-body")||e).textContent)&&!e.querySelector("table")));
   for(const [t,els,brk] of parts){ const list=els.filter(e=>e==="3D"?V3D.snap.has(cur.key):e&&!prazno(e)); if(!list.length) continue; no++;
     const sec=document.createElement("section"); sec.className="rpt-sec"+(brk?" rpt-brk":""); sec.innerHTML=`<div class="rpt-h"><span>${String(no).padStart(2,"0")}</span><h2>${esc(t)}</h2></div>`;
-    for(const e of list){ if(e==="3D"){const im=V3D.snap.get(cur.key); if(im){const f=document.createElement("figure"); f.className="rpt-3d"; f.innerHTML=`<h4><span>3D pogled</span></h4><img alt="3D pogled na česticu" src="${im}"><figcaption>Satelitska snimka (Esri) s modelom terena oko 30 m, granice čestica DGU, kuća iz simulatora${(curData()&&(prikPrijedlog(curData())||{}).stanje==="ok")?", najbliži evidentirani vodovi i ravne trase priključaka (DGU, katastar infrastrukture; ilustrativno)":""}. Ilustracija, ne projekt.</figcaption>`; sec.appendChild(f);} continue;}
+    for(const e of list){ if(e==="3D"){const im=V3D.snap.get(cur.key); if(im){const f=document.createElement("figure"); f.className="rpt-3d"; f.innerHTML=`<h4><span>3D pogled</span></h4><img alt="3D pogled na česticu" src="${im}"><figcaption>Satelitska snimka (Esri) s modelom terena oko 30 m, granice čestica DGU, kuća iz simulatora${(curData()&&(prikPrijedlog(curData())||{}).stanje==="ok")?", najbliži evidentirani vodovi i ravne trase priključaka (DGU, katastar infrastrukture; ilustrativno)":""}. Ilustracija, ne projekt.${V3D.snapNep&&V3D.snapNep[cur.key]?" Satelitska podloga ili teren nisu se potpuno učitali na vrijeme, pa dio slike može biti prazan.":""}</figcaption>`; sec.appendChild(f);} continue;}
       if(e==="LEGENDA"){const l=document.createElement("div"); l.className="rpt-lgd"; l.innerHTML=`<h4><span>Legenda boja</span></h4>`+legendaHtml({skica:true}); sec.appendChild(l); continue;} sec.appendChild(rptClean(e)); }
     R.appendChild(sec); }
   document.body.appendChild(R); return R;
