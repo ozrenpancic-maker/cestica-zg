@@ -3252,6 +3252,9 @@ async function pouzdanostTests(){
   {const Z=E("zkKlasa")([{ulozak:"108773",plomba:false,A2:{upisi:[{rb:"3.1",tekst:"ZABILJEŽBA, da za evidentiranje u katastru kuće i garaže nije priložena uporabna dozvola"}]},C:{upisa:1,grupe:[{upisi:[{rb:"1.1",tekst:"UKNJIŽBA, OSOBNA SLUŽNOST - PRAVO PLODOUŽIVANJA, za korist: [OIB skriven]"}]}]}}]);
    ok(Z.n("teret")===1&&Z.n("dokumentacija")===1&&Z.n("zapreka")===0,"ZK: plodouživanje = upisani teret; zabilježba o uporabnoj dozvoli = zabilježba o dokumentaciji (ne zapreka)");
    const dok=Z.stavke.find(x=>x.vrsta==="dokumentacija"); ok(/Ne znači da je zgrada nezakonita/.test(dok.nap),"ZK: zabilježba o nepriloženoj uporabnoj dozvoli ne proglašava zgradu nezakonitom");
+   const Zs=E("zkKlasa")([{C:{grupe:[{upisi:[{tekst:"UKNJIŽBA, OSOBNA SLUŽNOST - PRAVO PLODOUŽIVANJA, SPORAZUM O OSNIVANJU PRAVA SLUŽNOSTI DOŽIVOTNOG PLODOUŽIVANJA 20.09.2025, za korist:"}]}]}}]);
+   ok(Zs.n("zapreka")===0&&Zs.n("teret")===1&&Zs.stavke[0].naziv.startsWith("Pravo plodouživanja"),"ZK (stvarni upis 1551/4): »SPORAZUM o osnivanju« plodouživanja je teret, ne spor ni zapreka");
+   const Zsp=E("zkKlasa")([{C:{grupe:[{upisi:[{tekst:"ZABILJEŽBA SPORA radi utvrđenja prava vlasništva"}]}]}}]); ok(Zsp.n("zapreka")===1,"ZK: zabilježba spora je zapreka ili postupak");
    const Zz=E("zkKlasa")([{plomba:true,C:{grupe:[{upisi:[{tekst:"ZABILJEŽBA OVRHE radi naplate"}]}]}}]); ok(Zz.n("zapreka")===1&&Zz.plomba,"ZK: ovrha je upisana zapreka; plomba prepoznata");
    const I=E("presudaIzracun"), base={namjena:"info",pristup:"info",uvjeti:"info",infra:"info",nagib:5,ogr:"warn",inv:{lo:1,hi:2},invIskljuceno:[]};
    const P1=I({...base,zk:Z}); ok(P1.status==="žuta"&&P1.kriticne.length>=2&&P1.pokazatelji.find(x=>x.id==="prav").st==="žuta"&&P1.kriticne.some(x=>/plodouživanja/.test(x.tekst)),"ZK teret: kritične napomene vidljive, pravna sigurnost žuta, ocjena ne može biti zelena (prije: 83/100 zelena)");

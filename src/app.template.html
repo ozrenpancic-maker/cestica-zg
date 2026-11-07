@@ -2065,7 +2065,8 @@ const ZKU=new Map();
 const ZK_VRSTE={zapreka:"upisana zapreka ili postupak",teret:"upisani teret",dokumentacija:"zabilježba o dokumentaciji",provjera:"okolnost za provjeru"};
 function zkRazvrstaj(tekst,list){
   const t=String(tekst||"").replace(/\s+/g," ").trim(), l=t.toLowerCase(), r=(vrsta,naziv,nap)=>({vrsta,naziv,list,tekst:t.slice(0,400),nap:nap||null});
-  if(/zabran\w* (otuđ|opterećen)|ovrh|stečaj|\bspor\w*|tužb|predbilježb|zabilježba (pokretanja|postupka)/.test(l)) return r("zapreka","Zapreka raspolaganju ili postupak u tijeku","Prije kupnje treba ga riješiti ili brisati; provjeri s odvjetnikom.");
+  // „spor” samo kao riječ (spor, spora, sporu…), ne „sporazum” iz pravnog osnova upisa
+  if(/zabran\w* (otuđ|opterećen)|ovrh|stečaj|\bspor(a|u|om|ova)?\b|tužb|predbilježb|zabilježba (pokretanja|postupka)/.test(l)) return r("zapreka","Zapreka raspolaganju ili postupak u tijeku","Prije kupnje treba ga riješiti ili brisati; provjeri s odvjetnikom.");
   if(/uporabn\w* dozvol|građevinsk\w* dozvol|izvedenom stanju|bez (građevinske )?dozvole|nije priložen/.test(l)) return r("dokumentacija","Zabilježba o dokumentaciji zgrade","Ne znači da je zgrada nezakonita: provjeri postoji li uporabna dozvola, rješenje o izvedenom stanju ili drugi akt o legalnosti.");
   if(/hipotek|založn/.test(l)) return r("teret","Založno pravo (hipoteka)","Prije kupnje treba brisati ili riješiti otplatom.");
   if(/plodouživ/.test(l)) return r("teret","Pravo plodouživanja (osobna služnost)","Nositelj prava smije koristiti nekretninu; kupac je preuzima s tim pravom dok se ono ne briše.");
@@ -3277,8 +3278,9 @@ function krkKdVolSync(M){
   if(n) n.textContent=`Obujam iz modela kuće u simulatoru: ${O.et} ${O.et===1?"etaža":"etaže"} × ${fmt(O.A)} m² × ${String(O.fh).replace(".",",")} m${O.gar?" + garaža":""}${O.kr?" + prostor pod kosim krovom viši od 1,2 m ("+fmt(O.kr)+" m³)":""} = ${fmt(O.v)} m³ (Pravilnik o načinu utvrđivanja obujma, NN 15/2019; pretpostavke: krov na stropu zadnje etaže, nadozid potkrovlja 1,2 m). Ako ga promijeniš ručno, simulator ga više ne mijenja. Službeno se obračunava obujam iz projekta (čl. 4.).`;
 }
 sheet.addEventListener("input",e=>{ if(e.target.id==="krkKdVol") e.target.dataset.manual="1"; });
+function zgPrekRefresh(){ const pe=sheet.querySelector(".prek"), d=window.__lastData; if(!pe||!d||KRK_CUR||!d.checks) return; const h=zgPrekHtml(d); if(pe.outerHTML!==h) keepPos(()=>{pe.outerHTML=h;}); }
 function zgSync(){
-  const M=zgradaModel(); window.__zgrada=M; try{krkKdVolSync(M)}catch(e){} try{skicaUpdate()}catch(e){} const a=document.getElementById("bArea"); zgLinkNote(); if(!M||!a) return;
+  const M=zgradaModel(); window.__zgrada=M; try{zgPrekRefresh()}catch(e){} try{krkKdVolSync(M)}catch(e){} try{skicaUpdate()}catch(e){} const a=document.getElementById("bArea"); zgLinkNote(); if(!M||!a) return;
   if(a.dataset.rucno==="1") return;
   const f=document.getElementById("bFloors"), b=document.getElementById("bBase");
   if(+a.value===Math.round(M.gbpN)&&(!f||f.value===M.flBuild)&&(!b||b.checked===M.podrum)){
