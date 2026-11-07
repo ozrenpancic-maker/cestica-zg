@@ -6,13 +6,13 @@ main = "src/index.js"
 compatibility_date = "2026-08-01"
 
 [vars]
-ALLOWED_ORIGINS = "https://app.cesticahr.com,https://ozrenpancic-maker.github.io,http://localhost:8000"
+ALLOWED_ORIGINS = "https://app.cesticahr.com,https://cesticahr.com,https://www.cesticahr.com,https://ozrenpancic-maker.github.io,http://localhost:8000"
 MAIL_FROM = "dosje@cesticahr.com"      # adresa pošiljatelja (domena potvrđena u Brevu)
 MAIL_REPLY = "info@cesticahr.com"      # odgovori korisnika idu ovamo
 IZVJESTAJA_DNEVNO = "10"               # najviše slanja dosjea po kodu na dan
 TOKEN_EPOCH = "1"                      # promjena broja odjavljuje sve korisnike
 ADMIN_EMAIL = "info@cesticahr.com"     # obavijesti o novim zahtjevima i produženjima
-APP_URL = "https://ozrenpancic-maker.github.io/cestica-zg/"   # poveznica za aktivaciju u e-mailu (kasnije https://app.cesticahr.com/)
+APP_URL = "https://app.cesticahr.com/"   # poveznica za aktivaciju u e-mailu
 TRAJANJE_DANA = "30"                   # zadano trajanje pristupa; mijenja se i u administraciji (Postavke)
 
 [[d1_databases]]
