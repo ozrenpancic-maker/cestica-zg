@@ -121,6 +121,13 @@ await call(m, "/dogadaj", { method: "POST", body: { e: "pokretanje", s: "s3", v:
 ok(!(await m.db.prepare("SELECT COUNT(*) n FROM posjetitelj").first()).n, "Bez privole identifikator preglednika se ne sprema");
 await call(m, "/dogadaj", { method: "POST", body: { e: "pokretanje", s: "s4", v: "preglednik-1", privola: true } });
 ok((await m.db.prepare("SELECT COUNT(*) n FROM posjetitelj").first()).n === 1, "Uz privolu sprema se samo sažetak identifikatora po danu");
+for (const f of ["simulator", "simulator", "troskovi", "hakiranje"]) await call(m, "/dogadaj", { method: "POST", body: { e: "zakljucano", s: "sz", o: f, f } });
+for (const sid of ["a1", "a2", "a3", "a4"]) await call(m, "/dogadaj", { method: "POST", body: { e: "slobodno", s: sid } });
+await call(m, "/dogadaj", { method: "POST", body: { e: "zahtjev_obrazac", s: "a1" } });
+const PG2 = await (await adm(m, C, "pregled?r=30")).json();
+ok(PG2.dogadaji.zakljucano === 2 && PG2.zakljucano.length === 2 && PG2.zakljucano.some((x) => x.dim === "simulator" && x.n === 1) && !PG2.zakljucano.some((x) => x.dim === "hakiranje"), "Zaključane funkcije: interes po funkciji, bez ponavljanja i bez nepoznatih naziva");
+ok(PG2.dogadaji.slobodno === 4 && PG2.konverzijaSlob === 25, "Konverzija besplatne provjere: 1 zahtjev na 4 besplatna pregleda = 25 %");
+ok(typeof PG2.koristeNapredno === "number" && typeof PG2.odobreniUkupno === "number", "Pokazatelj: odobreni korisnici koji koriste napredne funkcije");
 ok(PG.zahtjeviUkupno >= 1 && PG.naCekanju >= 0 && typeof PG.aktivni7 === "number" && PG.razdoblje === 7, "Pregled: zahtjevi, na čekanju, aktivni korisnici za razdoblje 7 dana");
 ok((await (await adm(m, C, "pregled?r=sve")).json()).razdoblje === "ukupno", "Pregled za razdoblje »ukupno«");
 // dnevni zadatak: podsjetnik i rokovi čuvanja

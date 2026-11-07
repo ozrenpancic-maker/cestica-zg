@@ -82,8 +82,15 @@ U `src/app.template.html`: `PRISTUP.api="https://pristup.cesticahr.com"`, `FEATU
 - `cd worker-pristup && npm install && npm test`: Miniflare (workerd + D1), lažni Brevo, 58 provjera.
 - `node tests/run.js`: obrazac, aktivacija poveznicom, neograničen pristup, produženje, statistika u aplikaciji (Worker zamijenjen u testu).
 
+## Besplatni i napredni dio (novi model)
+
+- **Bez koda** (kad je `FEATURES.pristup` uključen): pretraga i odabir čestice, granice, površina, duljine granica (informativno, oznake na karti) i građevinski dio čestice u m² i postotku, na karti zeleno (građevinski) i crveno (izvan). Zagreb: prema planiranoj namjeni GUP-a; Krk: županijski sloj građevinskih područja; ostatak Hrvatske i nepotpun sloj: „Nije moguće pouzdano utvrditi”.
+- **Sve ostalo** (ocjena, uvjeti, pristup, mreže, ZK, simulator, 3D, okućnica, troškovi, materijal, montažne kuće, energija, PDF) samo uz odobren pristup. Pokušaj otvaranja prikazuje „Otključaj naprednu analizu zemljišta” s gumbima „Zatraži besplatan napredni pristup” i „Već imam pristupni kod”.
+- Za zaključanog korisnika aplikacija **ne dohvaća i ne računa** napredne podatke (nakon čestice i namjene ne ide ni jedan upit za nagib, okolinu, mreže, ZK, 3D), pa ih nema na stranici ni u memoriji; uklanjanje elementa ništa ne otkriva. Slojevi karte s vodovima, sjenama i skenerom su zaključani.
+- Statistika: besplatni pregledi, pokušaji zaključanih funkcija po funkciji, konverzija (zahtjevi iz aplikacije ÷ učitavanja s besplatnim pregledom), odobreni koji koriste napredni pristup.
+
 ## Otvoreno
 
-- Zaključavanje u aplikaciji je u pregledniku: kod naprednih funkcija i dalje je u javnoj stranici. Zaštita na poslužitelju traži premještanje naprednog dijela iza Workera (vidi zadatak o novom modelu pristupa).
+- **Programski kod** naprednih funkcija i dalje je u javnoj stranici (GitHub Pages), a javni podaci dolaze izravno iz javnih servisa. Tko zna programirati, može u konzoli preglednika isključiti zaključavanje i sam dohvatiti javne podatke. Pravu zaštitu na poslužitelju daje tek faza 2: napredni dio aplikacije kao zaseban paket koji Worker šalje samo uz valjan token (i privatni repozitorij).
 - Posjeti web stranice broje se tek kad objavljena stranica šalje događaj `web_posjet`.
 - Odbijeni korisnik ne dobiva e-mail (upute to nisu tražile).

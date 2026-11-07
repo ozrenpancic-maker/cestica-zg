@@ -256,6 +256,10 @@ details.vise[open]>summary span::after{content:" ▴"}details.vise:not([open])>s
 .lgd-wrap>summary{cursor:pointer;font-weight:600;font-size:13px}
 .lgd-nam>summary{cursor:pointer;font-size:12px;color:var(--muted);margin-top:4px}
 #report{display:none}
+.slob-dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:6px 0}.slob-dl dt{color:var(--muted)}.slob-dl dd{margin:0}
+.lgd-mini{font-size:13px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}.lgd-mini span{display:inline-block;width:14px;height:10px;border-radius:2px}.lg-g{background:#2e9d57}.lg-n{background:#e0574f}
+.edge-lbl span{background:rgba(255,255,255,.88);border:1px solid #444;border-radius:4px;padding:0 3px;font:600 11px system-ui,sans-serif;white-space:nowrap;transform:translate(-50%,-50%);display:inline-block;color:#111}
+.slob-nap{border:1px solid var(--accent);border-radius:12px;padding:10px 12px;margin:10px 0;background:var(--panel)}.slob-l{list-style:none;margin:0;padding:0;display:grid;gap:4px}.slob-f{font:inherit;text-align:left;width:100%;min-height:40px;border:1px solid var(--line);border-radius:8px;background:var(--soft);color:var(--fg);cursor:pointer;padding:6px 10px}
 .pr-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}.pr-zah .kd{flex-wrap:wrap}.pr-zah input[type=email]{min-width:220px;flex:1}
 .pr-box,.pr-zak{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0;background:var(--panel)}.pr-box[data-pr="zakljucano"]{border-color:var(--accent)}
 @media print{ body.pr-blok>*{display:none!important} body.pr-blok::after{content:"Dosje se ne ispisuje iz preglednika: pošalji ga na e-mail gumbom „Pošalji dosje na e-mail”.";display:block;font:14pt sans-serif;padding:20mm} }
@@ -1708,10 +1712,11 @@ async function inspectKrk(ll){
            .filter(r=>r.share===null||r.share>0.005).sort((a,b)=>(b.share??0)-(a.share??0));
     }catch(e){}
     if(id!==clickId) return;
-    rows.forEach(r=>r.geom&&L.geoJSON(r.geom,{style:{color:KRK_COLORS[krkKind(r.p)],weight:1,fillOpacity:.3},interactive:false}).addTo(selLayer));
+    if(!prZaklj()) rows.forEach(r=>r.geom&&L.geoJSON(r.geom,{style:{color:KRK_COLORS[krkKind(r.p)],weight:1,fillOpacity:.3},interactive:false}).addTo(selLayer));
   }
   const d={region:"krk",ll,parcel,area,rows,ces,nam,pl,slope:null,env:null};
   renderKrk(d);
+  if(prZaklj()) return;
   if(parcel) zg3dLoad(parcel).then(()=>{try{skicaUpdate()}catch(e){}});
   const [slope,env,ski]=await Promise.all([settle(loadSlope(parcel,ll)),settle(loadEnv(ll,parcel)),FEATURES.infra?(parcel&&parcel.properties.hr?Promise.resolve({e:SKI_NP}):settle(loadSki(parcel,ll,SKI_KRK))):Promise.resolve(null)]);
   if(id!==clickId) return;
@@ -1740,7 +1745,7 @@ async function inspectHR(ll){
   if(parcel){ const plK=L.geoJSON(parcel.geometry,{style:{color:"#111",weight:3,fill:false},interactive:false}).addTo(selLayer); window.__lastBounds=plK.getBounds(); }
   const d={region:"hr",ll,parcel,area,rows:[],ces,nam:{v:[]},pl:{v:[]},slope:null,env:null};
   renderHR(d);
-  if(!parcel) return;
+  if(!parcel||prZaklj()) return;
   zg3dLoad(parcel).then(()=>{try{skicaUpdate()}catch(e){}});
   const [slope,env]=await Promise.all([settle(loadSlope(parcel,ll)),settle(loadEnv(ll,parcel))]);
   if(id!==clickId) return;
@@ -2991,6 +2996,7 @@ function krkPzBase(d){
 }
 function renderKrk(d){
   if(d.region==="hr") return renderHR(d);
+  if(prZaklj()) return renderSlobodno(d,"krk"); window.__slobodno=false;
   KRK_CUR=d;
   const {ll,parcel,area,rows,ces,nam,pl,slope,env}=d, R=REGIJE.krk;
   const jls=krkJls(rows,pl), jlsName=jls?(R.jls[jls]||krkJlsNaziv(jls)):null, inPilot=jls===R.pilot, izvanOtoka=!!(parcel&&parcel.properties.hr);
@@ -3083,6 +3089,7 @@ function renderKrk(d){
 }
 
 function renderHR(d){
+  if(prZaklj()) return renderSlobodno(d,"hr"); window.__slobodno=false;
   KRK_CUR=d;
   const {ll,parcel,area,ces,slope,env}=d;
   const P=parcel?parcel.properties:{};
@@ -3178,10 +3185,11 @@ async function inspect(ll){
     if(parcel){try{const i=turf.intersect(parcel.geometry,z.geometry);share=i?turf.area(i)/area:0}catch(e){}}
     return {p:z.properties,share,geom:z.geometry};
   }).filter(r=>r.share===null||r.share>0.005).sort((a,b)=>(b.share??0)-(a.share??0));
-  rows.forEach(r=>L.geoJSON(r.geom,{style:{color:COLORS[r.p.Analitika]||"#888",weight:1,fillOpacity:.3},interactive:false}).addTo(selLayer));
+  if(!prZaklj()) rows.forEach(r=>L.geoJSON(r.geom,{style:{color:COLORS[r.p.Analitika]||"#888",weight:1,fillOpacity:.3},interactive:false}).addTo(selLayer));
   // pokaži osnovno odmah, provjere stižu za trenutak
   const base={ll,parcel,area,rows,ces,nam,up,upx,gn,checks:null};
   render(base);
+  if(prZaklj()) return; // besplatni pregled: napredni slojevi se ne dohvaćaju
   // malo smanjena čestica, da susjedni sloj koji samo dodiruje među ne bude pogodak
   let qGeom=null;
   if(parcel){try{const b=turf.buffer(parcel.geometry,-0.0008,{units:"kilometers"});qGeom=b&&b.geometry?b.geometry:parcel.geometry}catch(e){qGeom=parcel.geometry}}
@@ -4370,14 +4378,15 @@ function prDijalog(){ const t=prTok(); auxOpen(`<p class="eyebrow">Napredni pris
 async function prZahtjevPosalji(){ const p=document.getElementById("przPor"), em=(document.getElementById("przEmail")||{}).value||"", nam=(document.getElementById("przNam")||{}).value||"", web=(document.getElementById("przWeb")||{}).value||"";
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em.trim())){ if(p) p.textContent="Upiši ispravnu e-mail adresu."; return; }
   if(p) p.textContent="Šaljem zahtjev…";
-  try{ const j=await prApi("/zahtjev",{body:{email:em.trim(),namjena:nam||null,web}}); if(p) p.textContent=j.poruka||"Zahtjev je zaprimljen."; const b=document.getElementById("przPosalji"); if(b) b.disabled=true; }
+  try{ const j=await prApi("/zahtjev",{body:{email:em.trim(),namjena:nam||null,web}}); try{ an("zahtjev_obrazac"); }catch(x){} if(p) p.textContent=j.poruka||"Zahtjev je zaprimljen."; const b=document.getElementById("przPosalji"); if(b) b.disabled=true; }
   catch(err){ if(p) p.textContent=err.message||"Slanje nije uspjelo."; } }
 async function prAktiviraj(kod,por){ if(por) por.textContent="Provjeravam kod…";
   try{ const j=await prApi("/prijava",{body:{kod}}); prPostavi({token:j.token,istice:j.istice??null,oznaka:j.oznaka||null}); PRISTUP.provjereno=true; if(por) por.textContent="Napredni pristup je aktiviran."; prRerender(); return true; }
   catch(err){ if(por) por.textContent=err.message||"Prijava nije uspjela."; return false; } }
 function prOk(){ return !prUkljuceno()||!!prTok(); }
 function prPostavi(o){ try{ if(o) localStorage.setItem("pristupTok",JSON.stringify(o)); else localStorage.removeItem("pristupTok"); }catch(e){} }
-function prRerender(){ try{ const c=window.__cur||{}; if(c.region==="krk"&&KRK_CUR) renderKrk(KRK_CUR); else if(c.region==="hr"&&KRK_CUR) renderHR(KRK_CUR); else if(window.__lastData) render(window.__lastData); }catch(e){console.error(e)} }
+function prRerender(){ try{ if(window.__slobodno&&prOk()&&window.__lastLL){ window.__slobodno=false; if(SLOB.layer){ try{selLayer.removeLayer(SLOB.layer)}catch(e){} SLOB.layer=null; } return inspect(L.latLng(window.__lastLL.lat,window.__lastLL.lng)); }
+  if(!prOk()&&window.__lastLL&&!window.__slobodno) return inspect(L.latLng(window.__lastLL.lat,window.__lastLL.lng)); const c=window.__cur||{}; if(c.region==="krk"&&KRK_CUR) renderKrk(KRK_CUR); else if(c.region==="hr"&&KRK_CUR) renderHR(KRK_CUR); else if(window.__lastData) render(window.__lastData); }catch(e){console.error(e)} }
 async function prApi(path,opt){ const t=prTok(), r=await fetch(PRISTUP.api+path,{method:opt&&opt.body?"POST":"GET",headers:{"content-type":"application/json",...(t?{authorization:"Bearer "+t.token}:{})},body:opt&&opt.body?JSON.stringify(opt.body):undefined});
   let j=null; try{ j=await r.json(); }catch(e){} if(!r.ok){ const e=new Error(j&&j.error&&j.error.poruka||("greška "+r.status)); e.status=r.status; e.code=j&&j.error&&j.error.code; throw e; } return j; }
 function prBoxHtml(){ const t=prTok();
@@ -4421,6 +4430,73 @@ function prUrl(){ if(!prUkljuceno()) return; let q; try{ q=new URLSearchParams(l
   else if(zah) prDijalog(); }
 setTimeout(()=>{ try{prUrl()}catch(e){console.error(e)} },0);
 sheet.addEventListener("keydown",e=>{ if(e.target.id==="prKod"&&e.key==="Enter"){ e.preventDefault(); const b=document.getElementById("prPrijava"); if(b) b.click(); } });
+// ================= BESPLATNI PREGLED (bez prijave) =================
+// Bez pristupnog koda: samo čestica, granice, površina, duljine granica i građevinski dio čestice. Napredni podaci se
+// za zaključanog korisnika NE dohvaćaju ni ne računaju (inspect staje nakon osnovnih slojeva), pa ih nema ni na stranici.
+// Građevinski dio: Zagreb prema planiranoj namjeni (GUP / PPGZ) — namjene koje dopuštaju gradnju zgrada; Krk prema
+// županijskom sloju (građevinsko područje naselja ili izdvojeno). Izvan toga: „Nije moguće pouzdano utvrditi”.
+const prZaklj=()=>prUkljuceno()&&!prTok();
+const SLOB={layer:null};
+const SLOB_FUNK=[["ocjena","Ocjena čestice 0–100 i analiza prednosti i rizika"],["uvjeti","Urbanistički uvjeti: kig, kis, GBP i što smiješ graditi"],["pristup","Pristup prometnici i infrastrukturne mreže"],["zk","Zemljišna knjiga: vlasništvo, tereti i ograničenja"],
+  ["simulator","Simulator kuće na čestici"],["3d","3D prikaz i okućnica"],["troskovi","Troškovi gradnje i komunalni doprinos"],["materijal","Građevinski materijal"],["montazne","Katalog montažnih kuća"],["energija","Energetske i okolišne analize"],["pdf","PDF dosje čestice"]];
+function slobGradivo(region,r){ if(region==="krk"){ const k=krkKind(r.p); return k==="gpn"||k==="gpi"?true:k==="van"?false:null; } return r.p&&r.p.Analitika?BUILDABLE.has(r.p.Analitika):null; }
+// pokrivenost: dio čestice za koji sloj namjene ima podatak; ispod 98 % ili s nepoznatom namjenom nije pouzdano
+function slobodnoInfo(d,region){
+  const parcel=d.parcel, area=d.area||(parcel?turf.area(parcel.geometry):null), rows=d.rows||[];
+  let gp={st:"nepoznato",razlog:region==="hr"?"za ovo područje prostorni plan nije obrađen u aplikaciji":"sloj namjene nije odgovorio"};
+  if(parcel&&area&&rows.length&&rows.every(r=>r.share!=null)){
+    const pokr=rows.reduce((a,r)=>a+r.share,0), nep=rows.some(r=>slobGradivo(region,r)==null);
+    if(pokr>=0.98&&!nep){ const u=Math.min(1,rows.filter(r=>slobGradivo(region,r)).reduce((a,r)=>a+r.share,0)); gp={st:"ok",udio:u,unutra:u*area,izvan:Math.max(0,area-u*area),izvor:region==="krk"?"Primorsko-goranska županija, sloj namjene (građevinska područja)":"Grad Zagreb, planirana namjena (GUP)"}; }
+    else gp={st:"nepoznato",razlog:nep?"namjena dijela čestice nije prepoznata":"sloj namjene ne pokriva cijelu česticu"};
+  } else if(parcel&&rows.length&&region!=="hr") gp={st:"nepoznato",razlog:"udio namjene na čestici nije izračunat"};
+  const edges=[]; if(parcel){ const g=parcel.geometry, rings=g.type==="Polygon"?[g.coordinates[0]]:g.type==="MultiPolygon"?g.coordinates.map(p=>p[0]):[];
+    for(const ring of rings) for(let i=0;i+1<ring.length;i++){ const a=ring[i], b=ring[i+1], len=turf.distance(turf.point(a),turf.point(b),{units:"kilometers"})*1000; if(len>0.05) edges.push({len,a,b,mid:[(a[0]+b[0])/2,(a[1]+b[1])/2]}); } }
+  return {area,gp,edges,opseg:edges.reduce((s,e)=>s+e.len,0)};
+}
+function slobCrtaj(d,region,I){
+  if(SLOB.layer){ try{selLayer.removeLayer(SLOB.layer)}catch(e){} } SLOB.layer=L.layerGroup().addTo(selLayer); const parcel=d.parcel; if(!parcel) return;
+  for(const r of d.rows||[]){ if(!r.geom) continue; const gr=slobGradivo(region,r); let i=null; try{ i=turf.intersect(parcel.geometry,r.geom); }catch(e){} if(!i) continue;
+    L.geoJSON(i.geometry||i,{style:{color:gr?"#1f7a3f":gr===false?"#b3261e":"#888",weight:1,fillColor:gr?"#2e9d57":gr===false?"#e0574f":"#999",fillOpacity:gr?.35:.45,dashArray:gr===false?"4 3":null},interactive:false}).addTo(SLOB.layer); }
+  L.geoJSON(parcel.geometry,{style:{color:"#111",weight:3,fill:false},interactive:false}).addTo(SLOB.layer);
+  const min=I.edges.length>30?3:1;
+  for(const e of I.edges) if(e.len>=min) L.marker([e.mid[1],e.mid[0]],{interactive:false,keyboard:false,icon:L.divIcon({className:"edge-lbl",html:`<span>${dec((Math.round(e.len*10)/10).toFixed(1))} m</span>`,iconSize:null})}).addTo(SLOB.layer);
+}
+function renderSlobodno(d,region){
+  const parcel=d.parcel, P=parcel?parcel.properties:{}, ll=d.ll;
+  const ces=region==="zg"?P.KATASTARSKA_CESTICA:P.broj, ko=region==="zg"?P.KATASTARSKA_OPCINA:P.ko;
+  const ptc=parcel?(()=>{try{const c=turf.pointOnFeature(parcel).geometry.coordinates; return {lat:c[1],lng:c[0]}}catch(e){return ll}})():ll;
+  const key=region==="zg"?favKey(parcel,ll):(region==="krk"?"krk:":"hr:")+(P.ref||P.broj||(ll.lat.toFixed(6)+","+ll.lng.toFixed(6)));
+  window.__lastLL=ll; window.__slobodno=true; if(region==="zg"){ window.__lastData=d; KRK_CUR=null; } else KRK_CUR=d;
+  const I=slobodnoInfo(d,region);
+  window.__cur={key,region:region==="zg"?undefined:region,ll:{lat:ptc.lat,lng:ptc.lng},ces:ces||null,ko:ko||null,area:I.area,buildArea:I.gp.st==="ok"?I.gp.unutra:null,code:null,slobodno:true};
+  const f1=v=>dec((Math.round(v*10)/10).toFixed(1));
+  let h=`<div class="grp" data-g="sum"><p class="eyebrow">Katastarska čestica${ko?" · k.o. "+esc(ko):""}</p>`;
+  if(!parcel){ h+=`<p class="hint">Na ovom mjestu nije pronađena katastarska čestica. Zumiraj kartu do razine ulice i dodirni zemljište.</p></div>`; sheet.innerHTML=h; return; }
+  h+=`<p class="parcel">${esc(ces||"")}</p><dl class="slob-dl">`+
+    `<dt>Ukupna površina</dt><dd><b>${fmt(I.area)} m²</b> <small class="fx">grafička, iz digitalnog katastarskog plana (DGU)</small></dd>`;
+  if(I.gp.st==="ok") h+=`<dt>Unutar građevinskog područja</dt><dd><b>${fmt(I.gp.unutra)} m²</b></dd><dt>Građevinski dio</dt><dd><b>${f1(I.gp.udio*100)} %</b></dd><dt>Izvan građevinskog područja</dt><dd><b>${f1((1-I.gp.udio)*100)} %</b>${I.gp.izvan>=0.5?` (${fmt(I.gp.izvan)} m²)`:""}</dd>`;
+  else h+=`<dt>Građevinsko područje</dt><dd><b>Nije moguće pouzdano utvrditi</b> <small class="fx">${esc(I.gp.razlog)}</small></dd>`;
+  h+=`<dt>Opseg</dt><dd>${fmt(I.opseg)} m · duljine granica prikazane su na karti</dd></dl>`;
+  if(I.gp.st==="ok") h+=`<p class="lgd-mini"><span class="lg-g"></span> građevinski dio <span class="lg-n"></span> izvan građevinskog područja</p>`;
+  h+=`<p class="meta">Površina i duljine granica izračunate su iz digitalne katastarske karte i informativne su; nisu geodetski utvrđene (točne daje geodetska izmjera). ${I.gp.st==="ok"?"Izvor građevinskog područja: "+esc(I.gp.izvor)+". ":""}<b>Građevinsko područje ne znači da je gradnja dopuštena</b>: to ovisi o uvjetima plana, pristupu, infrastrukturi i drugim propisima.</p>`;
+  h+=`<details class="acc" data-k="slob-gr"><summary><span>Duljine granica (${I.edges.length})</span><b>${fmt(I.opseg)} m</b></summary><div class="acc-body"><ol class="zi">${I.edges.map(e=>`<li>${f1(e.len)} m</li>`).join("")}</ol></div></details></div>`;
+  h+=`<div class="slob-nap"><p class="eyebrow" style="margin:0 0 4px">Napredna analiza</p><ul class="slob-l">${SLOB_FUNK.map(([k,n])=>`<li><button type="button" class="slob-f" data-zak="${k}"><span aria-hidden="true">🔒</span> ${esc(n)}</button></li>`).join("")}</ul>
+    <p style="margin:8px 0 0"><button type="button" class="ib" id="prZatrazi">Zatraži besplatan napredni pristup</button> <button type="button" class="ib" id="slobKod">Već imam pristupni kod</button></p></div>`;
+  h+=`<div class="actions"><button type="button" class="ib" id="saveBtn">${isSaved(key)?"★ Spremljeno":"☆ Spremi"}</button><button type="button" class="ib" id="shareBtn">Podijeli</button></div>`;
+  sheet.innerHTML=h; slobCrtaj(d,region,I);
+  if(isMobile()&&typeof setState==="function") try{ setState(UI.state==="peek"?"half":UI.state,{keepScroll:true}); }catch(e){}
+  try{ an("slobodno"); an("cestica",key); anIzbornik(); }catch(e){}
+}
+// zaključana funkcija: što je, i dva puta do nje
+function slobZakljucano(k){ const n=(SLOB_FUNK.find(x=>x[0]===k)||[k,"Napredna analiza"])[1]; try{ an("zakljucano",k); }catch(e){}
+  auxOpen(`<section class="slob-mod" data-zak="${esc(k)}"><p class="eyebrow">${esc(n)}</p><h2 style="margin:4px 0 8px">Otključaj naprednu analizu zemljišta</h2><p>Saznaj što smiješ graditi, postavi kuću na česticu, provjeri infrastrukturu i procijeni ukupne troškove gradnje.</p>
+    <p><button type="button" class="ib" id="prZatrazi">Zatraži besplatan napredni pristup</button> <button type="button" class="ib" id="slobKod">Već imam pristupni kod</button></p></section>`); }
+// slojevi karte s naprednim podacima (vodovi, sjene, skener čestica) u besplatnom pregledu otvaraju poruku o zaključanoj funkciji
+document.addEventListener("change",e=>{ const id=e.target&&e.target.id; const M={lyrInf:"pristup",lyrSki:"pristup",lyrSun:"energija",lyrSken:"uvjeti"};
+  if(!M[id]||!prZaklj()||!e.target.checked) return; e.stopImmediatePropagation(); e.target.checked=false; slobZakljucano(M[id]); },true);
+document.addEventListener("click",e=>{ const t=e.target&&e.target.closest&&e.target.closest(".slob-f,#slobKod"); if(!t) return; e.preventDefault();
+  if(t.id==="slobKod"){ prDijalog(); const k=document.getElementById("prKod2"); if(k) try{k.focus()}catch(x){} return; }
+  slobZakljucano(t.dataset.zak); });
 // ================= SKUPNA STATISTIKA KORIŠTENJA =================
 // Uključuje se s FEATURES.analitika=true i adresom Workera. Šalje se samo vrsta događaja, županija i (za uklanjanje
 // ponovljenih događaja) nasumični identifikator ovog učitavanja i sažetak čestice; Worker ništa od toga ne sprema uz osobu.
@@ -4433,7 +4509,7 @@ function anVid(){ try{ let v=localStorage.getItem("anVid"); if(!v){ v=AN.sid+Dat
 function anH(s){ let h=0x811c9dc5; for(const c of String(s)){ h^=c.charCodeAt(0); h=Math.imul(h,0x01000193)>>>0; } return h.toString(36); }
 function anZup(){ try{ const c=window.__cur||{}; if(!c.region) return c.key?"Grad Zagreb":""; if(c.region==="krk") return "Primorsko-goranska"; const J=ptnJls(); const z=J&&J.red?String(J.red[1]||""):""; return z.replace(/\s+županija$/i,"").replace(/^Grad Zagreb$/,"Grad Zagreb"); }catch(e){ return ""; } }
 function an(e,obj){ if(!anUk()) return; const k=e+"|"+(obj||""); if(AN.posl.has(k)) return; AN.posl.add(k);
-  const b={e,s:AN.sid,o:obj?anH(obj):"",z:anZup()}; if(anPrivola()){ const v=anVid(); if(v){ b.v=v; b.privola=true; } }
+  const b={e,s:AN.sid,o:obj?anH(obj):"",z:anZup()}; if(e==="zakljucano"){ b.f=obj; b.o=obj; } if(anPrivola()){ const v=anVid(); if(v){ b.v=v; b.privola=true; } }
   const u=PRISTUP.api+"/dogadaj", body=JSON.stringify(b);
   try{ if(window.__anHook) return window.__anHook(b); if(navigator.sendBeacon&&navigator.sendBeacon(u,new Blob([body],{type:"text/plain"}))) return; fetch(u,{method:"POST",body,keepalive:true,headers:{"content-type":"text/plain"}}).catch(()=>{}); }catch(err){} }
 document.addEventListener("change",e=>{ if(e.target&&e.target.id==="anPrivola"){ try{ if(e.target.checked) localStorage.setItem("anPrivola","1"); else { localStorage.removeItem("anPrivola"); localStorage.removeItem("anVid"); } }catch(err){} } });
@@ -5920,6 +5996,7 @@ function G(g){let s=GRP?"</div>":""; GRP=g; return g?s+`<div class="grp" data-g=
 function snapInputs(){const o={}; sheet.querySelectorAll("input[id],select[id],textarea[id]").forEach(e=>{if(e.type==="file") return; o[e.id]={v:e.value,c:e.checked,m:e.dataset.manual,r:e.dataset.rucno}}); return o}
 function restoreInputs(o){ if(!o) return; for(const [id,x] of Object.entries(o)){const e=document.getElementById(id); if(!e||!sheet.contains(e)) continue; if(e.type==="checkbox") e.checked=x.c; else e.value=x.v; if(x.m) e.dataset.manual=x.m; if(x.r) e.dataset.rucno=x.r;} }
 function render(d){
+  if(prZaklj()) return renderSlobodno(d,"zg"); window.__slobodno=false;
   const prevKey=window.__cur&&window.__cur.key, snap=prevKey&&prevKey===favKey(d.parcel,d.ll)?snapInputs():null;
   window.__lastData=d;
   const {ll,parcel,area,rows,ces,nam,up,upx,gn,checks,env,envelope,slope,zgrade,infra,sun}=d;
@@ -8432,7 +8509,7 @@ function triTeren(map,ll){ const te=map.terrain; if(!te) return null;
   try{ const v=te.getElevationForLngLatZoom(new maplibregl.LngLat(ll[0],ll[1]),map.transform.tileZoom); return isFinite(v)?v:null; }catch(e){ return null; } }
 function triPv(){ try{ const g=TRI.grp; if(g) g.traverse(x=>{ if(x.name==="pv") x.visible=!!V3D.pv; }); }catch(e){} }
 const TRI_K=new Set(["podest","zid","krov","streha","sljeme","atika","okvir","prozor","vrata","nadstresnica","obloga","garaza","garazna-vrata","pv"]);
-async function v3dOpen(){ try{ if(!V3D.zaDosje) an("3d",window.__cur&&window.__cur.key); }catch(e){}
+async function v3dOpen(){ if(prZaklj()){ slobZakljucano("3d"); return; } try{ if(!V3D.zaDosje) an("3d",window.__cur&&window.__cur.key); }catch(e){}
   const D=v3dData(), box=document.getElementById("v3d"), note=document.getElementById("v3dNote");
   if(!D){alert("Najprije odaberi česticu na karti."); return;}
   box.hidden=false; if(isMobile()) setState("min");
@@ -8674,7 +8751,7 @@ sheet.addEventListener("scroll",()=>{const b=document.getElementById("izbTop"); 
 // odmah nakon slaganja prikaza: sklapanje pojašnjenja, kategorije izbornika i sažetak (prije vraćanja položaja čitanja)
 // promjena sadržaja iznad mjesta čitanja ne smije pomaknuti tekst koji se čita (Safari nema „scroll anchoring”)
 function keepPos(fn){ const A=sheet.scrollTop>0?scrollAnchor():null; fn(); if(A) scrollRestore(A); }
-function sheetPost(){ try{prGate(); prProvjeri()}catch(e){console.error(e)} try{ const k=window.__cur&&window.__cur.key; if(k) an("cestica",k); anIzbornik(); }catch(e){} try{scenLinkApply()}catch(e){console.error(e)} try{srchNote()}catch(e){} try{ptnUpdate()}catch(e){console.error(e)} try{viseInfo()}catch(e){} try{izbWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){} try{promSoon()}catch(e){} }
+function sheetPost(){ try{prGate(); prProvjeri()}catch(e){console.error(e)} try{ const k=window.__cur&&window.__cur.key; if(k) an("cestica",k); if(prUkljuceno()&&prTok()) an("napredno"); anIzbornik(); }catch(e){} try{scenLinkApply()}catch(e){console.error(e)} try{srchNote()}catch(e){} try{ptnUpdate()}catch(e){console.error(e)} try{viseInfo()}catch(e){} try{izbWrap()}catch(e){console.error(e)} try{sazetakUpdate()}catch(e){} try{promSoon()}catch(e){} }
 // položaj čitanja: zadnji odjeljak čiji je vrh iznad vrha panela i koliko je pomaknut; poslije ponovnog prikaza isti odjeljak
 // vraća se na isto mjesto, i kad se visina sadržaja iznad promijeni (npr. stigne uložak ili se sklope pojašnjenja)
 function scrollAnchor(){
@@ -9232,6 +9309,7 @@ function presudaHtml(Pz){
 // ================= SAŽETAK NA VRHU ANALIZE =================
 // Pet kratkih odgovora; dodir otvara odgovarajući odjeljak. Svaki odgovor je preuzet iz odjeljka ispod (isti izvor i oznaka).
 function sazetakUpdate(){
+  if(window.__slobodno){ const b=document.getElementById("sazetak"); if(b) b.remove(); return; } // besplatni pregled: bez ocjene i sažetka
   const g=sheet.querySelector('.grp[data-g=sum]'), d=curData(); if(!g||!d||!d.parcel) return;
   let box=document.getElementById("sazetak");
   if(!box){box=document.createElement("div"); box.id="sazetak"; box.className="saz"; const z=g.querySelector("ul.zones")||document.getElementById("sumEnd"); if(z) z.after(box); else g.appendChild(box);}

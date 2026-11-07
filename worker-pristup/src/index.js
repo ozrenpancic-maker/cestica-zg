@@ -13,7 +13,8 @@ const enc = new TextEncoder();
 const DAN = 86400000, SAT = 3600000;
 const MAX_PDF = 6 * 1024 * 1024;
 const NAMJENE = { kupujem: "Kupujem zemljište", gradnja: "Planiram gradnju kuće", arhitekt: "Arhitekt ili projektant", agencija: "Agencija za nekretnine", investitor: "Investitor", ostalo: "Ostalo" };
-const VRSTE = { web_posjet: "Otvaranje web stranice", pokretanje: "Pokretanje aplikacije", pretraga: "Pretraživanje čestice", cestica: "Analizirana čestica", ocjena: "Pregled ocjene", simulator: "Simulator kuće", "3d": "3D prikaz", troskovi: "Izračun troškova", pdf: "PDF dosje" };
+const VRSTE = { web_posjet: "Otvaranje web stranice", pokretanje: "Pokretanje aplikacije", pretraga: "Pretraživanje čestice", cestica: "Analizirana čestica", ocjena: "Pregled ocjene", simulator: "Simulator kuće", "3d": "3D prikaz", troskovi: "Izračun troškova", pdf: "PDF dosje", slobodno: "Besplatni pregled", zakljucano: "Pokušaj otvaranja zaključane funkcije", zahtjev_obrazac: "Zahtjev poslan iz aplikacije", napredno: "Korištenje naprednih funkcija (prijavljen)" };
+const ZAKLJ = ["ocjena", "uvjeti", "pristup", "zk", "simulator", "3d", "troskovi", "materijal", "montazne", "energija", "pdf"];
 const ZUPANIJE = ["Grad Zagreb", "Zagrebačka", "Krapinsko-zagorska", "Sisačko-moslavačka", "Karlovačka", "Varaždinska", "Koprivničko-križevačka", "Bjelovarsko-bilogorska", "Primorsko-goranska", "Ličko-senjska", "Virovitičko-podravska", "Požeško-slavonska", "Brodsko-posavska", "Zadarska", "Osječko-baranjska", "Šibensko-kninska", "Vukovarsko-srijemska", "Splitsko-dalmatinska", "Istarska", "Dubrovačko-neretvanska", "Međimurska"];
 const IZVORI = ["izravno", "google", "bing", "facebook", "instagram", "linkedin", "whatsapp", "e-mail", "ostalo"];
 
@@ -168,10 +169,11 @@ async function izvjestaj(env, req, H, T) {
 async function dogadaj(env, req, H) {
   let b; try { b = await req.json(); } catch (e) { return new Response(null, { status: 204, headers: H }); }
   const vrsta = String(b && b.e || ""); if (!VRSTE[vrsta]) return greska("VRSTA", "Nepoznat događaj.", 400, H);
+  if (vrsta === "zakljucano" && !ZAKLJ.includes(b.f)) return greska("VRSTA", "Nepoznata funkcija.", 400, H);
   const ih = await ipH(env, req), rk = "ev:" + ih; if ((await ogrBroj(env, rk)) >= 600) return new Response(null, { status: 204, headers: H }); await ogrPlus(env, rk, SAT);
   const s = String(b.s || "").slice(0, 64), o = String(b.o || "").slice(0, 128);
   if (s) { const h = await hmac(env.CODE_PEPPER, "p:" + s + "|" + vrsta + "|" + o); const r = await run(env, "INSERT OR IGNORE INTO ponavljanje(h,istice) VALUES(?,?)", h, Date.now() + DAN); if (!(r.meta && r.meta.changes)) return new Response(null, { status: 204, headers: H }); }
-  const dim = vrsta === "web_posjet" ? (IZVORI.includes(b.izvor) ? b.izvor : "ostalo") : ZUPANIJE.includes(b.z) ? b.z : "";
+  const dim = vrsta === "web_posjet" ? (IZVORI.includes(b.izvor) ? b.izvor : "ostalo") : vrsta === "zakljucano" ? (ZAKLJ.includes(b.f) ? b.f : "") : ZUPANIJE.includes(b.z) ? b.z : "";
   await brojDogadaj(env, vrsta, dim);
   if (b.v && b.privola === true) await run(env, "INSERT OR IGNORE INTO posjetitelj(dan,v_h) VALUES(?,?)", dan(), await hmac(env.CODE_PEPPER, "v:" + String(b.v).slice(0, 64)));
   return new Response(null, { status: 204, headers: H });
@@ -259,10 +261,13 @@ async function pregled(env, r) {
   const jedinstveni = ((await one(env, "SELECT COUNT(DISTINCT v_h) n FROM posjetitelj WHERE dan>=?", od)) || {}).n || 0;
   const regije = await all(env, "SELECT dim, SUM(n) n FROM dogadaj WHERE vrsta='cestica' AND dim!='' AND dan>=? GROUP BY dim ORDER BY n DESC", od);
   const izvori = await all(env, "SELECT dim, SUM(n) n FROM dogadaj WHERE vrsta='web_posjet' AND dan>=? GROUP BY dim ORDER BY n DESC", od);
+  const zakljucano = await all(env, "SELECT dim, SUM(n) n FROM dogadaj WHERE vrsta='zakljucano' AND dim!='' AND dan>=? GROUP BY dim ORDER BY n DESC", od);
+  const odob = Z.filter((z) => z.status === "odobren"), koriste = odob.filter((z) => z.aktiviran && z.zadnja_akt && z.zadnja_akt >= odT).length;
   const niz = await all(env, "SELECT dan, vrsta, SUM(n) n FROM dogadaj WHERE dan>=? AND vrsta IN ('pokretanje','cestica','simulator','3d','pdf','zahtjev') GROUP BY dan, vrsta ORDER BY dan", d ? od : dan(t - 89 * DAN));
   return { razdoblje: d || "ukupno", od: d ? od : null, dogadaji: P, zahtjeviUkupno: Z.filter((z) => !d || (z.potvrden || 0) >= odT).length, naCekanju: st.filter((s) => s === "ceka").length,
     odobreni: st.filter((s) => s === "odobren").length, aktivni7: Z.filter((z) => stanje(z, t) === "odobren" && z.zadnja_akt > t - 7 * DAN).length, aktivni30: Z.filter((z) => stanje(z, t) === "odobren" && z.zadnja_akt > t - 30 * DAN).length,
-    povratni, jedinstveni, konverzija: P.pokretanje ? Math.round((P.zahtjev / P.pokretanje) * 1000) / 10 : null, regije, izvori, niz };
+    povratni, jedinstveni, konverzija: P.pokretanje ? Math.round((P.zahtjev / P.pokretanje) * 1000) / 10 : null,
+    konverzijaSlob: P.slobodno ? Math.round((P.zahtjev_obrazac / P.slobodno) * 1000) / 10 : null, zakljucano, odobreniUkupno: odob.length, koristeNapredno: koriste, regije, izvori, niz };
 }
 
 // --- dnevni zadatak: podsjetnik prije isteka i rokovi čuvanja podataka
@@ -291,7 +296,7 @@ table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #e3e8e5;
 <h1>Čestica HR · administracija</h1>
 <section id="log"><p>Prijava je samo za administratora.</p><label for="lz">Lozinka</label><input id="lz" type="password" autocomplete="current-password" style="width:100%;max-width:420px"><label for="mfa">Jednokratni kod (aplikacija za autentifikaciju)</label><input id="mfa" inputmode="numeric" autocomplete="one-time-code" maxlength="6"><p><button id="ul">Prijavi se</button></p><p id="lp" role="status"></p></section>
 <section id="app" hidden><div class="row"><button class="s" id="od">Odjava</button><label for="rz" style="margin:0">Razdoblje</label><select id="rz"><option value="7">7 dana</option><option value="30" selected>30 dana</option><option value="90">90 dana</option><option value="sve">ukupno</option></select></div>
-<p id="upoz"></p><h2>Pokazatelji</h2><div class="kp" id="kp"></div><h2>Kroz vrijeme</h2><div id="gr"></div><h2>Područja (analizirane čestice po županiji)</h2><div id="reg"></div>
+<p id="upoz"></p><h2>Pokazatelji</h2><div class="kp" id="kp"></div><h2>Kroz vrijeme</h2><div id="gr"></div><h2>Područja (analizirane čestice po županiji)</h2><div id="reg"></div><h2>Zaključane funkcije koje zanimaju posjetitelje</h2><div id="zak"></div>
 <h2>Zahtjevi</h2><div class="row"><input id="ne" placeholder="e-mail novog korisnika" aria-label="e-mail novog korisnika"><button class="s" id="nd">Dodaj korisnika</button></div><div class="tw" id="tz"></div>
 <h2>Postavke</h2><div class="row"><label for="tr" style="margin:0">Zadano trajanje pristupa (dana od aktivacije)</label><input id="tr" type="number" min="1" max="3650" style="width:110px"><button class="s" id="ts">Spremi</button></div>
 <h2>Dnevnik radnji</h2><div class="tw" id="dn"></div></section>
@@ -303,11 +308,14 @@ const DEF={pokretanje:["Pokretanja aplikacije","otvaranja aplikacije (jedno po u
 async function sve(){ const r=$("rz").value; const [P,Z,S,D]=await Promise.all([api("pregled?r="+r),api("zahtjevi"),api("postavke"),api("dnevnik")]);
   $("upoz").innerHTML=(Z.mfa?"":'<span class="warn">Drugi korak prijave (MFA) nije uključen: postavi tajnu ADMIN_TOTP.</span> ')+(Z.posta?"":'<span class="warn">Slanje e-maila nije postavljeno (BREVO_KEY): kodovi se ne šalju.</span>');
   const k=[["Zahtjevi za pristup",P.zahtjeviUkupno,"potvrđeni zahtjevi u razdoblju"],["Na čekanju",P.naCekanju,"trenutno"],["Odobreni korisnici",P.odobreni,"trenutno aktivan odobren pristup"],["Aktivni (7 dana)",P.aktivni7,"odobreni korisnici s prijavom u zadnjih 7 dana"],["Aktivni (30 dana)",P.aktivni30,"odobreni korisnici s prijavom u zadnjih 30 dana"],["Aktivacije",P.dogadaji.aktivacija,"prve prijave kodom u razdoblju"],
-    ...["web_posjet","pokretanje","cestica","ocjena","simulator","3d","troskovi","pdf"].map(v=>[DEF[v][0],P.dogadaji[v],DEF[v][1]]),["Povratni preglednici",P.povratni,"samo uz privolu: preglednici viđeni u barem 2 dana (od "+P.jedinstveni+")"],["Zahtjev nakon pokretanja",P.konverzija==null?"–":P.konverzija+" %","zahtjevi ÷ pokretanja aplikacije u razdoblju"]];
+    ...["web_posjet","pokretanje","cestica","ocjena","simulator","3d","troskovi","pdf"].map(v=>[DEF[v][0],P.dogadaji[v],DEF[v][1]]),["Povratni preglednici",P.povratni,"samo uz privolu: preglednici viđeni u barem 2 dana (od "+P.jedinstveni+")"],["Zahtjev nakon pokretanja",P.konverzija==null?"–":P.konverzija+" %","zahtjevi ÷ pokretanja aplikacije u razdoblju"],
+    ["Besplatni pregledi",P.dogadaji.slobodno,"učitavanja aplikacije s barem jednim besplatnim pregledom čestice"],["Pokušaji zaključanih funkcija",P.dogadaji.zakljucano,"otvaranja zaključane funkcije (jednom po funkciji i učitavanju)"],
+    ["Konverzija besplatne provjere",P.konverzijaSlob==null?"–":P.konverzijaSlob+" %","zahtjevi poslani iz aplikacije ÷ učitavanja s besplatnim pregledom"],["Odobreni koji koriste",P.koristeNapredno+" od "+P.odobreniUkupno,"odobreni i aktivirani korisnici s prijavom u razdoblju"]];
   $("kp").innerHTML=k.map(x=>'<div><small>'+e(x[0])+'</small><b>'+e(x[1])+'</b><small>'+e(x[2])+'</small></div>').join("");
   const dani=[...new Set(P.niz.map(x=>x.dan))], V=["pokretanje","cestica","simulator","3d","pdf","zahtjev"], C={pokretanje:"#5b6661",cestica:"#0f7a52",simulator:"#1565c0",["3d"]:"#a86400",pdf:"#6a1b9a",zahtjev:"#b3261e"};
   $("gr").innerHTML=dani.length?V.map(v=>{const pts=dani.map(dd=>{const x=P.niz.find(y=>y.dan===dd&&y.vrsta===v);return x?x.n:0}), mx=Math.max(1,...pts), w=Math.max(4,Math.floor(640/dani.length));
     return '<p style="margin:8px 0 2px">'+e(v==="zahtjev"?"Zahtjevi":DEF[v][0])+' (najviše '+mx+' u danu)</p><svg width="'+(w*dani.length)+'" height="48" role="img" aria-label="'+e(v)+' po danu">'+pts.map((n,i)=>'<rect x="'+(i*w)+'" y="'+(46-Math.round(44*n/mx))+'" width="'+(w-1)+'" height="'+Math.round(44*n/mx)+'" fill="'+C[v]+'"><title>'+e(dani[i])+': '+n+'</title></rect>').join("")+'</svg>';}).join(""):"<p>Još nema događaja.</p>";
+  $("zak").innerHTML=P.zakljucano.length?'<table><tr><th>Funkcija</th><th>Pokušaja</th></tr>'+P.zakljucano.map(x=>'<tr><td>'+e(x.dim)+'</td><td>'+x.n+'</td></tr>').join("")+'</table>':"<p>Još nema podataka.</p>";
   $("reg").innerHTML=P.regije.length?'<table><tr><th>Županija</th><th>Čestica</th></tr>'+P.regije.map(x=>'<tr><td>'+e(x.dim)+'</td><td>'+x.n+'</td></tr>').join("")+'</table>':"<p>Još nema podataka.</p>";
   $("tz").innerHTML='<table><tr><th>E-mail</th><th>Zahtjev</th><th>Namjena</th><th>Status</th><th>Odobren</th><th>Ističe</th><th>Zadnja aktivnost</th><th>Radnje</th></tr>'+Z.zahtjevi.map(z=>'<tr><td>'+e(z.email)+(z.trazi_produzenje?'<br><small class="st-ceka">traži produženje</small>':"")+'</td><td>'+d(z.stvoren)+'</td><td>'+e(z.namjena||"–")+'</td><td class="st st-'+z.stanje+'">'+ST[z.stanje]+'</td><td>'+d(z.odluka&&z.stanje!=="ceka"?z.odluka:null)+'</td><td>'+(z.stanje==="odobren"&&!z.aktiviran?"nije aktiviran":z.istice?d(z.istice):z.stanje==="odobren"?"neograničeno":"–")+'</td><td>'+d(z.zadnja_akt)+'</td><td><div class="row">'+
     (["ceka","odbijen","opozvan","istekao"].includes(z.stanje)?'<button data-r="odobri" data-i="'+e(z.id)+'">Odobri</button>':"")+(z.stanje==="ceka"?'<button class="s" data-r="odbij" data-i="'+e(z.id)+'">Odbij</button>':"")+

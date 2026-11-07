@@ -3165,15 +3165,21 @@ async function pristupTests(){
     if(u==="https://p.test/izvjestaj") return h.authorization==="Bearer tok.sig"?R(200,{ok:true,poslano:b.email}):R(401,{error:{code:"TOKEN",poruka:"Prijava nije valjana."}});
     return Promise.reject(new Error("bez mreže u testu")); };
   E("FEATURES.pristup=true; PRISTUP.api='https://p.test'"); w.__areaCtx=null; w.__lastData=data(w,A,"2.2."); E("render")(w.__lastData); await tick(50);
-  const zak=[...w.document.querySelectorAll("details[data-pr-zak]")].map(d=>d.dataset.k);
-  ok($(w,"prBox")&&$(w,"prBox").dataset.pr==="zakljucano"&&["tloc","build","kd","costs"].every(k=>zak.includes(k))&&!zak.includes("calc")&&/Napredna funkcija/.test(w.document.querySelector('details[data-k="tloc"]').textContent)&&!$(w,"tW"),"Bez koda: simulator i troškovi zaključani, izračun za česticu i namjena dostupni");
-  ok(/88\/1/.test(txt(w,"sheet"))&&/Stambena/.test(txt(w,"sheet")),"Bez koda: čestica i namjena vidljive");
-  ok($(w,"v3dBtn")&&$(w,"v3dBtn").disabled&&$(w,"printBtn").textContent==="Pošalji dosje na e-mail"&&w.document.body.classList.contains("pr-blok"),"Bez koda: 3D isključen; ispis iz preglednika blokiran, gumb šalje dosje na e-mail");
-  $(w,"printBtn").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20); ok(!$(w,"prMail"),"Bez koda: slanje dosjea traži prijavu (fokus na upis koda)");
-  setv(w,"prKod","pogresan-kod1"); $(w,"prPrijava").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(50);
-  ok(/Kod nije ispravan/.test(txt(w,"prPor"))&&!E("prTok()"),"Prijava: kriv kod daje poruku s Workera");
-  setv(w,"prKod","abcd-efgh-jklm"); $(w,"prPrijava").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(80);
-  ok(E("prTok()")&&E("prTok()").token==="tok.sig"&&$(w,"prBox").dataset.pr==="otkljucano"&&!w.document.querySelector("[data-pr-zak]")&&!!$(w,"tW"),"Prijava kodom otključava napredne funkcije (prikaz se osvježi)");
+  E("inspect=function(){ render(window.__lastData); }"); // ponovno dohvaćanje nakon prijave/odjave: u testu isti podaci
+  {const T0=txt(w,"sheet");
+   ok(/88\/1/.test(T0)&&/Ukupna površina1\.200 m²/.test(T0.replace(/\s/g,"").replace("Ukupnapovršina","Ukupna površina"))||(/88\/1/.test(T0)&&/Ukupna površina/.test(T0)),"Bez koda: broj čestice i ukupna površina");
+   ok(/Unutar građevinskog područja/.test(T0)&&/Građevinski dio\s*100,0 %/.test(T0)&&/Duljine granica \(4\)/.test(T0)&&/30,0 m/.test(T0)&&/40,\d m/.test(T0)&&/informativne su; nisu geodetski utvrđene/.test(T0)&&/Građevinsko područje ne znači da je gradnja dopuštena/.test(T0),"Bez koda: građevinski dio (postotak i površina), duljine granica 30 i 40 m, napomena da je informativno i da GP nije dozvola");
+   ok(!$(w,"tW")&&!$(w,"printBtn")&&!$(w,"sazetak")&&!$(w,"presuda")&&!w.document.querySelector('details[data-k="calc"],details[data-k="zk"],details[data-k="tloc"],details[data-k="build"],.prek')&&!/kis|GBP|ocjena|teret|\/100/i.test(T0.split("Napredna analiza")[0]),"Bez koda: nema ocjene, uvjeta, ZK-a, simulatora, troškova, 3D-a ni PDF-a na stranici (ne samo skriveno)");
+   ok(E("SLOB.layer.getLayers().length")>=6&&w.document.querySelectorAll(".slob-f").length===11,"Bez koda: na karti građevinski dio i oznake duljina; popis 11 zaključanih funkcija");}
+  await E("v3dOpen")(); ok(/Otključaj naprednu analizu zemljišta/.test(txt(w,"aux"))&&!E("V3D.map"),"Bez koda: gumb 3D otvara poruku o zaključanoj funkciji, a ne 3D prikaz");
+  {const c=$(w,"lyrSki"); c.checked=true; c.dispatchEvent(new w.Event("change",{bubbles:true})); ok(!c.checked&&!E("map.hasLayer(skiLayer)")&&/Otključaj naprednu analizu/.test(txt(w,"aux")),"Bez koda: sloj s vodovima na karti je zaključan");}
+  w.document.querySelector('.slob-f[data-zak="simulator"]').dispatchEvent(new w.Event("click",{bubbles:true})); await tick(10);
+  ok(/Otključaj naprednu analizu zemljišta/.test(txt(w,"aux"))&&/Saznaj što smiješ graditi, postavi kuću na česticu, provjeri infrastrukturu i procijeni ukupne troškove gradnje/.test(txt(w,"aux"))&&!!w.document.querySelector("#aux #prZatrazi")&&/Već imam pristupni kod/.test(txt(w,"aux")),"Zaključana funkcija: poruka »Otključaj naprednu analizu zemljišta« i dva gumba");
+  w.document.querySelector("#aux #slobKod").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(10);
+  setv(w,"prKod2","pogresan-kod1"); $(w,"prPrijava2").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(50);
+  ok(/Kod nije ispravan/.test(txt(w,"prPor2"))&&!E("prTok()"),"Prijava: kriv kod daje poruku s Workera");
+  setv(w,"prKod2","abcd-efgh-jklm"); $(w,"prPrijava2").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(80);
+  ok(E("prTok()")&&E("prTok()").token==="tok.sig"&&$(w,"prBox")&&$(w,"prBox").dataset.pr==="otkljucano"&&!!$(w,"tW")&&!!$(w,"sazetak")&&!!w.document.querySelector('details[data-k="calc"]')&&!E("window.__slobodno"),"Odobren korisnik: nakon prijave puna analiza (ocjena, uvjeti, simulator)");
   ok(/otključane do/.test(txt(w,"prBox"))&&calls.some(c=>c.u.endsWith("/prijava")),"Otključano: rok i odjava prikazani");
   // dosje na e-mail (PDF iz preglednika zamijenjen u testu, jsdom nema platna)
   E("dosjePripremi=async()=>{}"); // u testu bez čekanja analiza i 3D snimke (provjerava se posebno)
@@ -3186,16 +3192,16 @@ async function pristupTests(){
   ok(hook&&hook.email==="kupac@primjer.hr"&&/Dosje čestice|Čestica HR/.test(hook.tekst)&&/Poslano na kupac@primjer.hr/.test(txt(w,"prMailPor"))&&!w.document.getElementById("report"),"Dosje: složen iz istog izvještaja, potvrda slanja, privremeni izvještaj uklonjen");
   // opoziv: pri sljedećem pokretanju provjera odjavljuje
   opozvan=true; E("PRISTUP.provjereno=false"); E("render")(w.__lastData); await tick(80);
-  ok(!E("prTok()")&&w.document.querySelector("[data-pr-zak]"),"Opozvan kod: provjera pri pokretanju odjavljuje i ponovno zaključava");
-  setv(w,"prKod","ABCD-EFGH-JKLM"); opozvan=false; $(w,"prPrijava").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(80);
-  $(w,"prOdjava").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(50); ok(!E("prTok()")&&$(w,"prBox").dataset.pr==="zakljucano","Odjava briše prijavu i zaključava");
+  ok(!E("prTok()")&&E("window.__slobodno")&&!$(w,"tW")&&w.document.querySelector(".slob-f"),"Opozvan ili istekao kod: provjera pri pokretanju odjavljuje i vraća besplatni pregled");
+  E("prDijalog()"); setv(w,"prKod2","ABCD-EFGH-JKLM"); opozvan=false; $(w,"prPrijava2").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(80);
+  $(w,"prOdjava").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(50); ok(!E("prTok()")&&E("window.__slobodno")&&!$(w,"tW"),"Odjava briše prijavu i vraća besplatni pregled");
   // zahtjev za pristup, aktivacija poveznicom, neograničen pristup, produženje
   {const zc=[]; const f0=w.fetch; w.fetch=async(u,o)=>{ u=String(u); const b=o&&o.body?JSON.parse(o.body):null; if(u==="https://p.test/zahtjev"){ zc.push(b); return {ok:true,status:200,json:async()=>({ok:true,poruka:"Ako adresa još nema zahtjev, na nju stiže e-mail s poveznicom za potvrdu."})}; }
      if(u==="https://p.test/produzenje"){ zc.push({prod:true,h:o.headers}); return {ok:true,status:200,json:async()=>({ok:true})}; }
      if(u==="https://p.test/prijava"&&b&&b.kod==="NEOG-RANI-CENO") return {ok:true,status:200,json:async()=>({token:"tok.neog",istice:null})};
      return f0(u,o); };
    E("prPostavi(null)"); E("render")(w.__lastData); await tick(30);
-   ok(!!$(w,"prZatrazi")&&/Zatraži besplatan napredni pristup/.test($(w,"prZatrazi").textContent)&&w.document.querySelector(".pr-zatrazi"),"Zaključano: gumb »Zatraži besplatan napredni pristup« na vrhu i u zaključanim odjeljcima");
+   ok(!!$(w,"prZatrazi")&&/Zatraži besplatan napredni pristup/.test($(w,"prZatrazi").textContent)&&w.document.querySelector(".slob-f"),"Besplatni pregled: gumb »Zatraži besplatan napredni pristup« i zaključane funkcije");
    $(w,"prZatrazi").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(10);
    ok(!!$(w,"przEmail")&&$(w,"przNam").options.length===7&&!!$(w,"przWeb")&&/besplatan/.test(txt(w,"prZah"))&&/pojedinačno/.test(txt(w,"prZah"))&&!w.document.querySelector("#prZah input[autocomplete=name],#prZah input[type=tel]"),"Obrazac: e-mail, šest odgovora za namjenu, skriveno polje za robote, obavijest o testnoj fazi; bez imena i telefona");
    setv(w,"przEmail","nije"); $(w,"przPosalji").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(10); ok(!zc.length&&/ispravnu e-mail/.test(txt(w,"przPor")),"Obrazac: neispravan e-mail se ne šalje");
@@ -3208,11 +3214,28 @@ async function pristupTests(){
    $(w,"prProd").dispatchEvent(new w.Event("click",{bubbles:true})); await tick(20); ok(zc.some(x=>x.prod&&x.h.authorization==="Bearer tok.sig")&&/produženje je poslan/.test(txt(w,"prProdPor")),"Korisnik s rokom može zatražiti produženje (s prijavom)");
    E("prPostavi(null)"); w.history.replaceState(null,"","/cestica-zg/?zahtjev=1"); E("prUrl")(); await tick(10); ok(!!$(w,"przEmail")&&!/zahtjev=/.test(w.location.search),"Poveznica ?zahtjev=1 (web stranica) otvara obrazac");}
   // skupna statistika: bez broja čestice, jednom po čestici, privola za identifikator preglednika
-  {const ev=[]; w.__anHook=b=>ev.push(b); E("FEATURES.analitika=true"); E("AN.posl.clear()"); E("render")(w.__lastData); await tick(30); E("render")(w.__lastData); await tick(30);
+  {const ev=[]; w.__anHook=b=>ev.push(b); E("FEATURES.analitika=true"); E("prPostavi({token:'tok.sig',istice:Date.now()+86400000})"); E("AN.posl.clear()"); E("render")(w.__lastData); await tick(30); E("render")(w.__lastData); await tick(30);
    const c=ev.filter(x=>x.e==="cestica"); ok(c.length===1&&c[0].z==="Grad Zagreb"&&c[0].o&&!/88\/1|REMETE/.test(JSON.stringify(ev))&&!ev.some(x=>x.v),"Statistika: analizirana čestica jednom po učitavanju, županija skupno, bez broja čestice i bez identifikatora bez privole");
    ok(ev.some(x=>x.e==="ocjena"),"Statistika: pregled ocjene se broji");
    E("localStorage.setItem('anPrivola','1')"); E("AN.posl.clear()"); E("render")(w.__lastData); await tick(30); ok(ev.filter(x=>x.e==="cestica").pop().privola===true&&!!ev.filter(x=>x.e==="cestica").pop().v,"Statistika: uz privolu šalje se nasumični identifikator preglednika");
    E("localStorage.removeItem('anPrivola')"); E("FEATURES.analitika=false"); w.__anHook=null;}
+  // besplatni pregled: djelomično građevinska čestica, nepoznata namjena, Krk, ostatak Hrvatske; napredni podaci se ne dohvaćaju
+  {E("prPostavi(null)"); const B=parcelRect(30,40,{KATASTARSKA_CESTICA:"77/7",KATASTARSKA_OPCINA:"REMETE"}), d2=data(w,B,"2.2.");
+   d2.rows=[{p:{Analitika:"Stambena i mješovita"},share:0.7,geom:B.geometry},{p:{Analitika:"Javne zelene površine"},share:0.3,geom:B.geometry}];
+   E("renderSlobodno")(d2,"zg"); const T=txt(w,"sheet"), I=E("slobodnoInfo")(d2,"zg");
+   ok(/Građevinski dio\s*70,0 %/.test(T)&&/Izvan građevinskog područja\s*30,0 %/.test(T)&&Math.abs(I.gp.unutra-0.7*I.area)<0.5,"Djelomično građevinska čestica: 70 % / 30 %, površina unutar GP-a = 70 % površine");
+   const boje=E("SLOB.layer.getLayers().filter(l=>l.options&&l.options.style).map(l=>l.options.style.fillColor)"); ok(boje.includes("#2e9d57")&&boje.includes("#e0574f"),"Na karti građevinski dio zeleno, negrađevinski crveno");
+   d2.rows=[{p:{Analitika:"Stambena i mješovita"},share:null,geom:null}]; E("renderSlobodno")(d2,"zg"); ok(/Nije moguće pouzdano utvrditi/.test(txt(w,"sheet"))&&!/%/.test(txt(w,"sheet").split("Opseg")[0].split("Ukupna površina")[1]||""),"Nepoznat udio namjene: »Nije moguće pouzdano utvrditi«, bez izmišljenog postotka");
+   d2.rows=[{p:{Analitika:"Stambena i mješovita"},share:0.6,geom:B.geometry}]; ok(E("slobodnoInfo")(d2,"zg").gp.st==="nepoznato","Sloj namjene pokriva samo dio čestice: nije pouzdano");
+   const K={region:"krk",ll:{lat:45.04,lng:14.61},parcel:{...B,properties:{broj:"735/58",ko:"KORNIĆ",ref:"315907-735/58"}},area:1200,rows:[{p:{POLAZNA_NAMJENA:"Građevinsko područje",PRIMARNA_NAMJENA:"naselje"},share:1,geom:B.geometry}]};
+   E("renderSlobodno")(K,"krk"); ok(/735\/58/.test(txt(w,"sheet"))&&/Građevinski dio\s*100,0 %/.test(txt(w,"sheet"))&&/Primorsko-goranska/.test(txt(w,"sheet")),"Krk: građevinsko područje iz županijskog sloja");
+   const H={region:"hr",ll:{lat:45.5,lng:18.7},parcel:{...B,properties:{broj:"12/3",ko:null,ref:"x-12/3"}},area:1200,rows:[]};
+   E("renderSlobodno")(H,"hr"); ok(/12\/3/.test(txt(w,"sheet"))&&/Nije moguće pouzdano utvrditi/.test(txt(w,"sheet")),"Ostatak Hrvatske: građevinsko područje »Nije moguće pouzdano utvrditi«");
+   // napredni podaci se za zaključanog korisnika ne dohvaćaju (ni nagib, ni okolina, ni 3D, ni mreža)
+   const spy=[]; E("loadSlope=async()=>{throw 0}; loadEnv=async()=>{throw 0}; zg3dLoad=async()=>{}"); w.__spy=spy; E("const _s=loadSlope, _e=loadEnv; loadSlope=(...a)=>{window.__spy.push('slope'); return _s(...a)}; loadEnv=(...a)=>{window.__spy.push('env'); return _e(...a)}; zg3dLoad=async()=>{window.__spy.push('3d')}");
+   E("loadParcelHR=async()=>({type:'Feature',geometry:"+JSON.stringify(B.geometry)+",properties:{broj:'12/3',ref:'x-12/3',hr:true}})"); const f0=w.fetch, fc=[]; w.fetch=(u,o)=>{fc.push(String(u)); return f0(u,o);};
+   await E("inspectHR")(w.L.latLng(45.5,18.7)); await tick(50); w.fetch=f0;
+   ok(!spy.length&&!fc.some(u=>!/p\.test/.test(u))&&E("window.__slobodno")&&/12\/3/.test(txt(w,"sheet")),"Zaključano: nakon čestice se ne dohvaćaju nagib, okolina, 3D ni drugi napredni podaci ("+spy.join(",")+")");}
   ok(errs.length===0,"bez JS grešaka (pristup): "+errs.join(" | "));
 }
 
