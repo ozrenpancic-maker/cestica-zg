@@ -8226,12 +8226,14 @@ function triSloj(o){
       sun.shadow.mapSize.set(2048,2048); sun.shadow.bias=-0.0004; sun.shadow.normalBias=0.03; scene.add(sun); scene.add(sun.target); this.sun=sun;
       renderer=new T.WebGLRenderer({canvas:map.getCanvas(),context:gl,antialias:true}); renderer.autoClear=false; renderer.shadowMap.enabled=true; renderer.shadowMap.type=T.PCFSoftShadowMap; renderer.outputEncoding=T.sRGBEncoding;
       TRI.r=renderer; },
-    // visina terena: najniža od središta i kutova tlocrta (s garažom), da kuća na kosom terenu nigdje ne lebdi; viša strana ulazi u teren
-    // (podnožje seže do 3 m ispod). Visina se uzima iz istog modela terena koji MapLibre crta, za trenutni zum, u svakom kadru.
-    matrica(){ let e=0, dub=0; try{ const tr=mapa.transform; if(mapa.terrain){ let mx=-Infinity, mn=Infinity;
-        for(const q of triTocke(o)){ const v=triTeren(mapa,q); if(v!=null){ if(v>mx) mx=v; if(v<mn) mn=v; } }
+    // visina terena: pod kuće u razini terena u sredini tlocrta (isto kao skica 3D prikaza), pa se kuća na strmom terenu ne diže
+    // na najvišu točku; viša strana ulazi u teren, a na nižoj se vidi podnožje do najniže točke oko kuće (najviše 12 m).
+    // Visina se uzima iz istog modela terena koji MapLibre crta, za trenutni zum, u svakom kadru; pločice bez podataka se preskaču.
+    matrica(){ let e=0, dub=0; try{ const tr=mapa.transform; if(mapa.terrain){ let mn=Infinity, zb=0, n=0;
+        for(const q of triTocke(o)){ const v=triTeren(mapa,q); if(v!=null){ zb+=v; n++; if(v<mn) mn=v; } }
         for(const q of triRub(o)){ const v=triTeren(mapa,q); if(v!=null&&v<mn) mn=v; }
-        if(isFinite(mx)){ e=mx-tr.elevation; dub=mx-mn; } } else if(mapa.queryTerrainElevation) e=mapa.queryTerrainElevation(o.c)||0; }catch(x){ e=0; }
+        let sr=triTeren(mapa,o.c); if(sr==null&&n) sr=zb/n;
+        if(sr!=null&&isFinite(sr)){ e=sr-tr.elevation; dub=Math.max(0,Math.min(12,sr-(isFinite(mn)?mn:sr))); } } else if(mapa.queryTerrainElevation) e=mapa.queryTerrainElevation(o.c)||0; }catch(x){ e=0; }
       if(this.grp&&Math.abs(dub-(this.dub??-1))>0.05){ this.dub=dub; this.grp.userData.teren(dub); }
       if(mm&&Math.abs(e-elev)<1e-4) return mm; elev=e; const mc=maplibregl.MercatorCoordinate.fromLngLat(o.c,e), s=mc.meterInMercatorCoordinateUnits();
       mm=new T.Matrix4().makeTranslation(mc.x,mc.y,mc.z).scale(new T.Vector3(s,-s,s)).multiply(new T.Matrix4().makeRotationX(Math.PI/2)); return mm; },
@@ -8256,8 +8258,9 @@ function triRub(o){ const lat=o.c[1]*Math.PI/180, mx=1/(111320*Math.cos(lat)), m
 // nego za getElevationForLngLatZoom, pa bi kuća inače lebdjela ili tonula); bez nje iz getElevationForLngLatZoom
 function triTeren(map,ll){ const te=map.terrain; if(!te) return null;
   try{ const sc=te.sourceCache, tiles=sc&&sc.getRenderableTiles?sc.getRenderableTiles():[], mc=maplibregl.MercatorCoordinate.fromLngLat(ll), X=8192; let best=null;
-    for(const t of tiles){ const c=t.tileID&&t.tileID.canonical; if(!c) continue; const n=2**c.z, tx=mc.x*n-c.x, ty=mc.y*n-c.y; if(tx>=0&&tx<1&&ty>=0&&ty<1&&(!best||c.z>best.c.z)) best={t,c,tx,ty}; }
+    for(const t of tiles){ const c=t.tileID&&t.tileID.canonical; if(!c||!t.dem) continue; const n=2**c.z, tx=mc.x*n-c.x, ty=mc.y*n-c.y; if(tx>=0&&tx<1&&ty>=0&&ty<1&&(!best||c.z>best.c.z)) best={t,c,tx,ty}; }
     if(best){ const v=te.getElevation(best.t.tileID,best.tx*X,best.ty*X,X); if(isFinite(v)) return v; } }catch(e){}
+  // (pločice se biraju samo ako imaju učitan model visina: bez njega MapLibre vraća 0 m i kuća bi poletjela ili potonula)
   try{ const v=te.getElevationForLngLatZoom(new maplibregl.LngLat(ll[0],ll[1]),map.transform.tileZoom); return isFinite(v)?v:null; }catch(e){ return null; } }
 function triPv(){ try{ const g=TRI.grp; if(g) g.traverse(x=>{ if(x.name==="pv") x.visible=!!V3D.pv; }); }catch(e){} }
 const TRI_K=new Set(["podest","zid","krov","streha","sljeme","atika","okvir","prozor","vrata","nadstresnica","obloga","garaza","garazna-vrata","pv"]);
