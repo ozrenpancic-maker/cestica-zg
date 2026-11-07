@@ -9562,7 +9562,8 @@ sheet.addEventListener("click",async e=>{
 (function(){ // otvaranje dijeljenog linka
   const q=new URLSearchParams(location.search), c=q.get("c"); if(!c) return; window.__scenLink=scenLinkParse(q);
   const [la,lo]=c.split(",").map(Number); if(!isFinite(la)||!isFinite(lo)) return;
-  const ll=L.latLng(la,lo); map.setView(ll,18); setTimeout(()=>inspect(ll),300);
+  // tek nakon što se skripta učita do kraja: setView odmah pokreće rukovatelje karte (moveend) koji koriste kasnije deklarirane varijable
+  const ll=L.latLng(la,lo); setTimeout(()=>{ map.setView(ll,18); setTimeout(()=>inspect(ll),300); },0);
 })();
 // ponovno otvaranje zadnje čestice (nakon ažuriranja ili kad Android zatvori aplikaciju u pozadini)
 setTimeout(async()=>{
