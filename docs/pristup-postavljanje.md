@@ -77,9 +77,14 @@ U `src/app.template.html`: `PRISTUP.api="https://pristup.cesticahr.com"`, `FEATU
 - Povratni korisnici: samo uz privolu u izborniku (nasumični identifikator preglednika, u bazi samo sažetak po danu, briše se nakon 90 dana).
 - Rokovi čuvanja: nepotvrđeni zahtjevi 7 dana, odbijeni 90 dana, opozvani i istekli 12 mjeseci, dnevnik 2 godine. Brisanje na zahtjev: „Obriši podatke” u administraciji.
 
+## Dosje na e-mail
+
+- Aplikacija slaže PDF u pregledniku i šalje ga Workeru kao bajtove (`application/pdf`; adresa, naziv i naslov u zaglavljima `x-email`, `x-naziv`, `x-naslov`). Worker ga ne raščlanjuje znak po znak: besplatni Worker smije potrošiti najviše 10 ms procesora po zahtjevu. Najveći dosje: 6 MB.
+- Snimke iz zraka DGU-a (geoportal.dgu.hr) nemaju CORS zaglavlja, pa ih preglednik ne smije ucrtati u PDF. Za PDF idu preko Workera: `/slika?u=…` (samo WMS GetMap slike s geoportal.dgu.hr, samo za dopuštene stranice, predmemorija jedan dan).
+
 ## Testovi
 
-- `cd worker-pristup && npm install && npm test`: Miniflare (workerd + D1), lažni Brevo, 58 provjera.
+- `cd worker-pristup && npm install && npm test`: Miniflare (workerd + D1), lažni Brevo, 75 provjera.
 - `node tests/run.js`: obrazac, aktivacija poveznicom, neograničen pristup, produženje, statistika u aplikaciji (Worker zamijenjen u testu).
 
 ## Besplatni i napredni dio (novi model)

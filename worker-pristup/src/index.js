@@ -188,6 +188,26 @@ async function izvjestaj(env, req, H, T) {
   await ogrPlus(env, dk, 2 * DAN);
   return json({ ok: true, poslano: email }, 200, H);
 }
+// --- javno: snimke DGU-a (ortofoto) za dosje. Geoportal DGU ne šalje CORS zaglavlja, pa ih preglednik ne smije ucrtati u
+// PDF (html2canvas). Worker ih samo prosljeđuje (tok bajtova, bez obrade): samo WMS GetMap slike s geoportal.dgu.hr, samo za
+// dopuštene stranice, s predmemorijom od jednog dana.
+const SLIKA_HOST = ["geoportal.dgu.hr"];
+async function slika(env, req, url, H) {
+  if (!H["access-control-allow-origin"]) return greska("ORIGIN", "Nedopušteno podrijetlo zahtjeva.", 403, H);
+  let u; try { u = new URL(url.searchParams.get("u") || ""); } catch (e) { return greska("ADRESA", "Neispravna adresa.", 400, H); }
+  const q = (k) => [...u.searchParams.entries()].find(([a]) => a.toLowerCase() === k)?.[1] || "";
+  if (u.protocol !== "https:" || !SLIKA_HOST.includes(u.hostname) || !/^\/services\/inspire\/[\w-]+\/(wms|ows)$/.test(u.pathname) || q("request").toLowerCase() !== "getmap" || !/^image\/(jpeg|png)$/i.test(q("format")))
+    return greska("ADRESA", "Adresa nije dopuštena.", 403, H);
+  const W = +q("width"), Hh = +q("height"); if (!(W > 0 && W <= 1200 && Hh > 0 && Hh <= 1200)) return greska("ADRESA", "Prevelika slika.", 400, H);
+  const ck = new Request("https://slika.cache/" + encodeURIComponent(u.toString())), c = typeof caches !== "undefined" ? caches.default : null;
+  let r = c ? await c.match(ck) : null;
+  if (!r) { r = await fetch(u.toString(), { cf: { cacheTtl: 86400 } }).catch(() => null);
+    if (!r || !r.ok || !/^image\//.test(r.headers.get("content-type") || "")) return greska("SLIKA", "Snimka nije dostupna.", 502, H);
+    r = new Response(r.body, { status: 200, headers: { "content-type": r.headers.get("content-type"), "cache-control": "public, max-age=86400" } });
+    if (c) await c.put(ck, r.clone()).catch(() => {}); }
+  const h = new Headers(r.headers); for (const [k, v] of Object.entries(H)) h.set(k, v); h.set("cache-control", "public, max-age=86400");
+  return new Response(r.body, { status: 200, headers: h });
+}
 // --- javno: skupna statistika. Bez kolačića i bez IP adrese u bazi; čestica se ne sprema (samo sažetak za uklanjanje
 // ponovljenih događaja, briše se nakon jednog dana); županija samo skupno. Identifikator preglednika samo uz privolu.
 async function dogadaj(env, req, H) {
@@ -397,6 +417,7 @@ export default {
     if (!dozvoljen) return greska("ORIGIN", "Nedopušteno podrijetlo zahtjeva.", 403, H);
     if (url.pathname === "/zahtjev" && req.method === "POST") return zahtjev(env, req, H);
     if (url.pathname === "/dogadaj" && req.method === "POST") return dogadaj(env, req, H);
+    if (url.pathname === "/slika" && req.method === "GET") return slika(env, req, url, H);
     if (url.pathname === "/prijava" && req.method === "POST") return prijava(env, req, H);
     if (url.pathname === "/provjera" && req.method === "GET") { const T = await provjeriToken(env, req); return T ? json({ ok: true, istice: T.z.istice || null, oznaka: null, produzenje: !!T.z.trazi_produzenje }, 200, H) : greska("TOKEN", "Prijava nije valjana.", 401, H); }
     if (url.pathname === "/produzenje" && req.method === "POST") { const T = await provjeriToken(env, req); if (!T) return greska("TOKEN", "Prijava nije valjana.", 401, H); return produzenje(env, req, H, T); }
