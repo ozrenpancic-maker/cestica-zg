@@ -53,7 +53,7 @@ npx wrangler secret put ADMIN_TOTP       # tajna za drugi korak prijave (vidi is
 npx wrangler secret put BREVO_KEY        # ključ iz Breva
 npx wrangler deploy
 ```
-**ADMIN_TOTP (MFA):** u terminalu `node -e "const A='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';let s='';for(const b of crypto.getRandomValues(new Uint8Array(20)))s+=A[b&31];console.log(s)"`. Ispisani niz upiši kao tajnu i u aplikaciju za autentifikaciju na mobitelu (Google Authenticator, Microsoft Authenticator: „Unesi ključ za postavljanje”, vremenski). Bez ove tajne prijava radi samo lozinkom, a administracija to upozorava.
+**ADMIN_TOTP (MFA):** u terminalu `node -e "const A='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';let s='';for(const b of crypto.getRandomValues(new Uint8Array(32)))s+=A[b&31];console.log(s)"`. Ispisani niz upiši kao tajnu i u aplikaciju za autentifikaciju na mobitelu (Google Authenticator, Microsoft Authenticator: „Unesi ključ za postavljanje”, vremenski). Bez ove tajne prijava radi samo lozinkom, a administracija to upozorava.
 
 **Po želji, zaštita obrasca od robota (Cloudflare Turnstile):** Cloudflare → Turnstile → Add site, pa `npx wrangler secret put TURNSTILE_SECRET`. Bez toga obrazac štite skriveno polje, potvrda adrese i ograničenje 5 zahtjeva na sat s iste mreže.
 

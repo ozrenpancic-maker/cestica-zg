@@ -343,7 +343,7 @@ export default {
     const url = new URL(req.url), { h: H, dozvoljen } = cors(env, req);
     if (req.method === "OPTIONS") return new Response(null, { status: dozvoljen ? 204 : 403, headers: H });
     if (!env.TOKEN_SECRET || !env.CODE_PEPPER || !env.DB) return greska("NOT_CONFIGURED", "Worker nije postavljen.", 503, H);
-    if (url.pathname === "/admin" && req.method === "GET") { const n = rnd(16); return new Response(adminHtml(n), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "content-security-policy": `default-src 'none'; connect-src 'self'; script-src 'nonce-${n}'; style-src 'nonce-${n}'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'`, "x-frame-options": "DENY", ...SIG } }); }
+    if (url.pathname === "/admin" && req.method === "GET") { const n = rnd(16); return new Response(adminHtml(n), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "content-security-policy": `default-src 'none'; connect-src 'self'; script-src 'nonce-${n}'; style-src 'nonce-${n}'; style-src-attr 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'`, "x-frame-options": "DENY", ...SIG } }); }
     if (url.pathname === "/admin/prijava" && req.method === "POST") { const o = req.headers.get("origin"); if (req.headers.get("x-chr-admin") !== "1" || (o && o !== url.origin)) return greska("ADMIN", "Neovlašteno.", 403); return adminPrijava(env, req); }
     if (url.pathname.startsWith("/admin/api/")) return adminApi(env, req, url);
     if (url.pathname.startsWith("/admin")) return greska("NEMA", "Nepoznata adresa.", 404);
