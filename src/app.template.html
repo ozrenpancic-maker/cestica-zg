@@ -321,6 +321,18 @@ details.saz-d>summary::-webkit-details-marker{display:none}
 details.saz-d>summary .eyebrow{margin:0}
 .saz-mini{display:flex;flex-wrap:wrap;gap:4px 10px;flex:1 1 auto;min-width:0;font-size:12px;color:var(--muted)}
 .saz-m{display:inline-flex;align-items:center;gap:4px}.saz-m i{font-style:normal;font-weight:700;width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px}
+#presuda{border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:0 1px 3px rgba(0,0,0,.08);padding:12px;margin:0 0 10px}
+.pres-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pres-oc{font-size:30px;font-weight:800;line-height:1;letter-spacing:-.02em}.pres-oc small{font-size:14px;font-weight:600;color:var(--muted)}
+.pres-st{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-weight:700;font-size:13px}
+.pres-z{background:var(--ok-bg);color:var(--ok)}.pres-y{background:var(--warn-bg);color:var(--warn)}.pres-r{background:var(--no-bg);color:var(--no)}
+.pres-st i{width:10px;height:10px;border-radius:50%;background:currentColor}
+.pres-sub{flex:1 1 220px;font-size:13px;color:var(--muted);margin:0}
+.pres-g{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}@media (max-width:560px){.pres-g{grid-template-columns:1fr}}
+.pres-g h4{margin:0 0 4px;font-size:13px}.pres-g ul{margin:0;padding-left:18px;font-size:13.5px}.pres-g li{margin:2px 0}
+.pres-inv{margin:10px 0 0;font-size:14px}
+#presuda details{margin-top:8px;font-size:13px}#presuda summary{cursor:pointer;color:var(--accent);font-weight:600;min-height:32px;display:flex;align-items:center}
+.pres-tab{width:100%;border-collapse:collapse;font-size:12.5px}.pres-tab th,.pres-tab td{text-align:left;padding:4px 6px;border-top:1px solid var(--line);vertical-align:top}.pres-tab td.n{text-align:right;white-space:nowrap}
 .saz-m.saz-ok i{background:var(--ok-bg);color:var(--ok)}.saz-m.saz-warn i,.saz-m.saz-q i{background:var(--warn-bg);color:var(--warn)}.saz-m.saz-no i{background:var(--no-bg);color:var(--no)}.saz-m.saz-info i{background:var(--soft);color:var(--muted);border:1px solid var(--line)}
 details.saz-d[open] .saz-mini{display:none}
 details.saz-d>summary>em{display:none}
@@ -8932,6 +8944,75 @@ document.addEventListener("click",e=>{ const b=e.target&&e.target.closest&&e.tar
 (()=>{ const st=document.createElement("style"); st.id="modCss"; st.textContent=modCss(); document.head.appendChild(st); modPostavi(false,{tiho:true}); })();
 // ukupna investicija se preračunava u finUpdate: nakon toga osvježi napomenu o naprednim stavkama
 finUpdate=(f=>function(){ const r=f.apply(this,arguments); try{modNap()}catch(e){} return r; })(finUpdate);
+// ================= PRESUDA: OCJENA ČESTICE =================
+// Ocjena 0–100 iz odgovora sažetka, prema važnosti (upute korisnika): kritično 70 bodova, vrlo važno 30.
+// Korisno (energija, osunčanost) i „nice to have” (pogled, vjetar, kišnica) ne ulaze u ocjenu: aplikacija ih ne
+// procjenjuje sama za svaku česticu. Stanje kriterija: ok 100 %, info 85 % (podatak je tu, ali nije pravna potvrda),
+// warn 50 %, nepoznato 50 % (Podaci nisu dostupni), no 0 %. Zelena samo bez zapreka i bez nepoznatih kritičnih kriterija;
+// crvena kad je kritični kriterij zapreka. Ocjena nije pravna potvrda: to ostaje lokacijska informacija.
+const PRES_KR=[
+  {id:"namjena",raz:"Kritično",w:30,n:"Dozvoljivost gradnje (namjena)"},
+  {id:"pristup",raz:"Kritično",w:20,n:"Pristup s prometne površine"},
+  {id:"uvjeti",raz:"Kritično",w:20,n:"Urbanistički uvjeti (veličina kuće, UPU)"},
+  {id:"infra",raz:"Vrlo važno",w:10,n:"Infrastruktura (voda, odvodnja, struja)"},
+  {id:"teren",raz:"Vrlo važno",w:10,n:"Teren (nagib)"},
+  {id:"ogr",raz:"Vrlo važno",w:10,n:"Ograničenja (tereti, priroda, poplave)"}];
+const PRES_F={ok:1,info:0.85,warn:0.5,"?":0.5,no:0};
+function presudaIzracun(U){
+  U=U||{}; const K=[];
+  const teren=U.nagib==null?{st:"?"}:U.nagib<10?{st:"ok"}:U.nagib<20?{st:"warn",f:0.6}:{st:"warn",f:0.3};
+  const S={namjena:U.namjena, pristup:U.pristup, uvjeti:U.uvjeti, infra:U.infra, teren:teren.st, ogr:U.ogr};
+  const nag=U.nagib==null?"":String(Math.round(U.nagib));
+  const TX={
+    namjena:{ok:"Namjena prema prostornom planu dopušta gradnju",info:"Namjena prema prostornom planu predviđa gradnju",warn:"Namjena dopušta gradnju samo uz uvjete",no:"Namjena ili plan ne dopuštaju gradnju"+(U.zapreke&&U.zapreke.length?" ("+U.zapreke.join(", ")+")":""),"?":"Namjena: podaci nisu dostupni"},
+    pristup:{ok:"Pristup s prometne površine potvrđen",info:"Uz česticu je cesta (pravni status pristupa nije potvrđen)",warn:"Pristup nije potvrđen",no:"Nema pristupa s prometne površine","?":"Pristup: podaci nisu dostupni"},
+    uvjeti:{ok:"Uvjeti iz plana dopuštaju kuću"+(U.kuca?": "+U.kuca:""),info:"Uvjeti iz plana dopuštaju kuću"+(U.kuca?": "+U.kuca:""),warn:"Urbanistički uvjeti nisu potpuno obrađeni (UPU)",no:"Urbanistički uvjeti nisu zadovoljeni"+(U.kuca?": "+U.kuca:""),"?":"Urbanistički uvjeti: podaci nisu dostupni"},
+    infra:{ok:"Priključci u blizini (katastar infrastrukture)",info:"Priključci u blizini (katastar infrastrukture)",warn:"Neki vod je dalje od 50 m ili nije evidentiran",no:"Nema komunalne infrastrukture","?":"Infrastruktura: podaci nisu dostupni"},
+    teren:{ok:"Blag teren (nagib oko "+nag+" %)",warn:U.nagib>=20?"Strm teren (oko "+nag+" %) povećava troškove":"Umjereno strm teren (oko "+nag+" %)","?":"Nagib terena: podaci nisu dostupni"},
+    ogr:{ok:"Bez evidentiranih tereta, izvan zaštićenih i poplavnih područja",info:"Bez poznatih ograničenja",warn:"Postoji ograničenje: "+(U.ogrTxt||"tereti, priroda ili poplave"),no:"Plomba ili teret u zemljišnoj knjizi","?":"Tereti i ograničenja: podaci nisu dostupni"}};
+  let zb=0;
+  for(const k of PRES_KR){ const st=S[k.id]&&PRES_F[S[k.id]]!=null?S[k.id]:"?"; const f=k.id==="teren"&&teren.f!=null?teren.f:PRES_F[st];
+    const b=Math.round(k.w*f*10)/10; zb+=b; K.push({...k,st,f,b,t:(TX[k.id][st]||TX[k.id]["?"])}); }
+  const ocjena=Math.round(zb), kr=K.filter(k=>k.raz==="Kritično");
+  const status=kr.some(k=>k.st==="no")||ocjena<50?"crvena":ocjena>=75&&kr.every(k=>k.st==="ok"||k.st==="info")&&!K.some(k=>k.st==="no")?"zelena":"žuta";
+  const nep=K.filter(k=>k.st==="?");
+  const prednosti=K.filter(k=>k.f>=0.85).sort((a,b)=>b.w-a.w).slice(0,3).map(k=>k.t);
+  const rizici=K.filter(k=>k.f<0.85).sort((a,b)=>(b.w*(1-b.f))-(a.w*(1-a.f))||b.w-a.w).slice(0,3).map(k=>k.t);
+  return {ocjena,status,kriteriji:K,prednosti,rizici,nepoznato:nep.map(k=>k.n),inv:U.inv||null};
+}
+function presudaUlaz(rows,d){
+  const R=q=>rows.find(r=>r.q===q), P=window.__prek||[], pr=id=>P.find(x=>x.id===id);
+  const gr=R("Smije li se graditi?"), ku=R("Koliko velika kuća?"), te=R("Ima li tereta?"), pp=R("Priroda i poplave");
+  const zap=P.filter(x=>x.stanje==="no");
+  // pristup: fizički uz cestu (OSM) = info; pravni status aplikacija ne potvrđuje
+  const a=pr("ot-pristup"), O=window.__prist, PO=(()=>{try{return pristupOpis(window.__cur&&window.__cur.key)}catch(e){return null}})();
+  let pristup=a?(a.stanje==="no"?"no":a.stanje==="warn"?"warn":"?"):"?";
+  if(pristup==="?"&&O&&(O.st==="uz"||(O.st==="blizu"&&PO&&/vjerojatno čestica ceste/.test(PO.tekst)))) pristup="info";
+  const upu=pr("ot-upu"), kst=ku?ku.st:"?";
+  const uvjeti=kst==="no"||(upu&&upu.stanje==="no")?"no":upu&&upu.stanje==="warn"?"warn":kst==="ok"?"info":"?";
+  const k=pr("ot-komunalno"), infra=k?(k.stanje==="ok"?"info":k.stanje==="warn"?"warn":k.stanje==="no"?"no":"?"):"?";
+  const ts=te?te.st:"?", ps=pp?pp.st:"?";
+  const ogr=ts==="no"?"no":ts==="warn"||ps==="warn"?"warn":ts==="ok"&&ps==="ok"?"ok":"?";
+  const ogrTxt=[ts==="warn"?"upis u teretovnici":"",ps==="warn"?"priroda, poplave ili kulturno dobro":""].filter(Boolean).join("; ");
+  const sl=d&&d.slope&&d.slope.v&&Number.isFinite(d.slope.v.slope)?d.slope.v.slope:null;
+  const F=window.__fin, inv=F&&F.total&&F.total.base?{lo:F.total.lo,hi:F.total.hi,zem:!!F.total.hasBuy}:null;
+  const kuca=ku&&ku.a&&ku.st!=="?"?String(ku.a).split(" · ")[0].slice(0,70):"";
+  return {namjena:gr?(gr.st==="no"?"no":gr.st==="warn"?"warn":gr.st==="ok"||gr.st==="info"?"info":"?"):"?",zapreke:zap.map(x=>x.naziv),pristup,uvjeti,kuca,infra,nagib:sl,ogr,ogrTxt,inv};
+}
+function presudaHtml(Pz){
+  const C={zelena:["pres-z","Zelena","Nema poznatih zapreka; potvrdi lokacijskom informacijom."],"žuta":["pres-y","Žuta","Gradnja je moguća uz provjere ili nedostaju podaci."],crvena:["pres-r","Crvena","Postoji zapreka ili ozbiljan rizik za gradnju."]}[Pz.status];
+  const li=a=>a.length?a.map(x=>`<li>${esc(x)}</li>`).join(""):"<li>Podaci nisu dostupni</li>";
+  const stN={ok:"potvrđeno",info:"podatak postoji, nije pravna potvrda",warn:"upozorenje","?":"Podaci nisu dostupni",no:"zapreka"};
+  const inv=Pz.inv?`(${Pz.inv.zem?"sa zemljištem":"gradnja s naknadama"}): <b>${fmt(Pz.inv.lo)}–${fmt(Pz.inv.hi)} €</b> (procjena, ne ulazi u ocjenu)`:"Podaci nisu dostupni (postavi kuću u simulatoru ili upiši površinu u procjeni gradnje).";
+  return `<section id="presuda" aria-label="Ocjena čestice"><div class="pres-top"><div class="pres-oc" data-ocjena="${Pz.ocjena}">${Pz.ocjena}<small>/100</small></div>`+
+    `<span class="pres-st ${C[0]}" data-status="${Pz.status}"><i aria-hidden="true"></i>${C[1]}</span><p class="pres-sub">${C[2]}</p></div>`+
+    `<div class="pres-g"><div><h4>Najveće prednosti</h4><ul class="pres-plus">${li(Pz.prednosti)}</ul></div><div><h4>Najveći rizici</h4><ul class="pres-minus">${li(Pz.rizici)}</ul></div></div>`+
+    `<p class="pres-inv">Procijenjena investicija ${Pz.inv?inv:": "+inv}</p>`+
+    `<details data-k="pres-kako"><summary>Kako je izračunato ▾</summary><table class="pres-tab"><thead><tr><th>Kriterij</th><th>Važnost</th><th>Stanje</th><th class="n">Bodovi</th></tr></thead><tbody>`+
+    Pz.kriteriji.map(k=>`<tr data-kr="${k.id}"><td>${esc(k.n)}</td><td>${k.raz}</td><td>${esc(stN[k.st])}</td><td class="n">${dec(String(k.b))} / ${k.w}</td></tr>`).join("")+
+    `<tr><td>Energija, osunčanost, pogled, vjetar, kišnica</td><td>Korisno / dodatno</td><td>ne ulazi u ocjenu (vidi napredne alate)</td><td class="n">–</td></tr></tbody></table>`+
+    `<p class="meta">Stanje „potvrđeno” 100 % bodova, „podatak postoji” 85 %, upozorenje i „Podaci nisu dostupni” 50 %, zapreka 0 %; strm teren 30–60 %. Zelena traži ocjenu od 75 naviše i sve kritične kriterije bez upozorenja i bez nepoznanica. Crvena: kritični kriterij je zapreka ili ocjena ispod 50. Ocjena je pomoć pri odluci, ne pravna potvrda: dopuštenost gradnje potvrđuje lokacijska informacija i projektant.</p></details></section>`;
+}
 // ================= SAŽETAK NA VRHU ANALIZE =================
 // Pet kratkih odgovora; dodir otvara odgovarajući odjeljak. Svaki odgovor je preuzet iz odjeljka ispod (isti izvor i oznaka).
 function sazetakUpdate(){
@@ -8976,13 +9057,14 @@ function sazetakUpdate(){
    else if(T&&sheet.querySelector('details[data-k="ptn"]'))
      rows.push({src:["ppv","ptn"],st:T.S.zad||pp?"info":"?",q:"Koliko vrijedi zemljište?",a:tl?tl+(T.S.zad?" (medijan: cijeli grad ili općina, ne ova čestica)":""):"za ovaj grad ili općinu medijan nije objavljen",go:'details[data-k="ptn"]'});}
   window.__sazRows=rows;
+  let presH=""; try{ const Pz=presudaIzracun(presudaUlaz(rows,d)); window.__presuda=Pz; presH=presudaHtml(Pz); }catch(e){ console.error(e); }
   const C=[...PZREG.items.values()].filter(x=>x.raz==="C").length, ic={ok:"✓",warn:"!",no:"✕","?":"?",info:"i"};
   const srcOf=r=>{ if(r.srcTxt) return r.srcTxt; const its=(r.src||[]).map(id=>PZREG.items.get(id)).filter(Boolean); if(!its.length) return "";
     const seen=new Set(); return its.map(it=>{const t=(it.izvor||it.razlog||"").replace(/\s+/g," ").slice(0,90); const k=t+it.raz; if(seen.has(k)) return null; seen.add(k); return `${t}${it.datum?", "+it.datum.split("-").reverse().join(". ")+".":""} (${it.raz})`;}).filter(Boolean).join(" · "); };
   // na mobitelu je sažetak sklopljen u jedan redak sa stanjima; dodir ga proširuje (stanje se pamti)
   const kratko={"Smije li se graditi?":"Gradnja","Koliko velika kuća?":"Kuća","Ima li tereta?":"Tereti","Pristup i komunalije":"Pristup","Koliko bi koštalo?":"Trošak","Priroda i poplave":"Priroda","Koliko vrijedi zemljište?":"Vrijednost"};
   const sOpen=OPEN.has("saz")||(!isMobile()&&!OPEN.has("saz-zatv")), mini=rows.map(r=>`<span class="saz-m saz-${r.st==="?"?"q":r.st}"><i aria-hidden="true">${ic[r.st]}</i>${esc(kratko[r.q]||r.q)}</span>`).join("");
-  const h=`<details class="saz-d" data-k="saz"${sOpen?" open":""}><summary><span class="eyebrow">Sažetak čestice</span><span class="saz-hint">${sOpen?"Sakrij ▴":"Prikaži odgovore ▾"}</span><span class="saz-mini">${mini}</span><em aria-hidden="true">▾</em></summary><ul class="saz-l">${rows.map(r=>`<li class="saz-${r.st==="?"?"q":r.st}"><button type="button" class="saz-b" data-saz="${esc(r.go)}"><i aria-hidden="true">${ic[r.st]}</i><span><b>${esc(r.q)}</b><small>${esc(r.a)}</small>${srcOf(r)?`<small class="saz-src">${esc(srcOf(r))}</small>`:""}</span><em aria-hidden="true">›</em></button></li>`).join("")}</ul>`+
+  const h=presH+`<details class="saz-d" data-k="saz"${sOpen?" open":""}><summary><span class="eyebrow">Sažetak čestice</span><span class="saz-hint">${sOpen?"Sakrij ▴":"Prikaži odgovore ▾"}</span><span class="saz-mini">${mini}</span><em aria-hidden="true">▾</em></summary><ul class="saz-l">${rows.map(r=>`<li class="saz-${r.st==="?"?"q":r.st}"><button type="button" class="saz-b" data-saz="${esc(r.go)}"><i aria-hidden="true">${ic[r.st]}</i><span><b>${esc(r.q)}</b><small>${esc(r.a)}</small>${srcOf(r)?`<small class="saz-src">${esc(srcOf(r))}</small>`:""}</span><em aria-hidden="true">›</em></button></li>`).join("")}</ul>`+
     (C?`<button type="button" class="saz-c" data-saz="#sec-pouzdanost">Prije kupnje provjeri ${C} ${C===1?"stavku označenu":"stavki označenih"} s C ›</button>`:"")+`</details>`;
   if(box.dataset.h!==h){keepPos(()=>{box.innerHTML=h; box.dataset.h=h;});}
   const cards=g.querySelector(".cards"); if(cards) cards.style.display="none"; // stare kartice sažetka zamijenio je ovaj sažetak
