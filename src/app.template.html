@@ -2136,7 +2136,7 @@ function katwGet(P){const w=KATW.get(String(P.cid)); if(!w||w.st!=="ok") return 
 //    obuhvaća točku, GetMap u EPSG:3765 (ili CRS:84) za točno traženi okvir; provjera ima li list sadržaja na čestici.
 // Novi katalog (druga županija) dodaje se u RASTER_KATALOZI s obuhvatom; kod se ne veže uz pojedini list ili česticu.
 const RASTER_KATALOZI=[
- {id:"pgz",tip:"arcgis",naslov:"Detaljna namjena (UPU)",kratko:"PGŽ",
+ {id:"pgz",tip:"arcgis",naslov:"Detaljna namjena (UPU)",kratko:"PGŽ",zup:"Primorsko-goranska županija",
   naziv:"Zavod za prostorno uređenje Primorsko-goranske županije, katalog rasterskih karata prostornih planova",
   url:"https://gisportal.pgz.hr/server/rest/services/PP_RASTERI/PP_RASTERI/MapServer",
   obuhvat:[13.9,44.4,15.3,45.7], // približni okvir PGŽ (WGS84); služi samo da se katalog ne pita izvan županije
@@ -2145,12 +2145,46 @@ const RASTER_KATALOZI=[
   naziv:"Ministarstvo prostornoga uređenja, graditeljstva i državne imovine, ISPU: prostorni planovi Grada Zagreba (WMS)",
   // gis2 je provjeren u pregledniku 19. 10. 2026. (HTTP 200, CORS); ostale adrese iz registra NIPP koriste se samo ako gis2 ne odgovori
   hosts:["https://gis2.mgipu.hr/srv1/PPRasterZ21_Public/wms","https://gis3.mgipu.hr/srv1/PPRasterZ21_Public/wms","https://gis4.mgipu.hr/srv1/PPRasterZ21_Public/wms","https://gis1.mgipu.hr/srv1/PPRasterZ21_Public/wms"],
-  obuhvat:[15.74,45.60,16.25,45.97]} // približni okvir Grada Zagreba
+  obuhvat:[15.74,45.60,16.25,45.97],glasilo:"Službeni glasnik Grada Zagreba",zup:"Grad Zagreb"}, // približni okvir Grada Zagreba
+ // ostalih 19 županija: isti servis Ministarstva (PPRasterZ01…Z20 bez Z08, broj = redni broj županije). Provjereno u pregledniku 7. 11. 2026.:
+ // GetCapabilities i GetMap s CORS-om za sve osim Z12 (nije odgovorio ni na jednoj adresi). Z08 (PGŽ) ima samo UPU Crikvenica centar,
+ // pa za PGŽ ostaje županijski katalog. Obuhvat je okvir svih listova iz GetCapabilities (Z12 i Z17 približno).
+ ...[["01","Zagrebačka županija",[15.32,45.46,16.73,46.07]],["02","Krapinsko-zagorska županija",[15.59,45.90,16.26,46.28]],["03","Sisačko-moslavačka županija",[15.69,44.87,17.26,45.80]],
+  ["04","Karlovačka županija",[14.95,44.88,15.93,45.77]],["05","Varaždinska županija",[15.87,46.01,16.77,46.41]],["06","Koprivničko-križevačka županija",[16.34,45.88,17.31,46.36]],
+  ["07","Bjelovarsko-bilogorska županija",[16.48,45.46,17.51,46.10]],["09","Ličko-senjska županija",[14.56,44.22,16.40,45.16]],["10","Virovitičko-podravska županija",[17.12,45.47,18.08,46.00]],
+  ["11","Požeško-slavonska županija",[16.93,45.18,18.12,45.58]],["12","Brodsko-posavska županija",[17.00,44.95,18.70,45.40]],["13","Zadarska županija",[14.31,43.79,16.26,44.55]],
+  ["14","Osječko-baranjska županija",[17.88,45.19,19.12,45.94]],["15","Šibensko-kninska županija",[15.02,43.43,16.67,44.28]],["16","Vukovarsko-srijemska županija",[18.48,44.83,19.47,45.50]],
+  ["17","Splitsko-dalmatinska županija",[15.90,42.90,17.60,44.05]],["18","Istarska županija",[13.26,44.60,14.30,45.55]],["19","Dubrovačko-neretvanska županija",[16.43,42.38,18.57,43.20]],
+  ["20","Međimurska županija",[16.18,46.27,16.90,46.57]]].map(([z,zup,ob])=>({id:"ispu-z"+z,tip:"wms",naslov:"Karte prostornog plana (ISPU)",kratko:"ISPU",zup,
+  naziv:"Ministarstvo prostornoga uređenja, graditeljstva i državne imovine, ISPU: prostorni planovi, "+zup+" (WMS)",
+  hosts:["gis2","gis3","gis4","gis1"].map(h=>`https://${h}.mgipu.hr/srv1/PPRasterZ${z}_Public/wms`),obuhvat:ob})),
+ // Brodsko-posavska: servis Ministarstva (Z12) nije odgovarao (7. 11. 2026.); županijski zavod ima vlastiti WMS (MapGuide, samo EPSG:3765,
+ // okviri listova u EPSG:3765, CORS provjeren s GetMap na Slavonskom Brodu i Novoj Gradiški). Pita se prije Z12.
+ {id:"bpz",tip:"wms",naslov:"Karte prostornog plana (Zavod BPŽ)",kratko:"Zavod BPŽ",zup:"Brodsko-posavska županija",prvi:true,
+  naziv:"Zavod za prostorno uređenje Brodsko-posavske županije, karte prostornih planova (WMS)",
+  hosts:["https://wms.bpzzpu.hr/mapguide/mapagent/mapagent.fcgi"],obuhvat:[17.00,44.95,18.70,45.40],planoviUrl:"https://www.bpzzpu.hr/vazeci/"}
 ];
+// Planovi državne razine (nacionalni parkovi, parkovi prirode, područja posebnih obilježja): isti servis Ministarstva, dodatni listovi
+// uz plan grada ili općine (ne zamjenjuju ga). Provjereno 7. 11. 2026.: 146 listova, npr. PP Medvednica, NP Plitvička jezera, PP Učka.
+const RK_DRZAVNI={id:"ispu-pppo",tip:"wms",naslov:"Karte prostornog plana državne razine",kratko:"ISPU, državna razina",drzavni:true,
+  naziv:"Ministarstvo prostornoga uređenja, graditeljstva i državne imovine, ISPU: prostorni planovi državne razine (WMS)",
+  hosts:["gis2","gis3","gis4","gis1"].map(h=>`https://${h}.mgipu.hr/srv1/PPRasterPPPPO_Public/wms`),obuhvat:[13.2,42.3,19.5,46.6]};
 const RK_POLJA="OBJECTID,Name,KARTA_NAZIV,PLAN_NAZIV,OPCINA,GIS_SIFRA,MJERILO,KARTA_SIFRA,STANJE_1212";
 const RKAT=new Map(); // ključ čestice -> {st, K, items, sel, img, e, dan, prazni}
 let RK_CTX=null;      // trenutna čestica: {key, parcel, ll, region, pl (Krk: evidencija planova), rows (Zagreb: namjena)}
-function rkKatalog(ll){return RASTER_KATALOZI.find(k=>ll.lng>=k.obuhvat[0]&&ll.lng<=k.obuhvat[2]&&ll.lat>=k.obuhvat[1]&&ll.lat<=k.obuhvat[3])||null}
+// katalozi čiji obuhvat sadrži točku; okviri županija se preklapaju, pa se pitaju redom (PGŽ i Grad Zagreb prvi, zatim manji okvir)
+// zup (npr. „Splitsko-dalmatinska županija” iz adrese) stavlja katalog te županije na prvo mjesto
+const rkZupKljuc=t=>norm(String(t||"")).toLowerCase().replace(/zupanija|grad/g,"").trim().split(/\s+/)[0]||"";
+function rkKatalozi(ll,zup){const u=k=>ll.lng>=k.obuhvat[0]&&ll.lng<=k.obuhvat[2]&&ll.lat>=k.obuhvat[1]&&ll.lat<=k.obuhvat[3], pov=k=>(k.obuhvat[2]-k.obuhvat[0])*(k.obuhvat[3]-k.obuhvat[1]);
+  const L=RASTER_KATALOZI.map((k,i)=>({k,i})).filter(x=>u(x.k)).sort((a,b)=>(a.i<2?a.i:9)-(b.i<2?b.i:9)||(b.k.prvi?1:0)-(a.k.prvi?1:0)||pov(a.k)-pov(b.k)).map(x=>x.k);
+  const zk=rkZupKljuc(zup); return zk?[...L.filter(k=>rkZupKljuc(k.zup)===zk),...L.filter(k=>rkZupKljuc(k.zup)!==zk)]:L;}
+// županija točke iz adrese (OpenStreetMap, Nominatim): okviri županija se preklapaju, pa se ne odlučuje samo po okviru
+const RK_ZUP=new Map();
+function rkZupanija(ll){ const k=ll.lat.toFixed(3)+","+ll.lng.toFixed(3); if(RK_ZUP.has(k)) return RK_ZUP.get(k);
+  const q=new URLSearchParams({format:"jsonv2",lat:ll.lat.toFixed(6),lon:ll.lng.toFixed(6),zoom:"8",addressdetails:"1","accept-language":"hr"});
+  const p=Promise.race([(window.__ptnGeoHook?Promise.resolve(window.__ptnGeoHook(ll)):getJSON("https://nominatim.openstreetmap.org/reverse?"+q.toString(),{},8000)).then(j=>{const a=j&&j.address||{}; return a.county||a.state||"";}),new Promise(r=>setTimeout(()=>r(""),8000))]).catch(()=>"");
+  RK_ZUP.set(k,p); p.then(z=>{ if(!z) RK_ZUP.delete(k); }); return p; }
+function rkKatalog(ll){return rkKatalozi(ll)[0]||null}
 // --- vrsta kartografskog prikaza iz naziva lista; karta prometa nikad ne postaje karta namjene
 const RK_VRSTE={namjena:"korištenje i namjena površina",promet:"promet",zastita:"zaštita prostora (priroda, baština)",infra:"promet i komunalna infrastruktura",uvjeti:"uvjeti korištenja, uređenja i zaštite",pravila:"urbana pravila i način gradnje",ostalo:"ostali prikaz",nepoznato:"vrsta nije prepoznata"};
 // naziv koji je samo šifra (npr. „HR_ISPU_GUP1_01333_R09_KN_1_1” ili „KN_1_1”) ne otkriva vrstu karte
@@ -2166,7 +2200,7 @@ function rkVrsta(naziv){
   return "nepoznato"; // naziv bez opisa vrste (npr. samo plan i izmjena) ne određuje vrstu karte
 }
 // Title sloja ISPU-a, npr. „GUP grada Zagreba - V. ID (dopuna) ID KN_1_1”: naziv plana i izmjena iz koje je list (metapodatak servisa)
-function ispuTitle(t){const r=String(t||"").trim(), m=r.match(/^(.*?)\s+-\s+(.*)$/), iz=r.match(/\b([IVXLC]+)\.\s*ID\b/);
+function ispuTitle(t){const r=String(t||"").trim(), m=r.match(/^(.*?)\s+-\s+(.*)$/)||r.match(/^(.*?)\s+(ID\s+[A-Z]{2}_[\d_]+)$/), iz=r.match(/\b([IVXLC]+)\.\s*ID\b/);
   return {plan:m&&!rkSamoSifra(m[1])?m[1].trim():null,izmjena:iz?iz[1]+". izmjene i dopune":null,dopuna:/\(dopuna\)/i.test(r)};}
 const rkGenericki=t=>/web map service|^wms$|geoserver/i.test(String(t||""));
 // Provjerena tablica: šifra karte u ISPU-u -> vrsta i službeni naziv, posebno za svaki plan i oznaku revizije.
@@ -2267,7 +2301,7 @@ const RK_ARCGIS={
 // ---------- WMS (ISPU, Ministarstvo) ----------
 // Naziv sloja ISPU-a, npr. HR_ISPU_GUP1_01333_R09_IS_1_1: vrsta plana, oznaka, šifra, oznaka revizije, šifra karte.
 // Oznaka revizije (R09…) NE dokazuje važenje lista: služi samo da se vidi ima li u servisu više inačica iste karte.
-function ispuIme(n){const m=String(n||"").match(/^HR_ISPU_([A-Z]+?)(\d*)_(\d+)_R(\d+)_(.+)$/i); return m?{vrsta:m[1].toUpperCase(),br:m[2]||"",sifra:m[3],rev:+m[4],karta:m[5]}:null}
+function ispuIme(n){const m=String(n||"").split("/").pop().replace(/^HR-ISPU-/i,"HR_ISPU_").replace(/^(HR_ISPU_[A-Z]+\d*)-(\d+)-R(\d+)-(.+)$/i,(a,b,c,d,e)=>b+"_"+c+"_R"+d+"_"+e.replace(/-/g,"_")).match(/^HR_ISPU_([A-Z]+?)(\d*)_(\d+)_R(\d+)_(.+)$/i); return m?{vrsta:m[1].toUpperCase(),br:m[2]||"",sifra:m[3],rev:+m[4],karta:m[5]}:null}
 function wmsParse(xml){
   const doc=new DOMParser().parseFromString(xml,"text/xml"), out=[];
   if(doc.getElementsByTagName("parsererror").length) throw new Error("GetCapabilities nije ispravan XML");
@@ -2276,9 +2310,12 @@ function wmsParse(xml){
     for(const L of kids(el,"Layer")){
       const crs=new Set([...inh.crs,...kids(L,"CRS").map(c=>c.textContent.trim()),...kids(L,"SRS").map(c=>c.textContent.trim())]);
       const title=txt(L,"Title"), name=txt(L,"Name"), g=kids(L,"EX_GeographicBoundingBox")[0];
-      const bb=g?["westBoundLongitude","southBoundLatitude","eastBoundLongitude","northBoundLatitude"].map(k=>parseFloat(txt(g,k))):inh.bb;
+      // bez EX_GeographicBoundingBox (npr. MapGuide BPŽ): okvir u EPSG:3765 pretvoren u stupnjeve (okvir oko četiri kuta)
+      const b3=kids(L,"BoundingBox").find(b=>/EPSG:3765/.test(b.getAttribute("CRS")||b.getAttribute("SRS")||"")), bt=b3?["minx","miny","maxx","maxy"].map(k=>parseFloat(b3.getAttribute(k))):null;
+      const bbT=bt&&bt.every(Number.isFinite)?(()=>{const P=[[bt[0],bt[1]],[bt[2],bt[1]],[bt[0],bt[3]],[bt[2],bt[3]]].map(([e,n])=>tmInv(e,n)); return [Math.min(...P.map(q=>q[0])),Math.min(...P.map(q=>q[1])),Math.max(...P.map(q=>q[0])),Math.max(...P.map(q=>q[1]))];})():null;
+      const bb=g?["westBoundLongitude","southBoundLatitude","eastBoundLongitude","northBoundLatitude"].map(k=>parseFloat(txt(g,k))):bbT||inh.bb;
       const sub=kids(L,"Layer");
-      if(name&&!sub.length) out.push({name,title,abs:txt(L,"Abstract"),bb,crs:[...crs],roditelj:inh.title||""});
+      if(name&&!sub.length) out.push({name,title,abs:txt(L,"Abstract"),bb,bb3765:bt&&bt.every(Number.isFinite)?bt:null,crs:[...crs],roditelj:inh.title||""});
       walk(L,{crs,bb,title:title||inh.title});
     }
   })(doc.documentElement.getElementsByTagName("Capability")[0]||doc.documentElement,{crs:new Set(),bb:null,title:""});
@@ -2291,7 +2328,7 @@ function wmsCaps(K){
     for(const host of K.hosts){
       try{const x=await rkFetchText(host+"?service=WMS&request=GetCapabilities&version=1.3.0",25000);
         if(!/<WMS_Capabilities|<WMT_MS_Capabilities/.test(x)) throw new Error("odgovor nije WMS GetCapabilities");
-        return {host,slojevi:wmsParse(x),dohvaceno:pzDan()};
+        K._host=host; return {host,slojevi:wmsParse(x),dohvaceno:pzDan()};
       }catch(e){err.push(host.replace(/^https:\/\/([^/]+).*/,"$1")+": "+e.message)}
     }
     throw new Error(err.join("; "));
@@ -2420,7 +2457,7 @@ const RK_WMS={
     const q=new URLSearchParams({SERVICE:"WMS",VERSION:"1.3.0",REQUEST:"GetMap",LAYERS:it.s.name,STYLES:"",CRS:crs,BBOX:bbox.map(v=>v.toFixed(crs==="CRS:84"?7:2)).join(","),WIDTH:String(W),HEIGHT:String(H),FORMAT:"image/png",TRANSPARENT:transparent?"TRUE":"FALSE"});
     return (RK_WMS.host(K))+"?"+q.toString();
   },
-  host(K){const S=RKAT.get(rkKey()); return (S&&S.host)||K.hosts[0];},
+  host(K){const S=RKAT.get(rkKey()); return K._host||(S&&S.K===K&&S.host)||K.hosts[0];},
   async img(K,it,parcel,scale){
     const B=rkBox(parcel,scale), W=800, H=800; let bbox, px;
     if(it.crs==="EPSG:3765"){bbox=[B.xmin,B.ymin,B.xmax,B.ymax]; px=([e,n])=>[(e-B.xmin)/(B.xmax-B.xmin)*W,(B.ymax-n)/(B.ymax-B.ymin)*H];}
@@ -2438,9 +2475,11 @@ const RK_WMS={
     return {href,extent:{xmin:B.xmin,ymin:B.ymin,xmax:B.xmax,ymax:B.ymax},crs:it.crs,W,H,poly,scale,url:RK_WMS.getMapUrl(K,it,bbox,W,H,it.crs,false),okvir:"traženi",share,provjera};
   },
   // cijeli list (naslov, legenda) u okviru sloja iz GetCapabilities: za provjeru vrste karte
-  fullUrl(K,it){const b=it.s.bb; if(!b||!b.every(Number.isFinite)) return null; const kx=Math.cos((b[1]+b[3])/2*Math.PI/180), ar=(b[3]-b[1])/((b[2]-b[0])*kx||1), W=1600, H=Math.max(200,Math.min(3200,Math.round(W*ar)));
+  fullUrl(K,it){ if(!it.s.crs.includes("CRS:84")&&it.s.bb3765){ const b=it.s.bb3765, W=1600, H=Math.max(200,Math.min(3200,Math.round(W*(b[3]-b[1])/((b[2]-b[0])||1)))); return RK_WMS.getMapUrl(K,it,b,W,H,"EPSG:3765",false); }
+    const b=it.s.bb; if(!b||!b.every(Number.isFinite)) return null; const kx=Math.cos((b[1]+b[3])/2*Math.PI/180), ar=(b[3]-b[1])/((b[2]-b[0])*kx||1), W=1600, H=Math.max(200,Math.min(3200,Math.round(W*ar)));
     return RK_WMS.getMapUrl(K,it,b,W,H,"CRS:84",false);},
   mapUrl(K,it,b,sz){const w=Math.min(2048,sz.x), h=Math.min(2048,sz.y);
+    if(!it.s.crs.includes("CRS:84")){ const a=tmFwd(b.getWest(),b.getSouth()), c=tmFwd(b.getEast(),b.getNorth()); return RK_WMS.getMapUrl(K,it,[a[0],a[1],c[0],c[1]],w,h,"EPSG:3765",true); }
     return RK_WMS.getMapUrl(K,it,[b.getWest(),b.getSouth(),b.getEast(),b.getNorth()],w,h,"CRS:84",true);},
   status(K,it,ctx){
     // plan se veže uz evidenciju samo kad ga servis imenuje (naziv sloja ili nadređenog sloja), ne iz same šifre
@@ -2453,9 +2492,9 @@ const RK_WMS={
     const izm=it.TT&&it.TT.izmjena?`Servis navodi da je list iz ${it.TT.izmjena}${it.TT.dopuna?" (dopuna; list ne mora pokrivati cijeli plan)":""}${m&&m.verzija?"; zadnja odluka u evidenciji aplikacije: "+String(m.verzija).replace(/\.$/,""):""}. Jesu li kasnije izmjene mijenjale ovaj list, nije provjereno. `:"";
     const aktNap=izm+`Oznaka revizije${rv!=null?" R"+String(rv).padStart(2,"0"):""} u nazivu sloja nije dokaz da je list iz zadnje važeće odluke.`+(revs.length>1?` U servisu postoji ${revs.length} inačice ove karte (${revs.map(r=>"R"+String(r).padStart(2,"0")).join(", ")})${it.starija?"; ovo nije najviša oznaka":""}.`:"");
     return {st,stTxt,izvorSt:"plan prepoznat iz naziva sloja ISPU-a",
-      statusP:na?pz("A",{izvor:m.naziv+(m.verzija?", "+m.verzija:""),obuhvat:"plan (ne pojedini list)",datum:d,razlog:"veza lista i plana izvedena iz naziva sloja"}):pz("C",{razlog:stTxt,provjera:"Službeni glasnik Grada Zagreba, lokacijska informacija"}),
+      statusP:na?pz("A",{izvor:m.naziv+(m.verzija?", "+m.verzija:""),obuhvat:"plan (ne pojedini list)",datum:d,razlog:"veza lista i plana izvedena iz naziva sloja"}):pz("C",{razlog:stTxt,provjera:(K.glasilo||"službeno glasilo grada ili općine")+", lokacijska informacija"}),
       aktV:it.starija?"starija inačica u servisu":it.TT&&it.TT.izmjena?"list iz "+it.TT.izmjena+"; nije potvrđeno da je zadnji":"nije potvrđeno",
-      aktP:pz("C",{razlog:"servis ne navodi odluku ni datum lista; oznaka revizije nije dokaz važenja",provjera:"grafički dio zadnje odluke (Službeni glasnik Grada Zagreba), lokacijska informacija"}),
+      aktP:pz("C",{razlog:"servis ne navodi odluku ni datum lista; oznaka revizije nije dokaz važenja",provjera:"grafički dio zadnje odluke ("+(K.glasilo||"službeno glasilo grada ili općine")+"), lokacijska informacija"}),
       aktNap,izr:[]};
   },
   rows(K,it){const S=RKAT.get(rkKey()), im=S&&S.img; return [
@@ -2464,7 +2503,7 @@ const RK_WMS={
     ["Izvor karte",esc(K.naziv)+`<small class="fx">${esc((S&&S.host)||K.hosts[0])}</small>`],
     ["WMS sloj",esc(it.s.name)+`<small class="fx">koordinatni sustav ${esc(it.crs)}</small>`],
     ["Sadržaj na čestici",im&&im.st==="ok"?(im.share==null?"nije provjereno (slika se ne može očitati u pregledniku)":im.share===0?"list na čestici nema sadržaja":Math.round(im.share*100)+" % granice čestice prekriva sadržaj lista"):"–"]];},
-  emptyMsg(K,ctx){return {warn:true,txt:"U servisu ISPU nema lista prostornog plana čiji okvir obuhvaća ovu česticu. Karte plana pogledaj u Službenom glasniku Grada Zagreba ili traži lokacijsku informaciju."};}
+  emptyMsg(K,ctx){return {warn:true,txt:"U servisu ISPU nema lista prostornog plana čiji okvir obuhvaća ovu česticu. Karte plana pogledaj u "+(K.glasilo?K.glasilo.replace(/^Službeni glasnik/,"Službenom glasniku"):"službenom glasilu grada ili općine")+" ili traži lokacijsku informaciju."};}
 };
 const RK_TIPOVI={arcgis:RK_ARCGIS,wms:RK_WMS};
 
@@ -2483,7 +2522,7 @@ function rkPlanStatus(a,feats){
 }
 const snTxt=s=>{const m=String(s||"").match(/(\d{4})\D+(\d+)/); return m?(+m[2])+"/"+m[1]:String(s||"")};
 function rkPzSet(S,it,PS){
-  pzSet("upu-list","List prostornog plana",it.plan+" · "+it.karta,pz("B",{izvor:S.K.naziv,obuhvat:"list čiji obuhvat sadrži točku čestice",datum:S.dan,metoda:S.K.tip==="arcgis"?"georeferencirani raster, sloj "+it._sloj.id+", OBJECTID "+it.OBJECTID:"georeferencirani raster, WMS sloj "+it.s.name}));
+  pzSet("upu-list","List prostornog plana",it.plan+" · "+it.karta,pz("B",{izvor:(it._K||S.K).naziv,obuhvat:"list čiji obuhvat sadrži točku čestice",datum:S.dan,metoda:S.K.tip==="arcgis"?"georeferencirani raster, sloj "+it._sloj.id+", OBJECTID "+it.OBJECTID:"georeferencirani raster, WMS sloj "+it.s.name}));
   pzSet("upu-vrsta","Vrsta karte",RK_VRSTE[it.vrsta],it.vrsta==="nepoznato"?pz("C",{razlog:"servis za list daje samo šifru; šifra se ne tumači",provjera:"naslov na cijelom listu"}):it.vrstaIzvor==="tablica"?pz("A",{izvor:it.tablica.izvor,datum:it.tablica.datum,obuhvat:"ovaj plan i oznaka revizije"}):pz("B",{metoda:"prepoznato iz naziva lista u servisu"}));
   pzSet("upu-status","Status plana s lista",PS.stTxt,PS.statusP);
   pzSet("upu-aktualnost","Je li list iz zadnje važeće odluke",PS.aktV,PS.aktP);
@@ -2500,20 +2539,26 @@ function rkBox(parcel,scale){
 }
 function rkKey(){return window.__cur&&window.__cur.key}
 async function rkStart(ctx){
-  const key=rkKey(), parcel=ctx&&ctx.parcel, ll=ctx&&ctx.ll, K=ll?rkKatalog(ll):null;
+  const key=rkKey(), parcel=ctx&&ctx.parcel, ll=ctx&&ctx.ll; let KK=ll?rkKatalozi(ll):[]; const K=KK[0]||null;
   RK_CTX=ctx&&key?{...ctx,key}:null;
   if(!key||!parcel||!K||RKAT.has(key)) return;
   const S={st:"load",K,dan:pzDan(),prazni:new Set()}; RKAT.set(key,S); rkUpd();
-  try{const c=turf.pointOnFeature(parcel).geometry.coordinates, [E,N]=tmFwd(c[0],c[1]); const r=await RK_TIPOVI[K.tip].query(K,E,N,{lat:c[1],lng:c[0]});
-    S.items=r.items; S.err=r.err; S.host=r.host||null; S.st=r.items.length?"ok":"none"; S.sel=r.items.length?0:null;}
-  catch(e){S.st="err"; S.e=e.message; setTimeout(()=>{if(RKAT.get(key)===S) RKAT.delete(key)},30000);}
+  if(KK.length>1&&ctx.region==="hr"){ const z=await rkZupanija(ll); if(z){ KK=rkKatalozi(ll,z); S.K=KK[0]; S.zup=z; rkUpd(); } }
+  // uz granicu županija prvi katalog može biti susjedni: pita se sljedeći dok jedan ne nađe list (greška jednog ne prekida ostale)
+  let c; try{ c=turf.pointOnFeature(parcel).geometry.coordinates; }catch(e){ c=[ll.lng,ll.lat]; } const [E,N]=tmFwd(c[0],c[1]); let prva=null, gr=null;
+  for(const Ki of KK){ try{const r=await RK_TIPOVI[Ki.tip].query(Ki,E,N,{lat:c[1],lng:c[0]}); if(!prva) prva={Ki,r}; if(r.items.length){ prva={Ki,r}; break; } }catch(e){ if(!gr) gr={Ki,e}; } }
+  // listovi planova državne razine (park prirode, nacionalni park…) dodaju se iza listova plana grada ili općine
+  let dr=[]; if(FEATURES.rkDrzavni!==false&&ll){ try{ const r=await RK_WMS.query(RK_DRZAVNI,E,N,{lat:c[1],lng:c[0]}); dr=r.items.map(x=>({...x,_K:RK_DRZAVNI})); }catch(e){ S.errDr=e.message; } }
+  if(prva&&(prva.r.items.length||!gr||dr.length)){ const r=prva.r, its=[...r.items,...dr]; S.K=prva.Ki; S.items=its; S.err=r.err; S.host=r.host||null; S.st=its.length?"ok":"none"; S.sel=its.length?0:null; S.errGl=gr&&!r.items.length?gr.e.message:null; }
+  else if(dr.length){ S.K=gr?gr.Ki:K; S.items=dr; S.err=[]; S.st="ok"; S.sel=0; S.errGl=gr?gr.e.message:null; }
+  else { S.K=gr?gr.Ki:K; S.st="err"; S.e=gr?gr.e.message:"katalog nije odgovorio"; setTimeout(()=>{if(RKAT.get(key)===S) RKAT.delete(key)},30000); }
   rkUpd(); if(S.st==="ok") rkImg(parcel,1,true);
 }
 // auto = odabir koji je napravila aplikacija: ako list na čestici nema sadržaja, prelazi se na sljedeći list iste vrste
 async function rkImg(parcel,scale,auto){
   const key=rkKey(), S=RKAT.get(key); if(!S||S.st!=="ok") return;
   const it=S.items[S.sel]; S.img={st:"load",scale}; rkUpd();
-  try{const im=await RK_TIPOVI[S.K.tip].img(S.K,it,parcel,scale); if(RKAT.get(key)===S&&S.items[S.sel]===it){S.img={st:"ok",...im};
+  try{const Kt=it._K||S.K, im=await RK_TIPOVI[Kt.tip].img(Kt,it,parcel,scale); if(RKAT.get(key)===S&&S.items[S.sel]===it){S.img={st:"ok",...im};
       if(scale===1&&it.zona&&uzUkljuceno()&&uzLegenda(it)&&!(S.zp&&S.zp.it===it&&S.zp.st!=="err")){S.zp={st:"load",it}; uzPrijedlog(S,it,S.img).then(z=>{if(RKAT.get(key)===S&&z){S.zp={...z,it}; window.__uzZadnji=S.zp; rkUpd();}});}
       if(im.share===0){S.prazni.add(it.id); if(auto){const nx=S.items.findIndex(x=>x.vrsta===it.vrsta&&!x.starija&&!S.prazni.has(x.id)); if(nx>=0){S.sel=nx; S.preskoceno=(S.preskoceno||[]).concat(it.karta); rkUpd(); return rkImg(parcel,scale,true);}}}}}
   catch(e){if(RKAT.get(key)===S) S.img={st:"err",e:e.message,scale}}
@@ -2522,7 +2567,35 @@ async function rkImg(parcel,scale,auto){
 function rkUpd(){const el=document.getElementById("rkBox"); if(el&&RK_CTX&&RK_CTX.key===rkKey()) el.innerHTML=rkInner(); const u=document.getElementById("uzUvjeti"); if(u) u.outerHTML=uzUvjetiBox();}
 // prijedlog zone i uz izbornik zone u „Uvjetima gradnje” (vidljiv i u osnovnom prikazu, gdje je odjeljak s kartom skriven)
 function uzUvjetiBox(){let h=""; try{const S=RKAT.get(rkKey()); if(S&&S.zp&&S.zp.it&&S.zp.it.zona&&S.zp.key===rkKey()) h=uzPrijedlogHtml(S);}catch(e){} return `<div id="uzUvjeti">${h}</div>`;}
-function rkInner(){
+// Usporedni sloj Grada Zagreba „Planirana namjena 2026.” (GUP 2025, ArcGIS, ažuriran 30. 10. 2026.; isti sadržaj kao skup
+// podataka na data.zagreb.hr, čiji GeoJSON ima samo prvih 2000 poligona). Ima oznaku zone (S, M1, K1…), ali za prometne
+// površine prazan naziv namjene, pa zasad samo potvrđuje ili ne potvrđuje namjenu iz postojećeg sloja; ne zamjenjuje ga.
+const NAM26_URL=BASE+"A7_planirana_namjena_Grad_Zagreb_PPGZ_GUP_ovi_i_UPU_i/FeatureServer/0/query", NAM26=new Map();
+async function nam26Start(parcel){ const key=rkKey(); if(FEATURES.nam26===false||!key||NAM26.has(key)) return; NAM26.set(key,{st:"load"});
+  try{ const c=turf.pointOnFeature(parcel).geometry.coordinates; const q=new URLSearchParams({geometry:c[0]+","+c[1],geometryType:"esriGeometryPoint",inSR:"4326",spatialRel:"esriSpatialRelIntersects",outFields:"Namjena,oznaka,Naziv_plana,Godina_zadnje_izmjene",returnGeometry:"false",f:"json"});
+    const j=await getJSON(NAM26_URL+"?"+q.toString(),{},12000); if(j&&j.error) throw new Error(j.error.message||"greška servisa");
+    NAM26.set(key,{st:"ok",a:((j&&j.features)||[]).map(f=>f.attributes)}); }
+  catch(e){ NAM26.set(key,{st:"err",e:e.message}); }
+  rkUpd(); }
+function nam26Html(){ const R=NAM26.get(rkKey()); if(!R||!(RK_CTX&&RK_CTX.region==="zg")) return ""; if(R.st==="load") return `<p class="meta">Uspoređujem sa slojem „Planirana namjena 2026.”…</p>`;
+  if(R.st==="err") return `<p class="meta">Sloj „Planirana namjena 2026.” (Grad Zagreb): Podaci nisu dostupni (${esc(R.e)}).</p>`;
+  const a=R.a[0]; if(!a) return `<p class="meta">Sloj „Planirana namjena 2026.” (Grad Zagreb): za točku čestice nema poligona.</p>`;
+  const m=RK_CTX.rows&&RK_CTX.rows[0]&&RK_CTX.rows[0].p, st=norm(String(m&&m.Namjena||"")).toLowerCase(), nv=norm(String(a.Namjena||"")).toLowerCase();
+  const isto=!!(st&&nv&&st===nv), opis=`${a.oznaka?"oznaka <b>"+esc(a.oznaka)+"</b>, ":""}${a.Namjena?esc(a.Namjena):"naziv namjene nije upisan"} (${esc(a.Naziv_plana||"plan nije naveden")}${a.Godina_zadnje_izmjene?", "+esc(a.Godina_zadnje_izmjene):""})`;
+  return `<p class="meta">Usporedni sloj Grada Zagreba „Planirana namjena 2026.”: ${opis}. ${!nv?"Namjena se ne može usporediti.":isto?"Namjena je ista kao u sloju koji aplikacija koristi.":"<b>Namjena se razlikuje od sloja koji aplikacija koristi</b>: provjeri lokacijskom informacijom."} Oznaka zone iz tog sloja nije potvrda detaljne zone za uvjete gradnje.</p>`; }
+// tri odvojena stanja: je li karta dostupna, je li zona potvrđena, jesu li uvjeti gradnje obrađeni u aplikaciji
+function rkStanja(S){
+  const it=S.st==="ok"?S.items[S.sel]:null, Ki=it&&(it._K||S.K), im=S.img||{};
+  const karta=S.st==="load"?"tražim…":S.st==="err"?`servis trenutačno nedostupan (${S.K.kratko})`:S.st==="none"?`za česticu nije pronađen list (${S.K.kratko})`:
+    im.st==="err"?`list je pronađen, ali servis trenutačno ne vraća sliku (${Ki.kratko})`:im.st==="ok"&&im.share===0?`list je pronađen, ali na čestici nema sadržaja (${Ki.kratko})`:`dostupna: ${it.plan} · ${it.karta} (${Ki.kratko})`;
+  const reg=RK_CTX&&RK_CTX.region, uvj=reg==="zg"?"obrađeni u aplikaciji (GUP Grada Zagreba, Prostorni plan Grada Zagreba)":reg==="krk"?"obrađeni u aplikaciji za Grad Krk (PPUG; UPU samo pilot)":"nisu obrađeni u aplikaciji za ovo područje";
+  const ok=S.st==="ok"&&!(im.st==="err"||im.share===0);
+  return `<table class="rp rk-stanja"><tbody><tr><th>Karta plana</th><td>${ok?"<b>":""}${esc(karta)}${ok?"</b>":""}</td></tr><tr><th>Zona</th><td>nije potvrđena (aplikacija ne očitava skeniranu kartu)</td></tr><tr><th>Uvjeti gradnje</th><td>${esc(uvj)}</td></tr></tbody></table>`+
+    ((S.st!=="ok"||S.errGl)&&S.K.planoviUrl?`<p class="meta"><a href="${esc(S.K.planoviUrl)}" target="_blank" rel="noopener">Popis važećih planova (${esc(S.K.kratko)})</a></p>`:"")+
+    (S.errGl?`<p class="meta">Katalog ${esc(S.K.kratko)} trenutačno nije odgovorio (${esc(S.errGl)}); prikazani su samo listovi drugih izvora.</p>`:"");
+}
+function rkInner(){ const S=RKAT.get(rkKey()); const h0=rkInner0(); return S&&S.st!=="load"?rkStanja(S)+h0:h0; }
+function rkInner0(){
   const S=RKAT.get(rkKey());
   if(!S) return `<p class="meta">Katalog karata prostornih planova nije dostupan za ovo područje.</p>`;
   const T=RK_TIPOVI[S.K.tip];
@@ -2533,7 +2606,7 @@ function rkInner(){
   if(S.st==="none"){const m=T.emptyMsg(S.K,RK_CTX);
     if(m.warn){pzSet("upu-zona","Detaljna zona",null,pz("C",{razlog:"katalog za točku nema kartu plana",provjera:"grafički dio plana, lokacijska informacija"})); return `<div class="verdict v-warn">${esc(m.txt)}</div><p class="meta"><b>Detaljna zona nije potvrđena.</b></p>`;}
     pzDel("upu-zona"); return `<p class="meta">${esc(m.txt)}</p>`;}
-  const it=S.items[S.sel], im=S.img||{}, PS=T.status(S.K,it,RK_CTX);
+  const it=S.items[S.sel], im=S.img||{}, Ki=it._K||S.K, Ti=RK_TIPOVI[Ki.tip], PS=Ti.status(Ki,it,RK_CTX);
   rkPzSet(S,it,PS);
   let h="";
   if(PS.st!=="vazeci") h+=`<div class="verdict v-${PS.st==="van"?"no":"warn"}" style="margin:0 0 6px">Status plana: ${esc(PS.stTxt)}. ${PS.st==="van"?"Karta ne vrijedi za gradnju.":"Provjeri je li plan na snazi."}</div>`;
@@ -2543,7 +2616,7 @@ function rkInner(){
   if(it.vrsta==="nepoznato") h+=`<p class="flag">Vrsta ovog lista nije potvrđena. Otvori cijeli list i pročitaj naslov karte.</p>`;
   else if(it.zona) h+=`<p class="meta">Na ovom listu su ${esc(it.listNapomena||"zone za uvjete gradnje")}. Naslov lista: ${esc(it.listIzvor||"odluka o planu")}.</p>`;
   else if(nam&&it.vrsta!=="namjena") h+=`<p class="flag">Odabrana karta je ${esc(RK_VRSTE[it.vrsta])}, a ne karta namjene.</p>`;
-  if(RK_CTX&&RK_CTX.region==="zg"&&RK_CTX.rows&&RK_CTX.rows.length){const m=RK_CTX.rows[0].p; h+=`<p class="meta">${pzTag(pz("A",{izvor:"Grad Zagreb, GIS baza planirane namjene"}))} Namjena prema službenom vektorskom sloju GUP-a: <b>${esc(m.Namjena||m.Analitika||"–")}</b> (odjeljak na vrhu). Raster ISPU-a ovdje je kartografski dokaz.</p>`;}
+  if(RK_CTX&&RK_CTX.region==="zg"&&RK_CTX.rows&&RK_CTX.rows.length){const m=RK_CTX.rows[0].p; h+=`<p class="meta">${pzTag(pz("A",{izvor:"Grad Zagreb, GIS baza planirane namjene"}))} Namjena prema službenom vektorskom sloju GUP-a: <b>${esc(m.Namjena||m.Analitika||"–")}</b> (odjeljak na vrhu). Raster ISPU-a ovdje je kartografski dokaz.</p>`+nam26Html();}
   const lbl=a=>`${a.plan} · ${a.karta}${a.vrsta!=="namjena"?" ("+RK_VRSTE[a.vrsta]+")":""}${a.I?" · R"+String(a.I.rev).padStart(2,"0"):""}${a.starija?" · starija inačica":""}${S.prazni.has(a.id)?" · bez sadržaja na čestici":""}`;
   h+=`<div class="kd" style="margin:0 0 6px"><label for="rkSel">Karta</label><select id="rkSel" class="bsel">${S.items.map((a,i)=>`<option value="${i}"${i===S.sel?" selected":""}>${esc(lbl(a))}</option>`).join("")}</select></div>`;
   if(S.preskoceno&&S.preskoceno.length) h+=`<p class="meta">Preskočeno jer na čestici nema sadržaja: ${esc(S.preskoceno.join("; "))}.</p>`;
@@ -2553,14 +2626,14 @@ function rkInner(){
     const pts=im.poly.map(r=>r.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" "));
     if(im.share===0) h+=`<div class="verdict v-warn" style="margin:0 0 6px">Ovaj list na čestici nema sadržaja (prozirno ili bijelo). Obuhvat lista ne znači da sadrži podatke za česticu.</div>`;
     h+=`<div class="rkimg" style="aspect-ratio:${im.W}/${im.H}"><img src="${esc(im.href)}" alt="Izrez karte ${esc(it.karta)} s granicom čestice" width="${im.W}" height="${im.H}"><svg viewBox="0 0 ${im.W} ${im.H}" preserveAspectRatio="none" aria-hidden="true">${pts.map(p=>`<polygon points="${p}" fill="rgba(0,200,220,.18)" stroke="#000" stroke-width="6"/><polygon points="${p}" fill="none" stroke="#00e0ff" stroke-width="3"/>`).join("")}</svg></div>`;
-    h+=`<div class="kd"><button type="button" class="ib" id="rkIn">Uvećaj</button><button type="button" class="ib" id="rkOut">Umanji</button><button type="button" class="ib" id="rkMap">${RK_MAP.on?"Ukloni s karte":"Prikaži na karti"}</button><a class="ib" href="${esc(im.url)}" target="_blank" rel="noopener">Otvori izrez</a>${T.fullUrl?`<a class="ib" id="rkFull" href="${esc(T.fullUrl(S.K,it))}" target="_blank" rel="noopener">Otvori cijeli list</a>`:""}</div>`;
+    h+=`<div class="kd"><button type="button" class="ib" id="rkIn">Uvećaj</button><button type="button" class="ib" id="rkOut">Umanji</button><button type="button" class="ib" id="rkMap">${RK_MAP.on?"Ukloni s karte":"Prikaži na karti"}</button><a class="ib" href="${esc(im.url)}" target="_blank" rel="noopener">Otvori izrez</a>${Ti.fullUrl&&Ti.fullUrl(Ki,it)?`<a class="ib" id="rkFull" href="${esc(Ti.fullUrl(Ki,it))}" target="_blank" rel="noopener">Otvori cijeli list</a>`:""}</div>`;
     h+=`<p class="meta">Prikazano je ${Math.round(im.extent.xmax-im.extent.xmin)} × ${Math.round(im.extent.ymax-im.extent.ymin)} m. Granica čestice (plavo) ucrtana je prema okviru koji je ${im.okvir==="vraćeni"?"vratio servis":"zatražen od servisa (WMS vraća točno taj okvir)"} (${esc(im.crs==="CRS:84"?"WGS84":"HTRS96/TM")}).</p>`;
   }
   if(it.zona&&S.zp) h+=uzPrijedlogHtml(S);
   h+=`<div class="verdict v-warn" style="margin:6px 0">Detaljna zona nije potvrđena.</div>`;
-  h+=`<p class="meta">Oznaku zone pročitaj na karti i usporedi s legendom i odredbama plana. Aplikacija je ne očitava automatski, jer skenirana karta nema digitalnu legendu povezanu s bojama.${S.K.tip==="arcgis"?" Uvjeti gradnje računaju se samo za zonu koju sam odabereš u „Uvjetima gradnje”, uz napomenu da nije potvrđena.":""}</p>`;
+  h+=`<p class="meta">Oznaku zone pročitaj na karti i usporedi s legendom i odredbama plana. Aplikacija je ne očitava automatski, jer skenirana karta nema digitalnu legendu povezanu s bojama.${Ki.tip==="arcgis"?" Uvjeti gradnje računaju se samo za zonu koju sam odabereš u „Uvjetima gradnje”, uz napomenu da nije potvrđena.":""}</p>`;
   const R=PZREG.items;
-  h+=`<table class="rp"><tbody>`+T.rows(S.K,it).map(([a,b])=>`<tr><th>${esc(a)}</th><td>${b}</td></tr>`).join("")+
+  h+=`<table class="rp"><tbody>`+Ti.rows(Ki,it).map(([a,b])=>`<tr><th>${esc(a)}</th><td>${b}</td></tr>`).join("")+
     `<tr><th>Status plana</th><td>${pzTag(R.get("upu-status"))} ${esc(PS.stTxt)}<small class="fx">${esc(PS.izvorSt)}</small></td></tr>`+
     `<tr><th>Aktualnost lista</th><td>${pzTag(R.get("upu-aktualnost"))} ${esc(PS.aktV)}<small class="fx">${esc(PS.aktNap)}</small></td></tr>`+
     `<tr><th>Datum provjere</th><td>${esc(S.dan)}</td></tr>`+
@@ -2575,7 +2648,7 @@ function rkMapDraw(){
   const S=RKAT.get(rkKey()); if(!RK_MAP.on||!S||S.st!=="ok") return;
   const it=S.items[S.sel], b=map.getBounds(), sz=map.getSize();
   if(!map.getPane("rkPane")){const pn=map.createPane("rkPane"); pn.style.zIndex=350; pn.style.pointerEvents="none";}
-  RK_MAP.layer=window.L.imageOverlay(RK_TIPOVI[S.K.tip].mapUrl(S.K,it,b,sz),b,{opacity:.8,interactive:false,pane:"rkPane"}).addTo(map);
+  RK_MAP.layer=window.L.imageOverlay(RK_TIPOVI[(it._K||S.K).tip].mapUrl(it._K||S.K,it,b,sz),b,{opacity:.8,interactive:false,pane:"rkPane"}).addTo(map);
 }
 map.on("moveend",()=>{if(RK_MAP.on) rkMapDraw();});
 sheet.addEventListener("change",e=>{ if(e.target.id!=="rkSel") return; const S=RKAT.get(rkKey()); if(!S||!RK_CTX) return; S.sel=+e.target.value; rkImg(RK_CTX.parcel,1,false); if(RK_MAP.on) rkMapDraw(); });
@@ -3122,6 +3195,7 @@ function renderHR(d){
   else if(slope&&slope.e) h+=`<p class="meta">Nagib terena: Podaci nisu dostupni (${esc(slope.e)}).</p>`;
   else if(parcel&&!env) h+=`<p class="hint"><span class="spin"></span>Učitavam teren, pristup i infrastrukturu…</p>`;
   if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`+povHtml()+ptnHtml()+vjetHtml();
+  if(parcel&&rkKatalog(ll)) h+=`<h2 id="sec-upu">${esc(rkKatalog(ll).naslov)}</h2><div id="rkBox">${rkInner()}</div>`;
   h+=naHtml("Namjena, klizišta i druga ograničenja iz plana","Za područja izvan Grada Zagreba i otoka Krka aplikacija još ne provjerava slojeve plana (kulturna dobra iz Registra i geološka podloga provjeravaju se iznad). Namjenu i ograničenja provjeri u ISPU-u (ispu.mgipu.hr) i u prostornom planu općine ili grada.");
   h+=env?envHtml(env):envHtml(null);
   if(parcel) h+=naHtml("Postojeće zgrade i uvjeti gradnje","Uvjeti gradnje (izgrađenost, visina, katnost) i izračun smjestivosti kuće nisu obrađeni za ovo područje. Okolne zgrade u 3D pogledu preuzete su iz OpenStreetMapa i samo su ilustracija.");
@@ -3139,7 +3213,7 @@ function renderHR(d){
   sheet.querySelectorAll("details[data-k]").forEach(dd=>{if(OPEN.has(dd.dataset.k)) dd.open=true});
   sheetPost(); scrollRestore(keepScroll);
   if(parcel){ window.__areaCtx={key,refresh:()=>renderHR(KRK_CUR),retry:()=>{OSSZK.delete(String(P.cid)); KATW.delete(String(P.cid)); krkOssFetch(P,area);}};
-    try{finUpdate()}catch(err){console.error(err)} if(TL.layer){TL.zones=null; tDraw();} if(OPEN.has("sun")) sunDraw(); krkOssFetch(P,area); zkOssRefresh(String(P.cid)); okolisStart(parcel,key); }
+    try{finUpdate()}catch(err){console.error(err)} if(TL.layer){TL.zones=null; tDraw();} if(OPEN.has("sun")) sunDraw(); krkOssFetch(P,area); zkOssRefresh(String(P.cid)); okolisStart(parcel,key); rkStart({parcel,ll,region:"hr"}); }
   else window.__areaCtx=null;
   try{PWA.loadedAt=Date.now(); if(parcel) pwaRememberParcel(); pwaNetUI();}catch(e){}
   if(isMobile()){ if(!UI.hadParcel&&parcel){UI.hadParcel=true; if(UI.state==="peek") setState("half"); else setState(UI.state,{keepScroll:true});} else setState(UI.state,{keepScroll:true}); }
@@ -6278,7 +6352,7 @@ function render(d){
   restoreInputs(snap);
   if(parcel){const k=favKey(parcel,ll); window.__areaCtx={key:k,refresh:()=>{const el=document.getElementById("zgArea"); if(el) el.innerHTML=krkAreaHtml(zgAreaP(parcel,k),area); areaCmpRefresh();},retry:()=>{OSSZK.delete("zg:"+k); KATW.delete("zg:"+k); zgOssFetch(parcel,k,area);}}; zgOssFetch(parcel,k,area); zkOssRefresh(zgAreaP(parcel,k).cid); okolisStart(parcel,k);}
   else window.__areaCtx=null;
-  if(parcel) rkStart({parcel,ll,region:"zg",rows});
+  if(parcel){ rkStart({parcel,ll,region:"zg",rows}); nam26Start(parcel); }
   if(!snap&&window.__cur) projApplyHouse(window.__cur.key);
   sheet.querySelectorAll("details[data-k]").forEach(dd=>{if(OPEN.has(dd.dataset.k)) dd.open=true});
   sheetPost(); scrollRestore(keepScroll);
