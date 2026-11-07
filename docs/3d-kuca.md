@@ -17,7 +17,7 @@ Model ima:
 
 Mjere su iste kao u simulatoru: širina, dubina, visina do vijenca, nagib, smjer sljemena i okret. Materijali i raspored prozora samo su ilustracija.
 
-**Teren:** pod kuće je u razini terena u sredini tlocrta (isto kao skica 3D prikaza). Viša strana ulazi u teren, a na nižoj se vidi podnožje do najniže točke oko kuće, najviše 12 m (do 7. 11. 2026. kuća je stajala na najvišoj točki, pa se na strmom terenu dizala). Pločice terena bez učitanog modela visina se preskaču. Visina se uzima iz pločice terena koju karta u tom trenutku crta: kad se odzumira, karta crta grublji teren (osobito na mobitelu), pa bi kuća inače lebdjela.
+**Teren:** pod kuće je na najnižoj točki terena ispod tlocrta, pa kuća nigdje ne lebdi. Na kosom terenu viša strana ulazi u padinu, a terasa i okućnica uz nižu stranu ostaju u razini poda (odluka 7. 11. 2026., nakon čestice 11098 k.o. Čučerje Novo s nagibom oko 54 %). Pločice terena bez učitanog modela visina se preskaču. Visina se uzima iz pločice terena koju karta u tom trenutku crta: kad se odzumira, karta crta grublji teren (osobito na mobitelu), pa bi kuća inače lebdjela.
 
 Bez WebGL-a, ili ako se biblioteka ne učita, ostaje dosadašnji model od kvadara.
 

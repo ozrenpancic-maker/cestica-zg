@@ -8226,14 +8226,12 @@ function triSloj(o){
       sun.shadow.mapSize.set(2048,2048); sun.shadow.bias=-0.0004; sun.shadow.normalBias=0.03; scene.add(sun); scene.add(sun.target); this.sun=sun;
       renderer=new T.WebGLRenderer({canvas:map.getCanvas(),context:gl,antialias:true}); renderer.autoClear=false; renderer.shadowMap.enabled=true; renderer.shadowMap.type=T.PCFSoftShadowMap; renderer.outputEncoding=T.sRGBEncoding;
       TRI.r=renderer; },
-    // visina terena: pod kuće u razini terena u sredini tlocrta (isto kao skica 3D prikaza), pa se kuća na strmom terenu ne diže
-    // na najvišu točku; viša strana ulazi u teren, a na nižoj se vidi podnožje do najniže točke oko kuće (najviše 12 m).
-    // Visina se uzima iz istog modela terena koji MapLibre crta, za trenutni zum, u svakom kadru; pločice bez podataka se preskaču.
-    matrica(){ let e=0, dub=0; try{ const tr=mapa.transform; if(mapa.terrain){ let mn=Infinity, zb=0, n=0;
-        for(const q of triTocke(o)){ const v=triTeren(mapa,q); if(v!=null){ zb+=v; n++; if(v<mn) mn=v; } }
-        for(const q of triRub(o)){ const v=triTeren(mapa,q); if(v!=null&&v<mn) mn=v; }
-        let sr=triTeren(mapa,o.c); if(sr==null&&n) sr=zb/n;
-        if(sr!=null&&isFinite(sr)){ e=sr-tr.elevation; dub=Math.max(0,Math.min(12,sr-(isFinite(mn)?mn:sr))); } } else if(mapa.queryTerrainElevation) e=mapa.queryTerrainElevation(o.c)||0; }catch(x){ e=0; }
+    // visina terena: pod kuće na najnižoj točki tlocrta (kutovi, sredina, garaža), pa kuća nigdje ne lebdi iznad terena;
+    // na kosom terenu viša strana ulazi u padinu (kao ukopana kuća), a terasa i okućnica uz nižu stranu ostaju u razini poda.
+    // Visina se uzima iz pločice terena koju karta u tom trenutku crta (isti model kao teren na slici), u svakom kadru.
+    matrica(){ let e=0, dub=0; try{ const tr=mapa.transform; if(mapa.terrain){ let mn=Infinity;
+        for(const q of triTocke(o)){ const v=triTeren(mapa,q); if(v!=null&&v<mn) mn=v; }
+        if(isFinite(mn)) e=mn-tr.elevation; } else if(mapa.queryTerrainElevation) e=mapa.queryTerrainElevation(o.c)||0; }catch(x){ e=0; }
       if(this.grp&&Math.abs(dub-(this.dub??-1))>0.05){ this.dub=dub; this.grp.userData.teren(dub); }
       if(mm&&Math.abs(e-elev)<1e-4) return mm; elev=e; const mc=maplibregl.MercatorCoordinate.fromLngLat(o.c,e), s=mc.meterInMercatorCoordinateUnits();
       mm=new T.Matrix4().makeTranslation(mc.x,mc.y,mc.z).scale(new T.Vector3(s,-s,s)).multiply(new T.Matrix4().makeRotationX(Math.PI/2)); return mm; },
