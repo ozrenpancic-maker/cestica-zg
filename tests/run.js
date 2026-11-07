@@ -29,6 +29,8 @@ function boot(src,url){
   try{dom.window.eval('window.__OSS_URL=SRC_KRK.oss; window.__OSS2_URL=SRC_KRK.oss2; SRC_KRK.oss=""; SRC_KRK.oss2=""')}catch(e){}
   // katalog ISPU (Zagreb) u testovima je isključen; testovi karata planova ga uključuju (__ISPU_OBUHVAT)
   try{dom.window.eval('(()=>{const k=RASTER_KATALOZI.find(k=>k.tip==="wms"); window.__ISPU_OBUHVAT=k.obuhvat; k.obuhvat=[0,0,0,0];})()')}catch(e){}
+  // u objavljenoj aplikaciji pristup i statistika su uključeni; testovi rade s punom aplikacijom, a pristup uključuju sami
+  try{ dom.window.eval("FEATURES.pristup=false; FEATURES.analitika=false;"); }catch(e){}
   return {w:dom.window, errs};
 }
 // pravokutna čestica w × d metara
