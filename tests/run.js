@@ -1867,7 +1867,7 @@ async function sazTests(){
    ok(!k2.open&&k3.open&&bk&&!bk.hidden&&/Natrag na 02/.test(bk.textContent),"Izbornik: otvorena je jedna glavna kategorija; gumb za povratak na prethodnu");
    bk.dispatchEvent(new w.Event("click",{bubbles:true})); await tick(40); ok(k2.open&&!k3.open,"Izbornik: povratak na prethodnu kategoriju");}
   E("render")(d); await tick(80); ok(w.document.querySelector('details[data-k="calc"]').closest("details.izb").open,"Otvorena kategorija ostaje otvorena nakon ponovnog prikaza");
-  {const S=$(w,"sazetak"), mi=S.querySelector(".saz-mini"), g0=S.querySelector("li"); ok(S.querySelector("details.saz-d")&&mi&&/Gradnja/.test(mi.textContent)&&/Tereti/.test(mi.textContent),"Sažetak: sklopivo zaglavlje s kratkim stanjima");
+  {const S=$(w,"sazetak"), mi=S.querySelector(".saz-mini"), g0=S.querySelector(".saz-l>li"); ok(S.querySelector("details.saz-d")&&mi&&/Gradnja/.test(mi.textContent)&&/Tereti/.test(mi.textContent),"Sažetak: sklopivo zaglavlje s kratkim stanjima");
    ok(g0.classList.contains("saz-info")&&/Namjena je potvrđena; uvjeti za konkretnu gradnju nisu potvrđeni/.test(g0.textContent),"Sažetak: potvrđena namjena bez zelene kvačice (uvjeti gradnje nisu potvrđeni)");}
   {const R=E("buildReport")(), secs=[...R.querySelectorAll(".rpt-h h2")].map(h=>h.textContent); ok(secs.includes("Uvjeti gradnje")&&secs.includes("Rizici i provjere")&&R.querySelector(".rpt-sec .rule-title"),"Izvještaj i dalje sadrži poglavlja (neovisno o izborniku)"); R.remove();}
   // 3D pogled: lažni MapLibre bilježi stil i kameru
@@ -3192,7 +3192,38 @@ async function pristupTests(){
   ok(errs.length===0,"bez JS grešaka (pristup): "+errs.join(" | "));
 }
 
-netTests().then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(()=>{
+async function presudaTests(){
+  console.log("\n# presuda: ocjena čestice");
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  const I=E("presudaIzracun");
+  // sve poznato i bez zapreka: zelena, ali „podatak postoji” nije 100 %
+  let P=I({namjena:"info",pristup:"info",uvjeti:"info",kuca:"tlocrt do 150 m²",infra:"info",nagib:5,ogr:"ok",inv:{lo:300000,hi:360000,zem:false}});
+  ok(P.status==="zelena"&&P.ocjena===Math.round(30*.85+20*.85+20*.85+10*.85+10+10)&&P.prednosti.length===3&&P.kriteriji.length===6,"Presuda: sve bez zapreka → zelena, ocjena "+P.ocjena);
+  // pristup nepoznat: najviše žuta i rizik „podaci nisu dostupni”
+  P=I({namjena:"info",pristup:"?",uvjeti:"info",infra:"info",nagib:5,ogr:"ok"});
+  ok(P.status==="žuta"&&P.rizici[0]==="Pristup: podaci nisu dostupni"&&P.nepoznato.includes("Pristup s prometne površine"),"Presuda: nepoznat kritični kriterij → najviše žuta");
+  // zapreka u namjeni: crvena bez obzira na ostalo
+  P=I({namjena:"no",zapreke:["Obvezni urbanistički plan (UPU)"],pristup:"info",uvjeti:"info",infra:"info",nagib:5,ogr:"ok"});
+  ok(P.status==="crvena"&&/UPU/.test(P.rizici[0]),"Presuda: kritična zapreka → crvena, zapreka je prvi rizik");
+  // strm teren i upozorenje pristupa (primjer iz uputa)
+  P=I({namjena:"info",pristup:"warn",uvjeti:"info",infra:"info",nagib:54,ogr:"?"});
+  ok(P.status==="žuta"&&P.rizici.includes("Pristup nije potvrđen")&&P.rizici.some(x=>/Strm teren \(oko 54 %\) povećava troškove/.test(x))&&P.prednosti[0]==="Namjena prema prostornom planu predviđa gradnju","Presuda: pristup i strm teren među rizicima");
+  // bez ijednog podatka: nema izmišljenih prednosti
+  P=I({});
+  ok(P.ocjena===50&&P.status==="žuta"&&P.prednosti.length===0&&P.nepoznato.length===6,"Presuda: bez podataka ocjena 50, žuta, bez prednosti");
+  const H=E("presudaHtml")(P);
+  ok(/Podaci nisu dostupni/.test(H)&&/Kako je izračunato/.test(H)&&/ne ulazi u ocjenu/.test(H)&&/nije pravna potvrda|ne pravna potvrda/.test(H)&&!/\bAI\b/.test(H),"Presuda HTML: prazne liste kažu »Podaci nisu dostupni«, objašnjenje bodova, bez tvrdnje o pravnoj potvrdi");
+  // u aplikaciji: presuda na vrhu sažetka
+  const A=parcelRect(30,25,{KATASTARSKA_CESTICA:"96/1",KATASTARSKA_OPCINA:"REMETE"}), d=data(w,A,"2.2.");
+  w.fetch=()=>Promise.reject(new Error("bez mreže u testu"));
+  w.__env=d.envelope; E("render")(d); await tick(120);
+  const S=$(w,"sazetak"), pr=$(w,"presuda");
+  ok(pr&&S.firstElementChild===pr&&/\/100/.test(pr.textContent)&&["zelena","žuta","crvena"].includes(pr.querySelector("[data-status]").dataset.status)&&pr.querySelectorAll("tr[data-kr]").length===6,"Presuda u aplikaciji: na vrhu sažetka, ocjena, status, šest kriterija");
+  ok(E("window.__presuda")&&+pr.querySelector("[data-ocjena]").dataset.ocjena===E("window.__presuda.ocjena"),"Presuda u aplikaciji: prikazana ocjena = izračun");
+  ok(errs.length===0,"bez JS grešaka (presuda): "+errs.join(" | "));
+}
+
+netTests().then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
