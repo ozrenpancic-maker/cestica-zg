@@ -8211,7 +8211,7 @@ window.addEventListener("afterprint",()=>setTimeout(restoreMap,100));
 // Kosi pogled na satelitsku snimku s modelom terena (Terrain Tiles, oko 30 m), granicom čestice, područjem za gradnju,
 // granicama čestica DGU i kućom iz simulatora (visina do vijenca). Pogled se polako okreće; dodir ga zaustavlja.
 // Kad se karta prvi put iscrta, sprema se slika za PDF izvještaj (ako preglednik dopusti čitanje slike).
-const V3D={map:null,rot:true,raf:0,snap:new Map(),pod:"sat",key:null,pv:false};
+const V3D={map:null,rot:true,raf:0,snap:new Map(),pod:"sat",key:null,pv:false,dbg:(()=>{ try{ return /[?&]dbg3d=1/.test(location.search); }catch(e){ return false; } })()};
 function qrLib(){ if(window.qrcode) return Promise.resolve();
   return new Promise((res,rej)=>{ const sc=document.createElement("script"); sc.src="vendor/qrcode-generator-2.0.4/qrcode.js"; sc.onload=()=>res(); sc.onerror=()=>rej(new Error("QR se nije učitao")); document.head.appendChild(sc); }); }
 function qrSvg(url){ try{ if(!window.qrcode) return null; const q=qrcode(0,"M"); q.addData(url); q.make(); return q.createSvgTag({cellSize:2,margin:0,scalable:true}); }catch(e){ return null; } }
@@ -8563,6 +8563,16 @@ function triKuca(T,o){
   G.userData.teren(0);
   return G;
 }
+// dijagnostika položaja kuće (?dbg3d=1): visine terena, zum pločica i razlika na zaslonu između sidra kuće i točke
+// koju MapLibre crta na terenu (map.project) — za traženje uzroka kad kuća »lebdi« pri udaljavanju
+function tri3dDbg(map,o,M,L){ const t=performance.now(); if(t-(L.dbgT||0)<400) return; L.dbgT=t;
+  const tr=map.transform, te=map.terrain, ll=new maplibregl.LngLat(o.c[0],o.c[1]), mc=maplibregl.MercatorCoordinate.fromLngLat(o.c,L.eZad||0);
+  const v=[mc.x,mc.y,mc.z,1], q=[0,0,0,0]; for(let i=0;i<4;i++) q[i]=M[i]*v[0]+M[4+i]*v[1]+M[8+i]*v[2]+M[12+i]*v[3];
+  const W=tr.width, Hh=tr.height, ax=(q[0]/q[3]+1)/2*W, ay=(1-q[1]/q[3])/2*Hh, pp=map.project(ll);
+  let bz=null; try{ const sc=te.sourceCache, tl=sc.getRenderableTiles(), m2=maplibregl.MercatorCoordinate.fromLngLat(o.c); for(const x of tl){ const c=x.tileID.canonical, n=2**c.z, tx=m2.x*n-c.x, ty=m2.y*n-c.y; if(tx>=0&&tx<1&&ty>=0&&ty<1) bz=Math.max(bz??-1,c.z); } }catch(e){}
+  const tt=triTeren(map,o.c), gz=te?te.getElevationForLngLatZoom(ll,tr.tileZoom):null;
+  let d=document.getElementById("v3dDbg"); if(!d){ d=document.createElement("pre"); d.id="v3dDbg"; d.style.cssText="position:absolute;left:4px;top:4px;z-index:9;background:rgba(255,255,255,.88);font:11px/1.3 monospace;padding:4px;margin:0;pointer-events:none;max-width:95%;white-space:pre-wrap"; document.getElementById("v3dMap").appendChild(d); }
+  d.textContent=`zum ${map.getZoom().toFixed(2)} · tileZoom ${tr.tileZoom} · pločica kuće z${bz}\nteren(pločica) ${tt==null?"—":tt.toFixed(1)} m · teren(tileZoom) ${gz==null?"—":gz.toFixed(1)} m\nsredište karte ${tr.elevation.toFixed(1)} m · min/max ${L.tv?L.tv.mn.toFixed(1)+"/"+L.tv.mx.toFixed(1):"—"}\nvisina sidra e ${(L.eZad||0).toFixed(1)} · dub ${(L.dub??0).toFixed(1)}\nsidro kuće ${ax.toFixed(0)},${ay.toFixed(0)} px · map.project ${pp.x.toFixed(0)},${pp.y.toFixed(0)} px · razlika ${Math.hypot(ax-pp.x,ay-pp.y).toFixed(0)} px`; }
 // temelj u 3D-u: pod je 30 cm iznad najviše točke terena ispod kuće; ishodište modela je TEMELJ_POD (0,45 m) ispod poda
 const TEMELJ_NAD=0.30, TEMELJ_POD=0.45;
 // sloj za MapLibre: three.js crta u isto WebGL platno, s istom dubinom (teren i okolne zgrade zaklanjaju kuću ispravno)
@@ -8593,7 +8603,8 @@ function triSloj(o){
       mm=new T.Matrix4().makeTranslation(mc.x,mc.y,mc.z).scale(new T.Vector3(s,-s,s)).multiply(new T.Matrix4().makeRotationX(Math.PI/2)); return mm; },
     render(gl,matrix){ if(!renderer) return; const M=Array.isArray(matrix)||matrix instanceof Float32Array||matrix instanceof Float64Array?matrix:(matrix&&matrix.defaultProjectionData&&matrix.defaultProjectionData.mainMatrix)||matrix;
       if(this.sun) this.sun.position.copy(sunce());
-      cam.projectionMatrix=new T.Matrix4().fromArray(M).multiply(this.matrica()); renderer.resetState(); renderer.render(scene,cam); },
+      cam.projectionMatrix=new T.Matrix4().fromArray(M).multiply(this.matrica()); renderer.resetState(); renderer.render(scene,cam);
+      if(V3D.dbg) try{ tri3dDbg(mapa,o,M,this); }catch(e){} },
     onRemove(){ try{ scene.traverse(x=>{ if(x.geometry) x.geometry.dispose(); if(x.material&&x.material.dispose) x.material.dispose(); }); }catch(e){} renderer=null; }
   };
 }
