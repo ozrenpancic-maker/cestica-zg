@@ -4599,39 +4599,61 @@ function prSlikeZaPdf(R){ const sl=[...R.querySelectorAll("img")];
     if(u&&u.hostname==="geoportal.dgu.hr"&&PRISTUP.api){ im.crossOrigin="anonymous"; im.src=PRISTUP.api+"/slika?u="+encodeURIComponent(u.toString()); } }
   return Promise.race([Promise.all(sl.map(im=>im.complete&&im.naturalWidth?null:new Promise(r=>{ im.addEventListener("load",r,{once:true}); im.addEventListener("error",r,{once:true}); }))),new Promise(r=>setTimeout(r,15000))]); }
 // Blokovi za slaganje stranica: naslov poglavlja ide s prvim blokom; blok viši od stranice dijeli se na svoje dijelove
+// Slaganje PDF-a: slike, karte, crteži i grafikoni nikad se ne lome na dvije stranice (premještaju se ili malo smanje),
+// naslov poglavlja ide sa sljedećim blokom, a velik tekstni blok popunjava ostatak stranice umjesto prazne stranice.
+const PR_SLIKA="img,svg,canvas,figure,.sk-svg", PR_CIJELO=PR_SLIKA+",tr,li,h2,h3,h4,.rpt-h,.rk-stanja";
 function prBlokovi(R,maxPx){ const out=[];
+  const blok=e=>/^(block|flex|grid|table|list-item|flow-root)$/.test(getComputedStyle(e).display);
+  const tekst=e=>[...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim());
   const dodaj=(el,dubina)=>{ const h=el.getBoundingClientRect().height; if(h<1) return;
-    if(h>maxPx&&dubina<3&&el.children.length>1&&!el.matches("table,svg,figure,img,.sk-svg,ul.saz-l,.rpt-cover")){ for(const c of el.children) dodaj(c,dubina+1); return; }
-    out.push({el,nova:false,uz:false,h}); };
-  for(const sec of R.children){ if(sec.classList.contains("rpt-cover")){ out.push({el:sec,nova:true,uz:false,h:0}); continue; }
-    const kids=[...sec.children], prvi=out.length; for(const c of kids) dodaj(c,1);
+    const kids=[...el.children].filter(k=>k.getBoundingClientRect().height>=1);
+    if(h>maxPx*0.45&&dubina<6&&kids.length>1&&!el.matches(PR_SLIKA+",table,ul.saz-l,.rpt-cover,.rpt-h")&&!tekst(el)&&kids.every(k=>k instanceof HTMLElement&&!k.matches("svg,img,canvas")&&blok(k))){ for(const k of kids) dodaj(k,dubina+1); return; }
+    out.push({el,nova:false,uz:false,h,slika:el.matches(PR_SLIKA)||!!el.querySelector(PR_SLIKA)}); };
+  for(const sec of R.children){ if(sec.classList.contains("rpt-cover")){ out.push({el:sec,nova:true,uz:false,h:0,slika:true}); continue; }
+    const prvi=out.length; for(const c of sec.children) dodaj(c,1);
     if(out[prvi]){ out[prvi].nova=sec.classList.contains("rpt-brk"); out[prvi].uz=true; } }
   return out; }
+// dijelovi bloka koji se ne smiju prerezati (slike, retci tablice, stavke popisa, naslovi), u pikselima slike bloka
+function prCijeli(el,k){ const t0=el.getBoundingClientRect().top; return [...el.querySelectorAll(PR_CIJELO)].map(x=>{ const r=x.getBoundingClientRect(); return [(r.top-t0)*k,(r.bottom-t0)*k,x.matches(PR_SLIKA)]; }).filter(r=>r[1]-r[0]>2); }
 async function prPdf(R,email){
   if(window.__pdfHook) return window.__pdfHook(R,email);
   await prLib("vendor/html2canvas-1.4.1/html2canvas.min.js","html2canvas"); await prLib("vendor/jspdf-2.5.2/jspdf.umd.min.js","jspdf");
-  const {jsPDF}=window.jspdf, doc=new jsPDF({unit:"mm",format:"a4",compress:true}), W=210, H=297, M=12, IW=W-2*M, IH=H-2*M-8, dat=new Date().toLocaleDateString("hr-HR");
+  const {jsPDF}=window.jspdf, doc=new jsPDF({unit:"mm",format:"a4",compress:true}), W=210, H=297, M=12, IW=W-2*M, IH=H-2*M-8, DNO=M+IH, dat=new Date().toLocaleDateString("hr-HR");
   const zig=()=>{ doc.setFontSize(7.5); doc.setTextColor(120); doc.text(`Dosje za ${email} - ${dat} - cesticahr.com - nije lokacijska informacija ni projekt`,M,H-6); };
   R.style.cssText="display:block;position:absolute;left:-10000px;top:0;width:186mm;background:#fff"; R.classList.add("rpt-pdf");
   dosjeProg("učitavam snimke za dosje…"); await prSlikeZaPdf(R);
-  const pxPoMm=R.getBoundingClientRect().width/186||3.78, bl=prBlokovi(R,IH*pxPoMm), SC=1.3, Q=0.7;
-  let y=M, prva=true, n=0, cekaNaslov=null;
-  const nova=()=>{ if(y<=M+0.5) return; zig(); doc.addPage(); y=M; };
-  for(let bi=0;bi<bl.length;bi++){ const b=bl[bi]; n++; if(n%4===0) dosjeProg(`slažem PDF… ${Math.round(n/bl.length*100)} %`);
+  const pxPoMm=R.getBoundingClientRect().width/186||3.78, bl=prBlokovi(R,IH*pxPoMm), SC=1.3, Q=0.7, RAZ=2.5;
+  let y=M, prva=true, n=0, naslovIznad=false;
+  const nova=()=>{ if(y<=M+0.5) return; zig(); doc.addPage(); y=M; naslovIznad=false; };
+  const crtaj=(cv,h,sk=1)=>{ const w=IW*sk; doc.addImage(cv.toDataURL("image/jpeg",Q),"JPEG",M+(IW-w)/2,y,w,h*sk); y+=h*sk+RAZ; };
+  const procjena=b=>b?b.h/pxPoMm:0;
+  for(let bi=0;bi<bl.length;bi++){ const b=bl[bi], sl=bl[bi+1]; n++; if(n%4===0) dosjeProg(`slažem PDF… ${Math.round(n/bl.length*100)} %`);
     const el=b.el, c=await html2canvas(el,{scale:SC,useCORS:true,backgroundColor:"#ffffff",logging:false,ignoreElements:x=>x.id==="app"||x.id==="aux"||x.id==="ai"||x.id==="v3d"||x.tagName==="IFRAME"}); if(!c.width) continue;
     const mmPx=IW/c.width, hMM=c.height*mmPx, cover=el.classList.contains("rpt-cover");
-    if(!prva&&(cover||b.nova)) nova();
-    else if(!prva&&hMM<=IH&&y+hMM>M+IH) nova();
-    else if(!prva&&b.uz&&bl[bi+1]&&y+hMM+Math.min(40,bl[bi+1].h/pxPoMm)>M+IH) nova(); // naslov poglavlja ne ostaje sam na dnu stranice
-    if(cover){ const sk=Math.min(1,(H-2)/(c.height*W/c.width)); doc.addImage(c.toDataURL("image/jpeg",Q),"JPEG",(W-W*sk)/2,0,W*sk,c.height*W/c.width*sk); zig(); doc.addPage(); y=M; prva=false; continue; }
-    if(hMM<=IH){ doc.addImage(c.toDataURL("image/jpeg",Q),"JPEG",M,y,IW,hMM); y+=hMM+3; }
-    else { // dugačak blok: rez na bijelom retku (ne kroz tekst), najviše 18 % visine stranice iznad granice
-      const sliceH=Math.floor(IH/mmPx), D=c.getContext("2d").getImageData(0,0,c.width,c.height).data, bijel=r=>{ for(let x=0;x<c.width;x+=3){ const i=(r*c.width+x)*4; if(D[i]<235||D[i+1]<235||D[i+2]<235) return false; } return true; };
-      for(let s0=0;s0<c.height;){ let ost=Math.floor((M+IH-y)/mmPx); if(ost<sliceH*0.25){ nova(); ost=sliceH; } let e=Math.min(c.height,s0+ost);
-        if(e<c.height){ const lim=(e-s0)*0.18; for(let r=e;r>e-lim;r--) if(bijel(r)){ e=r; break; } }
-        const cc=document.createElement("canvas"); cc.width=c.width; cc.height=e-s0; cc.getContext("2d").drawImage(c,0,-s0);
-        doc.addImage(cc.toDataURL("image/jpeg",Q),"JPEG",M,y,IW,cc.height*mmPx); y+=cc.height*mmPx+3; s0=e; if(s0<c.height) nova(); } }
-    prva=false; }
+    if(cover){ if(!prva) nova(); const sk=Math.min(1,(H-2)/(c.height*W/c.width)); doc.addImage(c.toDataURL("image/jpeg",Q),"JPEG",(W-W*sk)/2,0,W*sk,c.height*W/c.width*sk); zig(); doc.addPage(); y=M; prva=false; continue; }
+    if(!prva&&b.nova) nova();
+    // naslov poglavlja ide sa sljedećim blokom: slika cijela (ili barem 70 % veličine), tekst barem 35 mm
+    if(b.uz&&sl){ const s2=procjena(sl), treba=sl.slika?Math.min(s2,IH)*0.6:Math.min(s2,35); if(y+hMM+treba>DNO) nova(); }
+    let ost=DNO-y;
+    if(hMM<=ost){ crtaj(c,hMM); naslovIznad=b.uz; prva=false; continue; }
+    if(b.slika&&hMM<=IH/0.55){ // slika ili blok sa slikom: nikad se ne lomi; smanji (do 60 %) da stane ovdje, inače nova stranica
+      const mjera=Math.min(1,IH/hMM);
+      if(ost>=hMM*Math.max(0.6,Math.min(mjera,1)*0.6)&&ost/hMM>=0.6){ crtaj(c,hMM,Math.min(1,ost/hMM)); naslovIznad=false; prva=false; continue; }
+      if(naslovIznad&&ost>=hMM*0.5){ crtaj(c,hMM,ost/hMM); naslovIznad=false; prva=false; continue; }
+      nova(); crtaj(c,hMM,mjera); naslovIznad=false; prva=false; continue; }
+    if(hMM<=IH&&ost<IH*0.3&&!naslovIznad){ nova(); crtaj(c,hMM); naslovIznad=false; prva=false; continue; }
+    // tekstni blok (ili dulji od stranice): popuni ostatak stranice; rez nikad kroz sliku, redak tablice, stavku ili naslov
+    const k=c.height/(el.getBoundingClientRect().height||1), cj=prCijeli(el,k), sliceH=Math.floor(IH/mmPx);
+    const D=c.getContext("2d").getImageData(0,0,c.width,c.height).data, bijel=r=>{ for(let x=0;x<c.width;x+=3){ const i=(r*c.width+x)*4; if(D[i]<235||D[i+1]<235||D[i+2]<235) return false; } return true; };
+    for(let s0=0;s0<c.height;){ let px=Math.floor((DNO-y)/mmPx); if(px<sliceH*0.12){ nova(); px=sliceH; }
+      let e=Math.min(c.height,s0+px);
+      if(e<c.height){ // pomakni rez iznad dijela koji se ne smije prerezati (osim ako je on sam viši od stranice)
+        for(let it=0;it<20;it++){ const r=cj.find(([t,bb])=>t<e-1&&bb>e+1&&t>s0+1&&(bb-t)<=sliceH); if(!r) break; e=Math.floor(r[0]); }
+        if(e-s0<px*0.25&&y>M+0.5){ nova(); continue; } // premalo bi ostalo na ovoj stranici: cijeli nastavak na sljedeću
+        if(!cj.some(([t,bb])=>t<e&&bb>e)){ const lim=(e-s0)*0.12; for(let r=e;r>e-lim;r--) if(bijel(r)&&!cj.some(([t,bb])=>t<r&&bb>r)){ e=r; break; } } }
+      if(e<=s0) e=Math.min(c.height,s0+px);
+      const cc=document.createElement("canvas"); cc.width=c.width; cc.height=e-s0; cc.getContext("2d").drawImage(c,0,-s0); crtaj(cc,cc.height*mmPx); s0=e; if(s0<c.height) nova(); }
+    naslovIznad=false; prva=false; }
   zig(); return doc.output("arraybuffer");
 }
 function prMailHtml(){ return `<div class="pr-box" id="prMail"><p style="margin:0 0 6px"><b>Pošalji dosje na e-mail</b></p><p class="meta" style="margin:0 0 8px">Dosje (PDF) stiže na upisanu adresu s oznakom primatelja. Adresu koristimo samo za ovo slanje.</p>
