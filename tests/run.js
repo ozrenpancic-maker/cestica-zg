@@ -3570,7 +3570,7 @@ async function splitTests(){
 async function sgTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms)); let likeUrl=null; const likeAll=[];
   w.fetch=(u)=>{u=String(u); const fl=(dir,f)=>{const pth=path.join(__dirname,"..","data",dir,f); return Promise.resolve({ok:fs.existsSync(pth),status:fs.existsSync(pth)?200:404,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(pth,"utf8")))});};
-    let m=u.match(/data\/adr\/(.+\.json)$/); if(m) return fl("adr",m[1]); m=u.match(/data\/kat_krk\/(.+\.json)$/); if(m) return fl("kat_krk",m[1]);
+    let m=u.match(/data\/adr\/(.+\.json)$/); if(m) return fl("adr",m[1]); m=u.match(/data\/kat_krk\/(.+\.json)$/); if(m) return fl("kat_krk",m[1]); m=u.match(/data\/kat_hr\/(.+\.json)$/); if(m) return fl("kat_hr",m[1]);
     if(/KatastarskeCestice/.test(u)&&/LIKE/.test(decodeURIComponent(u))){ likeUrl=decodeURIComponent(u.replace(/\+/g," ")); likeAll.push(likeUrl); return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({features:["4027/2","40271","4027/1","4027"].map(x=>({attributes:{KATASTARSKA_CESTICA:x}}))})}); }
     if(/KatastarskeCestice/.test(u)) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[[[15.95,45.86],[15.951,45.86],[15.951,45.861],[15.95,45.86]]]},properties:{KATASTARSKA_OPCINA:"ŠESTINE",KATASTARSKA_CESTICA:"4027/1"}},{type:"Feature",geometry:{type:"Polygon",coordinates:[[[15.9,45.8],[15.901,45.8],[15.901,45.801],[15.9,45.8]]]},properties:{KATASTARSKA_OPCINA:"MIKULIĆI",KATASTARSKA_CESTICA:"4027/1"}}]})});
     return Promise.reject(new Error("bez mreže u testu"));};
@@ -3598,6 +3598,15 @@ async function sgTests(){
   await typ("Nepostojeća ulicaxyz"); ok(sg.hidden,"Tražilica: nepoznat upit → bez prijedloga (nema izmišljenih)");
   ok(E("parcelQuery")("Lučko 12/3").ko==="Lučko"&&E("parcelQuery")("k.č. 123 Sesvete").ko==="Sesvete"&&E("parcelQuery")("kč 4027/1 k.o. Šestine").ko==="Šestine"&&E("parcelQuery")("Novačko 5/1").ko==="Novačko","Pretraga čestice: oznake k.č./kč/k.o. se uklanjaju, a „Lučko” i „Novačko” ostaju cijeli");
   likeAll.length=0; await typ("Lučko 12"); ok(/KATASTARSKA_OPCINA='LUČKO' AND/.test(likeAll[0]||"")&&/ORDER|orderByFields=KATASTARSKA_CESTICA/.test(likeAll[0]||""),"Tražilica: „Lučko 12” → upit za k.o. Lučko (ne „Luč”)");
+  // Split, Rijeka, Zadar, Osijek: ulice i kućni brojevi (registar DGU) i brojevi čestica (indeks DGU s točkom unutar čestice)
+  await typ("Marmontova 1"); const L4=labs(); ok(L4[0]==="Marmontova 1"&&/Split · adresa/.test(sg.textContent),"Tražilica: „Marmontova 1” → kućni brojevi u Splitu ("+L4.slice(0,3).join(", ")+")");
+  pick(0); await tick(30); {const ll=E("window.__ins"); ok(ll&&Math.abs(ll.lat-43.509)<0.004&&Math.abs(ll.lng-16.44)<0.004&&q.value==="Marmontova 1, Split","Tražilica: odabir „Marmontova 1” → točka kućnog broja u Splitu");}
+  await typ("Korz"); ok(labs().includes("Korzo")&&/Rijeka · ulica/.test(sg.textContent),"Tražilica: „Korz” → Korzo (Rijeka)");
+  await typ("Europska aven"); ok(labs()[0]==="Europska avenija"&&/Osijek · ulica/.test(sg.textContent),"Tražilica: „Europska aven” → Europska avenija (Osijek)");
+  await typ("Split 4058"); const L5=labs(); ok(L5.includes("Split 4058/3")&&/k\.o\. Split \(Split\)/.test(sg.textContent),"Tražilica: „Split 4058” → brojevi čestica u k.o. Split ("+L5.slice(0,4).join(", ")+")");
+  w.__got=null; pick(L5.indexOf("Split 4058/3")); await tick(200); {const g=E("window.__got"), c=g&&g.geometry.coordinates; ok(g&&g.properties.broj==="4058/3"&&Math.abs(c[0]-16.4606)<0.001&&Math.abs(c[1]-43.5150)<0.001,"Tražilica: odabir „Split 4058/3” → točka unutar čestice (karta zatim učitava česticu iz DGU-a)");}
+  w.__got=null; await E("searchParcel")({kc:"4058/3",ko:"Split"}); await tick(50); ok(E("window.__got")&&E("window.__got").properties.ko==="SPLIT","Pretraga čestice (Enter): „Split 4058/3” nalazi česticu i izvan Zagreba i Krka");
+  await E("searchParcel")({kc:"999999/9",ko:"Zadar"}); ok(/nije nađena u k\.o\. ZADAR/.test(w.document.getElementById("sheet").textContent),"Pretraga čestice: nepostojeći broj u k.o. Zadar → poruka, bez izmišljene čestice");
   ok(errs.length===0,"bez JS grešaka (tražilica): "+errs.join(" | "));
 }
 
