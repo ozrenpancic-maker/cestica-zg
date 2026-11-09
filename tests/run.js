@@ -3608,7 +3608,8 @@ async function sgTests(){
   w.__got=null; await E("searchParcel")({kc:"4058/3",ko:"Split"}); await tick(50); ok(E("window.__got")&&E("window.__got").properties.ko==="SPLIT","Pretraga čestice (Enter): „Split 4058/3” nalazi česticu i izvan Zagreba i Krka");
   // nezavisna provjera: najbolja ulica u svim područjima, točan naziv k.o. ima prednost, brojevi sa zvjezdicom
   {const B=async(q,c)=>{E("map").setView(c,14); const b=await E("adrNajbolja")(q); return b?b.reg+"|"+b.u.nas+"|"+b.u.ul:null;};
-   const a=await B("Kornić 12",[45.04,14.6]), b=await B("Ilica 1",[43.51,16.44]), c=await B("Korzo 1",[45.81,15.97]), d=await B("Marmontova 5",[45.81,15.97]), e=await B("Vukovarska 10, Split",[45.81,15.97]);
+   const a=await B("Kornić 12",[45.04,14.6]), b=await B("Ilica 1",[43.51,16.44]), c=await B("Korzo 1",[45.81,15.97]), d=await B("Marmontova 5",[45.81,15.97]), e=await B("Vukovarska 10, Split",[45.81,15.97]); const f=await B("Vukovarska 10",[45.81,15.97]), g=await B("Ledine 3",[45.81,15.97]), h=await B("Vukovarska 10",[43.51,16.44]);
+   ok(/^zg\|/.test(f||"")&&/^zg\|/.test(g||"")&&/^split\|Split\|Vukovarska/.test(h||""),"Adrese: ista ulica u više gradova → grad na karti („Vukovarska 10” i „Ledine 3” iz Zagreba → Zagreb, iz Splita → Split) ("+[f,g,h].join(" ; ")+")");
    ok(a===null&&b==="zg|Zagreb|Ilica"&&c==="rijeka|Rijeka|Korzo"&&d==="split|Split|Marmontova"&&/^split\|Split\|Vukovarska/.test(e||""),"Adrese: točan naziv u bilo kojem gradu ispred sličnog naziva („Ilica 1” iz Splita → Zagreb, „Korzo 1” → Rijeka); mjesto s Krka traži samo na Krku ("+[a,b,c,d,e].join(" ; ")+")");}
   E("map").setView([45.81,15.97],14);
   w.__got=null; await E("searchParcel")({kc:"3531/12",ko:"Solin"}); ok(E("window.__got")&&E("window.__got").properties.ko==="SOLIN","Pretraga čestice: „Solin 3531/12” → k.o. Solin (ne Soline na Krku)");

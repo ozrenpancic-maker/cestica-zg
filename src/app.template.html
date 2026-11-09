@@ -10942,8 +10942,10 @@ function adrUlica(I,P,reg){ const b=adrUlicaSc(I,P,reg); return b?b.u:null; }
 // najbolja ulica u svim područjima: mjesto s Krka u upitu → samo Krk; grad u upitu → samo taj grad; inače najveći rezultat
 // (točan naziv ispred iste riječi u drugom padežu), a pri jednakom rezultatu područje na karti
 async function adrNajbolja(q){ const P=adrParse(q); if(!P.t.length) return null; const n=norm(q), grad=[...new Set(n.split(" ").map(w=>ADR_GRAD[w]).filter(Boolean))];
-  const regs=KRK_MJESTA.test(n)?["krk"]:grad.length?grad:adrRegRed(q); let best=null;
-  for(const reg of regs){ let I; try{I=await adrIdx(reg)}catch(e){continue} const b=adrUlicaSc(I,P,reg); if(b&&(!best||b.sc>best.sc)) best={...b,reg}; }
+  const regs=KRK_MJESTA.test(n)?["krk"]:grad.length?grad:adrRegRed(q), nk=adrNaKarti(); let best=null;
+  // područje na karti dobiva +3: ista ili slična ulica u drugom gradu ne preuzima pretragu (Vukovarska u Zagrebu i u Splitu),
+  // a točan naziv u drugom gradu i dalje pobjeđuje sličan naziv na karti (Ilica iz Splita → Zagreb)
+  for(const reg of regs){ let I; try{I=await adrIdx(reg)}catch(e){continue} const b=adrUlicaSc(I,P,reg); if(!b) continue; const sc=b.sc+(reg===nk?3:0); if(!best||sc>best.sc) best={...b,sc,reg}; }
   return best; }
 async function adrTrazi(q,reg){
   const P=adrParse(q); if(!P.t.length) return null;
@@ -10961,6 +10963,7 @@ const ADR_REG={zg:[15.75,45.60,16.25,46.00],krk:[14.40,44.86,14.90,45.26],split:
 const ADR_GLAVNO={zg:"Zagreb",split:"Split",rijeka:"Rijeka",zadar:"Zadar",osijek:"Osijek"};
 const ADR_GRAD={SPLIT:"split",SOLIN:"split",RIJEKA:"rijeka",KASTAV:"rijeka",ZADAR:"zadar",OSIJEK:"osijek",ZAGREB:"zg",SESVETE:"zg"};
 // redoslijed područja za upit: naselje iz upita, područje na sredini karte, Krk (mjesto s otoka), Zagreb, ostala
+function adrNaKarti(){ try{const c=map.getCenter(); for(const [k,b] of Object.entries(ADR_REG)) if(c.lng>=b[0]&&c.lng<=b[2]&&c.lat>=b[1]&&c.lat<=b[3]) return k;}catch(e){} return null; }
 function adrRegRed(q){ const n=norm(q), o=[], add=r=>{if(r&&!o.includes(r)) o.push(r)};
   for(const w of n.split(" ")) add(ADR_GRAD[w]); if(KRK_MJESTA.test(n)) add("krk");
   try{const c=map.getCenter(); for(const [k,b] of Object.entries(ADR_REG)) if(c.lng>=b[0]&&c.lng<=b[2]&&c.lat>=b[1]&&c.lat<=b[3]) add(k);}catch(e){}
