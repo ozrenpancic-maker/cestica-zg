@@ -1453,6 +1453,15 @@ async function krkTests(){
   tm=await reinspect(); M=w.__krkCalc;
   ok(M&&M.plan==="PPUO Mrkopalj"&&M.minOk&&Math.abs(M.tl-0.3*M.A)<0.6&&M.gbpN===250&&M.tip==="obit","Mrkopalj obiteljska samostojeća: kig 0,3, GBP najviše 250 m² (čl. 43., SN 39/2020)");
   {const r=(w.__tipCmp||[]).find(x=>x.key==="krk|obit|dvoj"); ok(r&&r.gbp===200&&(w.__tipCmp||[]).find(x=>x.key==="krk|visobit|slob").gbp===400,"Mrkopalj: usporedba tipova koristi GBP po obliku (dvojna 200, višeobiteljska 400 m²)");}
+  // Rijeka: GUP (urbana pravila po kvartovima, čl. 90.–115.); pravilo bira korisnik, bez odabira nema izračuna
+  Object.assign(gp,{OPCINA_GRAD:"RIJEKA",OZNAKA_NAMJENE:"GP-3",NASELJE:"Rijeka",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
+  tm=await reinspect();
+  ok(w.__krkCalc===null&&$(w,"krkZona")&&/Urbano pravilo \(kvart, karta 4\.7\)/.test(tm)&&/GUP Rijeka/.test(tm)&&/Gornji Zamet \(2-10-6\.4\)/.test(tm),"Rijeka: urbano pravilo nije odabrano, nema izračuna; ponuđeni kvartovi (npr. Gornji Zamet 2-10-6.4)");
+  setv(w,"krkZona","2-10-6.4","change"); M=w.__krkCalc; tm=txt(w,"sheet");
+  ok(M&&M.plan==="GUP Rijeka"&&Math.abs(M.tl-Math.min(0.3*M.A,240))<0.6&&Math.abs(M.gbpN-Math.min(0.8*M.A,400))<1.5&&/8,0? m/.test(tm)&&/kin/.test(tm)&&/35 %/.test(tm),"Rijeka, Gornji Zamet (pravilo 6, čl. 102.): kig 0,3 (do 240 m²), kis 0,8, GBP do 400 m², visina 8 m, zelenilo 35 %, kin umjesto kis-a");
+  setv(w,"krkZona","3-9-13.8","change"); M=w.__krkCalc;
+  ok(M&&M.gbpN<=250&&Math.abs(M.tl-Math.min(0.25*M.A,250))<0.6,"Rijeka, Kačjak (pravilo 13, čl. 112.): kig 0,25, GBP najviše 250 m²");
+  setv(w,"krkZona","UP2","change"); ok(w.__krkCalc===null&&/gradski centar/.test(txt(w,"sheet"))&&/obiteljska kuća nije predviđena/.test(txt(w,"sheet")),"Rijeka, gradski centar (pravilo 2): kuća nije predviđena, nema izračuna");
   // Čabar: PPUG (II. izmjene 2013.; kasnije bez promjena za kuće) - bez kis-a, GBP do 400 m²
   Object.assign(gp,{OPCINA_GRAD:"ČABAR",OZNAKA_NAMJENE:"N",NASELJE:"Gerovo",IZGRADJENOST:"izgrađeno"}); E("KRK_TIP").tip="obit"; E("KRK_TIP").oblik="slob";
   tm=await reinspect(); M=w.__krkCalc;
@@ -1796,7 +1805,7 @@ async function pgzTests(){
   await E("inspect")({lat,lng:lon}); await tick(200);
   let t=w.document.getElementById("sheet").textContent;
   ok(/Primorsko-goranska županija · Rijeka/.test(t)&&/55\/2/.test(t)&&/480 m²/.test(t)&&/Građevinsko područje naselja/.test(t),"PGŽ: čestica uživo iz DGU-a i namjena iz županijskog sloja za Rijeku");
-  ok(/Uvjeti gradnje za Rijeka još nisu obrađeni/.test(t)&&!/Otok Krk · pilot/.test(t),"PGŽ: za jedinicu bez obrađenih pravila piše da uvjeti nisu obrađeni");
+  ok(/Urbano pravilo \(kvart, karta 4\.7\)/.test(t)&&!/Otok Krk · pilot/.test(t)&&w.__krkCalc===null,"PGŽ, Rijeka: GUP traži odabir urbanog pravila (kvarta), bez odabira nema izračuna");
   ok(/katastar infrastrukture nije pripremljen za ovo područje/.test(t)&&!/nema evidentiranog voda/.test(t),"PGŽ: infrastruktura izvan otoka ne tvrdi da vodova nema, nego da podaci nisu pripremljeni");
   withNam=false; E("NET").cache.clear(); w.localStorage.clear(); await E("inspect")({lat,lng:lon}); await tick(200); t=w.document.getElementById("sheet").textContent;
   ok(/Hrvatska · osnovni pregled/.test(t),"PGŽ: točka bez namjene u županijskom sloju (izvan županije) ide u osnovni pregled za državu");
@@ -2451,8 +2460,9 @@ async function formulaTests(){
   // 5. 11. 2026.: OMIŠALJ, DOBRINJ (nova pravila) i VRBNIK (izmjene SN 34/2024) izvan sažetka; ostatak datoteke dokazano isti (isti sažetak starog i novog sadržaja)
   // Plan Integrity v10: novo polje »citati« (doslovni navodi iz objave) ne mijenja postojeće brojke ni tekstove; ne ulazi u sažetak,
   // a njegovu doslovnost provjerava zaseban test (»PI v10 navodi«) prema tekstu SN PGŽ 19/2016
+  // 9. 11. 2026.: RIJEKA (GUP, urbana pravila, nova pravila) izvan sažetka do neovisne provjere
   // Sljedeća faza: »legenda« (boje polja legende karte 4 za pilot prijedloga zone) i »provjereno« (stručno provjereni obuhvati) nisu pravila; ne ulaze u sažetak
-  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik"&&k!=="OPATIJA"&&k!=="RAB"&&k!=="NOVI VINODOLSKI"&&k!=="CRIKVENICA"&&k!=="MALI LOŠINJ"&&k!=="LOPAR"&&k!=="KRALJEVICA"&&k!=="MOŠĆENIČKA DRAGA"&&k!=="BAKAR"&&k!=="KASTAV"&&k!=="VIŠKOVO"&&k!=="JELENJE"&&k!=="ČAVLE"&&k!=="RAVNA GORA"&&k!=="VRBOVSKO"&&k!=="BROD MORAVICE"&&k!=="DELNICE"&&k!=="SKRAD"&&k!=="VINODOLSKA OPĆINA"&&k!=="CRES"&&k!=="LOVRAN"&&k!=="MATULJI"&&k!=="FUŽINE"&&k!=="MRKOPALJ"&&k!=="ČABAR"&&k!=="LOKVE"&&k!=="KLANA"&&k!=="KOSTRENA").map(([k,v])=>[k,bezPP(v)])):o;
+  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="RIJEKA"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik"&&k!=="OPATIJA"&&k!=="RAB"&&k!=="NOVI VINODOLSKI"&&k!=="CRIKVENICA"&&k!=="MALI LOŠINJ"&&k!=="LOPAR"&&k!=="KRALJEVICA"&&k!=="MOŠĆENIČKA DRAGA"&&k!=="BAKAR"&&k!=="KASTAV"&&k!=="VIŠKOVO"&&k!=="JELENJE"&&k!=="ČAVLE"&&k!=="RAVNA GORA"&&k!=="VRBOVSKO"&&k!=="BROD MORAVICE"&&k!=="DELNICE"&&k!=="SKRAD"&&k!=="VINODOLSKA OPĆINA"&&k!=="CRES"&&k!=="LOVRAN"&&k!=="MATULJI"&&k!=="FUŽINE"&&k!=="MRKOPALJ"&&k!=="ČABAR"&&k!=="LOKVE"&&k!=="KLANA"&&k!=="KOSTRENA").map(([k,v])=>[k,bezPP(v)])):o;
   const sha=crypto.createHash("sha256").update(JSON.stringify(bezPP(JSON.parse(fs.readFileSync(path.join(__dirname,"..","src","rules_krk.json"),"utf8"))))).digest("hex");
   ok(sha==="de538e7ddc17cdc11746acbca3217b77569881a269c740457be9e5bc7a615f82","Pravila: src/rules_krk.json bez oznaka pravne provjere nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
   // nova i izmijenjena pravila (Omišalj, Dobrinj, Vrbnik 2024.): izvan sažetka; svaka brojka mora biti u svom doslovnom navodu
