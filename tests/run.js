@@ -3566,7 +3566,25 @@ async function splitTests(){
   ok(errs.length===0,"bez JS grešaka (Split): "+errs.join(" | "));
 }
 
-netTests().then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
+// Zadar: PPUG (zone gustoće u GP-u grada Zadra), parcela 30 x 24 m = 720 m²
+async function zadarTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  const lon=15.2500, lat=44.1100, [E0,N0]=E("tmFwd")(lon,lat), ring=[[E0-15,N0-12],[E0+15,N0-12],[E0+15,N0+12],[E0-15,N0+12],[E0-15,N0-12]];
+  w.fetch=(u)=>{u=String(u); const r=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b),text:()=>Promise.resolve("")});
+    if(/wms1-gs-oss\.uredjenazemlja\.hr/.test(u)&&/GetFeatureInfo/.test(u)) return r({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{CESTICA_ID:666001,BROJ_CESTICE:"4321/1",MATICNI_BROJ_KO:337200,POVRSINA_GRAFICKA:720,POVRSINA_ATRIBUTNA:720}}]});
+    return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null),text:()=>Promise.resolve("")}); };
+  ok(E("hrGrad")({lat,lng:lon}).k==="ZADAR","Zadar: obuhvat GP-a grada Zadra prepoznat");
+  await E("inspect")({lat,lng:lon}); await tick(200);
+  ok(/PPUG Zadar/.test(txt(w,"sheet"))&&w.__krkCalc===null&&/Zona namjene i gustoće/.test(txt(w,"sheet")),"Zadar: zona nije odabrana, nema izračuna");
+  setv(w,"krkZona","Sm","change"); let C=w.__krkCalc, t=txt(w,"sheet");
+  ok(C&&C.plan==="PPUG Zadar"&&Math.abs(C.tl-0.3*C.A)<0.6&&C.gbpN===400&&/10 m/.test(t)&&/20 %/.test(t),"Zadar Sm samostojeća (čl. 90.): kig 0,3, GBPn do 400 m², visina 10 m, zelenilo 20 %");
+  setv(w,"krkZona","Smg","change"); C=w.__krkCalc; ok(C&&Math.abs(C.tl-0.4*C.A)<0.6,"Zadar Smg: kig 0,4");
+  setv(w,"krkZona","Sm3","change"); C=w.__krkCalc; ok(C&&Math.abs(C.gbpN-0.6*C.A)<1.5&&/7 m/.test(txt(w,"sheet")),"Zadar Sm3 Vidikovac: kisn 0,6, visina 7 m");
+  setv(w,"krkZona","UPU","change"); ok(w.__krkCalc===null&&/čl\. 345\./.test(txt(w,"sheet")),"Zadar: područje UPU-a, nema izračuna");
+  ok(errs.length===0,"bez JS grešaka (Zadar): "+errs.join(" | "));
+}
+
+netTests().then(zadarTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
