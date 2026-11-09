@@ -5068,7 +5068,7 @@ function zg3dClip(poly,z){
 }
 // zgrada bez poznatog oblika krova (katastar, OpenStreetMap): ILUSTRATIVNI dvostrešni krov nagiba 30° po duljoj stranici tlocrta
 // (sljeme najviše 4 m iznad vijenca); vijenac se spusti za pola visine krova, da ukupna visina ostane blizu pretpostavljene
-function zg3dKrovIlustr(B){ const f=B.foot&&B.foot[0]; if(B.mj||!f||f.length<3) return B; // izmjereni ravni krov (LiDAR) ostaje ravan const D=krovDvostresni(f); if(!D||D.pov<12||!D.sljeme) return B;
+function zg3dKrovIlustr(B){ const f=B.foot&&B.foot[0]; if(B.mj||!f||f.length<3) return B; /* izmjereni ravni krov (LiDAR) ostaje ravan */ const D=krovDvostresni(f); if(!D||D.pov<12||!D.sljeme) return B;
   const c0=f[0], T=krovLok(c0), a=T.f(D.sljeme[0]), b=T.f(D.sljeme[1]), L=Math.hypot(b[0]-a[0],b[1]-a[1])||1, n=[-(b[1]-a[1])/L,(b[0]-a[0])/L];
   const dist=q=>{ const m=T.f(q); return (m[0]-a[0])*n[0]+(m[1]-a[1])*n[1]; }, tan=Math.tan(30*Math.PI/180);
   let dmax=0; for(const h of D.pol) for(const q of h.r) dmax=Math.max(dmax,Math.abs(dist(q)));
