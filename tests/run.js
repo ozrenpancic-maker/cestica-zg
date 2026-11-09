@@ -3499,7 +3499,32 @@ async function primjerTests(){
   ok(errs.length===0,"bez JS grešaka (primjer): "+errs.join(" | "));
 }
 
-netTests().then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
+// zgrade izvan Zagreba i Krka: tlocrti iz katastra DGU uživo (WMS kao SVG)
+async function dkpwTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  const lon=18.6950, lat=45.5500, [E0,N0]=E("tmFwd")(lon,lat);
+  let zadnji="";
+  // kuća 20 x 10 m (40 x 20 px) u sredini i garaža 4 x 4 m; ista kuća dvaput (obris), oznaka (natpis) se preskače
+  const svg=(W,H)=>`<?xml version="1.0"?><svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg"><g><path clip-path="url(#clipPath1)" d="M${W/2-20} ${H/2-10} L${W/2+20} ${H/2-10} L${W/2+20} ${H/2+10} L${W/2-20} ${H/2+10} L${W/2-20} ${H/2-10} Z" fill="none" fill-rule="evenodd"
+      /><path clip-path="url(#clipPath1)" d="M${W/2-20} ${H/2-10} L${W/2+20} ${H/2-10} L${W/2+20} ${H/2+10} L${W/2-20} ${H/2+10} L${W/2-20} ${H/2-10} Z" fill="none" fill-rule="evenodd"
+      /><path clip-path="url(#clipPath1)" d="M${W/2+40} ${H/2} L${W/2+48} ${H/2} L${W/2+48} ${H/2+8} L${W/2+40} ${H/2+8} Z" fill="none" fill-rule="evenodd"
+      /></g><g transform="matrix(1,0,0,1,10,10)"><path clip-path="url(#clipPath9)" d="M1 0 L1 -7.9 Q2 -3 3 0 Z" opacity="0.99" stroke="none"/></g></svg>`;
+  w.fetch=(u)=>{ u=String(u); zadnji=u; const q=new URL(u).searchParams; if(/DKP_ZGRADE/.test(u)) return Promise.resolve({ok:true,status:200,text:()=>Promise.resolve(svg(+q.get("WIDTH"),+q.get("HEIGHT")))}); return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null),text:()=>Promise.resolve("")}); };
+  const d=0.0015, L=await E("dkpZgrade")([lon-d,lat-d,lon+d,lat+d]);
+  const q=new URL(zadnji).searchParams, sc=(+q.get("BBOX").split(",")[2]-+q.get("BBOX").split(",")[0])/+q.get("WIDTH")/0.00028;
+  ok(L.length===2&&sc>=450&&sc<=2050&&q.get("FORMAT")==="image/svg+xml","DGU zgrade: dvije zgrade iz SVG-a (dvostruki obris jednom, natpis preskočen), mjerilo "+Math.round(sc)+" unutar 1:450–1:2050");
+  const ku=L.find(b=>b.pov>100), ga=L.find(b=>b.pov<25);
+  ok(ku&&Math.abs(ku.pov-200)<6&&ku.wall===6.5&&ga&&Math.abs(ga.pov-16)<2&&ga.wall===2.8,"DGU zgrade: površina tlocrta iz katastra (200 m² kuća, 16 m² garaža), visina pretpostavljena po veličini");
+  ok(Math.abs(ku.c[0]-lon)<0.00005&&Math.abs(ku.c[1]-lat)<0.00005,"DGU zgrade: koordinate iz piksela točno vraćene u WGS84");
+  // okolina za 3D: kuća iz SVG-a pada u sredinu traženog područja, tj. na samu česticu, pa se ne prikazuje; garaža je 10 m dalje
+  const [Ea,Na]=[E0-10,N0-40], ring=[[Ea,Na],[Ea+20,Na],[Ea+20,Na+20],[Ea,Na+20],[Ea,Na]].map(p=>E("tmInv")(p[0],p[1]));
+  const parcel={type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{}};
+  const Z=await E("zg3dLoad")(parcel);
+  ok(Z.st==="ok"&&Z.tip==="dkpw"&&Z.list.length===1&&Z.list[0].pov<25&&Math.abs(Z.list[0].dist-10)<0.5&&/katastarskog plana DGU-a \(dohvaćeno uživo\)/.test(E("zg3dNapomena")(Z))&&/PRETPOSTAVLJENE/.test(E("zg3dNapomena")(Z)),"3D okolina izvan Zagreba i Krka: tlocrti iz katastra DGU uživo, uz napomenu o pretpostavljenim visinama");
+  ok(errs.length===0,"bez JS grešaka (DGU zgrade): "+errs.join(" | "));
+}
+
+netTests().then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
