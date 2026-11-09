@@ -589,6 +589,7 @@ ul.risk small{color:var(--muted)}
         <label><input type="checkbox" id="lyrNam" checked> Namjena</label>
         <label><input type="checkbox" id="lyrInf" checked> Vodovi iz GUP-a</label>
         <label><input type="checkbox" id="lyrSki"> Najbliži vodovi (DGU)</label>
+        <label><input type="checkbox" id="lyrKrov" checked> Postojeće zgrade (krovovi) <small id="lyrKrovH" class="meta"></small></label>
         <label><input type="checkbox" id="lyrSun"> Sjene</label>
         <label><input type="checkbox" id="lyrSken"> Skener građevinskih čestica</label><div id="skenInfo"></div>
         <details class="lgd-wrap" id="lgdMap"><summary>Legenda boja</summary><div id="lgdMapBody"></div></details>
@@ -667,7 +668,7 @@ const CHECKS = [
 ];
 // Koridori infrastrukture (GUP čl. 50: DV 110 kV 20 m, 220 kV 25 m, 400 kV 35 m od osi; čl. 53: magistralni plinovod 30 m, VTP 10 m)
 // moduli koji su u razvoju (faze C i D) i još nisu uključeni
-const FEATURES={infra:true,seis:false,ai:false,upuZona:false,pristup:true,analitika:true}; // pristup: kodovi za napredne funkcije i dosje na e-mail (uključuje se kad je Worker postavljen, vidi PRISTUP.api) // seis: potresna opasnost, privremeno skrivena; ai: AI asistent (AI-1/AI-2 kod postoji) privremeno isključen: nema stavke u izborniku i ništa se ne šalje; uključuje se postavljanjem na true
+const FEATURES={krovovi:true,infra:true,seis:false,ai:false,upuZona:false,pristup:true,analitika:true}; // pristup: kodovi za napredne funkcije i dosje na e-mail (uključuje se kad je Worker postavljen, vidi PRISTUP.api) // seis: potresna opasnost, privremeno skrivena; ai: AI asistent (AI-1/AI-2 kod postoji) privremeno isključen: nema stavke u izborniku i ništa se ne šalje; uključuje se postavljanjem na true
 const INFRA=BASE+"GUP_Infrastruktura/FeatureServer/";
 const corrDist=(f,kind)=>{
   if(kind==="ee"){const l=String(f.LAYER||"")+String(f.EE_VODOVI_OPIS||""); return /400|440/.test(l)?35:/220/.test(l)?25:20;}
@@ -5001,6 +5002,63 @@ function zg3dLoad(parcel,Rm){
   ZG3D.cache.set(key,pr); return pr;
 }
 function zg3dGet(parcel){return parcel?ZG3D.res.get(zg3dKey(parcel))||null:null}
+// --- 2D krovovi postojećih zgrada na karti (od zuma 17). Zagreb: krovne plohe iz ZG3D (stvarni oblik krova, osjenčan prema strani
+// svijeta, svjetlo sa sjeverozapada); Krk: tlocrti iz katastra DGU; drugdje: tlocrti iz OpenStreetMapa. Gdje oblik krova nije poznat,
+// crta se ILUSTRATIVNI dvostrešni krov po duljoj stranici tlocrta. Zgrade na odabranoj čestici imaju plavi obrub.
+const KROV={on:true,minZ:17,lay:null,ren:null,dr:new Map(),osm:new Map(),t:0,tip:new Set()};
+function krovLok(c0){ const kx=111320*Math.cos(c0[1]*Math.PI/180), ky=110540; return {f:q=>[(q[0]-c0[0])*kx,(q[1]-c0[1])*ky],b:q=>[c0[0]+q[0]/kx,c0[1]+q[1]/ky]}; }
+// sjenčanje plohe: normala (Newellova metoda), nagib i strana svijeta; ravna ploha (< 6°) sivo
+function krovBoja(f,c0){ const T=krovLok(c0); let nx=0,ny=0,nz=0; const P=f.map(q=>{const a=T.f(q); return [a[0],a[1],q[2]||0];});
+  for(let i=0;i<P.length;i++){ const a=P[i], b=P[(i+1)%P.length]; nx+=(a[1]-b[1])*(a[2]+b[2]); ny+=(a[2]-b[2])*(a[0]+b[0]); nz+=(a[0]-b[0])*(a[1]+b[1]); }
+  const L=Math.hypot(nx,ny,nz)||1; nx/=L; ny/=L; nz/=L; if(nz<0){ nx=-nx; ny=-ny; nz=-nz; }
+  const nagib=Math.acos(Math.min(1,nz))*180/Math.PI; if(nagib<6) return {c:"#b8b3aa",nagib};
+  const sv=[-Math.SQRT1_2*Math.cos(Math.PI/4),Math.SQRT1_2*Math.cos(Math.PI/4),Math.sin(Math.PI/4)], I=Math.max(0,nx*sv[0]+ny*sv[1]+nz*sv[2]);
+  const k=0.62+0.55*I; return {c:`rgb(${Math.min(255,Math.round(196*k))},${Math.min(255,Math.round(102*k))},${Math.min(255,Math.round(63*k))})`,nagib}; }
+// ilustrativni dvostrešni krov: sljeme po duljoj stranici kroz težište; dvije polovice osjenčane prema strani svijeta
+function krovDvostresni(foot){ const c0=foot[0], T=krovLok(c0), P=foot.map(T.f); let sx=0,sy=0,A=0;
+  for(let i=0;i<P.length;i++){ const a=P[i],b=P[(i+1)%P.length],cr=a[0]*b[1]-b[0]*a[1]; A+=cr; sx+=(a[0]+b[0])*cr; sy+=(a[1]+b[1])*cr; }
+  if(Math.abs(A)<1e-6) return null; const C=[sx/(3*A),sy/(3*A)], pov=Math.abs(A)/2;
+  let best=0, d=[1,0]; for(let i=0;i<P.length;i++){ const a=P[i],b=P[(i+1)%P.length],L=Math.hypot(b[0]-a[0],b[1]-a[1]); if(L>best){ best=L; d=[(b[0]-a[0])/L,(b[1]-a[1])/L]; } }
+  const n=[-d[1],d[0]], rez=(Q,s)=>{ const o=[], f=q=>((q[0]-C[0])*n[0]+(q[1]-C[1])*n[1])*s; for(let i=0;i<Q.length;i++){ const p=Q[i],q=Q[(i+1)%Q.length],fp=f(p),fq=f(q); if(fp>=0) o.push(p); if((fp>=0)!==(fq>=0)){ const t=fp/(fp-fq); o.push([p[0]+t*(q[0]-p[0]),p[1]+t*(q[1]-p[1])]); } } return o; };
+  let t0=1e9,t1=-1e9; for(let i=0;i<P.length;i++){ const a=P[i],b=P[(i+1)%P.length], fa=(a[0]-C[0])*n[0]+(a[1]-C[1])*n[1], fb=(b[0]-C[0])*n[0]+(b[1]-C[1])*n[1];
+    if((fa>=0)!==(fb>=0)){ const t=fa/(fa-fb), x=[a[0]+t*(b[0]-a[0]),a[1]+t*(b[1]-a[1])], u=(x[0]-C[0])*d[0]+(x[1]-C[1])*d[1]; t0=Math.min(t0,u); t1=Math.max(t1,u); } }
+  const sv=[-Math.SQRT1_2,Math.SQRT1_2], sh=s=>{ const I=Math.max(0,(n[0]*s*sv[0]+n[1]*s*sv[1])*0.7+0.7*0.71); const k=0.62+0.55*I; return `rgb(${Math.min(255,Math.round(196*k))},${Math.min(255,Math.round(102*k))},${Math.min(255,Math.round(63*k))})`; };
+  return {pov,pol:[{r:rez(P,1).map(T.b),c:sh(1)},{r:rez(P,-1).map(T.b),c:sh(-1)}],sljeme:t1>t0?[T.b([C[0]+d[0]*t0,C[1]+d[1]*t0]),T.b([C[0]+d[0]*t1,C[1]+d[1]*t1])]:null}; }
+function krovNaCestici(B){ const d=curData(), P=d&&d.parcel; if(!P) return false; try{ return turf.booleanPointInPolygon(turf.point(B.c),P); }catch(e){ return false; } }
+function krovCrtaj(list,tip){ const g=L.layerGroup(), ll=r=>r.map(q=>[q[1],q[0]]), o={renderer:KROV.ren,interactive:false};
+  for(const B of list){ const naC=krovNaCestici(B), obrub=naC?"#1d4ed8":"#3d2b22", tez=naC?2.6:0.9;
+    if(B.faces&&B.faces.length){ for(const f of B.faces){ if(f.length<3) continue; const k=krovBoja(f,B.c); L.polygon(ll(f),{...o,stroke:k.nagib>=6,color:"#4a3328",weight:0.5,opacity:0.35,fillColor:k.c,fillOpacity:0.95}).addTo(g); }
+      for(const r of B.foot) L.polygon(ll(r),{...o,fill:false,color:obrub,weight:tez}).addTo(g); continue; }
+    const D=B.foot[0]&&B.foot[0].length>=3?krovDvostresni(B.foot[0]):null;
+    if(!D||D.pov<12){ for(const r of B.foot) L.polygon(ll(r),{...o,color:obrub,weight:tez,fillColor:"#b8b3aa",fillOpacity:0.9}).addTo(g); continue; }
+    for(const h of D.pol) if(h.r.length>=3) L.polygon(ll(h.r),{...o,stroke:false,fillColor:h.c,fillOpacity:0.88}).addTo(g);
+    if(D.sljeme) L.polyline(ll(D.sljeme),{...o,color:"#4a3328",weight:1,opacity:0.85,dashArray:"3 2"}).addTo(g);
+    for(const r of B.foot) L.polygon(ll(r),{...o,fill:false,color:obrub,weight:tez}).addTo(g); }
+  KROV.tip.add(tip); return g; }
+function krovOznaka(){ const h=document.getElementById("lyrKrovH"); if(!h) return; const t=KROV.tip, z=map.getZoom()<KROV.minZ;
+  h.textContent=z?"(približi kartu)":[t.has("zg3d")?"Zagreb: ZG3D 2022, stvarni krovovi":"",t.has("dkp")?"tlocrti: katastar DGU, krov ilustrativno":"",t.has("osm")?"tlocrti: OpenStreetMap, krov ilustrativno":""].filter(Boolean).join(" · "); }
+async function krovUpd(){
+  if(FEATURES.krovovi===false) return;
+  if(!KROV.lay){ if(!map.getPane("krovPane")){ const pn=map.createPane("krovPane"); pn.style.zIndex=380; pn.style.pointerEvents="none"; } KROV.ren=L.canvas({pane:"krovPane",padding:0.3}); KROV.lay=L.layerGroup().addTo(map); }
+  const t=++KROV.t; krovOznaka();
+  if(!KROV.on||map.getZoom()<KROV.minZ){ KROV.lay.clearLayers(); KROV.dr.clear(); KROV.tip.clear(); krovOznaka(); return; }
+  const b=map.getBounds().pad(0.25), bb=[b.getWest(),b.getSouth(),b.getEast(),b.getNorth()], hoc=new Set(); let pokriveno=false;
+  for(const base of ZG3D.izv){ const ix=await zg3dIdx(base); if(t!==KROV.t) return; if(!ix) continue; const have=new Set(ix.kvadrati);
+    for(let i=Math.floor(bb[1]/ix.dlat);i<=Math.floor(bb[3]/ix.dlat);i++) for(let j=Math.floor(bb[0]/ix.dlon);j<=Math.floor(bb[2]/ix.dlon);j++){
+      const k=i+"_"+j; if(!have.has(k)) continue; pokriveno=true; const key=base+k; hoc.add(key);
+      if(!KROV.dr.has(key)){ KROV.dr.set(key,null); zg3dTile(base,k,ix).then(list=>{ if(!KROV.dr.has(key)) return; const g=krovCrtaj(list,ix.tip||"zg3d"); KROV.dr.set(key,g); g.addTo(KROV.lay); krovOznaka(); }); } } }
+  if(!pokriveno&&map.getZoom()>=17.5){ // izvan Zagreba i Krka: OpenStreetMap po kvadratima (pamte se), najviše 4 kvadrata
+    const DL=0.004,DO=0.006, keys=[]; for(let i=Math.floor(bb[1]/DL);i<=Math.floor(bb[3]/DL);i++) for(let j=Math.floor(bb[0]/DO);j<=Math.floor(bb[2]/DO);j++) keys.push([i,j]);
+    for(const [i,j] of keys.slice(0,4)){ const key="osm:"+i+"_"+j; hoc.add(key); if(KROV.dr.has(key)) continue; KROV.dr.set(key,null);
+      const s0=i*DL,w0=j*DO, q=`[out:json][timeout:20];way["building"](${s0.toFixed(4)},${w0.toFixed(4)},${(s0+DL).toFixed(4)},${(w0+DO).toFixed(4)});out geom;`;
+      ovpQuery(q,20000).then(jj=>{ if(!KROV.dr.has(key)) return; const list=[];
+        for(const w of (jj&&jj.elements)||[]){ if(w.type!=="way"||!w.geometry||w.geometry.length<4) continue; const r=w.geometry.map(g=>[g.lon,g.lat]), a=r[0], z=r[r.length-1]; if(a[0]!==z[0]||a[1]!==z[1]) continue;
+          const foot=r.slice(0,-1); let sx=0,sy=0; for(const q2 of foot){sx+=q2[0];sy+=q2[1];} list.push({foot:[foot],faces:[],c:[sx/foot.length,sy/foot.length]}); }
+        const g=krovCrtaj(list,"osm"); KROV.dr.set(key,g); g.addTo(KROV.lay); krovOznaka(); }).catch(()=>{ KROV.dr.delete(key); }); } }
+  for(const [k,g] of [...KROV.dr]) if(!hoc.has(k)){ if(g) KROV.lay.removeLayer(g); KROV.dr.delete(k); }
+}
+// ponovno nacrtaj (npr. nakon odabira čestice, da zgrade na njoj dobiju plavi obrub)
+function krovOsvjezi(){ if(!KROV.lay) return krovUpd(); KROV.lay.clearLayers(); KROV.dr.clear(); KROV.tip.clear(); return krovUpd(); }
 // zadrži dio plohe na kojem je visina >= z (ploha je ravnina, pa je visina linearna duž rubova)
 function zg3dClip(poly,z){
   const out=[]; for(let i=0;i<poly.length;i++){const a=poly[i], b=poly[(i+1)%poly.length], fa=a[2]-z, fb=b[2]-z;
@@ -9928,6 +9986,11 @@ document.getElementById("lyrBtn").addEventListener("click",e=>{const l=document.
 window.addEventListener("resize",()=>lyrFit());
 document.getElementById("lyrInf").addEventListener("change",e=>{ e.target.checked?infLayer.addTo(map):map.removeLayer(infLayer); });
 document.getElementById("lyrSki").addEventListener("change",e=>{ e.target.checked?skiLayer.addTo(map):map.removeLayer(skiLayer); });
+// 2D krovovi postojećih zgrada: uključivanje, pomicanje karte (s odgodom) i novi odabir čestice (plavi obrub zgrada na njoj)
+document.getElementById("lyrKrov").addEventListener("change",e=>{ KROV.on=e.target.checked; krovUpd(); });
+{ let kt=0; map.on("moveend zoomend",()=>{ clearTimeout(kt); kt=setTimeout(()=>{ try{ krovUpd(); }catch(e){} },350); }); }
+{ let zadnja=null; setInterval(()=>{ try{ const d=curData(), p=d&&d.parcel||null; if(p!==zadnja){ zadnja=p; if(KROV.lay&&map.getZoom()>=KROV.minZ) krovOsvjezi(); } }catch(e){} },1500); }
+setTimeout(()=>{ try{ krovUpd(); }catch(e){} },800);
 document.getElementById("lyrSun").addEventListener("change",e=>{ SUN.on=e.target.checked; const c=document.getElementById("sunOn"); if(c) c.checked=SUN.on; if(SUN.on&&curData()&&curData().parcel){sunEnsureNb();} sunDraw(); });
 // izbornik (verzija, stanje servisa)
 document.getElementById("menuBtn").addEventListener("click",()=>{const m=document.getElementById("menu"); m.hidden=!m.hidden;});
