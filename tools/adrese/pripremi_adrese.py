@@ -2,7 +2,7 @@
 
 Izvor: https://geoportal.dgu.hr/services/atom/ad/xml → INSPIRE_Addresses_(AD).zip (cijela Hrvatska, oko 84 MB).
 Iz svake adrese uzima se samo: naziv ulice, kućni broj, naselje i točka. Ništa drugo se ne sprema.
-Obuhvat: otok Krk i Grad Zagreb (okviri u REGIJE).
+Obuhvat: otok Krk, Grad Zagreb, Split, Rijeka, Zadar i Osijek (okviri u REGIJE).
 
 Korištenje (Python 3, pip install lxml pyproj):
   python3 tools/adrese/pripremi_adrese.py --zip INSPIRE_Addresses_(AD).zip --datum 2026-10-18
@@ -13,7 +13,10 @@ import argparse, json, os, re, subprocess, zlib, collections
 from lxml import etree
 from pyproj import Transformer
 
-REGIJE = {"krk": (14.40, 44.86, 14.90, 45.26), "zg": (15.75, 45.60, 16.25, 46.00)}
+REGIJE = {"krk": (14.40, 44.86, 14.90, 45.26), "zg": (15.75, 45.60, 16.25, 46.00),
+          # gradovi s obrađenim pravilima gradnje (GUP/PPUG): okvir grada sa susjednim naseljima
+          "split": (16.37, 43.49, 16.56, 43.56), "rijeka": (14.33, 45.30, 14.52, 45.39),
+          "zadar": (15.17, 44.06, 15.33, 44.16), "osijek": (18.58, 45.50, 18.80, 45.60)}
 AD = "{http://inspire.ec.europa.eu/schemas/ad/4.0}"; GML = "{http://www.opengis.net/gml/3.2}"; XL = "{http://www.w3.org/1999/xlink}"; GN = "{http://inspire.ec.europa.eu/schemas/gn/4.0}"
 NB = 128
 T = Transformer.from_crs(4326, 3035, always_xy=True); TI = Transformer.from_crs(3035, 4326, always_xy=True)

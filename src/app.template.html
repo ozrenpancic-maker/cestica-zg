@@ -10366,8 +10366,29 @@ async function searchParcelKrk(pq,kos){
   if(hits.length>1){window.__choices=hits;
     sheet.innerHTML=`<p class="eyebrow">Pronađeno više čestica</p><div class="choices">${hits.map((x,i)=>`<button type="button" class="ib" data-pick="${i}">${esc(x.properties.broj)} · k.o. ${esc(x.properties.ko)}${x.properties.pov?" · "+fmt(x.properties.pov)+" m²":""}</button>`).join("")}</div>`; return;}
   goToFeature(hits[0]);}
+// --- Split, Rijeka, Zadar, Osijek: indeks brojeva čestica s jednom točkom unutar čestice (data/kat_hr, tools/katastar/pripremi_brojeve_hr.py);
+// čestica se nakon odabira učitava uživo iz katastarskog sloja DGU-a
+const KAT_HR={base:"data/kat_hr/",idx:null,br:new Map()}, KAT_HR_GRAD={split:"područje Splita",rijeka:"područje Rijeke",zadar:"područje Zadra",osijek:"područje Osijeka"};
+function katHrIndex(){ if(!KAT_HR.idx){ KAT_HR.idx=skiFetch(KAT_HR.base+"index.json",15000).then(j=>{if(!j||j.v!==1||!j.ko) throw new Error("neispravan indeks"); return j;}); KAT_HR.idx.catch(()=>{KAT_HR.idx=null;}); } return KAT_HR.idx; }
+function katHrBrojevi(mb){ let X=KAT_HR.br.get(mb); if(!X){ X=skiFetch(KAT_HR.base+mb+".json",20000); KAT_HR.br.set(mb,X); X.catch(()=>KAT_HR.br.delete(mb)); } return X; }
+async function hrKoTrazi(ko){ if(!ko) return []; let I; try{I=await katHrIndex()}catch(e){return []}
+  const k=norm(ko), all=Object.entries(I.ko).map(([mb,v])=>({mb,naziv:v.naziv,grad:v.grad}));
+  const tocno=all.filter(x=>norm(x.naziv)===k); if(tocno.length) return tocno;
+  return all.filter(x=>norm(x.naziv).split(" ").includes(k)||norm(x.naziv).startsWith(k+" ")||(k.length>=4&&norm(x.naziv).includes(k)));}
+async function searchParcelHr(pq,kos){
+  const kc=pq.kc, brojevi=kc.startsWith("*")?[kc]:[kc,"*"+kc]; sheet.innerHTML='<p class="hint"><span class="spin"></span>Tražim česticu '+esc(kc)+' (k.o. '+esc(kos.map(x=>x.naziv).join(", "))+')…</p>';
+  const hits=[]; for(const K of kos){ let X; try{X=await katHrBrojevi(K.mb)}catch(e){continue} for(const b of brojevi){ const p=X&&X.c&&X.c[b];
+    if(p) hits.push({type:"Feature",geometry:{type:"Point",coordinates:[p[0]/1e6,p[1]/1e6]},properties:{broj:b,ko:K.naziv}}); } }
+  if(!hits.length){ let I=null; try{I=await katHrIndex()}catch(e){} sheet.innerHTML=`<p class="err">Čestica ${esc(kc)} nije nađena u k.o. ${esc(kos.map(x=>x.naziv).join(", "))} (katastarski plan DGU${I&&I.preuzeto?", stanje "+esc(I.preuzeto.split("-").reverse().join(". "))+".":""}). Provjeri broj i katastarsku općinu.</p>`; return; }
+  if(hits.length>1){ window.__choices=hits; sheet.innerHTML=`<p class="eyebrow">Pronađeno više čestica</p><div class="choices">${hits.map((x,i)=>`<button type="button" class="ib" data-pick="${i}">${esc(x.properties.broj)} · k.o. ${esc(x.properties.ko)}</button>`).join("")}</div>`; return; }
+  goToFeature(hits[0]); }
 async function searchParcel(pq){
-  {const kos=await krkKoTrazi(pq.ko); if(kos.length) return searchParcelKrk(pq,kos);}
+  // točan naziv k.o. ima prednost u bilo kojem indeksu (Krk, Split/Rijeka/Zadar/Osijek, Zagreb); inače približni na Krku ili
+  // u gradovima (kad postoje oba, ono područje koje je na karti)
+  if(pq.ko){ const k=norm(pq.ko), kk=await krkKoTrazi(pq.ko), kh=await hrKoTrazi(pq.ko), ex=a=>a.filter(x=>norm(x.naziv)===k);
+    if(ex(kh).length) return searchParcelHr(pq,ex(kh)); if(ex(kk).length) return searchParcelKrk(pq,ex(kk));
+    if(!ZG_KO.some(n=>norm(n)===k)){ let naKrku=false; try{const c=map.getCenter(), b=ADR_REG.krk; naKrku=c.lng>=b[0]&&c.lng<=b[2]&&c.lat>=b[1]&&c.lat<=b[3];}catch(e){}
+      if(kk.length&&(!kh.length||naKrku)) return searchParcelKrk(pq,kk); if(kh.length) return searchParcelHr(pq,kh); } }
   if(pq.kc.startsWith("*")) pq={...pq,kc:pq.kc.slice(1)};
   sheet.innerHTML='<p class="hint"><span class="spin"></span>Tražim česticu '+esc(pq.kc)+'…</p>';
   const p=new URLSearchParams({where:"KATASTARSKA_CESTICA='"+pq.kc.replace(/'/g,"")+"'",outFields:"KATASTARSKA_OPCINA,KATASTARSKA_CESTICA",returnGeometry:"true",outSR:"4326",f:"geojson",resultRecordCount:"200"});
@@ -10910,13 +10931,22 @@ function adrB(b){ if(!ADR.b.has(b)){ const p=skiFetch(ADR.base+"b/"+String(b).pa
 const adrTok=(q,t)=>q===t||(t.length>=4&&q.length>=4&&(q.startsWith(t.slice(0,Math.max(3,t.length-2)))||t.startsWith(q.slice(0,Math.max(3,q.length-2)))));
 function adrParse(q){ const m=q.match(/(?:^|[\s,])(\d{1,4}\s?[a-zA-Z]?(?:\/\d{1,3})?)(?=[\s,]|$)/); const broj=m?m[1].replace(/\s/g,"").toUpperCase():null;
   const rest=m?q.slice(0,m.index)+" "+q.slice(m.index+m[0].length):q; return {broj,t:norm(rest).split(" ").filter(Boolean)}; }
-function adrUlica(I,P,reg){ let best=null;
+function adrUlicaSc(I,P,reg){ let best=null;
   for(const u of I.U){ if(!u.t.length) continue; const hitU=u.t.every(t=>P.t.some(q=>adrTok(q,t))); if(!hitU) continue;
     const hitN=u.nt.every(t=>P.t.some(q=>adrTok(q,t))), used=P.t.filter(q=>u.t.some(t=>adrTok(q,t))||u.nt.some(t=>adrTok(q,t))&&hitN).length, extra=P.t.length-used;
     // točna riječ vrijedi više od iste riječi u drugom padežu (Vranićeva ulica ispred Vraničke ulice)
-    const ex=u.t.filter(t=>P.t.includes(t)).length, sc=u.t.length*6+ex*4+(hitN?6:reg==="zg"&&u.nas==="Zagreb"?2:0)-extra*3+Math.min(1,u.n/50);
+    const ex=u.t.filter(t=>P.t.includes(t)).length, sc=u.t.length*6+ex*4+(hitN?6:u.nas===ADR_GLAVNO[reg]?2:0)-extra*3+Math.min(1,u.n/50);
     if(!best||sc>best.sc) best={u,sc}; }
-  return best&&best.sc>0?best.u:null; }
+  return best&&best.sc>0?best:null; }
+function adrUlica(I,P,reg){ const b=adrUlicaSc(I,P,reg); return b?b.u:null; }
+// najbolja ulica u svim područjima: mjesto s Krka u upitu → samo Krk; grad u upitu → samo taj grad; inače najveći rezultat
+// (točan naziv ispred iste riječi u drugom padežu), a pri jednakom rezultatu područje na karti
+async function adrNajbolja(q){ const P=adrParse(q); if(!P.t.length) return null; const n=norm(q), grad=[...new Set(n.split(" ").map(w=>ADR_GRAD[w]).filter(Boolean))];
+  const regs=KRK_MJESTA.test(n)?["krk"]:grad.length?grad:adrRegRed(q), nk=adrNaKarti(); let best=null;
+  // područje na karti dobiva +3: ista ili slična ulica u drugom gradu ne preuzima pretragu (Vukovarska u Zagrebu i u Splitu),
+  // a točan naziv u drugom gradu i dalje pobjeđuje sličan naziv na karti (Ilica iz Splita → Zagreb)
+  for(const reg of regs){ let I; try{I=await adrIdx(reg)}catch(e){continue} const b=adrUlicaSc(I,P,reg); if(!b) continue; const sc=b.sc+(reg===nk?3:0); if(!best||sc>best.sc) best={...b,sc,reg}; }
+  return best; }
 async function adrTrazi(q,reg){
   const P=adrParse(q); if(!P.t.length) return null;
   const I=await adrIdx(reg), u=adrUlica(I,P,reg); if(!u) return null;
@@ -10928,6 +10958,16 @@ async function adrTrazi(q,reg){
 }
 function srchNote(){ const n=SRCH.note, d=curData(); if(!n||!d||!d.ll||!SRCH.ll||Math.abs(d.ll.lat-SRCH.ll.lat)>1e-9||Math.abs(d.ll.lng-SRCH.ll.lng)>1e-9) return;
   if(document.getElementById("srchNote")) return; const b=document.createElement("p"); b.className=n.cls||"flag"; b.id="srchNote"; b.innerHTML=n.txt; sheet.insertBefore(b,sheet.firstChild); }
+// područja s registrom adresa DGU-a uz aplikaciju (tools/adrese/pripremi_adrese.py, REGIJE): [zapad, jug, istok, sjever]
+const ADR_REG={zg:[15.75,45.60,16.25,46.00],krk:[14.40,44.86,14.90,45.26],split:[16.37,43.49,16.56,43.56],rijeka:[14.33,45.30,14.52,45.39],zadar:[15.17,44.06,15.33,44.16],osijek:[18.58,45.50,18.80,45.60]};
+const ADR_GLAVNO={zg:"Zagreb",split:"Split",rijeka:"Rijeka",zadar:"Zadar",osijek:"Osijek"};
+const ADR_GRAD={SPLIT:"split",SOLIN:"split",RIJEKA:"rijeka",KASTAV:"rijeka",ZADAR:"zadar",OSIJEK:"osijek",ZAGREB:"zg",SESVETE:"zg"};
+// redoslijed područja za upit: naselje iz upita, područje na sredini karte, Krk (mjesto s otoka), Zagreb, ostala
+function adrNaKarti(){ try{const c=map.getCenter(); for(const [k,b] of Object.entries(ADR_REG)) if(c.lng>=b[0]&&c.lng<=b[2]&&c.lat>=b[1]&&c.lat<=b[3]) return k;}catch(e){} return null; }
+function adrRegRed(q){ const n=norm(q), o=[], add=r=>{if(r&&!o.includes(r)) o.push(r)};
+  for(const w of n.split(" ")) add(ADR_GRAD[w]); if(KRK_MJESTA.test(n)) add("krk");
+  try{const c=map.getCenter(); for(const [k,b] of Object.entries(ADR_REG)) if(c.lng>=b[0]&&c.lng<=b[2]&&c.lat>=b[1]&&c.lat<=b[3]) add(k);}catch(e){}
+  for(const k of Object.keys(ADR_REG)) add(k); return o; }
 const KRK_MJESTA=/\b(KRK|MALINSKA|BASKA|PUNAT|OMISALJ|NJIVICE|VRBNIK|DOBRINJ|SILO|KORNIC|PINEZICI|KOSTERNA|BRZAC|LINARDICI|GARICA|SVETI VID|KLIMNO|SOLINE|RISIKA|STARA BASKA|DRAGA BASCANSKA|JURANDVOR|BATOMALJ|CIZICI|NENADICI|LUKEZIC|MILOHNICI)\b/;
 async function search(){ try{ an("pretraga",String(Date.now())); }catch(e){}
   const q=document.getElementById("q").value.trim(); if(!q) return;
@@ -10935,11 +10975,13 @@ async function search(){ try{ an("pretraga",String(Date.now())); }catch(e){}
   if(pq){try{await searchParcel(pq)}catch(e){sheet.innerHTML='<p class="err">Pretraga čestice nije uspjela: '+esc(e.message)+'</p>'} return;}
   sheet.innerHTML='<p class="hint"><span class="spin"></span>Tražim adresu…</p>';
   try{
-    // pilot Krk: naselja na otoku traže se u obuhvatu otoka, sve ostalo u Zagrebu
-    const krk=KRK_MJESTA.test(norm(q));
-    // prvo službeni registar adresa DGU-a (pripremljen uz aplikaciju), pa OpenStreetMap
-    try{ const A=await adrTrazi(q,krk?"krk":"zg"); if(A){ SRCH.note=A.note; SRCH.ll=A.ll; map.setView(A.ll,18); inspect(A.ll); return; } }catch(e){}
-    const p=new URLSearchParams(krk?{q,format:"json",limit:"8",addressdetails:"1",countrycodes:"hr",viewbox:"14.40,45.26,14.90,44.86",bounded:"1"}:{q:q+", Zagreb",format:"json",limit:"8",addressdetails:"1",countrycodes:"hr",viewbox:"15.75,46.0,16.25,45.6",bounded:"1"});
+    // prvo službeni registar adresa DGU-a (pripremljen uz aplikaciju za Zagreb, Krk, Split, Rijeku, Zadar i Osijek):
+    // najprije područje koje je na karti, naselje iz upita i Zagreb, pa ostala; zatim OpenStreetMap u istom području
+    const RG=adrRegRed(q);
+    try{ const BB=await adrNajbolja(q), A=BB&&await adrTrazi(q,BB.reg); if(A){ SRCH.note=A.note; SRCH.ll=A.ll; map.setView(A.ll,18); inspect(A.ll); return; } }catch(e){}
+    // OpenStreetMap: Krk samo kad je u upitu mjesto s otoka (kao i prije); inače naselje iz upita, područje na karti ili Zagreb
+    const NR=RG.find(r=>r!=="krk"||KRK_MJESTA.test(norm(q))), B=ADR_REG[NR], vb=[B[0],B[3],B[2],B[1]].map(v=>v.toFixed(2)).join(",");
+    const p=new URLSearchParams(NR==="zg"?{q:q+", Zagreb",format:"json",limit:"8",addressdetails:"1",countrycodes:"hr",viewbox:vb,bounded:"1"}:{q,format:"json",limit:"8",addressdetails:"1",countrycodes:"hr",viewbox:vb,bounded:"1"});
     const a=await getJSON("https://nominatim.openstreetmap.org/search?"+p.toString());
     if(!a[0]){sheet.innerHTML='<p class="err">Adresa nije pronađena. Probaj drukčije napisati ili dodirni kartu.</p>';return}
     // kućni broj: OpenStreetMap nema sve kućne brojeve; bez točnog broja vraća ulicu (često daleko od kuće), pa to treba reći
@@ -10965,34 +11007,37 @@ async function sgKos(txt){ const Q=norm(txt).split(" ").filter(Boolean); if(!Q.l
   const hit=n=>{const W=norm(n).split(" "); return Q.every(q=>W.some(w=>w.startsWith(q)));};
   const out=ZG_KO.filter(hit).map(n=>({reg:"zg",naziv:n}));
   try{const I=await katIndex(); for(const [mb,v] of Object.entries(I.ko||{})) if(hit(v.naziv)) out.push({reg:"krk",mb,naziv:v.naziv});}catch(e){}
+  try{const I=await katHrIndex(); for(const [mb,v] of Object.entries(I.ko||{})) if(hit(v.naziv)) out.push({reg:"hr",mb,naziv:v.naziv,grad:v.grad});}catch(e){}
   const Qs=Q.join(" "); return out.sort((a,b)=>(norm(b.naziv)===Qs)-(norm(a.naziv)===Qs)||(norm(b.naziv).startsWith(Qs))-(norm(a.naziv).startsWith(Qs))||sgNat(a.naziv,b.naziv)); }
 async function sgBrojevi(K,pre){
   if(!/^\d[\d\/]*$/.test(pre)) return [];
   if(K.reg==="zg"){ const k=K.naziv+"|"+pre; if(!SG.zg.has(k)){ const w=`KATASTARSKA_OPCINA='${K.naziv.replace(/'/g,"")}' AND KATASTARSKA_CESTICA LIKE '${pre}%'`;
       const p=getJSON(SRC.cestice+"?"+new URLSearchParams({where:w,outFields:"KATASTARSKA_CESTICA",returnGeometry:"false",orderByFields:"KATASTARSKA_CESTICA",resultRecordCount:"60",f:"json"}).toString(),{},8000).then(j=>[...new Set((j&&j.features||[]).map(f=>String(f.attributes.KATASTARSKA_CESTICA)))]);
       SG.zg.set(k,p); p.catch(()=>SG.zg.delete(k)); } return SG.zg.get(k); }
-  const d=await katBrojevi(K.mb); return Object.keys(d&&d.c||{}).filter(b=>b.replace(/^\*/,"").startsWith(pre)); }
-async function sgUlice(Q){ if(!Q.length||Q.join("").length<3) return []; const res=[];
-  for(const reg of ["zg","krk"]){ let I; try{I=await adrIdx(reg)}catch(e){continue}
+  const d=await (K.reg==="hr"?katHrBrojevi(K.mb):katBrojevi(K.mb)); return Object.keys(d&&d.c||{}).filter(b=>b.replace(/^\*/,"").startsWith(pre)); }
+async function sgUlice(Q){ if(!Q.length||Q.join("").length<3) return []; const res=[], RG=adrRegRed(Q.join(" "));
+  for(const reg of RG){ let I; try{I=await adrIdx(reg)}catch(e){continue} const pr=reg===RG[0]?4:0;
     for(const u of I.U){ if(!u.t.length) continue; const W=u.N.split(" "), all=[...W,...u.nt];
       if(!Q.every(q=>all.some(t=>sgRijec(q,t)))||!Q.some(q=>u.t.some(t=>sgRijec(q,t)))) continue;
-      const sc=(u.N.startsWith(Q.join(" "))?20:0)+(W[0].startsWith(Q[0])?8:0)+Math.min(8,u.n/25)+(u.nas==="Zagreb"?3:0)-(W.length-Q.length);
+      const sc=(u.N.startsWith(Q.join(" "))?20:0)+(W[0].startsWith(Q[0])?8:0)+Math.min(8,u.n/25)+pr+(u.nas===ADR_GLAVNO[reg]?3:0)-(W.length-Q.length);
       res.push({reg,u,sc}); } }
   return res.sort((a,b)=>b.sc-a.sc).slice(0,6); }
-async function sgKucni(P){ const out=[];
-  for(const reg of KRK_MJESTA.test(P.t.join(" "))?["krk","zg"]:["zg","krk"]){ let I; try{I=await adrIdx(reg)}catch(e){continue}
-    const u=adrUlica(I,P,reg); if(!u) continue; let B; try{B=await adrB(u.b)}catch(e){continue}
-    const L2=(B&&B[u.nas+"|"+u.ul]||[]).filter(p=>String(p[0]).toUpperCase().startsWith(P.broj)).sort((a,b)=>sgNat(a[0],b[0])).slice(0,out.length?4:6);
+async function sgKucni(P,q){ const out=[]; let N0=null; const BB=await adrNajbolja(q).catch(()=>null); if(!BB) return out;
+  // najbolje područje, a u ostalima samo ulica istog naziva (npr. Ledine u Zagrebu i u Korniću)
+  for(const reg of [BB.reg,...adrRegRed(q).filter(r=>r!==BB.reg)]){ if(out.length>=8) break; let I; try{I=await adrIdx(reg)}catch(e){continue}
+    const u=reg===BB.reg?BB.u:adrUlica(I,P,reg); if(!u||(N0&&u.N!==N0)) continue; let B; try{B=await adrB(u.b)}catch(e){continue}
+    const L2=(B&&B[u.nas+"|"+u.ul]||[]).filter(p=>String(p[0]).toUpperCase().startsWith(P.broj)).sort((a,b)=>sgNat(a[0],b[0])).slice(0,N0?3:6);
+    if(!L2.length) continue; N0=N0||u.N;
     out.push(...L2.map(p=>({tip:"kbr",u,kb:p[0],ll:[p[2]/1e6,p[1]/1e6],lab:`${u.ul} ${p[0]}`,sub:`${u.nas} · adresa (registar DGU)`,reg}))); }
   return out; }
 async function sgRun(){ const q=document.getElementById("q").value, my=++SG.seq, qt=q.trim(); if(qt.length<2){sgShow([]);return}
   const items=[], m=qt.match(/^(.*?)\s*(\*?\d[\d\/]*)$/), txt=parcelPrefiksi(m?m[1]:qt), pre=m?m[2].replace(/^\*/,""):null;
   try{ const kos=txt?await sgKos(txt):[];
     if(pre&&kos.length){ for(const K of kos.slice(0,2)){ try{ const L2=(await sgBrojevi(K,pre)).sort((a,b)=>(b.replace(/^\*/,"")===pre)-(a.replace(/^\*/,"")===pre)||sgNat(a.replace(/^\*/,""),b.replace(/^\*/,""))).slice(0,6);
-        for(const b of L2) items.push({tip:"cest",K,kc:b,lab:`${sgVelika(K.naziv)} ${b}`,sub:`katastarska čestica · k.o. ${sgVelika(K.naziv)}${K.reg==="krk"?" (Krk)":" (Zagreb)"}`}); }catch(e){} } }
-    else if(!pre) for(const K of kos.slice(0,3)) items.push({tip:"ko",K,lab:`k.o. ${sgVelika(K.naziv)}`,sub:`katastarska općina${K.reg==="krk"?" na Krku":" u Zagrebu"} · dopiši broj čestice`});
+        for(const b of L2) items.push({tip:"cest",K,kc:b,lab:`${sgVelika(K.naziv)} ${b}`,sub:`katastarska čestica · k.o. ${sgVelika(K.naziv)} (${K.reg==="krk"?"Krk":K.reg==="hr"?KAT_HR_GRAD[K.grad]||"":"Zagreb"})`}); }catch(e){} } }
+    else if(!pre) for(const K of kos.slice(0,3)) items.push({tip:"ko",K,lab:`k.o. ${sgVelika(K.naziv)}`,sub:`katastarska općina · ${K.reg==="krk"?"Krk":K.reg==="hr"?KAT_HR_GRAD[K.grad]||"":"Zagreb"} · dopiši broj čestice`});
     const P=adrParse(qt);
-    if(P.broj&&!P.broj.includes("/")&&P.t.length) items.push(...await sgKucni(P));
+    if(P.broj&&!P.broj.includes("/")&&P.t.length) items.push(...await sgKucni(P,qt));
     else if(!P.broj) for(const x of await sgUlice(P.t)) items.push({tip:"ul",u:x.u,reg:x.reg,lab:x.u.ul,sub:`${x.u.nas} · ulica (registar DGU), dopiši kućni broj`});
   }catch(e){}
   if(my!==SG.seq) return; sgShow(items.slice(0,9)); }
@@ -11013,7 +11058,7 @@ async function sgPick(it){ const q=document.getElementById("q"); if(!it) return;
   if(it.tip==="kbr"){ q.value=`${it.u.ul} ${it.kb}${it.u.nas!==it.u.ul?", "+it.u.nas:""}`; const I=await adrIdx(it.reg).catch(()=>null), ll=L.latLng(it.ll[0],it.ll[1]);
     SRCH.note={cls:"meta",txt:`Adresa iz registra adresa DGU-a: ${esc(q.value)}${I&&I.preuzeto?" (stanje "+esc(I.preuzeto.split("-").reverse().join(". "))+".)":""}. Točka kućnog broja; provjeri na karti je li to tvoja čestica.`}; SRCH.ll=ll; map.setView(ll,18); inspect(ll); return; }
   if(it.tip==="cest"){ q.value=`${sgVelika(it.K.naziv)} ${it.kc}`; const pq={kc:it.kc,ko:it.K.naziv};
-    try{ if(it.K.reg==="krk") await searchParcelKrk(pq,[{mb:it.K.mb,naziv:it.K.naziv}]); else await searchParcel(pq); }catch(e){sheet.innerHTML='<p class="err">Pretraga čestice nije uspjela: '+esc(e.message)+'</p>'} } }
+    try{ if(it.K.reg==="krk") await searchParcelKrk(pq,[{mb:it.K.mb,naziv:it.K.naziv}]); else if(it.K.reg==="hr") await searchParcelHr(pq,[{mb:it.K.mb,naziv:it.K.naziv}]); else await searchParcel(pq); }catch(e){sheet.innerHTML='<p class="err">Pretraga čestice nije uspjela: '+esc(e.message)+'</p>'} } }
 { const q=document.getElementById("q"), el=document.getElementById("sg");
   // izvan zaglavlja: zaglavlje ima vlastiti z-index, pa bi ga kontrole karte i donji panel prekrili
   document.body.appendChild(el);
