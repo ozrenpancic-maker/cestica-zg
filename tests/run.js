@@ -1892,6 +1892,9 @@ async function sazTests(){
    ok(M.fb&&M.fb.maxZoom===19&&M.zz===19&&M.pp>=55&&M.pp<=62,"3D pogled: čestica s okolicom u kadru, zum najviše 19 (satelit na Krku ima najviše razinu 18), nagib "+M.pp+"°");
    ok(E("V3D").rot===true&&(M.cc.dispatchEvent(new w.Event("pointerdown")),E("V3D").rot===false),"3D pogled: automatsko okretanje staje na prvi dodir, da nagib i okret prstima ili mišem rade (okretanje inače prekida svaki pokret)");
    M.fitBounds=()=>{}; M.setZoom=()=>{}; M.getZoom=()=>18; M.setPitch=()=>{}; M.h["1idle"](); ok(E("V3D").snap.size===1,"3D pogled: nakon iscrtavanja sprema se slika za izvještaj");
+   {const I=$(w,"v3dInfo"), B=$(w,"v3dInfoB"); ok(I.hidden&&/Teren: model visina/.test(I.textContent)&&!/Teren/.test($(w,"v3dNote").textContent),"3D pogled: izvori i napomene skriveni ispod slike, dostupni na gumb ⓘ");
+    B.dispatchEvent(new w.Event("click",{bubbles:true})); ok(!I.hidden&&B.getAttribute("aria-expanded")==="true","3D pogled: gumb ⓘ prikazuje izvore i napomene");
+    B.dispatchEvent(new w.Event("click",{bubbles:true})); ok(I.hidden,"3D pogled: drugi dodir na ⓘ skriva napomene");}
    {let t0=Date.now(), snim=0; const F={getCanvas:()=>({toDataURL:()=>{snim=Date.now()-t0; return "data:image/jpeg;base64,eA=="}}),loaded:()=>Date.now()-t0>600,areTilesLoaded:()=>Date.now()-t0>900,once:(e,f)=>setTimeout(f,20),triggerRepaint:()=>{}};
     E("V3D").map=F; await E("v3dCekajSnimi")(F,{key:"t:cek",model:null}); ok(snim>=900&&E("V3D").snap.has("t:cek")&&E("V3D").snapNep["t:cek"]===false,"3D za dosje: slika se snima tek kad su podloga i teren učitani ("+snim+" ms)");
     t0=Date.now(); const G={...F,areTilesLoaded:()=>false}; E("V3D").map=G; const T0=Date.now(); E("V3D").snap.delete("t:cek"); const sp=E("v3dCekajSnimi")(G,{key:"t:cek",model:null});
