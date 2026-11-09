@@ -16,7 +16,7 @@ IZVOR = {
     "url": "https://www.osijek.hr/",
     "pdf": "https://www.osijek.hr/wp-content/uploads/2025/04/0-7_25-GUP_pro%C4%8Di%C5%A1%C4%87eni_tekst.pdf",
     "status": "na snazi (pročišćeni tekst 7/2025, obuhvaća izmjene do 23/2024); u tijeku je postupak transformacije GUP-a (prijedlog, javni uvid 15.–29. 1. 2026.)",
-    "provjera": "Čl. 7., 8., 23.j–26., 33. i 40. iz pročišćenog teksta (PDF s osijek.hr, tekst izvučen strojno), preuzeto 9. 11. 2026.",
+    "provjera": "Čl. 7., 8., 23.j–26., 33. i 40. iz pročišćenog teksta (PDF s osijek.hr, tekst izvučen strojno), preuzeto 9. 11. 2026. Neovisna provjera (zasebna provjera koja nije sastavljala pravila), 9. 11. 2026.: oko 45 vrijednosti i navoda, bez odstupanja u brojkama; dopunjene napomene o namjeni S1, otvorima uz među i višestambenoj gradnji u OVS-u.",
     "pravna_provjera": {"status": "NIJE_POTVRDENO",
                         "napomena": "Grad je u siječnju 2026. stavio na javni uvid prijedlog transformiranog GUP-a s drukčijim oznakama zona (npr. SM-O-2) i dijelom drukčijim pokazateljima; donošenje nije provjereno. Tip zgrade i broj etaža određuje kartografski prikaz 4.3.2. „Način gradnje”."}
 }
@@ -41,13 +41,14 @@ def obit(et=3):
                      "oblici": [["slob", "samostojeća"], ["dvoj", "poluugrađena"], ["ugr", "ugrađena"]]}}
 
 MEDA = {"clanak": "25.", "min": 1, "opis": "zid uz dvorišnu među ili najmanje 1 m od nje (čl. 25. st. 9.–12.)",
-        "opisIznimka": "Na dijelu građevine bližem od 3,0 m granici susjedne čestice ne smiju se projektirati ni izvoditi otvori (čl. 25. st. 15.); zid na međi mora biti puni zid bez otvora (čl. 25.a). S prozorima prema susjedu kuća je zato najmanje 3 m od međe.",
+        "opisIznimka": "Na dijelu građevine bližem od 3,0 m granici susjedne čestice ne smiju se projektirati ni izvoditi otvori (čl. 25. st. 15.); zid na međi mora biti puni zid bez otvora (čl. 25.a st. 1.). Čl. 25.a dopušta na 1 m od međe staklenu opeku, fiksna ostakljenja do 60 × 60 cm i male ventilacijske otvore, a otvore pod kutom od 45° ili većim prema međi slobodno; za obične prozore prema susjedu računaj s najmanje 3 m.",
         "txt": "Zid građevine koji je paralelan s dvorišnom međom građevne čestice može biti prislonjen uz tu među ili udaljen 1 m ili više od te međe."}
 REG = {"clanak": "25.", "ostale": None,
        "opis": "plan ne propisuje opću udaljenost; 5 m od regulacijskog pravca uz Strossmayerovu (zapadno od Rokove), Divaltovu i dijelove Ulice M. Gupca i Vukovarske, a uz pojedine poteze obvezno zadržavanje postojećeg građevinskog pravca (karta 4.1.2.)",
        "txt": "Građevinski pravac mora biti udaljen 5 m od regulacijskog pravca za sljedeće ulice, odnosno dijelove ulica, a označen je na kartografskom prikazu 4.1.2."}
 ZEL = {"clanak": "25.b", "min": 0.3, "txt": "Najmanje 30% površine građevne čestice mora biti ozelenjeno."}
-NAP = ["Najmanja duljina regulacijskog pravca 5 m kad je pristup s javne prometne površine (čl. 24. st. 11.).",
+NAP = ["Namjena S1: obiteljske zgrade samo za stanovanje, bez drugih djelatnosti; namjena S: druge djelatnosti najviše 25 % GBP-a obiteljske zgrade (čl. 7.). U Južnom stadionskom naselju i Filipovici samo obiteljske stambene zgrade (čl. 7. st. 9.).",
+       "Najmanja duljina regulacijskog pravca 5 m kad je pristup s javne prometne površine (čl. 24. st. 11.).",
        "Postojeća čestica manja od 120 m² s obiteljskom zgradom: kig do 1,0 (čl. 24.a st. 2.).",
        "kis se može uvećati za podzemne etaže koje služe za smještaj vozila (čl. 24.a st. 6.).",
        "Dalje od 20 m od regulacijskog pravca zid uz među najviše 4 m iznad terena susjeda, za novu obiteljsku zgradu 6 m (čl. 24.a st. 14.–17.).",
@@ -62,7 +63,7 @@ def bez(k, naziv, msg): ZONE.append([k, naziv]); ZSET[k] = {"tipovi": None, "dru
 dodaj("O", "O · obiteljske zgrade (karta 4.3.2.)", {"tipovi": obit(), "meda": MEDA, "regulacija": REG, "zelenilo": ZEL, "napomene": NAP,
       "upozorenja": ["Najveći broj nadzemnih etaža za česticu je broj u krugu na karti 4.3.2. „Način gradnje”; obiteljska zgrada ima ih najviše 3 (čl. 24.a, 33.)."]})
 dodaj("OVS", "OVS · obiteljske i višestambene zgrade (karta 4.3.2.)", {"tipovi": obit(), "meda": MEDA, "regulacija": REG, "zelenilo": ZEL,
-      "napomene": ["Na površini OVS može se graditi i višestambena zgrada (više od 3 stana): čestica najmanje 700 m², kig 0,5, kis 2,5, do 6 etaža i 20 m (čl. 27.–27.a); aplikacija to ne računa."] + NAP,
+      "napomene": ["Na površini OVS može se graditi i višestambena zgrada (više od 3 stana): čestica najmanje 700 m², kig 0,5, kis 2,5, do 6 etaža (i prema broju u krugu na karti 4.3.2.) i 20 m, a uz Strossmayerovu, Divaltovu, Ulicu M. Gupca i Vukovarsku istočno od Trpimirove najmanje 4 etaže (čl. 27.–27.a); aplikacija to ne računa."] + NAP,
       "upozorenja": ["Najveći broj nadzemnih etaža prema karti 4.3.2. odnosi se na sve zgrade; obiteljska zgrada ima ih najviše 3 (čl. 24.a, 33.)."]})
 bez("VS", "VS · višestambene zgrade (karta 4.3.2.)", "Na površinama VS predviđena je gradnja višestambenih zgrada (čestica najmanje 700 m², kig 0,5, kis 2,5, čl. 27.–27.a); postojeće obiteljske zgrade mogu se rekonstruirati prema uvjetima za obiteljske zgrade (čl. 24.a st. 13.), a nova obiteljska kuća nije predviđena.")
 bez("namjena", "druga namjena na karti 1 (javna, gospodarska, zelenilo, promet)", "Na ovoj namjeni stanovanje je moguće samo kao prateći sadržaj (čl. 23.j); uvjeti za obiteljsku kuću se ne primjenjuju.")
@@ -74,7 +75,7 @@ OSIJEK = {
     "oblici": [["slob", "samostojeća"], ["dvoj", "poluugrađena"], ["ugr", "ugrađena"]],
     "kisUkupni": True,
     "zone": ZONE, "zoneSet": ZSET, "zonaLabel": "Način gradnje (karta 4.3.2.)",
-    "zonaNapomena": "GUP Osijeka određuje tip stambene zgrade kartom 4.3.2. „Način gradnje”: O obiteljske zgrade, VS višestambene, OVS obje; uvjeti za obiteljske zgrade jednaki su u stambenoj (S, S1) i mješovitoj (M) namjeni (čl. 23.j–25.b).",
+    "zonaNapomena": "GUP Osijeka određuje tip stambene zgrade kartom 4.3.2. „Način gradnje”: O obiteljske zgrade, VS višestambene, OVS obje; pokazatelji za obiteljske zgrade (čestica, kig, kis, etaže, visina) jednaki su u stambenoj (S, S1) i mješovitoj (M) namjeni, a razlikuju se dopuštene druge djelatnosti (čl. 7., 8., 23.j–25.b).",
     "drugaZona": "Za odabrani način gradnje uvjeti za obiteljsku kuću nisu obrađeni.",
     "tipovi": obit(), "meda": MEDA, "regulacija": REG, "zelenilo": ZEL,
     "pristup": {"napomena": "Jedan kolni pristup širine do 4,5 m i duljine do 50 m (čl. 26.); 1 parkirališno mjesto po stanu (čl. 40.)."},
