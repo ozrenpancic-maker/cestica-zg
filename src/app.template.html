@@ -1691,7 +1691,7 @@ sheet.addEventListener("change",e=>{
   }
 });
 async function inspectKrk(ll){
-  const id=++clickId;
+  window.__pokLL=ll; const id=++clickId;
   selLayer.clearLayers(); infLayer.clearLayers(); skiLayer.clearLayers(); TL.layer=null; TL.marker=null; TL.rotM=null; TL.center=null; TL.zones=null;
   window.__lastData=null; window.__infra=null; window.__ski=null; window.__env=null; KRK_CUR=null;
   L.circleMarker(ll,{radius:5,color:"#000",weight:2,fillColor:"#fff",fillOpacity:1}).addTo(selLayer);
@@ -1736,7 +1736,7 @@ async function loadParcelHR(ll){
     izvor:"DGU, katastarski sloj karte (uživo)",gSrc:"iz katastarskog sloja DGU-a (uživo)",hr:true}};
 }
 async function inspectHR(ll){
-  const id=++clickId;
+  window.__pokLL=ll; const id=++clickId;
   selLayer.clearLayers(); infLayer.clearLayers(); skiLayer.clearLayers(); TL.layer=null; TL.marker=null; TL.rotM=null; TL.center=null; TL.zones=null;
   window.__lastData=null; window.__infra=null; window.__ski=null; window.__env=null; KRK_CUR=null;
   L.circleMarker(ll,{radius:5,color:"#000",weight:2,fillColor:"#fff",fillOpacity:1}).addTo(selLayer);
@@ -3224,7 +3224,7 @@ function renderHR(d){
 }
 
 async function inspect(ll){
-  if(isOffline()){pwaOfflineInspect(); return}
+  window.__pokLL=ll; if(isOffline()){pwaOfflineInspect(); return}
   // nova čestica: ništa od prethodne (okvir karte, pravila, granice) ne smije ostati, ni kad se prelazi Zagreb ↔ Krk
   window.__lastBounds=null; window.__tl=null; window.__gbp=null; window.__ruleP=null; window.__rule=null; window.__prist=null;
   krkEnvLayer.clearLayers(); KRK_CUR=null; RK_CTX=null; gpLayer.clearLayers(); window.__gp=null; if(RK_MAP.layer){map.removeLayer(RK_MAP.layer); RK_MAP.layer=null;} RK_MAP.on=false;
@@ -4492,6 +4492,10 @@ function matPrint(){ let R=document.getElementById("report"); if(R) R.remove(); 
 const PRISTUP={api:"https://pristup.cesticahr.com",kontakt:"info@cesticahr.com",provjereno:false};
 const PR_ADV=["tloc","gp","skica","oku","mat","build","prep","kd","costs","krkKd","hkd","buy","total","scen","proj","vrij","ptn","ppv","isk","osun","pogled","ene","kis","vjet","sun","pv","bfaze","mk","cklist"];
 const prUkljuceno=()=>!!(FEATURES.pristup&&PRISTUP.api);
+// ogledni napredni prikaz bez koda (poveznica s web stranice ?primjer=1): samo za k.č. 735/58 k.o. Kornić, do 35 m od točke primjera
+const PR_PRIMJER={lat:45.044662,lng:14.615334,r:35,naziv:"k.č. 735/58, k.o. Kornić"};
+let PR_PRIMJER_ON=false; try{ PR_PRIMJER_ON=new URLSearchParams(location.search).has("primjer"); }catch(e){}
+function prPrimjer(){ const l=window.__pokLL; if(!PR_PRIMJER_ON||!l) return false; const dy=(l.lat-PR_PRIMJER.lat)*110540, dx=(l.lng-PR_PRIMJER.lng)*111320*Math.cos(PR_PRIMJER.lat*Math.PI/180); return Math.hypot(dx,dy)<=PR_PRIMJER.r; }
 // istice: null = neograničen pristup (Worker ipak provjerava stanje pri svakom pokretanju)
 function prTok(){ try{ const o=JSON.parse(localStorage.getItem("pristupTok")||"null"); return o&&o.token&&(o.istice==null||o.istice>Date.now())?o:null; }catch(e){ return null; } }
 const PR_NAMJENE=[["kupujem","Kupujem zemljište"],["gradnja","Planiram gradnju kuće"],["arhitekt","Arhitekt ili projektant"],["agencija","Agencija za nekretnine"],["investitor","Investitor"],["ostalo","Ostalo"]];
@@ -4512,13 +4516,15 @@ async function prZahtjevPosalji(){ const p=document.getElementById("przPor"), em
 async function prAktiviraj(kod,por){ if(por) por.textContent="Provjeravam kod…";
   try{ const j=await prApi("/prijava",{body:{kod}}); prPostavi({token:j.token,istice:j.istice??null,oznaka:j.oznaka||null}); PRISTUP.provjereno=true; if(por) por.textContent="Napredni pristup je aktiviran."; prRerender(); return true; }
   catch(err){ if(por) por.textContent=err.message||"Prijava nije uspjela."; return false; } }
-function prOk(){ return !prUkljuceno()||!!prTok(); }
+function prOk(){ return !prUkljuceno()||!!prTok()||prPrimjer(); }
 function prPostavi(o){ try{ if(o) localStorage.setItem("pristupTok",JSON.stringify(o)); else localStorage.removeItem("pristupTok"); }catch(e){} }
 function prRerender(){ try{ if(window.__slobodno&&prOk()&&window.__lastLL){ window.__slobodno=false; if(SLOB.layer){ try{selLayer.removeLayer(SLOB.layer)}catch(e){} SLOB.layer=null; } return inspect(L.latLng(window.__lastLL.lat,window.__lastLL.lng)); }
   if(!prOk()&&window.__lastLL&&!window.__slobodno) return inspect(L.latLng(window.__lastLL.lat,window.__lastLL.lng)); const c=window.__cur||{}; if(c.region==="krk"&&KRK_CUR) renderKrk(KRK_CUR); else if(c.region==="hr"&&KRK_CUR) renderHR(KRK_CUR); else if(window.__lastData) render(window.__lastData); }catch(e){console.error(e)} }
 async function prApi(path,opt){ const t=prTok(), r=await fetch(PRISTUP.api+path,{method:opt&&opt.body?"POST":"GET",headers:{"content-type":"application/json",...(t?{authorization:"Bearer "+t.token}:{})},body:opt&&opt.body?JSON.stringify(opt.body):undefined});
   let j=null; try{ j=await r.json(); }catch(e){} if(!r.ok){ const e=new Error(j&&j.error&&j.error.poruka||("greška "+r.status)); e.status=r.status; e.code=j&&j.error&&j.error.code; throw e; } return j; }
 function prBoxHtml(){ const t=prTok();
+  if(!t&&prPrimjer()) return `<div class="pr-box" id="prBox" data-pr="primjer"><p style="margin:0 0 6px"><b>Ogledni napredni prikaz</b> za ${esc(PR_PRIMJER.naziv)}: simulator kuće, troškovi, 3D i ostale napredne funkcije otključane su samo za ovu česticu. Dosje na e-mail i druge čestice traže pristupni kod.</p>
+    <p style="margin:0"><button type="button" class="ib" id="prZatrazi">Zatraži besplatan napredni pristup</button></p></div>`;
   if(t) return `<div class="pr-box" id="prBox" data-pr="otkljucano"><p class="meta" style="margin:0">Napredne funkcije otključane ${t.istice?`do <b>${new Date(t.istice).toLocaleDateString("hr-HR")}</b>`:"<b>bez vremenskog ograničenja</b>"}${t.oznaka?" ("+esc(t.oznaka)+")":""}. ${t.istice?`<button type="button" class="ib" id="prProd">Zatraži produženje</button> `:""}<button type="button" class="ib" id="prOdjava">Odjavi se</button></p><p class="meta" id="prProdPor" aria-live="polite" style="margin:4px 0 0"></p></div>`;
   return `<div class="pr-box" id="prBox" data-pr="zakljucano"><p style="margin:0 0 6px"><b>Napredne funkcije</b> (simulator kuće, troškovi, 3D, okućnica, materijal, dosje na e-mail) otključavaju se pristupnim kodom.</p>
     <p style="margin:0 0 8px"><button type="button" class="ib" id="prZatrazi">Zatraži besplatan napredni pristup</button></p>
@@ -4530,7 +4536,7 @@ function prGate(){ try{document.body.classList.toggle("pr-blok",prUkljuceno())}c
   const act=s.querySelector(".actions"), box=document.createElement("div"); box.innerHTML=prBoxHtml(); const B=box.firstElementChild;
   if(act&&act.parentNode) act.parentNode.insertBefore(B,act.nextSibling); else s.prepend(B);
   const pb=document.getElementById("printBtn"); if(pb) pb.textContent="Pošalji dosje na e-mail";
-  if(prTok()) return;
+  if(prTok()||prPrimjer()) return;
   for(const d of s.querySelectorAll("details[data-k]")){ if(!PR_ADV.includes(d.dataset.k)||d.dataset.prZak) continue; d.dataset.prZak="1";
     const b=d.querySelector(":scope>summary>b"); if(b) b.textContent="zaključano"; const body=d.querySelector(":scope>.acc-body")||d.querySelector(":scope>div");
     if(body) body.innerHTML=prZakHtml(); else d.insertAdjacentHTML("beforeend",prZakHtml()); }
@@ -4564,7 +4570,7 @@ sheet.addEventListener("keydown",e=>{ if(e.target.id==="prKod"&&e.key==="Enter")
 // za zaključanog korisnika NE dohvaćaju ni ne računaju (inspect staje nakon osnovnih slojeva), pa ih nema ni na stranici.
 // Građevinski dio: Zagreb prema planiranoj namjeni (GUP / PPGZ) — namjene koje dopuštaju gradnju zgrada; Krk prema
 // županijskom sloju (građevinsko područje naselja ili izdvojeno). Izvan toga: „Nije moguće pouzdano utvrditi”.
-const prZaklj=()=>prUkljuceno()&&!prTok();
+const prZaklj=()=>prUkljuceno()&&!prTok()&&!prPrimjer();
 const SLOB={layer:null};
 const SLOB_FUNK=[["ocjena","Ocjena čestice 0–100 i analiza prednosti i rizika"],["uvjeti","Urbanistički uvjeti: kig, kis, GBP i što smiješ graditi"],["pristup","Pristup prometnici i infrastrukturne mreže"],["zk","Zemljišna knjiga: vlasništvo, tereti i ograničenja"],
   ["simulator","Simulator kuće na čestici"],["3d","3D prikaz i okućnica"],["troskovi","Troškovi gradnje i komunalni doprinos"],["materijal","Građevinski materijal"],["montazne","Katalog montažnih kuća"],["energija","Energetske i okolišne analize"],["pdf","PDF dosje čestice"]];
