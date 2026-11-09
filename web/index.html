@@ -64,7 +64,7 @@ a{color:#0f7a52}a:hover{color:#0a5a3c}
       </div>
     </div>
 
-    <!-- stvarni primjer: Ledine 22, Kornić (k.č. 735/58), odmak od ceste 4 m / 6 m -->
+    <!-- stvarni primjer: Ledine 22, Kornić (k.č. 735/58, 642 m²): odmak od ceste 4 / 6 m i od susjeda 3 / 4 / 5 m, prostor se računa u pregledniku -->
     <div style="flex: 1 1 460px; min-width: 0; position: relative">
       <div style="background: #0b1210; border-radius: 22px; padding: 10px; box-shadow: 0 30px 60px -30px rgba(11,18,16,0.45)">
         <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px 12px">
@@ -74,10 +74,16 @@ a{color:#0f7a52}a:hover{color:#0a5a3c}
         <div style="position: relative; background: #2b3531; border-radius: 14px; overflow: hidden">
           <img src="img/ortofoto-735-58.jpg" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block">
           <svg viewBox="0 0 400 410" role="img" aria-label="Ortofoto čestice 735/58 k.o. Kornić s granicom iz katastra, teorijskim prostorom za gradnju i kućom iz simulatora" style="position: relative; width: 100%; height: auto; display: block">
-            <polygon data-v="poly" points="297.3,182.3 202.4,30.0 46.2,135.0 217.3,375.5 242.0,363.9 278.6,346.1 286.1,341.9 295.8,339.8 351.0,328.2 354.0,328.2" fill="#3ddc97" fill-opacity="0.34" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"></polygon>
+            <defs><clipPath id="cestClip"><polygon points="297.3,182.3 202.4,30.0 46.2,135.0 217.3,375.5 242.0,363.9 278.6,346.1 286.1,341.9 295.8,339.8 351.0,328.2 354.0,328.2"></polygon></clipPath></defs>
+            <g clip-path="url(#cestClip)"><polygon points="297.3,182.3 202.4,30.0 46.2,135.0 217.3,375.5 242.0,363.9 278.6,346.1 286.1,341.9 295.8,339.8 351.0,328.2 354.0,328.2" fill="#3ddc97" fill-opacity="0.42"></polygon><g data-v="pojas" stroke="#e5484d" stroke-opacity="0.55" stroke-linecap="round" fill="none"></g></g>
+            <polygon points="297.3,182.3 202.4,30.0 46.2,135.0 217.3,375.5 242.0,363.9 278.6,346.1 286.1,341.9 295.8,339.8 351.0,328.2 354.0,328.2" fill="none" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"></polygon>
+            <g font-family="Inter, sans-serif" font-size="11" font-weight="700">
+              <rect x="268" y="350" width="74" height="20" rx="10" fill="#0b1210" fill-opacity="0.78"></rect><text x="305" y="364" text-anchor="middle" fill="#ffffff">cesta <tspan data-v="odm">4</tspan> m</text>
+              <rect x="52" y="200" width="78" height="20" rx="10" fill="#0b1210" fill-opacity="0.78"></rect><text x="91" y="214" text-anchor="middle" fill="#ffffff">susjed <tspan data-v="sus">3</tspan> m</text>
+            </g>
             <g transform="translate(173 176) rotate(-34.5)">
               <rect x="-48" y="-52" width="96" height="104" rx="2" fill="#0b1210" fill-opacity="0.35" transform="translate(5 6)"></rect>
-              <rect x="-48" y="-52" width="96" height="104" rx="2" fill="#f79646" stroke="#ffffff" stroke-width="2.5"></rect>
+              <rect data-v="kuca" x="-48" y="-52" width="96" height="104" rx="2" fill="#f79646" stroke="#ffffff" stroke-width="2.5"></rect>
               <path d="M-48 0 L48 0" stroke="#ffffff" stroke-width="2" stroke-opacity="0.85"></path>
               <rect x="-48" y="52" width="96" height="30" fill="#ffffff" fill-opacity="0.55" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4 3"></rect>
             </g>
@@ -85,8 +91,8 @@ a{color:#0f7a52}a:hover{color:#0a5a3c}
             <text x="200" y="312" text-anchor="middle" font-family="'Space Grotesk', Inter, sans-serif" font-size="22" font-weight="700" fill="#0b1210"><tspan data-v="prostor">318</tspan> m²</text>
             <text x="200" y="330" text-anchor="middle" font-family="Inter, sans-serif" font-size="11.5" fill="#2b3531">teorijski prostor za gradnju</text>
             <rect x="12" y="12" width="150" height="26" rx="13" fill="#0b1210" fill-opacity="0.78"></rect>
-            <circle cx="27" cy="25" r="5" fill="#f79646"></circle>
-            <text x="38" y="29.5" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#ffffff">Kuća iz simulatora</text>
+            <circle data-v="kucaT" cx="27" cy="25" r="5" fill="#f79646"></circle>
+            <text data-v="kucaTxt" x="38" y="29.5" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#ffffff">Kuća iz simulatora</text>
             <rect x="188" y="384" width="206" height="20" rx="6" fill="#0b1210" fill-opacity="0.7"></rect>
             <text x="291" y="398" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" fill="#ffffff">Ortofoto 2023./24. © DGU · katastar DGU</text>
           </svg>
@@ -97,20 +103,26 @@ a{color:#0f7a52}a:hover{color:#0a5a3c}
             <button type="button" data-odm="4" aria-pressed="true" style="padding: 9px 16px; min-height: 44px; border: 0; border-radius: 999px; background: #3ddc97; color: #0b1210; font-weight: 700; font-size: 14px; font-family: inherit; cursor: pointer">4 m</button>
             <button type="button" data-odm="6" aria-pressed="false" style="padding: 9px 16px; min-height: 44px; border: 0; border-radius: 999px; background: transparent; color: #d7e0dc; font-weight: 600; font-size: 14px; font-family: inherit; cursor: pointer">6 m</button>
           </div>
+          <div role="group" aria-label="Odmak od susjeda" style="display: flex; align-items: center; gap: 4px; background: #1b2622; padding: 4px; border-radius: 999px">
+            <span style="font-size: 13px; color: #c4cdc9; padding: 0 8px 0 10px">Odmak od susjeda</span>
+            <button type="button" data-sus="3" aria-pressed="true" style="padding: 9px 16px; min-height: 44px; border: 0; border-radius: 999px; background: #3ddc97; color: #0b1210; font-weight: 700; font-size: 14px; font-family: inherit; cursor: pointer">3 m</button>
+            <button type="button" data-sus="4" aria-pressed="false" style="padding: 9px 16px; min-height: 44px; border: 0; border-radius: 999px; background: transparent; color: #d7e0dc; font-weight: 600; font-size: 14px; font-family: inherit; cursor: pointer">4 m</button>
+            <button type="button" data-sus="5" aria-pressed="false" style="padding: 9px 16px; min-height: 44px; border: 0; border-radius: 999px; background: transparent; color: #d7e0dc; font-weight: 600; font-size: 14px; font-family: inherit; cursor: pointer">5 m</button>
+          </div>
           <a href="https://app.cesticahr.com/?c=45.044662,14.615334" style="font-size: 14px; font-weight: 600; color: #3ddc97; text-decoration: none; padding: 12px 8px">Otvori u simulatoru →</a>
         </div>
       </div>
       <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px">
         <div style="flex: 1 1 150px; background: #ffffff; border: 1px solid #e3e8e5; border-radius: 14px; padding: 14px 16px">
-          <p style="margin: 0 0 4px; font-size: 12px; color: #5b6661; font-weight: 500">Teorijski prostor, odmak <span data-v="odm">4</span> m</p>
+          <p style="margin: 0 0 4px; font-size: 12px; color: #5b6661; font-weight: 500">Prostor za gradnju (cesta <span data-v="odm">4</span> m, susjed <span data-v="sus">3</span> m)</p>
           <p style="margin: 0; font-family: 'Space Grotesk', Inter, sans-serif; font-size: 24px; font-weight: 700"><span data-v="prostor">318</span> m²</p>
         </div>
         <div style="flex: 1 1 150px; background: #ffffff; border: 1px solid #e3e8e5; border-radius: 14px; padding: 14px 16px">
-          <p style="margin: 0 0 4px; font-size: 12px; color: #5b6661; font-weight: 500">Razlika 6 m prema 4 m</p>
-          <p style="margin: 0; font-family: 'Space Grotesk', Inter, sans-serif; font-size: 24px; font-weight: 700; color: #b42318">−87 m²</p>
+          <p style="margin: 0 0 4px; font-size: 12px; color: #5b6661; font-weight: 500">Odmaci oduzimaju od čestice (<span data-v="cestM">642</span> m²)</p>
+          <p style="margin: 0; font-family: 'Space Grotesk', Inter, sans-serif; font-size: 24px; font-weight: 700; color: #b42318">−<span data-v="gub">0</span> m² <span style="font-size: 15px; font-weight: 600">(<span data-v="gubP">0</span> %)</span></p>
         </div>
       </div>
-      <p style="margin: 12px 2px 0; font-size: 13px; line-height: 1.5; color: #5b6661">Izračun aplikacije za stvarnu česticu (pouzdanost C). Koji odmak vrijedi, ovisi o kategoriji ceste. Narančasta kuća s terasom prikazuje položaj kuće u simulatoru; stane li za odabrani odmak, aplikacija provjerava za konkretan tlocrt, posebno za svaki scenarij.</p>
+      <p style="margin: 12px 2px 0; font-size: 13px; line-height: 1.5; color: #5b6661">Pojednostavljen prikaz na stvarnoj čestici (642 m² prema katastru): crveno je pojas koji odmaci oduzimaju, zeleno ono što ostaje. Koji odmak vrijedi, ovisi o kategoriji ceste i o planu; aplikacija za tvoju česticu računa prema pravilima plana. Narančasta kuća s terasom prikazuje položaj kuće u simulatoru; stane li za odabrani odmak, aplikacija provjerava za konkretan tlocrt, posebno za svaki scenarij.</p>
     </div>
   </section>
 
@@ -384,9 +396,33 @@ a{color:#0f7a52}a:hover{color:#0a5a3c}
 // broj posjeta (skupno, bez kolačića i bez IP adrese): izvor dolaska samo kao kategorija
 (function(){try{var r=document.referrer?new URL(document.referrer).hostname:"",i=!r||r===location.hostname?"izravno":/google\./.test(r)?"google":/bing\./.test(r)?"bing":/facebook|fb\./.test(r)?"facebook":/instagram/.test(r)?"instagram":/linkedin|lnkd/.test(r)?"linkedin":/whatsapp/.test(r)?"whatsapp":/mail/.test(r)?"e-mail":"ostalo";
 var b=JSON.stringify({e:"web_posjet",s:Math.random().toString(36).slice(2),izvor:i}); if(navigator.sendBeacon) navigator.sendBeacon("https://pristup.cesticahr.com/dogadaj",new Blob([b],{type:"text/plain"}));}catch(e){}})();
-document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-odm]"); if(!b) return; var six=b.dataset.odm==="6";
-document.querySelectorAll("[data-odm]").forEach(function(x){var on=x.dataset.odm===b.dataset.odm; x.setAttribute("aria-pressed",on?"true":"false"); x.style.cssText=on?"padding: 9px 16px; min-height: 44px; border: 0; border-radius: 999px; background: #3ddc97; color: #0b1210; font-weight: 700; font-size: 14px; font-family: inherit; cursor: pointer":"padding: 9px 16px; min-height: 44px; border: 0; border-radius: 999px; background: transparent; color: #d7e0dc; font-weight: 600; font-size: 14px; font-family: inherit; cursor: pointer";});
-document.querySelectorAll('[data-v="prostor"]').forEach(function(x){x.textContent=six?"231":"318";}); document.querySelectorAll('[data-v="odm"]').forEach(function(x){x.textContent=six?"6":"4";});
-var p=document.querySelector('[data-v="poly"]'); if(p) p.setAttribute("fill-opacity",six?"0.18":"0.34");});</script>
+// primjer odmaka: dio čestice dalje od ceste (južna međa) i od susjeda (ostale međe) nego odabrani odmak; crveni pojas je
+// sve što je bliže međi (udaljenost od međe, kao u aplikaciji), površina se broji gustom mrežom točaka
+(function(){
+  var P=[[297.3,182.3],[202.4,30.0],[46.2,135.0],[217.3,375.5],[242.0,363.9],[278.6,346.1],[286.1,341.9],[295.8,339.8],[351.0,328.2],[354.0,328.2]];
+  var CESTA={3:1,4:1,5:1,6:1,7:1,8:1}, M2=642, SC=Math.sqrt(M2/povrs(P)), ON="padding: 9px 16px; min-height: 44px; border: 0; border-radius: 999px; background: #3ddc97; color: #0b1210; font-weight: 700; font-size: 14px; font-family: inherit; cursor: pointer", OFF="padding: 9px 16px; min-height: 44px; border: 0; border-radius: 999px; background: transparent; color: #d7e0dc; font-weight: 600; font-size: 14px; font-family: inherit; cursor: pointer", st={odm:4,sus:3}, NS="http://www.w3.org/2000/svg";
+  function povrs(Q){var a=0;for(var i=0;i<Q.length;i++){var p=Q[i],q=Q[(i+1)%Q.length];a+=p[0]*q[1]-q[0]*p[1];}return Math.abs(a)/2;}
+  function unutra(x,y){var c=false;for(var i=0,j=P.length-1;i<P.length;j=i++){var a=P[i],b=P[j]; if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0]) c=!c;} return c;}
+  function udalj(x,y,a,b){var dx=b[0]-a[0],dy=b[1]-a[1],L=dx*dx+dy*dy,t=L?Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/L)):0; return Math.hypot(x-a[0]-t*dx,y-a[1]-t*dy);}
+  function gradivo(x,y,odm,sus){ if(!unutra(x,y)) return false; for(var i=0;i<P.length;i++){ if(udalj(x,y,P[i],P[(i+1)%P.length])*SC<(CESTA[i]?odm:sus)) return false; } return true; }
+  var MR=[]; (function(){ var k=1.5; for(var y=25;y<380;y+=k) for(var x=40;x<360;x+=k) if(unutra(x,y)) MR.push([x,y]); })(); var Akor=M2/MR.length;
+  function kucaStane(odm,sus){ var r=-34.5*Math.PI/180, co=Math.cos(r), si=Math.sin(r), ok=true;
+    for(var u=-48;u<=48&&ok;u+=8) for(var v=-52;v<=52&&ok;v+=8){ if(Math.abs(u)<48&&Math.abs(v)<52) continue; ok=gradivo(173+u*co-v*si,176+u*si+v*co,odm,sus); }
+    return ok; }
+  function crtaj(){ var n=0; for(var i=0;i<MR.length;i++) if(gradivo(MR[i][0],MR[i][1],st.odm,st.sus)) n++;
+    var A=Math.round(n*Akor), G=M2-A, ok=kucaStane(st.odm,st.sus), g=document.querySelector('[data-v="pojas"]');
+    if(g){ g.innerHTML=""; for(var j=0;j<P.length;j++){ var a=P[j],b=P[(j+1)%P.length],l=document.createElementNS(NS,"line"); l.setAttribute("x1",a[0]);l.setAttribute("y1",a[1]);l.setAttribute("x2",b[0]);l.setAttribute("y2",b[1]); l.setAttribute("stroke-width",(2*(CESTA[j]?st.odm:st.sus)/SC).toFixed(1)); g.appendChild(l); } }
+    var set=function(k,v){document.querySelectorAll('[data-v="'+k+'"]').forEach(function(x){x.textContent=v;});};
+    set("prostor",A); set("odm",st.odm); set("sus",st.sus); set("gub",G); set("gubP",Math.round(G/M2*100)); set("cestM",M2);
+    var k=document.querySelector('[data-v="kuca"]'); if(k) k.setAttribute("fill",ok?"#f79646":"#e5484d");
+    var kt=document.querySelector('[data-v="kucaTxt"]'); if(kt) kt.textContent=ok?"Kuća stane":"Kuća ne stane";
+    var kd=document.querySelector('[data-v="kucaT"]'); if(kd) kd.setAttribute("fill",ok?"#f79646":"#e5484d"); }
+  document.addEventListener("click",function(e){ var b=e.target.closest&&e.target.closest("[data-odm],[data-sus]"); if(!b) return;
+    var key=b.hasAttribute("data-odm")?"odm":"sus"; st[key]=+b.getAttribute("data-"+key);
+    document.querySelectorAll("[data-"+key+"]").forEach(function(x){ var on=x===b; x.setAttribute("aria-pressed",on?"true":"false"); x.style.cssText=on?ON:OFF; });
+    crtaj(); });
+  crtaj();
+})();
+</script>
 </body>
 </html>
