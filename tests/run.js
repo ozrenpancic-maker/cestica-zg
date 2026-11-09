@@ -3566,6 +3566,37 @@ async function splitTests(){
   ok(errs.length===0,"bez JS grešaka (Split): "+errs.join(" | "));
 }
 
+// prijedlozi u tražilici: ulice i kućni brojevi (registar DGU), k.o. i brojevi čestica (Zagreb: katastar GZ, Krk: indeks DGU)
+async function sgTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms)); let likeUrl=null;
+  w.fetch=(u)=>{u=String(u); const fl=(dir,f)=>{const pth=path.join(__dirname,"..","data",dir,f); return Promise.resolve({ok:fs.existsSync(pth),status:fs.existsSync(pth)?200:404,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(pth,"utf8")))});};
+    let m=u.match(/data\/adr\/(.+\.json)$/); if(m) return fl("adr",m[1]); m=u.match(/data\/kat_krk\/(.+\.json)$/); if(m) return fl("kat_krk",m[1]);
+    if(/KatastarskeCestice/.test(u)&&/LIKE/.test(decodeURIComponent(u))){ likeUrl=decodeURIComponent(u.replace(/\+/g," ")); return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({features:["4027/2","40271","4027/1","4027"].map(x=>({attributes:{KATASTARSKA_CESTICA:x}}))})}); }
+    if(/KatastarskeCestice/.test(u)) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[[[15.95,45.86],[15.951,45.86],[15.951,45.861],[15.95,45.86]]]},properties:{KATASTARSKA_OPCINA:"ŠESTINE",KATASTARSKA_CESTICA:"4027/1"}},{type:"Feature",geometry:{type:"Polygon",coordinates:[[[15.9,45.8],[15.901,45.8],[15.901,45.801],[15.9,45.8]]]},properties:{KATASTARSKA_OPCINA:"MIKULIĆI",KATASTARSKA_CESTICA:"4027/1"}}]})});
+    return Promise.reject(new Error("bez mreže u testu"));};
+  E("inspect=ll=>{window.__ins=ll}; goToFeature=f=>{window.__got=f}; search=()=>{window.__srch=(window.__srch||0)+1}");
+  const q=w.document.getElementById("q"), sg=w.document.getElementById("sg"), key=k=>q.dispatchEvent(new w.KeyboardEvent("keydown",{key:k,bubbles:true}));
+  const typ=async v=>{q.focus(); q.value=v; q.dispatchEvent(new w.Event("input",{bubbles:true})); await tick(450);};
+  const labs=()=>[...sg.querySelectorAll(".sg-i b")].map(b=>b.textContent), pick=i=>sg.querySelectorAll(".sg-i")[i].dispatchEvent(new w.Event("pointerdown",{bubbles:true,cancelable:true}));
+  await typ("I"); ok(sg.hidden&&!labs().length,"Tražilica: jedno slovo → bez prijedloga");
+  await typ("Ilic"); ok(!sg.hidden&&labs()[0]==="Ilica"&&/Zagreb · ulica/.test(sg.textContent)&&q.getAttribute("aria-expanded")==="true","Tražilica: „Ilic” → prvi prijedlog ulica Ilica (Zagreb, registar DGU): "+labs().slice(0,4).join(", "));
+  await typ("Vranićev"); ok(labs().some(l=>/^Vranićeva/.test(l)),"Tražilica: „Vranićev” → Vranićeva ulica");
+  await typ("Ilica 1"); const L1=labs(); ok(L1.length>=3&&L1.every(l=>/^Ilica 1/.test(l))&&L1[0]==="Ilica 1","Tražilica: „Ilica 1” → kućni brojevi Ilice koji počinju s 1 ("+L1.slice(0,5).join(", ")+")");
+  key("ArrowDown"); ok(sg.querySelector('[aria-selected="true"]')&&q.getAttribute("aria-activedescendant")==="sg0","Tražilica: strelica dolje označava prvi prijedlog");
+  key("Enter"); await tick(30); const ins=E("window.__ins"); ok(ins&&Math.abs(ins.lat-45.8133)<0.003&&sg.hidden&&q.value==="Ilica 1, Zagreb"&&/registra adresa DGU-a: Ilica 1, Zagreb/.test(E("SRCH.note.txt")),"Tražilica: Enter na prijedlogu „Ilica 1” → točka kućnog broja, popis se zatvara");
+  await typ("Ledine 3"); ok(labs().includes("Ledine 31")&&/Kornić/.test(sg.textContent),"Tražilica: „Ledine 3” → kućni brojevi u Korniću (Krk): "+labs().slice(0,4).join(", "));
+  await typ("Šest"); ok(labs()[0]==="k.o. Šestine","Tražilica: „Šest” → k.o. Šestine");
+  pick(0); await tick(20); ok(q.value==="Šestine "&&w.document.activeElement===q,"Tražilica: odabir k.o. upisuje „Šestine ” i čeka broj čestice");
+  await typ("Šestine 4027"); const L2=labs(); ok(/KATASTARSKA_OPCINA='ŠESTINE' AND KATASTARSKA_CESTICA LIKE '4027%'/.test(likeUrl||"")&&L2[0]==="Šestine 4027"&&L2.indexOf("Šestine 4027/1")<L2.indexOf("Šestine 4027/2")&&L2.indexOf("Šestine 4027/2")<L2.indexOf("Šestine 40271"),"Tražilica: „Šestine 4027” → upit katastru GZ samo za k.o. Šestine; točan broj prvi, ostali prirodnim redom ("+L2.join(", ")+")");
+  pick(L2.indexOf("Šestine 4027/1")); await tick(50); const g=E("window.__got"); ok(g&&g.properties.KATASTARSKA_OPCINA==="ŠESTINE"&&q.value==="Šestine 4027/1","Tražilica: odabir čestice otvara 4027/1 u k.o. Šestine (ne u Mikulićima)");
+  await typ("kč Punat 4381"); const L3=labs(); ok(L3.includes("Punat 4381/3")&&/k\.o\. Punat \(Krk\)/.test(sg.textContent),"Tražilica: „kč Punat 4381” → brojevi čestica iz indeksa DGU za k.o. Punat ("+L3.slice(0,4).join(", ")+")");
+  w.__got=null; pick(L3.indexOf("Punat 4381/3")); await tick(300); ok(E("window.__got")&&E("window.__got").properties.broj==="4381/3","Tražilica: odabir „Punat 4381/3” otvara česticu na Krku");
+  await typ("Ilic"); key("Escape"); ok(sg.hidden,"Tražilica: Escape zatvara prijedloge");
+  await typ("Ilic"); key("Enter"); await tick(20); ok(E("window.__srch")===1&&sg.hidden,"Tražilica: Enter bez odabranog prijedloga pretražuje kao i prije");
+  await typ("Nepostojeća ulicaxyz"); ok(sg.hidden,"Tražilica: nepoznat upit → bez prijedloga (nema izmišljenih)");
+  ok(errs.length===0,"bez JS grešaka (tražilica): "+errs.join(" | "));
+}
+
 // Split: prijedlog urbanog pravila iz boja lista KN_1_2 „Urbana pravila” (kalibracija, stvarni histogrami, sučelje)
 async function zonaBojaTests(){
   const SP0=JSON.parse(fs.readFileSync(path.join(__dirname,"../src/rules_krk.json"),"utf8")).hrGradovi.SPLIT, ZB0=SP0.zonaBoje, ids=SP0.zone.map(z=>z[0]);
@@ -3630,7 +3661,7 @@ async function zadarTests(){
   ok(errs.length===0,"bez JS grešaka (Zadar): "+errs.join(" | "));
 }
 
-netTests().then(zonaBojaTests).then(zadarTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
+netTests().then(sgTests).then(zonaBojaTests).then(zadarTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
