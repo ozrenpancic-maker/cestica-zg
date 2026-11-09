@@ -1788,8 +1788,10 @@ async function hrTests(){
       {type:"way",id:1,tags:{building:"house","building:levels":"2"},geometry:[[18.69540,45.55040],[18.69550,45.55040],[18.69550,45.55048],[18.69540,45.55048],[18.69540,45.55040]].map(q=>({lon:q[0],lat:q[1]}))},
       {type:"way",id:2,tags:{building:"garage"},geometry:[[18.69560,45.55040],[18.69566,45.55040],[18.69566,45.55045],[18.69560,45.55045],[18.69560,45.55040]].map(q=>({lon:q[0],lat:q[1]}))}]})});
     return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null)}); };
+  // čestica je u Osijeku; ovaj test provjerava područje bez obrađenih pravila, pa se pravila Osijeka ovdje privremeno uklanjaju
+  const OS0=E("RULES_KRK").hrGradovi.OSIJEK; E("delete RULES_KRK.hrGradovi.OSIJEK");
   await E("inspect")({lat,lng:lon}); await tick(150);
-  const t=w.document.getElementById("sheet").textContent;
+  const t=w.document.getElementById("sheet").textContent; E("RULES_KRK").hrGradovi.OSIJEK=OS0;
   ok(/Hrvatska · osnovni pregled/.test(t)&&/1234\/5/.test(t)&&/720 m²/.test(t),"Hrvatska: čestica iz DGU-a uživo (broj i grafička površina)");
   ok(/OSIJEK/.test(t)&&/Podaci nisu dostupni: namjena površina, uvjeti gradnje/.test(t)&&/ISPU/.test(t),"Hrvatska: k.o. iz OSS-a, jasno stoji da pravila gradnje nisu obrađena, uz poveznicu na ISPU");
   ok(!/Građevinsko područje|dopuštena izgrađenost|Smije se graditi/i.test(t),"Hrvatska: ne izmišlja namjenu ni uvjete gradnje");
