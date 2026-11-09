@@ -1742,8 +1742,9 @@ async function zg3dTests(){
   const n0=nf; const R2=await E("zg3dLoad")(A); ok(nf===n0&&R2.list.length===R.list.length,"ZG3D: ponovni upit za istu česticu ne dohvaća ništa ponovno");
   const R3=await E("zg3dLoad")(K); ok(R3.st==="nema"&&R3.list.length===0&&!E("zg3dNapomena")(R3),"ZG3D: izvan područja s podacima nema zgrada i nema napomene (bez izmišljanja)");
   {const Z=await E("zg3dLoad")(KR); ok(Z.st==="ok"&&Z.tip==="dkp"&&Z.list.length>5&&Z.list.every(b=>b.dist<=80&&b.foot[0].length>=3&&b.faces.length===0&&b.wall>=2&&b.wall<=10),"ZG3D, Krk: okolne zgrade iz katastra DGU (tlocrt + pretpostavljena visina, bez krovnih ploha)");
-   const n=E("zg3dNapomena")(Z); ok(/PRETPOSTAVLJENE/.test(n)&&/kvadri bez krova/.test(n)&&!/ZG3D, Otvorena/.test(n),"ZG3D, Krk: napomena jasno kaže da su visine pretpostavljene i da nema krovova");
-   const F=E("zg3dFeatures")(Z.list); ok(F.length===Z.list.length&&F.every(f=>f.properties.b===0&&f.properties.h>=2),"ZG3D, Krk: tijela za 3D pogled su kvadri do pretpostavljene visine");}
+   const n=E("zg3dNapomena")(Z); ok(/PRETPOSTAVLJENE/.test(n)&&/ILUSTRATIVNI dvostrešni/.test(n)&&!/ZG3D, Otvorena/.test(n),"ZG3D, Krk: napomena jasno kaže da su visine pretpostavljene, a krov ilustrativni");
+   const F=E("zg3dFeatures")(Z.list), zid=F.filter(f=>f.properties.c==="#d9d5cc"&&f.properties.b===0), krov=F.filter(f=>f.properties.c==="#a39e96");
+   ok(zid.length===Z.list.length&&zid.every(f=>f.properties.h>=2)&&krov.every(f=>f.properties.b>=2),"ZG3D, Krk: svaka zgrada ima zidove od tla do vijenca, a krov (ilustrativni) je iznad vijenca");}
   // skica: s okolnim zgradama ima puno više ploha i napomenu; bez njih ostaje kao prije
   const d=data(w,A,"2.2.",{slope:{v:{h:200,slope:5,down:"jug",az:180}}}); w.__env=d.envelope; E("OPEN").add("tloc"); E("OPEN").add("skica"); E("render")(d);
   const TL=E("TL"); TL.w=10; TL.d=8; TL.rot=0; TL.fl="2"; TL.fh=3; TL.podrum=false; TL.krov="dvo"; TL.nagib=30; TL.sljeme="duz"; TL.gar=false;
