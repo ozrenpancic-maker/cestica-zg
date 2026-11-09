@@ -1788,8 +1788,10 @@ async function hrTests(){
       {type:"way",id:1,tags:{building:"house","building:levels":"2"},geometry:[[18.69540,45.55040],[18.69550,45.55040],[18.69550,45.55048],[18.69540,45.55048],[18.69540,45.55040]].map(q=>({lon:q[0],lat:q[1]}))},
       {type:"way",id:2,tags:{building:"garage"},geometry:[[18.69560,45.55040],[18.69566,45.55040],[18.69566,45.55045],[18.69560,45.55045],[18.69560,45.55040]].map(q=>({lon:q[0],lat:q[1]}))}]})});
     return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null)}); };
+  // čestica je u Osijeku; ovaj test provjerava područje bez obrađenih pravila, pa se pravila Osijeka ovdje privremeno uklanjaju
+  const OS0=E("RULES_KRK").hrGradovi.OSIJEK; E("delete RULES_KRK.hrGradovi.OSIJEK");
   await E("inspect")({lat,lng:lon}); await tick(150);
-  const t=w.document.getElementById("sheet").textContent;
+  const t=w.document.getElementById("sheet").textContent; E("RULES_KRK").hrGradovi.OSIJEK=OS0;
   ok(/Hrvatska · osnovni pregled/.test(t)&&/1234\/5/.test(t)&&/720 m²/.test(t),"Hrvatska: čestica iz DGU-a uživo (broj i grafička površina)");
   ok(/OSIJEK/.test(t)&&/Podaci nisu dostupni: namjena površina, uvjeti gradnje/.test(t)&&/ISPU/.test(t),"Hrvatska: k.o. iz OSS-a, jasno stoji da pravila gradnje nisu obrađena, uz poveznicu na ISPU");
   ok(!/Građevinsko područje|dopuštena izgrađenost|Smije se graditi/i.test(t),"Hrvatska: ne izmišlja namjenu ni uvjete gradnje");
@@ -3553,7 +3555,7 @@ async function splitTests(){
   w.fetch=(u)=>{u=String(u); const r=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b),text:()=>Promise.resolve("")});
     if(/wms1-gs-oss\.uredjenazemlja\.hr/.test(u)&&/GetFeatureInfo/.test(u)) return r({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{CESTICA_ID:555001,BROJ_CESTICE:"8123/4",MATICNI_BROJ_KO:335061,POVRSINA_GRAFICKA:720,POVRSINA_ATRIBUTNA:720}}]});
     return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null),text:()=>Promise.resolve("")}); };
-  ok(!!E("hrGrad")({lat,lng:lon})&&!E("hrGrad")({lat:45.55,lng:18.69}),"Split: obuhvat GUP-a Splita prepoznat, Osijek nije");
+  ok(E("hrGrad")({lat,lng:lon}).k==="SPLIT"&&!E("hrGrad")({lat:46.305,lng:16.338}),"Split: obuhvat GUP-a Splita prepoznat, Varaždin (bez obrađenih pravila) nije");
   await E("inspect")({lat,lng:lon}); await tick(200);
   let t=txt(w,"sheet");
   ok(/GUP Splita/.test(t)&&$(w,"krkZona")&&w.__krkCalc===null&&/Urbano pravilo \(karta „Urbana pravila”\)/.test(t),"Split: urbano pravilo nije odabrano, nema izračuna");
@@ -3666,6 +3668,25 @@ async function zonaBojaTests(){
    ok(errs.length===0,"bez JS grešaka (Split boje, odustajanje): "+errs.join(" | "));}
 }
 
+// Osijek: GUP (način gradnje O, OVS, VS prema karti 4.3.2.), parcela 30 x 24 m = 720 m²
+async function osijekTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  const lon=18.6550, lat=45.5560, [E0,N0]=E("tmFwd")(lon,lat), ring=[[E0-15,N0-12],[E0+15,N0-12],[E0+15,N0+12],[E0-15,N0+12],[E0-15,N0-12]];
+  w.fetch=(u)=>{u=String(u); const r=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b),text:()=>Promise.resolve("")});
+    if(/wms1-gs-oss\.uredjenazemlja\.hr/.test(u)&&/GetFeatureInfo/.test(u)) return r({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{CESTICA_ID:777001,BROJ_CESTICE:"5123/2",MATICNI_BROJ_KO:320668,POVRSINA_GRAFICKA:720,POVRSINA_ATRIBUTNA:720}}]});
+    return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null),text:()=>Promise.resolve("")}); };
+  ok(E("hrGrad")({lat,lng:lon}).k==="OSIJEK","Osijek: obuhvat GUP-a Osijeka prepoznat");
+  await E("inspect")({lat,lng:lon}); await tick(200);
+  ok(/GUP Osijeka/.test(txt(w,"sheet"))&&w.__krkCalc===null&&/Način gradnje \(karta 4\.3\.2\.\)/.test(txt(w,"sheet")),"Osijek: način gradnje nije odabran, nema izračuna");
+  setv(w,"krkZona","O","change"); let C=w.__krkCalc, t=txt(w,"sheet");
+  ok(C&&C.plan==="GUP Osijeka"&&Math.abs(C.tl-0.4*C.A)<0.6&&Math.abs(C.gbpN-1.0*C.A)<1.5&&/11 m|11,0 m/.test(t)&&/30 %/.test(t),"Osijek O, samostojeća (čl. 24.a, 25.b): kig 0,4, kis 1,0, visina 11 m, zelenilo 30 %");
+  setv(w,"krkOblik","ugr","change"); C=w.__krkCalc; ok(C&&Math.abs(C.tl-0.6*C.A)<0.6&&Math.abs(C.gbpN-1.6*C.A)<1.5,"Osijek O, ugrađena: kig 0,6, kis 1,6");
+  setv(w,"krkOblik","slob","change");
+  {const T=E("RULES_KRK").hrGradovi.OSIJEK.zoneSet.O.tipovi.obit; ok(T.slob.minC===250&&T.slob.minCIznimno===200&&T.dvoj.minC===200&&T.dvoj.izg===0.5&&T.dvoj.kis===1.3&&T.ugr.minC===150,"Osijek: najmanje čestice 250 (iznimno 200) / 200 / 150 m² i poluugrađena kig 0,5, kis 1,3 (čl. 24., 24.a)");}
+  setv(w,"krkZona","VS","change"); ok(w.__krkCalc===null&&/nova obiteljska kuća nije predviđena/.test(txt(w,"sheet")),"Osijek VS: nova obiteljska kuća nije predviđena, nema izračuna");
+  ok(errs.length===0,"bez JS grešaka (Osijek): "+errs.join(" | "));
+}
+
 // Zadar: PPUG (zone gustoće u GP-u grada Zadra), parcela 30 x 24 m = 720 m²
 async function zadarTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
@@ -3684,7 +3705,7 @@ async function zadarTests(){
   ok(errs.length===0,"bez JS grešaka (Zadar): "+errs.join(" | "));
 }
 
-netTests().then(sgTests).then(zonaBojaTests).then(zadarTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
+netTests().then(osijekTests).then(sgTests).then(zonaBojaTests).then(zadarTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
