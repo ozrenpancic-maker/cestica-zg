@@ -3568,16 +3568,16 @@ async function splitTests(){
 
 // prijedlozi u tražilici: ulice i kućni brojevi (registar DGU), k.o. i brojevi čestica (Zagreb: katastar GZ, Krk: indeks DGU)
 async function sgTests(){
-  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms)); let likeUrl=null;
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms)); let likeUrl=null; const likeAll=[];
   w.fetch=(u)=>{u=String(u); const fl=(dir,f)=>{const pth=path.join(__dirname,"..","data",dir,f); return Promise.resolve({ok:fs.existsSync(pth),status:fs.existsSync(pth)?200:404,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(pth,"utf8")))});};
     let m=u.match(/data\/adr\/(.+\.json)$/); if(m) return fl("adr",m[1]); m=u.match(/data\/kat_krk\/(.+\.json)$/); if(m) return fl("kat_krk",m[1]);
-    if(/KatastarskeCestice/.test(u)&&/LIKE/.test(decodeURIComponent(u))){ likeUrl=decodeURIComponent(u.replace(/\+/g," ")); return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({features:["4027/2","40271","4027/1","4027"].map(x=>({attributes:{KATASTARSKA_CESTICA:x}}))})}); }
+    if(/KatastarskeCestice/.test(u)&&/LIKE/.test(decodeURIComponent(u))){ likeUrl=decodeURIComponent(u.replace(/\+/g," ")); likeAll.push(likeUrl); return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({features:["4027/2","40271","4027/1","4027"].map(x=>({attributes:{KATASTARSKA_CESTICA:x}}))})}); }
     if(/KatastarskeCestice/.test(u)) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[[[15.95,45.86],[15.951,45.86],[15.951,45.861],[15.95,45.86]]]},properties:{KATASTARSKA_OPCINA:"ŠESTINE",KATASTARSKA_CESTICA:"4027/1"}},{type:"Feature",geometry:{type:"Polygon",coordinates:[[[15.9,45.8],[15.901,45.8],[15.901,45.801],[15.9,45.8]]]},properties:{KATASTARSKA_OPCINA:"MIKULIĆI",KATASTARSKA_CESTICA:"4027/1"}}]})});
     return Promise.reject(new Error("bez mreže u testu"));};
   E("inspect=ll=>{window.__ins=ll}; goToFeature=f=>{window.__got=f}; search=()=>{window.__srch=(window.__srch||0)+1}");
   const q=w.document.getElementById("q"), sg=w.document.getElementById("sg"), key=k=>q.dispatchEvent(new w.KeyboardEvent("keydown",{key:k,bubbles:true}));
   const typ=async v=>{q.focus(); q.value=v; q.dispatchEvent(new w.Event("input",{bubbles:true})); await tick(450);};
-  const labs=()=>[...sg.querySelectorAll(".sg-i b")].map(b=>b.textContent), pick=i=>sg.querySelectorAll(".sg-i")[i].dispatchEvent(new w.Event("pointerdown",{bubbles:true,cancelable:true}));
+  const labs=()=>[...sg.querySelectorAll(".sg-i b")].map(b=>b.textContent), pe=(el,ty,x,y,b=0)=>el.dispatchEvent(new w.MouseEvent(ty,{bubbles:true,cancelable:true,clientX:x,clientY:y,button:b})), pick=i=>{const el=sg.querySelectorAll(".sg-i")[i]; pe(el,"pointerdown",20,20); pe(el,"pointerup",21,22);};
   await typ("I"); ok(sg.hidden&&!labs().length,"Tražilica: jedno slovo → bez prijedloga");
   await typ("Ilic"); ok(!sg.hidden&&labs()[0]==="Ilica"&&/Zagreb · ulica/.test(sg.textContent)&&q.getAttribute("aria-expanded")==="true","Tražilica: „Ilic” → prvi prijedlog ulica Ilica (Zagreb, registar DGU): "+labs().slice(0,4).join(", "));
   await typ("Vranićev"); ok(labs().some(l=>/^Vranićeva/.test(l)),"Tražilica: „Vranićev” → Vranićeva ulica");
@@ -3586,6 +3586,8 @@ async function sgTests(){
   key("Enter"); await tick(30); const ins=E("window.__ins"); ok(ins&&Math.abs(ins.lat-45.8133)<0.003&&sg.hidden&&q.value==="Ilica 1, Zagreb"&&/registra adresa DGU-a: Ilica 1, Zagreb/.test(E("SRCH.note.txt")),"Tražilica: Enter na prijedlogu „Ilica 1” → točka kućnog broja, popis se zatvara");
   await typ("Ledine 3"); ok(labs().includes("Ledine 31")&&/Kornić/.test(sg.textContent),"Tražilica: „Ledine 3” → kućni brojevi u Korniću (Krk): "+labs().slice(0,4).join(", "));
   await typ("Šest"); ok(labs()[0]==="k.o. Šestine","Tražilica: „Šest” → k.o. Šestine");
+  {const el=sg.querySelectorAll(".sg-i")[0]; pe(el,"pointerdown",20,20); pe(el,"pointerup",20,80); pe(el,"pointerdown",20,20,2); pe(el,"pointerup",20,20,2); await tick(20);
+   ok(q.value==="Šest"&&!sg.hidden,"Tražilica: povlačenje prstom po popisu i desni klik ne biraju prijedlog");}
   pick(0); await tick(20); ok(q.value==="Šestine "&&w.document.activeElement===q,"Tražilica: odabir k.o. upisuje „Šestine ” i čeka broj čestice");
   await typ("Šestine 4027"); const L2=labs(); ok(/KATASTARSKA_OPCINA='ŠESTINE' AND KATASTARSKA_CESTICA LIKE '4027%'/.test(likeUrl||"")&&L2[0]==="Šestine 4027"&&L2.indexOf("Šestine 4027/1")<L2.indexOf("Šestine 4027/2")&&L2.indexOf("Šestine 4027/2")<L2.indexOf("Šestine 40271"),"Tražilica: „Šestine 4027” → upit katastru GZ samo za k.o. Šestine; točan broj prvi, ostali prirodnim redom ("+L2.join(", ")+")");
   pick(L2.indexOf("Šestine 4027/1")); await tick(50); const g=E("window.__got"); ok(g&&g.properties.KATASTARSKA_OPCINA==="ŠESTINE"&&q.value==="Šestine 4027/1","Tražilica: odabir čestice otvara 4027/1 u k.o. Šestine (ne u Mikulićima)");
@@ -3594,6 +3596,8 @@ async function sgTests(){
   await typ("Ilic"); key("Escape"); ok(sg.hidden,"Tražilica: Escape zatvara prijedloge");
   await typ("Ilic"); key("Enter"); await tick(20); ok(E("window.__srch")===1&&sg.hidden,"Tražilica: Enter bez odabranog prijedloga pretražuje kao i prije");
   await typ("Nepostojeća ulicaxyz"); ok(sg.hidden,"Tražilica: nepoznat upit → bez prijedloga (nema izmišljenih)");
+  ok(E("parcelQuery")("Lučko 12/3").ko==="Lučko"&&E("parcelQuery")("k.č. 123 Sesvete").ko==="Sesvete"&&E("parcelQuery")("kč 4027/1 k.o. Šestine").ko==="Šestine"&&E("parcelQuery")("Novačko 5/1").ko==="Novačko","Pretraga čestice: oznake k.č./kč/k.o. se uklanjaju, a „Lučko” i „Novačko” ostaju cijeli");
+  likeAll.length=0; await typ("Lučko 12"); ok(/KATASTARSKA_OPCINA='LUČKO' AND/.test(likeAll[0]||"")&&/ORDER|orderByFields=KATASTARSKA_CESTICA/.test(likeAll[0]||""),"Tražilica: „Lučko 12” → upit za k.o. Lučko (ne „Luč”)");
   ok(errs.length===0,"bez JS grešaka (tražilica): "+errs.join(" | "));
 }
 

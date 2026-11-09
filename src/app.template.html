@@ -10340,11 +10340,13 @@ setTimeout(async()=>{
 
 // --- pretraga po broju katastarske čestice (npr. "Šestine 4027/1" ili "kč 123 Sesvete")
 const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/đ/gi,"d").toUpperCase().replace(/[^A-Z0-9 ]/g," ").replace(/\s+/g," ").trim();
+// oznake „k.č.”, „kč”, „k.o.”, „ko” ispred broja ili naziva; bez \b, jer č, ž i š za \b nisu slova („Lučko” ostaje „Lučko”)
+const parcelPrefiksi=t=>String(t).replace(/k\.\s*[oč]\.?/gi," ").replace(/(^|\s)(k\.?č|kc|ko|čestica|cestica)\.?(?=\s|$)/gi,"$1 ").replace(/\s+/g," ").trim();
 function parcelQuery(q){
   const isParcel=/\d+\/\d+/.test(q)||/^\s*(k\.?\s*č\.?|kc|kč|čest|cest)/i.test(q)||/k\.\s*o\./i.test(q)||/\*\s*\d/.test(q);
   if(!isParcel) return null;
   const m=q.match(/(\*?\s*\d+(?:\/\d+)?)/); if(!m) return null;
-  const ko=q.replace(m[0]," ").replace(/k\.?\s*č\.?|\bkc\b|\bkč\b|čestica|cestica|k\.\s*o\.|\bko\b/gi," ").trim();
+  const ko=parcelPrefiksi(q.replace(m[0]," "));
   return {kc:m[1].replace(/\s+/g,""),ko};
 }
 // --- Krk: čestica po broju i k.o. iz indeksa brojeva (data/kat_krk/brojevi/<k.o.>.json, tools/katastar/indeks_brojeva.py)
@@ -10352,10 +10354,12 @@ async function krkKoTrazi(ko){ if(!ko) return []; let I; try{I=await katIndex()}
   const k=norm(ko), all=Object.entries(I.ko||{}).map(([mb,v])=>({mb,naziv:v.naziv}));
   const tocno=all.filter(x=>norm(x.naziv)===k); if(tocno.length) return tocno;
   return all.filter(x=>norm(x.naziv).split(" ").includes(k)||norm(x.naziv).startsWith(k+" ")||(k.length>=4&&norm(x.naziv).includes(k)));}
+const KAT_BR=new Map();
+function katBrojevi(mb){ let X=KAT_BR.get(mb); if(!X){ X=skiFetch(KAT.base+"brojevi/"+mb+".json",20000); KAT_BR.set(mb,X); X.catch(()=>KAT_BR.delete(mb)); } return X; }
 async function searchParcelKrk(pq,kos){
   sheet.innerHTML='<p class="hint"><span class="spin"></span>Tražim česticu '+esc(pq.kc)+' (k.o. '+esc(kos.map(x=>x.naziv).join(", "))+')…</p>';
   const brojevi=pq.kc.startsWith("*")?[pq.kc]:[pq.kc,"*"+pq.kc], hits=[];
-  for(const K of kos){let X; try{X=await skiFetch(KAT.base+"brojevi/"+K.mb+".json",20000)}catch(e){continue}
+  for(const K of kos){let X; try{X=await katBrojevi(K.mb)}catch(e){continue}
     for(const b of brojevi){const ix=X&&X.c&&X.c[b]; if(!ix) continue; const seen=new Set();
       for(const i of ix){const arr=await katTile(X.kv[i]); for(const [id,broj,ko,pov,P] of arr) if(broj===b&&ko===K.mb&&!seen.has(id)){seen.add(id); hits.push({type:"Feature",geometry:katGeom(P),properties:{broj,ko:K.naziv,pov}});}}}}
   if(!hits.length){sheet.innerHTML=`<p class="err">Čestica ${esc(pq.kc)} nije nađena u k.o. ${esc(kos.map(x=>x.naziv).join(", "))} (katastarski plan DGU, stanje ${esc((KAT.idx&&KAT.idx.preuzeto)||"")}). Provjeri broj i katastarsku općinu.</p>`; return;}
@@ -10900,7 +10904,7 @@ const SRCH={note:null,ll:null};
 // službeni kućni brojevi: DGU, Adrese (INSPIRE AD), pripremljeno uz aplikaciju u data/adr/ (tools/adrese/pripremi_adrese.py)
 const ADR={base:"data/adr/",idx:{},b:new Map(),gen:new Set(["ULICA","CESTA","TRG","PUT","ODVOJAK","PROLAZ"])};
 function adrIdx(reg){ if(!ADR.idx[reg]){ ADR.idx[reg]=skiFetch(ADR.base+"ulice_"+reg+".json",15000).then(j=>{ if(!j||j.v!==1||!Array.isArray(j.ulice)) throw new Error("neispravan popis ulica");
-    j.U=j.ulice.map(r=>({nas:r[0],ul:r[1],b:r[2],n:r[3],c:[r[4]/1e6,r[5]/1e6],t:norm(r[1]).split(" ").filter(x=>x&&!ADR.gen.has(x)),nt:norm(r[0]).split(" ")})); return j; }); ADR.idx[reg].catch(()=>{delete ADR.idx[reg];}); } return ADR.idx[reg]; }
+    j.U=j.ulice.map(r=>({nas:r[0],ul:r[1],b:r[2],n:r[3],c:[r[4]/1e6,r[5]/1e6],t:norm(r[1]).split(" ").filter(x=>x&&!ADR.gen.has(x)),nt:norm(r[0]).split(" "),N:norm(r[1])})); return j; }); ADR.idx[reg].catch(()=>{delete ADR.idx[reg];}); } return ADR.idx[reg]; }
 function adrB(b){ if(!ADR.b.has(b)){ const p=skiFetch(ADR.base+"b/"+String(b).padStart(3,"0")+".json",15000); ADR.b.set(b,p); p.catch(()=>ADR.b.delete(b)); } return ADR.b.get(b); }
 // riječ upita odgovara riječi naziva i kad je u drugom padežu (Vranićeva / Vranićevoj, Ledine / Ledinama)
 const adrTok=(q,t)=>q===t||(t.length>=4&&q.length>=4&&(q.startsWith(t.slice(0,Math.max(3,t.length-2)))||t.startsWith(q.slice(0,Math.max(3,q.length-2)))));
@@ -10952,7 +10956,7 @@ document.getElementById("goKrk").addEventListener("click",e=>{e.preventDefault()
 // katastarske općine i brojevi čestica (Zagreb: katastar Grada Zagreba; Krk: indeks brojeva DGU). Prijedlog se nudi,
 // ne bira sam: Enter bez odabranog prijedloga pretražuje kao i prije.
 const ZG_KO=["ADAMOVEC","BLAGUŠA","BLATO","BREZOVICA","ČEHI","CENTAR","ČRNOMEREC","ČUČERJE","ČUČERJE NOVO","DEMERJE","DRAGONOŽEC","DUBRAVA","ĐURĐEKOVEC","GLAVNICA","GORANEC","GORNJE VRAPČE","GORNJI STENJEVEC","GRAČANI","GRANEŠINA NOVA","HORVATI","JAKUŠEVEC","KAŠINA","KLARA","KUPINEČKI KRALJEVEC","LUČKO","LUČKO NOVO","LUŽAN","MAKSIMIR","MARKUŠEVEC","MIKULIĆI","ODRA NOVA","ODRANSKI OBREŽ","PEŠČENICA","PLANINA","PODSUSED","REMETE","RESNIK","RUDEŠ","ŠAŠINOVEC","ŠESTINE","SESVETE","SESVETE NOVO","SESVETSKI KRALJEVEC","STARJAK","STENJEVEC","TREŠNJEVKA","TRNJE","TRPUCI","VRAPČE","VUGROVEC","VURNOVEC","ZAPRUDSKI OTOK","ŽITNJAK"];
-const SG={seq:0,t:0,items:[],act:-1,brKrk:new Map(),zg:new Map()};
+const SG={seq:0,t:0,items:[],act:-1,zg:new Map(),pd:null};
 const sgNat=(a,b)=>String(a).localeCompare(String(b),"hr",{numeric:true});
 const sgVelika=n=>String(n).toLowerCase().replace(/(^|[\s-])(\S)/g,(m,a,b)=>a+b.toUpperCase());
 // riječ upita je početak riječi naziva (zadnja riječ se još tipka) ili ista riječ u drugom padežu
@@ -10965,15 +10969,14 @@ async function sgKos(txt){ const Q=norm(txt).split(" ").filter(Boolean); if(!Q.l
 async function sgBrojevi(K,pre){
   if(!/^\d[\d\/]*$/.test(pre)) return [];
   if(K.reg==="zg"){ const k=K.naziv+"|"+pre; if(!SG.zg.has(k)){ const w=`KATASTARSKA_OPCINA='${K.naziv.replace(/'/g,"")}' AND KATASTARSKA_CESTICA LIKE '${pre}%'`;
-      const p=getJSON(SRC.cestice+"?"+new URLSearchParams({where:w,outFields:"KATASTARSKA_CESTICA",returnGeometry:"false",resultRecordCount:"60",f:"json"}).toString(),{},8000).then(j=>[...new Set((j&&j.features||[]).map(f=>String(f.attributes.KATASTARSKA_CESTICA)))]);
+      const p=getJSON(SRC.cestice+"?"+new URLSearchParams({where:w,outFields:"KATASTARSKA_CESTICA",returnGeometry:"false",orderByFields:"KATASTARSKA_CESTICA",resultRecordCount:"60",f:"json"}).toString(),{},8000).then(j=>[...new Set((j&&j.features||[]).map(f=>String(f.attributes.KATASTARSKA_CESTICA)))]);
       SG.zg.set(k,p); p.catch(()=>SG.zg.delete(k)); } return SG.zg.get(k); }
-  let X=SG.brKrk.get(K.mb); if(!X){ X=skiFetch(KAT.base+"brojevi/"+K.mb+".json",20000); SG.brKrk.set(K.mb,X); X.catch(()=>SG.brKrk.delete(K.mb)); }
-  const d=await X; return Object.keys(d&&d.c||{}).filter(b=>b.replace(/^\*/,"").startsWith(pre)); }
+  const d=await katBrojevi(K.mb); return Object.keys(d&&d.c||{}).filter(b=>b.replace(/^\*/,"").startsWith(pre)); }
 async function sgUlice(Q){ if(!Q.length||Q.join("").length<3) return []; const res=[];
   for(const reg of ["zg","krk"]){ let I; try{I=await adrIdx(reg)}catch(e){continue}
-    for(const u of I.U){ if(!u.t.length) continue; const W=norm(u.ul).split(" "), all=[...W,...u.nt];
+    for(const u of I.U){ if(!u.t.length) continue; const W=u.N.split(" "), all=[...W,...u.nt];
       if(!Q.every(q=>all.some(t=>sgRijec(q,t)))||!Q.some(q=>u.t.some(t=>sgRijec(q,t)))) continue;
-      const sc=(norm(u.ul).startsWith(Q.join(" "))?20:0)+(W[0].startsWith(Q[0])?8:0)+Math.min(8,u.n/25)+(u.nas==="Zagreb"?3:0)-(W.length-Q.length);
+      const sc=(u.N.startsWith(Q.join(" "))?20:0)+(W[0].startsWith(Q[0])?8:0)+Math.min(8,u.n/25)+(u.nas==="Zagreb"?3:0)-(W.length-Q.length);
       res.push({reg,u,sc}); } }
   return res.sort((a,b)=>b.sc-a.sc).slice(0,6); }
 async function sgKucni(P){ const out=[];
@@ -10983,7 +10986,7 @@ async function sgKucni(P){ const out=[];
     out.push(...L2.map(p=>({tip:"kbr",u,kb:p[0],ll:[p[2]/1e6,p[1]/1e6],lab:`${u.ul} ${p[0]}`,sub:`${u.nas} · adresa (registar DGU)`,reg}))); }
   return out; }
 async function sgRun(){ const q=document.getElementById("q").value, my=++SG.seq, qt=q.trim(); if(qt.length<2){sgShow([]);return}
-  const items=[], m=qt.match(/^(.*?)\s*(\*?\d[\d\/]*)$/), txt=(m?m[1]:qt).replace(/k\.?\s*č\.?|\bkc\b|\bkč\b|čestica|cestica|k\.\s*o\.|\bko\b/gi," ").trim(), pre=m?m[2].replace(/^\*/,""):null;
+  const items=[], m=qt.match(/^(.*?)\s*(\*?\d[\d\/]*)$/), txt=parcelPrefiksi(m?m[1]:qt), pre=m?m[2].replace(/^\*/,""):null;
   try{ const kos=txt?await sgKos(txt):[];
     if(pre&&kos.length){ for(const K of kos.slice(0,2)){ try{ const L2=(await sgBrojevi(K,pre)).sort((a,b)=>(b.replace(/^\*/,"")===pre)-(a.replace(/^\*/,"")===pre)||sgNat(a.replace(/^\*/,""),b.replace(/^\*/,""))).slice(0,6);
         for(const b of L2) items.push({tip:"cest",K,kc:b,lab:`${sgVelika(K.naziv)} ${b}`,sub:`katastarska čestica · k.o. ${sgVelika(K.naziv)}${K.reg==="krk"?" (Krk)":" (Zagreb)"}`}); }catch(e){} } }
@@ -10996,8 +10999,9 @@ async function sgRun(){ const q=document.getElementById("q").value, my=++SG.seq,
 function sgShow(items){ const el=document.getElementById("sg"), q=document.getElementById("q"); SG.items=items; SG.act=-1;
   if(!items.length||document.activeElement!==q){ el.hidden=true; el.innerHTML=""; q.setAttribute("aria-expanded","false"); q.removeAttribute("aria-activedescendant"); return; }
   el.innerHTML=items.map((it,i)=>`<div class="sg-i" role="option" id="sg${i}" data-sgi="${i}" aria-selected="false"><b>${esc(it.lab)}</b><small>${esc(it.sub)}</small></div>`).join("");
-  const r=q.getBoundingClientRect(), wd=Math.min(window.innerWidth-16,Math.max(r.width,300)); el.style.top=Math.round(r.bottom+4)+"px"; el.style.left=Math.round(Math.max(8,Math.min(r.left,window.innerWidth-wd-8)))+"px"; el.style.width=Math.round(wd)+"px";
-  el.hidden=false; q.setAttribute("aria-expanded","true"); }
+  sgPos(); el.hidden=false; q.setAttribute("aria-expanded","true"); }
+function sgPos(){ const el=document.getElementById("sg"), r=document.getElementById("q").getBoundingClientRect(), wd=Math.min(window.innerWidth-16,Math.max(r.width,300));
+  el.style.top=Math.round(r.bottom+4)+"px"; el.style.left=Math.round(Math.max(8,Math.min(r.left,window.innerWidth-wd-8)))+"px"; el.style.width=Math.round(wd)+"px"; }
 function sgHide(){ SG.seq++; clearTimeout(SG.t); const el=document.getElementById("sg"), q=document.getElementById("q"); el.hidden=true; el.innerHTML=""; SG.items=[]; SG.act=-1; q.setAttribute("aria-expanded","false"); q.removeAttribute("aria-activedescendant"); }
 function sgAkt(i){ const el=document.getElementById("sg"), q=document.getElementById("q"); SG.act=i;
   el.querySelectorAll(".sg-i").forEach((x,j)=>x.setAttribute("aria-selected",j===i?"true":"false"));
@@ -11020,11 +11024,14 @@ async function sgPick(it){ const q=document.getElementById("q"); if(!it) return;
     if(e.key==="ArrowDown"&&open){ e.preventDefault(); sgAkt((SG.act+1)%n); }
     else if(e.key==="ArrowUp"&&open){ e.preventDefault(); sgAkt(SG.act<=0?n-1:SG.act-1); }
     else if(e.key==="Escape"&&open){ e.preventDefault(); sgHide(); }
-    else if(e.key==="Enter"){ e.preventDefault(); if(open&&SG.act>=0) sgPick(SG.items[SG.act]); else { sgHide(); search(); } } });
-  // pointerdown: odabir prije nego polje izgubi fokus (i na dodir)
-  el.addEventListener("pointerdown",e=>{ const x=e.target.closest&&e.target.closest("[data-sgi]"); if(!x) return; e.preventDefault(); sgPick(SG.items[+x.dataset.sgi]); });
+    else if(e.key==="Enter"){ if(e.isComposing) return; e.preventDefault(); if(open&&SG.act>=0) sgPick(SG.items[SG.act]); else { sgHide(); search(); } } });
+  // pointerdown samo zadržava fokus u polju; prijedlog se bira na pointerup istog retka, lijevim gumbom i bez pomaka
+  // (povlačenje prstom pomiče popis i ne bira ništa)
+  el.addEventListener("pointerdown",e=>{ const x=e.target.closest&&e.target.closest("[data-sgi]"); e.preventDefault(); SG.pd=x&&(e.button==null||e.button===0)?{i:+x.dataset.sgi,x:e.clientX||0,y:e.clientY||0}:null; });
+  el.addEventListener("pointercancel",()=>{ SG.pd=null; });
+  el.addEventListener("pointerup",e=>{ const d=SG.pd, x=e.target.closest&&e.target.closest("[data-sgi]"); SG.pd=null; if(!d||!x||+x.dataset.sgi!==d.i||Math.hypot((e.clientX||0)-d.x,(e.clientY||0)-d.y)>10) return; sgPick(SG.items[d.i]); });
   document.getElementById("go").addEventListener("click",()=>sgHide());
-  window.addEventListener("resize",()=>{ if(!el.hidden) sgShow(SG.items); }); }
+  window.addEventListener("resize",()=>{ if(!el.hidden) sgPos(); }); }
 document.getElementById("me").onclick=()=>pwaLocate();
 </script>
 </body>
