@@ -1397,8 +1397,8 @@ function piBase(RS,I){
   const nam=PZREG.items.get("namjena");
   return [piK("čestica",PZREG.items.get("pov-graf")),plan,piK("GIS zona (prostorni plan grada ili općine)",nam,nam&&nam.raz!=="C"?{uskladenost:"nepoznata",razlogUsk:"oznaka iz županijskog sloja; podudarnost s grafičkim dijelom važeće odluke nije stručno potvrđena"}:null)].filter(Boolean);
 }
-function krkRulesHtml(d){
-  const R=RULES_KRK, S=krkRuleState(d); let h=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>%%PISAZ%%%%PREK%%`; window.__krkS=S; krkEnvLayer.clearLayers(); gpLayer.clearLayers(); window.__gp=null; pzDel("gp-podrucje");
+function krkRulesHtml(d,S0){
+  const R=RULES_KRK, S=S0||krkRuleState(d); let h=`<h2 id="sec-uvjeti">Uvjeti gradnje</h2>%%PISAZ%%%%PREK%%`; window.__krkS=S; krkEnvLayer.clearLayers(); gpLayer.clearLayers(); window.__gp=null; pzDel("gp-podrucje");
   window.__krkCalc=null; window.__env=null; window.__krkLim=null;
   for(const k of ["blok-uvjeti","blok-krov","calc-min","calc-tlocrt","calc-gbp","calc-prostor","calc-visina"]) pzDel(k); window.__krkKont="";
   if(S.st==="ne"||S.st==="upuNe"){h+=`<p class="hint">${esc(S.msg)}</p>`; piBlok("blok-uvjeti","Uvjeti gradnje (izračun)",S.msg||"uvjeti za ovu lokaciju nisu obrađeni",piBase(S.RS,S.RS&&(S.RS.izvor||R.izvor))); return h;}
@@ -1418,6 +1418,8 @@ function krkRulesHtml(d){
   if(zona) pzSet("zona-korisnik","Zona u UPU-u (tvoj odabir)",zona,pzUser({provjera:"legenda donesenog plana, lokacijska informacija",...(zIzv?{izvor:"prihvaćen automatski prijedlog iz rastera (pilot, "+zIzv.datum+"); nije stručna potvrda",razlog:"prijedlog "+zIzv.kandidat+" iz boja karte, prihvatio korisnik"}:{})})); else pzDel("zona-korisnik");
   for(const k of ["pravilo","calc-tlocrt","calc-gbp","calc-prostor","calc-visina"]) pzDel(k);
   if(zona&&RS.zoneSet&&RS.zoneSet[zona]) RS={...RS,...RS.zoneSet[zona]};
+  // varijante pravila prema površini čestice (npr. GUP Splita 2.3: od 800 m² Po+P+3): vrijedi najveća za koju čestica ima dovoljnu površinu
+  if(RS.varijante&&d.area){ const v=RS.varijante.filter(x=>d.area>=x.minA&&(!x.samoOblik||(KRK_TIP.oblik||"slob")===x.samoOblik)).sort((a,b)=>b.minA-a.minA)[0]; if(v) RS={...RS,tipovi:v.tipovi,varOpis:v.opis,napomene:["Za česticu od "+fmt(Math.round(d.area))+" m² vrijedi varijanta: "+v.opis+".",...(RS.napomene||[])]}; }
   if(!RS.tipovi){ // zona bez pravila za kuće (npr. „druga zona”)
     piBlok("blok-uvjeti","Uvjeti gradnje (izračun)","za odabranu zonu ("+zona+") uvjeti za kuće nisu obrađeni",piBase(RS,I));
     const sel0=(id,opts,v)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===v?" selected":""}>${esc(o[1])}</option>`).join("")}</select>`;
@@ -3170,6 +3172,10 @@ function renderKrk(d){
   if(isMobile()){ if(!UI.hadParcel&&parcel){UI.hadParcel=true; if(UI.state==="peek") setState("half"); else setState(UI.state,{keepScroll:true});} else setState(UI.state,{keepScroll:true}); }
 }
 
+// gradovi izvan Zagreba i PGŽ-a s obrađenim GUP-om (rules_krk.json → hrGradovi): obuhvat po okviru, urbano pravilo bira korisnik
+function hrGrad(ll){ const G=RULES_KRK&&RULES_KRK.hrGradovi||{}; for(const [k,g] of Object.entries(G)) if(g.obuhvat&&inBox(ll,g.obuhvat)) return {k,...g}; return null; }
+function hrGradState(G){ const notes=[]; if(G.upozorenje) notes.push(G.upozorenje);
+  return {st:"provjera",msg:"Obuhvat GUP-a određen je približnim okvirom grada; provjeri je li čestica u obuhvatu plana i u građevinskom području.",RS:G,izgr:[{share:1,p:{}}],notes,grupa:null}; }
 function renderHR(d){
   if(prZaklj()) return renderSlobodno(d,"hr"); window.__slobodno=false;
   KRK_CUR=d;
@@ -3189,7 +3195,7 @@ function renderHR(d){
   if(parcel){
     h+=`<p class="eyebrow" id="hrKo">Katastarska čestica${P.ko?" · k.o. "+esc(P.ko):P.koRef?" · k.o. br. "+esc(P.koRef):""}</p><p class="parcel">${esc(P.broj||"?")}</p>`;
     h+=`<div id="krkArea">`+krkAreaHtml(P,area)+`</div>`;
-    h+=`<div class="verdict v-warn">Za ovo područje aplikacija još nema obrađena pravila gradnje. Podaci nisu dostupni: namjena površina, uvjeti gradnje i izračun što se smije graditi. Provjeri ih u prostornom planu općine ili grada (ISPU) i traži lokacijsku informaciju.</div>`;
+    h+=hrGrad(ll)?`<div class="verdict v-warn">Namjena površina nije dostupna kao digitalni sloj. Uvjeti gradnje računaju se prema urbanom pravilu koje odabereš u odjeljku „Uvjeti gradnje”.</div>`:`<div class="verdict v-warn">Za ovo područje aplikacija još nema obrađena pravila gradnje. Podaci nisu dostupni: namjena površina, uvjeti gradnje i izračun što se smije graditi. Provjeri ih u prostornom planu općine ili grada (ISPU) i traži lokacijsku informaciju.</div>`;
   }else{
     h+=`<p class="eyebrow">Lokacija</p><p class="parcel">${ll.lat.toFixed(5)}, ${ll.lng.toFixed(5)}</p>`;
     h+=ces.e?`<p class="err">Katastar (DGU): Podaci nisu dostupni (${esc(ces.e)}). Pokušaj ponovno za nekoliko trenutaka.</p>`:`<p class="meta">Ovdje u katastru nije pronađena čestica (more, cesta ili rub čestice).</p>`;
@@ -3207,7 +3213,12 @@ function renderHR(d){
   if(parcel&&rkKatalog(ll)) h+=`<h2 id="sec-upu">${esc(rkKatalog(ll).naslov)}</h2><div id="rkBox">${rkInner()}</div>`;
   h+=naHtml("Namjena, klizišta i druga ograničenja iz plana","Za područja izvan Grada Zagreba i otoka Krka aplikacija još ne provjerava slojeve plana (kulturna dobra iz Registra i geološka podloga provjeravaju se iznad). Namjenu i ograničenja provjeri u ISPU-u (ispu.mgipu.hr) i u prostornom planu općine ili grada.");
   h+=env?envHtml(env):envHtml(null);
-  if(parcel) h+=naHtml("Postojeće zgrade i uvjeti gradnje","Uvjeti gradnje (izgrađenost, visina, katnost) i izračun smjestivosti kuće nisu obrađeni za ovo područje. Okolne zgrade u 3D pogledu preuzete su iz OpenStreetMapa i samo su ilustracija.");
+  const HG=parcel?hrGrad(ll):null;
+  if(HG){ let r=""; try{ r=krkRulesHtml(d,hrGradState(HG)).replace("%%PREK%%","");
+      let sz=""; try{sz=piSazetakHtml(["calc-min","calc-tlocrt","calc-gbp","calc-visina","calc-prostor","blok-krov","blok-uvjeti"],{osnovice:piOsniviceHtml(),kontekst:krkSazKontekst()})}catch(err){console.error(err)} r=r.replace("%%PISAZ%%",sz);
+      const C=window.__krkCalc; if(C&&window.__env) r+=simHtml({izg:C.tl/C.A,kis:C.kis},C.A,area,C.gbpN,null,window.__krkLim); }catch(err){ console.error(err); r=`<p class="err">Uvjeti gradnje: greška u izračunu (${esc(err.message)}).</p>`; }
+    h+=r; }
+  else{ window.__krkCalc=null; if(parcel) h+=naHtml("Postojeće zgrade i uvjeti gradnje","Uvjeti gradnje (izgrađenost, visina, katnost) i izračun smjestivosti kuće nisu obrađeni za ovo područje. Okolne zgrade u 3D pogledu preuzete su iz OpenStreetMapa i samo su ilustracija."); }
   if(parcel) h+=`<h2 id="sec-troskovi" class="m-only">Gradnja</h2>`+buildHtml(null,null)+kdHrHtml();
   if(parcel) h+=moneyHtml(key,area);
   h+=G("analiza");
