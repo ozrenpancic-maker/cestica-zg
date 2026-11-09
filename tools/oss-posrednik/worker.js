@@ -4,7 +4,7 @@
 // OSS-ova adresa /oss/public/cad/parcel-info nije službeno dokumentirano sučelje i može se promijeniti bez najave.
 
 const OSS = "https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info?parcelId=";
-const ALLOWED = ["https://ozrenpancic-maker.github.io"]; // stranice koje smiju čitati odgovor (produkcija i proba su na istom originu)
+const ALLOWED = ["https://app.cesticahr.com", "https://cesticahr.com", "https://www.cesticahr.com", "https://ozrenpancic-maker.github.io"]; // stranice koje smiju čitati odgovor (aplikacija je od 7. 11. 2026. na app.cesticahr.com; stara adresa preusmjerava)
 const CACHE_S = 24 * 3600; // odgovor OSS-a pamti se 24 sata (manje upita prema OSS-u)
 
 const arr = x => (x == null ? [] : Array.isArray(x) ? x : [x]);
