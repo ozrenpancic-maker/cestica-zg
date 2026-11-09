@@ -2472,9 +2472,9 @@ async function formulaTests(){
   // 5. 11. 2026.: OMIŠALJ, DOBRINJ (nova pravila) i VRBNIK (izmjene SN 34/2024) izvan sažetka; ostatak datoteke dokazano isti (isti sažetak starog i novog sadržaja)
   // Plan Integrity v10: novo polje »citati« (doslovni navodi iz objave) ne mijenja postojeće brojke ni tekstove; ne ulazi u sažetak,
   // a njegovu doslovnost provjerava zaseban test (»PI v10 navodi«) prema tekstu SN PGŽ 19/2016
-  // 9. 11. 2026.: RIJEKA (GUP, urbana pravila, nova pravila) izvan sažetka do neovisne provjere
+  // 9. 11. 2026.: RIJEKA (GUP, urbana pravila, nova pravila) i hrGradovi (GUP Splita) izvan sažetka do neovisne provjere
   // Sljedeća faza: »legenda« (boje polja legende karte 4 za pilot prijedloga zone) i »provjereno« (stručno provjereni obuhvati) nisu pravila; ne ulaze u sažetak
-  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="RIJEKA"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik"&&k!=="OPATIJA"&&k!=="RAB"&&k!=="NOVI VINODOLSKI"&&k!=="CRIKVENICA"&&k!=="MALI LOŠINJ"&&k!=="LOPAR"&&k!=="KRALJEVICA"&&k!=="MOŠĆENIČKA DRAGA"&&k!=="BAKAR"&&k!=="KASTAV"&&k!=="VIŠKOVO"&&k!=="JELENJE"&&k!=="ČAVLE"&&k!=="RAVNA GORA"&&k!=="VRBOVSKO"&&k!=="BROD MORAVICE"&&k!=="DELNICE"&&k!=="SKRAD"&&k!=="VINODOLSKA OPĆINA"&&k!=="CRES"&&k!=="LOVRAN"&&k!=="MATULJI"&&k!=="FUŽINE"&&k!=="MRKOPALJ"&&k!=="ČABAR"&&k!=="LOKVE"&&k!=="KLANA"&&k!=="KOSTRENA").map(([k,v])=>[k,bezPP(v)])):o;
+  const bezPP=o=>Array.isArray(o)?o.map(bezPP):o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([k])=>k!=="pravna_provjera"&&k!=="citati"&&k!=="legenda"&&k!=="provjereno"&&k!=="UPU 3"&&k!=="OMIŠALJ"&&k!=="DOBRINJ"&&k!=="VRBNIK"&&k!=="RIJEKA"&&k!=="hrGradovi"&&k!=="UPU 9 Punat"&&k!=="UPU 1 Vrbnik"&&k!=="OPATIJA"&&k!=="RAB"&&k!=="NOVI VINODOLSKI"&&k!=="CRIKVENICA"&&k!=="MALI LOŠINJ"&&k!=="LOPAR"&&k!=="KRALJEVICA"&&k!=="MOŠĆENIČKA DRAGA"&&k!=="BAKAR"&&k!=="KASTAV"&&k!=="VIŠKOVO"&&k!=="JELENJE"&&k!=="ČAVLE"&&k!=="RAVNA GORA"&&k!=="VRBOVSKO"&&k!=="BROD MORAVICE"&&k!=="DELNICE"&&k!=="SKRAD"&&k!=="VINODOLSKA OPĆINA"&&k!=="CRES"&&k!=="LOVRAN"&&k!=="MATULJI"&&k!=="FUŽINE"&&k!=="MRKOPALJ"&&k!=="ČABAR"&&k!=="LOKVE"&&k!=="KLANA"&&k!=="KOSTRENA").map(([k,v])=>[k,bezPP(v)])):o;
   const sha=crypto.createHash("sha256").update(JSON.stringify(bezPP(JSON.parse(fs.readFileSync(path.join(__dirname,"..","src","rules_krk.json"),"utf8"))))).digest("hex");
   ok(sha==="de538e7ddc17cdc11746acbca3217b77569881a269c740457be9e5bc7a615f82","Pravila: src/rules_krk.json bez oznaka pravne provjere nepromijenjen (sha256 "+sha.slice(0,12)+"); izmjena vrijednosti traži neovisnu provjeru i novi zapis u testu");
   // nova i izmijenjena pravila (Omišalj, Dobrinj, Vrbnik 2024.): izvan sažetka; svaka brojka mora biti u svom doslovnom navodu
@@ -3546,7 +3546,27 @@ async function dkpwTests(){
   ok(errs.length===0,"bez JS grešaka (DGU zgrade): "+errs.join(" | "));
 }
 
-netTests().then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
+// Split: GUP (urbana pravila), parcela 30 x 24 m = 720 m²
+async function splitTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  const lon=16.4700, lat=43.5150, [E0,N0]=E("tmFwd")(lon,lat), ring=[[E0-15,N0-12],[E0+15,N0-12],[E0+15,N0+12],[E0-15,N0+12],[E0-15,N0-12]];
+  w.fetch=(u)=>{u=String(u); const r=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b),text:()=>Promise.resolve("")});
+    if(/wms1-gs-oss\.uredjenazemlja\.hr/.test(u)&&/GetFeatureInfo/.test(u)) return r({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{CESTICA_ID:555001,BROJ_CESTICE:"8123/4",MATICNI_BROJ_KO:335061,POVRSINA_GRAFICKA:720,POVRSINA_ATRIBUTNA:720}}]});
+    return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null),text:()=>Promise.resolve("")}); };
+  ok(!!E("hrGrad")({lat,lng:lon})&&!E("hrGrad")({lat:45.55,lng:18.69}),"Split: obuhvat GUP-a Splita prepoznat, Osijek nije");
+  await E("inspect")({lat,lng:lon}); await tick(200);
+  let t=txt(w,"sheet");
+  ok(/GUP Splita/.test(t)&&$(w,"krkZona")&&w.__krkCalc===null&&/Urbano pravilo \(karta „Urbana pravila”\)/.test(t),"Split: urbano pravilo nije odabrano, nema izračuna");
+  setv(w,"krkZona","2.4","change"); let C=w.__krkCalc; t=txt(w,"sheet");
+  ok(C&&C.plan==="GUP Splita"&&Math.abs(C.tl-0.35*C.A)<0.6&&Math.abs(C.gbpN-1.2*C.A)<1.5&&/13,5 m/.test(t)&&/Po\+P\+3/.test(t),"Split 2.4 (čl. 67.): kig 0,35, kisN 1,2, Po+P+3, visina 13,5 m");
+  setv(w,"krkZona","2.3","change"); C=w.__krkCalc; t=txt(w,"sheet");
+  ok(C&&Math.abs(C.gbpN-0.9*C.A)<1.5&&!/vrijedi varijanta/.test(t)&&/Po\+P\+2/.test(t)&&/20 %/.test(t),"Split 2.3 (čl. 66.), čestica 720 m² (ispod 800): kisN 0,9, Po+P+2, zelenilo 20 %");
+  {const V=E("RULES_KRK").hrGradovi.SPLIT.zoneSet["2.3"].varijante; ok(V.length===2&&V[0].minA===800&&V[0].tipovi.stamb.slob.kis===1.2&&V[1].tipovi.stamb.etaze.includes("Po+P+4"),"Split 2.3: varijante 800 m² (Po+P+3, kisN 1,2) i 1200 m² (Po+P+4)");}
+  setv(w,"krkZona","3.2","change"); ok(w.__krkCalc===null&&/provedbeni dokument/.test(txt(w,"sheet")),"Split 3.2: gradnja tek uz UPU/DPU, nema izračuna");
+  ok(errs.length===0,"bez JS grešaka (Split): "+errs.join(" | "));
+}
+
+netTests().then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
