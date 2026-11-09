@@ -4939,7 +4939,7 @@ function zg3dDec(t,idx){
   const dec=(a,n)=>{const P=[]; let x=0,y=0,z=0; for(let i=0;i+n<=a.length;i+=n){x+=a[i]; y+=a[i+1]; if(n===3) z+=a[i+2]; P.push(n===3?[t.lon0+x/kx,t.lat0+y/ky,z/10]:[t.lon0+x/kx,t.lat0+y/ky]);} return P;};
   for(const r of t.b){ const foot=r[2].map(a=>dec(a,2)), faces=r[3].map(a=>dec(a,3)); if(!foot.length||!foot[0].length) continue;
     let sx=0,sy=0; for(const q of foot[0]){sx+=q[0];sy+=q[1];}
-    out.push({y:r[0],wall:r[1]/10,foot,faces,c:[sx/foot[0].length,sy/foot[0].length]}); }
+    out.push({y:r[0],wall:r[1]/10,foot,faces,c:[sx/foot[0].length,sy/foot[0].length],mj:r[4]===1}); }
   return out;
 }
 function zg3dTile(base,k,idx){
@@ -5029,14 +5029,14 @@ function krovCrtaj(list,tip){ const g=L.layerGroup(), ll=r=>r.map(q=>[q[1],q[0]]
   for(const B of list){ const naC=krovNaCestici(B), obrub=naC?"#1d4ed8":"#3d2b22", tez=naC?2.6:0.9;
     if(B.faces&&B.faces.length){ for(const f of B.faces){ if(f.length<3) continue; const k=krovBoja(f,B.c); L.polygon(ll(f),{...o,stroke:k.nagib>=6,color:"#4a3328",weight:0.5,opacity:0.35,fillColor:k.c,fillOpacity:0.95}).addTo(g); }
       for(const r of B.foot) L.polygon(ll(r),{...o,fill:false,color:obrub,weight:tez}).addTo(g); continue; }
-    const D=B.foot[0]&&B.foot[0].length>=3?krovDvostresni(B.foot[0]):null;
+    const D=!B.mj&&B.foot[0]&&B.foot[0].length>=3?krovDvostresni(B.foot[0]):null;
     if(!D||D.pov<12){ for(const r of B.foot) L.polygon(ll(r),{...o,color:obrub,weight:tez,fillColor:"#b8b3aa",fillOpacity:0.9}).addTo(g); continue; }
     for(const h of D.pol) if(h.r.length>=3) L.polygon(ll(h.r),{...o,stroke:false,fillColor:h.c,fillOpacity:0.88}).addTo(g);
     if(D.sljeme) L.polyline(ll(D.sljeme),{...o,color:"#4a3328",weight:1,opacity:0.85,dashArray:"3 2"}).addTo(g);
     for(const r of B.foot) L.polygon(ll(r),{...o,fill:false,color:obrub,weight:tez}).addTo(g); }
   KROV.tip.add(tip); return g; }
 function krovOznaka(){ const h=document.getElementById("lyrKrovH"); if(!h) return; const t=KROV.tip, z=map.getZoom()<KROV.minZ;
-  h.textContent=z?"(približi kartu)":[t.has("zg3d")?"Zagreb: ZG3D 2022, stvarni krovovi":"",t.has("dkp")?"tlocrti: katastar DGU, krov ilustrativno":"",t.has("osm")?"tlocrti: OpenStreetMap, krov ilustrativno":""].filter(Boolean).join(" · "); }
+  h.textContent=z?"(približi kartu)":[t.has("zg3d")?"Zagreb: ZG3D 2022, stvarni krovovi":"",t.has("ndmp")?"tlocrti: katastar DGU, krovovi iz LiDAR-a DGU":"",t.has("dkp")?"tlocrti: katastar DGU, krov ilustrativno":"",t.has("osm")?"tlocrti: OpenStreetMap, krov ilustrativno":""].filter(Boolean).join(" · "); }
 async function krovUpd(){
   if(FEATURES.krovovi===false) return;
   if(!KROV.lay){ if(!map.getPane("krovPane")){ const pn=map.createPane("krovPane"); pn.style.zIndex=380; pn.style.pointerEvents="none"; } KROV.ren=L.canvas({pane:"krovPane",padding:0.3}); KROV.lay=L.layerGroup().addTo(map); }
@@ -5066,12 +5066,21 @@ function zg3dClip(poly,z){
     if((fa>=0)!==(fb>=0)){const t=fa/(fa-fb); out.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,z]);} }
   return out;
 }
+// zgrada bez poznatog oblika krova (katastar, OpenStreetMap): ILUSTRATIVNI dvostrešni krov nagiba 30° po duljoj stranici tlocrta
+// (sljeme najviše 4 m iznad vijenca); vijenac se spusti za pola visine krova, da ukupna visina ostane blizu pretpostavljene
+function zg3dKrovIlustr(B){ const f=B.foot&&B.foot[0]; if(B.mj||!f||f.length<3) return B; /* izmjereni ravni krov (LiDAR) ostaje ravan */ const D=krovDvostresni(f); if(!D||D.pov<12||!D.sljeme) return B;
+  const c0=f[0], T=krovLok(c0), a=T.f(D.sljeme[0]), b=T.f(D.sljeme[1]), L=Math.hypot(b[0]-a[0],b[1]-a[1])||1, n=[-(b[1]-a[1])/L,(b[0]-a[0])/L];
+  const dist=q=>{ const m=T.f(q); return (m[0]-a[0])*n[0]+(m[1]-a[1])*n[1]; }, tan=Math.tan(30*Math.PI/180);
+  let dmax=0; for(const h of D.pol) for(const q of h.r) dmax=Math.max(dmax,Math.abs(dist(q)));
+  if(dmax<1) return B; const rise=Math.min(4,tan*dmax), wall=Math.max(2.4,B.wall-rise/2);
+  const faces=D.pol.filter(h=>h.r.length>=3).map(h=>h.r.map(q=>[q[0],q[1],wall+rise*(1-Math.min(1,Math.abs(dist(q))/dmax))]));
+  return {...B,wall,faces,ilustr:true}; }
 // tijela za 3D pogled (fill-extrusion): zidovi do vijenca i krov kao stepenice od 0,35 m
 function zg3dFeatures(list){
   const F=[], C={zid:"#d9d5cc",krov:"#a39e96"}, st=0.35;
   const add=(ring,b,h,c)=>{ if(ring.length<3||h-b<0.02) return; const r=ring.map(q=>[+q[0].toFixed(7),+q[1].toFixed(7)]); r.push(r[0]);
     F.push({type:"Feature",geometry:{type:"Polygon",coordinates:[r]},properties:{b:+b.toFixed(2),h:+h.toFixed(2),c}}); };
-  for(const B of list){
+  for(const B0 of list){ const B=B0.faces&&B0.faces.length?B0:zg3dKrovIlustr(B0);
     for(const r of B.foot) add(r,0,B.wall,C.zid);
     for(const f of B.faces){ let z0=1e9,z1=-1e9; for(const q of f){ if(q[2]<z0) z0=q[2]; if(q[2]>z1) z1=q[2]; }
       if(z1-z0<0.15){ add(f,B.wall,z1,C.krov); continue; }
@@ -5082,8 +5091,9 @@ function zg3dFeatures(list){
 }
 function zg3dNapomena(Z){
   if(!Z||!Z.list||!Z.list.length) return "";
-  if(Z.tip==="dkp") return `Okolne zgrade: tlocrti iz digitalnog katastarskog plana DGU-a, ${Z.list.length} zgrada u krugu do ${Z.R||ZG3D.R} m. Katastar ne sadrži visine ni oblik krova, pa su visine PRETPOSTAVLJENE prema vrsti zgrade (kuća oko 6,5 m, pomoćne zgrade oko 3 m) i zgrade su nacrtane kao kvadri bez krova. Samo ilustracija okoline; zgrade na samoj čestici nisu prikazane.`;
-  if(Z.tip==="osm") return `Okolne zgrade: tlocrti iz OpenStreetMapa (volonterski karta, može biti nepotpuna), ${Z.list.length} zgrada u krugu do ${Z.R||ZG3D.R} m. Visine su ${Z.pret<Z.list.length?"gdje postoje preuzete iz oznaka (visina, broj etaža), a inače ":""}PRETPOSTAVLJENE prema vrsti zgrade, bez oblika krova. Samo ilustracija okoline; zgrade na samoj čestici nisu prikazane.`;
+  if(Z.tip==="ndmp") return `Okolne zgrade: tlocrti iz digitalnog katastarskog plana DGU-a, ${Z.list.length} zgrada u krugu do ${Z.R||ZG3D.R} m. Visine i oblik krova izvedeni su iz LiDAR snimanja DGU-a 2021.–2023. (normalizirani digitalni model površina, zaokruženo na 0,5 m); prepoznaju se ravni i dvostrešni krovovi, složeniji su pojednostavljeni. Zgrade bez LiDAR podataka imaju pretpostavljenu visinu i ilustrativni krov. Sadrži informacije tijela javne vlasti u skladu s dozvolom. Samo ilustracija okoline; zgrade na samoj čestici nisu prikazane.`;
+  if(Z.tip==="dkp") return `Okolne zgrade: tlocrti iz digitalnog katastarskog plana DGU-a, ${Z.list.length} zgrada u krugu do ${Z.R||ZG3D.R} m. Katastar ne sadrži visine ni oblik krova, pa su visine PRETPOSTAVLJENE prema vrsti zgrade (kuća oko 6,5 m, pomoćne zgrade oko 3 m) a krov je ILUSTRATIVNI dvostrešni (30°, po duljoj stranici tlocrta). Samo ilustracija okoline; zgrade na samoj čestici nisu prikazane.`;
+  if(Z.tip==="osm") return `Okolne zgrade: tlocrti iz OpenStreetMapa (volonterski karta, može biti nepotpuna), ${Z.list.length} zgrada u krugu do ${Z.R||ZG3D.R} m. Visine su ${Z.pret<Z.list.length?"gdje postoje preuzete iz oznaka (visina, broj etaža), a inače ":""}PRETPOSTAVLJENE prema vrsti zgrade, a krov je ILUSTRATIVNI dvostrešni (30°, po duljoj stranici tlocrta). Samo ilustracija okoline; zgrade na samoj čestici nisu prikazane.`;
   const g=Z.godine||{}, god=Object.keys(g).sort().map(k=>(2000+ +k)+". ("+g[k]+")").join(", ");
   return `Okolne zgrade: neslužbeni 3D model Grada Zagreba (ZG3D, Otvorena dozvola), ${Z.list.length} zgrada u krugu do ${Z.R||ZG3D.R} m; godina snimanja ${god}. Visine i krovovi su prema modelu i ne moraju odgovarati današnjem stanju; zgrade na samoj čestici nisu prikazane.`;
 }
