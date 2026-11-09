@@ -30,7 +30,7 @@ function boot(src,url){
   // katalozi ISPU (Zagreb i županije) u testovima su isključeni; testovi karata planova ga uključuju (__ISPU_OBUHVAT)
   try{dom.window.eval('(()=>{window.__ISPU_OB={}; for(const k of RASTER_KATALOZI.filter(k=>k.tip==="wms")){ window.__ISPU_OB[k.id]=k.obuhvat; k.obuhvat=[0,0,0,0]; } window.__ISPU_OBUHVAT=window.__ISPU_OB["ispu-z21"];})()')}catch(e){}
   // u objavljenoj aplikaciji pristup i statistika su uključeni; testovi rade s punom aplikacijom, a pristup uključuju sami
-  try{ dom.window.eval("FEATURES.pristup=false; FEATURES.analitika=false; FEATURES.rkDrzavni=false; FEATURES.nam26=false;"); }catch(e){}
+  try{ dom.window.eval("FEATURES.pristup=false; FEATURES.analitika=false; FEATURES.rkDrzavni=false; FEATURES.nam26=false; FEATURES.krovovi=false;"); }catch(e){}
   return {w:dom.window, errs};
 }
 // pravokutna čestica w × d metara
@@ -3432,7 +3432,22 @@ async function ispuZupTests(){
   ok(errs.length===0,"bez JS grešaka (ISPU županije): "+errs.join(" | "));
 }
 
-netTests().then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
+// 2D krovovi postojećih zgrada: sjenčanje plohe po strani svijeta i ilustrativni dvostrešni krov
+async function krovTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  const c0=[16.0,45.8], m=(x,y,z)=>[c0[0]+x/(111320*Math.cos(45.8*Math.PI/180)),c0[1]+y/110540,z];
+  const sjZ=E("krovBoja")([m(0,0,3),m(10,0,3),m(10,5,6),m(0,5,6)],c0), juZ=E("krovBoja")([m(0,0,6),m(10,0,6),m(10,5,3),m(0,5,3)],c0), rav=E("krovBoja")([m(0,0,3),m(10,0,3),m(10,5,3.1),m(0,5,3)],c0);
+  const sv=c=>{const q=c.match(/\d+/g).map(Number); return q[0]+q[1]+q[2];};
+  ok(Math.abs(sjZ.nagib-31)<1.5&&Math.abs(juZ.nagib-31)<1.5&&rav.nagib<6&&rav.c==="#b8b3aa","Krovovi: nagib plohe iz krovnih ploha ZG3D (31°), ravan krov sivo");
+  // sjZ raste prema sjeveru, pa je okrenuta prema jugu; juZ pada prema sjeveru, pa je okrenuta prema sjeveru (svjetlo sa sjeverozapada)
+  ok(sv(juZ.c)>sv(sjZ.c),"Krovovi: ploha okrenuta prema sjeveru (prema svjetlu sa sjeverozapada) svjetlija je od plohe okrenute prema jugu");
+  const D=E("krovDvostresni")([m(0,0),m(12,0),m(12,8),m(0,8)]);
+  ok(D&&Math.abs(D.pov-96)<0.5&&D.pol.length===2&&D.pol.every(h=>h.r.length>=4)&&D.sljeme&&D.pol[0].c!==D.pol[1].c,"Krovovi: ilustrativni dvostrešni krov (dvije polovice različite boje i sljeme) za tlocrt bez oblika krova");
+  {const a=D.sljeme[0], b=D.sljeme[1], dx=(b[0]-a[0])*111320*Math.cos(45.8*Math.PI/180), dy=(b[1]-a[1])*110540; ok(Math.abs(Math.hypot(dx,dy)-12)<0.2&&Math.abs(dy)<0.2,"Krovovi: sljeme po duljoj stranici tlocrta (12 m, istok–zapad)");}
+  ok(errs.length===0,"bez JS grešaka (krovovi): "+errs.join(" | "));
+}
+
+netTests().then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
