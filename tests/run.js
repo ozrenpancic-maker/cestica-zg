@@ -30,7 +30,7 @@ function boot(src,url){
   // katalozi ISPU (Zagreb i županije) u testovima su isključeni; testovi karata planova ga uključuju (__ISPU_OBUHVAT)
   try{dom.window.eval('(()=>{window.__ISPU_OB={}; for(const k of RASTER_KATALOZI.filter(k=>k.tip==="wms")){ window.__ISPU_OB[k.id]=k.obuhvat; k.obuhvat=[0,0,0,0]; } window.__ISPU_OBUHVAT=window.__ISPU_OB["ispu-z21"];})()')}catch(e){}
   // u objavljenoj aplikaciji pristup i statistika su uključeni; testovi rade s punom aplikacijom, a pristup uključuju sami
-  try{ dom.window.eval("FEATURES.pristup=false; FEATURES.analitika=false; FEATURES.rkDrzavni=false; FEATURES.nam26=false; FEATURES.krovovi=false;"); }catch(e){}
+  try{ dom.window.eval("FEATURES.pristup=false; FEATURES.analitika=false; FEATURES.rkDrzavni=false; FEATURES.nam26=false; FEATURES.krovovi=false; FEATURES.pristupKat=false;"); }catch(e){}
   return {w:dom.window, errs};
 }
 // pravokutna čestica w × d metara
@@ -3455,7 +3455,38 @@ async function krovTests(){
   ok(errs.length===0,"bez JS grešaka (krovovi): "+errs.join(" | "));
 }
 
-netTests().then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
+// pristup iz katastra: susjedne čestice uz granicu, duljina granice iz grafičkog oblika čestice
+async function pkatTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  E("FEATURES.pristupKat=true");
+  const P=parcelRect(20,30), r=P.geometry.coordinates[0], yS=r[0][1], yN=r[2][1], xW=r[0][0], xE=r[1][0];
+  const uska=[[500000,5000000],[500060,5000000],[500060,5000004],[500000,5000004],[500000,5000000]], siroka=[[500000,5000000],[500025,5000000],[500025,5000030],[500000,5000030],[500000,5000000]];
+  let upiti=0, oss=[];
+  w.katwAt=async(lat,lon)=>{ upiti++; if(lat>yN) return {id:"101",broj:"735/1",geom:{type:"Polygon",coordinates:[uska]}};
+    if(lat<yS) return {id:"102",broj:"735/2",geom:{type:"Polygon",coordinates:[uska]}};
+    if(lon>xE) return {id:"103",broj:"735/59",geom:{type:"Polygon",coordinates:[siroka]}}; return null; };
+  w.krkOssOnce=async(Q,id)=>{ oss.push(id); return {st:"ok",d:{dijelovi:[{naziv:id==="101"?"PUT":"NERAZVRSTANA CESTA",povrsina:240}]}}; };
+  await w.pristupKatStart("t1",P,"735/58");
+  const K=E("PRISTK").get("t1");
+  ok(K&&K.st==="ok"&&K.ceste.length===2,"Pristup (katastar): dvije susjedne čestice prometnica (sjever i jug), široka susjedna čestica nije put: "+JSON.stringify(K&&K.ceste));
+  const sj=K.ceste.find(c=>c.broj==="735/1"), ju=K.ceste.find(c=>c.broj==="735/2");
+  ok(sj&&ju&&sj.strana==="sjever"&&ju.strana==="jug"&&sj.potvrdeno&&ju.potvrdeno&&sj.naziv==="PUT","Pristup (katastar): strane granice i način uporabe iz OSS-a");
+  ok(Math.abs(sj.duljina-20)<0.3&&Math.abs(ju.duljina-20)<0.3&&Math.abs(K.ukupno-40)<0.5,"Pristup (katastar): duljina granice prema putu iz grafičkog oblika čestice (20 m + 20 m)");
+  ok(oss.length===2&&!oss.includes("103"),"Pristup (katastar): OSS se pita samo za uske izdužene susjede");
+  ok(K.segs.length===2,"Pristup (katastar): rubovi čestice uz put za pojas građevnog pravca");
+  const PO=E("pristupOpis")("t1");
+  ok(PO&&PO.kat&&PO.stanje==="ok"&&/dva moguća kolna prilaza/.test(PO.tekst)&&/k\.č\. 735\/1 \(put\) uz 20 m granice \(sjever\)/.test(PO.tekst),"Pristup (katastar): tekst za izvještaj navodi dva kolna prilaza: "+(PO&&PO.tekst));
+  // bez OSS-a: uska izdužena čestica je vjerojatni put, nije potvrđen
+  w.krkOssOnce=async()=>({st:"err",e:"mreža"});
+  await w.pristupKatStart("t2",P,"735/58"); const K2=E("PRISTK").get("t2");
+  ok(K2.ceste.length===2&&K2.ceste.every(c=>!c.potvrdeno)&&E("pristupOpis")("t2").stanje==="?"&&/nije potvrđen/.test(E("pristupOpis")("t2").tekst),"Pristup (katastar): bez OSS-a uske čestice su vjerojatni putovi (nepotvrđeno)");
+  // OSS kaže da je susjed oranica: nije put
+  w.krkOssOnce=async()=>({st:"ok",d:{dijelovi:[{naziv:"ORANICA"}]}});
+  await w.pristupKatStart("t3",P,"735/58"); ok(E("PRISTK").get("t3").ceste.length===0,"Pristup (katastar): uska čestica s načinom uporabe oranica nije put");
+  ok(errs.length===0,"bez JS grešaka (pristup katastar): "+errs.join(" | "));
+}
+
+netTests().then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
