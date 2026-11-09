@@ -1419,7 +1419,7 @@ function krkRulesHtml(d,S0){
   for(const k of ["pravilo","calc-tlocrt","calc-gbp","calc-prostor","calc-visina"]) pzDel(k);
   if(zona&&RS.zoneSet&&RS.zoneSet[zona]) RS={...RS,...RS.zoneSet[zona]};
   // varijante pravila prema površini čestice (npr. GUP Splita 2.3: od 800 m² Po+P+3): vrijedi najveća za koju čestica ima dovoljnu površinu
-  if(RS.varijante&&d.area){ const v=RS.varijante.filter(x=>d.area>=x.minA).sort((a,b)=>b.minA-a.minA)[0]; if(v) RS={...RS,tipovi:v.tipovi,varOpis:v.opis,napomene:["Za česticu od "+fmt(Math.round(d.area))+" m² vrijedi varijanta: "+v.opis+".",...(RS.napomene||[])]}; }
+  if(RS.varijante&&d.area){ const v=RS.varijante.filter(x=>d.area>=x.minA&&(!x.samoOblik||(KRK_TIP.oblik||"slob")===x.samoOblik)).sort((a,b)=>b.minA-a.minA)[0]; if(v) RS={...RS,tipovi:v.tipovi,varOpis:v.opis,napomene:["Za česticu od "+fmt(Math.round(d.area))+" m² vrijedi varijanta: "+v.opis+".",...(RS.napomene||[])]}; }
   if(!RS.tipovi){ // zona bez pravila za kuće (npr. „druga zona”)
     piBlok("blok-uvjeti","Uvjeti gradnje (izračun)","za odabranu zonu ("+zona+") uvjeti za kuće nisu obrađeni",piBase(RS,I));
     const sel0=(id,opts,v)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===v?" selected":""}>${esc(o[1])}</option>`).join("")}</select>`;

@@ -14222,8 +14222,8 @@
     "sn": "Službeni glasnik Grada Splita 55/2014",
     "url": "https://split.hr/strateski-dokumenti/prostorno-planska-dokumentacija/planovi-na-snazi/gup-splita",
     "pdf": "https://split.hr/DesktopModules/Bring2mind/DMX/API/Entries/Download?language=hr-HR&Command=Core_Download&EntryId=6130&PortalId=0",
-    "status": "na snazi (pročišćeni tekst 55/2014; ciljane izmjene za Trsteničku uvalu nisu obrađene; izmjene i dopune GUP-a u izradi, prijedlog 2024.)",
-    "provjera": "Čl. 49.–75. iz pročišćenog teksta (PDF sa split.hr, tekst izvučen strojno; dvostupčani prijelom), preuzeto 9. 11. 2026.",
+    "status": "na snazi (pročišćeni tekst 55/2014, uključuje i ciljane izmjene za Trsteničku uvalu 41/2014; izmjene i dopune GUP-a u izradi, prijedlog 2024.)",
+    "provjera": "Čl. 49.–75. iz pročišćenog teksta (PDF sa split.hr, tekst izvučen strojno; dvostupčani prijelom), preuzeto 9. 11. 2026. Neovisna provjera (zasebna provjera koja nije sastavljala pravila), 9. 11. 2026.: oko 170 vrijednosti, brojke bez odstupanja; ispravljeni navod općih odredbi (čl. 49.) i etaže dvojnih građevina u varijantama.",
     "pravna_provjera": {
      "status": "NIJE_POTVRDENO",
      "napomena": "Pročišćeni tekst iz 2014.; kasnije ciljane izmjene i izmjene u izradi nisu uspoređene. Urbano pravilo za česticu određuje kartografski prikaz „Urbana pravila” GUP-a."
@@ -14362,7 +14362,7 @@
      "tipovi": {
       "stamb": {
        "naziv": "Niska stambena građevina",
-       "opis": "stambena ili stambeno-poslovna, najviše Po+P+2 (čl. 50. i 52.)",
+       "opis": "stambena ili stambeno-poslovna, najviše Po+P+2 (čl. 49. i 52.)",
        "clanak": "52.",
        "gbpMax": null,
        "etaze": "podrum, prizemlje i 2 kata (Po+P+2)",
@@ -14405,7 +14405,7 @@
       }
      },
      "meda": {
-      "clanak": "50.",
+      "clanak": "49.",
       "min": 3,
       "opis": "u neizgrađenom dijelu najmanje 3 m od međe; u izgrađenom dijelu može i manje, prema lokalnim uvjetima",
       "opisIznimka": "",
@@ -14427,8 +14427,8 @@
       "Najmanja širina čestice prema ulici: slobodnostojeća 14 m, dvojna 10 m; podzemna izgrađenost (kigP) najviše 0,5 (čl. 52.).",
       "Nova čestica između dvije izgrađene: najmanje 300 m², kig 0,25, kisN 0,75, kis 1,5, Po+P+2 (čl. 52.).",
       "Gdje to dopušta prosječna visina u uličnom potezu: slobodnostojeća na čestici od 800 m², Po+P+3, obvezno ravni krov, kisN 1,0, tlocrt do 300 m² (čl. 52.); aplikacija to ne pretpostavlja.",
-      "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 50.).",
-      "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 50.)."
+      "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 49.).",
+      "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 49.)."
      ],
      "upozorenja": [
       "Zaštićena povijesna cjelina: za zahvate u zonama A i B trebaju posebni uvjeti i suglasnost konzervatora, u zoni C očitovanje konzervatora (čl. 49.)."
@@ -14438,7 +14438,7 @@
      "tipovi": {
       "stamb": {
        "naziv": "Niska stambena građevina",
-       "opis": "stambena ili stambeno-poslovna, najviše Po+P+2 (čl. 50. i 54.)",
+       "opis": "stambena ili stambeno-poslovna, najviše Po+P+2 (čl. 49. i 54.)",
        "clanak": "54.",
        "gbpMax": null,
        "etaze": "podrum, prizemlje i 2 kata (Po+P+2)",
@@ -14481,14 +14481,14 @@
       }
      },
      "meda": {
-      "clanak": "50.",
+      "clanak": "49.",
       "min": 3,
       "opis": "u neizgrađenom dijelu najmanje 3 m od međe; u izgrađenom dijelu može i manje, prema lokalnim uvjetima",
       "opisIznimka": "",
       "txt": "U neizgrađenom dijelu udaljenost građevina od međe je najmanje 3 m. … U izgrađenim dijelovima udaljenost građevina od međe može biti manja od 3 m, u skladu s lokalnim uvjetima."
      },
      "regulacija": {
-      "clanak": "50.",
+      "clanak": "49.",
       "ostale": 5,
       "opis": "u izgrađenom dijelu na postojećem građevnom pravcu u potezu; inače 5 m od pristupne ulice (sabirna 5 m, gradska ulica 10 m, magistrala 20 m)",
       "txt": "pristupna ulica i druge javno prometne površine 5,0 m … U izgrađenom dijelu … građevina se postavlja … na dominantnom postojećem građevnom pravcu"
@@ -14501,9 +14501,10 @@
      "napomene": [
       "Najmanja širina čestice prema ulici: slobodnostojeća 14 m, dvojna 10 m; podzemna izgrađenost najviše 0,5 (čl. 54.).",
       "Nadzemna gradnja u vrtovima i dvorištima unutar bloka nije moguća; velike okućnice ne mogu se prenamijeniti u građevne čestice (čl. 54.).",
+      "Gdje to dopušta prosječna visina u uličnom potezu: slobodnostojeća na čestici od 800 m², Po+P+3, kisN 1,0, kis 2,0 (čl. 54.); uz Jadransku ulicu na Bačvicama iznimno kig 0,40, kisN 1,6 uz suglasnost konzervatora; aplikacija to ne pretpostavlja.",
       "Pravilo 1.5 ne propisuje postotak zelenila.",
-      "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 50.).",
-      "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 50.)."
+      "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 49.).",
+      "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 49.)."
      ],
      "upozorenja": [
       "Vrijedno obalno područje: zadržavaju se postojeći regulacijski i građevni pravci, čuvaju se stabla i kameni ogradni zidovi (čl. 54.)."
@@ -14513,9 +14514,9 @@
      "tipovi": {
       "stamb": {
        "naziv": "Niska stambena građevina",
-       "opis": "stambena ili stambeno-poslovna, najviše Po+P+2 (čl. 50. i 64.)",
+       "opis": "stambena ili stambeno-poslovna, najviše Po+P+2 (čl. 49. i 64.)",
        "clanak": "64.",
-       "gbpMax": 750,
+       "gbpMax": null,
        "etaze": "podrum, prizemlje i 2 kata (Po+P+2)",
        "visina": 10.5,
        "visinaOpis": "10,5 m (sa suterenom 12,5 m)",
@@ -14525,13 +14526,14 @@
         "kis": 0.75,
         "kisPodrum": 1.5,
         "tlMin": null,
-        "tlMax": null
+        "tlMax": null,
+        "gbpMax": 750
        },
        "txt": {
         "minC": "Pp min =400 m2 … (dvojne) Pp min =250 m2",
         "izg": "k ig =0,25",
         "kis": "k is =1,50, k is N=0,75",
-        "gbp": "maksimalni BRPN=750 m2",
+        "gbp": "maksimalni BRPN=750 m2 (za novu izgradnju i zamjenu slobodnostojeće)",
         "etaze": "E=Po+P+2"
        },
        "dvoj": {
@@ -14556,14 +14558,14 @@
       }
      },
      "meda": {
-      "clanak": "50.",
+      "clanak": "49.",
       "min": 3,
       "opis": "u neizgrađenom dijelu najmanje 3 m od međe; u izgrađenom dijelu može i manje, prema lokalnim uvjetima",
       "opisIznimka": "",
       "txt": "U neizgrađenom dijelu udaljenost građevina od međe je najmanje 3 m. … U izgrađenim dijelovima udaljenost građevina od međe može biti manja od 3 m, u skladu s lokalnim uvjetima."
      },
      "regulacija": {
-      "clanak": "50.",
+      "clanak": "49.",
       "ostale": 5,
       "opis": "u izgrađenom dijelu na postojećem građevnom pravcu u potezu; inače 5 m od pristupne ulice (sabirna 5 m, gradska ulica 10 m, magistrala 20 m)",
       "txt": "pristupna ulica i druge javno prometne površine 5,0 m … U izgrađenom dijelu … građevina se postavlja … na dominantnom postojećem građevnom pravcu"
@@ -14575,8 +14577,9 @@
      },
      "napomene": [
       "Najmanja širina čestice dvojne građevine prema ulici 10 m (čl. 64.).",
-      "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 50.).",
-      "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 50.)."
+      "Postojeće legalne dvojne građevine mogu se rekonstruirati ili izjednačiti po visini: kig 0,35, kigP 0,5, kisN 1,05, kis 1,55, Po+P+3 (čl. 64.).",
+      "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 49.).",
+      "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 49.)."
      ],
      "upozorenja": [
       "Pravilo 2.1a: moguća je isključivo zamjena postojećih građevina koje nisu zaštićene te rekonstrukcija u postojećim gabaritima (čl. 64.); izračun vrijedi samo za zamjensku građevinu."
@@ -14586,7 +14589,7 @@
      "tipovi": {
       "stamb": {
        "naziv": "Niska stambena građevina",
-       "opis": "stambena ili stambeno-poslovna, najviše Po+P+2 (čl. 50. i 66.)",
+       "opis": "stambena ili stambeno-poslovna, najviše Po+P+2 (čl. 49. i 66.)",
        "clanak": "66.",
        "gbpMax": null,
        "etaze": "podrum, prizemlje i 2 kata (Po+P+2)",
@@ -14628,14 +14631,14 @@
       }
      },
      "meda": {
-      "clanak": "50.",
+      "clanak": "49.",
       "min": 3,
       "opis": "u neizgrađenom dijelu najmanje 3 m od međe; u izgrađenom dijelu može i manje, prema lokalnim uvjetima",
       "opisIznimka": "",
       "txt": "U neizgrađenom dijelu udaljenost građevina od međe je najmanje 3 m. … U izgrađenim dijelovima udaljenost građevina od međe može biti manja od 3 m, u skladu s lokalnim uvjetima."
      },
      "regulacija": {
-      "clanak": "50.",
+      "clanak": "49.",
       "ostale": 5,
       "opis": "u izgrađenom dijelu na postojećem građevnom pravcu u potezu; inače 5 m od pristupne ulice (sabirna 5 m, gradska ulica 10 m, magistrala 20 m)",
       "txt": "pristupna ulica i druge javno prometne površine 5,0 m … U izgrađenom dijelu … građevina se postavlja … na dominantnom postojećem građevnom pravcu"
@@ -14647,24 +14650,26 @@
      },
      "napomene": [
       "Prema površini čestice: od 800 m² vrijedi Po+P+3 (kisN 1,2), od 1200 m² Po+P+4 (kisN 1,5) (čl. 66.).",
-      "Nova čestica između dvije izgrađene: najmanje 300 m², kig 0,25, kisN 0,75, Po+P+2 (čl. 66.).",
+      "Nova čestica između dvije izgrađene: najmanje 300 m², kig 0,25, kisN 0,75, kis 1,5, Po+P+2 (čl. 66.).",
+      "Varijante za veću česticu vrijede za slobodnostojeću građevinu; dvojna je uvijek Po+P+2 (čl. 66.).",
       "Podzemna izgrađenost (kigP) najviše 0,6, dvojne 0,5; širina čestice dvojne građevine 10 m (čl. 66.).",
-      "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 50.).",
-      "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 50.)."
+      "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 49.).",
+      "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 49.)."
      ],
      "varijante": [
       {
        "minA": 800,
-       "opis": "čestica od 800 m²: Po+P+3, kisN 1,2, kis 2,5",
+       "samoOblik": "slob",
+       "opis": "slobodnostojeća na čestici od 800 m²: Po+P+3, kisN 1,2, kis 2,5",
        "tipovi": {
         "stamb": {
          "naziv": "Niska stambena građevina",
-         "opis": "stambena ili stambeno-poslovna, najviše Po+P+3 (čl. 50. i 66.)",
+         "opis": "stambena ili stambeno-poslovna, najviše Po+P+3 (čl. 49. i 66.)",
          "clanak": "66.",
          "gbpMax": null,
          "etaze": "podrum, prizemlje i 3 kata (Po+P+3)",
          "visina": 13.5,
-         "visinaOpis": "13,5 m (sa suterenom 15,5 m)",
+         "visinaOpis": "13,5 m (sa suterenom 15,5 m); plan izričito navodi visine do P+2 (10,5 m), za više etaža »itd.«, pa je visina izvedena s 3 m po etaži",
          "slob": {
           "minC": 800,
           "izg": 0.3,
@@ -14703,16 +14708,17 @@
       },
       {
        "minA": 1200,
-       "opis": "čestica od 1200 m²: Po+P+4, kisN 1,5, kis 3,0",
+       "samoOblik": "slob",
+       "opis": "slobodnostojeća na čestici od 1200 m²: Po+P+4, kisN 1,5, kis 3,0",
        "tipovi": {
         "stamb": {
-         "naziv": "Niska stambena građevina",
-         "opis": "stambena ili stambeno-poslovna, najviše Po+P+4 (čl. 50. i 66.)",
+         "naziv": "Srednja stambena građevina",
+         "opis": "stambena ili stambeno-poslovna, najviše Po+P+4 (čl. 49. i 66.)",
          "clanak": "66.",
          "gbpMax": null,
          "etaze": "podrum, prizemlje i 4 kata (Po+P+4)",
          "visina": 16.5,
-         "visinaOpis": "16,5 m (sa suterenom 18,5 m)",
+         "visinaOpis": "16,5 m (sa suterenom 18,5 m); plan izričito navodi visine do P+2 (10,5 m), za više etaža »itd.«, pa je visina izvedena s 3 m po etaži",
          "slob": {
           "minC": 1200,
           "izg": 0.3,
@@ -14755,12 +14761,12 @@
      "tipovi": {
       "stamb": {
        "naziv": "Niska stambena građevina",
-       "opis": "stambena ili stambeno-poslovna, najviše Po+P+3 (čl. 50. i 67.)",
+       "opis": "stambena ili stambeno-poslovna, najviše Po+P+3 (čl. 49. i 67.)",
        "clanak": "67.",
        "gbpMax": null,
        "etaze": "podrum, prizemlje i 3 kata (Po+P+3)",
        "visina": 13.5,
-       "visinaOpis": "13,5 m (sa suterenom 15,5 m)",
+       "visinaOpis": "13,5 m (sa suterenom 15,5 m); plan izričito navodi visine do P+2 (10,5 m), za više etaža »itd.«, pa je visina izvedena s 3 m po etaži",
        "slob": {
         "minC": 500,
         "izg": 0.35,
@@ -14803,7 +14809,7 @@
       "txt": "minimalna udaljenost građevine od granica čestice 3,0 m"
      },
      "regulacija": {
-      "clanak": "50.",
+      "clanak": "49.",
       "ostale": 5,
       "opis": "u izgrađenom dijelu na postojećem građevnom pravcu u potezu; inače 5 m od pristupne ulice (sabirna 5 m, gradska ulica 10 m, magistrala 20 m)",
       "txt": "pristupna ulica i druge javno prometne površine 5,0 m … U izgrađenom dijelu … građevina se postavlja … na dominantnom postojećem građevnom pravcu"
@@ -14817,20 +14823,20 @@
       "Najmanja širina čestice prema ulici: slobodnostojeća 12 m, dvojna 10 m; podzemna izgrađenost najviše 0,6 (čl. 67.).",
       "Nova čestica između dvije izgrađene: najmanje 300 m², kig 0,30, kisN 0,9, kis 1,2, Po+P+2 (čl. 67.).",
       "Građevni pravac prema prevladavajućoj udaljenosti postojećih građevina u uličnom potezu (čl. 67.).",
-      "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 50.).",
-      "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 50.)."
+      "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 49.).",
+      "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 49.)."
      ]
     },
     "2.5": {
      "tipovi": {
       "stamb": {
        "naziv": "Niska stambena građevina",
-       "opis": "stambena ili stambeno-poslovna, najviše Po+P+3 (čl. 50. i 68.)",
+       "opis": "stambena ili stambeno-poslovna, najviše Po+P+3 (čl. 49. i 68.)",
        "clanak": "68.",
        "gbpMax": null,
        "etaze": "podrum, prizemlje i 3 kata (Po+P+3)",
        "visina": 13.5,
-       "visinaOpis": "13,5 m (sa suterenom 15,5 m)",
+       "visinaOpis": "13,5 m (sa suterenom 15,5 m); plan izričito navodi visine do P+2 (10,5 m), za više etaža »itd.«, pa je visina izvedena s 3 m po etaži",
        "slob": {
         "minC": 500,
         "izg": 0.35,
@@ -14873,7 +14879,7 @@
       "txt": "minimalna udaljenost građevine od granica čestice 3,0 m"
      },
      "regulacija": {
-      "clanak": "50.",
+      "clanak": "49.",
       "ostale": 5,
       "opis": "u izgrađenom dijelu na postojećem građevnom pravcu u potezu; inače 5 m od pristupne ulice (sabirna 5 m, gradska ulica 10 m, magistrala 20 m)",
       "txt": "pristupna ulica i druge javno prometne površine 5,0 m … U izgrađenom dijelu … građevina se postavlja … na dominantnom postojećem građevnom pravcu"
@@ -14886,21 +14892,21 @@
      "napomene": [
       "Najmanja širina čestice prema ulici: slobodnostojeća 12 m, dvojna 10 m; podzemna izgrađenost najviše 0,6 (čl. 68.).",
       "Nova čestica između dvije izgrađene: najmanje 300 m², kig 0,30, kisN 0,9, kis 1,2, Po+P+2 (čl. 68.).",
-      "Na čestici većoj od 1200 m², gdje to dopušta prosječna visina uličnog poteza: Po+P+4, kig 0,30, kisN 1,5 (čl. 68.); aplikacija to ne pretpostavlja.",
-      "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 50.).",
-      "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 50.)."
+      "Na čestici većoj od 1200 m², gdje to dopušta prosječna visina uličnog poteza: Po+P+4, kig 0,30, kis 3,0, kisN 1,5 (čl. 68.); aplikacija to ne pretpostavlja.",
+      "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 49.).",
+      "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 49.)."
      ]
     },
     "2.5 Bol": {
      "tipovi": {
       "stamb": {
        "naziv": "Niska stambena građevina",
-       "opis": "stambena ili stambeno-poslovna, najviše Po+P+3 (čl. 50. i 68.)",
+       "opis": "stambena ili stambeno-poslovna, najviše Po+P+3 (čl. 49. i 68.)",
        "clanak": "68.",
        "gbpMax": null,
        "etaze": "podrum, prizemlje i 3 kata (Po+P+3)",
        "visina": 13.5,
-       "visinaOpis": "13,5 m (sa suterenom 15,5 m)",
+       "visinaOpis": "13,5 m (sa suterenom 15,5 m); plan izričito navodi visine do P+2 (10,5 m), za više etaža »itd.«, pa je visina izvedena s 3 m po etaži",
        "slob": {
         "minC": 500,
         "izg": 0.4,
@@ -14943,7 +14949,7 @@
       "txt": "minimalna udaljenost građevine od granica čestice 3,0 m"
      },
      "regulacija": {
-      "clanak": "50.",
+      "clanak": "49.",
       "ostale": 5,
       "opis": "u izgrađenom dijelu na postojećem građevnom pravcu u potezu; inače 5 m od pristupne ulice (sabirna 5 m, gradska ulica 10 m, magistrala 20 m)",
       "txt": "pristupna ulica i druge javno prometne površine 5,0 m … U izgrađenom dijelu … građevina se postavlja … na dominantnom postojećem građevnom pravcu"
@@ -14957,16 +14963,16 @@
       "Predjel Bol: slobodnostojeće kig 0,4, kigP 0,7, kis 2,0, kisN 1,4 (čl. 68.).",
       "Najmanja širina čestice prema ulici: slobodnostojeća 12 m, dvojna 10 m; podzemna izgrađenost najviše 0,6 (čl. 68.).",
       "Nova čestica između dvije izgrađene: najmanje 300 m², kig 0,30, kisN 0,9, kis 1,2, Po+P+2 (čl. 68.).",
-      "Na čestici većoj od 1200 m², gdje to dopušta prosječna visina uličnog poteza: Po+P+4, kig 0,30, kisN 1,5 (čl. 68.); aplikacija to ne pretpostavlja.",
-      "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 50.).",
-      "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 50.)."
+      "Na čestici većoj od 1200 m², gdje to dopušta prosječna visina uličnog poteza: Po+P+4, kig 0,30, kis 3,0, kisN 1,5 (čl. 68.); aplikacija to ne pretpostavlja.",
+      "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 49.).",
+      "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 49.)."
      ]
     },
     "3.1": {
      "tipovi": {
       "stamb": {
        "naziv": "Niska stambena građevina",
-       "opis": "stambena ili stambeno-poslovna, najviše Po+P+2 (čl. 50. i 73.)",
+       "opis": "stambena ili stambeno-poslovna, najviše Po+P+2 (čl. 49. i 73.)",
        "clanak": "73.",
        "gbpMax": null,
        "etaze": "podrum, prizemlje i 2 kata (Po+P+2)",
@@ -15028,11 +15034,13 @@
       "txt": "minimalno 30% površine građevne čestice obraditi kao zelenu površinu, uključujući visoko i nisko zelenilo"
      },
      "napomene": [
-      "Od 700 m² čestice: Po+P+3, kisN 1,2, kis 2,4 (čl. 73.).",
+      "Od 700 m² čestice: Po+P+3, kisN 1,2, kis 2,4 (čl. 73.); dvojna je uvijek Po+P+2.",
+      "Nova čestica između dvije izgrađene: najmanje 300 m², kig 0,3, kisN 0,9, kis 1,2, Po+P+2 (čl. 73.).",
+      "Tlocrt od 250 m² plan navodi uz interpolaciju i ponovno za čestice od 700 m²; je li granica i za čestice od 500 m², tekst ne kaže jasno, pa aplikacija primjenjuje strožu vrijednost.",
       "Najmanja širina čestice prema ulici: slobodnostojeća 14 m, dvojna 10 m (čl. 73.).",
       "Zona M1 istočno od TTTS-a uz Žrnovnicu: najviše Po+P+2 (čl. 73.).",
-      "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 50.).",
-      "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 50.)."
+      "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 49.).",
+      "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 49.)."
      ],
      "upozorenja": [
       "Gdje je odredbama propisana izrada provedbenog dokumenta (UPU/DPU), gradi se tek prema njemu (čl. 73.); provjeri na karti „Urbana pravila” i u lokacijskoj informaciji."
@@ -15040,16 +15048,17 @@
      "varijante": [
       {
        "minA": 700,
-       "opis": "čestica od 700 m²: Po+P+3, kisN 1,2, kis 2,4",
+       "samoOblik": "slob",
+       "opis": "slobodnostojeća na čestici od 700 m²: Po+P+3, kisN 1,2, kis 2,4",
        "tipovi": {
         "stamb": {
          "naziv": "Niska stambena građevina",
-         "opis": "stambena ili stambeno-poslovna, najviše Po+P+3 (čl. 50. i 73.)",
+         "opis": "stambena ili stambeno-poslovna, najviše Po+P+3 (čl. 49. i 73.)",
          "clanak": "73.",
          "gbpMax": null,
          "etaze": "podrum, prizemlje i 3 kata (Po+P+3)",
          "visina": 13.5,
-         "visinaOpis": "13,5 m (sa suterenom 15,5 m)",
+         "visinaOpis": "13,5 m (sa suterenom 15,5 m); plan izričito navodi visine do P+2 (10,5 m), za više etaža »itd.«, pa je visina izvedena s 3 m po etaži",
          "slob": {
           "minC": 700,
           "izg": 0.3,
@@ -15091,7 +15100,7 @@
     },
     "1.1": {
      "tipovi": null,
-     "drugaZona": "Pravilo 1.1: zaštita i revitalizacija povijesne jezgre; zahvati uz posebne uvjete konzervatora, izračun za kuću nije moguć (čl. 50.). Mjerodavna je lokacijska informacija Grada Splita."
+     "drugaZona": "Pravilo 1.1: zaštita i revitalizacija povijesne jezgre; zahvati uz posebne uvjete konzervatora, izračun za kuću nije moguć (čl. 49.). Mjerodavna je lokacijska informacija Grada Splita."
     },
     "1.2": {
      "tipovi": null,
@@ -15172,12 +15181,12 @@
    "tipovi": {
     "stamb": {
      "naziv": "Niska stambena građevina",
-     "opis": "stambena ili stambeno-poslovna, najviše Po+P+3 (čl. 50. i 67.)",
+     "opis": "stambena ili stambeno-poslovna, najviše Po+P+3 (čl. 49. i 67.)",
      "clanak": "67.",
      "gbpMax": null,
      "etaze": "podrum, prizemlje i 3 kata (Po+P+3)",
      "visina": 13.5,
-     "visinaOpis": "13,5 m (sa suterenom 15,5 m)",
+     "visinaOpis": "13,5 m (sa suterenom 15,5 m); plan izričito navodi visine do P+2 (10,5 m), za više etaža »itd.«, pa je visina izvedena s 3 m po etaži",
      "slob": {
       "minC": 500,
       "izg": 0.35,
@@ -15213,14 +15222,14 @@
     }
    },
    "meda": {
-    "clanak": "50.",
+    "clanak": "49.",
     "min": 3,
     "opis": "u neizgrađenom dijelu najmanje 3 m od međe; u izgrađenom dijelu može i manje, prema lokalnim uvjetima",
     "opisIznimka": "",
     "txt": "U neizgrađenom dijelu udaljenost građevina od međe je najmanje 3 m. … U izgrađenim dijelovima udaljenost građevina od međe može biti manja od 3 m, u skladu s lokalnim uvjetima."
    },
    "regulacija": {
-    "clanak": "50.",
+    "clanak": "49.",
     "ostale": 5,
     "opis": "u izgrađenom dijelu na postojećem građevnom pravcu u potezu; inače 5 m od pristupne ulice (sabirna 5 m, gradska ulica 10 m, magistrala 20 m)",
     "txt": "pristupna ulica i druge javno prometne površine 5,0 m … U izgrađenom dijelu … građevina se postavlja … na dominantnom postojećem građevnom pravcu"
@@ -15232,7 +15241,7 @@
    },
    "simulator": {
     "krov": {
-     "clanak": "50.",
+     "clanak": "49.",
      "nagibMin": 0,
      "nagibMax": 30,
      "ravniDopusten": true,
@@ -15240,11 +15249,11 @@
     }
    },
    "pristup": {
-    "napomena": "Parkirališna mjesta prema čl. 33. GUP-a; ulaz u garažu niske stambene građevine može biti bliže od 5 m regulacijskom pravcu, u skladu s lokalnim uvjetima (čl. 50.)."
+    "napomena": "Parkirališna mjesta prema čl. 33. GUP-a; ulaz u garažu niske stambene građevine može biti bliže od 5 m regulacijskom pravcu, u skladu s lokalnim uvjetima (čl. 49.)."
    },
    "napomene": [
-    "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 50.).",
-    "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 50.)."
+    "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 49.).",
+    "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 49.)."
    ]
   }
  }

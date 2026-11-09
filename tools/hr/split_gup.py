@@ -2,11 +2,11 @@
 """Uvjeti gradnje niskih stambenih građevina iz GUP-a Splita (urbana pravila, čl. 49.–75.).
 
 Izvor: Odredbe za provođenje GUP-a Splita – pročišćeni tekst, Službeni glasnik Grada Splita 55/2014
-(split.hr, „Planovi na snazi” → GUP Splita). Ciljane izmjene za Trsteničku uvalu nisu obrađene.
+(split.hr, „Planovi na snazi” → GUP Splita); uključuje i ciljane izmjene za Trsteničku uvalu (41/2014).
 GUP Splita ne razlikuje obiteljsku i višeobiteljsku kuću nego nisku građevinu (do P+3) prema pokazateljima:
 Pp min (najmanja čestica), kig (nadzemni), kigP (podzemni), kis (ukupni), kisN (nadzemni), E (etaže).
 Aplikacija: izg = kig, kis = kisN (nadzemni GBP), kisPodrum = kis (ukupni GBP s podzemnim etažama).
-Visina iz čl. 50. (opće odredbe): P+2 do 10,5 m, P+3 13,5 m, P+4 16,5 m (3 m po etaži, „itd.”), sa suterenom 2 m više.
+Visina iz čl. 49. (opće odredbe): P+2 do 10,5 m, P+3 13,5 m, P+4 16,5 m (3 m po etaži, „itd.”), sa suterenom 2 m više.
 Pokretanje: python3 -I tools/hr/split_gup.py  → upisuje src/rules_krk.json → hrGradovi["SPLIT"].
 """
 import json, os
@@ -16,8 +16,8 @@ IZVOR = {
     "sn": "Službeni glasnik Grada Splita 55/2014",
     "url": "https://split.hr/strateski-dokumenti/prostorno-planska-dokumentacija/planovi-na-snazi/gup-splita",
     "pdf": "https://split.hr/DesktopModules/Bring2mind/DMX/API/Entries/Download?language=hr-HR&Command=Core_Download&EntryId=6130&PortalId=0",
-    "status": "na snazi (pročišćeni tekst 55/2014; ciljane izmjene za Trsteničku uvalu nisu obrađene; izmjene i dopune GUP-a u izradi, prijedlog 2024.)",
-    "provjera": "Čl. 49.–75. iz pročišćenog teksta (PDF sa split.hr, tekst izvučen strojno; dvostupčani prijelom), preuzeto 9. 11. 2026.",
+    "status": "na snazi (pročišćeni tekst 55/2014, uključuje i ciljane izmjene za Trsteničku uvalu 41/2014; izmjene i dopune GUP-a u izradi, prijedlog 2024.)",
+    "provjera": "Čl. 49.–75. iz pročišćenog teksta (PDF sa split.hr, tekst izvučen strojno; dvostupčani prijelom), preuzeto 9. 11. 2026. Neovisna provjera (zasebna provjera koja nije sastavljala pravila), 9. 11. 2026.: oko 170 vrijednosti, brojke bez odstupanja; ispravljeni navod općih odredbi (čl. 49.) i etaže dvojnih građevina u varijantama.",
     "pravna_provjera": {"status": "NIJE_POTVRDENO",
                         "napomena": "Pročišćeni tekst iz 2014.; kasnije ciljane izmjene i izmjene u izradi nisu uspoređene. Urbano pravilo za česticu određuje kartografski prikaz „Urbana pravila” GUP-a."}
 }
@@ -30,17 +30,17 @@ def ob(minC, kig, kisN, kis, tl=None, nap=None):
 DV_NAP = "Najveća tlocrtna površina dvojne građevine je 300 m² ukupno (obje polovice zajedno), pa je za jednu polovicu manja."
 
 def tip(cl, n, slob, dvoj, txt, gbp=None):
-    t = {"naziv": "Niska stambena građevina", "opis": f"stambena ili stambeno-poslovna, najviše Po+P+{n} (čl. 50. i {cl})", "clanak": cl,
-         "gbpMax": gbp, "etaze": et(n), "visina": VIS[n], "visinaOpis": f"{str(VIS[n]).replace('.', ',')} m (sa suterenom {str(VIS[n]+2).replace('.', ',')} m)",
+    t = {"naziv": "Niska stambena građevina" if n <= 3 else "Srednja stambena građevina", "opis": f"stambena ili stambeno-poslovna, najviše Po+P+{n} (čl. 49. i {cl})", "clanak": cl,
+         "gbpMax": gbp, "etaze": et(n), "visina": VIS[n], "visinaOpis": f"{str(VIS[n]).replace('.', ',')} m (sa suterenom {str(VIS[n]+2).replace('.', ',')} m)" + ("" if n == 2 else "; plan izričito navodi visine do P+2 (10,5 m), za više etaža »itd.«, pa je visina izvedena s 3 m po etaži"),
          "slob": slob, "txt": txt}
     if dvoj: t["dvoj"] = dvoj
     t["oblici"] = [["slob", "slobodnostojeća"]] + ([["dvoj", "dvojna"]] if dvoj else [])
     return {"stamb": t}
 
-MEDA_OPCA = {"clanak": "50.", "min": 3, "opis": "u neizgrađenom dijelu najmanje 3 m od međe; u izgrađenom dijelu može i manje, prema lokalnim uvjetima",
+MEDA_OPCA = {"clanak": "49.", "min": 3, "opis": "u neizgrađenom dijelu najmanje 3 m od međe; u izgrađenom dijelu može i manje, prema lokalnim uvjetima",
              "opisIznimka": "", "txt": "U neizgrađenom dijelu udaljenost građevina od međe je najmanje 3 m. … U izgrađenim dijelovima udaljenost građevina od međe može biti manja od 3 m, u skladu s lokalnim uvjetima."}
 def meda3(cl): return {"clanak": cl, "min": 3, "opis": "najmanje 3 m od granica čestice", "opisIznimka": "", "txt": "minimalna udaljenost građevine od granica čestice 3,0 m"}
-REG_OPCA = {"clanak": "50.", "ostale": 5, "opis": "u izgrađenom dijelu na postojećem građevnom pravcu u potezu; inače 5 m od pristupne ulice (sabirna 5 m, gradska ulica 10 m, magistrala 20 m)",
+REG_OPCA = {"clanak": "49.", "ostale": 5, "opis": "u izgrađenom dijelu na postojećem građevnom pravcu u potezu; inače 5 m od pristupne ulice (sabirna 5 m, gradska ulica 10 m, magistrala 20 m)",
             "txt": "pristupna ulica i druge javno prometne površine 5,0 m … U izgrađenom dijelu … građevina se postavlja … na dominantnom postojećem građevnom pravcu"}
 def reg4(cl, neiz=False): return {"clanak": cl, "ostale": 4, "razvrstane": 5 if neiz else None, "opis": "usklađeno s postojećim građevinama u potezu, ali najmanje 4 m" + (" (u neizgrađenom dijelu najmanje 5 m)" if neiz else ""),
                                   "txt": "udaljenost građevine (građevni pravac) od ulice odnosno regulacijskog pravca mora biti usklađena s prevladavajućom istom udaljenošću postojećih građevina u uličnom potezu ali ne manja od 4 m"}
@@ -76,15 +76,17 @@ dodaj("1.5", "vrijedna niska izgradnja u obalnom području (Bačvice, Meje)", zo
     MEDA_OPCA, REG_OPCA, zel("54.", None, ""),
     ["Najmanja širina čestice prema ulici: slobodnostojeća 14 m, dvojna 10 m; podzemna izgrađenost najviše 0,5 (čl. 54.).",
      "Nadzemna gradnja u vrtovima i dvorištima unutar bloka nije moguća; velike okućnice ne mogu se prenamijeniti u građevne čestice (čl. 54.).",
+     "Gdje to dopušta prosječna visina u uličnom potezu: slobodnostojeća na čestici od 800 m², Po+P+3, kisN 1,0, kis 2,0 (čl. 54.); uz Jadransku ulicu na Bačvicama iznimno kig 0,40, kisN 1,6 uz suglasnost konzervatora; aplikacija to ne pretpostavlja.",
      "Pravilo 1.5 ne propisuje postotak zelenila."],
     ["Vrijedno obalno područje: zadržavaju se postojeći regulacijski i građevni pravci, čuvaju se stabla i kameni ogradni zidovi (čl. 54.)."]))
 
 # 2.1a (čl. 64.)
 dodaj("2.1a", "dovršena naselja u kontaktnoj zoni Marjana", zona(
-    tip("64.", 2, ob(400, 0.25, 0.75, 1.50), ob(250, 0.25, 0.75, 1.50, 300, DV_NAP),
-        {"minC": "Pp min =400 m2 … (dvojne) Pp min =250 m2", "izg": "k ig =0,25", "kis": "k is =1,50, k is N=0,75", "gbp": "maksimalni BRPN=750 m2", "etaze": "E=Po+P+2"}, gbp=750),
+    tip("64.", 2, dict(ob(400, 0.25, 0.75, 1.50), gbpMax=750), ob(250, 0.25, 0.75, 1.50, 300, DV_NAP),
+        {"minC": "Pp min =400 m2 … (dvojne) Pp min =250 m2", "izg": "k ig =0,25", "kis": "k is =1,50, k is N=0,75", "gbp": "maksimalni BRPN=750 m2 (za novu izgradnju i zamjenu slobodnostojeće)", "etaze": "E=Po+P+2"}),
     MEDA_OPCA, REG_OPCA, zel("64.", None, ""),
-    ["Najmanja širina čestice dvojne građevine prema ulici 10 m (čl. 64.)."],
+    ["Najmanja širina čestice dvojne građevine prema ulici 10 m (čl. 64.).",
+     "Postojeće legalne dvojne građevine mogu se rekonstruirati ili izjednačiti po visini: kig 0,35, kigP 0,5, kisN 1,05, kis 1,55, Po+P+3 (čl. 64.)."],
     ["Pravilo 2.1a: moguća je isključivo zamjena postojećih građevina koje nisu zaštićene te rekonstrukcija u postojećim gabaritima (čl. 64.); izračun vrijedi samo za zamjensku građevinu."]))
 
 # 2.3 (čl. 66.) s varijantama prema površini čestice
@@ -97,9 +99,9 @@ dodaj("2.3", "pretežito dovršeni prostori mješovite gradnje", zona(
     t23(2, 500, 0.90, 2.00), MEDA_OPCA, REG_OPCA,
     zel("66.", 0.2, "minimalno 20% površine građevne čestice obraditi kao zelenu površinu, uključujući visoko i nisko zelenilo"),
     ["Prema površini čestice: od 800 m² vrijedi Po+P+3 (kisN 1,2), od 1200 m² Po+P+4 (kisN 1,5) (čl. 66.).",
-     "Nova čestica između dvije izgrađene: najmanje 300 m², kig 0,25, kisN 0,75, Po+P+2 (čl. 66.).", "Podzemna izgrađenost (kigP) najviše 0,6, dvojne 0,5; širina čestice dvojne građevine 10 m (čl. 66.)."],
-    var=[{"minA": 800, "opis": "čestica od 800 m²: Po+P+3, kisN 1,2, kis 2,5", "tipovi": t23(3, 800, 1.20, 2.50)},
-         {"minA": 1200, "opis": "čestica od 1200 m²: Po+P+4, kisN 1,5, kis 3,0", "tipovi": t23(4, 1200, 1.50, 3.00)}]))
+     "Nova čestica između dvije izgrađene: najmanje 300 m², kig 0,25, kisN 0,75, kis 1,5, Po+P+2 (čl. 66.).", "Varijante za veću česticu vrijede za slobodnostojeću građevinu; dvojna je uvijek Po+P+2 (čl. 66.).", "Podzemna izgrađenost (kigP) najviše 0,6, dvojne 0,5; širina čestice dvojne građevine 10 m (čl. 66.)."],
+    var=[{"minA": 800, "samoOblik": "slob", "opis": "slobodnostojeća na čestici od 800 m²: Po+P+3, kisN 1,2, kis 2,5", "tipovi": t23(3, 800, 1.20, 2.50)},
+         {"minA": 1200, "samoOblik": "slob", "opis": "slobodnostojeća na čestici od 1200 m²: Po+P+4, kisN 1,5, kis 3,0", "tipovi": t23(4, 1200, 1.50, 3.00)}]))
 
 # 2.4 (čl. 67.)
 dodaj("2.4", "planirana naselja niske gradnje na periferiji", zona(
@@ -117,7 +119,7 @@ def t25(kig, kisN, kis):
                 "kis": f"k is ={str(kis).replace('.', ',')}, k is N={str(kisN).replace('.', ',')}", "etaze": "E=Po+P+3"})
 nap25 = ["Najmanja širina čestice prema ulici: slobodnostojeća 12 m, dvojna 10 m; podzemna izgrađenost najviše 0,6 (čl. 68.).",
          "Nova čestica između dvije izgrađene: najmanje 300 m², kig 0,30, kisN 0,9, kis 1,2, Po+P+2 (čl. 68.).",
-         "Na čestici većoj od 1200 m², gdje to dopušta prosječna visina uličnog poteza: Po+P+4, kig 0,30, kisN 1,5 (čl. 68.); aplikacija to ne pretpostavlja."]
+         "Na čestici većoj od 1200 m², gdje to dopušta prosječna visina uličnog poteza: Po+P+4, kig 0,30, kis 3,0, kisN 1,5 (čl. 68.); aplikacija to ne pretpostavlja."]
 dodaj("2.5", "uređivanje i urbana obnova (mješovita namjena M1)", zona(t25(0.35, 1.20, 1.80), meda3("68."), REG_OPCA, zel("68.", 0.3, ZEL30), nap25))
 dodaj("2.5 Bol", "uređivanje i urbana obnova, predjel Bol", zona(t25(0.40, 1.40, 2.00), meda3("68."), REG_OPCA, zel("68.", 0.3, ZEL30),
                                                                   ["Predjel Bol: slobodnostojeće kig 0,4, kigP 0,7, kis 2,0, kisN 1,4 (čl. 68.)."] + nap25))
@@ -130,14 +132,16 @@ def t31(n, minC, kisN, kis):
                 "tl": "maksimalna tlocrtna površina pod nadzemnim dijelom građevine za slobodnostojeće građevine 250 m2"})
 dodaj("3.1", "sanacija i urbana obnova djelomično izgrađenih prostora (M1)", zona(
     t31(2, 500, 0.90, 1.50), meda3("73."), reg4("73.", True), zel("73.", 0.3, ZEL30),
-    ["Od 700 m² čestice: Po+P+3, kisN 1,2, kis 2,4 (čl. 73.).", "Najmanja širina čestice prema ulici: slobodnostojeća 14 m, dvojna 10 m (čl. 73.).",
+    ["Od 700 m² čestice: Po+P+3, kisN 1,2, kis 2,4 (čl. 73.); dvojna je uvijek Po+P+2.",
+     "Nova čestica između dvije izgrađene: najmanje 300 m², kig 0,3, kisN 0,9, kis 1,2, Po+P+2 (čl. 73.).",
+     "Tlocrt od 250 m² plan navodi uz interpolaciju i ponovno za čestice od 700 m²; je li granica i za čestice od 500 m², tekst ne kaže jasno, pa aplikacija primjenjuje strožu vrijednost.", "Najmanja širina čestice prema ulici: slobodnostojeća 14 m, dvojna 10 m (čl. 73.).",
      "Zona M1 istočno od TTTS-a uz Žrnovnicu: najviše Po+P+2 (čl. 73.)."],
     ["Gdje je odredbama propisana izrada provedbenog dokumenta (UPU/DPU), gradi se tek prema njemu (čl. 73.); provjeri na karti „Urbana pravila” i u lokacijskoj informaciji."],
-    var=[{"minA": 700, "opis": "čestica od 700 m²: Po+P+3, kisN 1,2, kis 2,4", "tipovi": t31(3, 700, 1.20, 2.40)}]))
+    var=[{"minA": 700, "samoOblik": "slob", "opis": "slobodnostojeća na čestici od 700 m²: Po+P+3, kisN 1,2, kis 2,4", "tipovi": t31(3, 700, 1.20, 2.40)}]))
 
 # pravila bez izračuna
 for k, n, m in [
-    ("1.1", "povijesna jezgra Splita", "Pravilo 1.1: zaštita i revitalizacija povijesne jezgre; zahvati uz posebne uvjete konzervatora, izračun za kuću nije moguć (čl. 50.)."),
+    ("1.1", "povijesna jezgra Splita", "Pravilo 1.1: zaštita i revitalizacija povijesne jezgre; zahvati uz posebne uvjete konzervatora, izračun za kuću nije moguć (čl. 49.)."),
     ("1.2", "zaštita i dogradnja povijesne baštine", "Pravilo 1.2: zaštićena povijesna baština; uvjete određuju konzervatorski uvjeti, izračun za kuću nije moguć."),
     ("1.4", "zaštićena blokovska izgradnja XIX. i XX. st.", "Pravilo 1.4: blokovska izgradnja; nova gradnja je interpolacija u blok prema susjednim građevinama, izračun za kuću nije moguć."),
     ("1.6", "priobalno područje Bačvice", "Pravilo 1.6: stroga zaštita i prenamjena u javne sadržaje; stambena gradnja nije predviđena."),
@@ -176,11 +180,11 @@ SPLIT = {
     "zonaNapomena": "GUP Splita dijeli grad na urbana pravila (visokokonsolidirana 1.x, konsolidirana 2.x, niskokonsolidirana 3.x, gradski projekti) s uvjetima za stambenu (S) i mješovitu (M1) namjenu (čl. 49.).",
     "drugaZona": "Za odabrano urbano pravilo uvjeti za stambenu kuću nisu obrađeni.",
     "tipovi": ZSET["2.4"]["tipovi"], "meda": MEDA_OPCA, "regulacija": REG_OPCA, "zelenilo": zel("67.", 0.3, ZEL30),
-    "simulator": {"krov": {"clanak": "50.", "nagibMin": 0, "nagibMax": 30, "ravniDopusten": True,
+    "simulator": {"krov": {"clanak": "49.", "nagibMin": 0, "nagibMax": 30, "ravniDopusten": True,
                            "txt": "Kosi krov se oblikuje kao četverostrešni ili dvostrešni sa ili bez nadozida i ima nagib krovnih ploha od najviše 30"}},
-    "pristup": {"napomena": "Parkirališna mjesta prema čl. 33. GUP-a; ulaz u garažu niske stambene građevine može biti bliže od 5 m regulacijskom pravcu, u skladu s lokalnim uvjetima (čl. 50.)."},
-    "napomene": ["Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 50.).",
-                 "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 50.)."],
+    "pristup": {"napomena": "Parkirališna mjesta prema čl. 33. GUP-a; ulaz u garažu niske stambene građevine može biti bliže od 5 m regulacijskom pravcu, u skladu s lokalnim uvjetima (čl. 49.)."},
+    "napomene": ["Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 49.).",
+                 "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 49.)."],
 }
 for z in ZSET.values():
     if z.get("tipovi"): z["napomene"] = z["napomene"] + SPLIT["napomene"]
