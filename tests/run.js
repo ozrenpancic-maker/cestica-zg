@@ -3489,7 +3489,17 @@ async function pkatTests(){
   ok(errs.length===0,"bez JS grešaka (pristup katastar): "+errs.join(" | "));
 }
 
-netTests().then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
+// ogledni napredni prikaz bez koda (?primjer=1) samo za k.č. 735/58 Kornić
+async function primjerTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x);
+  E("FEATURES.pristup=true; PRISTUP.api='https://x.invalid'; localStorage.removeItem('pristupTok')");
+  E("window.__pokLL={lat:45.04468,lng:14.61535}"); ok(E("prZaklj()")===true,"Primjer: bez ?primjer=1 i bez koda napredno je zaključano");
+  E("PR_PRIMJER_ON=true"); ok(E("prZaklj()")===false&&E("prOk()")===true&&/Ogledni napredni prikaz/.test(E("prBoxHtml()")),"Primjer: s ?primjer=1 napredne funkcije otključane za oglednu česticu, uz napomenu");
+  E("window.__pokLL={lat:45.0460,lng:14.6170}"); ok(E("prZaklj()")===true,"Primjer: druga čestica (oko 200 m dalje) ostaje zaključana");
+  ok(errs.length===0,"bez JS grešaka (primjer): "+errs.join(" | "));
+}
+
+netTests().then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
