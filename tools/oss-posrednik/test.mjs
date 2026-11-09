@@ -24,6 +24,11 @@ const realFetch = globalThis.fetch;
 globalThis.fetch = async u => new Response(xml, { status: 200, headers: { "Content-Type": "application/xml" } });
 let r = await W.fetch(new Request("https://w.dev/?id=19311109", { headers: { Origin: "https://ozrenpancic-maker.github.io" } }), {}, ctx);
 assert.equal(r.status, 200); assert.equal(r.headers.get("Access-Control-Allow-Origin"), "https://ozrenpancic-maker.github.io");
+{ // nova adresa aplikacije (od 7. 11. 2026.): app.cesticahr.com mora dobiti CORS zaglavlje; tuđa stranica ne
+  const ra = await W.fetch(new Request("https://w.dev/?id=19311109", { headers: { Origin: "https://app.cesticahr.com" } }), {}, ctx);
+  assert.equal(ra.headers.get("Access-Control-Allow-Origin"), "https://app.cesticahr.com");
+  const rz = await W.fetch(new Request("https://w.dev/?id=19311109", { headers: { Origin: "https://zli.example" } }), {}, ctx);
+  assert.equal(rz.headers.get("Access-Control-Allow-Origin"), null); console.log("ok - CORS: app.cesticahr.com dopušten, tuđa stranica ne"); }
 const o = await r.json(); assert.equal(o.zk[0].povrsina, 642);
 r = await W.fetch(new Request("https://w.dev/?id=19311109", { headers: { Origin: "https://evil.example" } }), {}, ctx);
 assert.equal(r.headers.get("Access-Control-Allow-Origin"), null);

@@ -6,7 +6,7 @@
 
 const OSS = "https://oss.uredjenazemlja.hr/oss/public/cad/parcel-info?parcelId=";
 const OSS_LR = "https://oss.uredjenazemlja.hr/oss/public/lr/lr-unit";
-const ALLOWED = ["https://ozrenpancic-maker.github.io"]; // stranice koje smiju čitati odgovor (produkcija i proba su na istom originu)
+const ALLOWED = ["https://app.cesticahr.com", "https://cesticahr.com", "https://www.cesticahr.com", "https://ozrenpancic-maker.github.io"]; // stranice koje smiju čitati odgovor (aplikacija je od 7. 11. 2026. na app.cesticahr.com; stara adresa preusmjerava)
 const CACHE_S = 3 * 24 * 3600; // odgovor OSS-a pamti se 3 dana (manje upita prema OSS-u; aplikacija prikazuje datum dohvata)
 const BLOK_S = 90; // kad OSS odbije (403/429), posrednik ga 90 s ne pita ništa, da se odbijanje ne produžuje novim upitima
 
