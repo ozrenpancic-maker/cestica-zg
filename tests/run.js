@@ -3444,6 +3444,12 @@ async function krovTests(){
   const D=E("krovDvostresni")([m(0,0),m(12,0),m(12,8),m(0,8)]);
   ok(D&&Math.abs(D.pov-96)<0.5&&D.pol.length===2&&D.pol.every(h=>h.r.length>=4)&&D.sljeme&&D.pol[0].c!==D.pol[1].c,"Krovovi: ilustrativni dvostrešni krov (dvije polovice različite boje i sljeme) za tlocrt bez oblika krova");
   {const a=D.sljeme[0], b=D.sljeme[1], dx=(b[0]-a[0])*111320*Math.cos(45.8*Math.PI/180), dy=(b[1]-a[1])*110540; ok(Math.abs(Math.hypot(dx,dy)-12)<0.2&&Math.abs(dy)<0.2,"Krovovi: sljeme po duljoj stranici tlocrta (12 m, istok–zapad)");}
+  // 3D: zgrada bez oblika krova dobiva ilustrativni dvostrešni krov (30°, sljeme po duljoj stranici)
+  {const B={y:0,wall:6.5,foot:[[m(0,0),m(12,0),m(12,8),m(0,8)].map(q=>[q[0],q[1]])],faces:[],c:m(6,4)}, K=E("zg3dKrovIlustr")(B);
+   const zs=K.faces.flat().map(q=>q[2]), zmax=Math.max(...zs), zmin=Math.min(...zs);
+   ok(K.ilustr&&K.faces.length===2&&Math.abs(zmax-zmin-4*Math.tan(Math.PI/6))<0.05&&Math.abs(zmin-K.wall)<0.01&&K.wall<6.5,"3D krov: ilustrativni dvostrešni krov 30° (pola širine 4 m → sljeme 2,3 m iznad vijenca), vijenac spušten");
+   const F=E("zg3dFeatures")([B]); ok(F.filter(f=>f.properties.c==="#a39e96").length>3,"3D krov: krov u 3D pogledu crta se kao stepenice krovnih ploha (ne ravan kvadar)");
+   const mala=E("zg3dKrovIlustr")({...B,foot:[[m(0,0),m(3,0),m(3,3),m(0,3)].map(q=>[q[0],q[1]])]}); ok(!mala.ilustr,"3D krov: mala zgrada (< 12 m²) ostaje bez krova");}
   ok(errs.length===0,"bez JS grešaka (krovovi): "+errs.join(" | "));
 }
 
