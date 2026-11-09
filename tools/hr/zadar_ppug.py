@@ -16,9 +16,9 @@ IZVOR = {
     "url": "https://zpu-zadzup.hr/",
     "pdf": "https://zpu-zadzup.hr/download/prostorni_planovi/PPUG Zadra/Tekstualni dio/PPUG_Zadra_Pročišćeni_tekst.pdf",
     "status": "na snazi (pročišćeni tekst 14/2023, obuhvaća izmjene do 14/2019); nove izmjene i dopune su u pripremi",
-    "provjera": "Čl. 49.–64.a, 89.–99. i 344.b–345. iz pročišćenog teksta (PDF Zavoda, tekst izvučen strojno; tablica zone Sm provjerena i na slici stranice), preuzeto 9. 11. 2026.",
+    "provjera": "Čl. 49.–64.a, 89.–99. i 344.b–345. iz pročišćenog teksta (PDF Zavoda, tekst izvučen strojno; tablica zone Sm provjerena i na slici stranice), preuzeto 9. 11. 2026. Neovisna provjera (zasebna provjera koja nije sastavljala pravila), 9. 11. 2026.: oko 165 vrijednosti, bez odstupanja; dodana upozorenja za UPU u zonama Sm2 i Sm4 i zasebna zgrada u nizu.",
     "pravna_provjera": {"status": "NIJE_POTVRDENO",
-                        "napomena": "Pročišćeni tekst iz 2023.; izmjene nakon 14/2019 nisu uspoređene. Zonu gustoće određuje kartografski prikaz 5. PPUG-a."}
+                        "napomena": "Prema izvješću Gradskog vijeća od 27. 3. 2026. posljednje donesene izmjene su iz 2019. (14/19); postupak novih izmjena pokrenut je 3. 3. 2026. (Glasnik 4/2026) i nije završen. Presudom Visokog upravnog suda (NN 62/24) djelomično je ukinut čl. 152., koji se ne odnosi na ove uvjete. Zonu gustoće određuje kartografski prikaz 5. PPUG-a."}
 }
 
 def ob(minC, kig, kisn, kis, gbp=None, nap=None):
@@ -53,14 +53,15 @@ NAP_SM = ["Najmanja širina čestice na mjestu građevnog pravca: samostojeća 1
           "Za česticu veću od 2000 m² GBPn se povećava za kisn 0,15 na dio iznad 2000 m² (čl. 90.).",
           "Parkiranje: 2 mjesta po stanu na čestici (čl. 90.)."]
 def sm(kig_sd=0.30):
-    a = T("Stambena zgrada (do 3 stana)", "samostojeća do 3 stana, dvojna do 2 stana, u nizu 1 stan (čl. 90.)", "90.",
-          "4 nadzemne etaže (u nizu 3)", 10.0,
-          ob(350, kig_sd, 0.90, 1.2, 400), ob(250, kig_sd, 0.90, 1.2, 250), ob(200, 0.40, 0.80, 1.0, 200, "U nizu: visina najviše 7,5 m i 3 nadzemne etaže (čl. 90.)."), TXT_SM,
-          "10 m (u nizu 7,5 m)")
+    a = T("Stambena zgrada (do 3 stana)", "samostojeća do 3 stana, dvojna do 2 stana (čl. 90.)", "90.",
+          "4 nadzemne etaže", 10.0,
+          ob(350, kig_sd, 0.90, 1.2, 400), ob(250, kig_sd, 0.90, 1.2, 250), None, TXT_SM)
+    n = T("Zgrada u nizu", "1 stan po jedinici, najviše 5 jedinica u nizu (čl. 90.)", "90.", "3 nadzemne etaže", 7.5,
+          ugr=ob(200, 0.40, 0.80, 1.0, 200), txt=TXT_SM)
     b = T("Samostojeća zgrada na čestici od 450 m²", "drugi stupac za samostojeću zgradu u tablici čl. 90. (broj stanova nije propisan)", "90.",
           "4 nadzemne etaže", 10.0, ob(450, kig_sd, 0.90, 1.5, 600,
           "Tablica čl. 90. za samostojeću zgradu ima dva stupca bez naziva; ovaj (450 m², GBPn 600 m², kis 1,5) nema propisan broj stanova. Što razlikuje stupce, provjeri u lokacijskoj informaciji."), txt=TXT_SM)
-    return {"stamb": a, "stamb450": b}
+    return {"stamb": a, "stamb450": b, "niz": n}
 
 ZONE, ZSET = [], {}
 def dodaj(k, naziv, cfg): ZONE.append([k, naziv]); ZSET[k] = cfg
@@ -76,14 +77,16 @@ def smx(minS, minD, niz=False):
     t = T("Stambena zgrada", "samostojeća do 2 stana, dvojna i u nizu 1 stan (čl. 90., zone Sm1–Sm4)", "90.", "broj etaža nije propisan (visina 7 m)", 7.0,
           ob(minS, 0.30, 0.60, 0.90, 600), ob(minD, 0.30, 0.60, 0.90, 300), ob(200, 0.40, 0.60, 0.90, 200) if niz else None, dict(TXT_SMX, minC=f"min. površina građevne čestice (m2) {minS} (dvojna {minD}{', niz 200' if niz else ''})"))
     return {"stamb": t}
-NAP_SMX = ["Zone Sm2 i Sm3 imaju posebne uvjete radi zaštite vizura, Sm4 zbog prometne povezanosti (čl. 90.).", "Najmanja širina čestice: samostojeća 12 m, dvojna 8 m, niz 6 m (čl. 90.)."]
+NAP_SMX = ["Zone Sm2 i Sm3 imaju posebne uvjete radi zaštite vizura, Sm4 zbog prometne povezanosti (čl. 90.).", "Najmanja širina čestice: samostojeća 12 m, dvojna 8 m, niz 6 m (čl. 90.).",
+           "Parkiranje: 2 mjesta po stanu i poslovnom prostoru na čestici (čl. 90.)."]
+UPU_SM = lambda b, n: [f"U tablici čl. 90. uz ovu zonu stoji broj plana {b}; u čl. 345. pod tim brojem je {n}. Ako čestica leži u obuhvatu tog UPU-a, gradi se prema UPU-u (a dok nije donesen, ne mogu se ishoditi akti za gradnju); provjeri na karti 6. i u lokacijskoj informaciji."]
 dodaj("Sm1", "Sm1 · Musapstan (kuće ladanjskog tipa)", {"tipovi": {"stamb": T("Kuća ladanjskog tipa (»stancija«)", "1 stan, s mogućim rekreacijskim i ugostiteljskim uslugama (čl. 90.)", "90.",
       "broj etaža nije propisan (visina 7 m)", 7.0, {"minC": 4000, "izg": 0.15, "kis": None, "kisPodrum": None, "tlMin": 50, "tlMax": None}, txt={"minC": "min. površina građevne čestice (m2) 4000", "izg": "max. koef. izgrađenosti (k ig) 0,15", "gbp": "max. bruto površina GBP (m2) nadzemno 800"})},
       "meda": MEDA_SM, "regulacija": REG, "zelenilo": zel("90.", 0.5), "napomene": ["Zona Sm1 uz rekreacijsku zonu šume Musapstan: kuće ladanjskog tipa (»stancija«), GBP nadzemno do 800 m², 1 stan (čl. 90.)."]})
 ZSET["Sm1"]["tipovi"]["stamb"]["gbpMax"] = 800
-dodaj("Sm2", "Sm2 · Donji Brig", {"tipovi": smx(500, 250), "meda": MEDA_SM, "regulacija": REG, "zelenilo": zel("90.", 0.2), "napomene": NAP_SMX})
+dodaj("Sm2", "Sm2 · Donji Brig", {"tipovi": smx(500, 250), "meda": MEDA_SM, "regulacija": REG, "zelenilo": zel("90.", 0.2), "napomene": NAP_SMX, "upozorenja": UPU_SM(9, "»stambena zona Gaj II« (UPU obvezan)")})
 dodaj("Sm3", "Sm3 · Vidikovac", {"tipovi": smx(400, 200), "meda": MEDA_SM, "regulacija": REG, "zelenilo": zel("90.", 0.2), "napomene": NAP_SMX})
-dodaj("Sm4", "Sm4 · Karma", {"tipovi": smx(350, 200, niz=True), "meda": MEDA_SM, "regulacija": REG, "zelenilo": zel("90.", 0.2), "napomene": NAP_SMX})
+dodaj("Sm4", "Sm4 · Karma", {"tipovi": smx(350, 200, niz=True), "meda": MEDA_SM, "regulacija": REG, "zelenilo": zel("90.", 0.2), "napomene": NAP_SMX, "upozorenja": UPU_SM(66, "»UPU stambene zone Karma«")})
 
 def ss(big=False):
     return {"stamb": T("Stambena zgrada (srednja gustoća)", "višestambena zgrada, zona Ss (čl. 90.)", "90.", "7 nadzemnih etaža" if big else "5 nadzemnih etaža", 21.0 if big else 13.0,
@@ -100,7 +103,7 @@ dodaj("M1", "M1 · mješovita, pretežito stambena (ostale pojedinačne čestice
       "broj etaža nije propisan (visina 12 m)", 12.0, ob(600, 0.30, 1.2, 2.5), txt={"minC": "Ostale pojedinač. čestice 0,3 - 600 12 1,2 2,5", "izg": "max. koef. izgrađ. kig … 0,3", "kis": "max. koeficijent iskoristivosti nadzemno … 1,2; max. koeficijent iskoristivosti (kis) 2,5", "visina": "max. visina zgrade (m) 12"})},
       "meda": dict(MEDA_5, clanak="98.", opis="najmanje 5 m od granice čestice (zona M1)", txt="Minimalna udaljenost zgrada (unutar zone M1) od granice građevne čestice je 5,0 metara."),
       "regulacija": REG, "zelenilo": zel("98.", 0.2),
-      "napomene": ["Pojedinačne čestice na Poluotoku: kig 0,4, uz konzervatorske uvjete (čl. 98.).", "Za zone iz tablice čl. 98. (Suha, Put Dikla, Vitrenjak, Dražanica, Žmirići II, Bregdetti, Biogradska, Vidikovac, Smiljevac …) vrijede ukupni GBP zone i UPU; ovaj izračun ne vrijedi."]})
+      "napomene": ["Pojedinačne čestice na Poluotoku: kig 0,4, uz konzervatorske uvjete (čl. 98.).", "Čl. 98. kaže i da koeficijent izgrađenosti u zonama iz tablica »nije ograničen«, a u istoj tablici za ostale pojedinačne čestice navodi kig 0,3; aplikacija primjenjuje 0,3.", "Za zone iz tablice čl. 98. (Suha, Put Dikla, Vitrenjak, Dražanica, Žmirići II, Bregdetti, Biogradska, Vidikovac, Smiljevac …) vrijede ukupni GBP zone i UPU; ovaj izračun ne vrijedi."]})
 
 for k, n, m in [
     ("M2", "M2 · mješovita, pretežito poslovna", "Zona M2: osnovna namjena su poslovne, javne i društvene zgrade; za ostale pojedinačne čestice čestica 1000 m², visina 15 m, kisn 1,5, kis 2,0, kig nije ograničen (čl. 99.). Izračun za stambenu kuću nije obrađen."),

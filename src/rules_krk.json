@@ -15264,10 +15264,10 @@
     "url": "https://zpu-zadzup.hr/",
     "pdf": "https://zpu-zadzup.hr/download/prostorni_planovi/PPUG Zadra/Tekstualni dio/PPUG_Zadra_Pročišćeni_tekst.pdf",
     "status": "na snazi (pročišćeni tekst 14/2023, obuhvaća izmjene do 14/2019); nove izmjene i dopune su u pripremi",
-    "provjera": "Čl. 49.–64.a, 89.–99. i 344.b–345. iz pročišćenog teksta (PDF Zavoda, tekst izvučen strojno; tablica zone Sm provjerena i na slici stranice), preuzeto 9. 11. 2026.",
+    "provjera": "Čl. 49.–64.a, 89.–99. i 344.b–345. iz pročišćenog teksta (PDF Zavoda, tekst izvučen strojno; tablica zone Sm provjerena i na slici stranice), preuzeto 9. 11. 2026. Neovisna provjera (zasebna provjera koja nije sastavljala pravila), 9. 11. 2026.: oko 165 vrijednosti, bez odstupanja; dodana upozorenja za UPU u zonama Sm2 i Sm4 i zasebna zgrada u nizu.",
     "pravna_provjera": {
      "status": "NIJE_POTVRDENO",
-     "napomena": "Pročišćeni tekst iz 2023.; izmjene nakon 14/2019 nisu uspoređene. Zonu gustoće određuje kartografski prikaz 5. PPUG-a."
+     "napomena": "Prema izvješću Gradskog vijeća od 27. 3. 2026. posljednje donesene izmjene su iz 2019. (14/19); postupak novih izmjena pokrenut je 3. 3. 2026. (Glasnik 4/2026) i nije završen. Presudom Visokog upravnog suda (NN 62/24) djelomično je ukinut čl. 152., koji se ne odnosi na ove uvjete. Zonu gustoće određuje kartografski prikaz 5. PPUG-a."
     }
    },
    "obuhvat": [
@@ -15355,12 +15355,12 @@
      "tipovi": {
       "stamb": {
        "naziv": "Stambena zgrada (do 3 stana)",
-       "opis": "samostojeća do 3 stana, dvojna do 2 stana, u nizu 1 stan (čl. 90.)",
+       "opis": "samostojeća do 3 stana, dvojna do 2 stana (čl. 90.)",
        "clanak": "90.",
        "gbpMax": null,
-       "etaze": "4 nadzemne etaže (u nizu 3)",
+       "etaze": "4 nadzemne etaže",
        "visina": 10.0,
-       "visinaOpis": "10 m (u nizu 7,5 m)",
+       "visinaOpis": "10,0 m",
        "txt": {
         "minC": "min. površina građ. čestice (m2) 350 450 250 200",
         "izg": "max. koef. izgrađenosti (kig) 0,30 0,30 0,30 0,40",
@@ -15387,16 +15387,6 @@
         "tlMax": null,
         "gbpMax": 250
        },
-       "ugr": {
-        "minC": 200,
-        "izg": 0.4,
-        "kis": 0.8,
-        "kisPodrum": 1.0,
-        "tlMin": 50,
-        "tlMax": null,
-        "gbpMax": 200,
-        "napomena": "U nizu: visina najviše 7,5 m i 3 nadzemne etaže (čl. 90.)."
-       },
        "oblici": [
         [
          "slob",
@@ -15405,10 +15395,6 @@
         [
          "dvoj",
          "dvojna"
-        ],
-        [
-         "ugr",
-         "u nizu"
         ]
        ]
       },
@@ -15442,6 +15428,38 @@
         [
          "slob",
          "samostojeća"
+        ]
+       ]
+      },
+      "niz": {
+       "naziv": "Zgrada u nizu",
+       "opis": "1 stan po jedinici, najviše 5 jedinica u nizu (čl. 90.)",
+       "clanak": "90.",
+       "gbpMax": null,
+       "etaze": "3 nadzemne etaže",
+       "visina": 7.5,
+       "visinaOpis": "7,5 m",
+       "txt": {
+        "minC": "min. površina građ. čestice (m2) 350 450 250 200",
+        "izg": "max. koef. izgrađenosti (kig) 0,30 0,30 0,30 0,40",
+        "kis": "max. koef. iskoristivosti nadzemno (kisn) 0,90 0.90 0,90 0,80; max. koef. iskoristivosti (k is) 1,2 1,5 1,2 1,0",
+        "gbp": "max. bruto površina GBPn (m2) nadzemno 400 600 250 200",
+        "visina": "max. visina zgrade (m) 10 10 10 7,5",
+        "etaze": "broj nadzemnih etaža 4 4 4 3"
+       },
+       "ugr": {
+        "minC": 200,
+        "izg": 0.4,
+        "kis": 0.8,
+        "kisPodrum": 1.0,
+        "tlMin": 50,
+        "tlMax": null,
+        "gbpMax": 200
+       },
+       "oblici": [
+        [
+         "ugr",
+         "u nizu"
         ]
        ]
       }
@@ -15478,12 +15496,12 @@
      "tipovi": {
       "stamb": {
        "naziv": "Stambena zgrada (do 3 stana)",
-       "opis": "samostojeća do 3 stana, dvojna do 2 stana, u nizu 1 stan (čl. 90.)",
+       "opis": "samostojeća do 3 stana, dvojna do 2 stana (čl. 90.)",
        "clanak": "90.",
        "gbpMax": null,
-       "etaze": "4 nadzemne etaže (u nizu 3)",
+       "etaze": "4 nadzemne etaže",
        "visina": 10.0,
-       "visinaOpis": "10 m (u nizu 7,5 m)",
+       "visinaOpis": "10,0 m",
        "txt": {
         "minC": "min. površina građ. čestice (m2) 350 450 250 200",
         "izg": "max. koef. izgrađenosti (kig) 0,30 0,30 0,30 0,40",
@@ -15510,16 +15528,6 @@
         "tlMax": null,
         "gbpMax": 250
        },
-       "ugr": {
-        "minC": 200,
-        "izg": 0.4,
-        "kis": 0.8,
-        "kisPodrum": 1.0,
-        "tlMin": 50,
-        "tlMax": null,
-        "gbpMax": 200,
-        "napomena": "U nizu: visina najviše 7,5 m i 3 nadzemne etaže (čl. 90.)."
-       },
        "oblici": [
         [
          "slob",
@@ -15528,10 +15536,6 @@
         [
          "dvoj",
          "dvojna"
-        ],
-        [
-         "ugr",
-         "u nizu"
         ]
        ]
       },
@@ -15565,6 +15569,38 @@
         [
          "slob",
          "samostojeća"
+        ]
+       ]
+      },
+      "niz": {
+       "naziv": "Zgrada u nizu",
+       "opis": "1 stan po jedinici, najviše 5 jedinica u nizu (čl. 90.)",
+       "clanak": "90.",
+       "gbpMax": null,
+       "etaze": "3 nadzemne etaže",
+       "visina": 7.5,
+       "visinaOpis": "7,5 m",
+       "txt": {
+        "minC": "min. površina građ. čestice (m2) 350 450 250 200",
+        "izg": "max. koef. izgrađenosti (kig) 0,30 0,30 0,30 0,40",
+        "kis": "max. koef. iskoristivosti nadzemno (kisn) 0,90 0.90 0,90 0,80; max. koef. iskoristivosti (k is) 1,2 1,5 1,2 1,0",
+        "gbp": "max. bruto površina GBPn (m2) nadzemno 400 600 250 200",
+        "visina": "max. visina zgrade (m) 10 10 10 7,5",
+        "etaze": "broj nadzemnih etaža 4 4 4 3"
+       },
+       "ugr": {
+        "minC": 200,
+        "izg": 0.4,
+        "kis": 0.8,
+        "kisPodrum": 1.0,
+        "tlMin": 50,
+        "tlMax": null,
+        "gbpMax": 200
+       },
+       "oblici": [
+        [
+         "ugr",
+         "u nizu"
         ]
        ]
       }
@@ -15722,9 +15758,13 @@
      "napomene": [
       "Zone Sm2 i Sm3 imaju posebne uvjete radi zaštite vizura, Sm4 zbog prometne povezanosti (čl. 90.).",
       "Najmanja širina čestice: samostojeća 12 m, dvojna 8 m, niz 6 m (čl. 90.).",
+      "Parkiranje: 2 mjesta po stanu i poslovnom prostoru na čestici (čl. 90.).",
       "Najmanja tlocrtna površina stambene zgrade 50 m²; na čestici jedna zgrada i pomoćne građevine (čl. 49.).",
       "Koeficijenti uključuju glavnu i sve pomoćne građevine na čestici, osim nenatkrivenih bazena (čl. 64.).",
       "Potkrovlje: nadozid najviše 1,2 m; uz ravni krov moguća uvučena krovna etaža (nadgrađe) do 3,5 m (čl. 58.)."
+     ],
+     "upozorenja": [
+      "U tablici čl. 90. uz ovu zonu stoji broj plana 9; u čl. 345. pod tim brojem je »stambena zona Gaj II« (UPU obvezan). Ako čestica leži u obuhvatu tog UPU-a, gradi se prema UPU-u (a dok nije donesen, ne mogu se ishoditi akti za gradnju); provjeri na karti 6. i u lokacijskoj informaciji."
      ]
     },
     "Sm3": {
@@ -15795,6 +15835,7 @@
      "napomene": [
       "Zone Sm2 i Sm3 imaju posebne uvjete radi zaštite vizura, Sm4 zbog prometne povezanosti (čl. 90.).",
       "Najmanja širina čestice: samostojeća 12 m, dvojna 8 m, niz 6 m (čl. 90.).",
+      "Parkiranje: 2 mjesta po stanu i poslovnom prostoru na čestici (čl. 90.).",
       "Najmanja tlocrtna površina stambene zgrade 50 m²; na čestici jedna zgrada i pomoćne građevine (čl. 49.).",
       "Koeficijenti uključuju glavnu i sve pomoćne građevine na čestici, osim nenatkrivenih bazena (čl. 64.).",
       "Potkrovlje: nadozid najviše 1,2 m; uz ravni krov moguća uvučena krovna etaža (nadgrađe) do 3,5 m (čl. 58.)."
@@ -15881,9 +15922,13 @@
      "napomene": [
       "Zone Sm2 i Sm3 imaju posebne uvjete radi zaštite vizura, Sm4 zbog prometne povezanosti (čl. 90.).",
       "Najmanja širina čestice: samostojeća 12 m, dvojna 8 m, niz 6 m (čl. 90.).",
+      "Parkiranje: 2 mjesta po stanu i poslovnom prostoru na čestici (čl. 90.).",
       "Najmanja tlocrtna površina stambene zgrade 50 m²; na čestici jedna zgrada i pomoćne građevine (čl. 49.).",
       "Koeficijenti uključuju glavnu i sve pomoćne građevine na čestici, osim nenatkrivenih bazena (čl. 64.).",
       "Potkrovlje: nadozid najviše 1,2 m; uz ravni krov moguća uvučena krovna etaža (nadgrađe) do 3,5 m (čl. 58.)."
+     ],
+     "upozorenja": [
+      "U tablici čl. 90. uz ovu zonu stoji broj plana 66; u čl. 345. pod tim brojem je »UPU stambene zone Karma«. Ako čestica leži u obuhvatu tog UPU-a, gradi se prema UPU-u (a dok nije donesen, ne mogu se ishoditi akti za gradnju); provjeri na karti 6. i u lokacijskoj informaciji."
      ]
     },
     "Ss": {
@@ -16093,6 +16138,7 @@
      },
      "napomene": [
       "Pojedinačne čestice na Poluotoku: kig 0,4, uz konzervatorske uvjete (čl. 98.).",
+      "Čl. 98. kaže i da koeficijent izgrađenosti u zonama iz tablica »nije ograničen«, a u istoj tablici za ostale pojedinačne čestice navodi kig 0,3; aplikacija primjenjuje 0,3.",
       "Za zone iz tablice čl. 98. (Suha, Put Dikla, Vitrenjak, Dražanica, Žmirići II, Bregdetti, Biogradska, Vidikovac, Smiljevac …) vrijede ukupni GBP zone i UPU; ovaj izračun ne vrijedi.",
       "Najmanja tlocrtna površina stambene zgrade 50 m²; na čestici jedna zgrada i pomoćne građevine (čl. 49.).",
       "Koeficijenti uključuju glavnu i sve pomoćne građevine na čestici, osim nenatkrivenih bazena (čl. 64.).",
@@ -16126,12 +16172,12 @@
    "tipovi": {
     "stamb": {
      "naziv": "Stambena zgrada (do 3 stana)",
-     "opis": "samostojeća do 3 stana, dvojna do 2 stana, u nizu 1 stan (čl. 90.)",
+     "opis": "samostojeća do 3 stana, dvojna do 2 stana (čl. 90.)",
      "clanak": "90.",
      "gbpMax": null,
-     "etaze": "4 nadzemne etaže (u nizu 3)",
+     "etaze": "4 nadzemne etaže",
      "visina": 10.0,
-     "visinaOpis": "10 m (u nizu 7,5 m)",
+     "visinaOpis": "10,0 m",
      "txt": {
       "minC": "min. površina građ. čestice (m2) 350 450 250 200",
       "izg": "max. koef. izgrađenosti (kig) 0,30 0,30 0,30 0,40",
@@ -16158,16 +16204,6 @@
       "tlMax": null,
       "gbpMax": 250
      },
-     "ugr": {
-      "minC": 200,
-      "izg": 0.4,
-      "kis": 0.8,
-      "kisPodrum": 1.0,
-      "tlMin": 50,
-      "tlMax": null,
-      "gbpMax": 200,
-      "napomena": "U nizu: visina najviše 7,5 m i 3 nadzemne etaže (čl. 90.)."
-     },
      "oblici": [
       [
        "slob",
@@ -16176,10 +16212,6 @@
       [
        "dvoj",
        "dvojna"
-      ],
-      [
-       "ugr",
-       "u nizu"
       ]
      ]
     },
@@ -16213,6 +16245,38 @@
       [
        "slob",
        "samostojeća"
+      ]
+     ]
+    },
+    "niz": {
+     "naziv": "Zgrada u nizu",
+     "opis": "1 stan po jedinici, najviše 5 jedinica u nizu (čl. 90.)",
+     "clanak": "90.",
+     "gbpMax": null,
+     "etaze": "3 nadzemne etaže",
+     "visina": 7.5,
+     "visinaOpis": "7,5 m",
+     "txt": {
+      "minC": "min. površina građ. čestice (m2) 350 450 250 200",
+      "izg": "max. koef. izgrađenosti (kig) 0,30 0,30 0,30 0,40",
+      "kis": "max. koef. iskoristivosti nadzemno (kisn) 0,90 0.90 0,90 0,80; max. koef. iskoristivosti (k is) 1,2 1,5 1,2 1,0",
+      "gbp": "max. bruto površina GBPn (m2) nadzemno 400 600 250 200",
+      "visina": "max. visina zgrade (m) 10 10 10 7,5",
+      "etaze": "broj nadzemnih etaža 4 4 4 3"
+     },
+     "ugr": {
+      "minC": 200,
+      "izg": 0.4,
+      "kis": 0.8,
+      "kisPodrum": 1.0,
+      "tlMin": 50,
+      "tlMax": null,
+      "gbpMax": 200
+     },
+     "oblici": [
+      [
+       "ugr",
+       "u nizu"
       ]
      ]
     }
