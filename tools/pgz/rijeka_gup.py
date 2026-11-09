@@ -15,7 +15,7 @@ IZVOR = {
     "url": "https://sn.rijeka.hr/2023/10/odluka-o-izmjenama-i-dopunama-odluke-o-donosenju-generalnog-urbanistickog-plana-grada-rijeke-4/",
     "pdf": "https://www.rijeka.hr/wp-content/uploads/2023/05/Odluka-o-dono%C5%A1enju-Generalnog-urbanisti%C4%8Dkog-plana-Grada-Rijeke-neslu%C5%BEbeni-pro%C4%8Di%C5%A1%C4%87eni-tekst.pdf",
     "status": "na snazi (izmjene i dopune SN 14/2023)",
-    "provjera": "Čl. 67.–115. iz neslužbenog pročišćenog teksta (PDF s rijeka.hr, tekst izvučen strojno) i izmjene iz SN Grada Rijeke 14/2023 (čl. 20.–39. te odluke), preuzeto 9. 11. 2026.",
+    "provjera": "Čl. 67.–115. iz neslužbenog pročišćenog teksta (PDF s rijeka.hr, tekst izvučen strojno) i izmjene iz SN Grada Rijeke 14/2023 (čl. 20.–39. te odluke), preuzeto 9. 11. 2026. Neovisna provjera (zasebna provjera koja nije sastavljala pravila), 9. 11. 2026.: 2638 vrijednosti za 60 područja pravila 5–14 usporedeno s tekstom članaka, 0 odstupanja; opisi pravila 3, 12 i 19 nakon provjere dopunjeni.",
     "pravna_provjera": {"status": "NIJE_POTVRDENO",
                         "napomena": "Neslužbeni pročišćeni tekst; usporedba sa svim objavljenim odlukama nije napravljena. Urbano pravilo za česticu određuje kartografski prikaz 4.7 (čl. 84.)."}
 }
@@ -177,7 +177,7 @@ dodaj("10", "2-4-10.1", "Potok", zona(t10, meda("108.", 4, "najmanja dozvoljena 
                                        reg("108.", 5, 4.6, "udaljenost građevnog od regulacijskog pravca iznosi najmanje 5,0 m ili građevni pravac odrediti u skladu s postojećom gradnjom"),
                                        zel("108.", 0.3, "30% građevne čestice potrebno je ozeleniti i hortikulturno urediti"), None,
                                        ["Pravilo 10 predviđa višeobiteljsku kuću (najviše 6 stanova), pretežito samostojeću (čl. 108.).",
-                                        "Udaljenost regulacijskog pravca od osi prometnice pravilo 10 ne propisuje posebno; 4,6 m je vrijednost iz susjednih pravila, provjeri."]))
+                                        "Udaljenost regulacijskog pravca od osi prometnice pravilo 10 ne propisuje; broj etaža može se u dovršenim zonama odrediti prema lokalnim uvjetima (čl. 108.)."]))
 ZSET["2-4-10.1"]["regulacija"]["opis"] = "građevni pravac najmanje 5 m od regulacijskog pravca ili u skladu s postojećom gradnjom"
 
 # --- urbano pravilo 13 (čl. 112.)
@@ -232,20 +232,25 @@ def z14(k):
 for k, n in [("3-10-14.1", "Grpci – Pilepići"), ("3-13-14.2", "Škurinje"), ("3-4-14.3", "Kozala"), ("3-13-14.4", "Lipa"), ("3-13-14.5", "Drenova – Ivana Žorža")]:
     dodaj("14", k, n, z14(k))
 
+# --- pravilo 19, stambeno područje Rujevica: do UPU-a nove obiteljske i višeobiteljske kuće prema pravilu 6, pokazatelji za Pehlin (čl. 125. st. 4., izmjene SN 14/2023)
+z19 = z6(); z19["napomene"] = ["Stambeno područje Rujevica (pravilo 19): do donošenja UPU-a nove obiteljske i višeobiteljske kuće grade se prema pravilu 6, pokazateljima za Pehlin 2-11-6.5 (čl. 125. st. 4., izmjene SN 14/2023), samo unutar uređenih dijelova područja."] + z19["napomene"]
+for T in z19["tipovi"].values(): T["clanak"] = "125. i 102."
+dodaj("19", "4-10-19.4", "Stambeno područje Rujevica", z19)
+
 # --- pravila bez izračuna za kuću
 BEZ = [
     ("1", "povijesne gradske cjeline (Stari grad, Trsat, Sveti Kuzam)", "91.", "Urbano pravilo 1 (povijesne gradske cjeline): uvjete određuje točka 3.2.8.1. obrazloženja plana i konzervatorski uvjeti; aplikacija ih ne računa (čl. 91.)."),
     ("2", "gradski centar (Rijeka, Sušak)", "92.", "Urbano pravilo 2 (gradski centar): samo višestambene, stambeno-poslovne i poslovno-stambene građevine (čl. 92.); obiteljska kuća nije predviđena."),
     ("3", "osobito vrijedni predjeli višeobiteljske gradnje (Belveder, Bulevard, Pećine, Kostabela, Bivio, Razbojna, Dražica, Istarska, Podkoludrica)", "93. i 94.",
-     "Urbano pravilo 3: nova gradnja samo kroz plan užeg područja, osim pojedinačne interpolacije višeobiteljske kuće uz konzervatorske uvjete (čl. 93.–94., izmjene SN 14/2023); aplikacija je ne računa."),
+     "Urbano pravilo 3: nova gradnja samo kroz plan užeg područja, osim pojedinačne interpolacije (čl. 93.–94.). Za interpolaciju višeobiteljske kuće plan daje brojke (čestica 900 m², kig 0,25, kis 0,6, GBP 600 ili 400 m²), ali prema izmjenama SN 14/2023 čestica može biti manja (čl. 71.), a visina i broj etaža ne smiju biti veći od susjedne građevine; na Bulevardu je iznimno dopuštena i obiteljska kuća. Jer to ovisi o susjednoj zgradi i konzervatorskim uvjetima, aplikacija ne računa."),
     ("4", "dovršena područja višestambene izgradnje", "97. i 98.", "Urbano pravilo 4: postojeće obiteljske kuće rekonstruiraju se prema pravilu 6, a nove takve kuće nije moguće planirati (čl. 97.)."),
     ("11", "planski građeno socijalno stanovanje (Podmurvice, Kantrida, Cento celle)", "109.", "Urbano pravilo 11: mješovita, pretežito poslovna namjena (čl. 109.); obiteljska kuća nije obrađena."),
-    ("12", "kompleksi jedne namjene (Bolnica, Dom umirovljenika, Plase, Pulac, Sveta Katarina)", "110.", "Urbano pravilo 12: kompleksi jedne namjene; zahvati samo u funkciji osnovne namjene (čl. 110.)."),
+    ("12", "kompleksi jedne namjene (Bolnica, Dom umirovljenika, Plase, Pulac, Sveta Katarina)", "110.", "Urbano pravilo 12: kompleksi jedne namjene; rekonstrukcija, zamjena i pojedinačna interpolacija prema pravilu 6 dopuštene su samo u funkciji osnovne namjene kompleksa (čl. 110.)."),
     ("15", "zone gradskog centra za transformaciju (Štranga, Rikard Benčić, Beli Kamik, Blok Ciottina, Autobusni kolodvor)", "117.", "Urbano pravilo 15: gradi se prema čl. 92. (gradski centar); obiteljska kuća nije predviđena."),
     ("16", "kompleksi za rekonstrukciju (Školjić, Sjeverna Brajdica)", "118.", "Urbano pravilo 16: gradnja tek prema planu užeg područja; dotad samo rekonstrukcija u postojećim gabaritima (čl. 118.)."),
     ("17", "područja širenja višestambene i višeobiteljske gradnje (Lukovići, Škurinje, Sveta Katarina)", "119.", "Urbano pravilo 17: višeobiteljska i višestambena gradnja prema pokazateljima šireg područja (Gig 0,35, Kis 1,2) uz ulicu širine 12 m (čl. 119.); izračun za kuću na čestici nije moguć."),
     ("18", "potezi urbaniteta (Zvonimirova, Liburnijska, Mlaka centar)", "120.", "Urbano pravilo 18: potezi urbaniteta, gradnja do 8 nadzemnih etaža uz ulicu širine 12 m (čl. 120.); obiteljska kuća nije predviđena."),
-    ("19", "gradski projekti (Delta, Kampus, Rujevica, Torpedo, Preluka, Mlaka)", "121.", "Urbano pravilo 19: gradski projekti prema obrazloženju plana i planovima užeg područja (čl. 121.); izračun za kuću nije moguć."),
+    ("19", "gradski projekti (Delta, Kampus, sekundarno središte Rujevica, Torpedo, Preluka, Mlaka)", "121.", "Urbano pravilo 19: gradski projekti prema obrazloženju plana i planovima užeg područja (čl. 121.); izračun za kuću nije moguć. Za stambeno područje Rujevica (4-10-19.4) odaberi tu stavku posebno."),
 ]
 for up, naziv, cl, msg in BEZ:
     key = "UP" + up
