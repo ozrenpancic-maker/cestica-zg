@@ -3603,9 +3603,18 @@ async function sgTests(){
   pick(0); await tick(30); {const ll=E("window.__ins"); ok(ll&&Math.abs(ll.lat-43.509)<0.004&&Math.abs(ll.lng-16.44)<0.004&&q.value==="Marmontova 1, Split","Tražilica: odabir „Marmontova 1” → točka kućnog broja u Splitu");}
   await typ("Korz"); ok(labs().includes("Korzo")&&/Rijeka · ulica/.test(sg.textContent),"Tražilica: „Korz” → Korzo (Rijeka)");
   await typ("Europska aven"); ok(labs()[0]==="Europska avenija"&&/Osijek · ulica/.test(sg.textContent),"Tražilica: „Europska aven” → Europska avenija (Osijek)");
-  await typ("Split 4058"); const L5=labs(); ok(L5.includes("Split 4058/3")&&/k\.o\. Split \(Split\)/.test(sg.textContent),"Tražilica: „Split 4058” → brojevi čestica u k.o. Split ("+L5.slice(0,4).join(", ")+")");
+  await typ("Split 4058"); const L5=labs(); ok(L5.includes("Split 4058/3")&&/k\.o\. Split \(područje Splita\)/.test(sg.textContent),"Tražilica: „Split 4058” → brojevi čestica u k.o. Split ("+L5.slice(0,4).join(", ")+")");
   w.__got=null; pick(L5.indexOf("Split 4058/3")); await tick(200); {const g=E("window.__got"), c=g&&g.geometry.coordinates; ok(g&&g.properties.broj==="4058/3"&&Math.abs(c[0]-16.4606)<0.001&&Math.abs(c[1]-43.5150)<0.001,"Tražilica: odabir „Split 4058/3” → točka unutar čestice (karta zatim učitava česticu iz DGU-a)");}
   w.__got=null; await E("searchParcel")({kc:"4058/3",ko:"Split"}); await tick(50); ok(E("window.__got")&&E("window.__got").properties.ko==="SPLIT","Pretraga čestice (Enter): „Split 4058/3” nalazi česticu i izvan Zagreba i Krka");
+  // nezavisna provjera: najbolja ulica u svim područjima, točan naziv k.o. ima prednost, brojevi sa zvjezdicom
+  {const B=async(q,c)=>{E("map").setView(c,14); const b=await E("adrNajbolja")(q); return b?b.reg+"|"+b.u.nas+"|"+b.u.ul:null;};
+   const a=await B("Kornić 12",[45.04,14.6]), b=await B("Ilica 1",[43.51,16.44]), c=await B("Korzo 1",[45.81,15.97]), d=await B("Marmontova 5",[45.81,15.97]), e=await B("Vukovarska 10, Split",[45.81,15.97]);
+   ok(a===null&&b==="zg|Zagreb|Ilica"&&c==="rijeka|Rijeka|Korzo"&&d==="split|Split|Marmontova"&&/^split\|Split\|Vukovarska/.test(e||""),"Adrese: točan naziv u bilo kojem gradu ispred sličnog naziva („Ilica 1” iz Splita → Zagreb, „Korzo 1” → Rijeka); mjesto s Krka traži samo na Krku ("+[a,b,c,d,e].join(" ; ")+")");}
+  E("map").setView([45.81,15.97],14);
+  w.__got=null; await E("searchParcel")({kc:"3531/12",ko:"Solin"}); ok(E("window.__got")&&E("window.__got").properties.ko==="SOLIN","Pretraga čestice: „Solin 3531/12” → k.o. Solin (ne Soline na Krku)");
+  w.__got=null; await E("searchParcel")({kc:"3301",ko:"Draga"}); ok(E("window.__got")&&E("window.__got").properties.ko==="DRAGA","Pretraga čestice: „Draga 3301” → k.o. Draga (Rijeka), ne Draga Baščanska");
+  w.__got=null; await E("searchParcel")({kc:"285",ko:"Bibinje"}); ok(E("window.__got")&&E("window.__got").properties.broj==="*285","Pretraga čestice: „Bibinje 285” nalazi zgradnu česticu *285 kad obične 285 nema");
+  w.__got=null; await E("searchParcel")({kc:"112/3",ko:"Bibinje"}); ok(!E("window.__got")&&w.document.querySelectorAll("#sheet [data-pick]").length===2,"Pretraga čestice: „Bibinje 112/3” kad postoje i 112/3 i *112/3 → izbor između obje");
   await E("searchParcel")({kc:"999999/9",ko:"Zadar"}); ok(/nije nađena u k\.o\. ZADAR/.test(w.document.getElementById("sheet").textContent),"Pretraga čestice: nepostojeći broj u k.o. Zadar → poruka, bez izmišljene čestice");
   ok(errs.length===0,"bez JS grešaka (tražilica): "+errs.join(" | "));
 }
