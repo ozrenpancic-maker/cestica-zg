@@ -5087,7 +5087,8 @@ function krovCrtaj(list,tip){ const g=L.layerGroup(), ll=r=>r.map(q=>[q[1],q[0]]
     for(const r of B.foot) L.polygon(ll(r),{...o,fill:false,color:obrub,weight:tez}).addTo(g); }
   KROV.tip.add(tip); return g; }
 function krovOznaka(){ const h=document.getElementById("lyrKrovH"); if(!h) return; const t=KROV.tip, z=map.getZoom()<KROV.minZ;
-  h.textContent=z?"(približi kartu)":[t.has("zg3d")?"Zagreb: ZG3D 2022, stvarni krovovi":"",t.has("ndmp")?"tlocrti: katastar DGU, krovovi iz LiDAR-a DGU":"",t.has("dkp")?"tlocrti: katastar DGU, krov ilustrativno":"",t.has("osm")?"tlocrti: OpenStreetMap, krov ilustrativno":""].filter(Boolean).join(" · "); }
+  const L=[t.has("zg3d")?["ZG3D","Zagreb: ZG3D 2022, stvarni krovovi"]:null,t.has("ndmp")?["LiDAR","tlocrti: katastar DGU, krovovi iz LiDAR-a DGU"]:null,t.has("dkp")?["ilustr.","tlocrti: katastar DGU, krov ilustrativno"]:null,t.has("osm")?["OSM, ilustr.","tlocrti: OpenStreetMap, krov ilustrativno"]:null].filter(Boolean);
+  h.textContent=z?"(približi)":L.map(x=>x[0]).join(" · "); h.title=z?"Krovovi se prikazuju na većem povećanju":L.map(x=>x[1]).join(" · "); const lb=h.closest("label"); if(lb) lb.title=h.title; }
 async function krovUpd(){
   if(FEATURES.krovovi===false) return;
   if(!KROV.lay){ if(!map.getPane("krovPane")){ const pn=map.createPane("krovPane"); pn.style.zIndex=380; pn.style.pointerEvents="none"; } KROV.ren=L.canvas({pane:"krovPane",padding:0.3}); KROV.lay=L.layerGroup().addTo(map); }
@@ -5128,7 +5129,7 @@ function zg3dKrovIlustr(B){ const f=B.foot&&B.foot[0]; if(B.mj||!f||f.length<3) 
   return {...B,wall,faces,ilustr:true}; }
 // tijela za 3D pogled (fill-extrusion): zidovi do vijenca i krov kao stepenice od 0,35 m
 function zg3dFeatures(list){
-  const F=[], C={zid:"#d9d5cc",krov:"#a39e96"}, st=0.35;
+  const F=[], C={zid:"#d9d5cc",krov:"#b4553c"}, st=0.35;
   const add=(ring,b,h,c)=>{ if(ring.length<3||h-b<0.02) return; const r=ring.map(q=>[+q[0].toFixed(7),+q[1].toFixed(7)]); r.push(r[0]);
     F.push({type:"Feature",geometry:{type:"Polygon",coordinates:[r]},properties:{b:+b.toFixed(2),h:+h.toFixed(2),c}}); };
   for(const B0 of list){ const B=B0.faces&&B0.faces.length?B0:zg3dKrovIlustr(B0);
