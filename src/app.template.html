@@ -2580,20 +2580,20 @@ function uzUvjetiBox(){let h=""; try{const k=window.__cur&&window.__cur.key, Z=k
 // GUP Splita: list KN_1_2 „Urbana pravila” na ISPU WMS-u iscrtan je čistim bojama, pa se boja svakog uzorka unutar čestice
 // uspoređuje s bojama iz kalibracije (docs/zona-boja/split.md). Neke boje legenda koristi za dva pravila (npr. 1.3 i 3.5):
 // tada se nude oba kandidata. Prijedlog je razina C: nikad ne bira pravilo sam, korisnik ga prihvaća ili odbija.
-const HRZ_PARAM={tamno:96,bijelo:235,sivo:24,prostor:"rgb",boja:28,razmak:0,unutra:0.5,prsten:6,minUzoraka:150,minBoje:0.25,maxBijelo:0.5,minDom:0.75,prstenDrugo:0.1,maxTamno:0.6,drugaUnutra:0.15,drugaPrsten:0.25,verzija:"2026-11-09"};
+const HRZ_PARAM={tamno:96,bijelo:235,sivo:24,prostor:"rgb",boja:28,razmak:8,unutra:0.5,prsten:6,minUzoraka:150,minBoje:0.25,maxBijelo:0.5,minDom:0.75,prstenDrugo:0.1,maxTamno:0.6,drugaUnutra:0.15,drugaPrsten:0.25,verzija:"2026-11-09"};
 const HRZ_ST=new Map();
 function hrZonaUrl(ZB,host,bb,w,h){return host+"?"+new URLSearchParams({SERVICE:"WMS",VERSION:"1.3.0",REQUEST:"GetMap",LAYERS:ZB.sloj,STYLES:"",CRS:"CRS:84",BBOX:bb.map(v=>v.toFixed(7)).join(","),WIDTH:String(w),HEIGHT:String(h),FORMAT:"image/png",TRANSPARENT:"TRUE"}).toString();}
 // izrez oko čestice (s pojasom za provjeru granice) u približno kvadratnim pikselima zadane razlučivosti
 function hrZonaOkvir(parcel,ZB){const bb=turf.bbox(parcel), la=(bb[1]+bb[3])/2, mx=111320*Math.cos(la*Math.PI/180), my=110540, pad=HRZ_PARAM.prsten+4;
   const B=[bb[0]-pad/mx,bb[1]-pad/my,bb[2]+pad/mx,bb[3]+pad/my]; let mpx=ZB.mpx||0.5, w=Math.ceil((B[2]-B[0])*mx/mpx), h=Math.ceil((B[3]-B[1])*my/mpx); const k=Math.max(w,h)/1200;
   if(k>1){mpx*=k; w=Math.ceil(w/k); h=Math.ceil(h/k);} return {bb:B,w:Math.max(w,8),h:Math.max(h,8),mpx};}
-function hrZonaPoly(parcel,O){const g=parcel.geometry, R=g.type==="Polygon"?[g.coordinates[0]]:g.type==="MultiPolygon"?g.coordinates.map(p=>p[0]):[], [W0,S0,E0,N0]=O.bb;
+function hrZonaPoly(parcel,O){const g=parcel.geometry, R=g.type==="Polygon"?g.coordinates:g.type==="MultiPolygon"?g.coordinates.flat():[], [W0,S0,E0,N0]=O.bb;
   return R.map(r=>r.map(([x,y])=>[(x-W0)/(E0-W0)*O.w,(N0-y)/(N0-S0)*O.h]));}
-async function hrZonaPrijedlog(parcel,ZB){const O=hrZonaOkvir(parcel,ZB), polys=hrZonaPoly(parcel,O); let e="izvor nije dostupan";
+async function hrZonaPrijedlog(parcel,ZB){let O,polys,e="izvor nije dostupan"; try{O=hrZonaOkvir(parcel,ZB); polys=hrZonaPoly(parcel,O);}catch(err){return {st:"err",e:"granica čestice nije čitljiva",ZB};}
   if(typeof createImageBitmap!=="function") return {st:"err",e:"preglednik ne može očitati sliku",ZB};
   for(const host of ZB.wms||[]){ try{ const ac=typeof AbortController!=="undefined"?new AbortController():null, t=ac?setTimeout(()=>ac.abort(),20000):0;
-      let r; try{r=await fetch(hrZonaUrl(ZB,host,O.bb,O.w,O.h),{mode:"cors",credentials:"omit",signal:ac?ac.signal:undefined});}finally{clearTimeout(t);} if(!r.ok) throw new Error("HTTP "+r.status);
-      const bl=await r.blob(); if(bl.type&&!/^image\//.test(bl.type)) throw new Error("servis nije vratio sliku");
+      let bl; try{const r=await fetch(hrZonaUrl(ZB,host,O.bb,O.w,O.h),{mode:"cors",credentials:"omit",signal:ac?ac.signal:undefined}); if(!r.ok) throw new Error("HTTP "+r.status); bl=await r.blob();}finally{clearTimeout(t);}
+      if(bl.type&&!/^image\//.test(bl.type)) throw new Error("servis nije vratio sliku");
       const bm=await createImageBitmap(bl), c=document.createElement("canvas"); c.width=O.w; c.height=O.h; const g=c.getContext&&c.getContext("2d"); if(!g) throw new Error("nema platna za očitavanje");
       g.drawImage(bm,0,0,O.w,O.h); const Hs=uzHist(g.getImageData(0,0,O.w,O.h).data,O.w,O.h,polys,O.mpx,HRZ_PARAM);
       return {st:"ok",o:uzOdluka(Hs,ZB.boje,HRZ_PARAM),ZB,host,mpx:O.mpx}; }
