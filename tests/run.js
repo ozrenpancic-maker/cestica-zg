@@ -3566,6 +3566,52 @@ async function splitTests(){
   ok(errs.length===0,"bez JS grešaka (Split): "+errs.join(" | "));
 }
 
+// Split: prijedlog urbanog pravila iz boja lista KN_1_2 „Urbana pravila” (kalibracija, stvarni histogrami, sučelje)
+async function zonaBojaTests(){
+  const SP0=JSON.parse(fs.readFileSync(path.join(__dirname,"../src/rules_krk.json"),"utf8")).hrGradovi.SPLIT, ZB0=SP0.zonaBoje, ids=SP0.zone.map(z=>z[0]);
+  ok(ZB0&&ZB0.sloj==="HR_ISPU_GUP1_04090_R07_KN_1_2"&&ZB0.wms.length>=2&&ZB0.boje.length>=20&&/^\d{4}-\d\d-\d\d$/.test(ZB0.kalibrirano)&&ZB0.boje.every(b=>b.rgb.length===3&&b.zona.split("|").every(z=>ids.includes(z))),"Split boje: svaka boja lista KN_1_2 vodi na pravilo iz popisa, uz sloj i datum kalibracije");
+  ok(["2.4","2.3","3.1","2.1a","1.5"].every(z=>ZB0.boje.some(b=>b.zona===z))&&ZB0.boje.some(b=>b.zona==="1.3|3.5")&&ZB0.boje.some(b=>b.zona==="2.5|2.5 Bol"),"Split boje: obrađena pravila s izračunom imaju boju; boje koje legenda dijeli nude oba pravila (1.3 ili 3.5, 2.5 ili 2.5 Bol)");
+  const boot1=(fetchFn,pix)=>{const {w,errs}=boot(); const E=x=>w.eval(x);
+    const lon=16.5250, lat=43.5030, [E0,N0]=E("tmFwd")(lon,lat), ring=[[E0-15,N0-12],[E0+15,N0-12],[E0+15,N0+12],[E0-15,N0+12],[E0-15,N0-12]];
+    w.fetch=(u)=>{u=String(u); const r=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b),text:()=>Promise.resolve("")});
+      if(/wms1-gs-oss\.uredjenazemlja\.hr/.test(u)&&/GetFeatureInfo/.test(u)) return r({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{CESTICA_ID:555777,BROJ_CESTICE:"1537/19",MATICNI_BROJ_KO:335061,POVRSINA_GRAFICKA:720,POVRSINA_ATRIBUTNA:720}}]});
+      if(/PPRasterZ17_Public\/wms/.test(u)&&/KN_1_2/.test(u)) return fetchFn(u);
+      return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null),text:()=>Promise.resolve("")}); };
+    w.createImageBitmap=async()=>({});
+    w.HTMLCanvasElement.prototype.getContext=function(){return {drawImage(){},getImageData:(x,y,W,H)=>{const d=new w.Uint8ClampedArray(W*H*4); for(let i=0;i<W*H;i++){const c=pix(i%W,Math.floor(i/W),W,H); d[i*4]=c[0];d[i*4+1]=c[1];d[i*4+2]=c[2];d[i*4+3]=255;} return {data:d};}}};
+    return {w,errs,E,lat,lon};};
+  const tick=ms=>new Promise(r=>setTimeout(r,ms)), slika=()=>Promise.resolve({ok:true,status:200,blob:()=>Promise.resolve({type:"image/png"})});
+  {const {w,errs,E}=boot1(slika,()=>[0,0,0]); const P=E("HRZ_PARAM"), ZB=E("RULES_KRK").hrGradovi.SPLIT.zonaBoje, q=v=>(v>>4)*16+8;
+   ok(ZB.boje.every(b=>E("uzBoja")(q(b.rgb[0]),q(b.rgb[1]),q(b.rgb[2]),ZB.boje,P)===b.zona)&&E("uzBoja")(q(118),q(118),q(118),ZB.boje,P)==="sivo"&&E("uzBoja")(q(219),q(219),q(219),ZB.boje,P)==="sivo"&&E("uzBoja")(255,255,255,ZB.boje,P)==="bijelo","Split boje: svaka boja legende (kvantizirana kao u histogramu) prepoznaje se kao svoje pravilo; zgrade i prometnice (sivo) i bijelo ne broje se kao pravilo");
+   const F=JSON.parse(fs.readFileSync(path.join(__dirname,"pgz-odgovori/split-kn12-histogrami-2026-11-09/cestice.json"),"utf8")).cestice, od=x=>E("uzOdluka")(w.JSON.parse(JSON.stringify(x.Hs)),ZB.boje,P);
+   const [a,b,c,d]=F.map(od);
+   ok(a.kandidat==="2.4"&&!a.blizuGranice&&b.kandidat==="1.3|3.5"&&d.kandidat==="2.5|2.5 Bol","Split boje, stvarni izrezi KN_1_2 (2026-11-09): 1537/19 → 2.4; 5207 → 1.3 ili 3.5; 1041/9 → 2.5 ili 2.5 Bol");
+   ok(c.kandidat==="3.1"&&c.blizuGranice&&c.dokaz.udjeli["1.2|3.4"]>0.05,"Split boje, stvarni izrez: 3243 uz granicu 3.1/3.4 → kandidat 3.1 s upozorenjem o granici");
+   ok(errs.length===0,"bez JS grešaka (Split boje, čiste funkcije): "+errs.join(" | "));}
+  // sučelje: cijela čestica u boji 2.4 → prijedlog, ništa se ne bira samo; prihvaćanje računa 2.4 i bilježi izvor (razina C)
+  {const {w,errs,E,lat,lon}=boot1(slika,()=>[127,255,159]); await E("inspect")({lat,lng:lon}); await tick(250);
+   let t=txt(w,"sheet"), box=w.document.querySelector('[data-hrz="kandidat"]');
+   ok(box&&box.querySelector('[data-hrz-kandidat="2.4"]')&&/Prihvati 2\.4/.test(t)&&w.__krkCalc===null&&$(w,"krkZona").value==="","Split boje (sučelje): kandidat 2.4 prikazan uz izbornik, pravilo nije odabrano samo i nema izračuna");
+   ok(/KN_1_2/.test(box.textContent)&&/nije pravni podatak/.test(box.textContent)&&!/pouzdanost\w* \d+ ?%/i.test(box.textContent),"Split boje (sučelje): dokaz navodi sloj karte i ograničenja, bez izmišljenog postotka pouzdanosti");
+   w.document.querySelector('[data-hrzb="prihvati"]').click(); await tick(20); const C=w.__krkCalc; t=txt(w,"sheet");
+   ok(C&&C.plan==="GUP Splita"&&Math.abs(C.tl-0.35*C.A)<0.6&&$(w,"krkZona").value==="2.4"&&w.document.querySelector("[data-hrz-odabrano]")&&/prijedlog/.test(w.localStorage.getItem("krkZonaIzvor:"+E("window.__cur.key"))||""),"Split boje (sučelje): Prihvati 2.4 → izračun za 2.4 (kig 0,35), izvor odabira zapisan kao prijedlog iz boja karte");
+   ok(errs.length===0,"bez JS grešaka (Split boje, prihvaćanje): "+errs.join(" | "));}
+  // dvojbena boja: dva gumba, odbijanje se pamti
+  {const {w,errs,E,lat,lon}=boot1(slika,()=>[221,221,0]); await E("inspect")({lat,lng:lon}); await tick(250);
+   const bs=[...w.document.querySelectorAll('[data-hrzb="prihvati"]')].map(b=>b.dataset.zona);
+   ok(bs.join(",")==="1.3,3.5"&&w.document.querySelector("[data-hrz-dvojba]"),"Split boje (sučelje): boja koju legenda dijeli → dva gumba (1.3 i 3.5) i napomena da se pravilo očita iz oznake na karti");
+   w.document.querySelector('[data-hrzb="odbij"]').click(); await tick(10);
+   ok(w.document.querySelector("[data-hrz-odbijen]")&&!w.document.querySelector('[data-hrzb="prihvati"]')&&w.__krkCalc===null,"Split boje (sučelje): Odbij prijedlog → nema gumba za prihvaćanje, pravilo ostaje ručni odabir");
+   ok(errs.length===0,"bez JS grešaka (Split boje, dvojba): "+errs.join(" | "));}
+  // izvor nedostupan i čestica na bijeloj površini: nema prijedloga
+  {const {w,errs,E,lat,lon}=boot1(()=>Promise.resolve({ok:false,status:503}),()=>[127,255,159]); await E("inspect")({lat,lng:lon}); await tick(250);
+   const box=w.document.querySelector('[data-hrz="err"]'); ok(box&&/Podaci nisu dostupni/.test(box.textContent)&&!w.document.querySelector('[data-hrzb="prihvati"]'),"Split boje: WMS nedostupan (HTTP 503) → »Podaci nisu dostupni«, bez prijedloga");
+   ok(errs.length===0,"bez JS grešaka (Split boje, izvor nedostupan): "+errs.join(" | "));}
+  {const {w,errs,E,lat,lon}=boot1(slika,(x,y,W)=>x<W*0.55?[255,255,255]:[127,255,159]); await E("inspect")({lat,lng:lon}); await tick(250);
+   const box=w.document.querySelector('[data-hrz="odustao"]'); ok(box&&/ne predlaže/.test(box.textContent)&&!w.document.querySelector('[data-hrzb="prihvati"]'),"Split boje: polovica čestice na bijeloj površini → aplikacija ne predlaže pravilo ("+(box?box.textContent.slice(0,90):"")+")");
+   ok(errs.length===0,"bez JS grešaka (Split boje, odustajanje): "+errs.join(" | "));}
+}
+
 // Zadar: PPUG (zone gustoće u GP-u grada Zadra), parcela 30 x 24 m = 720 m²
 async function zadarTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
@@ -3584,7 +3630,7 @@ async function zadarTests(){
   ok(errs.length===0,"bez JS grešaka (Zadar): "+errs.join(" | "));
 }
 
-netTests().then(zadarTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
+netTests().then(zonaBojaTests).then(zadarTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

@@ -189,6 +189,28 @@ SPLIT = {
 for z in ZSET.values():
     if z.get("tipovi"): z["napomene"] = z["napomene"] + SPLIT["napomene"]
 
+# Prijedlog urbanog pravila iz boja lista KN_1_2 „Urbana pravila” (ISPU WMS PPRasterZ17, R07 = VI. izmjene i dopune).
+# Boje su očitane 2026-11-09 iz iscrtanog lista (čiste boje palete ACI) i povezane s oznakom pravila na karti, na najmanje
+# jednom mjestu za svaku boju (vidi docs/zona-boja/split.md). Legenda neke boje koristi za dva pravila (npr. 1.3 i 3.5):
+# tada se nude oba kandidata. Siva (zgrade, prometnice) i bijela (izvan pravila) ne broje se kao pravilo.
+BOJE = [
+    ("1.1|3.3", (255, 127, 127)), ("1.2|3.4", (0, 255, 191)), ("1.3|3.5", (221, 221, 0)), ("1.4", (255, 191, 0)),
+    ("1.5", (127, 255, 223)), ("1.7", (0, 221, 110)), ("1.7", (25, 224, 124)), ("1.7", (0, 184, 92)), ("1.8", (221, 193, 110)),
+    ("1.9", (165, 0, 221)), ("2.1", (255, 255, 127)), ("2.1a", (0, 255, 0)), ("2.2", (0, 221, 221)), ("2.3", (221, 110, 165)),
+    ("2.4", (127, 255, 159)), ("2.5|2.5 Bol", (255, 191, 127)), ("2.6", (221, 165, 0)), ("2.7", (127, 255, 255)),
+    ("2.8|1.7", (0, 191, 255)), ("2.9", (223, 127, 255)), ("3.1", (255, 0, 255)), ("3.2", (92, 161, 184)),
+]
+SPLIT["zonaBoje"] = {
+    "naziv": "Urbana pravila", "sloj": "HR_ISPU_GUP1_04090_R07_KN_1_2",
+    "wms": ["https://gis2.mgipu.hr/srv1/PPRasterZ17_Public/wms", "https://gis3.mgipu.hr/srv1/PPRasterZ17_Public/wms",
+            "https://gis4.mgipu.hr/srv1/PPRasterZ17_Public/wms", "https://gis1.mgipu.hr/srv1/PPRasterZ17_Public/wms"],
+    "izvor": "ISPU (Ministarstvo prostornoga uređenja), GUP Splita, VI. izmjene i dopune, list KN_1_2 „Urbana pravila”",
+    "mpx": 0.5, "kalibrirano": "2026-11-09",
+    "boje": [{"zona": z, "rgb": list(c)} for z, c in BOJE],
+}
+SPLIT["upozorenje"] = ("Urbano pravilo nije potvrđeno: aplikacija ga može predložiti iz boja karte „Urbana pravila”, ali ga potvrđuješ ti "
+                       "(karta je u odjeljku s kartama plana). Provjeri i namjenu (S ili M1) na karti 1.; potvrđuje ih lokacijska informacija.")
+
 if __name__ == "__main__":
     p = os.path.join(os.path.dirname(__file__), "..", "..", "src", "rules_krk.json")
     d = json.load(open(p, encoding="utf-8"))

@@ -14235,7 +14235,7 @@
     16.535,
     43.545
    ],
-   "upozorenje": "Urbano pravilo se ne očitava automatski: odaberi ga prema kartografskom prikazu „Urbana pravila” GUP-a Splita (karta je u odjeljku s kartama plana) i provjeri namjenu (S ili M1) na karti 1.; potvrđuje ih lokacijska informacija.",
+   "upozorenje": "Urbano pravilo nije potvrđeno: aplikacija ga može predložiti iz boja karte „Urbana pravila”, ali ga potvrđuješ ti (karta je u odjeljku s kartama plana). Provjeri i namjenu (S ili M1) na karti 1.; potvrđuje ih lokacijska informacija.",
    "oblici": [
     [
      "slob",
@@ -15254,7 +15254,198 @@
    "napomene": [
     "Niska građevina je visine do P+3; treći kat može biti potkrovlje ili etaža pod ravnim krovom (najviše 40 % donje etaže, uvučena 2 m od uličnog pročelja) (čl. 49.).",
     "Visina se mjeri od najniže točke zaravnanog terena uz pročelje do vrha stropa zadnjeg kata ili nadozida potkrovlja (nadozid najviše 1,2 m) (čl. 49.)."
-   ]
+   ],
+   "zonaBoje": {
+    "naziv": "Urbana pravila",
+    "sloj": "HR_ISPU_GUP1_04090_R07_KN_1_2",
+    "wms": [
+     "https://gis2.mgipu.hr/srv1/PPRasterZ17_Public/wms",
+     "https://gis3.mgipu.hr/srv1/PPRasterZ17_Public/wms",
+     "https://gis4.mgipu.hr/srv1/PPRasterZ17_Public/wms",
+     "https://gis1.mgipu.hr/srv1/PPRasterZ17_Public/wms"
+    ],
+    "izvor": "ISPU (Ministarstvo prostornoga uređenja), GUP Splita, VI. izmjene i dopune, list KN_1_2 „Urbana pravila”",
+    "mpx": 0.5,
+    "kalibrirano": "2026-11-09",
+    "boje": [
+     {
+      "zona": "1.1|3.3",
+      "rgb": [
+       255,
+       127,
+       127
+      ]
+     },
+     {
+      "zona": "1.2|3.4",
+      "rgb": [
+       0,
+       255,
+       191
+      ]
+     },
+     {
+      "zona": "1.3|3.5",
+      "rgb": [
+       221,
+       221,
+       0
+      ]
+     },
+     {
+      "zona": "1.4",
+      "rgb": [
+       255,
+       191,
+       0
+      ]
+     },
+     {
+      "zona": "1.5",
+      "rgb": [
+       127,
+       255,
+       223
+      ]
+     },
+     {
+      "zona": "1.7",
+      "rgb": [
+       0,
+       221,
+       110
+      ]
+     },
+     {
+      "zona": "1.7",
+      "rgb": [
+       25,
+       224,
+       124
+      ]
+     },
+     {
+      "zona": "1.7",
+      "rgb": [
+       0,
+       184,
+       92
+      ]
+     },
+     {
+      "zona": "1.8",
+      "rgb": [
+       221,
+       193,
+       110
+      ]
+     },
+     {
+      "zona": "1.9",
+      "rgb": [
+       165,
+       0,
+       221
+      ]
+     },
+     {
+      "zona": "2.1",
+      "rgb": [
+       255,
+       255,
+       127
+      ]
+     },
+     {
+      "zona": "2.1a",
+      "rgb": [
+       0,
+       255,
+       0
+      ]
+     },
+     {
+      "zona": "2.2",
+      "rgb": [
+       0,
+       221,
+       221
+      ]
+     },
+     {
+      "zona": "2.3",
+      "rgb": [
+       221,
+       110,
+       165
+      ]
+     },
+     {
+      "zona": "2.4",
+      "rgb": [
+       127,
+       255,
+       159
+      ]
+     },
+     {
+      "zona": "2.5|2.5 Bol",
+      "rgb": [
+       255,
+       191,
+       127
+      ]
+     },
+     {
+      "zona": "2.6",
+      "rgb": [
+       221,
+       165,
+       0
+      ]
+     },
+     {
+      "zona": "2.7",
+      "rgb": [
+       127,
+       255,
+       255
+      ]
+     },
+     {
+      "zona": "2.8|1.7",
+      "rgb": [
+       0,
+       191,
+       255
+      ]
+     },
+     {
+      "zona": "2.9",
+      "rgb": [
+       223,
+       127,
+       255
+      ]
+     },
+     {
+      "zona": "3.1",
+      "rgb": [
+       255,
+       0,
+       255
+      ]
+     },
+     {
+      "zona": "3.2",
+      "rgb": [
+       92,
+       161,
+       184
+      ]
+     }
+    ]
+   }
   },
   "ZADAR": {
    "kod": "PPUG Zadar",
