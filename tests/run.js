@@ -3449,6 +3449,7 @@ async function krovTests(){
    const zs=K.faces.flat().map(q=>q[2]), zmax=Math.max(...zs), zmin=Math.min(...zs);
    ok(K.ilustr&&K.faces.length===2&&Math.abs(zmax-zmin-4*Math.tan(Math.PI/6))<0.05&&Math.abs(zmin-K.wall)<0.01&&K.wall<6.5,"3D krov: ilustrativni dvostrešni krov 30° (pola širine 4 m → sljeme 2,3 m iznad vijenca), vijenac spušten");
    const F=E("zg3dFeatures")([B]); ok(F.filter(f=>f.properties.c==="#a39e96").length>3,"3D krov: krov u 3D pogledu crta se kao stepenice krovnih ploha (ne ravan kvadar)");
+   ok(!E("zg3dKrovIlustr")({...B,mj:true}).ilustr,"3D krov: zgrada s izmjerenim ravnim krovom (LiDAR) ostaje ravna");
    const mala=E("zg3dKrovIlustr")({...B,foot:[[m(0,0),m(3,0),m(3,3),m(0,3)].map(q=>[q[0],q[1]])]}); ok(!mala.ilustr,"3D krov: mala zgrada (< 12 m²) ostaje bez krova");}
   ok(errs.length===0,"bez JS grešaka (krovovi): "+errs.join(" | "));
 }
