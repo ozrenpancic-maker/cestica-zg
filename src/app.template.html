@@ -9989,7 +9989,7 @@ document.getElementById("lyrSki").addEventListener("change",e=>{ e.target.checke
 // 2D krovovi postojećih zgrada: uključivanje, pomicanje karte (s odgodom) i novi odabir čestice (plavi obrub zgrada na njoj)
 document.getElementById("lyrKrov").addEventListener("change",e=>{ KROV.on=e.target.checked; krovUpd(); });
 { let kt=0; map.on("moveend zoomend",()=>{ clearTimeout(kt); kt=setTimeout(()=>{ try{ krovUpd(); }catch(e){} },350); }); }
-{ let zadnja=null; setInterval(()=>{ try{ const d=curData(), p=d&&d.parcel||null; if(p!==zadnja){ zadnja=p; if(KROV.lay&&map.getZoom()>=KROV.minZ) krovOsvjezi(); } }catch(e){} },1500); }
+{ let zadnja=null; const iv=setInterval(()=>{ if(FEATURES.krovovi===false){ clearInterval(iv); return; } try{ const d=curData(), p=d&&d.parcel||null; if(p!==zadnja){ zadnja=p; if(KROV.lay&&map.getZoom()>=KROV.minZ) krovOsvjezi(); } }catch(e){} },1500); }
 setTimeout(()=>{ try{ krovUpd(); }catch(e){} },800);
 document.getElementById("lyrSun").addEventListener("change",e=>{ SUN.on=e.target.checked; const c=document.getElementById("sunOn"); if(c) c.checked=SUN.on; if(SUN.on&&curData()&&curData().parcel){sunEnsureNb();} sunDraw(); });
 // izbornik (verzija, stanje servisa)
