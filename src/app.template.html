@@ -2142,7 +2142,9 @@ const RASTER_KATALOZI=[
   naziv:"Zavod za prostorno uređenje Primorsko-goranske županije, katalog rasterskih karata prostornih planova",
   url:"https://gisportal.pgz.hr/server/rest/services/PP_RASTERI/PP_RASTERI/MapServer",
   obuhvat:[13.9,44.4,15.3,45.7], // približni okvir PGŽ (WGS84); služi samo da se katalog ne pita izvan županije
-  slojevi:[{id:12,vrsta:"UPU",grupa:"HTRS96",naziv:"RASTER_5UPU_HTRS"},{id:5,vrsta:"UPU",grupa:"GK5",naziv:"RASTER_5UPU"},{id:13,vrsta:"DPU",grupa:"HTRS96",naziv:"RASTER_6DPU_HTRS"},{id:6,vrsta:"DPU",grupa:"GK5",naziv:"RASTER_6DPU"}]},
+  slojevi:[{id:12,vrsta:"UPU",grupa:"HTRS96",naziv:"RASTER_5UPU_HTRS"},{id:5,vrsta:"UPU",grupa:"GK5",naziv:"RASTER_5UPU"},{id:13,vrsta:"DPU",grupa:"HTRS96",naziv:"RASTER_6DPU_HTRS"},{id:6,vrsta:"DPU",grupa:"GK5",naziv:"RASTER_6DPU"}],
+  // 9. 11. 2026. PGŽ je zaustavio PP_RASTERI (»Service … not started«); isti listovi su u mozaicima ImageServera UI/PGZ_MD_RASTER_*. Koriste se kad PP_RASTERI ne odgovori.
+  zamjena:[{id:"5UPU",img:"https://gisportal.pgz.hr/server/rest/services/UI/PGZ_MD_RASTER_5UPU/ImageServer",vrsta:"UPU",grupa:"HTRS96",naziv:"PGZ_MD_RASTER_5UPU"},{id:"6DPU",img:"https://gisportal.pgz.hr/server/rest/services/UI/PGZ_MD_RASTER_6DPU/ImageServer",vrsta:"DPU",grupa:"HTRS96",naziv:"PGZ_MD_RASTER_6DPU"}]},
  {id:"ispu-z21",tip:"wms",naslov:"Karte prostornog plana (GUP/UPU)",kratko:"ISPU",
   naziv:"Ministarstvo prostornoga uređenja, graditeljstva i državne imovine, ISPU: prostorni planovi Grada Zagreba (WMS)",
   // gis2 je provjeren u pregledniku 19. 10. 2026. (HTTP 200, CORS); ostale adrese iz registra NIPP koriste se samo ako gis2 ne odgovori
@@ -2247,38 +2249,41 @@ function rkFetchText(url,ms){
 const RK_ARCGIS={
   async query(K,E,N){
     const out=[], err=[];
-    for(const L of K.slojevi){
-      const q=new URLSearchParams({geometry:E.toFixed(2)+","+N.toFixed(2),geometryType:"esriGeometryPoint",inSR:"3765",spatialRel:"esriSpatialRelIntersects",outFields:RK_POLJA,returnGeometry:"false",f:"json"});
-      try{const j=await getJSON(K.url+"/"+L.id+"/query?"+q.toString(),{},15000,{retries:1});
+    const upit=async SL=>{ for(const L of SL){
+      const q=new URLSearchParams({geometry:E.toFixed(2)+","+N.toFixed(2),geometryType:"esriGeometryPoint",inSR:"3765",spatialRel:"esriSpatialRelIntersects",outFields:L.img?RK_POLJA.replace(",STANJE_1212",""):RK_POLJA,returnGeometry:"false",f:"json"});
+      try{const j=await getJSON(L.img?L.img+"/query?"+q.toString():K.url+"/"+L.id+"/query?"+q.toString(),{},15000,{retries:1});
         if(j&&j.error) throw new Error((j.error.message||"greška servisa")+(j.error.code?" ("+j.error.code+")":""));
         for(const f of (j&&j.features)||[]){const a=f.attributes||{}; if(a.OBJECTID!=null) out.push({...a,_sloj:L});}
       }catch(e){err.push(L.naziv+": "+e.message)}
-    }
+    } };
+    await upit(K.slojevi);
+    if(!out.length&&err.length===K.slojevi.length&&K.zamjena){ err.length=0; await upit(K.zamjena); if(!out.length&&err.length===K.zamjena.length) throw new Error(err[0]); }
     const seen=new Map(); // isti list u oba kataloga: prednost HTRS96
     for(const a of out){const k=(a.PLAN_NAZIV||"")+"|"+(a.KARTA_SIFRA||a.Name||"")+"|"+(a.Name||""); const b=seen.get(k); if(!b||(b._sloj.grupa!=="HTRS96"&&a._sloj.grupa==="HTRS96")) seen.set(k,a);}
     const items=[...seen.values()].map(a=>({id:a._sloj.id+":"+a.OBJECTID,plan:a.PLAN_NAZIV||"plan",planVrsta:a._sloj.vrsta,karta:a.KARTA_NAZIV||a.Name||"list",vrsta:rkVrsta(a.KARTA_NAZIV)!=="nepoznato"?rkVrsta(a.KARTA_NAZIV):/karta_?1(?!\d)/i.test(a.Name||"")?"namjena":"nepoznato",a,_sloj:a._sloj,OBJECTID:a.OBJECTID}));
     items.forEach(rkPoznatiList);
     items.sort((x,y)=>(y.zona?1:0)-(x.zona?1:0)||RK_VORD[x.vrsta]-RK_VORD[y.vrsta]||String(x.plan).localeCompare(String(y.plan))||String(x.a.KARTA_SIFRA||x.a.Name).localeCompare(String(y.a.KARTA_SIFRA||y.a.Name),"hr",{numeric:true}));
-    if(!items.length&&err.length===K.slojevi.length) throw new Error(err[0]);
+    if(!items.length&&err.length&&err.length===K.slojevi.length) throw new Error(err[0]);
     return {items,err};
   },
   async img(K,it,parcel,scale){
     const B=rkBox(parcel,scale), L=it._sloj;
-    const q=new URLSearchParams({bbox:[B.xmin,B.ymin,B.xmax,B.ymax].map(v=>v.toFixed(2)).join(","),bboxSR:"3765",imageSR:"3765",size:"800,800",dpi:"96",format:"png",transparent:"false",
-      layers:"show:"+L.id,layerDefs:JSON.stringify({[L.id]:"OBJECTID="+Number(it.OBJECTID)}),f:"json"});
-    const j=await getJSON(K.url+"/export?"+q.toString(),{},20000,{retries:1,cache:false});
+    const q=new URLSearchParams({bbox:[B.xmin,B.ymin,B.xmax,B.ymax].map(v=>v.toFixed(2)).join(","),bboxSR:"3765",imageSR:"3765",size:"800,800",format:"png",
+      ...(L.img?{mosaicRule:JSON.stringify({mosaicMethod:"esriMosaicLockRaster",lockRasterIds:[Number(it.OBJECTID)]})}:{dpi:"96",transparent:"false",layers:"show:"+L.id,layerDefs:JSON.stringify({[L.id]:"OBJECTID="+Number(it.OBJECTID)})}),f:"json"});
+    const base=L.img?L.img+"/exportImage":K.url+"/export";
+    const j=await getJSON(base+"?"+q.toString(),{},20000,{retries:1,cache:false});
     if(j&&j.error) throw new Error(j.error.message||"greška servisa");
     const x=j&&j.extent;
     if(!j||!j.href||!x||!(x.xmax>x.xmin)||!(x.ymax>x.ymin)) throw new Error("servis nije vratio sliku s okvirom");
     if(x.spatialReference&&x.spatialReference.wkid&&![3765].includes(x.spatialReference.wkid)&&x.spatialReference.latestWkid!==3765) throw new Error("slika nije u HTRS96/TM (EPSG:3765)");
     const W=j.width||800, H=j.height||800, px=([e,n])=>[(e-x.xmin)/(x.xmax-x.xmin)*W,(x.ymax-n)/(x.ymax-x.ymin)*H];
-    return {href:safeLink(j.href),extent:x,crs:"EPSG:3765",W,H,poly:B.pts.map(r=>r.map(px)),scale,url:K.url+"/export?"+q.toString().replace("f=json","f=image"),okvir:"vraćeni"};
+    return {href:safeLink(j.href),extent:x,crs:"EPSG:3765",W,H,poly:B.pts.map(r=>r.map(px)),scale,url:base+"?"+q.toString().replace("f=json","f=image"),okvir:"vraćeni"};
   },
   mapUrl(K,it,b,sz){
     const sw=window.L.CRS.EPSG3857.project(b.getSouthWest()), ne=window.L.CRS.EPSG3857.project(b.getNorthEast()), L=it._sloj;
-    const q=new URLSearchParams({bbox:[sw.x,sw.y,ne.x,ne.y].map(v=>v.toFixed(1)).join(","),bboxSR:"3857",imageSR:"3857",size:Math.min(2048,sz.x)+","+Math.min(2048,sz.y),dpi:"96",format:"png32",transparent:"true",
-      layers:"show:"+L.id,layerDefs:JSON.stringify({[L.id]:"OBJECTID="+Number(it.OBJECTID)}),f:"image"});
-    return K.url+"/export?"+q.toString();
+    const q=new URLSearchParams({bbox:[sw.x,sw.y,ne.x,ne.y].map(v=>v.toFixed(1)).join(","),bboxSR:"3857",imageSR:"3857",size:Math.min(2048,sz.x)+","+Math.min(2048,sz.y),format:L.img?"png":"png32",
+      ...(L.img?{mosaicRule:JSON.stringify({mosaicMethod:"esriMosaicLockRaster",lockRasterIds:[Number(it.OBJECTID)]})}:{dpi:"96",transparent:"true",layers:"show:"+L.id,layerDefs:JSON.stringify({[L.id]:"OBJECTID="+Number(it.OBJECTID)})}),f:"image"});
+    return (L.img?L.img+"/exportImage":K.url+"/export")+"?"+q.toString();
   },
   status(K,it,ctx){
     const PS=rkPlanStatus(it.a,ctx&&ctx.pl&&!ctx.pl.e?ctx.pl.v:null), d=RKAT.get(rkKey())?.dan||pzDan();

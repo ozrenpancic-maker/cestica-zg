@@ -941,8 +941,15 @@ async function krkTests(){
   let mode="ok", calls=[], rkMode="ok", rkCalls=[], ossOpt=null, ulN=0;
   const okj=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b)});
   w.fetch=(u,o={})=>{u=String(u); calls.push(u);
+    if(u.startsWith("https://gisportal.pgz.hr/server/rest/services/UI/PGZ_MD_RASTER_")){ rkCalls.push(u);
+      if(rkMode!=="stopped") return Promise.reject(new TypeError("Failed to fetch"));
+      if(/5UPU\/ImageServer\/query\?/.test(u)) return okj({features:[{attributes:{OBJECTID:66416,Name:"618_karta1_i.tif",KARTA_NAZIV:"618_karta1_i.tif",PLAN_NAZIV:"UPU 2 - Kornić",OPCINA:"Krk",MJERILO:null,KARTA_SIFRA:"618_karta1"}}]});
+      if(/\/query\?/.test(u)) return okj({features:[]});
+      if(/\/exportImage\?/.test(u)){const q=new URL(u).searchParams, b=q.get("bbox").split(",").map(Number); return okj({href:"https://gisportal.pgz.hr/server/rest/directories/arcgisoutput/x.png",width:800,height:800,extent:{xmin:b[0],ymin:b[1],xmax:b[2],ymax:b[3],spatialReference:{wkid:3765}}});}
+      return okj({}); }
     if(u.startsWith("https://gisportal.pgz.hr/server/rest/services/PP_RASTERI/PP_RASTERI/MapServer/")){ rkCalls.push(u);
       if(rkMode==="fail") return Promise.reject(new TypeError("Failed to fetch"));
+      if(rkMode==="stopped") return okj({error:{code:500,message:"Service PP_RASTERI/PP_RASTERI/MapServer not started ",details:[]}});
       if(/\/MapServer\/5\/query\?/.test(u)&&rkMode==="k4") return okj({features:["618_karta1","618_karta3a","618_karta4","618_karta2a"].map((s,i)=>({attributes:{OBJECTID:7090+i,Name:s+"_i.tif",KARTA_NAZIV:s+"_i.tif",PLAN_NAZIV:"UPU 2 - Kornić",OPCINA:"Krk",MJERILO:null,KARTA_SIFRA:s}}))});
       if(/\/MapServer\/5\/query\?/.test(u)) return okj({features:rkMode==="none"?[]:[
         {attributes:{OBJECTID:7097,Name:"618_karta2a_i.tif",KARTA_NAZIV:"2a. Promet",PLAN_NAZIV:"UPU 2 - Kornić",OPCINA:"KRK",MJERILO:2000,KARTA_SIFRA:"2a"}},
@@ -1019,6 +1026,11 @@ async function krkTests(){
    ok(/Detaljna namjena \(UPU\)/.test(txt(w,"sheet"))&&/Detaljna zona nije potvrđena/.test(tr)&&/UPU 2 - Kornić/.test(tr)&&/OBJECTID 7096/.test(tr)&&/sloj 5 RASTER_5UPU \(GK5\)/.test(tr)&&/618_karta1_i\.tif/.test(tr)&&/Datum provjere ?\d{4}-\d\d-\d\d/.test(tr)&&/preliminarno/.test(tr),"UPU karta: plan, list namjene, sloj, OBJECTID, datum provjere i pouzdanost; zona nije potvrđena");
    ok(rkCalls.some(u=>/\/12\/query\?/.test(u)&&/inSR=3765/.test(u))&&rkCalls.some(u=>/\/5\/query\?/.test(u)),"UPU karta: katalog se pita prostorno, u HTRS96 i GK5 sloju (ne po OBJECTID-u)");
    ok($(w,"rkSel")&&$(w,"rkSel").options[0].textContent.includes("Korištenje i namjena")&&q&&q.get("layerDefs")==='{"5":"OBJECTID=7096"}'&&q.get("bboxSR")==="3765"&&q.get("imageSR")==="3765"&&q.get("layers")==="show:5","UPU karta: list namjene prvi, export samo tog lista u HTRS96/TM");
+   {rkMode="stopped"; E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k);
+    const K=E("RASTER_KATALOZI").find(k=>k.id==="pgz"), r=await E("RK_ARCGIS").query(K,351573.08,4991067.93), it=r.items[0];
+    const im=it&&await E("RK_ARCGIS").img(K,it,E("KRK_CUR").parcel,1), mu=it&&E("RK_ARCGIS").mapUrl(K,it,w.L.latLngBounds([45.04,14.61],[45.05,14.62]),{x:600,y:400});
+    ok(it&&it.plan==="UPU 2 - Kornić"&&it._sloj.img&&/exportImage\?/.test(im.url)&&/esriMosaicLockRaster/.test(decodeURIComponent(im.url))&&/66416/.test(decodeURIComponent(mu)),"UPU karta: kad PGŽ zaustavi PP_RASTERI, listovi i izrez iz mozaika ImageServera (UI/PGZ_MD_RASTER_5UPU)");
+    rkMode="ok"; E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k);}
    {rkMode="k4"; const K=E("RASTER_KATALOZI").find(k=>k.id==="pgz"), r=await E("RK_ARCGIS").query(K,351573.08,4991067.93); rkMode="ok";
     const it=r.items;
     ok(it.length===4&&it[0].a.KARTA_SIFRA==="618_karta4"&&it[0].zona&&it[0].karta==="4. Način i uvjeti gradnje"&&it[1].vrsta==="namjena"&&it[1].karta==="1. Korištenje i namjena površina"&&it.some(x=>x.karta.startsWith("3A. Područja posebnih uvjeta")&&x.vrsta==="uvjeti"),"UPU 2: katalog daje samo nazive datoteka; listovi dobivaju naslove iz čl. 3. odluke, a karta 4 sa zonama (čl. 37.) ide prva");}
