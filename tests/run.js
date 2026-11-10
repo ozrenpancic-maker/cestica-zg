@@ -3693,6 +3693,7 @@ async function postojeceTests(){
     const sc=w.document.getElementById("potSir"); sc.checked=true; sc.dispatchEvent(new w.Event("change",{bubbles:true})); await tick(5);
     ok(/Dizalica topline\s*8\.750 €/.test(out())&&/Fotonaponska elektrana\s*6\.720 €/.test(out()),"Poticaji: energetsko siromaštvo 70 % (8.750 € i 8 kW × 840 € = 6.720 €)");}
    setv(w,"krkZahvat","rek","change"); await tick(20); let t=txt(w,"sheet"), L=w.document.querySelector("[data-zahvat-odredbe]");
+   ok(/Dizalica topline\s*8\.750 €/.test(w.document.getElementById("potOut").textContent)&&w.document.getElementById("potSir").checked,"Poticaji: upisani troškovi i odabir ostaju nakon promjene zahvata");
    {const o2=w.document.getElementById("dogOut"); ok(o2&&/Preostali tlocrt/.test(o2.textContent)&&w.document.getElementById("eFloors").value==="2","Dogradnja: izračun ostaje nakon promjene zahvata (ponovno crtanje lista)");}
    ok(L&&+L.dataset.zahvatOdredbe===14&&/čl\. 24\.a\./.test(L.textContent)&&/120 m²/.test(L.textContent)&&/VS/.test(L.textContent)&&/72\.a/.test(L.textContent),"Rekonstrukcija (Osijek): 14 odredbi plana (manja čestica, kig 1,0 ispod 120 m², VS, čl. 72.a)");
    const B=w.document.querySelector("[data-bez-dozvole]"); ok(B&&/NN 112\/17.*155\/23/.test(B.textContent)&&/zamjena prozora i vrata/.test(B.textContent)&&/glavni projekt/.test(B.textContent)&&/zakon\.hr/.test(B.innerHTML),"Rekonstrukcija: napomena o radovima bez građevinske dozvole (Pravilnik NN 112/17 … 155/23, čl. 3. i 5.)");

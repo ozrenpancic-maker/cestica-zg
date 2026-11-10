@@ -8343,29 +8343,32 @@ const POTICAJI={poziv:"EnU-6/26",naziv:"Javni poziv za poticanje korištenja obn
   url:"https://www.fzoeu.hr/docs/272/JP%20OIE%20i%20pohrana%20energije%20EnU-6_26.pdf",objava:"22. 7. 2026.",prijave:"od 2. 9. 2026. do kraja 2026. ili do iskorištenja sredstava (38 mil. €)",provjereno:"10. 11. 2026.",
   mjere:[{k:"M1",naziv:"Dizalica topline",max:12500,po:null},{k:"M2",naziv:"Fotonaponska elektrana",max:12000,po:{j:"kW",g:600,s:840}},{k:"M3",naziv:"Baterija (samo uz M2)",max:11200,po:{j:"kWh",g:350,s:490}}],
   stopa:{g:0.5,s:0.7},prag:"1.341,42 €"};
-function poticajiHtml(key){ const P=POTICAJI;
+const POT_V={}; // upisane vrijednosti kalkulatora (ostaju kad se list ponovno nacrta, npr. promjenom zahvata)
+function poticajiHtml(key){ const P=POTICAJI, v=id=>POT_V[id]!=null?` value="${esc(POT_V[id])}"`:"";
   return `<details class="acc" data-k="poticaji" data-poticaji="1"><summary><span>Poticaji za dizalicu topline i solarnu elektranu</span><b>FZOEU ${P.poziv}</b></summary><div class="calc" id="potCalc">`+
    `<p class="meta">${esc(P.naziv)} (objava ${P.objava}; prijave ${P.prijave}). Stanje provjereno ${P.provjereno}: prije prijave provjeri je li poziv još otvoren.</p>`+
    `<p class="eyebrow" style="margin:6px 0 2px">Uvjeti za kuću</p><ul class="zi" id="potUvjeti">`+
    `<li>izgrađena na temelju građevinske dozvole ili drugog akta o zakonitosti i nakon toga nije dograđivana ni mijenjana;</li>`+
    `<li>više od 50 % površine je stambeno, a kuća ima najviše 3 stana <i>ili</i> GBP do 600 m² <span id="potGbp"></span>;</li>`+
    `<li>prijavitelj ima prijavljeno prebivalište na adresi kuće najmanje 30 dana prije prijave;</li>`+
+   `<li>ne sufinancira se zamjena postojeće dizalice topline ili baterije ni zamjena odnosno proširenje postojeće solarne elektrane na istom obračunskom mjernom mjestu;</li>`+
    `<li>za dizalicu topline kuća mora imati energetski certifikat razreda C ili boljeg u kontinentalnoj, odnosno B ili boljeg u primorskoj Hrvatskoj (poziv ne određuje granicu tih područja).</li></ul>`+
-   P.mjere.map(m=>`<div class="kd"><label for="pot${m.k}">${esc(m.naziv)}: trošak (€)</label><input id="pot${m.k}" type="number" inputmode="decimal" min="0" step="100" placeholder="0">${m.po?`<input id="pot${m.k}j" type="number" inputmode="decimal" min="0" step="0.5" placeholder="${m.po.j}" style="max-width:6em"><span>${m.po.j}</span>`:""}</div>`).join("")+
-   `<div class="kd"><label><input id="potSir" type="checkbox"> Kućanstvo u riziku od energetskog siromaštva (prosječni mjesečni dohodak do ${P.prag}, mjere na jedinoj stambenoj nekretnini)</label></div>`+
+   P.mjere.map(m=>`<div class="kd"><label for="pot${m.k}">${esc(m.naziv)}: trošak (€)</label><input id="pot${m.k}" type="number" inputmode="decimal" min="0" step="100" placeholder="0"${v("pot"+m.k)}>${m.po?`<input id="pot${m.k}j" type="number" inputmode="decimal" min="0" step="0.5" placeholder="${m.po.j}" style="max-width:6em"${v("pot"+m.k+"j")}><span>${m.po.j}</span>`:""}</div>`).join("")+
+   `<div class="kd"><label><input id="potSir" type="checkbox"${POT_V.sir?" checked":""}> Kućanstvo u riziku od energetskog siromaštva (prosječni mjesečni ekvivalentni dohodak po članu kućanstva u 2025. do ${P.prag}, mjere na jedinoj stambeno uporabljivoj nekretnini)</label></div>`+
    `<div id="potOut"></div>`+
    `<p class="meta">Sufinanciranje: ${P.stopa.g*100} % prihvatljivih troškova, odnosno ${P.stopa.s*100} % za kućanstva u riziku od energetskog siromaštva. Za elektranu i bateriju poziv navodi i iznos po kW odnosno kWh; aplikacija uzima manji od dvaju iznosa. Za fasadu, stolariju i krov poziv za sve građane trenutno nije otvoren; posljednji takav bio je EnU-1/24 (zatvoren). <a href="${P.url}" target="_blank" rel="noopener">Tekst poziva (FZOEU)</a>.</p></div></details>`; }
 function poticajiUpdate(){ const o=document.getElementById("potOut"); if(!o) return; const P=POTICAJI, sir=!!(document.getElementById("potSir")||{}).checked, st=sir?P.stopa.s:P.stopa.g, num=id=>{const e=document.getElementById(id); const v=e?parseFloat(String(e.value).replace(",",".")):NaN; return isFinite(v)&&v>0?v:0;};
   let tot=0; const rows=[]; const m2=num("potM2")>0;
   for(const m of P.mjere){ const c=num("pot"+m.k); if(!c) continue; if(m.k==="M3"&&!m2){ rows.push([m.naziv,`<span class="bad">samo uz fotonaponsku elektranu (M2)</span>`]); continue; }
     let s=Math.min(c,m.max)*st; const cap=m.max*st; s=Math.min(s,cap); let nap="";
-    if(m.po){ const j=num("pot"+m.k+"j"); if(j){ const sj=j*(sir?m.po.s:m.po.g); if(sj<s){ s=sj; nap=` (${fmt(j)} ${m.po.j} × ${sir?m.po.s:m.po.g} €)`; } } else nap=" (upiši i snagu, odnosno kapacitet)"; }
-    tot+=s; rows.push([m.naziv,`${fmt(Math.round(s))} €${nap}`]); }
-  o.innerHTML=rows.length?rows.map(([a,b])=>`<div class="row"><span>${a}</span><span>${b}</span></div>`).join("")+`<div class="row"><span><b>Ukupno najviše (procjena)</b></span><span><b>${fmt(Math.round(tot))} €</b></span></div>`:`<p class="meta">Upiši procijenjeni trošak mjere da vidiš najveći poticaj.</p>`;
+    if(m.po){ const j=num("pot"+m.k+"j"); if(j){ const sj=j*(sir?m.po.s:m.po.g); if(sj<s){ s=sj; nap=` (${dec(Math.round(j*10)/10)} ${m.po.j} × ${sir?m.po.s:m.po.g} €)`; } } else nap=" (upiši i snagu, odnosno kapacitet)"; }
+    s=Math.round(s); tot+=s; rows.push([m.naziv,`${fmt(s)} €${nap}`]); }
+  if(!rows.length&&(num("potM2j")||num("potM3j"))) rows.push(["Trošak",`<span class="meta">upiši i procijenjeni trošak</span>`]);
+  o.innerHTML=rows.length?rows.map(([a,b])=>`<div class="row"><span>${a}</span><span>${b}</span></div>`).join("")+(tot?`<div class="row"><span><b>Ukupno najviše (procjena)</b></span><span><b>${fmt(tot)} €</b></span></div>`:""):`<p class="meta">Upiši procijenjeni trošak mjere da vidiš najveći poticaj.</p>`;
   const g=document.getElementById("potGbp"), d=document.getElementById("dogOut"), ef=document.getElementById("eFloors");
   if(g&&d&&ef){ const gb=(+d.dataset.zf)*(parseFloat(String(ef.value).replace(",","."))||0); g.innerHTML=gb?`(procjena za ovu kuću: ${fmt(gb)} m²${gb>600?`, <span class="bad">više od 600 m², pa vrijedi uvjet od najviše 3 stana</span>`:""})`:""; } }
-sheet.addEventListener("input",e=>{ if(/^pot|^eFloors$/.test(e.target.id||"")) poticajiUpdate(); });
-sheet.addEventListener("change",e=>{ if(e.target.id==="potSir") poticajiUpdate(); });
+sheet.addEventListener("input",e=>{ const id=e.target.id||""; if(/^potM/.test(id)) POT_V[id]=e.target.value; if(/^pot|^eFloors$/.test(id)) poticajiUpdate(); });
+sheet.addEventListener("change",e=>{ if(e.target.id==="potSir"){ POT_V.sir=e.target.checked; poticajiUpdate(); } });
 function dogUpdate(){
   const o=document.getElementById("dogOut"); if(!o) return; setTimeout(poticajiUpdate,0);
   const zf=+o.dataset.zf, tl=+o.dataset.tl||null, gbp=+o.dataset.gbp||null;
