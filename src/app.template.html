@@ -1909,7 +1909,8 @@ function rizTocka(parcel){try{return turf.pointOnFeature(parcel).geometry.coordi
 function posrednikTocka(par,lat,lon){ return posrednikUpit(par+"="+lat.toFixed(5)+","+lon.toFixed(5)); }
 async function posrednikUpit(qs){
   if(window.__posrednikHook) return window.__posrednikHook(qs);
-  const bases=[SRC_KRK.oss2,SRC_KRK.oss].filter(Boolean); if(!bases.length) throw new Error("posrednik nije postavljen");
+  // prvo Cloudflare (bez ograničenja prometa na besplatnom planu), Deno Deploy (20 GiB odlaznog prometa mjesečno) samo kad prvi ne vrati odgovor
+  const bases=[SRC_KRK.oss,SRC_KRK.oss2].filter(Boolean); if(!bases.length) throw new Error("posrednik nije postavljen");
   let last="posrednik ne odgovara";
   for(const b of bases){ const ac=new AbortController(), t=setTimeout(()=>ac.abort(),25000);
     try{ const r=await fetch(b+"?"+qs,{signal:ac.signal,cache:"no-store"}), j=await r.json().catch(()=>null);
