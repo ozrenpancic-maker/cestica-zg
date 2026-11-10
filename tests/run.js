@@ -3786,10 +3786,10 @@ async function postojeceTests(){
    ok(/nisu unesene/.test(E("zahvatOdredbeHtml")(null,"rek",null)),"Plan bez unesenih odredbi: jasno piše da nisu unesene");
    {const R=E("RULES_KRK"), cnt=(L,z)=>{const m=E("zahvatOdredbeHtml")(L,z,null).match(/data-zahvat-odredbe="(\d+)"/); return m?+m[1]:-1;};
     const RS=E("krkRuleSetJls")("RIJEKA",{p:{OZNAKA_NAMJENE:"S",NASELJE:"Rijeka"}});
-    ok(cnt(R.rekonstrukcija,"rek")===6&&cnt(R.rekonstrukcija,"zamj")===0&&/čl\. 56\./.test(E("zahvatOdredbeHtml")(R.rekonstrukcija,"nadogr",null))&&/čl\. 17\./.test(E("zahvatOdredbeHtml")(R.rekonstrukcija,"rek",null)),"Rekonstrukcija (PPUG Krk): 6 odredbi (čl. 17., 56., 170., 167.); za zamjensku nema posebnih");
-    ok(RS&&cnt(RS.rekonstrukcija,"rek")===7&&cnt(RS.rekonstrukcija,"zamj")===4&&/25 %/.test(E("zahvatOdredbeHtml")(RS.rekonstrukcija,"dogr",null)),"Rekonstrukcija (GUP Rijeke): čl. 88., 156. (25 %, izmjene SN 14/2023) i 324.; zamjenska 4 odredbe");
-    ok(cnt(R.hrGradovi.SPLIT.rekonstrukcija,"nadogr")===6&&cnt(R.hrGradovi.SPLIT.rekonstrukcija,"zamj")===2&&/108\./.test(E("zahvatOdredbeHtml")(R.hrGradovi.SPLIT.rekonstrukcija,"rek",null)),"Rekonstrukcija (GUP Splita): čl. 33., 49., 93., 108.");
-    ok(cnt(R.hrGradovi.ZADAR.rekonstrukcija,"rek")===9&&cnt(R.hrGradovi.ZADAR.rekonstrukcija,"zamj")===2&&/prizemna zgrada može se nadograditi/.test(E("zahvatOdredbeHtml")(R.hrGradovi.ZADAR.rekonstrukcija,"nadogr",null)),"Rekonstrukcija (PPUG Zadra): čl. 64.b, 66., 90., 152.–154., 363.–365.");}
+    ok(cnt(R.rekonstrukcija,"rek")===9&&cnt(R.rekonstrukcija,"zamj")===1&&/čl\. 56\./.test(E("zahvatOdredbeHtml")(R.rekonstrukcija,"nadogr",null))&&/čl\. 17\./.test(E("zahvatOdredbeHtml")(R.rekonstrukcija,"rek",null)),"Rekonstrukcija (PPUG Krk): 9 odredbi (čl. 17., 56., 78., 167., 170.); za zamjensku samo čl. 170. (Kornić, Vrh)");
+    ok(RS&&cnt(RS.rekonstrukcija,"rek")===8&&cnt(RS.rekonstrukcija,"zamj")===3&&/25 %/.test(E("zahvatOdredbeHtml")(RS.rekonstrukcija,"dogr",null)),"Rekonstrukcija (GUP Rijeke): čl. 88., 156. (25 %, izmjene SN 14/2023) i 324.; zamjenska 3 odredbe");
+    ok(cnt(R.hrGradovi.SPLIT.rekonstrukcija,"nadogr")===8&&cnt(R.hrGradovi.SPLIT.rekonstrukcija,"zamj")===2&&/108\./.test(E("zahvatOdredbeHtml")(R.hrGradovi.SPLIT.rekonstrukcija,"rek",null)),"Rekonstrukcija (GUP Splita): čl. 33., 49., 93., 108.");
+    ok(cnt(R.hrGradovi.ZADAR.rekonstrukcija,"rek")===11&&cnt(R.hrGradovi.ZADAR.rekonstrukcija,"zamj")===3&&/prizemna zgrada može se nadograditi/.test(E("zahvatOdredbeHtml")(R.hrGradovi.ZADAR.rekonstrukcija,"nadogr",null)),"Rekonstrukcija (PPUG Zadra): čl. 64.b, 66., 90., 152.–154., 363.–365.");}
    w.localStorage.removeItem("krkZahvat"); E("KRK_ZAHVAT=''");
    ok(errs.length===0,"bez JS grešaka (postojeće zgrade): "+errs.join(" | "));}
   {const {w,errs}=await run(false); const Z=w.document.getElementById("postZg");
