@@ -2446,14 +2446,29 @@ async function skenKrkTests(){
   w.fetch=(u)=>{u=String(u); const m=u.match(/data\/(kat_krk|zg3d_krk)\/(.+\.json)$/); if(m){ const pth=path.join(__dirname,"..","data",m[1],m[2]); return Promise.resolve({ok:fs.existsSync(pth),status:fs.existsSync(pth)?200:404,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(pth,"utf8")))}); }
     return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null),text:()=>Promise.resolve("")}); };
   const box=(b,props)=>({type:"Feature",properties:props,geometry:{type:"Polygon",coordinates:[[[b[0],b[1]],[b[2],b[1]],[b[2],b[3]],[b[0],b[3]],[b[0],b[1]]]]}});
-  let N=[]; w.__skenHook=u=>/NAMJENA_POVRSINA/.test(u)?{type:"FeatureCollection",features:N}:{type:"FeatureCollection",features:[]};
+  let N=[], PLN=[]; w.__skenHook=u=>/NAMJENA_POVRSINA/.test(u)?{type:"FeatureCollection",features:N}:/IZRADA_PP/.test(u)?{type:"FeatureCollection",features:PLN}:{type:"FeatureCollection",features:[]};
   const GP={POLAZNA_NAMJENA:"građevinsko područje",PRIMARNA_NAMJENA:"naselje",OPCINA_GRAD:"KRK",NASELJE:"Kornić",IZGRADJENOST:"izgrađeni dio",OZNAKA_NAMJENE:"GP"};
   N=[box([14.6125,45.0430,14.6185,45.0465],GP)];
-  E("map").setView([45.044662,14.615334],18,{animate:false}); $(w,"lyrSken").checked=true; $(w,"lyrSken").dispatchEvent(new w.Event("change",{bubbles:true})); await tick(400);
+  E("map").setView([45.044662,14.615334],18,{animate:false}); const gb0=E("map").getBounds.bind(E("map")); E("map").getBounds=()=>{ const c=E("map").getCenter(); return Math.abs(c.lat-45.044662)<1e-4?w.L.latLngBounds([45.0439,14.6141],[45.0454,14.6165]):gb0(); }; $(w,"lyrSken").checked=true; $(w,"lyrSken").dispatchEvent(new w.Event("change",{bubbles:true})); await tick(400);
   let R=E("SKEN").res, f=R&&R.out.find(x=>x.properties.ces==="735/58");
   ok(R&&R.C>=4&&R.out.length>=4&&f&&Math.abs(f.properties.A-599)<2&&f.properties.minC===500&&["pot","izg"].includes(f.properties.k),"Skener Krk (Kornić): stvarne čestice iz katastra DGU, k.č. 735/58 (599 m²) uz najmanje 500 m² za slobodnostojeću kuću (PPUG Krk) → "+(f?f.properties.k:"?")+"; pregledano "+(R?R.C:0));
   ok(R.out.some(x=>x.properties.k==="izg")&&R.out.some(x=>x.properties.k==="mala"),"Skener Krk: izgrađene čestice (zgrade iz katastra) i premale čestice razvrstane");
-  ok(/Otok Krk: čestice i zgrade iz katastra DGU/.test(txt(w,"skenInfo"))&&/UPU-ovi u drugim naseljima nisu uzeti u obzir/.test(txt(w,"skenInfo")),"Skener Krk: izvor i ograničenje (UPU) navedeni");
+  ok(/Otok Krk: čestice i zgrade iz katastra DGU/.test(txt(w,"skenInfo"))&&/važeći UPU-ovi iz evidencije planova PGŽ/.test(txt(w,"skenInfo")),"Skener Krk: izvor naveden (uključivo evidenciju UPU-ova)");
+  const cids=R.out.map(x=>x.properties.ko+"|"+x.properties.ces); ok(new Set(cids).size===cids.length,"Skener Krk: čestica na granici kvadrata katastra prikazana je jednom ("+cids.length+")");
+  // iznimka (Grad Krk: iznimno 400 m²) → razred »izn« za neizgrađenu česticu između 400 i 500 m²
+  const izn=R.out.filter(x=>x.properties.k==="izn"); ok(izn.length>0&&izn.every(x=>x.properties.A>=400&&x.properties.A<500),"Skener Krk: posebna odredba za manje čestice (iznimno 400 m²) → razred izn ("+izn.length+")");
+  // važeći UPU koji aplikacija nije obradila → razred »plan«, nijedna »potencijalna«
+  PLN=[box([14.6125,45.0430,14.6185,45.0465],{GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"UPU testnog naselja"})]; E("skenPokreni()"); await tick(400); R=E("SKEN").res;
+  ok(R.out.length>10&&R.out.every(x=>x.properties.k==="plan"||x.properties.k==="bez")&&R.out.some(x=>x.properties.k==="plan"&&/aplikacija ga još nije obradila/.test(x.properties.razlog||"")),"Skener Krk: pod važećim UPU-om koji nije obrađen → razred »plan« s razlogom, nijedna »potencijalna«");
+    PLN=[];
+  // Malinska-Dubašnica: skupine imaju samo tip »stamb« → isti pad na prvi tip kao u analizi čestice
+  const RK=JSON.parse(fs.readFileSync(path.join(__dirname,"../src/rules_krk.json"),"utf8")), mal=RK.ostaleJls["MALINSKA-DUBAŠNICA"].grupe[0].tipovi.stamb.slob.minC;
+  N=[box([14.6125,45.0430,14.6185,45.0465],{...GP,OPCINA_GRAD:"MALINSKA-DUBAŠNICA",NASELJE:"Malinska",OZNAKA_NAMJENE:"GPN-1"})]; E("skenPokreni()"); await tick(400); R=E("SKEN").res; f=R.out.find(x=>x.properties.ces==="735/58");
+  ok(f&&f.properties.minC===mal&&!R.out.every(x=>x.properties.k==="bez"),"Skener Krk: Malinska-Dubašnica (GPN-1) → najmanje "+mal+" m² iz PPUO-a, ne »bez« ("+(f&&f.properties.minC)+")");
+  // Baška N1: dvojna kuća nije dozvoljena → »bez« s razlogom
+  N=[box([14.6125,45.0430,14.6185,45.0465],{...GP,OPCINA_GRAD:"BAŠKA",NASELJE:"Baška",OZNAKA_NAMJENE:"N1"})]; E("KRK_TIP.oblik='dvoj'"); E("skenPokreni()"); await tick(400); R=E("SKEN").res;
+  ok(R.out.length>10&&R.out.every(x=>x.properties.k==="bez"&&/nije dozvoljena/.test(x.properties.razlog||"")),"Skener Krk: Baška N1, dvojna kuća → nije dozvoljena, nijedna »potencijalna«");
+    E("KRK_TIP.oblik='slob'"); N=[box([14.6125,45.0430,14.6185,45.0465],GP)];
   // neizgrađeni dio GP-a → UPU; izvan GP-a (poljoprivredno) se ne prikazuje
   N=[box([14.6125,45.0430,14.6185,45.0465],{...GP,IZGRADJENOST:"neizgrađeni dio"})]; E("skenPokreni()"); await tick(400); R=E("SKEN").res;
   ok(R.out.length>=4&&!R.out.some(x=>x.properties.k==="pot")&&R.out.some(x=>x.properties.k==="upu"),"Skener Krk: neizgrađeni dio građevinskog područja → razred UPU, nijedna »potencijalna«");
@@ -2461,7 +2476,9 @@ async function skenKrkTests(){
   ok(R.out.length===0&&R.C>=4,"Skener Krk: izvan građevinskog područja nema razvrstanih čestica");
   // oblik kuće mijenja najmanju površinu
   E("map").setView([45.044662,14.615334],18,{animate:false}); N=[box([14.6125,45.0430,14.6185,45.0465],GP)]; E("KRK_TIP.oblik='dvoj'"); E("skenPokreni()"); await tick(400); R=E("SKEN").res; f=R.out.find(x=>x.properties.ces==="735/58");
-  const dv=E("RULES_KRK").tipovi.obit.dvoj.minC; ok(f&&f.properties.minC===dv,"Skener Krk: dvojna kuća → najmanja površina "+dv+" m² iz PPUG-a"); E("KRK_TIP.oblik='slob'");
+  const dv=E("RULES_KRK").tipovi.obit.dvoj.minC; ok(f&&f.properties.minC===dv,"Skener Krk: dvojna kuća → najmanja površina "+dv+" m² iz PPUG-a");
+  E("KRK_TIP.oblik='ugr'"); E("skenPokreni()"); await tick(400); R=E("SKEN").res; f=R.out.find(x=>x.properties.ces==="735/58");
+  ok(f&&f.properties.minC===dv&&/dvojna/.test(R.tipTxt),"Skener Krk: ugrađena kuća (PPUG Krk je nema) → kao u analizi čestice dvojna, "+dv+" m²"); E("KRK_TIP.oblik='slob'");
   // izvan Krka i Zagreba
   E("map").setView([45.555,18.69],18,{animate:false}); E("skenPokreni()"); await tick(100); ok(/Grad Zagreb, otok Krk i Split/.test(txt(w,"skenInfo")),"Skener: izvan Zagreba, Krka i Splita (Osijek) jasna poruka");
   $(w,"lyrSken").checked=false; $(w,"lyrSken").dispatchEvent(new w.Event("change",{bubbles:true}));
