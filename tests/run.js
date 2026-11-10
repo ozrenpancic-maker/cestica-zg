@@ -3792,6 +3792,7 @@ async function postojeceTests(){
     ok(RS&&cnt(RS.rekonstrukcija,"rek")===8&&cnt(RS.rekonstrukcija,"zamj")===3&&/25 %/.test(E("zahvatOdredbeHtml")(RS.rekonstrukcija,"dogr",null)),"Rekonstrukcija (GUP Rijeke): čl. 88., 156. (25 %, izmjene SN 14/2023) i 324.; zamjenska 3 odredbe");
     ok(cnt(R.hrGradovi.SPLIT.rekonstrukcija,"nadogr")===8&&cnt(R.hrGradovi.SPLIT.rekonstrukcija,"zamj")===2&&/108\./.test(E("zahvatOdredbeHtml")(R.hrGradovi.SPLIT.rekonstrukcija,"rek",null)),"Rekonstrukcija (GUP Splita): čl. 33., 49., 93., 108.");
     ok(cnt(R.hrGradovi.ZADAR.rekonstrukcija,"rek")===11&&cnt(R.hrGradovi.ZADAR.rekonstrukcija,"zamj")===3&&/prizemna zgrada može se nadograditi/.test(E("zahvatOdredbeHtml")(R.hrGradovi.ZADAR.rekonstrukcija,"nadogr",null)),"Rekonstrukcija (PPUG Zadra): čl. 64.b, 66., 90., 152.–154., 363.–365.");}
+   {const h=E("radoviBezDozvoleHtml")("dogr"); ok(/data-kuca-1968/.test(h)&&/15\. veljače 1968\./.test(h)&&/NN 155\/25, čl\. 145\./.test(h)&&/čl\. 131\./.test(h)&&/snimku iz zraka/i.test(h)&&/izvedenom stanju/.test(h)&&!/data-kuca-1968/.test(E("radoviBezDozvoleHtml")("nova")),"Stara kuća prije 15. 2. 1968.: Zakon o gradnji NN 155/25 čl. 145., uporabna dozvola, provjera snimkom iz zraka; samo za zahvate na postojećoj zgradi");}
    w.localStorage.removeItem("krkZahvat"); E("KRK_ZAHVAT=''");
    ok(errs.length===0,"bez JS grešaka (postojeće zgrade): "+errs.join(" | "));}
   {const {w,errs}=await run(false); const Z=w.document.getElementById("postZg");
