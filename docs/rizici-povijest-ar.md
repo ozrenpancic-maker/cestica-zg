@@ -28,7 +28,7 @@ Stanje 24. 10. 2026., grana `razvoj`.
 - Licenca na data.gov.hr nije navedena. **Otvoreno:** potvrditi s Hrvatskim vodama smije li se servis koristiti u aplikaciji.
 
 **Provjera**
-Popis slojeva provjeren je na Denou (`?poplave=…&dijag=1`). Čitanje slike treba još jednom provjeriti istim URL-om nakon objave; poznata točka u području opasnosti (npr. uz Savu) mora vratiti `pogodak: true`.
+Popis slojeva provjeren je na Denou (`?poplave=…&dijag=1`). Čitanje slike treba još jednom provjeriti istim URL-om nakon objave (od 10. 11. 2026. Deno odgovara samo stranicama aplikacije, pa izravno otvaranje adrese vraća prazan 403; provjera: `curl -H 'Origin: https://app.cesticahr.com' '<adresa>/?poplave=…&dijag=1'`); poznata točka u području opasnosti (npr. uz Savu) mora vratiti `pogodak: true`.
 
 ### Internet (HAKOM)
 

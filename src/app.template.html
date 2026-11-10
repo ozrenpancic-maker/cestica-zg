@@ -1913,7 +1913,7 @@ async function posrednikUpit(qs){
   // prvo Cloudflare (bez ograničenja prometa na besplatnom planu), Deno Deploy (20 GiB odlaznog prometa mjesečno) samo kad prvi ne vrati odgovor
   const bases=[SRC_KRK.oss,SRC_KRK.oss2].filter(Boolean); if(!bases.length) throw new Error("posrednik nije postavljen");
   let last="posrednik ne odgovara";
-  for(const b of bases){ const ac=new AbortController(), t=setTimeout(()=>ac.abort(),b===bases[0]&&bases.length>1?10000:25000); // prvi kraće, da rezerva stigne na red
+  for(const b of bases){ const ac=new AbortController(), t=setTimeout(()=>ac.abort(),b===bases[0]&&bases.length>1?20000:25000); // prvi nešto kraće, da rezerva stigne na red
     try{ const r=await fetch(b+"?"+qs,{signal:ac.signal,cache:"no-store"}), j=await r.json().catch(()=>null);
       if(r.ok&&j&&j.ok) return j; last=(j&&j.greska)||("HTTP "+r.status); }
     catch(e){ last=e.name==="AbortError"?"posrednik ne odgovara":"posrednik nije dostupan"; } finally{ clearTimeout(t); } }
