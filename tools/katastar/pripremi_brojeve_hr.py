@@ -7,12 +7,14 @@ katalog DGU-a: „nema uvjeta za pristup i korištenje”. Za svaku česticu spr
 Korištenje (Python 3, pip install lxml pyproj shapely):
   python3 tools/katastar/pripremi_brojeve_hr.py --ulaz MAPA_SA_ZIPOVIMA --datum 2026-11-09
   (MAPA/ko-329835.zip …; grad svake k.o. zadan je u GRADOVI)
-Izlaz: data/kat_hr/index.json i data/kat_hr/<matični broj>.json = {"v":1,"ko":mb,"c":{"broj":[lon,lat]}} u milijuntinkama stupnja.
+Izlaz: data/kat_hr/index.json i data/kat_hr/<matični broj>.json = {"v":1,"ko":mb,"c":{"broj":[lon,lat,pov,zgr]}}: točka u milijuntinkama
+stupnja, grafička površina (m², zaokružena) i 1 ako je na čestici točka zgrade iz sloja zgrada istog DKP-a (inače 0); za skener čestica.
 """
 import argparse, glob, io, json, os, shutil, zipfile
 from lxml import etree
 from pyproj import Transformer
 from shapely.geometry import Polygon, MultiPolygon
+from shapely.strtree import STRtree
 
 G = "{http://www.opengis.net/gml}"; O = "{http://oss}"
 T = Transformer.from_crs(3765, 4326, always_xy=True)
@@ -51,19 +53,34 @@ def main():
             if e.tag == O + "NAZIV": naziv = e.text
             elif e.tag == O + "MATICNI_BROJ": mb = e.text
         if mb not in GRAD: print("preskačem k.o. izvan popisa:", mb, naziv); continue
-        C = {}; x0 = y0 = 1e9; x1 = y1 = -1e9
+        C = {}; x0 = y0 = 1e9; x1 = y1 = -1e9; GEO, KEY = [], []
         for _, f in etree.iterparse(citaj(z, "katastarske_cestice.gml"), tag=O + "CESTICE", huge_tree=True):
             broj = f.findtext(O + "BROJ_CESTICE"); g = f.find(O + "GEOM"); P = poligon(g) if g is not None else None
+            pg = f.findtext(O + "POVRSINA_GRAFICKA")
             f.clear()
             while f.getprevious() is not None: del f.getparent()[0]
             if not broj or P is None or P.is_empty: continue
             p = P.representative_point(); lon, lat = T.transform(p.x, p.y)
-            C[broj] = [round(lon * 1e6), round(lat * 1e6)]
+            pov = round(float(pg)) if pg and float(pg) > 0 else round(P.area)
+            C[broj] = [round(lon * 1e6), round(lat * 1e6), pov, 0]
+            GEO.append(P); KEY.append(broj)
             x0 = min(x0, lon); x1 = max(x1, lon); y0 = min(y0, lat); y1 = max(y1, lat)
+        # zgrade: točka unutar obrisa zgrade → čestica na kojoj leži (oznaka zgr = 1)
+        fz = citaj(z, "nacini_uporabe_zgrada.gml"); nz = 0
+        if fz is not None and GEO:
+            tree = STRtree(GEO)
+            for _, f in etree.iterparse(fz, tag=O + "ZGRADE", huge_tree=True):
+                g = f.find(O + "GEOM"); Z = poligon(g) if g is not None else None
+                f.clear()
+                while f.getprevious() is not None: del f.getparent()[0]
+                if Z is None or Z.is_empty: continue
+                q = Z.representative_point()
+                for i in tree.query(q, predicate="intersects"):
+                    C[KEY[int(i)]][3] = 1; nz += 1; break
         with open(os.path.join(out, mb + ".json"), "w", encoding="utf-8") as fh:
             json.dump({"v": 1, "ko": mb, "naziv": naziv, "preuzeto": a.datum, "c": C}, fh, ensure_ascii=False, separators=(",", ":"))
         kos[mb] = {"naziv": naziv, "grad": GRAD[mb], "cestica": len(C), "okvir": [round(x0, 4), round(y0, 4), round(x1, 4), round(y1, 4)]}
-        print(mb, naziv, GRAD[mb], len(C), flush=True)
+        print(mb, naziv, GRAD[mb], len(C), "zgrada", nz, flush=True)
     nema = sorted(set(GRAD) - set(kos))
     if nema: print("NEDOSTAJE:", " ".join(nema))
     idx = {"v": 1, "izvor": "Državna geodetska uprava, digitalni katastarski plan (ATOM, oss.uredjenazemlja.hr)",
