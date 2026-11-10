@@ -9482,7 +9482,7 @@ function skenKrkRazred(np,plans,A,zgrada){
   const minC=P&&P.minC>0?P.minC:null; if(!minC) return {k:"bez",razlog:"najmanja površina nije propisana",tip,kod};
   const upu=blok||(S.st==="provjera"&&S.na&&RULES_KRK.izravnaProvedba&&RULES_KRK.izravnaProvedba.bezNaselja.includes(S.na)&&RS===RULES_KRK);
   const neizgr=RS.neizgradeni&&(S.notes||[]).includes(RS.neizgradeni.msg);
-  let k; if(A>=minC) k=zgrada?"izg":upu?"upu":"pot"; else k=P.minCIznimno&&A>=P.minCIznimno&&!zgrada?"izn":"mala";
+  let k; if(A>=minC) k=zgrada?"izg":upu?"upu":"pot"; else k=P.minCIznimno&&A>=P.minCIznimno&&!zgrada&&!upu?"izn":"mala"; // pod obvezom UPU-a iznimka iz plana jedinice ne vrijedi izravno
   return {k,minC,minCIzn:P.minCIznimno||null,tip,kod,razlog:upu?S.msg:neizgr?RS.neizgradeni.msg:null}; }
 async function skenPokreniKrk(id,info){
   if(info) info.innerHTML=`<p class="hint"><span class="spin"></span>Pregledavam čestice…</p>`;
