@@ -2430,7 +2430,7 @@ async function skenSplitTests(){
   ok(g("1546")&&g("1546").properties.k==="izg"&&g("1553")&&g("1553").properties.k==="mala","Skener Split: čestica sa zgradom iz katastra → izgrađena (1546), premala → mala (1553, 297 m²)");
   const desno=R.out.filter(f=>f.properties.c[0]>lon+0.0001), lijevo=R.out.filter(f=>f.properties.c[0]<lon-0.0001);
   ok(desno.length>5&&desno.every(f=>f.properties.k==="bez"&&/1\.3 i 3\.5/.test(f.properties.razlog||""))&&lijevo.length>5&&lijevo.every(f=>f.properties.k!=="bez"),"Skener Split: boja koju dijele 1.3 (s uvjetima) i 3.5 (bez) → razred bez odluke, s razlogom");
-  ok(R.out.every(f=>f.geometry&&f.geometry.type==="Polygon")&&/Split: čestice iz katastra DGU/.test(txt(w,"skenInfo"))&&/krug iste površine/.test(txt(w,"skenInfo"))&&/prijedlog, nije potvrda/.test(txt(w,"skenInfo")),"Skener Split: izvor, prikaz kruga i status prijedloga navedeni");
+  ok(R.out.every(f=>f.geometry&&f.geometry.type==="Polygon")&&/Split: čestice iz katastra DGU/.test(txt(w,"skenInfo"))&&/krug iste površine/.test(txt(w,"skenInfo"))&&/s obrađenim urbanim pravilom/.test(txt(w,"skenInfo"))&&/Zašto bez razvrstavanja/.test(txt(w,"skenInfo"))&&/prijedlog, nije potvrda/.test(txt(w,"skenInfo")),"Skener Split: izvor, prikaz kruga i status prijedloga navedeni");
   // dvojna kuća → 300 m² za 2.4
   E("KRK_TIP.oblik='dvoj'"); E("skenPokreni()"); await tick(400); R=E("SKEN").res;
   ok(g("1550")&&g("1550").properties.minC===300&&g("1553")&&g("1553").properties.k==="mala"&&/dvojna/.test(txt(w,"skenInfo")),"Skener Split: dvojna kuća → najmanje 300 m² u pravilu 2.4 (k.č. 1553 s 297 m² ostaje premala)");
@@ -2472,6 +2472,7 @@ async function skenKrkTests(){
   // neizgrađeni dio GP-a → UPU; izvan GP-a (poljoprivredno) se ne prikazuje
   N=[box([14.6125,45.0430,14.6185,45.0465],{...GP,IZGRADJENOST:"neizgrađeni dio"})]; E("skenPokreni()"); await tick(400); R=E("SKEN").res;
   ok(R.out.length>=4&&!R.out.some(x=>x.properties.k==="pot")&&R.out.some(x=>x.properties.k==="upu"),"Skener Krk: neizgrađeni dio građevinskog područja → razred UPU, nijedna »potencijalna«");
+  ok(R.out.filter(x=>x.properties.k==="upu").every(x=>x.properties.minC===500&&x.properties.A>=500)&&R.out.some(x=>x.properties.k==="mala"&&x.properties.A<400)&&!/najmanje 0 m²/.test(txt(w,"skenInfo")),"Skener Krk: u neizgrađenom dijelu »UPU« samo za čestice od najmanje 500 m², manje su »mala«; nigdje »najmanje 0 m²«");
   N=[box([14.6125,45.0430,14.6185,45.0465],{POLAZNA_NAMJENA:"poljoprivredno tlo",PRIMARNA_NAMJENA:"osobito vrijedno obradivo tlo",OPCINA_GRAD:"KRK"})]; E("skenPokreni()"); await tick(400); R=E("SKEN").res;
   ok(R.out.length===0&&R.C>=4,"Skener Krk: izvan građevinskog područja nema razvrstanih čestica");
   // oblik kuće mijenja najmanju površinu
@@ -2479,6 +2480,9 @@ async function skenKrkTests(){
   const dv=E("RULES_KRK").tipovi.obit.dvoj.minC; ok(f&&f.properties.minC===dv,"Skener Krk: dvojna kuća → najmanja površina "+dv+" m² iz PPUG-a");
   E("KRK_TIP.oblik='ugr'"); E("skenPokreni()"); await tick(400); R=E("SKEN").res; f=R.out.find(x=>x.properties.ces==="735/58");
   ok(f&&f.properties.minC===dv&&/dvojna/.test(R.tipTxt),"Skener Krk: ugrađena kuća (PPUG Krk je nema) → kao u analizi čestice dvojna, "+dv+" m²"); E("KRK_TIP.oblik='slob'");
+  // obuhvat Krka bez pripremljenog katastra (Crikvenica) → podaci nisu dostupni, ne »nema čestica«
+  E("map").setView([45.17,14.69],18,{animate:false}); E("skenPokreni()"); await tick(300);
+  ok(!E("SKEN").res&&/Podaci nisu dostupni \(katastar za ovo područje nije pripremljen/.test(txt(w,"skenInfo")),"Skener Krk: izvan pripremljenog katastra otoka → »Podaci nisu dostupni«");
   // izvan Krka i Zagreba
   E("map").setView([45.555,18.69],18,{animate:false}); E("skenPokreni()"); await tick(100); ok(/Grad Zagreb, otok Krk i Split/.test(txt(w,"skenInfo")),"Skener: izvan Zagreba, Krka i Splita (Osijek) jasna poruka");
   $(w,"lyrSken").checked=false; $(w,"lyrSken").dispatchEvent(new w.Event("change",{bubbles:true}));

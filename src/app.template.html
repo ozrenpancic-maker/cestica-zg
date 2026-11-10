@@ -9366,7 +9366,7 @@ const SKEN_STIL={pot:{color:"#137a3a",weight:2,fillColor:"#1a9850",fillOpacity:.
   izg:{color:"#3b5f91",weight:1,fillColor:"#91bfdb",fillOpacity:.3},izn:{color:"#a07800",weight:1.5,fillColor:"#fee08b",fillOpacity:.45},
   mala:{color:"#c0392b",weight:1,fillColor:"#d73027",fillOpacity:.12,dashArray:"3 3"},plan:{color:"#8e44ad",weight:1.5,fillColor:"#c39bd3",fillOpacity:.25,dashArray:"4 3"},bez:{color:"#777",weight:1,fillOpacity:0,dashArray:"2 4"}};
 const SKEN_NAZ={pot:"potencijalna građevna čestica (neizgrađena, dovoljno velika)",upu:"dovoljno velika, ali u obuhvatu obveznog UPU-a",izg:"izgrađena, dovoljno velika",
-  izn:"manja od propisane; pravilo ima posebnu odredbu za manje čestice",mala:"manja od propisane najmanje površine",plan:"pod UPU-om koji aplikacija nije obradila ili čija zona nije poznata (uvjete propisuje UPU)",bez:"najmanja površina nije propisana ili pravilo nije pronađeno"};
+  izn:"manja od propisane; pravilo ima posebnu odredbu za manje čestice",mala:"manja od propisane najmanje površine",plan:"pod UPU-om koji aplikacija nije obradila ili čija zona nije poznata (uvjete propisuje UPU)",bez:"nije razvrstana: najmanja površina nije propisana ili nije jednoznačna, oblik kuće nije dozvoljen ili pravilo nije pronađeno"};
 const UPU_URL=BASE+"4b_procedure_JR_PJR_swipe/FeatureServer/19/query";
 // čisti razvrstaj jedne čestice (bez mreže): ulaz su podaci, izlaz razred i obrazloženje
 function skenRazred(o){
@@ -9429,16 +9429,20 @@ async function skenPokreniGrad(id,info,HG){
   const fail=m=>{ if(id!==SKEN.id) return; if(info) info.innerHTML=`<p class="flag">Podaci nisu dostupni (${esc(m)}).</p>`; const ch=document.getElementById("skenChip"); if(ch) ch.innerHTML=`<span class="meta">Skener: podaci nisu dostupni</span>`; };
   let I; try{ I=await katHrIndex(); }catch(e){ return fail(e.message||"indeks čestica"); }
   const kos=Object.entries(I.ko).filter(([,v])=>v.okvir&&!(v.okvir[2]<bb[0]||v.okvir[0]>bb[2]||v.okvir[3]<bb[1]||v.okvir[1]>bb[3]));
-  const pts=[]; for(const [mb,v] of kos){ let X; try{X=await katHrBrojevi(mb)}catch(e){continue}
-    for(const [broj,q] of Object.entries(X&&X.c||{})){ const lon=q[0]/1e6, lat=q[1]/1e6; if(lon<bb[0]||lon>bb[2]||lat<bb[1]||lat>bb[3]||q[2]==null) continue; pts.push({broj,ko:v.naziv,lon,lat,A:q[2],z:q[3]===1}); } }
+  const pts=[]; let koE=0; for(const [mb,v] of kos){ let X; try{X=await katHrBrojevi(mb)}catch(e){koE++; continue}
+    for(const [broj,q] of Object.entries(X&&X.c||{})){ const lon=q[0]/1e6, lat=q[1]/1e6; if(lon<bb[0]||lon>bb[2]||lat<bb[1]||lat>bb[3]||!(q[2]>0)) continue; pts.push({broj,ko:v.naziv,lon,lat,A:q[2],z:q[3]===1}); } }
   if(id!==SKEN.id) return;
   if(pts.length>2500){ if(info) info.innerHTML=`<p class="meta">Približi kartu: u vidljivom dijelu je ${fmt(pts.length)} čestica.</p>`; return; }
   // list KN_1_2 za vidljivi dio, približno kvadratni pikseli od 0,5 m (najviše 1600 px po strani)
   const la=(bb[1]+bb[3])/2, mx=111320*Math.cos(la*Math.PI/180), my=110540; let mpx=0.5, W=Math.ceil((bb[2]-bb[0])*mx/mpx), H=Math.ceil((bb[3]-bb[1])*my/mpx); const kf=Math.max(W,H)/1600; if(kf>1){ mpx*=kf; W=Math.ceil(W/kf); H=Math.ceil(H/kf); }
   let d=null, e0="izvor nije dostupan";
-  for(const host of ZB.wms||[]){ try{ const r=await fetch(hrZonaUrl(ZB,host,bb,W,H),{mode:"cors",credentials:"omit"}); if(!r.ok) throw new Error("HTTP "+r.status);
-      const bm=await createImageBitmap(await r.blob()), c=document.createElement("canvas"); c.width=W; c.height=H; const g=c.getContext("2d"); g.drawImage(bm,0,0,W,H); d=g.getImageData(0,0,W,H).data; break; }
-    catch(err){ e0=(err&&err.message)||e0; } }
+  if(typeof createImageBitmap!=="function") e0="preglednik ne može očitati sliku";
+  else for(const host of ZB.wms||[]){ const ac=new AbortController(), tm=setTimeout(()=>ac.abort(),20000);
+    try{ const r=await fetch(hrZonaUrl(ZB,host,bb,W,H),{mode:"cors",credentials:"omit",signal:ac.signal}); if(!r.ok) throw new Error("HTTP "+r.status);
+      const bl=await r.blob(); if(bl.type&&!/^image\//.test(bl.type)) throw new Error("servis nije vratio sliku");
+      const bm=await createImageBitmap(bl), c=document.createElement("canvas"); c.width=W; c.height=H; const g=c.getContext&&c.getContext("2d"); if(!g) throw new Error("nema platna za očitavanje");
+      g.drawImage(bm,0,0,W,H); try{ d=g.getImageData(0,0,W,H).data; }catch(e){ throw new Error("servis ne dopušta očitavanje piksela (CORS)"); } break; }
+    catch(err){ e0=err&&err.name==="AbortError"?"servis ne odgovara":(err&&err.message)||e0; } finally{ clearTimeout(tm); } }
   if(id!==SKEN.id) return; if(!d) return fail("karta urbanih pravila: "+e0);
   const ids=new Set((HG.zone||[]).map(z=>z[0])), out=[], broj={}; let n0=0, nepr=0;
   const minZa=z=>{ const Z=HG.zoneSet&&HG.zoneSet[z], T=Z&&Z.tipovi&&(Z.tipovi.stamb||Object.values(Z.tipovi)[0]); if(!T) return null; const P=T[ob[0]]; return P&&P.minC>0?P.minC:0; };
@@ -9452,8 +9456,8 @@ async function skenPokreniGrad(id,info,HG){
     let k, minC=null; const uniq=[...new Set(calc)];
     if(calc.length<kand.length||uniq.length>1||!(uniq[0]>0)) k="bez"; else { minC=uniq[0]; k=p.A>=minC?(p.z?"izg":"pot"):"mala"; }
     broj[k]=(broj[k]||0)+1; const r=Math.min(60,Math.sqrt(p.A/Math.PI));
-    out.push({type:"Feature",geometry:turf.circle([p.lon,p.lat],r/1000,{steps:16,units:"kilometers"}).geometry,properties:{k,ces:p.broj,ko:p.ko,A:p.A,minC,pravilo:kand.join(" ili "),an:"",c:[p.lon,p.lat],razlog:k==="bez"?"boja karte odgovara pravilima "+kand.join(" i ")+" s različitim ili neobrađenim uvjetima":null}}); }
-  SKEN.res={out,broj,nedostaje:nepr>n0*0.5?["urbano pravilo za dio čestica (boja karte nije prepoznata)"]:[],C:n0,nepotpuno:false,t:Date.now(),
+    out.push({type:"Feature",geometry:turf.circle([p.lon,p.lat],r/1000,{steps:16,units:"kilometers"}).geometry,properties:{k,ces:p.broj,ko:p.ko,A:p.A,minC,pravilo:kand.join(" ili "),se:true,an:"",c:[p.lon,p.lat],razlog:k==="bez"?"boja karte odgovara pravilima "+kand.join(" i ")+" s različitim ili neobrađenim uvjetima":null}}); }
+  SKEN.res={out,broj,nedostaje:[koE&&"dio katastarskih čestica",nepr>n0*0.5&&"urbano pravilo za dio čestica (boja karte nije prepoznata)"].filter(Boolean),C:n0,razvrstano:"s obrađenim urbanim pravilom",nepotpuno:false,t:Date.now(),
     tipTxt:"niska stambena građevina, "+ob[1],
     izvorTxt:"Split: čestice iz katastra DGU (stanje "+String(I.preuzeto||"").split("-").reverse().join(". ")+".), prikazane kao krug iste površine; urbano pravilo iz boje karte „Urbana pravila” GUP-a na točki čestice (prijedlog, nije potvrda), najmanja površina iz GUP-a Splita. Prikazane su samo čestice u pravilima s obrađenim uvjetima gradnje; obveza UPU-a i namjena (S/M) nisu provjerene."};
   SKEN.layer.addData(out); skenInfo(); }
@@ -9469,14 +9473,14 @@ function skenKrkRazred(np,plans,A,zgrada){
   const S=krkRuleState({rows:[{p:np,share:1,geom:null}],pl:plans});
   if(S.st==="ne") return {k:"bez",razlog:S.msg};
   if(S.st==="upuNe") return {k:"plan",razlog:S.msg};
-  if(S.st==="blok") return {k:"upu",razlog:S.msg};
-  const RS=S.RS; if(!RS||!RS.tipovi) return {k:"bez",razlog:"pravila nisu pronađena"};
+  const jls=String(np.OPCINA_GRAD||"").toUpperCase(), blok=S.st==="blok";
+  const RS=blok?(jls==="KRK"?RULES_KRK:krkRuleSetJls(jls,{p:np})):S.RS; if(!RS||!RS.tipovi||!Object.keys(RS.tipovi).length) return {k:"bez",razlog:blok?S.msg:"pravila nisu pronađena"};
   if(S.st==="upu"&&RS.zone) return {k:"plan",razlog:"Na lokaciji vrijedi "+(RS.kod||"UPU")+"; najmanja površina ovisi o zoni UPU-a, koju skener ne zna (odaberi zonu u analizi čestice).",kod:RS.kod};
   const T=RS.tipovi[KRK_TIP.tip]||RS.tipovi.obit||Object.values(RS.tipovi)[0], [o,on]=krkOblikZa(RS,T), P=T[o]||T.slob, zab=RS.grupa&&RS.grupa.zabranjeno||[];
   const tip=T.naziv+", "+on, kod=RS.kod;
   if(zab.includes(o)) return {k:"bez",razlog:"u ovom naselju nova gradnja ("+on+") nije dozvoljena",tip,kod};
   const minC=P&&P.minC>0?P.minC:null; if(!minC) return {k:"bez",razlog:"najmanja površina nije propisana",tip,kod};
-  const upu=S.st==="provjera"&&S.na&&RULES_KRK.izravnaProvedba&&RULES_KRK.izravnaProvedba.bezNaselja.includes(S.na)&&RS===RULES_KRK;
+  const upu=blok||(S.st==="provjera"&&S.na&&RULES_KRK.izravnaProvedba&&RULES_KRK.izravnaProvedba.bezNaselja.includes(S.na)&&RS===RULES_KRK);
   const neizgr=RS.neizgradeni&&(S.notes||[]).includes(RS.neizgradeni.msg);
   let k; if(A>=minC) k=zgrada?"izg":upu?"upu":"pot"; else k=P.minCIznimno&&A>=P.minCIznimno&&!zgrada?"izn":"mala";
   return {k,minC,minCIzn:P.minCIznimno||null,tip,kod,razlog:upu?S.msg:neizgr?RS.neizgradeni.msg:null}; }
@@ -9487,7 +9491,8 @@ async function skenPokreniKrk(id,info){
   let I; try{ I=await katIndex(); }catch(e){ return fail(e.message||"katastar"); }
   const kk=[]; for(let i=Math.floor(bb[1]/I.dlat);i<=Math.floor(bb[3]/I.dlat);i++) for(let j=Math.floor(bb[0]/I.dlon);j<=Math.floor(bb[2]/I.dlon);j++) if(I.set.has(i+"_"+j)) kk.push(i+"_"+j);
   if(kk.length>9){ if(id!==SKEN.id) return; if(info) info.innerHTML=`<p class="meta">Približi kartu: vidljivi dio je prevelik za pregled čestica.</p>`; return; }
-  let N, PL; try{ [N,PL]=await Promise.all([skenEnv(SRC_KRK.namjena,B,"*",true),skenEnv(SRC_KRK.planovi,B,"GRAD_OPCINA,VRSTA_PP,STATUS_PP,NAZIV",true).then(v=>({v}),e=>({e:e.message||"evidencija planova"}))]); }
+  if(!kk.length) return fail("katastar za ovo područje nije pripremljen; skener na Krku radi samo na otoku");
+  let N, PL; try{ [N,PL]=await Promise.all([skenEnv(SRC_KRK.namjena,B,"*",true),skenEnv(SRC_KRK.planovi,B,"GRAD_OPCINA,VRSTA_PP,STATUS_PP,NAZIV,SN_BROJ",true).then(v=>({v}),e=>({e:e.message||"evidencija planova"}))]); }
   catch(e){ return fail(e.message||"servis ne odgovara"); }
   let tErr=0; const tl=await Promise.all(kk.map(k=>katTile(k).catch(()=>{ tErr++; return []; })));
   let zgr=[],zgrE=null;
@@ -9511,7 +9516,7 @@ async function skenPokreniKrk(id,info){
     broj[r.k]=(broj[r.k]||0)+1; const K=I.ko[c.ko]||{};
     out.push({type:"Feature",geometry:c.g,properties:{k:r.k,ces:c.broj,ko:K.naziv||c.ko,A:c.pov,minC:r.minC||null,pravilo:r.kod||String(n.properties.OPCINA_GRAD||""),an:n.properties.OZNAKA_NAMJENE||"",c:pt.geometry.coordinates,razlog:r.razlog||null}}); }
   const T0=RULES_KRK&&RULES_KRK.tipovi&&RULES_KRK.tipovi[KRK_TIP.tip];
-  SKEN.res={out,broj,nedostaje:[zgrE,tErr&&"dio katastarskih čestica",PL.e&&"evidencija prostornih planova (UPU nije provjeren)"].filter(Boolean),C:n0,nepotpuno:!!N.incomplete,t:Date.now(),
+  SKEN.res={out,broj,nedostaje:[zgrE,tErr&&"dio katastarskih čestica",PL.e&&"evidencija prostornih planova (UPU nije provjeren)",PL.v&&PL.v.incomplete&&"dio evidencije prostornih planova"].filter(Boolean),C:n0,nepotpuno:!!N.incomplete,t:Date.now(),
     tipTxt:tip||(T0?T0.naziv:"")+", "+({slob:"slobodnostojeća",dvoj:"dvojna",ugr:"ugrađena"}[KRK_TIP.oblik]||KRK_TIP.oblik),
     izvorTxt:"Otok Krk: čestice i zgrade iz katastra DGU (stanje "+String(I.preuzeto||"").split("-").reverse().join(". ")+".), građevinsko područje naselja iz županijskog sloja PGŽ, važeći UPU-ovi iz evidencije planova PGŽ, najmanja površina iz prostornog plana grada ili općine (ista pravila kao analiza čestice; oblik kuće koji plan nema zamijenjen je kao u analizi). Neizgrađeni dio građevinskog područja gdje plan traži UPU i naselje Krk označeni su kao „UPU”, a čestice pod UPU-om koji aplikacija nije obradila ili čija zona nije poznata kao „plan”."};
   SKEN.layer.addData(out); skenInfo(); }
@@ -9519,10 +9524,13 @@ document.addEventListener("change",e=>{ if(e.target&&(e.target.id==="krkTip"||e.
 function skenInfo(){
   const info=document.getElementById("skenInfo"), R=SKEN.res; if(!info||!R) return;
   const red=["pot","upu","izg","izn","mala","plan","bez"];
-  let h=`<p class="meta" style="margin:4px 0">Pregledano ${fmt(R.C)} čestica, u građevinskom području ${fmt(R.out.length)}${R.nepotpuno?" (nisu sve: približi kartu)":""}. Tip kuće: ${esc(R.tipTxt||"")}.</p>`;
+  let h=`<p class="meta" style="margin:4px 0">Pregledano ${fmt(R.C)} čestica, ${esc(R.razvrstano||"u građevinskom području")} ${fmt(R.out.length)}${R.nepotpuno?" (nisu sve: približi kartu)":""}. Tip kuće: ${esc(R.tipTxt||"")}.</p>`;
   h+=`<ul class="sken-lgd">${red.filter(k=>R.broj[k]).map(k=>`<li><i style="background:${SKEN_STIL[k].fillColor||"transparent"};border-color:${SKEN_STIL[k].color}"></i><b>${fmt(R.broj[k])}</b> ${esc(SKEN_NAZ[k])}</li>`).join("")}</ul>`;
   const pot=R.out.filter(f=>f.properties.k==="pot"||f.properties.k==="upu").sort((a,b)=>b.properties.A-a.properties.A).slice(0,12);
-  if(pot.length) h+=`<details class="sken-pop"><summary>Potencijalne čestice (${fmt(R.out.filter(f=>f.properties.k==="pot"||f.properties.k==="upu").length)})</summary><ol>${pot.map(f=>{const p=f.properties; return `<li><a href="#" class="sken-go" data-lat="${p.c[1]}" data-lng="${p.c[0]}">k.č. ${esc(p.ces||"?")}</a> ${esc(p.ko||"")}: ${fmt(p.A)} m² (najmanje ${fmt(p.minC)} m², pravilo ${esc(p.pravilo||"")}${p.se?" – prijedlog":""})${p.k==="upu"?" · UPU":""}</li>`;}).join("")}</ol></details>`;
+  if(pot.length) h+=`<details class="sken-pop"><summary>Potencijalne čestice (${fmt(R.out.filter(f=>f.properties.k==="pot"||f.properties.k==="upu").length)})</summary><ol>${pot.map(f=>{const p=f.properties; return `<li><a href="#" class="sken-go" data-lat="${p.c[1]}" data-lng="${p.c[0]}">k.č. ${esc(p.ces||"?")}</a> ${esc(p.ko||"")}: ${fmt(p.A)} m² (${p.minC?"najmanje "+fmt(p.minC)+" m²":"najmanja površina nije poznata"}, pravilo ${esc(p.pravilo||"")}${p.se?" – prijedlog":""})${p.k==="upu"?" · UPU":""}</li>`;}).join("")}</ol></details>`;
+  const RZ={}; for(const f of R.out){ const z=f.properties.razlog; if(z&&(f.properties.k==="bez"||f.properties.k==="plan")) RZ[z]=(RZ[z]||0)+1; }
+  const rz=Object.entries(RZ).sort((a,b)=>b[1]-a[1]);
+  if(rz.length) h+=`<details class="sken-pop"><summary>Zašto bez razvrstavanja (${fmt(rz.reduce((s,x)=>s+x[1],0))})</summary><ul>${rz.slice(0,6).map(([z,n])=>`<li><b>${fmt(n)}</b> ${esc(z)}</li>`).join("")}</ul></details>`;
   if(R.nedostaje.length) h+=`<p class="flag" style="margin:4px 0">Nisu dohvaćeni: ${esc(R.nedostaje.join(", "))}; razvrstaj može biti nepotpun.</p>`;
   h+=`<p class="meta" style="margin:4px 0">${esc(R.izvorTxt||"")} Površina je grafička, iz katastarskog plana; za odabranu česticu dodirni je na karti (analiza provjerava i upisanu površinu, širinu uz ulicu, pristup i ostale uvjete). Skener ne zna vlasništvo ni terete.</p>`;
   info.innerHTML=h; skenChip();

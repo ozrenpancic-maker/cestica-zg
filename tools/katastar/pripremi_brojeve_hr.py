@@ -61,7 +61,7 @@ def main():
             while f.getprevious() is not None: del f.getparent()[0]
             if not broj or P is None or P.is_empty: continue
             p = P.representative_point(); lon, lat = T.transform(p.x, p.y)
-            pov = round(float(pg)) if pg else round(P.area)
+            pov = round(float(pg)) if pg and float(pg) > 0 else round(P.area)
             C[broj] = [round(lon * 1e6), round(lat * 1e6), pov, 0]
             GEO.append(P); KEY.append(broj)
             x0 = min(x0, lon); x1 = max(x1, lon); y0 = min(y0, lat); y1 = max(y1, lat)
