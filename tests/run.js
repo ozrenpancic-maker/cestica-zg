@@ -3784,7 +3784,7 @@ async function postojeceTests(){
    setv(w,"krkZahvat","nova","change"); await tick(20); ok(!w.document.querySelector("[data-zahvat-odredbe]")&&!w.document.querySelector("[data-bez-dozvole]"),"Nova gradnja: bez odredbi za zahvat i bez napomene o radovima bez dozvole");
    ok(E("radoviBezDozvoleHtml")("rek").includes("čl. 3.")&&E("radoviBezDozvoleHtml")("nova")===""&&E("radoviBezDozvoleHtml")("interp")==="","Radovi bez dozvole: samo za zahvate na postojećoj zgradi");
    ok(/nisu unesene/.test(E("zahvatOdredbeHtml")(null,"rek",null)),"Plan bez unesenih odredbi: jasno piše da nisu unesene");
-   {const h=E("radoviBezDozvoleHtml")("dogr"); ok(/data-kuca-1968/.test(h)&&/15\. veljače 1968\./.test(h)&&/čl\. 184\./.test(h)&&/snimku iz zraka/.test(h)&&/izvedenom stanju/.test(h)&&!/data-kuca-1968/.test(E("radoviBezDozvoleHtml")("nova")),"Stara kuća prije 15. 2. 1968.: Zakon o gradnji čl. 184., uporabna dozvola, provjera snimkom iz zraka; samo za zahvate na postojećoj zgradi");}
+   {const h=E("radoviBezDozvoleHtml")("dogr"); ok(/data-kuca-1968/.test(h)&&/15\. veljače 1968\./.test(h)&&/NN 155\/25, čl\. 145\./.test(h)&&/čl\. 131\./.test(h)&&/snimku iz zraka/i.test(h)&&/izvedenom stanju/.test(h)&&!/data-kuca-1968/.test(E("radoviBezDozvoleHtml")("nova")),"Stara kuća prije 15. 2. 1968.: Zakon o gradnji NN 155/25 čl. 145., uporabna dozvola, provjera snimkom iz zraka; samo za zahvate na postojećoj zgradi");}
    w.localStorage.removeItem("krkZahvat"); E("KRK_ZAHVAT=''");
    ok(errs.length===0,"bez JS grešaka (postojeće zgrade): "+errs.join(" | "));}
   {const {w,errs}=await run(false); const Z=w.document.getElementById("postZg");
