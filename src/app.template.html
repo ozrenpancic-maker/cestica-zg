@@ -1386,6 +1386,40 @@ function krkRuleStateJls(d,jls){
 // provjera lanca objava. Dok provjera nije POTVRDENO, pravilo nema razinu A, a uz prikazane uvjete gradnje stoji upozorenje.
 const pravnaNepotvrdena=I=>!!(I&&I.pravna_provjera&&I.pravna_provjera.status!=="POTVRDENO");
 function krkPravnaHtml(I){ return pravnaNepotvrdena(I)?`<div class="verdict v-warn" data-pravna-provjera="nepotvrdeno" data-plan="${esc(I.sn||"")}"><strong>Pravna aktualnost nije neovisno potvrđena.</strong> ${esc(I.pravna_provjera.napomena||"")}</div>`:""; }
+// --- Postojeće zgrade na čestici izvan Zagreba: obrisi iz katastarskog plana DGU (sloj DKP_ZGRADE, uživo) presječeni s česticom;
+// tlocrt se uspoređuje s najvećim tlocrtom i GBP-om za novu gradnju (isti izračun kao u Zagrebu: dogUpdate)
+const POSTZ=new Map(), POSTZ_ET=new Map(); // POSTZ_ET: upisani broj etaža po čestici
+sheet.addEventListener("input",e=>{ if(e.target.id==="eFloors"){ const el=document.getElementById("postZg"); if(el&&el.dataset.key) POSTZ_ET.set(el.dataset.key,e.target.value); } });
+function postZgradeStart(key,parcel){ if(!parcel||POSTZ.has(key)) return POSTZ.get(key);
+  const p=(async()=>{ const bb=turf.bbox(turf.buffer(parcel,0.01,{units:"kilometers"})); const all=await dkpZgrade(bb); let A=0,n=0,dio=0;
+    for(const b of all){ const ring=[...b.foot[0],b.foot[0][0]]; let x=null; try{x=turf.intersect(parcel,turf.polygon([ring]))}catch(e){} if(!x) continue;
+      const a=turf.area(x); if(a<1) continue; n++; A+=a; if(a<b.pov*0.9) dio++; }
+    return {st:"ok",n,A,dio,presk:all.preskoceno||0}; })().catch(e=>({st:"err",e:e&&e.message==="područje"?"čestica je prevelika za dohvat zgrada iz katastarskog sloja":e&&e.message||"izvor nije dostupan"}));
+  POSTZ.set(key,p); p.then(z=>{ if(z.st==="err") POSTZ.delete(key); const el=document.getElementById("postZg"); if(el&&el.dataset.key===key){ el.outerHTML=krkPostojeceIn(z,+el.dataset.tl||null,el.dataset.gbp?+el.dataset.gbp:null,key); dogUpdate(); } }); return p; }
+function krkPostojeceIn(z,tl,gbp,key){
+  let h=`<div id="postZg" class="calc" data-key="${esc(key||"")}" data-tl="${tl||""}" data-gbp="${gbp||""}" style="border-top:1px solid var(--line)"><p class="eyebrow">Postojeće zgrade i dogradnja</p>`;
+  if(!z||z.st==="load") return h+`<p class="hint"><span class="spin"></span>Tražim zgrade na čestici u katastru DGU…</p></div>`;
+  if(z.st==="err") return h+`<p class="meta" data-postzg="err">Podaci nisu dostupni: ${esc(z.e)}. Postojeće zgrade nisu provjerene.</p></div>`;
+  if(!z.n) return h+(z.presk?`<p class="meta" data-postzg="presk">Obris zgrade u katastru ima zakrivljene dijelove koje aplikacija ne čita, pa postojeći tlocrt nije izračunat. Provjeri zgradu na karti.</p></div>`:`<p class="meta" data-postzg="0">Na čestici u katastarskom planu DGU nije upisana zgrada. Zgrada koja nije upisana u katastar ovdje se ne vidi.</p></div>`);
+  h+=`<div class="row" data-postzg="${z.n}"><span>Postojeći tlocrt (${z.n} ${z.n===1?"zgrada":"zgrade"} iz katastra DGU${z.dio?", "+z.dio+" djelomično izvan čestice":""})</span><span>${fmt(z.A)} m²</span></div>`;
+  h+=`<div class="kd"><label for="eFloors">Etaža postojeće kuće</label><input id="eFloors" type="number" inputmode="decimal" min="1" max="9" step="0.5" value="${POSTZ_ET.get(key)||2}"><span>(npr. P+1 = 2, P+1+Pk = 2,5)</span></div>`;
+  setTimeout(()=>{ if(document.getElementById("postZg")) dogUpdate(); },0); // nakon ponovnog crtanja lista (promjena zahvata, tipa…) izračun se obnavlja
+  h+=`<div id="dogOut" data-zf="${Math.round(z.A)}" data-tl="${tl||""}" data-gbp="${gbp||""}"></div>`;
+  return h+`<p class="meta">Tlocrti su iz katastarskog plana DGU (uživo): zbrojen je dio zgrada unutar čestice, uključivo pomoćne zgrade; unutarnja dvorišta zgrada nisu oduzeta${z.presk?", a obrisi sa zakrivljenim dijelovima nisu uračunati":""}. Dogradnja nakon zadnjeg upisa u katastar nije prikazana. Postojeći GBP je procjena: tlocrt × broj etaža. Dogradnja i nadogradnja moguće su samo za legalnu zgradu (građevinska ili uporabna dozvola, rješenje o izvedenom stanju).</p></div>`; }
+// ključ iz same čestice (window.__cur se postavlja tek nakon crtanja)
+function krkPostojeceHtml(d,tl,gbp){ if(!d||!d.parcel) return ""; const pr=d.parcel.properties||{}, k="pz:"+(pr.cid||pr.ref||turf.bbox(d.parcel).map(v=>v.toFixed(6)).join(","));
+  const p=postZgradeStart(k,d.parcel); const z=p&&p.__z; if(p&&!p.__w){ p.__w=1; p.then(v=>{p.__z=v;}); } return krkPostojeceIn(z||{st:"load"},tl,gbp,k); }
+// odredbe plana za odabrani zahvat (rules_krk.json → *.rekonstrukcija: [{zahvati:[…], clanak, opis, txt}])
+function zahvatOdredbeHtml(L,z,I){ if(!L||!L.length) return `<p class="meta" data-zahvat-odredbe="0">Odredbe plana za ovaj zahvat nisu unesene u aplikaciju; provjeri ih u planu.</p>`;
+  const S=L.filter(x=>x.zahvati.includes(z)); if(!S.length) return `<p class="meta" data-zahvat-odredbe="0">Za ovaj zahvat plan nema posebnih odredbi u obrađenim člancima; vrijede uvjeti za novu gradnju.</p>`;
+  return `<p class="eyebrow" style="margin:6px 0 2px">Odredbe plana za ovaj zahvat</p><ul class="zi" data-zahvat-odredbe="${S.length}">${S.map(x=>`<li><b>čl. ${esc(String(x.clanak).replace(/\.$/,""))}.</b> ${esc(x.opis)}${x.txt?`<br><span class="meta">„${esc(x.txt)}“</span>`:""}</li>`).join("")}</ul>${I&&I.sn?`<p class="meta">Izvor: ${esc(I.naziv||"")}, ${esc(I.sn)}. Sažetak iz aplikacije; mjerodavan je tekst plana.</p>`:""}`; }
+// radovi na postojećoj zgradi bez građevinske dozvole (Pravilnik o jednostavnim i drugim građevinama i radovima)
+function radoviBezDozvoleHtml(z){ if(!z||z==="nova"||z==="interp") return "";
+  return `<details class="acc" data-k="bezDozvole" data-bez-dozvole="1"><summary><span>Radovi za koje ne treba građevinska dozvola</span></summary><div class="calc">`+
+   `<p>Prema <b>Pravilniku o jednostavnim i drugim građevinama i radovima</b> (NN 112/17, 34/18, 36/19, 98/19, 31/20, 74/22, 155/23) na postojećoj zgradi:</p><ul class="zi">`+
+   `<li><b>bez dozvole i bez projekta</b> (čl. 3.): redovito održavanje, zamjena prozora i vrata, novi otvor u nenosivom zidu, grijanje ili hlađenje do 30 kW te energetska obnova zgrade s najviše 3 stana ili do 600 m² (fasada, toplinska izolacija, pokrov, hidroizolacija, instalacije);</li>`+
+   `<li><b>bez dozvole, ali uz glavni projekt</b> (čl. 5.): preuređenje unutrašnjosti, izvanredno održavanje, krovne kućice, nadozid do 0,6 m, novi otvori u nosivim zidovima stambene zgrade do 400 m², fotonaponski moduli, rekonstrukcija ravnog krova u kosi bez nadozida; početak radova prijavljuje se, uz stručni nadzor (čl. 6.).</li></ul>`+
+   `<p class="meta">Radovi moraju biti u skladu s prostornim planom. Za zaštićeno kulturno dobro ili zgradu u zaštićenoj cjelini provjeri uvjete konzervatora. Dogradnja, nadogradnja (osim navedenih krovnih kućica i nadozida) i zamjenska zgrada traže građevinsku dozvolu. Sažetak iz aplikacije prema pročišćenom tekstu (<a href="https://www.zakon.hr/c/podzakonski-propis/39305/pravilnik-o-jednostavnim-i-drugim-gradevinama-i-radovima-%E2%80%93-procisceni-tekst-v2-2019" target="_blank" rel="noopener">zakon.hr</a>, neslužbeno); mjerodavne su Narodne novine.</p></div></details>`; }
 // vrsta zahvata na Krku (isti popis kao u Zagrebu); bez izbora nema prešutne vrijednosti: uvjeti ostaju »za novu gradnju«, uz otvoren uvjet
 let KRK_ZAHVAT=(()=>{try{return localStorage.getItem("krkZahvat")||""}catch(e){return ""}})();
 function krkZahvatUvjet(){ if(!KRK_ZAHVAT) return [{tekst:"vrsta zahvata nije odabrana; prikazani uvjeti vrijede za novu gradnju",razrijeseno:false}];
@@ -1461,7 +1495,8 @@ function krkRulesHtml(d,S0){
   if(dioNema){piBlok("blok-uvjeti","Uvjeti gradnje (izračun)","nije poznato je li čestica u izgrađenom ili neizgrađenom dijelu građevinskog područja; o tome ovise kis i visina",[...piBase(RS,I),piK("detaljna zona",PZREG.items.get("zona-korisnik"))]); return h+`<div class="verdict v-warn">Odaberi dio građevinskog područja; dotad se uvjeti ne računaju.</div>`;}
   h+=`<div class="kd" style="margin:6px 0"><label for="krkZahvat">Vrsta zahvata</label><select id="krkZahvat" class="bsel">${[["","— odaberi zahvat —"],...ZAHVATI].map(o=>`<option value="${o[0]}"${o[0]===KRK_ZAHVAT?" selected":""}>${esc(o[1])}</option>`).join("")}</select></div>`;
   if(!KRK_ZAHVAT) h+=`<p class="meta" data-krk-zahvat="nije-odabran">Vrsta zahvata nije odabrana. Uvjeti ispod vrijede za novu gradnju; za dogradnju, rekonstrukciju ili zamjensku građevinu plan ima posebne odredbe.</p>`;
-  else if(KRK_ZAHVAT!=="nova") h+=`<div class="verdict v-warn" data-krk-zahvat="${esc(KRK_ZAHVAT)}" style="margin:4px 0">${esc(krkZahvatNaziv())}: potrebna dodatna provjera. Za taj zahvat vrijede posebne odredbe plana; brojke ispod su za novu gradnju.</div>`;
+  else if(KRK_ZAHVAT!=="nova"){ h+=`<div class="verdict v-warn" data-krk-zahvat="${esc(KRK_ZAHVAT)}" style="margin:4px 0">${esc(krkZahvatNaziv())}: potrebna dodatna provjera. Za taj zahvat vrijede posebne odredbe plana; brojke ispod su za novu gradnju.</div>`;
+    h+=zahvatOdredbeHtml(RS.rekonstrukcija||(RS!==R?null:R.rekonstrukcija),KRK_ZAHVAT,I)+radoviBezDozvoleHtml(KRK_ZAHVAT); }
   h+=`<div class="kd" style="margin:6px 0"><label for="krkTip">Građevina</label>${sel("krkTip",Object.entries(RS.tipovi).map(([k,t])=>[k,t.naziv]),RS.tipovi[KRK_TIP.tip]?KRK_TIP.tip:Object.keys(RS.tipovi)[0])}</div>`;
   h+=`<p class="meta" style="margin:0 0 6px">${esc(T.naziv)}: ${esc(T.opis)}.</p>`;
   const obl=T.oblici||RS.oblici||[["slob","slobodnostojeća"]].concat(T.ugr?[["dvoj","dvojna"],["ugr","ugrađena"]]:T.dvoj?[["dvoj","dvojna"]]:[]);
@@ -1627,7 +1662,7 @@ function krkCalcHtml(d,S,RS,T,P,oblSel,isUpu){
   if(env&&env.area<tl) h+=`<p class="meta">Površina teorijskog obrisa (${RS.meda.min} m od međa) manja je od dopuštenog tlocrta, pa tlocrt po površini ne može biti veći od ${fmt(env.area)} m². Stane li kuća zadanog oblika, ovisi o širini i obliku obrisa (provjera u simulatoru).</p>`;
   h+=row(`Od regulacijskog pravca (čl. ${esc(RS.regulacija.clanak)})`,esc(RS.regulacija.opis));
   h+=row(`${esc(RS.zelenilo.opisNaziv||"Zelenilo")} (čl. ${esc(RS.zelenilo.clanak)})`,RS.zelenilo.min?`najmanje ${Math.round(RS.zelenilo.min*100)} % = ${fmt(Aall*RS.zelenilo.min)} m²`:"plan ne određuje");
-  h+=`<p class="meta">${esc(RS.pristup.napomena)}</p></div></details>`;
+  h+=`<p class="meta">${esc(RS.pristup.napomena)}</p>`+krkPostojeceHtml(d,Math.round(tl),noKis?null:Math.round(gbpN))+`</div></details>`;
   const c=T.clanak, Q=[[c,tx.minC],[c,tx.minCIznimno],[c,tx.maxC],[c,tx.dvoj],[c,tx.izg],[c,tx.kis],[c,tx.tl],[c,tx.gbp],[c,tx.etaze],[c,tx.visina],[RS.meda.clanak,RS.meda.txt],[RS.meda.clanak,RS.meda.txtBezOtvora],[RS.regulacija.clanak,RS.regulacija.txt],[RS.zelenilo.clanak,RS.zelenilo.txt]];
   if(RS===R) Q.push([R.izravnaProvedba.clanak,R.izravnaProvedba.txt]); else if(RS.neizgradeni) Q.push([RS.neizgradeni.clanak,RS.neizgradeni.txt]);
   h+=`<details data-k="krkTxt"><summary>Navodi iz plana</summary><ol>${Q.filter(x=>x[1]).map(([cl,t])=>`<li><b>čl. ${esc(String(cl).replace(/\.$/,""))}.</b> „${esc(t)}“</li>`).join("")}</ol>`;
@@ -5108,9 +5143,9 @@ async function dkpZgrade(bb){ // bb = [zapad, jug, istok, sjever] u WGS84
   const ac=new AbortController(), tm=setTimeout(()=>ac.abort(),15000);
   let t; try{ const r=await fetch(KATW_URL+"?"+q.toString(),{signal:ac.signal}); if(!r.ok) throw new Error("HTTP "+r.status); t=await r.text(); } finally{ clearTimeout(tm); }
   if(typeof t!=="string"||!/<svg/.test(t)) throw new Error("nije SVG");
-  const sx=(e1-e0)/W, sy=(n1-n0)/H, list=[], vid=new Set();
+  const sx=(e1-e0)/W, sy=(n1-n0)/H, list=[], vid=new Set(); list.preskoceno=0;
   for(const m of t.matchAll(/<path clip-path="url\(#clipPath1\)" d="(M[^"]+)" fill="none"/g)){
-    const dd=m[1]; if(vid.has(dd)||/[QCA]/.test(dd)) continue; vid.add(dd);
+    const dd=m[1]; if(vid.has(dd)) continue; vid.add(dd); if(/[QCA]/.test(dd)){ list.preskoceno++; continue; }
     const ring=dd.split(/M/).filter(Boolean)[0]; const P=[]; for(const x of ring.matchAll(/(-?[\d.]+) (-?[\d.]+)/g)){ const ll=tmInv(e0+(+x[1])*sx,n1-(+x[2])*sy); P.push([+ll[0].toFixed(7),+ll[1].toFixed(7)]); }
     if(P.length>3&&P[0][0]===P[P.length-1][0]&&P[0][1]===P[P.length-1][1]) P.pop(); if(P.length<3) continue;
     let A=0,cx=0,cy=0; for(let i=0;i<P.length;i++){ const p0=P[i],p1=P[(i+1)%P.length]; A+=(p0[0]*p1[1]-p1[0]*p0[1]); cx+=p0[0]; cy+=p0[1]; }
@@ -6528,7 +6563,7 @@ function render(d){
         if(ZAHVAT!=="nova"){const zi=zahvatItems(zone,ZAHVAT);
           h+=`<div class="verdict v-warn" style="margin:4px 0">${esc(ZAHVATI.find(x=>x[0]===ZAHVAT)[1])}: potrebna dodatna provjera. Za taj zahvat vrijede posebne odredbe pravila; brojke ispod su za novu gradnju.</div>`;
           h+=zi.length?`<ol class="zi">${zi.map(i=>`<li>${esc(i)}</li>`).join("")}</ol>`:`<p class="meta">Pravilo nema posebnih odredbi za ovaj zahvat, pa vrijede pravila za novu gradnju. Dogradnja i nadogradnja smatraju se rekonstrukcijom.</p>`;
-          h+=`<p class="meta">Za rekonstrukciju je potrebna postojeća legalna građevina (dozvola ili rješenje o izvedenom stanju).</p>`;}
+          h+=`<p class="meta">Za rekonstrukciju je potrebna postojeća legalna građevina (dozvola ili rješenje o izvedenom stanju).</p>`+radoviBezDozvoleHtml(ZAHVAT);}
         {const t=PZREG.items.get("calc-tlocrt")||PZREG.items.get("calc-gbp"); if(t) h+=t.raz==="C"?`<div class="verdict v-warn" style="margin:4px 0">Teorijski izračun, razina C: ${esc(t.razlog)}. Brojke nisu dopuštena gradnja.</div>`:`<p class="meta" style="margin:4px 0">Teorijski izračun iz pravila ${pzTag(t)}. Ne uzima u obzir pristup, parkiranje, komunalnu opremljenost ni regulacijski pravac (vidi „Pouzdanost podataka”).</p>`;}
         if(!pp.minC&&!pp.izg&&!pp.kis) h+=`<p class="flag">Pravilo ne navodi posebne uvjete za ovaj tip kuće; provjeri detaljna pravila.</p>`;
         if(buildArea!=null&&buildArea<area-1) h+=`<div class="row"><span>Građevinski dio čestice</span><span>${fmt(buildArea)} od ${fmt(area)} m²</span></div>`;
