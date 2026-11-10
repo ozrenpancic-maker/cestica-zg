@@ -193,18 +193,18 @@ async function zapamceno(kljuc, s, fn) {
   return o;
 }
 async function wmsPopis(url) {
-  const ck = new Request("https://cache.local/wmscap/" + encodeURIComponent(url)), hit = await caches.default.match(ck); let xml;
-  if (hit) xml = await hit.text();
-  else {
-    const r = await fetch(url + "?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0", { headers: { Accept: "application/xml,text/xml", ...UA }, signal: AbortSignal.timeout(15000) });
-    xml = await r.text();
-    if (!r.ok || !/WMS_Capabilities|WMT_MS_Capabilities/.test(xml)) throw new Error("popis slojeva nije dostupan (HTTP " + r.status + ", " + ((r.headers.get("content-type") || "?").split(";")[0]) + ", " + xml.length + " B)");
-    await caches.default.put(ck, new Response(xml, { headers: { "Cache-Control": "max-age=" + TJEDAN } }));
-  }
+  // pamti se samo izvučeni popis slojeva i formata (malen), ne cijeli XML: velik XML ne stane u Deno KV pa bi se dohvaćao pri svakom upitu
+  const ck = new Request("https://cache.local/wmscap2/" + encodeURIComponent(url)), hit = await caches.default.match(ck);
+  if (hit) { try { const o = await hit.json(); if (o && Array.isArray(o.slojevi)) return o; } catch { /* ponovni dohvat */ } }
+  const r = await fetch(url + "?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0", { headers: { Accept: "application/xml,text/xml", ...UA }, signal: AbortSignal.timeout(15000) });
+  const xml = await r.text();
+  if (!r.ok || !/WMS_Capabilities|WMT_MS_Capabilities/.test(xml)) throw new Error("popis slojeva nije dostupan (HTTP " + r.status + ", " + ((r.headers.get("content-type") || "?").split(";")[0]) + ", " + xml.length + " B)");
   const slojevi = [], re = /<Layer\b([^>]*)>\s*<Name>([^<]+)<\/Name>\s*<Title>([^<]*)<\/Title>/g; let m;
   while ((m = re.exec(xml))) slojevi.push({ name: xmlDec(m[2].trim()), title: xmlDec(m[3].trim()), q: /queryable\s*=\s*"(1|true)"/i.test(m[1]) });
   const gfi = (xml.match(/<GetFeatureInfo>[\s\S]*?<\/GetFeatureInfo>/) || [""])[0], formati = [...gfi.matchAll(/<Format>([^<]+)<\/Format>/g)].map(x => x[1].trim());
-  return { slojevi, formati };
+  const o = { slojevi, formati };
+  await caches.default.put(ck, new Response(JSON.stringify(o), { headers: { "Content-Type": "application/json", "Cache-Control": "max-age=" + TJEDAN } }));
+  return o;
 }
 // odgovor GetFeatureInfo: ima li objekata na točki (true/false), null kad se ne može odrediti; svojstva (najviše 6, kratko) za prikaz
 function gfiPogodak(txt, fmt) {

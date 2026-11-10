@@ -15,7 +15,7 @@ const shim = { default: {
       if (!v || v.do < Date.now()) return undefined; return new Response(v.b, { headers: { "Content-Type": v.t } }); } catch { return undefined; }
   },
   async put(req: Request, res: Response) {
-    try { const b = await res.text(), ms = ttl(res); if (b.length > 60000) return; // ograničenje veličine zapisa u Deno KV
+    try { const b = await res.text(), ms = ttl(res); if (new TextEncoder().encode(b).length > 30000) return; // Deno KV: najviše 64 KiB po zapisu; niz s č/ć/ž sprema se kao UTF-16 (2 bajta po znaku)
       await kv.set(["c", req.url], { b, t: res.headers.get("Content-Type") || "application/json", do: Date.now() + ms }, { expireIn: ms }); } catch { /* bez pamćenja */ }
   } } };
 // Deno ima vlastiti globalThis.caches (samo za čitanje), pa se zamjenjuje svojstvom
@@ -24,7 +24,12 @@ Object.defineProperty(globalThis, "caches", { value: shim, configurable: true, w
 const W = (await import("./worker.next.js")).default;
 const ctx = { waitUntil(p: Promise<unknown>) { if (p && (p as any).catch) (p as any).catch(() => {}); } };
 
+// Samo stranice aplikacije (isti popis kao ALLOWED u worker.next.js): upit bez dopuštenog zaglavlja Origin (botovi, izravno otvaranje adrese)
+// odbija se odmah, bez upita servisima i s kratkim odgovorom, da ne troši mjesečni odlazni promet besplatnog Deno plana (20 GiB).
+const DOPUSTENO = ["https://app.cesticahr.com", "https://cesticahr.com", "https://www.cesticahr.com", "https://ozrenpancic-maker.github.io"];
 Deno.serve({ onListen() {} }, async (req: Request) => { // bez ispisa pri pokretanju
+  const origin = req.headers.get("Origin") || "";
+  if (!DOPUSTENO.includes(origin)) return new Response(null, { status: 403, headers: { "Cache-Control": "no-store" } });
   const r: Response = await W.fetch(req, {}, ctx);
   // u odgovoru piše koji je posrednik odgovorio (aplikacija to prikazuje u odjeljku ZK)
   if (!(r.headers.get("Content-Type") || "").includes("json")) return r;
