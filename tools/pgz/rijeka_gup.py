@@ -284,6 +284,20 @@ RIJEKA = {
                  "Pomoćna građevina: jedna etaža, visina do 3 m, unutar gradivog dijela (čl. 80.); balkoni, terase i otvorena stubišta najmanje 4 m od međe (čl. 81.)."],
 }
 
+
+# Rekonstrukcija postojećih zgrada (čl. 88., 156., 324.; neslužbeni pročišćeni tekst 2023. i izmjene SN 14/2023, tekst izvučen iz PDF-a Grada 10. 11. 2026.)
+SVE_Z, POST_Z = ["rek", "dogr", "nadogr", "zamj"], ["rek", "dogr", "nadogr"]
+RIJEKA["rekonstrukcija"] = [
+    {"zahvati": SVE_Z, "clanak": "88.", "opis": "Rekonstrukcija obiteljske i višeobiteljske kuće planira se prema urbanim pravilima za novu gradnju ili prema planu užeg područja (st. 1.).",
+     "txt": "Rekonstrukciju obiteljske i višeobiteljske građevine potrebno je planirati/izvoditi sukladno urbanim pravilima gradnje novih građevina ili u skladu s prostornim planom užeg područja."},
+    {"zahvati": SVE_Z, "clanak": "88.", "opis": "Rekonstrukcija je dopuštena i kad je čestica manja od propisane te kad je kuća bliže međi ili regulacijskom pravcu, uz poštivanje svih ostalih normativa plana (st. 2.)."},
+    {"zahvati": SVE_Z, "clanak": "88.", "opis": "Ako su postojeći prostorni parametri veći od dopuštenih, dopuštene su rekonstrukcija i zamjenska gradnja bez njihova povećanja (st. 3.).",
+     "txt": "Prilikom rekonstrukcije građevine iz stavka 1. ovoga članka čiji su postojeći prostorni parametri veći od ovim Planom dozvoljenih, dozvoljena je rekonstrukcija i zamjenska gradnja građevine bez povećavanja prostornih parametara."},
+    {"zahvati": ["rek"], "clanak": "88.", "opis": "Neposrednom provedbom plana dopuštena je prenamjena samostalnih uporabnih cjelina u postojećim zgradama bez povećanja njihova broja (st. 6.)."},
+    {"zahvati": SVE_Z, "clanak": "88.", "opis": "U zaštićenoj povijesnoj cjelini ili za zgradu koja je kulturno dobro potrebna je suglasnost Konzervatorskog odjela u Rijeci (st. 8.)."},
+    {"zahvati": POST_Z, "clanak": "156.", "opis": "Rekonstrukcija obiteljske i višeobiteljske kuće kojom se neto razvijena površina povećava do 25 % ne traži dodatna parkirna mjesta (st. 12., dodan izmjenama SN 14/2023; za ostale zgrade do 15 %)."},
+    {"zahvati": POST_Z, "clanak": "324.", "opis": "Stambena zgrada izvan građevinskog područja ili namjene protivne planu: sanacija i zamjena dotrajalih dijelova u postojećim gabaritima, dogradnja ili nadogradnja do 75 m² GBP bez povećanja broja stanova, novi krov, nadozid do 0,6 m, visina najviše 8 m."},
+]
 for z in ZSET.values():
     if z.get("tipovi"): z["napomene"] = z["napomene"] + RIJEKA["napomene"]
 
