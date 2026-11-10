@@ -887,7 +887,8 @@ const SRC_KRK={
   planovi:PGZ+"IZRADA_PP/FeatureServer/0/query",
   // posrednik prema javnom OSS-u za upisanu (ZK) površinu; prazno = isključeno (tools/oss-posrednik)
   oss:"https://cestica-oss.ozren-pancic.workers.dev/",
-  // rezervni posrednik (Deno Deploy, drugi IP-jevi): pita se jednom, samo kad prvi javi blok/403, mrežnu grešku ili grešku poslužitelja
+  // rezervni posrednik (Deno Deploy, drugi IP-jevi; besplatno 20 GiB odlaznog prometa mjesečno): za ZK samo kad prvi javi blok/403, mrežnu grešku
+  // ili grešku poslužitelja; za upite po točki (poplave, kultura, internet) kad prvi ne vrati odgovor (npr. stara verzija Workera)
   oss2:"https://cestica-oss.ozrenpancic-maker.deno.net/",
 };
 
@@ -1909,9 +1910,10 @@ function rizTocka(parcel){try{return turf.pointOnFeature(parcel).geometry.coordi
 function posrednikTocka(par,lat,lon){ return posrednikUpit(par+"="+lat.toFixed(5)+","+lon.toFixed(5)); }
 async function posrednikUpit(qs){
   if(window.__posrednikHook) return window.__posrednikHook(qs);
-  const bases=[SRC_KRK.oss2,SRC_KRK.oss].filter(Boolean); if(!bases.length) throw new Error("posrednik nije postavljen");
+  // prvo Cloudflare (bez ograničenja prometa na besplatnom planu), Deno Deploy (20 GiB odlaznog prometa mjesečno) samo kad prvi ne vrati odgovor
+  const bases=[SRC_KRK.oss,SRC_KRK.oss2].filter(Boolean); if(!bases.length) throw new Error("posrednik nije postavljen");
   let last="posrednik ne odgovara";
-  for(const b of bases){ const ac=new AbortController(), t=setTimeout(()=>ac.abort(),25000);
+  for(const b of bases){ const ac=new AbortController(), t=setTimeout(()=>ac.abort(),b===bases[0]&&bases.length>1?20000:25000); // prvi nešto kraće, da rezerva stigne na red
     try{ const r=await fetch(b+"?"+qs,{signal:ac.signal,cache:"no-store"}), j=await r.json().catch(()=>null);
       if(r.ok&&j&&j.ok) return j; last=(j&&j.greska)||("HTTP "+r.status); }
     catch(e){ last=e.name==="AbortError"?"posrednik ne odgovara":"posrednik nije dostupan"; } finally{ clearTimeout(t); } }

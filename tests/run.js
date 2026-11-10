@@ -3089,6 +3089,12 @@ async function rizTests(){
     return Promise.reject(new TypeError("Failed to fetch"));};
   E("SRC_KRK").oss2="https://p2.example/"; E("SRC_KRK").oss="";
   const P=await E("loadPoplave")(parcel); ok(P.slojevi.length===3&&calls.some(u=>/^https:\/\/p2\.example\/\?poplave=45\.84\d*,15\.97\d*$/.test(u)),"Rizici: poplave se pitaju preko posrednika u točki unutar čestice");
+  {const f0=w.fetch; let seq=[], prviOk=false; w.fetch=(u,o)=>{u=String(u); if(/^https:\/\/p1\.example\//.test(u)){ seq.push("p1"); return Promise.resolve(prviOk?{ok:true,status:200,json:()=>Promise.resolve({ok:true,slojevi:[{name:"x"}]})}:{ok:false,status:400,json:()=>Promise.resolve({ok:false,greska:"neispravan id"})}); }
+     if(/^https:\/\/p2\.example\//.test(u)){ seq.push("p2"); return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({ok:true,slojevi:[{name:"y"}],posrednik:"deno"})}); } return f0(u,o); };
+   E("SRC_KRK").oss="https://p1.example/"; let q=await E("posrednikUpit")("poplave=45.8,15.9");
+   ok(seq.join()==="p1,p2"&&q.posrednik==="deno","Posrednik: prvo Cloudflare; kad ne zna odgovoriti (stara verzija), Deno Deploy");
+   seq=[]; prviOk=true; q=await E("posrednikUpit")("poplave=45.8,15.9"); ok(seq.join()==="p1"&&q.slojevi[0].name==="x","Posrednik: kad Cloudflare odgovori, Deno Deploy se ne pita (štedi mjesečni promet)");
+   E("SRC_KRK").oss=""; w.fetch=f0;}
   const I=await E("loadInternet")(parcel); ok(I.nepokretna.length===1&&I.nepokretna[0].sloj===93&&I.pokretna[0].sloj===99&&!calls.some(u=>/\?internet=/.test(u)),"Rizici: HAKOM se pita izravno (9 slojeva), bez posrednika");
   hakomOk=false; E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k); const I2=await E("loadInternet")(parcel); ok(I2.nepokretna[0].sloj===95&&calls.some(u=>/\?internet=/.test(u)),"Rizici: kad preglednik ne može izravno do HAKOM-a, ide preko posrednika");
   // prikaz

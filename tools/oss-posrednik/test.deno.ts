@@ -16,4 +16,5 @@ ok(r.status === 200 && j.ok && j.posrednik === "deno" && j.ulosci[0].ulozak === 
 const n = oss; ({ j } = await get("?id=19311109&ulozak=1")); ok(oss === n && j.ulosci.length === 1, "drugi upit iz Deno KV predmemorije (bez upita OSS-u)");
 odbij = true; ({ r, j } = await get("?id=99999")); const n2 = oss; ({ r, j } = await get("?id=99998"));
 ok(r.status === 503 && j.blok && oss === n2, "nakon odbijanja (403) pauza bez upita OSS-u");
+const n3 = oss; for (const h of [{}, { headers: { Origin: "https://primjer-zlonamjerno.com" } }]) { const rr = await real("http://localhost:8000/?id=19311000", h); const b = await rr.arrayBuffer(); ok(rr.status === 403 && b.byteLength === 0 && oss === n3, "upit bez dopuštene stranice (Origin): 403 bez sadržaja i bez upita OSS-u"); }
 console.log("deno: sve u redu"); Deno.exit(0);
