@@ -129,6 +129,27 @@ ZADAR = {
                  "Koeficijenti uključuju glavnu i sve pomoćne građevine na čestici, osim nenatkrivenih bazena (čl. 64.).",
                  "Potkrovlje: nadozid najviše 1,2 m; uz ravni krov moguća uvučena krovna etaža (nadgrađe) do 3,5 m (čl. 58.)."],
 }
+
+# Rekonstrukcija postojećih zgrada (čl. 64.b, 66., 90., 151.–154., 264., 363.–365.; pročišćeni tekst Glasnik Grada Zadra 14/2023, tekst izvučen iz PDF-a Zavoda 10. 11. 2026.)
+SVE_Z, POST_Z = ["rek", "dogr", "nadogr", "zamj"], ["rek", "dogr", "nadogr"]
+ZADAR["rekonstrukcija"] = [
+    {"zahvati": SVE_Z, "clanak": "64.b", "opis": "Uvjeti za novu gradnju primjenjuju se i na rekonstrukciju ako plan za nju ne propisuje posebne uvjete.",
+     "txt": "Uvjeti za gradnju novih građevina primjenjuju se i u slučajevima rekonstrukcije ukoliko Planom nisu posebno propisani"},
+    {"zahvati": POST_Z, "clanak": "152.", "opis": "Čestica manja od propisanog minimuma: rekonstrukcija samo u postojećim gabaritima; prizemna zgrada može se nadograditi za jednu etažu neovisno o kig-u, uz ostale uvjete zone.",
+     "txt": "kada je površina građevna čestica manja od Planom propisanog minimuma za novu gradnju, rekonstrukcija je dozvoljena samo u postojećim gabaritima građevine, iznimno, za prizemne građevine moguća je nadogradnja jedne etaže neovisno o najvećem dopuštenom koeficijentu izgrađenosti uz poštivanje ostalih uvjeta propisanih Planom za predmetnu zonu."},
+    {"zahvati": POST_Z, "clanak": "152.", "opis": "Zgrada bliže međi od propisanog: rekonstrukcija prema zatečenoj udaljenosti, uz suglasnost susjeda (osim kod reciprociteta) i bez novih otvora prema susjedu; bliže regulacijskom pravcu: prema zatečenoj udaljenosti."},
+    {"zahvati": POST_Z, "clanak": "152.", "opis": "Kig veći od propisanog: rekonstrukcija dopuštena uz ostale uvjete zone; uvjeti se ispunjavaju kumulativno (za postojeći i za rekonstruirani dio). Zgrada tipa zone manje gustoće u drugoj zoni rekonstruira se prema uvjetima zone Sm."},
+    {"zahvati": POST_Z, "clanak": "153.", "opis": "Postojeće zgrade koje premašuju dopušteni kig, kis ili nadzemni GBP zadržavaju se u postojećim gabaritima i ne mogu se povećavati; iznimno u zonama Ss i Sv rekonstrukcija krovišta ili nadogradnja potkrovlja za jednu stambenu jedinicu do najveće visine zone."},
+    {"zahvati": POST_Z, "clanak": "151.", "opis": "Otočna naselja (zone Sm): postojeće samostojeće i dvojne zgrade rekonstruiraju se prema uvjetima plana, a postojeći nizovi samo u postojećim gabaritima."},
+    {"zahvati": POST_Z, "clanak": "264.", "opis": "Parkiranje: na Poluotoku izvan jezgre rekonstrukcija bez promjene gabarita ne traži parkirna mjesta; kod povećanja GBP-a na Poluotoku i u svim jezgrama naselja obveza se odnosi samo na povećani dio, a samo na Poluotoku mjesta ne moraju biti na vlastitoj čestici."},
+    {"zahvati": SVE_Z, "clanak": "66.", "opis": "U jezgrama naselja rekonstrukcija ili zamjenska zgrada dopuštena je i kad čestica nema najmanju površinu, udaljenost od susjeda ili kig, ako se zadrže zatečeni tlocrtni gabariti; iznimno dogradnja etaža ili veća visina kad se slijedi visina susjednih zgrada.",
+     "txt": "U slučajevima rekonstrukcije ili gradnje zamjenske građevine dozvoljava se gradnja i kada nisu ispunjeni uvjeti minimalne površine građevinske čestice, udaljenosti od susjeda ili koeficijenta izgrađenosti, pod uvjetom da se zadrže zatečeni tlocrtni gabariti građevine."},
+    {"zahvati": ["nadogr"], "clanak": "90.", "opis": "Postojeća dvojna zgrada ili niz u zoni Sm: nadogradnja radi poravnanja s visinom susjedne zgrade i/ili povećanje na najviše dva stana."},
+    {"zahvati": SVE_Z, "clanak": "154.", "opis": "Na području s obvezom UPU-a do njegova donošenja dopuštena je samo nužna rekonstrukcija (čl. 364.)."},
+    {"zahvati": POST_Z, "clanak": "363.–364.", "opis": "Zgrada čija je namjena protivna planu: samo nužna rekonstrukcija — obnova krova i dotrajalih dijelova unutar postojećih gabarita, bez promjene volumena i vanjskog oblika.",
+     "txt": "Pod nužnom rekonstrukcijom podrazumijeva se obnova krova i svih dotrajalih dijelova zgrade unutar postojećih gabarita bez promjene volumena i vanjskog oblika građevine."},
+    {"zahvati": ["rek"], "clanak": "365.", "opis": "Zatečene ruševine unutar građevinskog područja mogu se rekonstruirati pod istim uvjetima kao postojeće zgrade u toj zoni."},
+]
 for z in ZSET.values():
     if z.get("tipovi"): z["napomene"] = z["napomene"] + ZADAR["napomene"]
 
