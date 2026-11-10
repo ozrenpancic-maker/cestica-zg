@@ -2412,6 +2412,35 @@ async function ighTests(){
 
 // skener građevinskih čestica (Zagreb): razvrstaj po namjeni, pravilu i najmanjoj površini, zgrade, UPU
 // skener na otoku Krku: stvarne čestice i zgrade iz katastra DGU (data/kat_krk, data/zg3d_krk), namjena PGŽ iz testnog sloja
+// skener u Splitu: čestice iz indeksa DGU (data/kat_hr: točka, površina, zgrada), pravilo iz boje lista KN_1_2 (testna slika)
+async function skenSplitTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  let wmsOk=true, wmsN=0;
+  w.fetch=(u)=>{u=String(u); const m=u.match(/data\/kat_hr\/(.+\.json)$/); if(m){ const pth=path.join(__dirname,"..","data","kat_hr",m[1]); return Promise.resolve({ok:fs.existsSync(pth),status:fs.existsSync(pth)?200:404,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(pth,"utf8")))}); }
+    if(/PPRasterZ17_Public\/wms/.test(u)&&/KN_1_2/.test(u)){ wmsN++; return Promise.resolve(wmsOk?{ok:true,status:200,blob:()=>Promise.resolve({type:"image/png"})}:{ok:false,status:503}); }
+    return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null),text:()=>Promise.resolve("")}); };
+  // lijeva polovica slike u boji pravila 2.4, desna u boji koju legenda dijeli (1.3 ili 3.5)
+  w.createImageBitmap=async()=>({});
+  w.HTMLCanvasElement.prototype.getContext=function(){return {drawImage(){},getImageData:(x,y,W,H)=>{const d=new w.Uint8ClampedArray(W*H*4); for(let i=0;i<W*H;i++){const c=(i%W)<W/2?[127,255,159]:[221,221,0]; d[i*4]=c[0];d[i*4+1]=c[1];d[i*4+2]=c[2];d[i*4+3]=255;} return {data:d};}}};
+  const lon=16.5250, lat=43.5030; E("map").setView([lat,lon],18,{animate:false});
+  E("map").getBounds=()=>w.L.latLngBounds([lat-0.0006,lon-0.001],[lat+0.0006,lon+0.001]);
+  $(w,"lyrSken").checked=true; $(w,"lyrSken").dispatchEvent(new w.Event("change",{bubbles:true})); await tick(500);
+  let R=E("SKEN").res; const g=c=>R&&R.out.find(x=>x.properties.ces===c);
+  ok(R&&R.C>50&&wmsN===1&&g("1550")&&g("1550").properties.k==="pot"&&g("1550").properties.minC===500&&g("1550").properties.pravilo==="2.4","Skener Split: k.č. 1550 (Stobreč, 1773 m², bez zgrade) u boji pravila 2.4 → potencijalna uz najmanje 500 m² (GUP Splita); pregledano "+(R?R.C:0));
+  ok(g("1546")&&g("1546").properties.k==="izg"&&g("1553")&&g("1553").properties.k==="mala","Skener Split: čestica sa zgradom iz katastra → izgrađena (1546), premala → mala (1553, 297 m²)");
+  const desno=R.out.filter(f=>f.properties.c[0]>lon+0.0001), lijevo=R.out.filter(f=>f.properties.c[0]<lon-0.0001);
+  ok(desno.length>5&&desno.every(f=>f.properties.k==="bez"&&/1\.3 i 3\.5/.test(f.properties.razlog||""))&&lijevo.length>5&&lijevo.every(f=>f.properties.k!=="bez"),"Skener Split: boja koju dijele 1.3 (s uvjetima) i 3.5 (bez) → razred bez odluke, s razlogom");
+  ok(R.out.every(f=>f.geometry&&f.geometry.type==="Polygon")&&/Split: čestice iz katastra DGU/.test(txt(w,"skenInfo"))&&/krug iste površine/.test(txt(w,"skenInfo"))&&/prijedlog, nije potvrda/.test(txt(w,"skenInfo")),"Skener Split: izvor, prikaz kruga i status prijedloga navedeni");
+  // dvojna kuća → 300 m² za 2.4
+  E("KRK_TIP.oblik='dvoj'"); E("skenPokreni()"); await tick(400); R=E("SKEN").res;
+  ok(g("1550")&&g("1550").properties.minC===300&&g("1553")&&g("1553").properties.k==="mala"&&/dvojna/.test(txt(w,"skenInfo")),"Skener Split: dvojna kuća → najmanje 300 m² u pravilu 2.4 (k.č. 1553 s 297 m² ostaje premala)");
+  E("KRK_TIP.oblik='slob'");
+  // karta pravila nedostupna → jasna poruka, bez razvrstavanja
+  wmsOk=false; E("skenPokreni()"); await tick(400);
+  ok(!E("SKEN").res&&/Podaci nisu dostupni \(karta urbanih pravila/.test(txt(w,"skenInfo")),"Skener Split: karta urbanih pravila nedostupna → »Podaci nisu dostupni«");
+  $(w,"lyrSken").checked=false; $(w,"lyrSken").dispatchEvent(new w.Event("change",{bubbles:true}));
+  ok(errs.length===0,"bez JS grešaka (skener Split): "+errs.join(" | "));
+}
 async function skenKrkTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
   w.fetch=(u)=>{u=String(u); const m=u.match(/data\/(kat_krk|zg3d_krk)\/(.+\.json)$/); if(m){ const pth=path.join(__dirname,"..","data",m[1],m[2]); return Promise.resolve({ok:fs.existsSync(pth),status:fs.existsSync(pth)?200:404,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(pth,"utf8")))}); }
@@ -2434,7 +2463,7 @@ async function skenKrkTests(){
   E("map").setView([45.044662,14.615334],18,{animate:false}); N=[box([14.6125,45.0430,14.6185,45.0465],GP)]; E("KRK_TIP.oblik='dvoj'"); E("skenPokreni()"); await tick(400); R=E("SKEN").res; f=R.out.find(x=>x.properties.ces==="735/58");
   const dv=E("RULES_KRK").tipovi.obit.dvoj.minC; ok(f&&f.properties.minC===dv,"Skener Krk: dvojna kuća → najmanja površina "+dv+" m² iz PPUG-a"); E("KRK_TIP.oblik='slob'");
   // izvan Krka i Zagreba
-  E("map").setView([43.51,16.44],18,{animate:false}); E("skenPokreni()"); await tick(100); ok(/Grad Zagreb i otok Krk/.test(txt(w,"skenInfo")),"Skener: izvan Zagreba i Krka jasna poruka");
+  E("map").setView([45.555,18.69],18,{animate:false}); E("skenPokreni()"); await tick(100); ok(/Grad Zagreb, otok Krk i Split/.test(txt(w,"skenInfo")),"Skener: izvan Zagreba, Krka i Splita (Osijek) jasna poruka");
   $(w,"lyrSken").checked=false; $(w,"lyrSken").dispatchEvent(new w.Event("change",{bubbles:true}));
   ok(errs.length===0,"bez JS grešaka (skener Krk): "+errs.join(" | "));
 }
@@ -3764,7 +3793,7 @@ async function zadarTests(){
   ok(errs.length===0,"bez JS grešaka (Zadar): "+errs.join(" | "));
 }
 
-netTests().then(skenKrkTests).then(postojeceTests).then(osijekTests).then(sgTests).then(zonaBojaTests).then(zadarTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
+netTests().then(skenKrkTests).then(skenSplitTests).then(postojeceTests).then(osijekTests).then(sgTests).then(zonaBojaTests).then(zadarTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
