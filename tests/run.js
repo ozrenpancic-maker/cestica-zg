@@ -2411,6 +2411,33 @@ async function ighTests(){
 }
 
 // skener građevinskih čestica (Zagreb): razvrstaj po namjeni, pravilu i najmanjoj površini, zgrade, UPU
+// skener na otoku Krku: stvarne čestice i zgrade iz katastra DGU (data/kat_krk, data/zg3d_krk), namjena PGŽ iz testnog sloja
+async function skenKrkTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  w.fetch=(u)=>{u=String(u); const m=u.match(/data\/(kat_krk|zg3d_krk)\/(.+\.json)$/); if(m){ const pth=path.join(__dirname,"..","data",m[1],m[2]); return Promise.resolve({ok:fs.existsSync(pth),status:fs.existsSync(pth)?200:404,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(pth,"utf8")))}); }
+    return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null),text:()=>Promise.resolve("")}); };
+  const box=(b,props)=>({type:"Feature",properties:props,geometry:{type:"Polygon",coordinates:[[[b[0],b[1]],[b[2],b[1]],[b[2],b[3]],[b[0],b[3]],[b[0],b[1]]]]}});
+  let N=[]; w.__skenHook=u=>/NAMJENA_POVRSINA/.test(u)?{type:"FeatureCollection",features:N}:{type:"FeatureCollection",features:[]};
+  const GP={POLAZNA_NAMJENA:"građevinsko područje",PRIMARNA_NAMJENA:"naselje",OPCINA_GRAD:"KRK",NASELJE:"Kornić",IZGRADJENOST:"izgrađeni dio",OZNAKA_NAMJENE:"GP"};
+  N=[box([14.6125,45.0430,14.6185,45.0465],GP)];
+  E("map").setView([45.044662,14.615334],18,{animate:false}); $(w,"lyrSken").checked=true; $(w,"lyrSken").dispatchEvent(new w.Event("change",{bubbles:true})); await tick(400);
+  let R=E("SKEN").res, f=R&&R.out.find(x=>x.properties.ces==="735/58");
+  ok(R&&R.C>=4&&R.out.length>=4&&f&&Math.abs(f.properties.A-599)<2&&f.properties.minC===500&&["pot","izg"].includes(f.properties.k),"Skener Krk (Kornić): stvarne čestice iz katastra DGU, k.č. 735/58 (599 m²) uz najmanje 500 m² za slobodnostojeću kuću (PPUG Krk) → "+(f?f.properties.k:"?")+"; pregledano "+(R?R.C:0));
+  ok(R.out.some(x=>x.properties.k==="izg")&&R.out.some(x=>x.properties.k==="mala"),"Skener Krk: izgrađene čestice (zgrade iz katastra) i premale čestice razvrstane");
+  ok(/Otok Krk: čestice i zgrade iz katastra DGU/.test(txt(w,"skenInfo"))&&/UPU-ovi u drugim naseljima nisu uzeti u obzir/.test(txt(w,"skenInfo")),"Skener Krk: izvor i ograničenje (UPU) navedeni");
+  // neizgrađeni dio GP-a → UPU; izvan GP-a (poljoprivredno) se ne prikazuje
+  N=[box([14.6125,45.0430,14.6185,45.0465],{...GP,IZGRADJENOST:"neizgrađeni dio"})]; E("skenPokreni()"); await tick(400); R=E("SKEN").res;
+  ok(R.out.length>=4&&!R.out.some(x=>x.properties.k==="pot")&&R.out.some(x=>x.properties.k==="upu"),"Skener Krk: neizgrađeni dio građevinskog područja → razred UPU, nijedna »potencijalna«");
+  N=[box([14.6125,45.0430,14.6185,45.0465],{POLAZNA_NAMJENA:"poljoprivredno tlo",PRIMARNA_NAMJENA:"osobito vrijedno obradivo tlo",OPCINA_GRAD:"KRK"})]; E("skenPokreni()"); await tick(400); R=E("SKEN").res;
+  ok(R.out.length===0&&R.C>=4,"Skener Krk: izvan građevinskog područja nema razvrstanih čestica");
+  // oblik kuće mijenja najmanju površinu
+  E("map").setView([45.044662,14.615334],18,{animate:false}); N=[box([14.6125,45.0430,14.6185,45.0465],GP)]; E("KRK_TIP.oblik='dvoj'"); E("skenPokreni()"); await tick(400); R=E("SKEN").res; f=R.out.find(x=>x.properties.ces==="735/58");
+  const dv=E("RULES_KRK").tipovi.obit.dvoj.minC; ok(f&&f.properties.minC===dv,"Skener Krk: dvojna kuća → najmanja površina "+dv+" m² iz PPUG-a"); E("KRK_TIP.oblik='slob'");
+  // izvan Krka i Zagreba
+  E("map").setView([43.51,16.44],18,{animate:false}); E("skenPokreni()"); await tick(100); ok(/Grad Zagreb i otok Krk/.test(txt(w,"skenInfo")),"Skener: izvan Zagreba i Krka jasna poruka");
+  $(w,"lyrSken").checked=false; $(w,"lyrSken").dispatchEvent(new w.Event("change",{bubbles:true}));
+  ok(errs.length===0,"bez JS grešaka (skener Krk): "+errs.join(" | "));
+}
 async function skenTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
   const kx=111320*Math.cos(45.84*Math.PI/180), ky=110540, o=[15.97,45.84];
@@ -3737,7 +3764,7 @@ async function zadarTests(){
   ok(errs.length===0,"bez JS grešaka (Zadar): "+errs.join(" | "));
 }
 
-netTests().then(postojeceTests).then(osijekTests).then(sgTests).then(zonaBojaTests).then(zadarTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
+netTests().then(skenKrkTests).then(postojeceTests).then(osijekTests).then(sgTests).then(zonaBojaTests).then(zadarTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
