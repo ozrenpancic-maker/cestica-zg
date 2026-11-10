@@ -3668,6 +3668,37 @@ async function zonaBojaTests(){
    ok(errs.length===0,"bez JS grešaka (Split boje, odustajanje): "+errs.join(" | "));}
 }
 
+// Postojeće zgrade izvan Zagreba: tlocrt iz katastra DGU (uživo), dogradnja, odredbe plana za zahvat, radovi bez dozvole
+async function postojeceTests(){
+  const run=async(zgOk)=>{ const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+    const lon=18.6550, lat=45.5560, [E0,N0]=E("tmFwd")(lon,lat), ring=[[E0-15,N0-12],[E0+15,N0-12],[E0+15,N0+12],[E0-15,N0+12],[E0-15,N0-12]];
+    // kuća 20 x 10 m u sredini čestice (40 x 20 px pri 0,5 m/px) i garaža 4 x 4 m izvan čestice (20–24 m istočno od sredine)
+    const svg=(W,H)=>`<?xml version="1.0"?><svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg"><g><path clip-path="url(#clipPath1)" d="M${W/2-20} ${H/2-10} L${W/2+20} ${H/2-10} L${W/2+20} ${H/2+10} L${W/2-20} ${H/2+10} L${W/2-20} ${H/2-10} Z" fill="none" fill-rule="evenodd"/><path clip-path="url(#clipPath1)" d="M${W/2+40} ${H/2} L${W/2+48} ${H/2} L${W/2+48} ${H/2+8} L${W/2+40} ${H/2+8} Z" fill="none" fill-rule="evenodd"/></g></svg>`;
+    w.fetch=(u)=>{u=String(u); const r=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b),text:()=>Promise.resolve("")});
+      if(/DKP_ZGRADE/.test(u)&&/GetMap/.test(u)){ if(!zgOk) return Promise.resolve({ok:false,status:503,text:()=>Promise.resolve("")}); const q=new URL(u).searchParams; return Promise.resolve({ok:true,status:200,text:()=>Promise.resolve(svg(+q.get("WIDTH"),+q.get("HEIGHT")))}); }
+      if(/wms1-gs-oss\.uredjenazemlja\.hr/.test(u)&&/GetFeatureInfo/.test(u)) return r({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{CESTICA_ID:777002,BROJ_CESTICE:"5124",MATICNI_BROJ_KO:320668,POVRSINA_GRAFICKA:720,POVRSINA_ATRIBUTNA:720}}]});
+      return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null),text:()=>Promise.resolve("")}); };
+    w.localStorage.removeItem("krkZahvat"); E("KRK_ZAHVAT=''");
+    await E("inspect")({lat,lng:lon}); await tick(150); setv(w,"krkZona","O","change"); await tick(300);
+    return {w,errs,E,tick}; };
+  {const {w,errs,E,tick}=await run(true); const Z=w.document.getElementById("postZg"), row=Z&&Z.querySelector("[data-postzg]");
+   ok(row&&row.dataset.postzg==="1"&&/Postojeći tlocrt \(1 zgrada iz katastra DGU\)/.test(row.textContent)&&/^200 m²$|^20\d m²$|^19\d m²$/.test(row.lastElementChild.textContent),"Postojeće zgrade (Osijek): kuća 20 × 10 m na čestici iz katastra DGU, garaža izvan čestice se ne broji ("+(row?row.textContent:"")+")");
+   const ef=w.document.getElementById("eFloors"); ef.value="2"; ef.dispatchEvent(new w.Event("input",{bubbles:true})); await tick(10); const o=w.document.getElementById("dogOut").textContent;
+   ok(/Postojeći GBP \(procjena\)\s*4\d\d m²/.test(o)&&/Preostali tlocrt za dogradnju\s*8\d m²/.test(o)&&/Preostali GBP \(dogradnja i nadogradnja\)\s*3\d\d m²/.test(o),"Dogradnja (Osijek, 720 m², kig 0,4, kis 1,0): postojeći GBP 400 m² uz 2 etaže, preostaje oko 88 m² tlocrta i 320 m² GBP-a ("+o.replace(/\s+/g," ")+")");
+   setv(w,"krkZahvat","rek","change"); await tick(20); let t=txt(w,"sheet"), L=w.document.querySelector("[data-zahvat-odredbe]");
+   ok(L&&+L.dataset.zahvatOdredbe===11&&/čl\. 24\.a\./.test(L.textContent)&&/120 m²/.test(L.textContent)&&/VS/.test(L.textContent)&&/72\.a/.test(L.textContent),"Rekonstrukcija (Osijek): 11 odredbi plana (manja čestica, kig 1,0 ispod 120 m², VS, čl. 72.a)");
+   const B=w.document.querySelector("[data-bez-dozvole]"); ok(B&&/NN 112\/17.*155\/23/.test(B.textContent)&&/zamjena prozora i vrata/.test(B.textContent)&&/glavni projekt/.test(B.textContent)&&/zakon\.hr/.test(B.innerHTML),"Rekonstrukcija: napomena o radovima bez građevinske dozvole (Pravilnik NN 112/17 … 155/23, čl. 3. i 5.)");
+   setv(w,"krkZahvat","zamj","change"); await tick(20); L=w.document.querySelector("[data-zahvat-odredbe]"); ok(L&&+L.dataset.zahvatOdredbe===4,"Zamjenska građevina (Osijek): samo 4 odredbe koje je spominju");
+   setv(w,"krkZahvat","nova","change"); await tick(20); ok(!w.document.querySelector("[data-zahvat-odredbe]")&&!w.document.querySelector("[data-bez-dozvole]"),"Nova gradnja: bez odredbi za zahvat i bez napomene o radovima bez dozvole");
+   ok(E("radoviBezDozvoleHtml")("rek").includes("čl. 3.")&&E("radoviBezDozvoleHtml")("nova")===""&&E("radoviBezDozvoleHtml")("interp")==="","Radovi bez dozvole: samo za zahvate na postojećoj zgradi");
+   ok(/nisu unesene/.test(E("zahvatOdredbeHtml")(null,"rek",null)),"Plan bez unesenih odredbi: jasno piše da nisu unesene");
+   w.localStorage.removeItem("krkZahvat"); E("KRK_ZAHVAT=''");
+   ok(errs.length===0,"bez JS grešaka (postojeće zgrade): "+errs.join(" | "));}
+  {const {w,errs}=await run(false); const Z=w.document.getElementById("postZg");
+   ok(Z&&/Podaci nisu dostupni/.test(Z.textContent)&&!w.document.getElementById("eFloors"),"Postojeće zgrade: katastarski sloj nedostupan → »Podaci nisu dostupni«, bez izračuna dogradnje");
+   ok(errs.length===0,"bez JS grešaka (postojeće zgrade, izvor nedostupan): "+errs.join(" | "));}
+}
+
 // Osijek: GUP (način gradnje O, OVS, VS prema karti 4.3.2.), parcela 30 x 24 m = 720 m²
 async function osijekTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
@@ -3705,7 +3736,7 @@ async function zadarTests(){
   ok(errs.length===0,"bez JS grešaka (Zadar): "+errs.join(" | "));
 }
 
-netTests().then(osijekTests).then(sgTests).then(zonaBojaTests).then(zadarTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
+netTests().then(postojeceTests).then(osijekTests).then(sgTests).then(zonaBojaTests).then(zadarTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });

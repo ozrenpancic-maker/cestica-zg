@@ -56,6 +56,27 @@ NAP = ["Namjena S1: obiteljske zgrade samo za stanovanje, bez drugih djelatnosti
        "Jedan kolni pristup na česticu, najviše 4,5 m širine (čl. 26.); parkiranje 1 PM po stanu (čl. 40.).",
        "Ograda uz među do 2 m (čl. 25.b)."]
 
+# odredbe za postojeće zgrade (zahvati: rek = rekonstrukcija, dogr = dogradnja, nadogr = nadogradnja, zamj = zamjenska građevina)
+SVE, POST = ["rek", "dogr", "nadogr", "zamj"], ["rek", "dogr", "nadogr"]
+REKON = [
+    {"zahvati": SVE, "clanak": "24.", "opis": "Čestica s postojećim građevinama manja od propisane može biti građevna čestica za rekonstrukciju postojeće ili gradnju nove građevine iste namjene (st. 10.).",
+     "txt": "Građevna čestica s postojećim građevinama koja u pogledu najmanje površine ne udovoljava uvjetima iz stavka 8. može se smatrati građevnom česticom za rekonstrukciju postojeće ili gradnju nove građevine iste namjene."},
+    {"zahvati": SVE, "clanak": "24.", "opis": "Veći postojeći broj građevina na čestici od dopuštenog može se zadržati, ali ne povećati (st. 6.)."},
+    {"zahvati": SVE, "clanak": "24.a", "opis": "Postojeća čestica manja od 120 m² s postojećom obiteljskom zgradom: kig do 1,0 (st. 2.).",
+     "txt": "Koeficijent izgrađenosti (kig) postojeće građevne čestice manje od 120 m2 s postojećom obiteljskom zgradom može iznositi najviše 1,0."},
+    {"zahvati": SVE, "clanak": "24.a", "opis": "Postojeći kig ili kis veći od dopuštenog može se pri radovima na postojećoj zgradi ili gradnji zamjenske zadržati, ali ne povećavati (st. 3. i 5.).",
+     "txt": "Iznimno, ukoliko je postojeći koeficijent izgrađenosti veći od dozvoljenog, isti se prilikom izvođenja radova na postojećoj građevini ili gradnji zamjenske građevine može zadržati, ali se ne smije povećavati."},
+    {"zahvati": POST, "clanak": "24.a", "opis": "Postojeća visina ili broj etaža veći od dopuštenog može se pri radovima na postojećoj zgradi zadržati, ali ne povećavati (st. 12.)."},
+    {"zahvati": POST, "clanak": "24.a", "opis": "Obiteljska zgrada na površini VS (karta 4.3.2.) može se rekonstruirati prema uvjetima za obiteljske zgrade (st. 13.); za nju ne vrijedi ni obveza građevinskog pravca od 5 m (čl. 25. st. 5.).",
+     "txt": "Iznimno, za obiteljske zgrade, izgrađene na površinama označenim oznakom VS (višestambene zgrade) na kartografskom prikazu 4.3.2. „Način gradnje“, dozvoljava se rekonstrukcija prema uvjetima propisanim za obiteljske zgrade (5.1. Obiteljske zgrade)."},
+    {"zahvati": POST, "clanak": "24.a", "opis": "Iznimka kojom zid obiteljske zgrade uz među i dio zgrade smiju biti do 6 m (umjesto 4 m) vrijedi kod rekonstrukcije tek dalje od 25 m od regulacijskog pravca (za novu gradnju dalje od 20 m) (st. 14.–17.)."},
+    {"zahvati": POST, "clanak": "25.a", "opis": "Postojeća zgrada koja nije usklađena s pravilima o zidu i otvorima uz među usklađuje se samo u dijelovima na kojima se rade radovi; postojeći otvori mogu se zadržati, ali ne povećavati (st. 12.)."},
+    {"zahvati": POST, "clanak": "25.b", "opis": "Ako je ozelenjeni dio čestice manji od 30 %, može se zadržati, ali ne smanjivati (st. 5.).",
+     "txt": "Iznimno, kod rekonstrukcije postojeće građevine ako je površina ozelenjenog dijela građevne čestice manja od propisane može se zadržati, ali se ne smije smanjivati."},
+    {"zahvati": POST, "clanak": "40.", "opis": "Kod rekonstrukcije treba osigurati parkirna mjesta za povećanje površine ili promjenu namjene; iznimno se nedostajuća mjesta mogu riješiti naknadom prema aktu Grada, na udaljenosti do 400 m (st. 7.–8.)."},
+    {"zahvati": POST, "clanak": "72.a", "opis": "Zgrada čija je namjena protivna planu ili je izgrađena protivno odredbama plana smije se samo neophodno poboljšati: obnova i zamjena dotrajalih dijelova i uređenje unutrašnjosti u postojećim gabaritima (bez prenamjene potkrovlja), dogradnja kupaonice ili WC-a do 6 m² ako ih nema, priključci i instalacije."},
+]
+
 ZONE, ZSET = [], {}
 def dodaj(k, naziv, cfg): ZONE.append([k, naziv]); ZSET[k] = cfg
 def bez(k, naziv, msg): ZONE.append([k, naziv]); ZSET[k] = {"tipovi": None, "drugaZona": msg + " Mjerodavna je lokacijska informacija Grada Osijeka."}
@@ -80,6 +101,7 @@ OSIJEK = {
     "tipovi": obit(), "meda": MEDA, "regulacija": REG, "zelenilo": ZEL,
     "pristup": {"napomena": "Jedan kolni pristup širine do 4,5 m i duljine do 50 m (čl. 26.); 1 parkirališno mjesto po stanu (čl. 40.)."},
     "napomene": NAP,
+    "rekonstrukcija": REKON,
 }
 
 if __name__ == "__main__":
