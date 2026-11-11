@@ -9,9 +9,11 @@ Korištenje (Python 3, pip install lxml pyproj shapely):
   (MAPA/ko-329835.zip …; grad svake k.o. zadan je u GRADOVI)
 Izlaz: data/kat_hr/index.json i data/kat_hr/<matični broj>.json = {"v":1,"ko":mb,"c":{"broj":[lon,lat,pov,zgr,put]}}: točka u milijuntinkama
 stupnja, grafička površina (m², zaokružena), 1 ako je na čestici točka zgrade iz sloja zgrada istog DKP-a (inače 0) i oznaka da čestica
-nije građevna: 2 = prometna površina prema načinu uporabe zemljišta iz DKP-a (put, cesta, ulica, pruga, parkiralište, trg; barem pola
-površine čestice), 3 = voda (kanal, potok, rijeka, more), 1 = uska izdužena čestica prema obliku (širina ≈ 2·površina/opseg; do 6 m uz duljinu
-barem 8 širina, do 9 m uz 12, do 12 m uz 15, do 20 m uz 20; vjerojatno put, prolaz ili kanal – sloj načina uporabe ne pokriva sve
+nije građevna: 2 = prometna površina prema načinu uporabe zemljišta iz DKP-a (put, cesta, ulica, prolaz, pločnik, staza, pruga,
+stepenište; barem pola površine čestice; parkiralište i trg se ne računaju), 3 = voda (kanal, potok, rijeka, more, jarak), 1 = uska
+izdužena čestica prema obliku (širina ≈ 2·površina/opseg; do 6 m uz duljinu barem 8 širina, do 9 m uz 12, do 12 m uz 15, do 20 m uz 20;
+moguće put, prolaz ili kanal – sloj načina uporabe ne pokriva sve čestice; kad katastar na barem 80 % površine navodi drugu uporabu,
+oznaka po obliku ostaje samo za trake do 6 m). U aplikaciji zgrada na čestici ima prednost pred svim oznakama. Sloj ne pokriva sve
 čestice), 0 = ništa od toga; za skener čestica.
 """
 import argparse, glob, io, json, os, re, shutil, zipfile
