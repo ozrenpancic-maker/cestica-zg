@@ -30,10 +30,24 @@ Granice ploha iscrtane su dvostrukom punom crvenom linijom; zaglađena izgleda k
 (33 × 33 točke, `vecina`): (a) točka razreda briše kad razredi zauzimaju manje od 40 % prozora (linija između sivih ili bijelih ploha),
 (b) točka prelazi u drugi razred kad ga ima barem 1,5 puta više nego njezinog. Odluka za česticu ima strože pragove nego u Splitu
 (`param`: prepoznato barem 60 % uzoraka, sive šrafure najviše 30 %), da čestica druge namjene uz granicu plohe ne dobije prijedlog.
-**Pravilo većine i ti pragovi provjereni su samo na umjetnim slikama (test `zonaOsijekTests`) i u neovisnoj provjeri, ne i na stvarnoj
-karti**, jer je veza s preglednikom prekinuta prije te provjere. Poznati preostali slučajevi (neovisna provjera na umjetnim slikama, 11. 11. 2026.): uska prometnica ili traka druge namjene (do oko 6 m; u
+Pravilo većine i ti pragovi provjereni su na umjetnim slikama (test `zonaOsijekTests`, neovisna provjera) i na stvarnoj karti (vidi dolje). Poznati preostali slučajevi (neovisna provjera na umjetnim slikama, 11. 11. 2026.): uska prometnica ili traka druge namjene (do oko 6 m; u
 skeneru do oko 8 m) između dviju ploha istog razreda čita se kao taj razred; čestica druge namjene koja je 40–50 % stvarno u plohi
 dobiva njezin razred; traka VS uža od 6 m između bijelih površina čita se kao O.
+
+## Provjera na stvarnoj karti i stvarnim česticama (11. 11. 2026.)
+
+U pregledniku (app.cesticahr.com) isti kod (`uzSrafura`, `uzOdluka` s `param`) pokrenut je nad listom KN_2_1 za 491 stvarnu česticu
+(granice iz katastarskog sloja DGU-a uživo, točke iz `data/kat_hr/320668.json`) u tri područja:
+- 18.6968–18.7006 / 45.5452–45.5472 (ploha O s ulicama i linijama granica): 162 čestice → 138 O, 24 bez prijedloga;
+- 18.6862–18.6900 / 45.5514–45.5534 (ploha OVS uz O): 18 čestica → 12 OVS, 4 O, 2 bez prijedloga;
+- 18.6900–18.6990 / 45.5535–45.5570 (mješovito O, OVS, VS, druge namjene): 311 čestica → 101 OVS, 63 VS, 21 O, 126 bez prijedloga.
+
+Ukupno 339 prijedloga (163 O, 113 OVS, 63 VS) i 152 odustajanja (114 premalo prepoznate površine – druga namjena, oznake na karti,
+ulice; 28 premala čestica; 10 više razreda ili granica kroz česticu). Prijedlozi su pregledani okom na preglednim slikama (obrisi
+čestica u boji prijedloga preko karte) i na pojedinačnim izrezima (npr. k.č. 6045 s oznakom gustoće → bez prijedloga; k.č. 8935/20
+uz rub plohe OVS → OVS): boja obrisa svugdje odgovara šrafuri ispod; čestice ulica i čestice na oznakama ostaju bez prijedloga;
+čestice u plohi O uz liniju granice ostaju O. Pogrešan prijedlog nije uočen. Pregled okom nije potpuna provjera svake čestice, a
+istinitost prema lokacijskoj informaciji nije provjeravana.
 
 Skener: slika mora biti 1 m/px ili krupnija (inače poruka „približi kartu”); za svaku česticu čita se pet točaka (središte i četiri na
 pola polumjera kruga iste površine) i svih pet mora dati isti razred, inače se čestica ne prikazuje.
