@@ -16,16 +16,26 @@ Kalibracija 10. 11. 2026. u pregledniku (app.cesticahr.com): list cijelog grada 
 5 × 5 px; pojavljuju se samo tri crvene skupine (s≈80–90/0, s≈150–170/0, s≈150/40), siva šrafura ostalih namjena i plava (voda).
 Oznake su pročitane na izrezima 0,4 m/px oko navedenih točaka.
 
-Pravila (`rules_krk.json → hrGradovi.OSIJEK.zonaBoje.srafura`), prvi koji odgovara:
-1. OVS: s ≥ 30 i q ≥ 0,13;
-2. VS: s ≥ 122 i q < 0,13;
-3. O: 45 ≤ s < 122 i q < 0,13;
-ostalo (bijelo, sivo, plavo, presvijetlo) nije razred.
+Izmjereni ton q: O i VS ≈ 0–0,06; OVS 0,20–0,33 (uzorci 241,117,78 → 0,27; 216,139,109 → 0,33; 229,126,91 → 0,29; 227,131,96 → 0,31;
+skupine cijelog grada 150/40, 120/30, 100/20, 90/20).
 
-Granice ploha iscrtane su dvostrukom punom crvenom linijom; zaglađena izgleda kao pruga gušće šrafure (na stvarnoj karti oko
-45.5462, 18.6985 čestica u zoni O dala je 34 % „VS”). Zato točka razreda prelazi u drugi razred kad ga u prozoru polumjera 8 m ima
-barem 1,5 puta više nego njezinog (`vecina`). **Pravilo većine provjereno je samo na umjetnoj slici (test `zonaOsijekTests`), ne i na
-stvarnoj karti**, jer je veza s preglednikom prekinuta prije te provjere.
+Pravila (`rules_krk.json → hrGradovi.OSIJEK.zonaBoje.srafura`), prvi koji odgovara; prozor zaglađivanja je 11 × 11 točaka (5,5 m pri 0,5 m/px):
+1. OVS: s ≥ 30 i q ≥ 0,18;
+2. VS: s ≥ 122 i q < 0,10;
+3. O: 45 ≤ s < 122 i q < 0,10;
+ostalo (bijelo, sivo, plavo, presvijetlo, dvojbeni ton 0,10–0,18) nije razred. Točka čiji je cijeli prozor izvan lista ostaje prozirna.
+
+Granice ploha iscrtane su dvostrukom punom crvenom linijom; zaglađena izgleda kao pruga šrafure (na stvarnoj karti oko
+45.5462, 18.6985 čestica u zoni O dala je 34 % „VS”; sama linija između ploha bez razreda izgleda kao „O”). Zato se u širem prozoru
+(33 × 33 točke, `vecina`): (a) točka razreda briše kad razredi zauzimaju manje od 40 % prozora (linija između sivih ili bijelih ploha),
+(b) točka prelazi u drugi razred kad ga ima barem 1,5 puta više nego njezinog. Odluka za česticu ima strože pragove nego u Splitu
+(`param`: prepoznato barem 60 % uzoraka, sive šrafure najviše 30 %), da čestica druge namjene uz granicu plohe ne dobije prijedlog.
+**Pravilo većine i ti pragovi provjereni su samo na umjetnim slikama (test `zonaOsijekTests`) i u neovisnoj provjeri, ne i na stvarnoj
+karti**, jer je veza s preglednikom prekinuta prije te provjere. Poznati preostali slučaj: uska prometnica (do oko 6 m) između dviju
+ploha istog razreda čita se kao taj razred.
+
+Skener: slika mora biti 1 m/px ili krupnija (inače poruka „približi kartu”); za svaku česticu čita se pet točaka (središte i četiri na
+pola polumjera kruga iste površine) i svih pet mora dati isti razred, inače se čestica ne prikazuje.
 
 Provjera na stvarnoj karti prije pravila većine (kvadratne probne plohe, ne stvarne čestice): 45.5523/18.6965 → VS 100 %;
 45.5527/18.6886 → OVS 100 %; 45.5478/18.7003 → O 100 %; 45.5512/18.6960 → VS 100 %; 45.5462/18.6985 → bez prijedloga (O 66 %, VS 34 %, linija granice).

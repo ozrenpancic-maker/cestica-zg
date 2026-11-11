@@ -3804,7 +3804,7 @@ async function postojeceTests(){
 // srednje boje ploha prema kalibraciji 10. 11. 2026.: O ≈ 240,155,155; VS ≈ 240,85,85; OVS ≈ 235,125,85; granica plohe = dvostruka puna crvena linija)
 async function zonaOsijekTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x);
-  const ZB=E("RULES_KRK").hrGradovi.OSIJEK.zonaBoje, P=E("HRZ_PARAM"), W=160, H=160, mpx=0.5;
+  const ZB=E("RULES_KRK").hrGradovi.OSIJEK.zonaBoje, P={...E("HRZ_PARAM"),...ZB.param}, W=160, H=160, mpx=0.5;
   // razred plohe po točki: f(x,y) → "O" | "VS" | "OVS" | "siva" | "bijelo"; linija = stupci x u [lx, lx+7) (2 crvena, 3 bijela, 2 crvena)
   const slika=(f,lx)=>{ const d=new Uint8ClampedArray(W*H*4); for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const o=(y*W+x)*4, k=f(x,y); let c=[255,255,255];
       if(lx!=null&&x>=lx&&x<lx+7) c=(x-lx<2||x-lx>=5)?[255,0,0]:[255,255,255];
@@ -3828,6 +3828,17 @@ async function zonaOsijekTests(){
   o=odl(slika(x=>x<80?"O":"VS")); ok(!o.kandidat&&o.dokaz.udjeli.O>0.35&&o.dokaz.udjeli.VS>0.35,"Osijek šrafura: stvarna granica O/VS kroz česticu → bez prijedloga, oba razreda vidljiva");
   // čestica O uz bijelu prometnicu: rub prema bijelom ne postaje drugi razred
   o=odl(slika(x=>x<112?"O":"bijelo")); ok(o.kandidat==="O","Osijek šrafura: čestica O uz bijelu površinu ostaje O");
+  // čestica druge namjene (siva šrafura): linija granice kroz nju ili pomak od 3 m u susjednu plohu O ne smije dati prijedlog
+  o=odl(slika(()=>"siva",78)); ok(!o.kandidat,"Osijek šrafura: linija granice kroz česticu druge namjene → bez prijedloga ("+(o.razlog||"")+")");
+  o=odl(slika(()=>"siva",106)); ok(!o.kandidat,"Osijek šrafura: linija granice uz rub čestice druge namjene → bez prijedloga");
+  o=odl(slika(x=>x<56?"O":"siva")); ok(!o.kandidat&&/sivoj površini|premalo boja/.test(o.razlog||""),"Osijek šrafura: čestica druge namjene pomaknuta 3 m u plohu O → bez prijedloga ("+(o.razlog||"")+")");
+  o=odl(slika(x=>x<56?"VS":"siva")); ok(!o.kandidat,"Osijek šrafura: čestica druge namjene pomaknuta 3 m u plohu VS → bez prijedloga");
+  // oznaka na karti (bijeli krug promjera 6 m) unutar čestice O ne mijenja razred
+  {const d=slika(()=>"O"); for(let y=0;y<H;y++) for(let x=0;x<W;x++) if(Math.hypot(x-80,y-80)<6){const q=(y*W+x)*4; d[q]=d[q+1]=d[q+2]=250;} o=odl(d); ok(o.kandidat==="O","Osijek šrafura: oznaka (bijeli krug) unutar čestice O ne mijenja prijedlog");}
+  // izvan lista (prozirno) → »list na čestici nema sadržaja«
+  {const d=new Uint8ClampedArray(W*H*4); o=odl(d); ok(!o.kandidat&&/nema sadržaja/.test(o.razlog||""),"Osijek šrafura: čestica izvan lista → bez prijedloga (list nema sadržaja)");}
+  // dvojbeni ton (između crvene i narančaste šrafure) nije nijedan razred
+  {const d=new Uint8ClampedArray(W*H*4); for(let i=0;i<W*H;i++){d[i*4]=238;d[i*4+1]=128;d[i*4+2]=112;d[i*4+3]=255;} o=odl(d); ok(!o.kandidat,"Osijek šrafura: ton između O/VS i OVS (q ≈ 0,14) → bez prijedloga");}
   ok(ZB.sloj==="HR_ISPU_GUP1_03123_R10_KN_2_1"&&ZB.wms.every(u=>/PPRasterZ14_Public/.test(u))&&/nije potvrđen/.test(E("RULES_KRK").hrGradovi.OSIJEK.upozorenje),"Osijek: izvor je list KN_2_1 (ISPU, Z14); upozorenje kaže da način gradnje nije potvrđen");
   ok(errs.length===0,"bez JS grešaka (šrafura Osijek): "+errs.join(" | "));
   // skener u Osijeku: čestice iz indeksa DGU, način gradnje iz šrafure (lijeva polovica O, desna VS)
@@ -3836,12 +3847,15 @@ async function zonaOsijekTests(){
      if(/PPRasterZ14_Public\/wms/.test(u)&&/KN_2_1/.test(u)) return Promise.resolve({ok:true,status:200,blob:()=>Promise.resolve({type:"image/png"})});
      return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null),text:()=>Promise.resolve("")}); };
    w.createImageBitmap=async()=>({});
-   w.HTMLCanvasElement.prototype.getContext=function(){return {drawImage(){},getImageData:(x,y,W,H)=>{const d=new w.Uint8ClampedArray(W*H*4); for(let j=0;j<H;j++) for(let i=0;i<W;i++){const o=(j*W+i)*4, red=i<W/2?((i%5<2&&j%5!==0)||(j%5===1&&i%5===3)):(i%3!==0); d[o]=255; d[o+1]=red?0:255; d[o+2]=red?0:255; d[o+3]=255;} return {data:d};}}};
+   w.HTMLCanvasElement.prototype.getContext=function(){return {drawImage(){},getImageData:(x,y,W,H)=>{const d=new w.Uint8ClampedArray(W*H*4); for(let j=0;j<H;j++) for(let i=0;i<W;i++){const o=(j*W+i)*4, L=i<W/2, red=L?((i%5<2&&j%5!==0)||(j%5===1&&i%5===3)):(MODE==="vs"&&i%3!==0), siv=!L&&MODE==="siva"&&(i+j)%4===0, v=siv?150:255; d[o]=red?255:v; d[o+1]=red?0:v; d[o+2]=red?0:v; d[o+3]=255;} return {data:d};}}}; let MODE="vs";
    const lon=18.7003, lat=45.5478; E("map").setView([lat,lon],18,{animate:false}); E("map").getBounds=()=>w.L.latLngBounds([lat-0.0006,lon-0.001],[lat+0.0006,lon+0.001]);
    $(w,"lyrSken").checked=true; $(w,"lyrSken").dispatchEvent(new w.Event("change",{bubbles:true})); await tick(600);
    const R=E("SKEN").res, minO=E("RULES_KRK").hrGradovi.OSIJEK.zoneSet.O.tipovi.obit.slob.minC, L=R?R.out.filter(f=>f.properties.c[0]<lon-0.0001):[], D=R?R.out.filter(f=>f.properties.c[0]>lon+0.0001):[];
    ok(R&&R.C>20&&L.length>5&&L.every(f=>f.properties.pravilo==="O"&&f.properties.minC===minO&&["pot","izg","mala"].includes(f.properties.k))&&D.length===0,"Skener Osijek: u šrafuri O čestice razvrstane uz najmanje "+minO+" m² (GUP), u šrafuri VS (bez uvjeta za obiteljsku kuću) se ne prikazuju; lijevo "+L.length+", desno "+D.length);
-   ok(/Osijek: čestice iz katastra DGU/.test(txt(w,"skenInfo"))&&/način gradnje iz boje karte/.test(txt(w,"skenInfo"))&&/prijedlog, nije potvrda/.test(txt(w,"skenInfo")),"Skener Osijek: izvor i status prijedloga navedeni");
+   ok(/Osijek: čestice iz katastra DGU/.test(txt(w,"skenInfo"))&&/način gradnje iz šrafure karte/.test(txt(w,"skenInfo"))&&/prijedlog, nije potvrda/.test(txt(w,"skenInfo")),"Skener Osijek: izvor i status prijedloga navedeni");
+   // desna polovica druge namjene (siva šrafura): čestice uz granicu (točke s obje strane) i na sivom se ne prikazuju
+   MODE="siva"; E("skenPokreni()"); await tick(600); const R2=E("SKEN").res, D2=R2.out.filter(f=>f.properties.c[0]>lon+0.00005);
+   ok(R2.out.length>5&&D2.length===0&&R2.out.every(f=>f.properties.pravilo==="O")&&R2.out.length<=L.length,"Skener Osijek: čestice na drugoj namjeni i uz granicu plohe se ne prikazuju ("+R2.out.length+" od "+R2.C+")");
    $(w,"lyrSken").checked=false; $(w,"lyrSken").dispatchEvent(new w.Event("change",{bubbles:true}));
    ok(errs.length===0,"bez JS grešaka (skener Osijek): "+errs.join(" | "));}
 }

@@ -119,10 +119,13 @@ OSIJEK["zonaBoje"] = {
             "https://gis4.mgipu.hr/srv1/PPRasterZ14_Public/wms", "https://gis1.mgipu.hr/srv1/PPRasterZ14_Public/wms"],
     "izvor": "ISPU (Ministarstvo prostornoga uređenja), GUP Osijeka, list KN_2_1 „Način gradnje” (karta 4.3.2.)",
     "mpx": 0.5, "kalibrirano": "2026-11-10",
-    "srafura": {"r": 2.5, "vecina": {"r": 8, "omjer": 1.5}, "razredi": [
-        {"zona": "OVS", "sMin": 30, "qMin": 0.13},
-        {"zona": "VS", "sMin": 122, "qMax": 0.13},
-        {"zona": "O", "sMin": 45, "sMax": 122, "qMax": 0.13}]},
+    # q između 0,10 i 0,18 nije nijedan razred (izmjereno: O i VS q ≈ 0–0,06; OVS q = 0,20–0,33)
+    "srafura": {"r": 2.5, "vecina": {"r": 8, "omjer": 1.5, "minUdio": 0.4}, "razredi": [
+        {"zona": "OVS", "sMin": 30, "qMin": 0.18},
+        {"zona": "VS", "sMin": 122, "qMax": 0.10},
+        {"zona": "O", "sMin": 45, "sMax": 122, "qMax": 0.10}]},
+    # stroži pragovi nego za karte s punom bojom: čestica druge namjene (siva šrafura) uz granicu plohe ne smije dobiti prijedlog
+    "param": {"minBoje": 0.6, "maxSivo": 0.3},
     "boje": [{"zona": "O", "rgb": [240, 150, 150]}, {"zona": "VS", "rgb": [240, 85, 85]}, {"zona": "OVS", "rgb": [235, 125, 85]}],
 }
 OSIJEK["upozorenje"] = ("Način gradnje (O, OVS, VS) nije potvrđen: aplikacija ga može predložiti iz šrafure karte 4.3.2. „Način gradnje”, ali ga potvrđuješ ti "

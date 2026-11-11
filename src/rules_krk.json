@@ -17273,26 +17273,31 @@
      "r": 2.5,
      "vecina": {
       "r": 8,
-      "omjer": 1.5
+      "omjer": 1.5,
+      "minUdio": 0.4
      },
      "razredi": [
       {
        "zona": "OVS",
        "sMin": 30,
-       "qMin": 0.13
+       "qMin": 0.18
       },
       {
        "zona": "VS",
        "sMin": 122,
-       "qMax": 0.13
+       "qMax": 0.1
       },
       {
        "zona": "O",
        "sMin": 45,
        "sMax": 122,
-       "qMax": 0.13
+       "qMax": 0.1
       }
      ]
+    },
+    "param": {
+     "minBoje": 0.6,
+     "maxSivo": 0.3
     },
     "boje": [
      {
