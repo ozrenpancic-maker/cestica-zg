@@ -31,8 +31,9 @@ Granice ploha iscrtane su dvostrukom punom crvenom linijom; zaglađena izgleda k
 (b) točka prelazi u drugi razred kad ga ima barem 1,5 puta više nego njezinog. Odluka za česticu ima strože pragove nego u Splitu
 (`param`: prepoznato barem 60 % uzoraka, sive šrafure najviše 30 %), da čestica druge namjene uz granicu plohe ne dobije prijedlog.
 **Pravilo većine i ti pragovi provjereni su samo na umjetnim slikama (test `zonaOsijekTests`) i u neovisnoj provjeri, ne i na stvarnoj
-karti**, jer je veza s preglednikom prekinuta prije te provjere. Poznati preostali slučaj: uska prometnica (do oko 6 m) između dviju
-ploha istog razreda čita se kao taj razred.
+karti**, jer je veza s preglednikom prekinuta prije te provjere. Poznati preostali slučajevi (neovisna provjera na umjetnim slikama, 11. 11. 2026.): uska prometnica ili traka druge namjene (do oko 6 m; u
+skeneru do oko 8 m) između dviju ploha istog razreda čita se kao taj razred; čestica druge namjene koja je 40–50 % stvarno u plohi
+dobiva njezin razred; traka VS uža od 6 m između bijelih površina čita se kao O.
 
 Skener: slika mora biti 1 m/px ili krupnija (inače poruka „približi kartu”); za svaku česticu čita se pet točaka (središte i četiri na
 pola polumjera kruga iste površine) i svih pet mora dati isti razred, inače se čestica ne prikazuje.

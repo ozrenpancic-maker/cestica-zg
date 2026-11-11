@@ -2645,7 +2645,8 @@ function hrZonaPoly(parcel,O){const g=parcel.geometry, R=g.type==="Polygon"?g.co
 // Karta iscrtana šrafurom (npr. GUP Osijeka, karta 4.3.2.): razred plohe ne daje boja pojedine točke nego srednja boja okoline.
 // Slika se zagladi kvadratnim prozorom (polumjer S.r metara), srednja boja se razvrsta po zasićenosti s = R − (G+B)/2 i tonu q = (G−B)/s
 // (rules_krk.json → zonaBoje.srafura.razredi, prvi koji odgovara) i točka dobije boju razreda iz zonaBoje.boje; ostale točke dobiju
-// zaglađenu boju (bijelo, sivo ili neprepoznato). Prozirne točke broje se kao bijele. Mijenja polje d na mjestu.
+// zaglađenu boju (bijelo, sivo ili neprepoznato). Prozirne točke u prozoru broje se kao bijele; točka čiji je cijeli prozor proziran ostaje
+// prozirna. Mijenja polje d na mjestu.
 function uzSrafura(d,W,H,mpx,ZB){ const S=ZB.srafura, R=Math.max(2,Math.round(S.r/mpx)), n=(W+1)*(H+1), I=[new Float64Array(n),new Float64Array(n),new Float64Array(n),new Float64Array(n)];
   for(let y=0;y<H;y++){ let a=0,b=0,c=0,e=0; for(let x=0;x<W;x++){ const o=(y*W+x)*4, t=d[o+3]<128; a+=t?255:d[o]; b+=t?255:d[o+1]; c+=t?255:d[o+2]; e+=t?0:1; const k=(y+1)*(W+1)+x+1, u=y*(W+1)+x+1; I[0][k]=I[0][u]+a; I[1][k]=I[1][u]+b; I[2][k]=I[2][u]+c; I[3][k]=I[3][u]+e; } }
   const boja=Object.fromEntries((ZB.boje||[]).map(b=>[b.zona,b.rgb])), Kl=new Uint8Array(W*H);
@@ -9504,6 +9505,7 @@ async function skenPokreniGrad(id,info,HG){
   if(pts.length>2500){ if(info) info.innerHTML=`<p class="meta">Približi kartu: u vidljivom dijelu je ${fmt(pts.length)} čestica.</p>`; return; }
   // list KN_1_2 za vidljivi dio, približno kvadratni pikseli od 0,5 m (najviše 1600 px po strani)
   const la=(bb[1]+bb[3])/2, mx=111320*Math.cos(la*Math.PI/180), my=110540; let mpx=0.5, W=Math.ceil((bb[2]-bb[0])*mx/mpx), H=Math.ceil((bb[3]-bb[1])*my/mpx); const kf=Math.max(W,H)/1600; if(kf>1){ mpx*=kf; W=Math.ceil(W/kf); H=Math.ceil(H/kf); }
+  if(ZB.srafura&&mpx>1){ if(info) info.innerHTML=`<p class="meta">Približi kartu: šrafura karte „${esc(ZB.naziv)}” čita se samo pri krupnijem prikazu.</p>`; return; }
   let d=null, e0="izvor nije dostupan";
   if(typeof createImageBitmap!=="function") e0="preglednik ne može očitati sliku";
   else for(const host of ZB.wms||[]){ const ac=new AbortController(), tm=setTimeout(()=>ac.abort(),20000);
@@ -9513,7 +9515,6 @@ async function skenPokreniGrad(id,info,HG){
       g.drawImage(bm,0,0,W,H); try{ d=g.getImageData(0,0,W,H).data; }catch(e){ throw new Error("servis ne dopušta očitavanje piksela (CORS)"); } if(ZB.srafura) uzSrafura(d,W,H,mpx,ZB); break; }
     catch(err){ e0=err&&err.name==="AbortError"?"servis ne odgovara":(err&&err.message)||e0; } finally{ clearTimeout(tm); } }
   if(id!==SKEN.id) return; if(!d) return fail((ZB.pojam?"karta „"+ZB.naziv+"”":"karta urbanih pravila")+": "+e0);
-  if(ZB.srafura&&mpx>1){ if(info) info.innerHTML=`<p class="meta">Približi kartu: šrafura karte „${esc(ZB.naziv)}” čita se samo pri krupnijem prikazu.</p>`; return; }
   const ids=new Set((HG.zone||[]).map(z=>z[0])), out=[], broj={}; let n0=0, nepr=0;
   const minZa=z=>{ const Z=HG.zoneSet&&HG.zoneSet[z], T=Z&&Z.tipovi&&(Z.tipovi.stamb||Object.values(Z.tipovi)[0]); if(!T) return null; const P=T[ob[0]]; return P&&P.minC>0?P.minC:0; };
   for(const p of pts){ n0++;
