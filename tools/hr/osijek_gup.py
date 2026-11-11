@@ -110,6 +110,24 @@ OSIJEK = {
     "rekonstrukcija": REKON,
 }
 
+# Prijedlog načina gradnje iz šrafure karte 4.3.2. „Način gradnje” (ISPU WMS, list KN_2_1). Plohe su iscrtane crvenom šrafurom različite
+# gustoće i tona, pa se razred određuje iz srednje boje u prozoru od 5 m: s = R − (G+B)/2 (zasićenost), q = (G−B)/s (narančasti ton).
+# Kalibrirano 10. 11. 2026. u pregledniku (oznake O, OVS i VS pročitane na karti; vidi docs/zona-boja/osijek.md).
+OSIJEK["zonaBoje"] = {
+    "naziv": "Način gradnje (karta 4.3.2.)", "pojam": "načina gradnje", "grad": "Osijek", "sloj": "HR_ISPU_GUP1_03123_R10_KN_2_1",
+    "wms": ["https://gis2.mgipu.hr/srv1/PPRasterZ14_Public/wms", "https://gis3.mgipu.hr/srv1/PPRasterZ14_Public/wms",
+            "https://gis4.mgipu.hr/srv1/PPRasterZ14_Public/wms", "https://gis1.mgipu.hr/srv1/PPRasterZ14_Public/wms"],
+    "izvor": "ISPU (Ministarstvo prostornoga uređenja), GUP Osijeka, list KN_2_1 „Način gradnje” (karta 4.3.2.)",
+    "mpx": 0.5, "kalibrirano": "2026-11-10",
+    "srafura": {"r": 2.5, "vecina": {"r": 8, "omjer": 1.5}, "razredi": [
+        {"zona": "OVS", "sMin": 30, "qMin": 0.13},
+        {"zona": "VS", "sMin": 122, "qMax": 0.13},
+        {"zona": "O", "sMin": 45, "sMax": 122, "qMax": 0.13}]},
+    "boje": [{"zona": "O", "rgb": [240, 150, 150]}, {"zona": "VS", "rgb": [240, 85, 85]}, {"zona": "OVS", "rgb": [235, 125, 85]}],
+}
+OSIJEK["upozorenje"] = ("Način gradnje (O, OVS, VS) nije potvrđen: aplikacija ga može predložiti iz šrafure karte 4.3.2. „Način gradnje”, ali ga potvrđuješ ti "
+                        "(karta je u odjeljku s kartama plana). Broj etaža (broj u krugu na karti) ne očitava se; potvrđuje ih lokacijska informacija.")
+
 if __name__ == "__main__":
     p = os.path.join(os.path.dirname(__file__), "..", "..", "src", "rules_krk.json")
     d = json.load(open(p, encoding="utf-8"))

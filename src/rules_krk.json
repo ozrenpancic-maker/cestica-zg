@@ -16795,7 +16795,7 @@
     18.76,
     45.585
    ],
-   "upozorenje": "Tip stambene zgrade (O, OVS, VS) i broj etaža ne očitavaju se automatski: odaberi ih prema kartografskom prikazu 4.3.2. „Način gradnje” GUP-a Osijeka (karta je u odjeljku s kartama plana) i provjeri namjenu S, S1 ili M na karti 1.; potvrđuje ih lokacijska informacija.",
+   "upozorenje": "Način gradnje (O, OVS, VS) nije potvrđen: aplikacija ga može predložiti iz šrafure karte 4.3.2. „Način gradnje”, ali ga potvrđuješ ti (karta je u odjeljku s kartama plana). Broj etaža (broj u krugu na karti) ne očitava se; potvrđuje ih lokacijska informacija.",
    "oblici": [
     [
      "slob",
@@ -17254,7 +17254,73 @@
      "clanak": "72.a",
      "opis": "Zgrada čija je namjena protivna planu ili je izgrađena protivno odredbama plana može se rekonstruirati u svrhu neophodnog poboljšanja uvjeta života i rada: obnova i zamjena dotrajalih dijelova i uređenje unutrašnjosti u postojećim gabaritima (bez prenamjene potkrovlja), dogradnja kupaonice ili WC-a do 6 m² ako ih nema, priključci i instalacije."
     }
-   ]
+   ],
+   "zonaBoje": {
+    "naziv": "Način gradnje (karta 4.3.2.)",
+    "pojam": "načina gradnje",
+    "grad": "Osijek",
+    "sloj": "HR_ISPU_GUP1_03123_R10_KN_2_1",
+    "wms": [
+     "https://gis2.mgipu.hr/srv1/PPRasterZ14_Public/wms",
+     "https://gis3.mgipu.hr/srv1/PPRasterZ14_Public/wms",
+     "https://gis4.mgipu.hr/srv1/PPRasterZ14_Public/wms",
+     "https://gis1.mgipu.hr/srv1/PPRasterZ14_Public/wms"
+    ],
+    "izvor": "ISPU (Ministarstvo prostornoga uređenja), GUP Osijeka, list KN_2_1 „Način gradnje” (karta 4.3.2.)",
+    "mpx": 0.5,
+    "kalibrirano": "2026-11-10",
+    "srafura": {
+     "r": 2.5,
+     "vecina": {
+      "r": 8,
+      "omjer": 1.5
+     },
+     "razredi": [
+      {
+       "zona": "OVS",
+       "sMin": 30,
+       "qMin": 0.13
+      },
+      {
+       "zona": "VS",
+       "sMin": 122,
+       "qMax": 0.13
+      },
+      {
+       "zona": "O",
+       "sMin": 45,
+       "sMax": 122,
+       "qMax": 0.13
+      }
+     ]
+    },
+    "boje": [
+     {
+      "zona": "O",
+      "rgb": [
+       240,
+       150,
+       150
+      ]
+     },
+     {
+      "zona": "VS",
+      "rgb": [
+       240,
+       85,
+       85
+      ]
+     },
+     {
+      "zona": "OVS",
+      "rgb": [
+       235,
+       125,
+       85
+      ]
+     }
+    ]
+   }
   }
  },
  "rekonstrukcija": [
