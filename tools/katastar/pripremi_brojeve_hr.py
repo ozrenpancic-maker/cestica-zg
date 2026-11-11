@@ -14,7 +14,7 @@ površine čestice), 3 = voda (kanal, potok, rijeka, more), 1 = uska izdužena �
 barem 8 širina, do 9 m uz 12, do 12 m uz 15, do 20 m uz 20; vjerojatno put, prolaz ili kanal – sloj načina uporabe ne pokriva sve
 čestice), 0 = ništa od toga; za skener čestica.
 """
-import argparse, glob, io, json, os, shutil, zipfile
+import argparse, glob, io, json, os, re, shutil, zipfile
 from lxml import etree
 from pyproj import Transformer
 from shapely.geometry import Polygon, MultiPolygon
@@ -30,13 +30,21 @@ GRADOVI = {
     "osijek": "300055 300101 300209 320498 320528 320609 320668 320692 320722 320749",
 }
 GRAD = {mb: g for g, s in GRADOVI.items() for mb in s.split()}
-PROMET = {"PUT", "CESTA", "NERAZVRSTANA CESTA", "ULICA", "DRŽAVNA CESTA", "ŽUPANIJSKA CESTA", "LOKALNA CESTA", "AUTOCESTA", "ŽELJEZNIČKA PRUGA",
-          "PARKIRALIŠTE", "TRG", "STEPENIŠTE"}
-VODA = {"KANAL", "POTOK", "RIJEKA", "MORE", "VODODERINA", "JEZERO"}
+# način uporabe po riječima naziva (npr. „NERAZVRSTANA CESTA”, „CESTA I PUT”, „PJEŠAČKA STAZA”); parkiralište i trg nisu uključeni
+# (na njima se gradi), a zgrada na čestici u aplikaciji ima prednost pred ovom oznakom
+PROMET = re.compile(r"\b(PUT|PUTEVI|PUTOVI|CEST[AE]|AUTOCESTA|ULICA|PROLAZ|PLOČNIK|NOGOSTUP|STAZA|PRUGA|STEPENIŠTE)\b")
+VODA = re.compile(r"\b(KANAL|POTOK|RIJEKA|MORE|VODODERINA|JEZERO|JARAK)\b")
+
+def opseg(P):
+    return sum(g.exterior.length for g in getattr(P, "geoms", [P]) if g.geom_type == "Polygon")
+
+def sirina(P):
+    op = opseg(P)
+    return 2 * P.area / op if op else 0
 
 def traka(P):
     """uska izdužena čestica (ista mjera kao cesTraka u aplikaciji): širina w ≈ 2·površina/opseg, duljina L ≈ opseg/2"""
-    op = sum(g.exterior.length for g in (P.geoms if P.geom_type == "MultiPolygon" else [P]))
+    op = opseg(P)
     if not op: return False
     w = 2 * P.area / op; L = op / 2
     return (w <= 6 and L >= 8 * w) or (w <= 9 and L >= 12 * w) or (w <= 12 and L >= 15 * w) or (w <= 20 and L >= 20 * w)
@@ -67,7 +75,7 @@ def main():
             if e.tag == O + "NAZIV": naziv = e.text
             elif e.tag == O + "MATICNI_BROJ": mb = e.text
         if mb not in GRAD: print("preskačem k.o. izvan popisa:", mb, naziv); continue
-        C = {}; x0 = y0 = 1e9; x1 = y1 = -1e9; GEO, KEY = [], []
+        C = {}; x0 = y0 = 1e9; x1 = y1 = -1e9; GEO, KEY, SIR = [], [], []
         for _, f in etree.iterparse(citaj(z, "katastarske_cestice.gml"), tag=O + "CESTICE", huge_tree=True):
             broj = f.findtext(O + "BROJ_CESTICE"); g = f.find(O + "GEOM"); P = poligon(g) if g is not None else None
             pg = f.findtext(O + "POVRSINA_GRAFICKA")
@@ -76,8 +84,10 @@ def main():
             if not broj or P is None or P.is_empty: continue
             p = P.representative_point(); lon, lat = T.transform(p.x, p.y)
             pov = round(float(pg)) if pg and float(pg) > 0 else round(P.area)
+            if not P.is_valid: P = P.buffer(0)
+            if P.is_empty: continue
             C[broj] = [round(lon * 1e6), round(lat * 1e6), pov, 0, 1 if traka(P) else 0]
-            GEO.append(P); KEY.append(broj)
+            GEO.append(P); KEY.append(broj); SIR.append(sirina(P))
             x0 = min(x0, lon); x1 = max(x1, lon); y0 = min(y0, lat); y1 = max(y1, lat)
         # zgrade: točka unutar obrisa zgrade → čestica na kojoj leži (oznaka zgr = 1)
         fz = citaj(z, "nacini_uporabe_zgrada.gml"); nz = 0
@@ -99,17 +109,21 @@ def main():
                 naz = (f.findtext(O + "NACINA_UPORABE_ZEMLJISTA") or "").strip().upper(); g = f.find(O + "GEOM"); U = poligon(g) if g is not None else None
                 f.clear()
                 while f.getprevious() is not None: del f.getparent()[0]
-                vr = 2 if naz in PROMET else 3 if naz in VODA else 0
-                if not vr or U is None or U.is_empty: continue
+                vr = 2 if PROMET.search(naz) else 3 if VODA.search(naz) else 0  # 0 = druga uporaba (dvorište, oranica …)
+                if U is None or U.is_empty: continue
                 if not U.is_valid: U = U.buffer(0)
                 for i in tree.query(U, predicate="intersects"):
                     Pc = GEO[int(i)]
-                    try: ar = (Pc if Pc.is_valid else Pc.buffer(0)).intersection(U).area
+                    try: ar = Pc.intersection(U).area
                     except Exception: continue
                     if ar > 0: udio[(int(i), vr)] = udio.get((int(i), vr), 0) + ar
             for (i, vr), ar in udio.items():
-                if GEO[i].area > 0 and ar / GEO[i].area >= 0.5:
+                if not GEO[i].area > 0: continue
+                if vr and ar / GEO[i].area >= 0.5:
                     C[KEY[i]][4] = vr; npr += vr == 2; nvo += vr == 3
+                # katastar kaže da čestica nije put ni voda (druga uporaba na barem 80 % površine): oznaka po obliku ostaje samo za trake do 6 m
+                elif not vr and ar / GEO[i].area >= 0.8 and C[KEY[i]][4] == 1 and SIR[i] > 6:
+                    C[KEY[i]][4] = 0
         with open(os.path.join(out, mb + ".json"), "w", encoding="utf-8") as fh:
             json.dump({"v": 1, "ko": mb, "naziv": naziv, "preuzeto": a.datum, "c": C}, fh, ensure_ascii=False, separators=(",", ":"))
         kos[mb] = {"naziv": naziv, "grad": GRAD[mb], "cestica": len(C), "okvir": [round(x0, 4), round(y0, 4), round(x1, 4), round(y1, 4)]}
