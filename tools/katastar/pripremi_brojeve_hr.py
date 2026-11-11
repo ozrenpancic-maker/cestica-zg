@@ -7,10 +7,16 @@ katalog DGU-a: „nema uvjeta za pristup i korištenje”. Za svaku česticu spr
 Korištenje (Python 3, pip install lxml pyproj shapely):
   python3 tools/katastar/pripremi_brojeve_hr.py --ulaz MAPA_SA_ZIPOVIMA --datum 2026-11-09
   (MAPA/ko-329835.zip …; grad svake k.o. zadan je u GRADOVI)
-Izlaz: data/kat_hr/index.json i data/kat_hr/<matični broj>.json = {"v":1,"ko":mb,"c":{"broj":[lon,lat,pov,zgr]}}: točka u milijuntinkama
-stupnja, grafička površina (m², zaokružena) i 1 ako je na čestici točka zgrade iz sloja zgrada istog DKP-a (inače 0); za skener čestica.
+Izlaz: data/kat_hr/index.json i data/kat_hr/<matični broj>.json = {"v":1,"ko":mb,"c":{"broj":[lon,lat,pov,zgr,put]}}: točka u milijuntinkama
+stupnja, grafička površina (m², zaokružena), 1 ako je na čestici točka zgrade iz sloja zgrada istog DKP-a (inače 0) i oznaka da čestica
+nije građevna: 2 = prometna površina prema načinu uporabe zemljišta iz DKP-a (put, cesta, ulica, prolaz, pločnik, staza, pruga,
+stepenište; barem pola površine čestice; parkiralište i trg se ne računaju), 3 = voda (kanal, potok, rijeka, more, jarak), 1 = uska
+izdužena čestica prema obliku (širina ≈ 2·površina/opseg; do 6 m uz duljinu barem 8 širina, do 9 m uz 12, do 12 m uz 15, do 20 m uz 20;
+moguće put, prolaz ili kanal – sloj načina uporabe ne pokriva sve čestice; kad katastar na barem 80 % površine navodi drugu uporabu,
+oznaka po obliku ostaje samo za trake do 6 m). U aplikaciji zgrada na čestici ima prednost pred svim oznakama. Sloj ne pokriva sve
+čestice), 0 = ništa od toga; za skener čestica.
 """
-import argparse, glob, io, json, os, shutil, zipfile
+import argparse, glob, io, json, os, re, shutil, zipfile
 from lxml import etree
 from pyproj import Transformer
 from shapely.geometry import Polygon, MultiPolygon
@@ -26,6 +32,24 @@ GRADOVI = {
     "osijek": "300055 300101 300209 320498 320528 320609 320668 320692 320722 320749",
 }
 GRAD = {mb: g for g, s in GRADOVI.items() for mb in s.split()}
+# način uporabe po riječima naziva (npr. „NERAZVRSTANA CESTA”, „CESTA I PUT”, „PJEŠAČKA STAZA”); parkiralište i trg nisu uključeni
+# (na njima se gradi), a zgrada na čestici u aplikaciji ima prednost pred ovom oznakom
+PROMET = re.compile(r"\b(PUT|PUTEVI|PUTOVI|CEST[AE]|AUTOCESTA|ULICA|PROLAZ|PLOČNIK|NOGOSTUP|STAZA|PRUGA|STEPENIŠTE)\b")
+VODA = re.compile(r"\b(KANAL|POTOK|RIJEKA|MORE|VODODERINA|JEZERO|JARAK)\b")
+
+def opseg(P):
+    return sum(g.exterior.length for g in getattr(P, "geoms", [P]) if g.geom_type == "Polygon")
+
+def sirina(P):
+    op = opseg(P)
+    return 2 * P.area / op if op else 0
+
+def traka(P):
+    """uska izdužena čestica (ista mjera kao cesTraka u aplikaciji): širina w ≈ 2·površina/opseg, duljina L ≈ opseg/2"""
+    op = opseg(P)
+    if not op: return False
+    w = 2 * P.area / op; L = op / 2
+    return (w <= 6 and L >= 8 * w) or (w <= 9 and L >= 12 * w) or (w <= 12 and L >= 15 * w) or (w <= 20 and L >= 20 * w)
 
 def poligon(geom):
     P = []
@@ -53,7 +77,7 @@ def main():
             if e.tag == O + "NAZIV": naziv = e.text
             elif e.tag == O + "MATICNI_BROJ": mb = e.text
         if mb not in GRAD: print("preskačem k.o. izvan popisa:", mb, naziv); continue
-        C = {}; x0 = y0 = 1e9; x1 = y1 = -1e9; GEO, KEY = [], []
+        C = {}; x0 = y0 = 1e9; x1 = y1 = -1e9; GEO, KEY, SIR = [], [], []
         for _, f in etree.iterparse(citaj(z, "katastarske_cestice.gml"), tag=O + "CESTICE", huge_tree=True):
             broj = f.findtext(O + "BROJ_CESTICE"); g = f.find(O + "GEOM"); P = poligon(g) if g is not None else None
             pg = f.findtext(O + "POVRSINA_GRAFICKA")
@@ -62,8 +86,10 @@ def main():
             if not broj or P is None or P.is_empty: continue
             p = P.representative_point(); lon, lat = T.transform(p.x, p.y)
             pov = round(float(pg)) if pg and float(pg) > 0 else round(P.area)
-            C[broj] = [round(lon * 1e6), round(lat * 1e6), pov, 0]
-            GEO.append(P); KEY.append(broj)
+            if not P.is_valid: P = P.buffer(0)
+            if P.is_empty: continue
+            C[broj] = [round(lon * 1e6), round(lat * 1e6), pov, 0, 1 if traka(P) else 0]
+            GEO.append(P); KEY.append(broj); SIR.append(sirina(P))
             x0 = min(x0, lon); x1 = max(x1, lon); y0 = min(y0, lat); y1 = max(y1, lat)
         # zgrade: točka unutar obrisa zgrade → čestica na kojoj leži (oznaka zgr = 1)
         fz = citaj(z, "nacini_uporabe_zgrada.gml"); nz = 0
@@ -77,10 +103,33 @@ def main():
                 q = Z.representative_point()
                 for i in tree.query(q, predicate="intersects"):
                     C[KEY[int(i)]][3] = 1; nz += 1; break
+        # način uporabe zemljišta: udio površine čestice pod prometnim površinama ili vodom (sloj ne pokriva sve čestice)
+        fu = citaj(z, "nacini_uporabe_zemljista.gml"); npr = nvo = 0
+        if fu is not None and GEO:
+            tree = STRtree(GEO); udio = {}
+            for _, f in etree.iterparse(fu, tag=O + "NACINI_UPORABE", huge_tree=True):
+                naz = (f.findtext(O + "NACINA_UPORABE_ZEMLJISTA") or "").strip().upper(); g = f.find(O + "GEOM"); U = poligon(g) if g is not None else None
+                f.clear()
+                while f.getprevious() is not None: del f.getparent()[0]
+                vr = 2 if PROMET.search(naz) else 3 if VODA.search(naz) else 0  # 0 = druga uporaba (dvorište, oranica …)
+                if U is None or U.is_empty: continue
+                if not U.is_valid: U = U.buffer(0)
+                for i in tree.query(U, predicate="intersects"):
+                    Pc = GEO[int(i)]
+                    try: ar = Pc.intersection(U).area
+                    except Exception: continue
+                    if ar > 0: udio[(int(i), vr)] = udio.get((int(i), vr), 0) + ar
+            for (i, vr), ar in udio.items():
+                if not GEO[i].area > 0: continue
+                if vr and ar / GEO[i].area >= 0.5:
+                    C[KEY[i]][4] = vr; npr += vr == 2; nvo += vr == 3
+                # katastar kaže da čestica nije put ni voda (druga uporaba na barem 80 % površine): oznaka po obliku ostaje samo za trake do 6 m
+                elif not vr and ar / GEO[i].area >= 0.8 and C[KEY[i]][4] == 1 and SIR[i] > 6:
+                    C[KEY[i]][4] = 0
         with open(os.path.join(out, mb + ".json"), "w", encoding="utf-8") as fh:
             json.dump({"v": 1, "ko": mb, "naziv": naziv, "preuzeto": a.datum, "c": C}, fh, ensure_ascii=False, separators=(",", ":"))
         kos[mb] = {"naziv": naziv, "grad": GRAD[mb], "cestica": len(C), "okvir": [round(x0, 4), round(y0, 4), round(x1, 4), round(y1, 4)]}
-        print(mb, naziv, GRAD[mb], len(C), "zgrada", nz, flush=True)
+        print(mb, naziv, GRAD[mb], len(C), "zgrada", nz, "promet", npr, "voda", nvo, "uske", sum(1 for v in C.values() if v[4] == 1), flush=True)
     nema = sorted(set(GRAD) - set(kos))
     if nema: print("NEDOSTAJE:", " ".join(nema))
     idx = {"v": 1, "izvor": "Državna geodetska uprava, digitalni katastarski plan (ATOM, oss.uredjenazemlja.hr)",

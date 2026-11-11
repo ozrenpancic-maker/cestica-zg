@@ -2450,6 +2450,7 @@ function uzOdluka(Hs,leg,P){P=P||UZ_PARAM; const zone=leg.map(l=>l.zona);
   else if(dokaz.boje<P.minBoje) razlog="prepoznato je premalo boja iz legende (linije, oznake, šrafura ili nečitljiv dio rastera)";
   else if(dokaz.bijelo>P.maxBijelo) razlog="dio čestice je na bijeloj površini (prometnica ili površina bez boje zone)";
   else if(dom<P.minDom) razlog="unutar čestice je više boja zona (mješovito ili granica zone)";
+  else if(P.maxSivo!=null&&dokaz.sivo>P.maxSivo) razlog="velik dio čestice je na sivoj površini (druga namjena, zgrade ili prometnica), pa se razred ne predlaže";
   else if(P.maxTamno!=null&&dokaz.tamno>P.maxTamno) razlog="velik dio čestice prekriva tamna površina (granica obuhvata plana, zgrade ili oznake), pa se zona za taj dio ne može očitati";
   else if(P.drugaUnutra!=null&&D2&&d2u>=P.drugaUnutra&&d2p>=P.drugaPrsten) razlog="granica zone prolazi kroz česticu: zona "+D2+" zauzima dio čestice i pojas uz nju";
   const drugo=D&&rb?1-(dokaz.prsten[D]||0):0;
@@ -2641,14 +2642,38 @@ function hrZonaOkvir(parcel,ZB){const bb=turf.bbox(parcel), la=(bb[1]+bb[3])/2, 
   if(k>1){mpx*=k; w=Math.ceil(w/k); h=Math.ceil(h/k);} return {bb:B,w:Math.max(w,8),h:Math.max(h,8),mpx};}
 function hrZonaPoly(parcel,O){const g=parcel.geometry, R=g.type==="Polygon"?g.coordinates:g.type==="MultiPolygon"?g.coordinates.flat():[], [W0,S0,E0,N0]=O.bb;
   return R.map(r=>r.map(([x,y])=>[(x-W0)/(E0-W0)*O.w,(N0-y)/(N0-S0)*O.h]));}
+// Karta iscrtana šrafurom (npr. GUP Osijeka, karta 4.3.2.): razred plohe ne daje boja pojedine točke nego srednja boja okoline.
+// Slika se zagladi kvadratnim prozorom (polumjer S.r metara), srednja boja se razvrsta po zasićenosti s = R − (G+B)/2 i tonu q = (G−B)/s
+// (rules_krk.json → zonaBoje.srafura.razredi, prvi koji odgovara) i točka dobije boju razreda iz zonaBoje.boje; ostale točke dobiju
+// zaglađenu boju (bijelo, sivo ili neprepoznato). Prozirne točke u prozoru broje se kao bijele; točka čiji je cijeli prozor proziran ostaje
+// prozirna. Mijenja polje d na mjestu.
+function uzSrafura(d,W,H,mpx,ZB){ const S=ZB.srafura, R=Math.max(2,Math.round(S.r/mpx)), n=(W+1)*(H+1), I=[new Float64Array(n),new Float64Array(n),new Float64Array(n),new Float64Array(n)];
+  for(let y=0;y<H;y++){ let a=0,b=0,c=0,e=0; for(let x=0;x<W;x++){ const o=(y*W+x)*4, t=d[o+3]<128; a+=t?255:d[o]; b+=t?255:d[o+1]; c+=t?255:d[o+2]; e+=t?0:1; const k=(y+1)*(W+1)+x+1, u=y*(W+1)+x+1; I[0][k]=I[0][u]+a; I[1][k]=I[1][u]+b; I[2][k]=I[2][u]+c; I[3][k]=I[3][u]+e; } }
+  const boja=Object.fromEntries((ZB.boje||[]).map(b=>[b.zona,b.rgb])), Kl=new Uint8Array(W*H);
+  for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const x0=Math.max(0,x-R),x1=Math.min(W,x+R+1),y0=Math.max(0,y-R),y1=Math.min(H,y+R+1), m=(x1-x0)*(y1-y0), W1=W+1;
+    const q=i=>(I[i][y1*W1+x1]-I[i][y0*W1+x1]-I[i][y1*W1+x0]+I[i][y0*W1+x0])/m, r=q(0), g=q(1), b=q(2), s=r-(g+b)/2, t=s>0?(g-b)/s:0;
+    if(q(3)===0){ d[(y*W+x)*4+3]=0; continue; } // cijeli prozor izvan lista: točka ostaje prozirna
+    const K=S.razredi.find(k=>s>=(k.sMin??-1e9)&&s<(k.sMax??1e9)&&t>=(k.qMin??-1e9)&&t<(k.qMax??1e9)), c=K&&boja[K.zona]||[r,g,b], o=(y*W+x)*4;
+    d[o]=Math.round(c[0]); d[o+1]=Math.round(c[1]); d[o+2]=Math.round(c[2]); d[o+3]=255; Kl[y*W+x]=K?S.razredi.indexOf(K)+1:0; }
+  // granice ploha iscrtane su punom crvenom linijom, koja zaglađena izgleda kao gušća šrafura (uska pruga drugog razreda). Točka razreda
+  // prelazi u drugi razred kad ga u širem prozoru (S.vecina.r metara) ima barem S.vecina.omjer puta više nego njezinog.
+  if(S.vecina){ const M=Math.max(1,Math.round(S.vecina.r/mpx)), nk=S.razredi.length, W1=W+1, C=[]; for(let k=1;k<=nk;k++){ const A=new Int32Array(n); for(let y=0;y<H;y++){ let a=0; for(let x=0;x<W;x++){ a+=Kl[y*W+x]===k?1:0; A[(y+1)*W1+x+1]=A[y*W1+x+1]+a; } } C.push(A); }
+    for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const k=Kl[y*W+x]; if(!k) continue; const x0=Math.max(0,x-M),x1=Math.min(W,x+M+1),y0=Math.max(0,y-M),y1=Math.min(H,y+M+1), cnt=A=>A[y1*W1+x1]-A[y0*W1+x1]-A[y1*W1+x0]+A[y0*W1+x0];
+      const own=cnt(C[k-1]); let b=0,bn=0,sv=own; for(let j=1;j<=nk;j++){ if(j===k) continue; const v=cnt(C[j-1]); sv+=v; if(v>bn){bn=v;b=j;} }
+      const o=(y*W+x)*4;
+      // linija granice između ploha bez razreda (siva šrafura, bijelo): u širem prozoru razreda gotovo nema, pa točka nije ploha razreda
+      if(S.vecina.minUdio!=null&&sv<(x1-x0)*(y1-y0)*S.vecina.minUdio){ d[o]=d[o+1]=d[o+2]=255; continue; }
+      if(b&&bn>=own*S.vecina.omjer){ const c=boja[S.razredi[b-1].zona]; if(c){ d[o]=c[0]; d[o+1]=c[1]; d[o+2]=c[2]; } } } }
+  return d; }
 async function hrZonaPrijedlog(parcel,ZB){let O,polys,e="izvor nije dostupan"; try{O=hrZonaOkvir(parcel,ZB); polys=hrZonaPoly(parcel,O);}catch(err){return {st:"err",e:"granica čestice nije čitljiva",ZB};}
   if(typeof createImageBitmap!=="function") return {st:"err",e:"preglednik ne može očitati sliku",ZB};
   for(const host of ZB.wms||[]){ try{ const ac=typeof AbortController!=="undefined"?new AbortController():null, t=ac?setTimeout(()=>ac.abort(),20000):0;
       let bl; try{const r=await fetch(hrZonaUrl(ZB,host,O.bb,O.w,O.h),{mode:"cors",credentials:"omit",signal:ac?ac.signal:undefined}); if(!r.ok) throw new Error("HTTP "+r.status); bl=await r.blob();}finally{clearTimeout(t);}
       if(bl.type&&!/^image\//.test(bl.type)) throw new Error("servis nije vratio sliku");
       const bm=await createImageBitmap(bl), c=document.createElement("canvas"); c.width=O.w; c.height=O.h; const g=c.getContext&&c.getContext("2d"); if(!g) throw new Error("nema platna za očitavanje");
-      g.drawImage(bm,0,0,O.w,O.h); const Hs=uzHist(g.getImageData(0,0,O.w,O.h).data,O.w,O.h,polys,O.mpx,HRZ_PARAM);
-      return {st:"ok",o:uzOdluka(Hs,ZB.boje,HRZ_PARAM),ZB,host,mpx:O.mpx}; }
+      g.drawImage(bm,0,0,O.w,O.h); const px=g.getImageData(0,0,O.w,O.h).data; if(ZB.srafura) uzSrafura(px,O.w,O.h,O.mpx,ZB);
+      const PP=ZB.param?{...HRZ_PARAM,...ZB.param}:HRZ_PARAM, Hs=uzHist(px,O.w,O.h,polys,O.mpx,PP);
+      return {st:"ok",o:uzOdluka(Hs,ZB.boje,PP),ZB,host,mpx:O.mpx}; }
     catch(err){ e=err&&err.name==="AbortError"?"servis ne odgovara":(err&&err.message)||e; } }
   return {st:"err",e,ZB};}
 function hrZonaStart(key,parcel,HG){ if(!HG||!HG.zonaBoje||!parcel) return; const Z0=HRZ_ST.get(key); if(Z0&&!(Z0.st==="err"&&Date.now()-Z0.t>60000)) return;
@@ -2657,7 +2682,7 @@ function hrZonaStart(key,parcel,HG){ if(!HG||!HG.zonaBoje||!parcel) return; cons
     if(window.__cur&&window.__cur.key===key){const u=document.getElementById("uzUvjeti"); if(u) u.outerHTML=uzUvjetiBox();} }); }
 const hrzOdbKey=k=>"hrzOdbij:"+k+":"+HRZ_PARAM.verzija;
 function hrZonaHtml(Z){ const pc=v=>Math.round(v*100)+" %", nz=String(Z.ZB&&Z.ZB.naziv||"karta");
-  if(Z.st==="load") return `<div class="uz" data-hrz="load"><p class="hint"><span class="spin"></span>Tražim prijedlog urbanog pravila iz boja karte „${esc(nz)}”…</p></div>`;
+  if(Z.st==="load") return `<div class="uz" data-hrz="load"><p class="hint"><span class="spin"></span>Tražim prijedlog ${esc(Z.ZB&&Z.ZB.pojam||"urbanog pravila")} iz boja karte „${esc(nz)}”…</p></div>`;
   let h=`<div class="uz" data-hrz="${Z.st==="ok"?(Z.o.kandidat?"kandidat":"odustao"):"err"}"><p class="eyebrow" style="margin:0 0 4px">Prijedlog iz boja karte „${esc(nz)}”</p>`;
   if(Z.st==="err") return h+`<p class="meta">Podaci nisu dostupni: ${esc(Z.e)}. Prijedlog se ne daje; pravilo odaberi sam prema karti.</p></div>`;
   const o=Z.o, D=o.dokaz, k=window.__cur&&window.__cur.key, odb=(()=>{try{return localStorage.getItem(hrzOdbKey(k))==="1"}catch(e){return false}})(), sad=krkZonaGet();
@@ -2675,7 +2700,9 @@ function hrZonaHtml(Z){ const pc=v=>Math.round(v*100)+" %", nz=String(Z.ZB&&Z.ZB
     `<li><b>Udio prepoznatih boja</b> među uzorcima bez linija i teksta: ${pc(D.boje)}; zgrade i prometnice (sivo) ${pc(D.sivo)}, bijelo ${pc(D.bijelo)}, neprepoznato ${pc(D.nepoznato)}</li>`+
     `<li><b>Pojas oko čestice</b> (do ${HRZ_PARAM.prsten} m): ${esc(Object.entries(D.prsten).slice(0,4).map(([x,v])=>x.replace("|"," ili ")+" "+pc(v)).join(", ")||"bez boja pravila")}</li>`+
     `<li><b>Izvor</b>: ${esc(Z.ZB.izvor||"")} (sloj ${esc(Z.ZB.sloj)}); razlučivost izreza ${String(Math.round(Z.mpx*100)/100).replace(".",",")} m/piksel; boje legende kalibrirane ${esc(Z.ZB.kalibrirano||"")}</li>`+
-    `<li><b>Ograničenja</b>: boja karte nije pravni podatak; granica čestice i karte mogu se razlikovati za nekoliko metara, a legenda neke boje koristi za dva pravila. Mjerodavna je lokacijska informacija.</li></ul></div></details></div>`;
+    (Z.ZB.srafura?`<li><b>Ograničenja</b>: karta je iscrtana šrafurom, pa se razred čita iz srednje boje u prozoru od oko 5 m; linije granica ploha i oznake na karti mogu iskriviti očitanje. Siva šrafura je druga namjena. Broj etaža (broj u krugu) se ne čita. Granica čestice i karte mogu se razlikovati za nekoliko metara. Mjerodavna je lokacijska informacija.</li>`
+     :`<li><b>Ograničenja</b>: boja karte nije pravni podatak; granica čestice i karte mogu se razlikovati za nekoliko metara, a legenda neke boje koristi za dva pravila. Mjerodavna je lokacijska informacija.</li>`)+`</ul></div></details></div>`;
+  if(Z.ZB.pojam) h=h.replace(/Aplikacija ne predlaže pravilo:/,"Aplikacija ne predlaže način gradnje:").replace(/Blizu granice pravila:/,"Blizu granice plohe:").replace(/Odabrano pravilo /,"Odabrani način gradnje ").replace(/Boje pravila unutar čestice/,"Razredi šrafure unutar čestice").replace(/zgrade i prometnice \(sivo\)/,"siva šrafura (druga namjena)").replace(/bez boja pravila/,"bez razreda").replace(/Pravilo odaberi sam prema karti i legendi\./,"Način gradnje odaberi sam prema karti.").replace(/pravilo ostaje tvoj ručni odabir/,"način gradnje ostaje tvoj ručni odabir");
   return h;}
 sheet.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-hrzb]"); if(!b) return; const k=window.__cur&&window.__cur.key, Z=k&&HRZ_ST.get(k); if(!Z||Z.st!=="ok") return; const a=b.dataset.hrzb;
   if(a==="prihvati"){krkZonaSet(b.dataset.zona); try{localStorage.setItem("krkZonaIzvor:"+k,JSON.stringify({izvor:"prijedlog iz boja karte",karta:Z.ZB.sloj,kandidat:Z.o.kandidat.replace("|"," ili "),zona:b.dataset.zona,datum:pzDan()}))}catch(err){} if(KRK_CUR) renderKrk(KRK_CUR);}
@@ -3202,7 +3229,7 @@ function renderKrk(d){
   if(!inPilot&&jlsName) h+=`<p class="flag">Pravila gradnje provjerena su samo za Grad Krk. Za ${esc(jlsName)} prikazujem isti županijski sloj namjene i popis planova${RULES_KRK&&RULES_KRK.ostaleJls&&RULES_KRK.ostaleJls[jls]?" te uvjete iz prostornog plana općine":""}, ali to nisam provjerio na primjerima.</p>`;
   // čestica
   if(parcel){
-    h+=`<p class="eyebrow">Katastarska čestica${P.ko?" · k.o. "+esc(P.ko):P.koRef?" · k.o. br. "+esc(P.koRef):""}</p><p class="parcel">${esc(P.broj||"?")}</p>`;
+    h+=`<p class="eyebrow">Katastarska čestica${P.ko?" · k.o. "+esc(P.ko):P.koRef?" · k.o. br. "+esc(P.koRef):""}</p><p class="parcel">${esc(P.broj||"?")}</p>`+trakaHtml(parcel,area);
     h+=`<div id="krkArea">`+krkAreaHtml(P,area)+`</div>`;
     if(P.preklapanje) h+=`<p class="meta">Na ovoj točki preklapaju se stara i nova izmjera (${esc(P.preklapanje.join(", "))}); prikazana je čestica novije izmjere.</p>`;
   }else{
@@ -3298,7 +3325,7 @@ function renderHR(d){
   const key=window.__cur.key;
   let h=G("sum")+`<p id="printHead" class="print-only"></p><div id="printMap"></div><p class="eyebrow">Hrvatska · osnovni pregled</p>`;
   if(parcel){
-    h+=`<p class="eyebrow" id="hrKo">Katastarska čestica${P.ko?" · k.o. "+esc(P.ko):P.koRef?" · k.o. br. "+esc(P.koRef):""}</p><p class="parcel">${esc(P.broj||"?")}</p>`;
+    h+=`<p class="eyebrow" id="hrKo">Katastarska čestica${P.ko?" · k.o. "+esc(P.ko):P.koRef?" · k.o. br. "+esc(P.koRef):""}</p><p class="parcel">${esc(P.broj||"?")}</p>`+trakaHtml(parcel,area);
     h+=`<div id="krkArea">`+krkAreaHtml(P,area)+`</div>`;
     h+=hrGrad(ll)?`<div class="verdict v-warn">Namjena površina nije dostupna kao digitalni sloj. Uvjeti gradnje računaju se prema urbanom pravilu koje odabereš u odjeljku „Uvjeti gradnje”${hrGrad(ll).zonaBoje?"; aplikacija ga predlaže iz boja karte plana, a ti ga potvrđuješ":""}.</div>`:`<div class="verdict v-warn">Za ovo područje aplikacija još nema obrađena pravila gradnje. Podaci nisu dostupni: namjena površina, uvjeti gradnje i izračun što se smije graditi. Provjeri ih u prostornom planu općine ili grada (ISPU) i traži lokacijsku informaciju.</div>`;
   }else{
@@ -4734,6 +4761,7 @@ function renderSlobodno(d,region){
   if(I.gp.st==="ok") h+=`<dt>Unutar građevinskog područja</dt><dd><b>${fmt(I.gp.unutra)} m²</b></dd><dt>Građevinski dio</dt><dd><b>${f1(I.gp.udio*100)} %</b></dd><dt>Izvan građevinskog područja</dt><dd><b>${f1((1-I.gp.udio)*100)} %</b>${I.gp.izvan>=0.5?` (${fmt(I.gp.izvan)} m²)`:""}</dd>`;
   else h+=`<dt>Građevinsko područje</dt><dd><b>Nije moguće pouzdano utvrditi</b> <small class="fx">${esc(I.gp.razlog)}</small></dd>`;
   h+=`<dt>Opseg</dt><dd>${fmt(I.opseg)} m · duljine granica prikazane su na karti</dd></dl>`;
+  h+=trakaHtml(parcel,I.area,I.opseg);
   if(I.gp.st==="ok") h+=`<p class="lgd-mini"><span class="lg-g"></span> građevinski dio <span class="lg-n"></span> izvan građevinskog područja</p>`;
   h+=`<p class="meta">Površina i duljine granica izračunate su iz digitalne katastarske karte i informativne su; nisu geodetski utvrđene (točne daje geodetska izmjera). ${I.gp.st==="ok"?"Izvor građevinskog područja: "+esc(I.gp.izvor)+". ":""}<b>Građevinsko područje ne znači da je gradnja dopuštena</b>: to ovisi o uvjetima plana, pristupu, infrastrukturi i drugim propisima.</p>`;
   h+=`<details class="acc" data-k="slob-gr"><summary><span>Duljine granica (${I.edges.length})</span><b>${fmt(I.opseg)} m</b></summary><div class="acc-body"><ol class="zi">${I.edges.map(e=>`<li>${f1(e.len)} m</li>`).join("")}</ol></div></details></div>`;
@@ -6430,7 +6458,7 @@ function render(d){
   if(parcel){
     const p=parcel.properties;
     h+=`<p class="eyebrow">Katastarska čestica${p.KATASTARSKA_OPCINA?" · k.o. "+esc(p.KATASTARSKA_OPCINA):""}</p>`;
-    h+=`<p class="parcel">${esc(p.KATASTARSKA_CESTICA||p.KC_KO||"?")}</p>`;
+    h+=`<p class="parcel">${esc(p.KATASTARSKA_CESTICA||p.KC_KO||"?")}</p>`+trakaHtml(parcel,area);
     h+=`<div id="zgArea">`+krkAreaHtml(zgAreaP(parcel,favKey(parcel,ll)),area)+`</div>`;
     if(p.GRADSKA_CETVRT) h+=`<p class="meta">Gradska četvrt: ${esc(p.GRADSKA_CETVRT)}</p>`;
     zkH+=`<details class="acc" data-k="zk"><summary><span>Vlasnici i tereti (ZK izvadak)</span><b id="zkSum">${ZK.res?esc(ZK.res.sum):"provjeri izvadak"}</b></summary><div class="acc-body"><div id="zkOss"></div><div class="zk-upute noprint">`;
@@ -9407,11 +9435,26 @@ const SKEN={on:false,id:0,res:null,t:0,zoom:17,
   layer:L.geoJSON(null,{interactive:false,style:f=>SKEN_STIL[f.properties.k]||{opacity:0,fillOpacity:0}})};
 const SKEN_STIL={pot:{color:"#137a3a",weight:2,fillColor:"#1a9850",fillOpacity:.45},upu:{color:"#c25a00",weight:2,fillColor:"#fdae61",fillOpacity:.4},
   izg:{color:"#3b5f91",weight:1,fillColor:"#91bfdb",fillOpacity:.3},izn:{color:"#a07800",weight:1.5,fillColor:"#fee08b",fillOpacity:.45},
-  mala:{color:"#c0392b",weight:1,fillColor:"#d73027",fillOpacity:.12,dashArray:"3 3"},plan:{color:"#8e44ad",weight:1.5,fillColor:"#c39bd3",fillOpacity:.25,dashArray:"4 3"},bez:{color:"#777",weight:1,fillOpacity:0,dashArray:"2 4"}};
+  mala:{color:"#c0392b",weight:1,fillColor:"#d73027",fillOpacity:.12,dashArray:"3 3"},plan:{color:"#8e44ad",weight:1.5,fillColor:"#c39bd3",fillOpacity:.25,dashArray:"4 3"},put:{color:"#555",weight:1,fillColor:"#9aa0a6",fillOpacity:.3,dashArray:"2 3"},bez:{color:"#777",weight:1,fillOpacity:0,dashArray:"2 4"}};
 const SKEN_NAZ={pot:"potencijalna građevna čestica (neizgrađena, dovoljno velika)",upu:"dovoljno velika, ali u obuhvatu obveznog UPU-a",izg:"izgrađena, dovoljno velika",
-  izn:"manja od propisane; pravilo ima posebnu odredbu za manje čestice",mala:"manja od propisane najmanje površine",plan:"pod UPU-om koji aplikacija nije obradila ili čija zona nije poznata (uvjete propisuje UPU)",bez:"nije razvrstana: najmanja površina nije propisana ili nije jednoznačna, oblik kuće nije dozvoljen ili pravilo nije pronađeno"};
+  izn:"manja od propisane; pravilo ima posebnu odredbu za manje čestice",mala:"manja od propisane najmanje površine",put:"put ili voda prema katastru, ili uska izdužena čestica (ne računa se kao građevna čestica)",plan:"pod UPU-om koji aplikacija nije obradila ili čija zona nije poznata (uvjete propisuje UPU)",bez:"nije razvrstana: najmanja površina nije propisana ili nije jednoznačna, oblik kuće nije dozvoljen ili pravilo nije pronađeno"};
 const UPU_URL=BASE+"4b_procedure_JR_PJR_swipe/FeatureServer/19/query";
 // čisti razvrstaj jedne čestice (bez mreže): ulaz su podaci, izlaz razred i obrazloženje
+// Uska izdužena čestica (put, prolaz, kanal ili traka zemljišta) nije građevna čestica samo zato što ima dovoljno kvadrata.
+// Mjera oblika: širina w ≈ 2·površina/opseg, duljina L ≈ opseg/2; traka je do 6 m široka uz L ≥ 8w, do 9 m uz 12w, do 12 m uz 15w,
+// do 20 m uz 20w (ista mjera kao u tools/katastar/pripremi_brojeve_hr.py). Opseg je zbroj vanjskih prstenova u metrima.
+function geoOpseg(g){ try{ const R=g.type==="Polygon"?[g.coordinates[0]]:g.type==="MultiPolygon"?g.coordinates.map(c=>c[0]):[]; let P=0;
+  for(const r of R){ const ky=110540, kx=111320*Math.cos(r[0][1]*Math.PI/180); for(let i=0;i<r.length-1;i++) P+=Math.hypot((r[i+1][0]-r[i][0])*kx,(r[i+1][1]-r[i][1])*ky); } return P; }catch(e){ return 0; } }
+function cesTraka(A,P){ if(!(A>0)||!(P>0)) return null; const w=2*A/P, L=P/2; return (w<=6&&L>=8*w)||(w<=9&&L>=12*w)||(w<=12&&L>=15*w)||(w<=20&&L>=20*w)?{w,L}:null; }
+const SKEN_PUT_TXT="uska izdužena čestica (moguće put, prolaz, kanal ili traka zemljišta); ne računa se kao građevna čestica";
+const PUT_KAT={2:"prometna površina prema katastru (pretežno put, cesta, ulica, prolaz ili pruga)",3:"voda prema katastru (pretežno kanal, potok, rijeka ili more)"};
+// Upozorenje u listu čestice (svi prikazi): oblik iz granice čestice odmah; za gradove s indeksom DGU-a (data/kat_hr) naknadno i način
+// uporabe iz katastra (oznaka 2 ili 3), koji vrijedi više od oblika.
+function trakaHtml(parcel,area,opseg){ if(!parcel||!parcel.geometry) return ""; let A=area, P=opseg; try{ if(!(A>0)) A=turf.area(parcel); if(!(P>0)) P=geoOpseg(parcel.geometry); }catch(e){ return ""; }
+  const tr=cesTraka(A,P), pp=parcel.properties||{}, kljuc=(pp.koRef||"")+"|"+(pp.broj||"");
+  if(pp.koRef&&pp.broj) setTimeout(()=>{ katHrIndex().then(I=>I&&I.ko&&I.ko[pp.koRef]?katHrBrojevi(pp.koRef):null).then(X=>{ const q=X&&X.c&&X.c[pp.broj], el=document.getElementById("trakaBox"); if(!q||!PUT_KAT[q[4]]||q[3]===1||!el||el.dataset.kljuc!==kljuc) return;
+      el.hidden=false; el.dataset.traka="katastar"; el.innerHTML=`<p class="flag"><b>Nije građevna čestica prema katastru:</b> ${esc(PUT_KAT[q[4]])} (način uporabe zemljišta iz digitalnog katastarskog plana DGU-a, barem polovica površine). Izračuni gradnje u nastavku vrijede samo ako se način uporabe promijeni; provjeri posjedovni list.</p>`; }).catch(()=>{}); },0);
+  return `<div id="trakaBox" data-kljuc="${esc(kljuc)}"${tr?` data-traka="oblik"`:" hidden"}>${tr?`<p class="flag"><b>Uska izdužena čestica</b> (prosječna širina oko ${dec((Math.round(tr.w*10)/10).toFixed(1))} m): po obliku je moguće put, prolaz, kanal ili traka zemljišta, a ne građevna čestica, bez obzira na površinu. Način uporabe provjeri u posjedovnom listu (katastar); izračuni gradnje u nastavku vrijede samo ako je čestica stvarno građevna.</p>`:""}</div>`; }
 function skenRazred(o){
   if(!o.analitika||!BUILDABLE.has(o.analitika)) return {k:null};
   const R=o.pravilo&&o.pravilo.rule, zona=R?pickZone(R,o.analitika):null;
@@ -9433,7 +9476,7 @@ async function skenPokreni(){
   if(map.getZoom()<SKEN.zoom){ if(info) info.innerHTML=`<p class="meta">Približi kartu (zum ${SKEN.zoom} ili više) da skener pregleda čestice u vidljivom dijelu.</p>`; return; }
   const c=map.getCenter(); if(regionOf(c)==="krk"&&inBox(c,REGIJE.krk.bbox)) return skenPokreniKrk(id,info);
   const HG=regionOf(c)!=="zg"?hrGrad(c):null; if(HG&&HG.zonaBoje) return skenPokreniGrad(id,info,HG);
-  if(regionOf(c)!=="zg"){ if(info) info.innerHTML=`<p class="meta">Skener zasad radi za Grad Zagreb, otok Krk i Split (slojevi čestica, namjene i pravila gradnje).</p>`; return; }
+  if(regionOf(c)!=="zg"){ if(info) info.innerHTML=`<p class="meta">Skener zasad radi za Grad Zagreb, otok Krk, Split i Osijek (slojevi čestica, namjene i pravila gradnje).</p>`; return; }
   if(info) info.innerHTML=`<p class="hint"><span class="spin"></span>Pregledavam čestice…</p>`;
   const B=map.getBounds(), st=s=>s.catch(e=>({e:e.message||"servis ne odgovara"}));
   const [C,N,P,PS,U,Z]=await Promise.all([skenEnv(SRC.cestice,B,"KATASTARSKA_CESTICA,KATASTARSKA_OPCINA",true),skenEnv(SRC.namjena,B,"Analitika",true),
@@ -9452,6 +9495,7 @@ async function skenPokreni(){
     const zgrada=izgr.has(ci);
     const upu=Array.isArray(U)?!!skenUnutra(pt,U):false;
     const r=skenRazred({analitika:an,pravilo,A,zgrada,upu}); if(!r.k) continue;
+    if(!zgrada&&cesTraka(A,geoOpseg(ces.geometry))){ r.k="put"; r.razlog=SKEN_PUT_TXT; }
     broj[r.k]=(broj[r.k]||0)+1;
     out.push({type:"Feature",geometry:ces.geometry,properties:{k:r.k,ces:ces.properties.KATASTARSKA_CESTICA,ko:ces.properties.KATASTARSKA_OPCINA,A,minC:r.minC||null,pravilo:pravilo.code,se:pravilo.se,clanak:pravilo.rule&&pravilo.rule.clanak,an,c:pt.geometry.coordinates,razlog:r.razlog||null}});
   }
@@ -9473,36 +9517,45 @@ async function skenPokreniGrad(id,info,HG){
   let I; try{ I=await katHrIndex(); }catch(e){ return fail(e.message||"indeks čestica"); }
   const kos=Object.entries(I.ko).filter(([,v])=>v.okvir&&!(v.okvir[2]<bb[0]||v.okvir[0]>bb[2]||v.okvir[3]<bb[1]||v.okvir[1]>bb[3]));
   const pts=[]; let koE=0; for(const [mb,v] of kos){ let X; try{X=await katHrBrojevi(mb)}catch(e){koE++; continue}
-    for(const [broj,q] of Object.entries(X&&X.c||{})){ const lon=q[0]/1e6, lat=q[1]/1e6; if(lon<bb[0]||lon>bb[2]||lat<bb[1]||lat>bb[3]||!(q[2]>0)) continue; pts.push({broj,ko:v.naziv,lon,lat,A:q[2],z:q[3]===1}); } }
+    for(const [broj,q] of Object.entries(X&&X.c||{})){ const lon=q[0]/1e6, lat=q[1]/1e6; if(lon<bb[0]||lon>bb[2]||lat<bb[1]||lat>bb[3]||!(q[2]>0)) continue; pts.push({broj,ko:v.naziv,lon,lat,A:q[2],z:q[3]===1,put:q[4]||0}); } }
   if(id!==SKEN.id) return;
   if(pts.length>2500){ if(info) info.innerHTML=`<p class="meta">Približi kartu: u vidljivom dijelu je ${fmt(pts.length)} čestica.</p>`; return; }
   // list KN_1_2 za vidljivi dio, približno kvadratni pikseli od 0,5 m (najviše 1600 px po strani)
   const la=(bb[1]+bb[3])/2, mx=111320*Math.cos(la*Math.PI/180), my=110540; let mpx=0.5, W=Math.ceil((bb[2]-bb[0])*mx/mpx), H=Math.ceil((bb[3]-bb[1])*my/mpx); const kf=Math.max(W,H)/1600; if(kf>1){ mpx*=kf; W=Math.ceil(W/kf); H=Math.ceil(H/kf); }
+  if(ZB.srafura&&mpx>1){ if(info) info.innerHTML=`<p class="meta">Približi kartu: šrafura karte „${esc(ZB.naziv)}” čita se samo pri krupnijem prikazu.</p>`; return; }
   let d=null, e0="izvor nije dostupan";
   if(typeof createImageBitmap!=="function") e0="preglednik ne može očitati sliku";
   else for(const host of ZB.wms||[]){ const ac=new AbortController(), tm=setTimeout(()=>ac.abort(),20000);
     try{ const r=await fetch(hrZonaUrl(ZB,host,bb,W,H),{mode:"cors",credentials:"omit",signal:ac.signal}); if(!r.ok) throw new Error("HTTP "+r.status);
       const bl=await r.blob(); if(bl.type&&!/^image\//.test(bl.type)) throw new Error("servis nije vratio sliku");
       const bm=await createImageBitmap(bl), c=document.createElement("canvas"); c.width=W; c.height=H; const g=c.getContext&&c.getContext("2d"); if(!g) throw new Error("nema platna za očitavanje");
-      g.drawImage(bm,0,0,W,H); try{ d=g.getImageData(0,0,W,H).data; }catch(e){ throw new Error("servis ne dopušta očitavanje piksela (CORS)"); } break; }
+      g.drawImage(bm,0,0,W,H); try{ d=g.getImageData(0,0,W,H).data; }catch(e){ throw new Error("servis ne dopušta očitavanje piksela (CORS)"); } if(ZB.srafura) uzSrafura(d,W,H,mpx,ZB); break; }
     catch(err){ e0=err&&err.name==="AbortError"?"servis ne odgovara":(err&&err.message)||e0; } finally{ clearTimeout(tm); } }
-  if(id!==SKEN.id) return; if(!d) return fail("karta urbanih pravila: "+e0);
+  if(id!==SKEN.id) return; if(!d) return fail((ZB.pojam?"karta „"+ZB.naziv+"”":"karta urbanih pravila")+": "+e0);
   const ids=new Set((HG.zone||[]).map(z=>z[0])), out=[], broj={}; let n0=0, nepr=0;
   const minZa=z=>{ const Z=HG.zoneSet&&HG.zoneSet[z], T=Z&&Z.tipovi&&(Z.tipovi.stamb||Object.values(Z.tipovi)[0]); if(!T) return null; const P=T[ob[0]]; return P&&P.minC>0?P.minC:0; };
   for(const p of pts){ n0++;
     const X=Math.floor((p.lon-bb[0])/(bb[2]-bb[0])*W), Y=Math.floor((bb[3]-p.lat)/(bb[3]-bb[1])*H), cnt={};
-    for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){ const x=X+dx, y=Y+dy; if(x<0||y<0||x>=W||y>=H) continue; const i=(y*W+x)*4; if(d[i+3]<128) continue;
+    // šrafura: slika je zaglađena, pa se uzima pet razmaknutih točaka (središte i četiri na pola polumjera kruga iste površine); svih pet mora dati isti razred
+    const rp=ZB.srafura?Math.max(2,Math.round(Math.min(60,Math.sqrt(p.A/Math.PI))/2/mpx)):0, T5=ZB.srafura?[[0,0],[rp,0],[-rp,0],[0,rp],[0,-rp]]:null; let uz=0;
+    if(T5){ for(const [dx,dy] of T5){ const x=X+dx, y=Y+dy; if(x<0||y<0||x>=W||y>=H) continue; const i=(y*W+x)*4; if(d[i+3]<128) continue; uz++;
+        const k=uzBoja(d[i],d[i+1],d[i+2],ZB.boje,HRZ_PARAM); if(k&&k!=="sivo"&&k!=="bijelo"&&k!=="tamno"&&k!=="nepoznato"&&k!=="dvojbeno") cnt[k]=(cnt[k]||0)+1; } }
+    else for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){ const x=X+dx, y=Y+dy; if(x<0||y<0||x>=W||y>=H) continue; const i=(y*W+x)*4; if(d[i+3]<128) continue;
       const k=uzBoja(d[i],d[i+1],d[i+2],ZB.boje,HRZ_PARAM); if(k&&k!=="sivo"&&k!=="bijelo"&&k!=="tamno"&&k!=="nepoznato"&&k!=="dvojbeno") cnt[k]=(cnt[k]||0)+1; }
-    const best=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0]; if(!best){ nepr++; continue; }
+    const best=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0]; if(!best||(T5&&(uz<5||best[1]<5))){ nepr++; continue; }
     const kand=best[0].split("|").filter(z=>ids.has(z)), mins=kand.map(minZa), calc=mins.filter(m=>m!=null);
     if(!calc.length) continue; // pravila bez obrađenih uvjeta gradnje
     let k, minC=null; const uniq=[...new Set(calc)];
     if(calc.length<kand.length||uniq.length>1||!(uniq[0]>0)) k="bez"; else { minC=uniq[0]; k=p.A>=minC?(p.z?"izg":"pot"):"mala"; }
+    // prometna površina ili voda prema načinu uporabe u katastru (DGU), odnosno uska izdužena čestica bez zgrade: nije građevna čestica
+    const putR=p.z?null:PUT_KAT[p.put]?PUT_KAT[p.put]+"; ne računa se kao građevna čestica":p.put===1?SKEN_PUT_TXT:null;
+    if(putR) k="put";
     broj[k]=(broj[k]||0)+1; const r=Math.min(60,Math.sqrt(p.A/Math.PI));
-    out.push({type:"Feature",geometry:turf.circle([p.lon,p.lat],r/1000,{steps:16,units:"kilometers"}).geometry,properties:{k,ces:p.broj,ko:p.ko,A:p.A,minC,pravilo:kand.join(" ili "),se:true,an:"",c:[p.lon,p.lat],razlog:k==="bez"?"boja karte odgovara pravilima "+kand.join(" i ")+" s različitim ili neobrađenim uvjetima":null}}); }
-  SKEN.res={out,broj,nedostaje:[koE&&"dio katastarskih čestica",nepr>n0*0.5&&"urbano pravilo za dio čestica (boja karte nije prepoznata)"].filter(Boolean),C:n0,razvrstano:"s obrađenim urbanim pravilom",nepotpuno:false,t:Date.now(),
-    tipTxt:"niska stambena građevina, "+ob[1],
-    izvorTxt:"Split: čestice iz katastra DGU (stanje "+String(I.preuzeto||"").split("-").reverse().join(". ")+".), prikazane kao krug iste površine; urbano pravilo iz boje karte „Urbana pravila” GUP-a na točki čestice (prijedlog, nije potvrda), najmanja površina iz GUP-a Splita. Prikazane su samo čestice u pravilima s obrađenim uvjetima gradnje; obveza UPU-a i namjena (S/M) nisu provjerene."};
+    out.push({type:"Feature",geometry:turf.circle([p.lon,p.lat],r/1000,{steps:16,units:"kilometers"}).geometry,properties:{k,ces:p.broj,ko:p.ko,A:p.A,minC,pravilo:kand.join(" ili "),se:true,an:"",c:[p.lon,p.lat],razlog:putR||(k==="bez"?"boja karte odgovara pravilima "+kand.join(" i ")+" s različitim ili neobrađenim uvjetima":null)}}); }
+  SKEN.res={out,broj,nedostaje:[koE&&"dio katastarskih čestica",!ZB.srafura&&nepr>n0*0.5&&"urbano pravilo za dio čestica (boja karte nije prepoznata)"].filter(Boolean),C:n0,razvrstano:ZB.pojam?"s jednoznačno očitanim načinom gradnje":"s obrađenim urbanim pravilom",nepotpuno:false,t:Date.now(),
+    tipTxt:(ZB.pojam?"obiteljska zgrada, ":"niska stambena građevina, ")+ob[1],
+    izvorTxt:ZB.pojam?ZB.grad+": čestice iz katastra DGU (stanje "+String(I.preuzeto||"").split("-").reverse().join(". ")+".), prikazane kao krug iste površine; način gradnje iz šrafure karte „"+ZB.naziv+"” GUP-a na pet točaka čestice (prijedlog, nije potvrda; čestice uz granicu plohe, na drugoj namjeni ili s nejasnim očitanjem se ne prikazuju), najmanja površina iz GUP-a. Broj etaža, obveza UPU-a ili DPU-a i namjena nisu provjereni."
+      :"Split: čestice iz katastra DGU (stanje "+String(I.preuzeto||"").split("-").reverse().join(". ")+".), prikazane kao krug iste površine; urbano pravilo iz boje karte „Urbana pravila” GUP-a na točki čestice (prijedlog, nije potvrda), najmanja površina iz GUP-a Splita. Prikazane su samo čestice u pravilima s obrađenim uvjetima gradnje; obveza UPU-a i namjena (S/M) nisu provjerene."};
   SKEN.layer.addData(out); skenInfo(); }
 // --- Otok Krk: čestice iz katastra DGU uz aplikaciju (data/kat_krk), zgrade iz katastra (data/zg3d_krk), namjena iz županijskog
 // sloja PGŽ; najmanja površina za odabrani tip i oblik kuće iz prostornog plana jedinice (rules_krk.json: Grad Krk ili ostaleJls).
@@ -9556,6 +9609,7 @@ async function skenPokreniKrk(id,info){
     const plans=PL.e?{e:PL.e}:{v:PF.filter(f=>{try{return f.geometry&&turf.booleanPointInPolygon(pt,f)}catch(e){return false}})};
     let zgrada=false; for(const q of zgr){ if(q[0]<b[0]||q[0]>b[2]||q[1]<b[1]||q[1]>b[3]) continue; try{ if(turf.booleanPointInPolygon(turf.point(q),c.f)){ zgrada=true; break; } }catch(e){} }
     const r=skenKrkRazred(n.properties,plans,c.pov,zgrada); if(r.tip&&!tip) tip=r.tip;
+    if(!zgrada&&cesTraka(c.pov,geoOpseg(c.g))){ r.k="put"; r.razlog=SKEN_PUT_TXT; }
     broj[r.k]=(broj[r.k]||0)+1; const K=I.ko[c.ko]||{};
     out.push({type:"Feature",geometry:c.g,properties:{k:r.k,ces:c.broj,ko:K.naziv||c.ko,A:c.pov,minC:r.minC||null,pravilo:r.kod||String(n.properties.OPCINA_GRAD||""),an:n.properties.OZNAKA_NAMJENE||"",c:pt.geometry.coordinates,razlog:r.razlog||null}}); }
   const T0=RULES_KRK&&RULES_KRK.tipovi&&RULES_KRK.tipovi[KRK_TIP.tip];
@@ -9566,16 +9620,16 @@ async function skenPokreniKrk(id,info){
 document.addEventListener("change",e=>{ if(e.target&&(e.target.id==="krkTip"||e.target.id==="krkOblik")&&SKEN.on) setTimeout(skenPokreni,50); });
 function skenInfo(){
   const info=document.getElementById("skenInfo"), R=SKEN.res; if(!info||!R) return;
-  const red=["pot","upu","izg","izn","mala","plan","bez"];
+  const red=["pot","upu","izg","izn","mala","plan","put","bez"];
   let h=`<p class="meta" style="margin:4px 0">Pregledano ${fmt(R.C)} čestica, ${esc(R.razvrstano||"u građevinskom području")} ${fmt(R.out.length)}${R.nepotpuno?" (nisu sve: približi kartu)":""}. Tip kuće: ${esc(R.tipTxt||"")}.</p>`;
   h+=`<ul class="sken-lgd">${red.filter(k=>R.broj[k]).map(k=>`<li><i style="background:${SKEN_STIL[k].fillColor||"transparent"};border-color:${SKEN_STIL[k].color}"></i><b>${fmt(R.broj[k])}</b> ${esc(SKEN_NAZ[k])}</li>`).join("")}</ul>`;
   const pot=R.out.filter(f=>f.properties.k==="pot"||f.properties.k==="upu").sort((a,b)=>b.properties.A-a.properties.A).slice(0,12);
   if(pot.length) h+=`<details class="sken-pop"><summary>Potencijalne čestice (${fmt(R.out.filter(f=>f.properties.k==="pot"||f.properties.k==="upu").length)})</summary><ol>${pot.map(f=>{const p=f.properties; return `<li><a href="#" class="sken-go" data-lat="${p.c[1]}" data-lng="${p.c[0]}">k.č. ${esc(p.ces||"?")}</a> ${esc(p.ko||"")}: ${fmt(p.A)} m² (${p.minC?"najmanje "+fmt(p.minC)+" m²":"najmanja površina nije poznata"}, pravilo ${esc(p.pravilo||"")}${p.se?" – prijedlog":""})${p.k==="upu"?" · UPU":""}</li>`;}).join("")}</ol></details>`;
-  const RZ={}; for(const f of R.out){ const z=f.properties.razlog; if(z&&(f.properties.k==="bez"||f.properties.k==="plan")) RZ[z]=(RZ[z]||0)+1; }
+  const RZ={}; for(const f of R.out){ const z=f.properties.razlog; if(z&&(f.properties.k==="bez"||f.properties.k==="plan"||f.properties.k==="put")) RZ[z]=(RZ[z]||0)+1; }
   const rz=Object.entries(RZ).sort((a,b)=>b[1]-a[1]);
-  if(rz.length) h+=`<details class="sken-pop"><summary>Zašto bez razvrstavanja (${fmt(rz.reduce((s,x)=>s+x[1],0))})</summary><ul>${rz.slice(0,6).map(([z,n])=>`<li><b>${fmt(n)}</b> ${esc(z)}</li>`).join("")}</ul></details>`;
+  if(rz.length) h+=`<details class="sken-pop"><summary>Zašto nisu razvrstane kao građevne (${fmt(rz.reduce((s,x)=>s+x[1],0))})</summary><ul>${rz.slice(0,6).map(([z,n])=>`<li><b>${fmt(n)}</b> ${esc(z)}</li>`).join("")}</ul></details>`;
   if(R.nedostaje.length) h+=`<p class="flag" style="margin:4px 0">Nisu dohvaćeni: ${esc(R.nedostaje.join(", "))}; razvrstaj može biti nepotpun.</p>`;
-  h+=`<p class="meta" style="margin:4px 0">${esc(R.izvorTxt||"")} Površina je grafička, iz katastarskog plana; za odabranu česticu dodirni je na karti (analiza provjerava i upisanu površinu, širinu uz ulicu, pristup i ostale uvjete). Skener ne zna vlasništvo ni terete.</p>`;
+  h+=`<p class="meta" style="margin:4px 0">${esc(R.izvorTxt||"")} Površina je grafička, iz katastarskog plana; za odabranu česticu dodirni je na karti (analiza provjerava i upisanu površinu, širinu uz ulicu, pristup i ostale uvjete). Putovi i ceste prepoznaju se iz načina uporabe u katastru (gdje ga DGU ima; zasad samo Split i Osijek) i po obliku čestice, pa šira ili kratka čestica ceste može ostati među potencijalnima. Skener ne zna vlasništvo ni terete.</p>`;
   info.innerHTML=h; skenChip();
 }
 // sažetak skenera uz gumb „Slojevi” (vidljiv i kad je popis slojeva zatvoren, npr. na mobitelu)
