@@ -2426,14 +2426,16 @@ async function skenSplitTests(){
   E("map").getBounds=()=>w.L.latLngBounds([lat-0.0006,lon-0.001],[lat+0.0006,lon+0.001]);
   $(w,"lyrSken").checked=true; $(w,"lyrSken").dispatchEvent(new w.Event("change",{bubbles:true})); await tick(500);
   let R=E("SKEN").res; const g=c=>R&&R.out.find(x=>x.properties.ces===c);
-  ok(R&&R.C>50&&wmsN===1&&g("1550")&&g("1550").properties.k==="pot"&&g("1550").properties.minC===500&&g("1550").properties.pravilo==="2.4","Skener Split: k.č. 1550 (Stobreč, 1773 m², bez zgrade) u boji pravila 2.4 → potencijalna uz najmanje 500 m² (GUP Splita); pregledano "+(R?R.C:0));
+  ok(R&&R.C>50&&wmsN===1&&g("1546")&&g("1546").properties.k==="izg"&&g("1546").properties.minC===500&&g("1546").properties.pravilo==="2.4","Skener Split: k.č. 1546 (Stobreč, 782 m², sa zgradom) u boji pravila 2.4 → izgrađena uz najmanje 500 m² (GUP Splita); pregledano "+(R?R.C:0));
   ok(g("1546")&&g("1546").properties.k==="izg"&&g("1553")&&g("1553").properties.k==="mala","Skener Split: čestica sa zgradom iz katastra → izgrađena (1546), premala → mala (1553, 297 m²)");
   const desno=R.out.filter(f=>f.properties.c[0]>lon+0.0001), lijevo=R.out.filter(f=>f.properties.c[0]<lon-0.0001);
-  ok(desno.length>5&&desno.every(f=>f.properties.k==="bez"&&/1\.3 i 3\.5/.test(f.properties.razlog||""))&&lijevo.length>5&&lijevo.every(f=>f.properties.k!=="bez"),"Skener Split: boja koju dijele 1.3 (s uvjetima) i 3.5 (bez) → razred bez odluke, s razlogom");
-  ok(R.out.every(f=>f.geometry&&f.geometry.type==="Polygon")&&/Split: čestice iz katastra DGU/.test(txt(w,"skenInfo"))&&/krug iste površine/.test(txt(w,"skenInfo"))&&/s obrađenim urbanim pravilom/.test(txt(w,"skenInfo"))&&/Zašto bez razvrstavanja/.test(txt(w,"skenInfo"))&&/prijedlog, nije potvrda/.test(txt(w,"skenInfo")),"Skener Split: izvor, prikaz kruga i status prijedloga navedeni");
+  ok(g("1550")&&g("1550").properties.k==="put"&&/uska izdužena čestica/.test(g("1550").properties.razlog)&&g("1537/18")&&g("1537/18").properties.k==="put"&&/prometna površina prema katastru/.test(g("1537/18").properties.razlog)&&!R.out.some(f=>f.properties.k==="pot"&&["1550","1537/18"].includes(f.properties.ces)),"Skener Split: uska izdužena čestica bez zgrade (k.č. 1550, 1773 m²) i prometna površina prema katastru (k.č. 1537/18, 463 m²) → razred »put«, ne »potencijalna«");
+  ok(/put, cesta, voda ili uska izdužena čestica/.test(txt(w,"skenInfo")),"Skener: razred »put« u legendi");
+  ok(desno.length>5&&desno.every(f=>f.properties.k==="put"||(f.properties.k==="bez"&&/1\.3 i 3\.5/.test(f.properties.razlog||"")))&&lijevo.length>5&&lijevo.every(f=>f.properties.k!=="bez"),"Skener Split: boja koju dijele 1.3 (s uvjetima) i 3.5 (bez) → razred bez odluke, s razlogom");
+  ok(R.out.every(f=>f.geometry&&f.geometry.type==="Polygon")&&/Split: čestice iz katastra DGU/.test(txt(w,"skenInfo"))&&/krug iste površine/.test(txt(w,"skenInfo"))&&/s obrađenim urbanim pravilom/.test(txt(w,"skenInfo"))&&/Zašto nisu razvrstane kao građevne/.test(txt(w,"skenInfo"))&&/prijedlog, nije potvrda/.test(txt(w,"skenInfo")),"Skener Split: izvor, prikaz kruga i status prijedloga navedeni");
   // dvojna kuća → 300 m² za 2.4
   E("KRK_TIP.oblik='dvoj'"); E("skenPokreni()"); await tick(400); R=E("SKEN").res;
-  ok(g("1550")&&g("1550").properties.minC===300&&g("1553")&&g("1553").properties.k==="mala"&&/dvojna/.test(txt(w,"skenInfo")),"Skener Split: dvojna kuća → najmanje 300 m² u pravilu 2.4 (k.č. 1553 s 297 m² ostaje premala)");
+  ok(g("1546")&&g("1546").properties.minC===300&&g("1553")&&g("1553").properties.k==="mala"&&/dvojna/.test(txt(w,"skenInfo")),"Skener Split: dvojna kuća → najmanje 300 m² u pravilu 2.4 (k.č. 1553 s 297 m² ostaje premala)");
   E("KRK_TIP.oblik='slob'");
   // karta pravila nedostupna → jasna poruka, bez razvrstavanja
   wmsOk=false; E("skenPokreni()"); await tick(400);
@@ -2459,7 +2461,7 @@ async function skenKrkTests(){
   const izn=R.out.filter(x=>x.properties.k==="izn"); ok(izn.length>0&&izn.every(x=>x.properties.A>=400&&x.properties.A<500),"Skener Krk: posebna odredba za manje čestice (iznimno 400 m²) → razred izn ("+izn.length+")");
   // važeći UPU koji aplikacija nije obradila → razred »plan«, nijedna »potencijalna«
   PLN=[box([14.6125,45.0430,14.6185,45.0465],{GRAD_OPCINA:"Krk",VRSTA_PP:"UPU",STATUS_PP:"VAŽEĆI",NAZIV:"UPU testnog naselja"})]; E("skenPokreni()"); await tick(400); R=E("SKEN").res;
-  ok(R.out.length>10&&R.out.every(x=>x.properties.k==="plan"||x.properties.k==="bez")&&R.out.some(x=>x.properties.k==="plan"&&/aplikacija ga još nije obradila/.test(x.properties.razlog||"")),"Skener Krk: pod važećim UPU-om koji nije obrađen → razred »plan« s razlogom, nijedna »potencijalna«");
+  ok(R.out.length>10&&R.out.every(x=>["plan","bez","put"].includes(x.properties.k))&&R.out.some(x=>x.properties.k==="plan"&&/aplikacija ga još nije obradila/.test(x.properties.razlog||"")),"Skener Krk: pod važećim UPU-om koji nije obrađen → razred »plan« s razlogom, nijedna »potencijalna«");
     PLN=[];
   // Malinska-Dubašnica: skupine imaju samo tip »stamb« → isti pad na prvi tip kao u analizi čestice
   const RK=JSON.parse(fs.readFileSync(path.join(__dirname,"../src/rules_krk.json"),"utf8")), mal=RK.ostaleJls["MALINSKA-DUBAŠNICA"].grupe[0].tipovi.stamb.slob.minC;
@@ -2467,7 +2469,7 @@ async function skenKrkTests(){
   ok(f&&f.properties.minC===mal&&!R.out.every(x=>x.properties.k==="bez"),"Skener Krk: Malinska-Dubašnica (GPN-1) → najmanje "+mal+" m² iz PPUO-a, ne »bez« ("+(f&&f.properties.minC)+")");
   // Baška N1: dvojna kuća nije dozvoljena → »bez« s razlogom
   N=[box([14.6125,45.0430,14.6185,45.0465],{...GP,OPCINA_GRAD:"BAŠKA",NASELJE:"Baška",OZNAKA_NAMJENE:"N1"})]; E("KRK_TIP.oblik='dvoj'"); E("skenPokreni()"); await tick(400); R=E("SKEN").res;
-  ok(R.out.length>10&&R.out.every(x=>x.properties.k==="bez"&&/nije dozvoljena/.test(x.properties.razlog||"")),"Skener Krk: Baška N1, dvojna kuća → nije dozvoljena, nijedna »potencijalna«");
+  ok(R.out.length>10&&R.out.every(x=>x.properties.k==="put"||(x.properties.k==="bez"&&/nije dozvoljena/.test(x.properties.razlog||""))),"Skener Krk: Baška N1, dvojna kuća → nije dozvoljena, nijedna »potencijalna«");
     E("KRK_TIP.oblik='slob'"); N=[box([14.6125,45.0430,14.6185,45.0465],GP)];
   // neizgrađeni dio GP-a → UPU; izvan GP-a (poljoprivredno) se ne prikazuje
   N=[box([14.6125,45.0430,14.6185,45.0465],{...GP,IZGRADJENOST:"neizgrađeni dio"})]; E("skenPokreni()"); await tick(400); R=E("SKEN").res;
@@ -2493,18 +2495,20 @@ async function skenTests(){
   const kx=111320*Math.cos(45.84*Math.PI/180), ky=110540, o=[15.97,45.84];
   const pr=(x,y,W,D,props)=>({type:"Feature",properties:props||{},geometry:{type:"Polygon",coordinates:[[[o[0]+x/kx,o[1]+y/ky],[o[0]+(x+W)/kx,o[1]+y/ky],[o[0]+(x+W)/kx,o[1]+(y+D)/ky],[o[0]+x/kx,o[1]+(y+D)/ky],[o[0]+x/kx,o[1]+y/ky]]]}});
   const ces=[pr(0,0,30,25,{KATASTARSKA_CESTICA:"10/1",KATASTARSKA_OPCINA:"ŠESTINE"}),pr(40,0,20,20,{KATASTARSKA_CESTICA:"10/2",KATASTARSKA_OPCINA:"ŠESTINE"}),
-    pr(0,40,30,25,{KATASTARSKA_CESTICA:"10/3",KATASTARSKA_OPCINA:"ŠESTINE"}),pr(40,40,30,25,{KATASTARSKA_CESTICA:"10/4",KATASTARSKA_OPCINA:"ŠESTINE"}),pr(200,0,40,40,{KATASTARSKA_CESTICA:"11/1",KATASTARSKA_OPCINA:"ŠESTINE"})];
+    pr(0,40,30,25,{KATASTARSKA_CESTICA:"10/3",KATASTARSKA_OPCINA:"ŠESTINE"}),pr(40,40,30,25,{KATASTARSKA_CESTICA:"10/4",KATASTARSKA_OPCINA:"ŠESTINE"}),pr(200,0,40,40,{KATASTARSKA_CESTICA:"11/1",KATASTARSKA_OPCINA:"ŠESTINE"}),pr(-8,-8,5,90,{KATASTARSKA_CESTICA:"99",KATASTARSKA_OPCINA:"ŠESTINE"})];
   const H={cestice:ces,namjena:[pr(-10,-10,100,90,{Analitika:"Stambena i mješovita"}),pr(190,-10,60,60,{Analitika:"Šume"})],pravila:[pr(-10,-10,300,100,{BROJ_UP:"2.2"})],
     pravilaSE:[],upu:[pr(38,38,40,30,{TextString:"UPU Test"})],objekti:[pr(10,50,8,8,{OBJECTID:1})]};
   const kljuc=u=>/KatastarskeCestice/.test(u)?"cestice":/planirana_namjena/.test(u)?"namjena":/4a_urbana_pravila/.test(u)?"pravila":/Sesvet/.test(u)?"pravilaSE":/4b_procedure/.test(u)?"upu":/Objekti/.test(u)?"objekti":null;
   let hookErr=null; w.__skenHook=u=>{ const k=kljuc(u); if(hookErr&&hookErr===k) return Promise.reject(new Error("HTTP 500")); return {type:"FeatureCollection",features:H[k]||[]}; };
   const min22=E("parseParams")(E("normKeys")(E("pickZone")(E("RULES")["2.2."],"Stambena i mješovita")),"slob").minC;
   ok(min22===600,"Skener: pravilo 2.2. za slobodnostojeću kuću traži najmanje 600 m²");
+  {const T=E("cesTraka"); ok(!T(800,120)&&!T(300,80)&&!T(2000,280)&&!T(1400,228)&&!T(1176,220)&&T(900,312)&&T(450,190)&&T(2000,420)&&T(10000,1040),"Oblik čestice: 20×40, 10×30, 20×100, 14×100 i 12×98 m nisu trake; 6×150, 5×90, 10×200 i 20×500 m jesu");}
   E("map").setView([45.8402,15.9705],18,{animate:false}); $(w,"lyrSken").checked=true; $(w,"lyrSken").dispatchEvent(new w.Event("change",{bubbles:true})); await new Promise(r=>setTimeout(r,80));
   const R=E("SKEN").res, k=c=>{const f=R.out.find(f=>f.properties.ces===c); return f&&f.properties.k;};
-  ok(R&&R.C===5&&R.out.length===4&&k("10/1")==="pot"&&["mala","izn"].includes(k("10/2"))&&k("10/3")==="izg"&&k("10/4")==="upu"&&!k("11/1"),"Skener: 750 m² neizgrađena = potencijalna; 400 m² premala; sa zgradom = izgrađena; u obuhvatu UPU-a; šuma se ne prikazuje: "+JSON.stringify(R&&R.out.map(f=>[f.properties.ces,f.properties.k])));
-  const t=txt(w,"skenInfo"); ok(/Pregledano 5 čestica, u građevinskom području 4/.test(t)&&/Potencijalne čestice \(2\)/.test(t)&&/k\.č\. 10\/1/.test(t)&&/najmanje 600 m², pravilo 2\.2\./.test(t)&&/Površina je grafička/.test(t),"Skener: legenda, broj po razredu i popis potencijalnih čestica s pravilom: "+t.slice(0,300));
-  ok(E("SKEN").layer.getLayers().length===4,"Skener: na karti su samo čestice u građevinskom području");
+  ok(k("99")==="put"&&/uska izdužena čestica/.test(R.out.find(f=>f.properties.ces==="99").properties.razlog),"Skener Zagreb: traka 5 × 90 m (450 m²) u stambenoj namjeni → razred »put«, ne »potencijalna« ni »premala«");
+  ok(R&&R.C===6&&R.out.length===5&&k("10/1")==="pot"&&["mala","izn"].includes(k("10/2"))&&k("10/3")==="izg"&&k("10/4")==="upu"&&!k("11/1"),"Skener: 750 m² neizgrađena = potencijalna; 400 m² premala; sa zgradom = izgrađena; u obuhvatu UPU-a; šuma se ne prikazuje: "+JSON.stringify(R&&R.out.map(f=>[f.properties.ces,f.properties.k])));
+  const t=txt(w,"skenInfo"); ok(/Pregledano 6 čestica, u građevinskom području 5/.test(t)&&/Potencijalne čestice \(2\)/.test(t)&&/k\.č\. 10\/1/.test(t)&&/najmanje 600 m², pravilo 2\.2\./.test(t)&&/Površina je grafička/.test(t),"Skener: legenda, broj po razredu i popis potencijalnih čestica s pravilom: "+t.slice(0,300));
+  ok(E("SKEN").layer.getLayers().length===5,"Skener: na karti su samo čestice u građevinskom području");
   // drugi tip kuće mijenja najmanju površinu (ugrađena) i razred se računa ponovno
   ok(E("skenRazred")({analitika:"Stambena i mješovita",pravilo:{rule:E("RULES")["2.2."]},A:599,zgrada:false,upu:false,tip:"slob"}).k!=="pot","Skener: 599 m² nije dovoljno uz najmanje 600 m²");
   ok(E("skenRazred")({analitika:"Promet",pravilo:null,A:5000}).k===null&&E("skenRazred")({analitika:"Stambena i mješovita",pravilo:null,A:900}).k==="bez","Skener: izvan građevinskog područja nema razreda; bez pravila „bez” (ne izmišlja najmanju površinu)");

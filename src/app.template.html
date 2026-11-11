@@ -4761,6 +4761,7 @@ function renderSlobodno(d,region){
   if(I.gp.st==="ok") h+=`<dt>Unutar građevinskog područja</dt><dd><b>${fmt(I.gp.unutra)} m²</b></dd><dt>Građevinski dio</dt><dd><b>${f1(I.gp.udio*100)} %</b></dd><dt>Izvan građevinskog područja</dt><dd><b>${f1((1-I.gp.udio)*100)} %</b>${I.gp.izvan>=0.5?` (${fmt(I.gp.izvan)} m²)`:""}</dd>`;
   else h+=`<dt>Građevinsko područje</dt><dd><b>Nije moguće pouzdano utvrditi</b> <small class="fx">${esc(I.gp.razlog)}</small></dd>`;
   h+=`<dt>Opseg</dt><dd>${fmt(I.opseg)} m · duljine granica prikazane su na karti</dd></dl>`;
+  {const tr=cesTraka(I.area,I.opseg); if(tr) h+=`<p class="flag" data-traka="1"><b>Uska izdužena čestica</b> (prosječna širina oko ${dec((Math.round(tr.w*10)/10).toFixed(1))} m): po obliku je vjerojatno put, prolaz, kanal ili traka zemljišta, a ne građevna čestica, bez obzira na površinu. Način uporabe provjeri u posjedovnom listu (katastar); izračuni gradnje u nastavku vrijede samo ako je čestica stvarno građevna.</p>`;}
   if(I.gp.st==="ok") h+=`<p class="lgd-mini"><span class="lg-g"></span> građevinski dio <span class="lg-n"></span> izvan građevinskog područja</p>`;
   h+=`<p class="meta">Površina i duljine granica izračunate su iz digitalne katastarske karte i informativne su; nisu geodetski utvrđene (točne daje geodetska izmjera). ${I.gp.st==="ok"?"Izvor građevinskog područja: "+esc(I.gp.izvor)+". ":""}<b>Građevinsko područje ne znači da je gradnja dopuštena</b>: to ovisi o uvjetima plana, pristupu, infrastrukturi i drugim propisima.</p>`;
   h+=`<details class="acc" data-k="slob-gr"><summary><span>Duljine granica (${I.edges.length})</span><b>${fmt(I.opseg)} m</b></summary><div class="acc-body"><ol class="zi">${I.edges.map(e=>`<li>${f1(e.len)} m</li>`).join("")}</ol></div></details></div>`;
@@ -9434,11 +9435,18 @@ const SKEN={on:false,id:0,res:null,t:0,zoom:17,
   layer:L.geoJSON(null,{interactive:false,style:f=>SKEN_STIL[f.properties.k]||{opacity:0,fillOpacity:0}})};
 const SKEN_STIL={pot:{color:"#137a3a",weight:2,fillColor:"#1a9850",fillOpacity:.45},upu:{color:"#c25a00",weight:2,fillColor:"#fdae61",fillOpacity:.4},
   izg:{color:"#3b5f91",weight:1,fillColor:"#91bfdb",fillOpacity:.3},izn:{color:"#a07800",weight:1.5,fillColor:"#fee08b",fillOpacity:.45},
-  mala:{color:"#c0392b",weight:1,fillColor:"#d73027",fillOpacity:.12,dashArray:"3 3"},plan:{color:"#8e44ad",weight:1.5,fillColor:"#c39bd3",fillOpacity:.25,dashArray:"4 3"},bez:{color:"#777",weight:1,fillOpacity:0,dashArray:"2 4"}};
+  mala:{color:"#c0392b",weight:1,fillColor:"#d73027",fillOpacity:.12,dashArray:"3 3"},plan:{color:"#8e44ad",weight:1.5,fillColor:"#c39bd3",fillOpacity:.25,dashArray:"4 3"},put:{color:"#555",weight:1,fillColor:"#9aa0a6",fillOpacity:.3,dashArray:"2 3"},bez:{color:"#777",weight:1,fillOpacity:0,dashArray:"2 4"}};
 const SKEN_NAZ={pot:"potencijalna građevna čestica (neizgrađena, dovoljno velika)",upu:"dovoljno velika, ali u obuhvatu obveznog UPU-a",izg:"izgrađena, dovoljno velika",
-  izn:"manja od propisane; pravilo ima posebnu odredbu za manje čestice",mala:"manja od propisane najmanje površine",plan:"pod UPU-om koji aplikacija nije obradila ili čija zona nije poznata (uvjete propisuje UPU)",bez:"nije razvrstana: najmanja površina nije propisana ili nije jednoznačna, oblik kuće nije dozvoljen ili pravilo nije pronađeno"};
+  izn:"manja od propisane; pravilo ima posebnu odredbu za manje čestice",mala:"manja od propisane najmanje površine",put:"put, cesta, voda ili uska izdužena čestica (ne računa se kao građevna čestica)",plan:"pod UPU-om koji aplikacija nije obradila ili čija zona nije poznata (uvjete propisuje UPU)",bez:"nije razvrstana: najmanja površina nije propisana ili nije jednoznačna, oblik kuće nije dozvoljen ili pravilo nije pronađeno"};
 const UPU_URL=BASE+"4b_procedure_JR_PJR_swipe/FeatureServer/19/query";
 // čisti razvrstaj jedne čestice (bez mreže): ulaz su podaci, izlaz razred i obrazloženje
+// Uska izdužena čestica (put, prolaz, kanal ili traka zemljišta) nije građevna čestica samo zato što ima dovoljno kvadrata.
+// Mjera oblika: širina w ≈ 2·površina/opseg, duljina L ≈ opseg/2; traka je do 6 m široka uz L ≥ 8w, do 9 m uz 12w, do 12 m uz 15w,
+// do 20 m uz 20w (ista mjera kao u tools/katastar/pripremi_brojeve_hr.py). Opseg je zbroj vanjskih prstenova u metrima.
+function geoOpseg(g){ try{ const R=g.type==="Polygon"?[g.coordinates[0]]:g.type==="MultiPolygon"?g.coordinates.map(c=>c[0]):[]; let P=0;
+  for(const r of R){ const ky=110540, kx=111320*Math.cos(r[0][1]*Math.PI/180); for(let i=0;i<r.length-1;i++) P+=Math.hypot((r[i+1][0]-r[i][0])*kx,(r[i+1][1]-r[i][1])*ky); } return P; }catch(e){ return 0; } }
+function cesTraka(A,P){ if(!(A>0)||!(P>0)) return null; const w=2*A/P, L=P/2; return (w<=6&&L>=8*w)||(w<=9&&L>=12*w)||(w<=12&&L>=15*w)||(w<=20&&L>=20*w)?{w,L}:null; }
+const SKEN_PUT_TXT="uska izdužena čestica (vjerojatno put, prolaz ili traka zemljišta); ne računa se kao građevna čestica";
 function skenRazred(o){
   if(!o.analitika||!BUILDABLE.has(o.analitika)) return {k:null};
   const R=o.pravilo&&o.pravilo.rule, zona=R?pickZone(R,o.analitika):null;
@@ -9479,6 +9487,7 @@ async function skenPokreni(){
     const zgrada=izgr.has(ci);
     const upu=Array.isArray(U)?!!skenUnutra(pt,U):false;
     const r=skenRazred({analitika:an,pravilo,A,zgrada,upu}); if(!r.k) continue;
+    if(!zgrada&&cesTraka(A,geoOpseg(ces.geometry))){ r.k="put"; r.razlog=SKEN_PUT_TXT; }
     broj[r.k]=(broj[r.k]||0)+1;
     out.push({type:"Feature",geometry:ces.geometry,properties:{k:r.k,ces:ces.properties.KATASTARSKA_CESTICA,ko:ces.properties.KATASTARSKA_OPCINA,A,minC:r.minC||null,pravilo:pravilo.code,se:pravilo.se,clanak:pravilo.rule&&pravilo.rule.clanak,an,c:pt.geometry.coordinates,razlog:r.razlog||null}});
   }
@@ -9500,7 +9509,7 @@ async function skenPokreniGrad(id,info,HG){
   let I; try{ I=await katHrIndex(); }catch(e){ return fail(e.message||"indeks čestica"); }
   const kos=Object.entries(I.ko).filter(([,v])=>v.okvir&&!(v.okvir[2]<bb[0]||v.okvir[0]>bb[2]||v.okvir[3]<bb[1]||v.okvir[1]>bb[3]));
   const pts=[]; let koE=0; for(const [mb,v] of kos){ let X; try{X=await katHrBrojevi(mb)}catch(e){koE++; continue}
-    for(const [broj,q] of Object.entries(X&&X.c||{})){ const lon=q[0]/1e6, lat=q[1]/1e6; if(lon<bb[0]||lon>bb[2]||lat<bb[1]||lat>bb[3]||!(q[2]>0)) continue; pts.push({broj,ko:v.naziv,lon,lat,A:q[2],z:q[3]===1}); } }
+    for(const [broj,q] of Object.entries(X&&X.c||{})){ const lon=q[0]/1e6, lat=q[1]/1e6; if(lon<bb[0]||lon>bb[2]||lat<bb[1]||lat>bb[3]||!(q[2]>0)) continue; pts.push({broj,ko:v.naziv,lon,lat,A:q[2],z:q[3]===1,put:q[4]||0}); } }
   if(id!==SKEN.id) return;
   if(pts.length>2500){ if(info) info.innerHTML=`<p class="meta">Približi kartu: u vidljivom dijelu je ${fmt(pts.length)} čestica.</p>`; return; }
   // list KN_1_2 za vidljivi dio, približno kvadratni pikseli od 0,5 m (najviše 1600 px po strani)
@@ -9530,8 +9539,11 @@ async function skenPokreniGrad(id,info,HG){
     if(!calc.length) continue; // pravila bez obrađenih uvjeta gradnje
     let k, minC=null; const uniq=[...new Set(calc)];
     if(calc.length<kand.length||uniq.length>1||!(uniq[0]>0)) k="bez"; else { minC=uniq[0]; k=p.A>=minC?(p.z?"izg":"pot"):"mala"; }
+    // prometna površina ili voda prema načinu uporabe u katastru (DGU), odnosno uska izdužena čestica bez zgrade: nije građevna čestica
+    const putR=p.put===2?"prometna površina prema katastru (put, cesta, ulica, parkiralište ili pruga); ne računa se kao građevna čestica":p.put===3?"voda prema katastru (kanal, potok, rijeka ili more); ne računa se kao građevna čestica":p.put===1&&!p.z?SKEN_PUT_TXT:null;
+    if(putR) k="put";
     broj[k]=(broj[k]||0)+1; const r=Math.min(60,Math.sqrt(p.A/Math.PI));
-    out.push({type:"Feature",geometry:turf.circle([p.lon,p.lat],r/1000,{steps:16,units:"kilometers"}).geometry,properties:{k,ces:p.broj,ko:p.ko,A:p.A,minC,pravilo:kand.join(" ili "),se:true,an:"",c:[p.lon,p.lat],razlog:k==="bez"?"boja karte odgovara pravilima "+kand.join(" i ")+" s različitim ili neobrađenim uvjetima":null}}); }
+    out.push({type:"Feature",geometry:turf.circle([p.lon,p.lat],r/1000,{steps:16,units:"kilometers"}).geometry,properties:{k,ces:p.broj,ko:p.ko,A:p.A,minC,pravilo:kand.join(" ili "),se:true,an:"",c:[p.lon,p.lat],razlog:putR||(k==="bez"?"boja karte odgovara pravilima "+kand.join(" i ")+" s različitim ili neobrađenim uvjetima":null)}}); }
   SKEN.res={out,broj,nedostaje:[koE&&"dio katastarskih čestica",!ZB.srafura&&nepr>n0*0.5&&"urbano pravilo za dio čestica (boja karte nije prepoznata)"].filter(Boolean),C:n0,razvrstano:ZB.pojam?"s jednoznačno očitanim načinom gradnje":"s obrađenim urbanim pravilom",nepotpuno:false,t:Date.now(),
     tipTxt:(ZB.pojam?"obiteljska zgrada, ":"niska stambena građevina, ")+ob[1],
     izvorTxt:ZB.pojam?ZB.grad+": čestice iz katastra DGU (stanje "+String(I.preuzeto||"").split("-").reverse().join(". ")+".), prikazane kao krug iste površine; način gradnje iz šrafure karte „"+ZB.naziv+"” GUP-a na pet točaka čestice (prijedlog, nije potvrda; čestice uz granicu plohe, na drugoj namjeni ili s nejasnim očitanjem se ne prikazuju), najmanja površina iz GUP-a. Broj etaža, obveza UPU-a ili DPU-a i namjena nisu provjereni."
@@ -9589,6 +9601,7 @@ async function skenPokreniKrk(id,info){
     const plans=PL.e?{e:PL.e}:{v:PF.filter(f=>{try{return f.geometry&&turf.booleanPointInPolygon(pt,f)}catch(e){return false}})};
     let zgrada=false; for(const q of zgr){ if(q[0]<b[0]||q[0]>b[2]||q[1]<b[1]||q[1]>b[3]) continue; try{ if(turf.booleanPointInPolygon(turf.point(q),c.f)){ zgrada=true; break; } }catch(e){} }
     const r=skenKrkRazred(n.properties,plans,c.pov,zgrada); if(r.tip&&!tip) tip=r.tip;
+    if(!zgrada&&cesTraka(c.pov,geoOpseg(c.g))){ r.k="put"; r.razlog=SKEN_PUT_TXT; }
     broj[r.k]=(broj[r.k]||0)+1; const K=I.ko[c.ko]||{};
     out.push({type:"Feature",geometry:c.g,properties:{k:r.k,ces:c.broj,ko:K.naziv||c.ko,A:c.pov,minC:r.minC||null,pravilo:r.kod||String(n.properties.OPCINA_GRAD||""),an:n.properties.OZNAKA_NAMJENE||"",c:pt.geometry.coordinates,razlog:r.razlog||null}}); }
   const T0=RULES_KRK&&RULES_KRK.tipovi&&RULES_KRK.tipovi[KRK_TIP.tip];
@@ -9599,14 +9612,14 @@ async function skenPokreniKrk(id,info){
 document.addEventListener("change",e=>{ if(e.target&&(e.target.id==="krkTip"||e.target.id==="krkOblik")&&SKEN.on) setTimeout(skenPokreni,50); });
 function skenInfo(){
   const info=document.getElementById("skenInfo"), R=SKEN.res; if(!info||!R) return;
-  const red=["pot","upu","izg","izn","mala","plan","bez"];
+  const red=["pot","upu","izg","izn","mala","plan","put","bez"];
   let h=`<p class="meta" style="margin:4px 0">Pregledano ${fmt(R.C)} čestica, ${esc(R.razvrstano||"u građevinskom području")} ${fmt(R.out.length)}${R.nepotpuno?" (nisu sve: približi kartu)":""}. Tip kuće: ${esc(R.tipTxt||"")}.</p>`;
   h+=`<ul class="sken-lgd">${red.filter(k=>R.broj[k]).map(k=>`<li><i style="background:${SKEN_STIL[k].fillColor||"transparent"};border-color:${SKEN_STIL[k].color}"></i><b>${fmt(R.broj[k])}</b> ${esc(SKEN_NAZ[k])}</li>`).join("")}</ul>`;
   const pot=R.out.filter(f=>f.properties.k==="pot"||f.properties.k==="upu").sort((a,b)=>b.properties.A-a.properties.A).slice(0,12);
   if(pot.length) h+=`<details class="sken-pop"><summary>Potencijalne čestice (${fmt(R.out.filter(f=>f.properties.k==="pot"||f.properties.k==="upu").length)})</summary><ol>${pot.map(f=>{const p=f.properties; return `<li><a href="#" class="sken-go" data-lat="${p.c[1]}" data-lng="${p.c[0]}">k.č. ${esc(p.ces||"?")}</a> ${esc(p.ko||"")}: ${fmt(p.A)} m² (${p.minC?"najmanje "+fmt(p.minC)+" m²":"najmanja površina nije poznata"}, pravilo ${esc(p.pravilo||"")}${p.se?" – prijedlog":""})${p.k==="upu"?" · UPU":""}</li>`;}).join("")}</ol></details>`;
-  const RZ={}; for(const f of R.out){ const z=f.properties.razlog; if(z&&(f.properties.k==="bez"||f.properties.k==="plan")) RZ[z]=(RZ[z]||0)+1; }
+  const RZ={}; for(const f of R.out){ const z=f.properties.razlog; if(z&&(f.properties.k==="bez"||f.properties.k==="plan"||f.properties.k==="put")) RZ[z]=(RZ[z]||0)+1; }
   const rz=Object.entries(RZ).sort((a,b)=>b[1]-a[1]);
-  if(rz.length) h+=`<details class="sken-pop"><summary>Zašto bez razvrstavanja (${fmt(rz.reduce((s,x)=>s+x[1],0))})</summary><ul>${rz.slice(0,6).map(([z,n])=>`<li><b>${fmt(n)}</b> ${esc(z)}</li>`).join("")}</ul></details>`;
+  if(rz.length) h+=`<details class="sken-pop"><summary>Zašto nisu razvrstane kao građevne (${fmt(rz.reduce((s,x)=>s+x[1],0))})</summary><ul>${rz.slice(0,6).map(([z,n])=>`<li><b>${fmt(n)}</b> ${esc(z)}</li>`).join("")}</ul></details>`;
   if(R.nedostaje.length) h+=`<p class="flag" style="margin:4px 0">Nisu dohvaćeni: ${esc(R.nedostaje.join(", "))}; razvrstaj može biti nepotpun.</p>`;
   h+=`<p class="meta" style="margin:4px 0">${esc(R.izvorTxt||"")} Površina je grafička, iz katastarskog plana; za odabranu česticu dodirni je na karti (analiza provjerava i upisanu površinu, širinu uz ulicu, pristup i ostale uvjete). Skener ne zna vlasništvo ni terete.</p>`;
   info.innerHTML=h; skenChip();
