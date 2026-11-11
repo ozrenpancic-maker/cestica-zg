@@ -2455,7 +2455,9 @@ async function skenSplitTests(){
 }
 async function skenKrkTests(){
   const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
-  w.fetch=(u)=>{u=String(u); const m=u.match(/data\/(kat_krk|zg3d_krk)\/(.+\.json)$/); if(m){ const pth=path.join(__dirname,"..","data",m[1],m[2]); return Promise.resolve({ok:fs.existsSync(pth),status:fs.existsSync(pth)?200:404,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(pth,"utf8")))}); }
+  let PUTMOCK=null;
+  w.fetch=(u)=>{u=String(u); if(PUTMOCK&&/kat_krk\/put\.json$/.test(u)) return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(PUTMOCK)});
+    const m=u.match(/data\/(kat_krk|zg3d_krk)\/(.+\.json)$/); if(m){ const pth=path.join(__dirname,"..","data",m[1],m[2]); return Promise.resolve({ok:fs.existsSync(pth),status:fs.existsSync(pth)?200:404,json:()=>Promise.resolve(JSON.parse(fs.readFileSync(pth,"utf8")))}); }
     return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null),text:()=>Promise.resolve("")}); };
   const box=(b,props)=>({type:"Feature",properties:props,geometry:{type:"Polygon",coordinates:[[[b[0],b[1]],[b[2],b[1]],[b[2],b[3]],[b[0],b[3]],[b[0],b[1]]]]}});
   let N=[], PLN=[]; w.__skenHook=u=>/NAMJENA_POVRSINA/.test(u)?{type:"FeatureCollection",features:N}:/IZRADA_PP/.test(u)?{type:"FeatureCollection",features:PLN}:{type:"FeatureCollection",features:[]};
@@ -2466,6 +2468,17 @@ async function skenKrkTests(){
   ok(R&&R.C>=4&&R.out.length>=4&&f&&Math.abs(f.properties.A-599)<2&&f.properties.minC===500&&["pot","izg"].includes(f.properties.k),"Skener Krk (Kornić): stvarne čestice iz katastra DGU, k.č. 735/58 (599 m²) uz najmanje 500 m² za slobodnostojeću kuću (PPUG Krk) → "+(f?f.properties.k:"?")+"; pregledano "+(R?R.C:0));
   ok(R.out.some(x=>x.properties.k==="izg")&&R.out.some(x=>x.properties.k==="mala"),"Skener Krk: izgrađene čestice (zgrade iz katastra) i premale čestice razvrstane");
   ok(/Otok Krk: čestice i zgrade iz katastra DGU/.test(txt(w,"skenInfo"))&&/važeći UPU-ovi iz evidencije planova PGŽ/.test(txt(w,"skenInfo")),"Skener Krk: izvor naveden (uključivo evidenciju UPU-ova)");
+  // način uporabe iz katastra (put.json): prometna površina → »put« s razlogom iz katastra; druga uporaba (4) poništava oznaku po obliku za trake šire od 6 m
+  {const I0=JSON.parse(fs.readFileSync(path.join(__dirname,"../data/kat_krk/index.json"),"utf8")), tl=JSON.parse(fs.readFileSync(path.join(__dirname,"../data/kat_krk/"+Math.floor(45.0445/I0.dlat)+"_"+Math.floor(14.615/I0.dlon)+".json"),"utf8")), cid=b=>String(tl.find(x=>x[1]===b)[0]);
+   const sir=R.out.filter(x=>x.properties.k==="put").map(x=>x.properties.ces), k0=c=>{const f=R.out.find(x=>x.properties.ces===c); return f&&f.properties.k;};
+   const wOf=f=>2*f.properties.A/E("geoOpseg")(f.geometry), siri=R.out.filter(x=>x.properties.k==="put"&&wOf(x)>6.5).map(x=>x.properties.ces), uzi=R.out.filter(x=>x.properties.k==="put"&&wOf(x)<5.5).map(x=>x.properties.ces);
+   ok(siri.length>0&&uzi.length>0&&["pot","izg"].includes(k0("735/58")),"Skener Krk: bez podatka katastra uske izdužene čestice su »put« po obliku ("+siri.length+" širih od 6,5 m, "+uzi.length+" užih od 5,5 m), a 735/58 građevna");
+   PUTMOCK={v:1,p:{[cid("735/58")]:2,[cid(siri[0])]:4,[cid(uzi[0])]:4}}; E("KAT.put=null"); E("skenPokreni()"); await tick(400); const R1=E("SKEN").res, f1=c=>R1.out.find(x=>x.properties.ces===c);
+   const zg=f1("735/58").properties.k==="izg";
+   ok((zg||(f1("735/58").properties.k==="put"&&/prometna površina prema katastru/.test(f1("735/58").properties.razlog)))&&f1(siri[0]).properties.k!=="put"&&f1(uzi[0]).properties.k==="put","Skener Krk: način uporabe iz katastra – prometna površina → »put« (osim sa zgradom); druga uporaba poništava oznaku po obliku za traku širu od 6 m ("+siri[0]+" → "+f1(siri[0]).properties.k+"), uža ostaje »put«");
+   PUTMOCK=null; E("KAT.put=null"); E("skenPokreni()"); await tick(400); R=E("SKEN").res;
+   const PJ=JSON.parse(fs.readFileSync(path.join(__dirname,"../data/kat_krk/put.json"),"utf8")), vr=Object.values(PJ.p);
+   ok(PJ.v===1&&vr.length>20000&&vr.every(v=>v===2||v===3||v===4)&&vr.filter(v=>v===2).length>2000&&/oss\.uredjenazemlja\.hr/.test(PJ.izvor),"Krk: popis načina uporabe iz katastra DGU ("+vr.filter(v=>v===2).length+" prometnih površina, "+vr.filter(v=>v===3).length+" voda, "+vr.filter(v=>v===4).length+" druge uporabe)");}
   const cids=R.out.map(x=>x.properties.ko+"|"+x.properties.ces); ok(new Set(cids).size===cids.length,"Skener Krk: čestica na granici kvadrata katastra prikazana je jednom ("+cids.length+")");
   // iznimka (Grad Krk: iznimno 400 m²) → razred »izn« za neizgrađenu česticu između 400 i 500 m²
   const izn=R.out.filter(x=>x.properties.k==="izn"); ok(izn.length>0&&izn.every(x=>x.properties.A>=400&&x.properties.A<500),"Skener Krk: posebna odredba za manje čestice (iznimno 400 m²) → razred izn ("+izn.length+")");

@@ -927,6 +927,9 @@ async function katIndex(){
   if(!j||j.v!==1||!j.ko) throw new Error("neispravan indeks katastra");
   j.set=new Set(j.kvadrati); KAT.idx=j; return j;
 }
+// način uporabe zemljišta iz katastra za Krk (data/kat_krk/put.json, tools/katastar/pripremi_put_krk.py): oznaka čestice → 2 prometna
+// površina, 3 voda, 4 druga uporaba (nije put). Sloj DGU-a ne pokriva sve čestice; bez datoteke ostaje samo prepoznavanje po obliku.
+function katPut(){ if(!KAT.put){ KAT.put=skiFetch(KAT.base+"put.json",20000).then(j=>{ if(!j||j.v!==1||!j.p) throw new Error("neispravan popis načina uporabe"); return j; }); KAT.put.catch(()=>{KAT.put=null;}); } return KAT.put; }
 function katTile(key){
   if(KAT.tiles.has(key)) return KAT.tiles.get(key);
   const p=skiFetch(KAT.base+key+".json",20000).then(a=>{ if(!Array.isArray(a)) throw new Error("neispravan kvadrat katastra"); return a; });
@@ -9452,7 +9455,10 @@ const PUT_KAT={2:"prometna površina prema katastru (pretežno put, cesta, ulica
 // uporabe iz katastra (oznaka 2 ili 3), koji vrijedi više od oblika.
 function trakaHtml(parcel,area,opseg){ if(!parcel||!parcel.geometry) return ""; let A=area, P=opseg; try{ if(!(A>0)) A=turf.area(parcel); if(!(P>0)) P=geoOpseg(parcel.geometry); }catch(e){ return ""; }
   const tr=cesTraka(A,P), pp=parcel.properties||{}, kljuc=(pp.koRef||"")+"|"+(pp.broj||"");
-  if(pp.koRef&&pp.broj) setTimeout(()=>{ katHrIndex().then(I=>I&&I.ko&&I.ko[pp.koRef]?katHrBrojevi(pp.koRef):null).then(X=>{ const q=X&&X.c&&X.c[pp.broj], el=document.getElementById("trakaBox"); if(!q||!PUT_KAT[q[4]]||q[3]===1||!el||el.dataset.kljuc!==kljuc) return;
+  const kat=v=>{ const el=document.getElementById("trakaBox"); if(!PUT_KAT[v]||!el||el.dataset.kljuc!==kljuc) return; el.hidden=false; el.dataset.traka="katastar";
+    el.innerHTML=`<p class="flag"><b>Nije građevna čestica prema katastru:</b> ${esc(PUT_KAT[v])} (način uporabe zemljišta iz digitalnog katastarskog plana DGU-a, barem polovica površine). Izračuni gradnje u nastavku vrijede samo ako se način uporabe promijeni; provjeri posjedovni list.</p>`; };
+  if(pp.izvor==="DGU DKP"&&pp.cid!=null) setTimeout(()=>{ katPut().then(J=>kat(J.p[pp.cid])).catch(()=>{}); },0);
+  else if(pp.koRef&&pp.broj) setTimeout(()=>{ katHrIndex().then(I=>I&&I.ko&&I.ko[pp.koRef]?katHrBrojevi(pp.koRef):null).then(X=>{ const q=X&&X.c&&X.c[pp.broj], el=document.getElementById("trakaBox"); if(!q||!PUT_KAT[q[4]]||q[3]===1||!el||el.dataset.kljuc!==kljuc) return;
       el.hidden=false; el.dataset.traka="katastar"; el.innerHTML=`<p class="flag"><b>Nije građevna čestica prema katastru:</b> ${esc(PUT_KAT[q[4]])} (način uporabe zemljišta iz digitalnog katastarskog plana DGU-a, barem polovica površine). Izračuni gradnje u nastavku vrijede samo ako se način uporabe promijeni; provjeri posjedovni list.</p>`; }).catch(()=>{}); },0);
   return `<div id="trakaBox" data-kljuc="${esc(kljuc)}"${tr?` data-traka="oblik"`:" hidden"}>${tr?`<p class="flag"><b>Uska izdužena čestica</b> (prosječna širina oko ${dec((Math.round(tr.w*10)/10).toFixed(1))} m): po obliku je moguće put, prolaz, kanal ili traka zemljišta, a ne građevna čestica, bez obzira na površinu. Način uporabe provjeri u posjedovnom listu (katastar); izračuni gradnje u nastavku vrijede samo ako je čestica stvarno građevna.</p>`:""}</div>`; }
 function skenRazred(o){
@@ -9591,6 +9597,7 @@ async function skenPokreniKrk(id,info){
   let N, PL; try{ [N,PL]=await Promise.all([skenEnv(SRC_KRK.namjena,B,"*",true),skenEnv(SRC_KRK.planovi,B,"GRAD_OPCINA,VRSTA_PP,STATUS_PP,NAZIV,SN_BROJ",true).then(v=>({v}),e=>({e:e.message||"evidencija planova"}))]); }
   catch(e){ return fail(e.message||"servis ne odgovara"); }
   let tErr=0; const tl=await Promise.all(kk.map(k=>katTile(k).catch(()=>{ tErr++; return []; })));
+  const PUTK=await katPut().catch(()=>null);
   let zgr=[],zgrE=null;
   try{ const base="data/zg3d_krk/", ix=await zg3dIdx(base); if(ix){ const have=new Set(ix.kvadrati), zk=[];
       for(let i=Math.floor(bb[1]/ix.dlat);i<=Math.floor(bb[3]/ix.dlat);i++) for(let j=Math.floor(bb[0]/ix.dlon);j<=Math.floor(bb[2]/ix.dlon);j++) if(have.has(i+"_"+j)) zk.push(i+"_"+j);
@@ -9609,11 +9616,13 @@ async function skenPokreniKrk(id,info){
     const plans=PL.e?{e:PL.e}:{v:PF.filter(f=>{try{return f.geometry&&turf.booleanPointInPolygon(pt,f)}catch(e){return false}})};
     let zgrada=false; for(const q of zgr){ if(q[0]<b[0]||q[0]>b[2]||q[1]<b[1]||q[1]>b[3]) continue; try{ if(turf.booleanPointInPolygon(turf.point(q),c.f)){ zgrada=true; break; } }catch(e){} }
     const r=skenKrkRazred(n.properties,plans,c.pov,zgrada); if(r.tip&&!tip) tip=r.tip;
-    if(!zgrada&&cesTraka(c.pov,geoOpseg(c.g))){ r.k="put"; r.razlog=SKEN_PUT_TXT; }
+    if(!zgrada){ const pk=PUTK&&PUTK.p[c.cid], tr=cesTraka(c.pov,geoOpseg(c.g));
+      if(PUT_KAT[pk]){ r.k="put"; r.razlog=PUT_KAT[pk]+"; ne računa se kao građevna čestica"; }
+      else if(tr&&!(pk===4&&tr.w>6)){ r.k="put"; r.razlog=SKEN_PUT_TXT; } } // katastar navodi drugu uporabu: po obliku samo trake do 6 m
     broj[r.k]=(broj[r.k]||0)+1; const K=I.ko[c.ko]||{};
     out.push({type:"Feature",geometry:c.g,properties:{k:r.k,ces:c.broj,ko:K.naziv||c.ko,A:c.pov,minC:r.minC||null,pravilo:r.kod||String(n.properties.OPCINA_GRAD||""),an:n.properties.OZNAKA_NAMJENE||"",c:pt.geometry.coordinates,razlog:r.razlog||null}}); }
   const T0=RULES_KRK&&RULES_KRK.tipovi&&RULES_KRK.tipovi[KRK_TIP.tip];
-  SKEN.res={out,broj,nedostaje:[zgrE,tErr&&"dio katastarskih čestica",PL.e&&"evidencija prostornih planova (UPU nije provjeren)",PL.v&&PL.v.incomplete&&"dio evidencije prostornih planova"].filter(Boolean),C:n0,nepotpuno:!!N.incomplete,t:Date.now(),
+  SKEN.res={out,broj,nedostaje:[zgrE,tErr&&"dio katastarskih čestica",PL.e&&"evidencija prostornih planova (UPU nije provjeren)",!PUTK&&"način uporabe iz katastra (putovi se prepoznaju samo po obliku)",PL.v&&PL.v.incomplete&&"dio evidencije prostornih planova"].filter(Boolean),C:n0,nepotpuno:!!N.incomplete,t:Date.now(),
     tipTxt:tip||(T0?T0.naziv:"")+", "+({slob:"slobodnostojeća",dvoj:"dvojna",ugr:"ugrađena"}[KRK_TIP.oblik]||KRK_TIP.oblik),
     izvorTxt:"Otok Krk: čestice i zgrade iz katastra DGU (stanje "+String(I.preuzeto||"").split("-").reverse().join(". ")+".), građevinsko područje naselja iz županijskog sloja PGŽ, važeći UPU-ovi iz evidencije planova PGŽ, najmanja površina iz prostornog plana grada ili općine (ista pravila kao analiza čestice; oblik kuće koji plan nema zamijenjen je kao u analizi). Neizgrađeni dio građevinskog područja gdje plan traži UPU i naselje Krk označeni su kao „UPU”, a čestice pod UPU-om koji aplikacija nije obradila ili čija zona nije poznata kao „plan”."};
   SKEN.layer.addData(out); skenInfo(); }
@@ -9629,7 +9638,7 @@ function skenInfo(){
   const rz=Object.entries(RZ).sort((a,b)=>b[1]-a[1]);
   if(rz.length) h+=`<details class="sken-pop"><summary>Zašto nisu razvrstane kao građevne (${fmt(rz.reduce((s,x)=>s+x[1],0))})</summary><ul>${rz.slice(0,6).map(([z,n])=>`<li><b>${fmt(n)}</b> ${esc(z)}</li>`).join("")}</ul></details>`;
   if(R.nedostaje.length) h+=`<p class="flag" style="margin:4px 0">Nisu dohvaćeni: ${esc(R.nedostaje.join(", "))}; razvrstaj može biti nepotpun.</p>`;
-  h+=`<p class="meta" style="margin:4px 0">${esc(R.izvorTxt||"")} Površina je grafička, iz katastarskog plana; za odabranu česticu dodirni je na karti (analiza provjerava i upisanu površinu, širinu uz ulicu, pristup i ostale uvjete). Putovi i ceste prepoznaju se iz načina uporabe u katastru (gdje ga DGU ima; zasad samo Split i Osijek) i po obliku čestice, pa šira ili kratka čestica ceste može ostati među potencijalnima. Skener ne zna vlasništvo ni terete.</p>`;
+  h+=`<p class="meta" style="margin:4px 0">${esc(R.izvorTxt||"")} Površina je grafička, iz katastarskog plana; za odabranu česticu dodirni je na karti (analiza provjerava i upisanu površinu, širinu uz ulicu, pristup i ostale uvjete). Putovi i ceste prepoznaju se iz načina uporabe u katastru (gdje ga DGU ima; zasad otok Krk, Split i Osijek) i po obliku čestice, pa šira ili kratka čestica ceste može ostati među potencijalnima. Skener ne zna vlasništvo ni terete.</p>`;
   info.innerHTML=h; skenChip();
 }
 // sažetak skenera uz gumb „Slojevi” (vidljiv i kad je popis slojeva zatvoren, npr. na mobitelu)
