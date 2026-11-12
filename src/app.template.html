@@ -340,9 +340,11 @@ details.saz-d>summary .eyebrow{margin:0}
 .odg-n small{display:block;color:var(--muted);font-size:12px;line-height:1.2;margin-bottom:2px}.odg-n b{font-size:16px;line-height:1.2}
 .odg-n0{margin:0 0 10px;color:var(--muted);font-size:14px}
 .odg-r h4,#odgovor .pres-kn h4{margin:0 0 4px;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}.odg-r ul{margin:0 0 8px;padding-left:18px}.odg-r li{margin:2px 0}
-.odg-b{appearance:none;border:0;background:none;color:var(--accent);font-weight:700;font-size:14px;padding:4px 0;cursor:pointer}
+.odg-b{appearance:none;border:0;background:none;color:var(--accent);font-weight:700;font-size:14px;padding:4px 0;min-height:44px;cursor:pointer}
 .pres-d>summary{list-style:none;cursor:pointer}.pres-d>summary::-webkit-details-marker{display:none}.pres-hint{margin-left:auto;color:var(--accent);font-weight:700;font-size:13px}.pres-d[open] .pres-hint em{display:inline-block;transform:rotate(180deg)}
-details.pres-d{margin-top:0;border-top:0;padding-top:0}
+#presuda details.pres-d{margin-top:0;border-top:0;padding-top:0;font-size:inherit}#presuda summary.pres-top{color:inherit;font-weight:inherit}
+#odgovor.odg-ograniceno,#odgovor.odg-nepoznato{border-left-color:var(--warn)}.odg-ograniceno .odg-h,.odg-nepoznato .odg-h{color:var(--warn)}
+@media print{.odg-b,.pres-hint{display:none}}
 .pres-d:not([open]) .pres-sub{display:none}
 #presuda{border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:0 1px 3px rgba(0,0,0,.08);padding:12px;margin:0 0 10px}
 .pres-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
@@ -9947,7 +9949,7 @@ function presudaHtml(Pz){
     (Pz.pokazatelji?`<div class="pres-pk">${Pz.pokazatelji.map(x=>`<div class="pres-pk-i" data-pk="${x.id}" data-st="${x.st}"><b><i aria-hidden="true"></i>${esc(x.naziv)}</b><span class="pres-pk-st">${{zelena:"bez poznatih problema",žuta:"traži provjeru",crvena:"zapreka ili ozbiljan rizik",nepoznato:"Podaci nisu dostupni"}[x.st]}</span><small>${esc(x.razlozi.join(" · "))}</small></div>`).join("")}</div>`:"")+
     `<div class="pres-g"><div><h4>Najveće prednosti</h4><ul class="pres-plus">${li(Pz.prednosti)}</ul></div><div><h4>Najveći rizici</h4><ul class="pres-minus">${li(Pz.rizici)}</ul></div></div>`+
     `<p class="pres-inv">Procijenjena investicija ${Pz.inv?inv:": "+inv}</p>`+
-    `<details data-k="pres-kako"><summary>Kako je izračunato ▾</summary><table class="pres-tab"><thead><tr><th>Kriterij</th><th>Važnost</th><th>Stanje</th><th class="n">Bodovi</th></tr></thead><tbody>`+
+    `<details data-k="pres-kako"${OPEN.has("pres-kako")?" open":""}><summary>Kako je izračunato ▾</summary><table class="pres-tab"><thead><tr><th>Kriterij</th><th>Važnost</th><th>Stanje</th><th class="n">Bodovi</th></tr></thead><tbody>`+
     Pz.kriteriji.map(k=>`<tr data-kr="${k.id}"><td>${esc(k.n)}</td><td>${k.raz}</td><td>${esc(stN[k.st])}</td><td class="n">${dec(String(k.b))} / ${k.w}</td></tr>`).join("")+
     `<tr><td>Energija, osunčanost, pogled, vjetar, kišnica</td><td>Korisno / dodatno</td><td>ne ulazi u ocjenu (vidi napredne alate)</td><td class="n">–</td></tr></tbody></table>`+
     `<p class="meta">Stanje „potvrđeno” 100 % bodova, „podatak postoji” 85 %, upozorenje i „Podaci nisu dostupni” 50 %, zapreka 0 %; strm teren 30–60 %. Zelena traži ocjenu od 75 naviše, sve kritične kriterije bez upozorenja i nepoznanica, sva četiri pokazatelja zelena i nijednu kritičnu napomenu. Crvena: kritični kriterij je zapreka, upisana je zapreka raspolaganju ili je ocjena ispod 50. Pokazatelji nemaju bodove: stanje im određuju pravila navedena uz svaki razlog. Ocjena je pomoć pri odluci, ne pravna potvrda: dopuštenost gradnje potvrđuje lokacijska informacija i projektant.</p></details></details></section>`;
@@ -9956,25 +9958,31 @@ function presudaHtml(Pz){
 // Jedna kartica iznad ocjene: odgovor običnim riječima, do tri broja iz izračuna i najvažnija upozorenja. Ništa novo se ne računa:
 // odgovor slijedi stanje ocjene (presudaIzracun) i namjenu, brojevi su iz sažetka odjeljka „Izračun za ovu česticu”, a upozorenja su
 // kritične napomene (sve) i najveći rizici iz ocjene (do ukupno tri stavke kad nema kritičnih više od toga).
-function odgovorKod(Pz,U){ const zap=U.zapreke&&U.zapreke.length;
-  if(U.namjena==="no"||zap) return "ne"; if(Pz.status==="crvena") return "zapreka"; if(U.namjena==="?") return "nepoznato"; return Pz.status==="zelena"?"da":"uvjetno"; }
+// Odgovor nikad nije povoljniji od retka „Smije li se graditi?”: namjena s upozorenjem (ograničena, neprepoznata, bez podataka) daje
+// „ograniceno”, a ne „uvjetno”. Sažetak izračuna koji kaže da čestica ili tip ne zadovoljavaju (i kad ga ocjena ne čita, npr. Krk) daje „zapreka”.
+const ODG_CALC_NE=/premala|nije dovoljna|ne zadovoljava|nije predviđen/i;
+function odgovorKod(Pz,U,calc){ const zap=U.zapreke&&U.zapreke.length;
+  if(U.namjena==="no"||zap) return "ne"; if(Pz.status==="crvena") return "zapreka"; if(U.namjena==="?") return "nepoznato"; if(U.namjena!=="info") return "ograniceno";
+  if(ODG_CALC_NE.test(String(calc||""))) return "zapreka"; return Pz.status==="zelena"?"da":"uvjetno"; }
 const ODG_TXT={da:["Može se graditi","Nema poznatih zapreka. Prije kupnje ili projektiranja zatraži lokacijsku informaciju."],
   uvjetno:["Može se graditi, uz provjere","Namjena predviđa gradnju, ali neke stavke treba provjeriti ili za njih nema podataka."],
-  zapreka:["Postoji zapreka ili ozbiljan rizik za gradnju","Namjena predviđa gradnju, ali nešto od navedenog ispod treba riješiti prije svega."],
-  ne:["Ovdje se zasad ne može graditi","Namjena ili postupak iz plana to ne dopuštaju; pojedinosti su ispod."],
+  zapreka:["Postoji zapreka ili ozbiljan rizik za gradnju","Nešto od navedenog ispod treba riješiti prije svega."],
+  ograniceno:["Gradnja kuće ovdje nije potvrđena","Namjena je ograničena, nije prepoznata ili za nju nema podataka; vidi „Smije li se graditi?” ispod."],
+  ne:["Ovdje se zasad ne može graditi","Namjena, postupak iz plana ili druga zapreka to ne dopuštaju; pojedinosti su ispod."],
   nepoznato:["Nema dovoljno podataka za odgovor","Namjena iz prostornog plana nije dohvaćena; pokušaj ponovno ili provjeri u planu."]};
 function odgovorBrojevi(c){ const out=[]; for(const d of String(c||"").split(" · ").map(x=>x.trim()).filter(Boolean)){ let m;
     if((m=d.match(/^čestica[: ]\s*(.+)$/i))||(m=d.match(/^(manja od propisane.*)$/i))) out.push(["Čestica",m[1]]);
     else if((m=d.match(/^tlocrt (do .+)$/i))) out.push(["Najveći tlocrt",m[1]]);
     else if((m=d.match(/^GBP[: ]\s*(.+)$/i))) out.push(["Ukupna površina (GBP)",m[1]]);
-    else if((m=d.match(/^visina (.+)$/i))) out.push(["Visina",m[1]]);
-    else if(/kis nije propisan|tip građevine nije predviđen/i.test(d)) out.push(["Ukupna površina (GBP)",d]); }
+    else if((m=d.match(/^tip građevine (nije predviđen.*)$/i))) out.push(["Tip građevine",m[1]]);
+    else if((m=d.match(/^kis (nije propisan.*)$/i))) out.push(["Koeficijent iskoristivosti (kis)",m[1]]); }
   return out.slice(0,3); }
-function odgovorHtml(Pz,U,calc){ const kod=odgovorKod(Pz,U), T=ODG_TXT[kod], N=odgovorBrojevi(calc), kn=Pz.kriticne||[];
-  const riz=(Pz.rizici||[]).filter(x=>x&&!/^Podaci nisu dostupni$/.test(x)).slice(0,Math.max(0,3-kn.length));
-  return `<section id="odgovor" class="odg odg-${kod}" data-odgovor="${kod}" aria-label="Može li se graditi"><p class="odg-h"><i aria-hidden="true"></i>${esc(T[0])}</p><p class="odg-s">${esc(T[1])}</p>`+
-    (N.length?`<div class="odg-n">${N.map(([a,b])=>`<div><small>${esc(a)}</small><b>${esc(b)}</b></div>`).join("")}</div>`:`<p class="odg-n0">Izračun veličine kuće još nije dostupan.</p>`)+
-    (kn.length?`<div class="pres-kn"><h4>Kritične napomene</h4><ul>${kn.map(x=>`<li class="pres-kn-${x.tezina}">${esc(x.tekst)}</li>`).join("")}</ul></div>`:"")+
+// brojevi izračuna prikazuju se samo kad namjena predviđa gradnju (inače bi veličina kuće stajala uz odgovor da gradnja nije potvrđena)
+function odgovorHtml(Pz,U,calc){ const kod=odgovorKod(Pz,U,calc), T=ODG_TXT[kod], N=["da","uvjetno","zapreka"].includes(kod)&&U.namjena==="info"?odgovorBrojevi(calc):null, kn=Pz.kriticne||[];
+  const riz=(Pz.rizici||[]).filter(x=>x&&!/^Podaci nisu dostupni$/.test(x)).slice(0,3);
+  return `<section id="odgovor" class="odg odg-${kod}" data-odgovor="${kod}" aria-label="Može li se graditi"><p class="odg-h" role="heading" aria-level="3">${esc(T[0])}</p><p class="odg-s">${esc(T[1])}</p>`+
+    (!N?"":N.length?`<div class="odg-n">${N.map(([a,b])=>`<div><small>${esc(a)}</small><b>${esc(b)}</b></div>`).join("")}</div>`:`<p class="odg-n0">Izračun veličine kuće još nije dostupan.</p>`)+
+    (kn.length?`<div class="pres-kn"><h4>Kritične napomene (neovisno o ocjeni)</h4><ul>${kn.map(x=>`<li class="pres-kn-${x.tezina}">${esc(x.tekst)}</li>`).join("")}</ul></div>`:"")+
     (riz.length?`<div class="odg-r"><h4>Na što paziti</h4><ul>${riz.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`:"")+
     `<button type="button" class="odg-b" data-saz=".prek, #sec-uvjeti">Sve provjere i uvjeti ›</button></section>`; }
 // ================= SAŽETAK NA VRHU ANALIZE =================
@@ -10063,6 +10071,8 @@ function rptClean(src,bez){
     else{v=el.value; if(!v&&el.placeholder&&/\d/.test(el.placeholder)){v=el.placeholder; muted=true;}}
     const sp=document.createElement("b"); sp.className="rv"+(muted?" rv-auto":""); sp.textContent=v||"—"; el.replaceWith(sp);});
   n.querySelectorAll("details.vise").forEach(d=>{const sm=d.querySelector(":scope>summary"); if(sm) sm.remove(); d.replaceWith(...d.childNodes);});
+  // ocjena: sklopljeni blok u izvještaju je uvijek cijeli (bodovi, stanje i rečenica ostaju na vrhu)
+  n.querySelectorAll("details.pres-d").forEach(d=>{const sm=d.querySelector(":scope>summary"); if(sm){const h=sm.querySelector(".pres-hint"); if(h) h.remove(); const v=document.createElement("div"); v.className=sm.className; v.append(...sm.childNodes); sm.replaceWith(v);} d.replaceWith(...d.childNodes);});
   n.querySelectorAll("details").forEach(d=>{const sm=d.querySelector(":scope>summary"), box=document.createElement("div"); box.className="rpt-sub";
     if(sm){const t=sm.querySelector("span"), b=sm.querySelector("b"), h=document.createElement("h4"); h.innerHTML=`<span>${esc((t||sm).textContent.replace(/[▾▴›]/g,"").trim())}</span>${b&&b.textContent.trim()?`<em>${b.innerHTML}</em>`:""}`; box.appendChild(h); sm.remove();}
     const body=d.querySelector(":scope>.acc-body"); (body?[...body.childNodes]:[...d.childNodes]).forEach(c=>box.appendChild(c)); d.replaceWith(box);});
@@ -10260,6 +10270,8 @@ function rptDone(){ if(!document.body.classList.contains("print-report")) return
   if(mapEl.classList.contains("in-print")){mapEl.classList.remove("in-print"); mapHome.insertBefore(mapEl,mapNext); map.invalidateSize();}
   const R=document.getElementById("report"); if(R) R.remove(); const st=document.getElementById("rptPage"); if(st) st.remove(); }
 window.addEventListener("afterprint",()=>setTimeout(rptDone,100));
+// obični ispis preglednika: ocjena se ispisuje cijela (sklopljeni dio se inače ne bi ispisao)
+window.addEventListener("beforeprint",()=>{const d=document.querySelector("details.pres-d"); if(d) d.open=true;});
 
 // --- spremljene čestice (samo u ovom pregledniku)
 const favKey=(parcel,ll)=>parcel?`${parcel.properties.KATASTARSKA_OPCINA}|${parcel.properties.KATASTARSKA_CESTICA}`:`${ll.lat.toFixed(5)},${ll.lng.toFixed(5)}`;
