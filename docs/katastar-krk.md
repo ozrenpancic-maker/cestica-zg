@@ -31,3 +31,17 @@ Uvjeti gradnje i dalje se računaju s grafičkom površinom.
 ## Osvježavanje
 
 Preuzeti ZIP-ove istom PowerShell naredbom (popis brojeva gore), raspakirati u `ko-<broj>/` i pokrenuti obje skripte.
+
+## Način uporabe zemljišta (put, cesta, voda) – 11. 11. 2026.
+
+`data/kat_krk/put.json` (`tools/katastar/pripremi_put_krk.py`): oznaka čestice (CESTICA_ID) → 2 prometna površina, 3 voda (barem pola
+površine čestice), 4 druga uporaba (barem 80 %). Izvor je sloj `nacini_uporabe_zemljista.gml` iz istih zipova DGU-a, preuzetih
+11. 11. 2026. (24 k.o., 29,4 MB); pločice čestica su i dalje od 19. 10. 2026. i nisu mijenjane. Veza preko oznake čestice: 210.835 od
+210.862 čestica iz pločica postoji u novim zipovima, s istim brojem i k.o.; 192 su u međuvremenu promijenile površinu (neovisna
+provjera: 13 oznaka bi se razlikovalo na staroj geometriji).
+
+Pokrivenost: oznaku ima 23.195 čestica (2.291 promet, 176 voda, 20.728 druga uporaba), tj. 9,3 % čestica od 200 m² naviše – gotovo sve
+u novim izmjerama (Baška-Nova 86 %, Omišalj-Njivice 78 %, Malinska-Dubašnica 66 %); drugdje ostaje prepoznavanje po obliku.
+
+Redoslijed: `pripremi_krk.py` briše cijelu mapu `data/kat_krk`, pa se `pripremi_put_krk.py` pokreće nakon njega, po mogućnosti iz
+istih zipova. Aplikacija bez `put.json` radi (samo oblik) i to navodi među nedohvaćenim podacima.
