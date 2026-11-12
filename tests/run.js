@@ -3599,6 +3599,30 @@ async function presudaTests(){
     const o3=$(w,"odgovor"), r0=E("window.__sazRows")[0];
     ok(r0.st==="warn"&&o3&&o3.dataset.odgovor==="ograniceno"&&!/Može se graditi/.test(o3.textContent)&&!o3.querySelector(".odg-n"),"Odgovor u aplikaciji: posebna namjena (upozorenje) daje »Gradnja kuće ovdje nije potvrđena«, bez brojeva kuće");
     w.__env=d.envelope; E("render")(d); await tick(120);}}
+  // „Sva upozorenja na jednom mjestu”: popis skuplja ono što već piše u odjeljcima, po težini, i vodi na mjesto stavke
+  {const SK=E("paziSkupi"), PH=E("paziHtml"), od=()=>$(w,"odgovor"), pz=()=>od().querySelector("details.pazi"), red={no:0,warn:1,nep:2}, tx=e=>e.textContent.replace(/\s+/g," ").trim();
+   E('OPEN.delete("pazi")'); E("sazetakUpdate")(); let L=E("window.__pazi");
+   ok(pz()&&!pz().open&&pz().nextElementSibling===od().querySelector(".odg-b")&&L.length>=3&&pz().querySelectorAll("[data-pazi]").length===L.length,"Na što paziti: sklopljeni popis u kartici odgovora, stavki koliko ih je skupljeno ("+L.length+")");
+   ok(L.every((x,i)=>!i||red[L[i-1].tez]<=red[x.tez])&&L.every(x=>x.el.isConnected&&!x.el.closest("#sazetak")&&!x.el.closest("[hidden]")&&tx(x.el).includes(x.opis?x.opis.replace(/…$/,""):x.nas.replace(/…$/,""))),"Na što paziti: stavke su poredane po težini i svaka doslovno potječe iz odjeljka lista (ništa novo)");
+   ok(L.some(x=>x.nas==="Pristup s prometne površine"&&x.tez==="nep"&&/^02 Gradnja/.test(x.gdje))&&new Set(L.map(x=>x.nas+"|"+x.opis)).size===L.length,"Na što paziti: nepotvrđeni pristup je među neprovjerenima, s oznakom poglavlja; bez dvostrukih stavki");
+   const n=t=>L.filter(x=>x.tez===t).length, sb=tx(pz().querySelector("summary>b")); ok((n("warn")?new RegExp("\\b"+n("warn")+" upozorenj").test(sb):!/upozorenj/.test(sb))&&(n("nep")?sb.includes(n("nep")+" neprovjereno"):!/neprovjereno/.test(sb))&&(n("no")?new RegExp("\\b"+n("no")+" zaprek").test(sb):!/zaprek/.test(sb)),"Na što paziti: brojevi u naslovu odgovaraju popisu ("+sb+")");
+   // umetnute poruke u odjeljak: zapreka ide na vrh, skrivena poruka i popis „što provjeriti” se ne broje, isti naslov samo jednom
+   const mod=w.document.querySelector('details.acc[data-k="calc"] .acc-body')||w.document.querySelector('details.acc[data-k="calc"]'), um=w.document.createElement("div");
+   um.innerHTML='<ul class="checks"><li class="chk chk-no" id="tZap"><b>✕ Probna zapreka <em class="pz pz-A">A</em></b><span>Prvi opis. Druga rečenica.<a href="#">veza</a></span></li><li class="chk chk-no"><b>✕ Probna zapreka</b><span>Opet.</span></li><li class="chk chk-warn"><b>! Probno upozorenje</b><span>Treba pogledati.</span></li><li class="chk chk-ok"><b>✓ Probno u redu</b><span>Dobro.</span></li></ul><p class="flag" hidden>Skrivena poruka.</p><p class="flag" id="tFl">Probna poruka o grešci.</p><div class="verdict v-warn"><b>Što provjeriti</b><ul><li>stavka</li></ul></div>'; mod.appendChild(um);
+   const L2=SK(), z=L2[0], fl=L2.find(x=>x.el.id==="tFl");
+   ok(L2.length===L.length+3&&z.tez==="no"&&z.nas==="Probna zapreka"&&z.opis==="Prvi opis."&&z.el.id==="tZap"&&/^02 Gradnja · Izračun za ovu česticu$/.test(z.gdje)&&L2.filter(x=>x.nas==="Probna zapreka").length===1&&L2.some(x=>x.nas==="Probno upozorenje"&&x.tez==="warn")&&!L2.some(x=>/Probno u redu|Skrivena|Što provjeriti/.test(x.nas+x.opis))&&fl&&fl.tez==="warn"&&fl.nas==="Izračun za ovu česticu"&&fl.opis==="Probna poruka o grešci.","Na što paziti: zapreka na vrhu s prvom rečenicom opisa i mjestom; isti naslov jednom; ispunjeno, skriveno i popisi se ne skupljaju; poruka modula nosi ime modula");
+   // otvaranje popisa nakon promjene u odjeljcima slaže popis iznova
+   const p0=pz(); E('OPEN.add("pazi")'); p0.open=true; p0.dispatchEvent(new w.Event("toggle")); await tick(30); L=E("window.__pazi");
+   ok(pz().open&&L.length===L2.length&&L[0].nas==="Probna zapreka"&&/\b1 zapreka\b/.test(tx(pz().querySelector("summary>b")))&&/Zapreke i potvrđena ograničenja \(1\)/.test(tx(pz()))&&pz().querySelector("[data-pazi].pazi-no"),"Na što paziti: pri otvaranju se popis osvježi (nova zapreka je na vrhu, broj u naslovu)");
+   // dodir vodi na samu stavku: otvara odjeljke iznad nje i označi je
+   {const cilj=w.document.getElementById("tZap"), pred=[]; for(let q=cilj;q;q=q.parentElement) if(q.tagName==="DETAILS"){ q.open=false; pred.push(q); }
+    let zvan=null; const pg=E("pogIdi"); w.pogIdi=el=>{ zvan=el; return pg(el); };
+    pz().querySelector('[data-pazi="0"]').dispatchEvent(new w.MouseEvent("click",{bubbles:true})); await tick(60); w.pogIdi=pg;
+    ok(zvan===cilj&&pred.length>=2&&pred.every(q=>q.open)&&cilj.classList.contains("pazi-cilj"),"Na što paziti: dodir otvara poglavlje i modul stavke, dovodi je u vidno polje i označi");}
+   ok(!E("rptClean")($(w,"sazetak")).querySelector(".pazi,[data-pazi]"),"Na što paziti: u izvještaju popisa nema (izvještaj ima svoje rizike)");
+   const F=(a,b,c)=>[...Array(a).fill({tez:"no",nas:"z",opis:"",gdje:""}),...Array(b).fill({tez:"warn",nas:"u",opis:"",gdje:""}),...Array(c).fill({tez:"nep",nas:"n",opis:"",gdje:""})], zb=h=>{const x=w.document.createElement("div"); x.innerHTML=h; return tx(x.querySelector("summary>b"));};
+   ok(PH([])===""&&zb(PH(F(1,1,0)))==="1 zapreka · 1 upozorenje"&&zb(PH(F(2,3,4)))==="2 zapreke · 3 upozorenja · 4 neprovjereno"&&zb(PH(F(5,11,0)))==="5 zapreka · 11 upozorenja"&&zb(PH(F(0,21,0)))==="21 upozorenje","Na što paziti: bez stavki nema popisa; brojevi se sklanjaju (1 zapreka, 2 zapreke, 5 zapreka)");
+   um.remove(); E('OPEN.delete("pazi")'); E("sazetakUpdate")();}
   ok(pr&&/\/100/.test(pr.textContent)&&["zelena","žuta","crvena"].includes(pr.querySelector("[data-status]").dataset.status)&&pr.querySelectorAll("tr[data-kr]").length===6,"Presuda u aplikaciji: na vrhu sažetka, ocjena, status, šest kriterija");
   ok(E("window.__presuda")&&+pr.querySelector("[data-ocjena]").dataset.ocjena===E("window.__presuda.ocjena"),"Presuda u aplikaciji: prikazana ocjena = izračun");
   ok(errs.length===0,"bez JS grešaka (presuda): "+errs.join(" | "));
