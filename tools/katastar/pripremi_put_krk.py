@@ -5,7 +5,8 @@ nacini_uporabe_zemljista.gml; katalog DGU-a: „nema uvjeta za pristup i korišt
 čestice (CESTICA_ID); pločice čestica se ne mijenjaju. Sloj načina uporabe ne pokriva sve čestice (samo novije izmjere).
 
 Korištenje (Python 3, pip install lxml pyproj shapely):
-  python3 tools/katastar/pripremi_put_krk.py --ulaz MAPA_SA_ZIPOVIMA --datum 2026-11-11
+  python3 -I tools/katastar/pripremi_put_krk.py --ulaz MAPA_SA_ZIPOVIMA --datum 2026-11-11
+Pokreće se NAKON pripremi_krk.py (taj alat briše cijelu mapu data/kat_krk, pa i put.json), po mogućnosti iz istih zipova.
 Izlaz: data/kat_krk/put.json = {"v":1,"preuzeto":datum,"p":{"<oznaka čestice>":2|3|4}}: 2 = prometna površina (put, cesta, ulica, prolaz,
 pločnik, staza, pruga, stepenište) na barem pola površine čestice, 3 = voda (kanal, potok, more, jarak) na barem pola, 4 = druga
 uporaba (dvorište, oranica, pašnjak …) na barem 80 % površine – čestica prema katastru nije put, pa oznaka po obliku u aplikaciji
@@ -27,8 +28,9 @@ def main():
         for r in json.load(open(os.path.join(out, k + ".json"), encoding="utf-8")): poznate.add(r[0])
     P = {}; br = {2: 0, 3: 0, 4: 0}; kos = set(); pokriveno = 0
     for zp in sorted(glob.glob(os.path.join(a.ulaz, "*.zip"))):
-        z = zipfile.ZipFile(zp); mb = None
-        for e in etree.parse(citaj(z, "katastarske_opcine.gml")).getroot().iter():
+        z = zipfile.ZipFile(zp); mb = None; f0 = citaj(z, "katastarske_opcine.gml")
+        if f0 is None: print("preskačem (nije DKP):", zp); continue
+        for e in etree.parse(f0).getroot().iter():
             if e.tag == O + "MATICNI_BROJ": mb = e.text
         if mb not in idx["ko"]: print("preskačem k.o. izvan otoka:", mb); continue
         kos.add(mb); GEO, ID = [], []
@@ -65,6 +67,6 @@ def main():
     with open(os.path.join(out, "put.json"), "w", encoding="utf-8") as fh:
         json.dump({"v": 1, "izvor": "Državna geodetska uprava, digitalni katastarski plan (ATOM, oss.uredjenazemlja.hr), način uporabe zemljišta",
                    "preuzeto": a.datum, "p": dict(sorted(P.items(), key=lambda t: int(t[0])))}, fh, separators=(",", ":"))
-    print("k.o.:", len(kos), "čestica s načinom uporabe:", pokriveno, "od", len(poznate), "| promet", br[2], "voda", br[3], "druga uporaba", br[4])
+    print("k.o.:", len(kos), "čestica s oznakom:", len(P), "od", len(poznate), "(sloj uporabe dodiruje", pokriveno, ") | promet", br[2], "voda", br[3], "druga uporaba", br[4])
 
 if __name__ == "__main__": main()

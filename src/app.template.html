@@ -9455,8 +9455,11 @@ const PUT_KAT={2:"prometna površina prema katastru (pretežno put, cesta, ulica
 // uporabe iz katastra (oznaka 2 ili 3), koji vrijedi više od oblika.
 function trakaHtml(parcel,area,opseg){ if(!parcel||!parcel.geometry) return ""; let A=area, P=opseg; try{ if(!(A>0)) A=turf.area(parcel); if(!(P>0)) P=geoOpseg(parcel.geometry); }catch(e){ return ""; }
   const tr=cesTraka(A,P), pp=parcel.properties||{}, kljuc=(pp.koRef||"")+"|"+(pp.broj||"");
-  const kat=v=>{ const el=document.getElementById("trakaBox"); if(!PUT_KAT[v]||!el||el.dataset.kljuc!==kljuc) return; el.hidden=false; el.dataset.traka="katastar";
-    el.innerHTML=`<p class="flag"><b>Nije građevna čestica prema katastru:</b> ${esc(PUT_KAT[v])} (način uporabe zemljišta iz digitalnog katastarskog plana DGU-a, barem polovica površine). Izračuni gradnje u nastavku vrijede samo ako se način uporabe promijeni; provjeri posjedovni list.</p>`; };
+  const kat=v=>{ const el=document.getElementById("trakaBox"); if(!el||el.dataset.kljuc!==kljuc) return;
+    // katastar navodi drugu uporabu (dvorište, oranica …): upozorenje po obliku ostaje samo za trake do 6 m, kao u skeneru
+    if(v===4){ if(tr&&tr.w>6){ el.hidden=true; el.dataset.traka="druga-uporaba"; el.innerHTML=""; } return; }
+    if(!PUT_KAT[v]) return; el.hidden=false; el.dataset.traka="katastar";
+    el.innerHTML=`<p class="flag"><b>Nije građevna čestica prema katastru:</b> ${esc(PUT_KAT[v])} (način uporabe zemljišta iz digitalnog katastarskog plana DGU-a, barem polovica površine). Ako na čestici stoji zgrada, mjerodavno je stvarno stanje; inače izračuni gradnje u nastavku vrijede samo ako se način uporabe promijeni. Provjeri posjedovni list.</p>`; };
   if(pp.izvor==="DGU DKP"&&pp.cid!=null) setTimeout(()=>{ katPut().then(J=>kat(J.p[pp.cid])).catch(()=>{}); },0);
   else if(pp.koRef&&pp.broj) setTimeout(()=>{ katHrIndex().then(I=>I&&I.ko&&I.ko[pp.koRef]?katHrBrojevi(pp.koRef):null).then(X=>{ const q=X&&X.c&&X.c[pp.broj], el=document.getElementById("trakaBox"); if(!q||!PUT_KAT[q[4]]||q[3]===1||!el||el.dataset.kljuc!==kljuc) return;
       el.hidden=false; el.dataset.traka="katastar"; el.innerHTML=`<p class="flag"><b>Nije građevna čestica prema katastru:</b> ${esc(PUT_KAT[q[4]])} (način uporabe zemljišta iz digitalnog katastarskog plana DGU-a, barem polovica površine). Izračuni gradnje u nastavku vrijede samo ako se način uporabe promijeni; provjeri posjedovni list.</p>`; }).catch(()=>{}); },0);
@@ -9596,8 +9599,9 @@ async function skenPokreniKrk(id,info){
   if(!kk.length) return fail("katastar za ovo područje nije pripremljen; skener na Krku radi samo na otoku");
   let N, PL; try{ [N,PL]=await Promise.all([skenEnv(SRC_KRK.namjena,B,"*",true),skenEnv(SRC_KRK.planovi,B,"GRAD_OPCINA,VRSTA_PP,STATUS_PP,NAZIV,SN_BROJ",true).then(v=>({v}),e=>({e:e.message||"evidencija planova"}))]); }
   catch(e){ return fail(e.message||"servis ne odgovara"); }
+  const pPut=katPut().catch(()=>null);
   let tErr=0; const tl=await Promise.all(kk.map(k=>katTile(k).catch(()=>{ tErr++; return []; })));
-  const PUTK=await katPut().catch(()=>null);
+  const PUTK=await pPut;
   let zgr=[],zgrE=null;
   try{ const base="data/zg3d_krk/", ix=await zg3dIdx(base); if(ix){ const have=new Set(ix.kvadrati), zk=[];
       for(let i=Math.floor(bb[1]/ix.dlat);i<=Math.floor(bb[3]/ix.dlat);i++) for(let j=Math.floor(bb[0]/ix.dlon);j<=Math.floor(bb[2]/ix.dlon);j++) if(have.has(i+"_"+j)) zk.push(i+"_"+j);
@@ -9624,7 +9628,7 @@ async function skenPokreniKrk(id,info){
   const T0=RULES_KRK&&RULES_KRK.tipovi&&RULES_KRK.tipovi[KRK_TIP.tip];
   SKEN.res={out,broj,nedostaje:[zgrE,tErr&&"dio katastarskih čestica",PL.e&&"evidencija prostornih planova (UPU nije provjeren)",!PUTK&&"način uporabe iz katastra (putovi se prepoznaju samo po obliku)",PL.v&&PL.v.incomplete&&"dio evidencije prostornih planova"].filter(Boolean),C:n0,nepotpuno:!!N.incomplete,t:Date.now(),
     tipTxt:tip||(T0?T0.naziv:"")+", "+({slob:"slobodnostojeća",dvoj:"dvojna",ugr:"ugrađena"}[KRK_TIP.oblik]||KRK_TIP.oblik),
-    izvorTxt:"Otok Krk: čestice i zgrade iz katastra DGU (stanje "+String(I.preuzeto||"").split("-").reverse().join(". ")+".), građevinsko područje naselja iz županijskog sloja PGŽ, važeći UPU-ovi iz evidencije planova PGŽ, najmanja površina iz prostornog plana grada ili općine (ista pravila kao analiza čestice; oblik kuće koji plan nema zamijenjen je kao u analizi). Neizgrađeni dio građevinskog područja gdje plan traži UPU i naselje Krk označeni su kao „UPU”, a čestice pod UPU-om koji aplikacija nije obradila ili čija zona nije poznata kao „plan”."};
+    izvorTxt:"Otok Krk: čestice i zgrade iz katastra DGU (stanje "+String(I.preuzeto||"").split("-").reverse().join(". ")+"."+(PUTK&&PUTK.preuzeto?"; način uporabe zemljišta "+String(PUTK.preuzeto).split("-").reverse().join(". ")+".":"")+"), građevinsko područje naselja iz županijskog sloja PGŽ, važeći UPU-ovi iz evidencije planova PGŽ, najmanja površina iz prostornog plana grada ili općine (ista pravila kao analiza čestice; oblik kuće koji plan nema zamijenjen je kao u analizi). Neizgrađeni dio građevinskog područja gdje plan traži UPU i naselje Krk označeni su kao „UPU”, a čestice pod UPU-om koji aplikacija nije obradila ili čija zona nije poznata kao „plan”."};
   SKEN.layer.addData(out); skenInfo(); }
 document.addEventListener("change",e=>{ if(e.target&&(e.target.id==="krkTip"||e.target.id==="krkOblik")&&SKEN.on) setTimeout(skenPokreni,50); });
 function skenInfo(){

@@ -2472,10 +2472,24 @@ async function skenKrkTests(){
   {const I0=JSON.parse(fs.readFileSync(path.join(__dirname,"../data/kat_krk/index.json"),"utf8")), tl=JSON.parse(fs.readFileSync(path.join(__dirname,"../data/kat_krk/"+Math.floor(45.0445/I0.dlat)+"_"+Math.floor(14.615/I0.dlon)+".json"),"utf8")), cid=b=>String(tl.find(x=>x[1]===b)[0]);
    const sir=R.out.filter(x=>x.properties.k==="put").map(x=>x.properties.ces), k0=c=>{const f=R.out.find(x=>x.properties.ces===c); return f&&f.properties.k;};
    const wOf=f=>2*f.properties.A/E("geoOpseg")(f.geometry), siri=R.out.filter(x=>x.properties.k==="put"&&wOf(x)>6.5).map(x=>x.properties.ces), uzi=R.out.filter(x=>x.properties.k==="put"&&wOf(x)<5.5).map(x=>x.properties.ces);
-   ok(siri.length>0&&uzi.length>0&&["pot","izg"].includes(k0("735/58")),"Skener Krk: bez podatka katastra uske izdužene čestice su »put« po obliku ("+siri.length+" širih od 6,5 m, "+uzi.length+" užih od 5,5 m), a 735/58 građevna");
-   PUTMOCK={v:1,p:{[cid("735/58")]:2,[cid(siri[0])]:4,[cid(uzi[0])]:4}}; E("KAT.put=null"); E("skenPokreni()"); await tick(400); const R1=E("SKEN").res, f1=c=>R1.out.find(x=>x.properties.ces===c);
-   const zg=f1("735/58").properties.k==="izg";
-   ok((zg||(f1("735/58").properties.k==="put"&&/prometna površina prema katastru/.test(f1("735/58").properties.razlog)))&&f1(siri[0]).properties.k!=="put"&&f1(uzi[0]).properties.k==="put","Skener Krk: način uporabe iz katastra – prometna površina → »put« (osim sa zgradom); druga uporaba poništava oznaku po obliku za traku širu od 6 m ("+siri[0]+" → "+f1(siri[0]).properties.k+"), uža ostaje »put«");
+   const grad=R.out.filter(x=>["pot","mala"].includes(x.properties.k)).map(x=>x.properties.ces), izg=R.out.filter(x=>x.properties.k==="izg").map(x=>x.properties.ces);
+   ok(siri.length>0&&uzi.length>0&&grad.length>1&&izg.length>0,"Skener Krk: polazno stanje (stvarni popis načina uporabe; u ovom dijelu Kornića nema oznaka) – trake po obliku »put« ("+siri.length+" širih od 6,5 m, "+uzi.length+" užih od 5,5 m), "+grad.length+" građevnih bez zgrade, "+izg.length+" izgrađenih");
+   PUTMOCK={v:1,preuzeto:"2026-11-11",p:{[cid(grad[0])]:2,[cid(grad[1])]:3,[cid(izg[0])]:2,[cid(siri[0])]:4,[cid(uzi[0])]:4}}; E("KAT.put=null"); E("skenPokreni()"); await tick(400); const R1=E("SKEN").res, f1=c=>R1.out.find(x=>x.properties.ces===c).properties;
+   ok(f1(grad[0]).k==="put"&&/prometna površina prema katastru/.test(f1(grad[0]).razlog)&&f1(grad[1]).k==="put"&&/voda prema katastru/.test(f1(grad[1]).razlog),"Skener Krk: čestica bez zgrade s načinom uporabe put/cesta ("+grad[0]+") ili voda ("+grad[1]+") → »put« s razlogom iz katastra, ne »potencijalna«");
+   ok(f1(izg[0]).k==="izg","Skener Krk: čestica sa zgradom ostaje »izgrađena« i kad katastar navodi prometnu površinu ("+izg[0]+")");
+   ok(f1(siri[0]).k!=="put"&&f1(uzi[0]).k==="put","Skener Krk: druga uporaba prema katastru poništava oznaku po obliku za traku širu od 6 m ("+siri[0]+" → "+f1(siri[0]).k+"), uža ostaje »put«");
+   ok(/način uporabe zemljišta 11\. 11\. 2026\./.test(txt(w,"skenInfo")),"Skener Krk: datum načina uporabe naveden uz izvor");
+   // list čestice na Krku: način uporabe iz katastra; druga uporaba skriva upozorenje po obliku za širu traku
+   {const kx=111320*Math.cos(45*Math.PI/180), ky=110540, pr=(W,D,props)=>({type:"Feature",properties:props,geometry:{type:"Polygon",coordinates:[[[14.6,45],[14.6+W/kx,45],[14.6+W/kx,45+D/ky],[14.6,45+D/ky],[14.6,45]]]}});
+    const dv=w.document.createElement("div"); w.document.body.appendChild(dv); const T=E("trakaHtml");
+    dv.innerHTML=T(pr(20,40,{izvor:"DGU DKP",cid:+cid(grad[0]),koRef:"315907",broj:grad[0]})); await tick(200); let bx=w.document.getElementById("trakaBox");
+    ok(!bx.hidden&&bx.dataset.traka==="katastar"&&/Nije građevna čestica prema katastru/.test(bx.textContent)&&/Ako na čestici stoji zgrada/.test(bx.textContent),"List čestice Krk: prometna površina prema katastru → upozorenje (uz napomenu za čestice sa zgradom)");
+    dv.innerHTML=T(pr(8,120,{izvor:"DGU DKP",cid:+cid(siri[0]),koRef:"315907",broj:siri[0]})); ok(/data-traka="oblik"/.test(dv.innerHTML),"List čestice Krk: traka 8 × 120 m prvo dobiva upozorenje po obliku"); await tick(200); bx=w.document.getElementById("trakaBox");
+    ok(bx.hidden&&bx.dataset.traka==="druga-uporaba","List čestice Krk: katastar navodi drugu uporabu → upozorenje po obliku se skriva za traku širu od 6 m");
+    dv.innerHTML=T(pr(5,120,{izvor:"DGU DKP",cid:+cid(uzi[0]),koRef:"315907",broj:uzi[0]})); await tick(200); ok(!w.document.getElementById("trakaBox").hidden,"List čestice Krk: traka do 6 m ostaje s upozorenjem i uz drugu uporabu"); dv.remove();}
+   // popis načina uporabe nedostupan → samo oblik, uz poruku
+   PUTMOCK={greska:1}; E("KAT.put=null"); E("skenPokreni()"); await tick(400); const R2=E("SKEN").res;
+   ok(R2.nedostaje.some(x=>/način uporabe iz katastra/.test(x))&&R2.out.find(x=>x.properties.ces===grad[0]).properties.k!=="put"&&R2.out.find(x=>x.properties.ces===siri[0]).properties.k==="put","Skener Krk: popis načina uporabe nedostupan → prepoznavanje samo po obliku i poruka o tome");
    PUTMOCK=null; E("KAT.put=null"); E("skenPokreni()"); await tick(400); R=E("SKEN").res;
    const PJ=JSON.parse(fs.readFileSync(path.join(__dirname,"../data/kat_krk/put.json"),"utf8")), vr=Object.values(PJ.p);
    ok(PJ.v===1&&vr.length>20000&&vr.every(v=>v===2||v===3||v===4)&&vr.filter(v=>v===2).length>2000&&/oss\.uredjenazemlja\.hr/.test(PJ.izvor),"Krk: popis načina uporabe iz katastra DGU ("+vr.filter(v=>v===2).length+" prometnih površina, "+vr.filter(v=>v===3).length+" voda, "+vr.filter(v=>v===4).length+" druge uporabe)");}
