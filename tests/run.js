@@ -1905,7 +1905,13 @@ async function sazTests(){
    iz(3).open=true; iz(3).dispatchEvent(new w.Event("toggle")); await tick(30); ok(on()==="3","Traka poglavlja: oznaka prati poglavlje otvoreno izvan trake");
    w.pogIdi=pg; let vrh=null; const st=w.sheet.scrollTo; w.sheet.scrollTo=o=>{ vrh=o; }; B[0].dispatchEvent(new w.MouseEvent("click",{bubbles:true})); w.sheet.scrollTo=st;
    ok(vrh&&vrh.top===0&&iz(3).open,"Traka poglavlja: »Sažetak« vraća na vrh lista i ne sklapa otvoreno poglavlje");
-   ok(E("pogTrakaVisina")(iz(3))===T.offsetHeight&&E("pogTrakaVisina")($(w,"sazetak"))===0&&!E("rptClean")(wr).querySelector(".pog-t"),"Traka poglavlja: pomak pri dovođenju odjeljka računa visinu trake samo unutar izbornika; u izvještaju je nema");
+   // pomak pod traku: uz traku visoku 50 px odjeljak u izborniku dolazi 58 px ispod vrha lista, odjeljak izvan izbornika 8 px
+   {Object.defineProperty(T,"offsetHeight",{configurable:true,get:()=>50}); const SH=w.sheet, gb=(el,top)=>{ el.getBoundingClientRect=()=>({top,bottom:top+10,left:0,right:10,height:10,width:10}); }; gb(SH,100); gb(iz(3),400); let stv=0; Object.defineProperty(SH,"scrollTop",{configurable:true,get:()=>stv,set:v=>{stv=v;}});
+    E("pogIdi")(iz(3)); await tick(320); const a=stv; stv=0; const sz=$(w,"sazetak"); gb(sz,400); E("pogIdi")(sz); await tick(320); const b2=stv; delete SH.scrollTop; delete SH.getBoundingClientRect; delete iz(3).getBoundingClientRect; delete sz.getBoundingClientRect;
+    ok(a===400-100-8-50&&b2===400-100-8,"Traka poglavlja: odjeljak iz izbornika dovodi se ispod trake ("+a+"), odjeljak izvan izbornika do vrha ("+b2+")");
+    const css=[...w.document.querySelectorAll("style")].map(x=>x.textContent).join("\n");
+    ok(/@media print\{\.pog-t\{display:none\}\}/.test(css)&&/\.grp\[data-g=izb\] details\{scroll-margin-top:64px\}/.test(css),"Traka poglavlja: u ispisu je skrivena; odjeljci dovedeni preglednikom (scrollIntoView) ostaju ispod trake");}
+   ok(E("pogTrakaVisina")(iz(3))===50&&E("pogTrakaVisina")($(w,"sazetak"))===0&&!E("rptClean")(wr).querySelector(".pog-t"),"Traka poglavlja: pomak pri dovođenju odjeljka računa visinu trake samo unutar izbornika; u izvještaju je nema");
    if(poc){ B[+poc].dispatchEvent(new w.MouseEvent("click",{bubbles:true})); await tick(40); } else { iz(3).open=false; iz(3).dispatchEvent(new w.Event("toggle")); await tick(30); }}
   {const S=$(w,"sazetak"), mi=S.querySelector(".saz-mini"), g0=S.querySelector(".saz-l>li"); ok(S.querySelector("details.saz-d")&&mi&&/Gradnja/.test(mi.textContent)&&/Tereti/.test(mi.textContent),"Sažetak: sklopivo zaglavlje s kratkim stanjima");
    ok(g0.classList.contains("saz-info")&&/Namjena je potvrđena; uvjeti za konkretnu gradnju nisu potvrđeni/.test(g0.textContent),"Sažetak: potvrđena namjena bez zelene kvačice (uvjeti gradnje nisu potvrđeni)");}

@@ -293,7 +293,11 @@ details.vise[open]>summary span::after{content:" ▴"}details.vise:not([open])>s
 .acc>summary>b{font-family:var(--f-mono);font-weight:500;font-size:13px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
 /* glavni izbornik: 6 numeriranih kategorija, isti stil; otvorena kategorija s naglašenim rubom i brojem */
 .izb-eb{margin:14px 0 6px}
-.pog-t{position:sticky;top:0;z-index:7;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:10px -16px 0;padding:6px 16px;background:var(--panel);border-bottom:1px solid var(--line);box-shadow:0 -8px 0 var(--panel)}.pog-t::-webkit-scrollbar{display:none}
+.pog-t{position:sticky;top:-6px;z-index:7;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:10px -16px 0;padding:10px 16px 6px;background:var(--panel);border-bottom:1px solid var(--line)}
+@media (min-width:900px){.pog-t{flex-wrap:wrap;overflow:visible}.pog-b{min-height:32px!important;padding:2px 9px!important}}
+.pog-b:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.grp[data-g=izb] details{scroll-margin-top:64px}@media (min-width:900px){.grp[data-g=izb] details{scroll-margin-top:96px}}
+.izb-topw{display:none!important}.pog-t::-webkit-scrollbar{display:none}
 .pog-b{flex:0 0 auto;font:inherit;font-size:13px;font-weight:600;min-height:40px;padding:4px 11px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--fg);cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
 .pog-b i{font-style:normal;font:600 11px/1 var(--f-mono);color:var(--muted)}.pog-b.on{background:var(--accent);border-color:var(--accent);color:var(--panel)}.pog-b.on i{color:var(--panel)}.pog-b[data-pog="0"]{color:var(--accent)}
 @media print{.pog-t{display:none}}
@@ -9192,8 +9196,11 @@ const IZB_TR=new Set([5]); // „Troškovi i investicija”: na mobitelu samo u 
 const IZB_OZN={1:"01",2:"02",3:"03",4:"04",5:"€",6:"05"};
 // traka poglavlja: kratka imena istih šest kategorija; ostaje vidljiva pri pomicanju lista
 const IZB_KR={1:"Plan",2:"Gradnja",3:"Rizici",4:"Pristup",5:"Troškovi",6:"Projekt"};
-function pogTrakaStanje(){ const t=document.getElementById("pogTraka"); if(!t) return; const o=sheet.querySelector("details.izb[open]"), n=o?o.dataset.n:"";
-  for(const b of t.querySelectorAll("[data-pog]")){ const on=b.dataset.pog===n; b.classList.toggle("on",on); if(on) b.setAttribute("aria-current","true"); else b.removeAttribute("aria-current"); } }
+// označeno je otvoreno poglavlje koje se vidi (na mobitelu je „Troškovi” samo u svojoj kartici); traka se vodoravno pomiče do označenog gumba
+function pogTrakaStanje(){ const t=document.getElementById("pogTraka"); if(!t) return;
+  const o=[...sheet.querySelectorAll("details.izb[open]")].find(d=>!isMobile()||UI.tab==="karta"||IZB_TR.has(+d.dataset.n)===(UI.tab==="troskovi")), n=o?o.dataset.n:"";
+  for(const b of t.querySelectorAll("[data-pog]")){ const on=b.dataset.pog===n; b.classList.toggle("on",on); if(on) b.setAttribute("aria-current","true"); else b.removeAttribute("aria-current");
+    if(on&&t.scrollWidth>t.clientWidth){ const l=b.offsetLeft-(t.clientWidth-b.offsetWidth)/2; t.scrollLeft=Math.max(0,l); } } }
 function pogTrakaVisina(el){ const t=document.getElementById("pogTraka"); return t&&el&&el.closest&&el.closest('.grp[data-g=izb]')&&el!==t?t.offsetHeight:0; }
 const IZB_K={kred:5,ene:2,kis:4,pogled:2,vjet:3,osun:2,ptn:5,zk:3,risks:3,rparams:2,rex:2,tipcmp:2,gp:2,calc:2,tloc:2,oku:2,skica:2,sun:2,pv:2,vrij:5,buy:5,build:5,prep:5,kd:5,costs:5,krkKd:5,total:5,scen:5,proj:6,ph3:6,ph4:6,cklist:6};
 const IZB_ID={okolisBox:3,rkBox:1,pzBox:6,"sec-rizici":3,"sec-provjere":3,"sec-upu":1,"sec-uvjeti":2,"sec-sunce":2,"sec-novac":5,"sec-pouzdanost":6,"sec-troskovi":5};
@@ -10422,7 +10429,8 @@ function setTab(t,{scrollTo}={}){
   if(t==="karta"){setState("min"); return;}
   if(UI.state==="peek") setState("half");
   // „Troškovi” na mobitelu: otvara kategoriju 05 Troškovi i investicija
-  if(!scrollTo&&t==="troskovi"){const d=sheet.querySelector('details.izb[data-n="5"]'); if(d){d.open=true; OPEN.add(d.dataset.k);} const g=d||sheet.querySelector('.grp[data-g=troskovi]'); if(g) setTimeout(()=>{const r=g.getBoundingClientRect(), sr=sheet.getBoundingClientRect(); sheet.scrollTop+=r.top-sr.top-8;},isMobile()?240:0);}
+  if(!scrollTo&&t==="troskovi"){const d=sheet.querySelector('details.izb[data-n="5"]'); if(d){d.open=true; OPEN.add(d.dataset.k);} const g=d||sheet.querySelector('.grp[data-g=troskovi]'); if(g) setTimeout(()=>{const r=g.getBoundingClientRect(), sr=sheet.getBoundingClientRect(); sheet.scrollTop+=r.top-sr.top-8-pogTrakaVisina(g);},isMobile()?240:0);}
+  setTimeout(pogTrakaStanje,0);
   if(!scrollTo&&t==="analiza") sheet.scrollTop=0;
   if(scrollTo){const el=document.getElementById(scrollTo); if(el) pogIdi(el);}
 }
