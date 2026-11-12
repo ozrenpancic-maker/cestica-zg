@@ -2738,6 +2738,10 @@ async function k73576Tests(){
   E("krkZonaSet")("M11"); E("renderKrk")(d); await tick();
   const zk=R().get("zona-korisnik"), ct=R().get("calc-tlocrt");
   ok(zk&&zk.raz==="C"&&zk.korisnik===true&&ct&&ct.raz==="C"&&R().get("calc-gbp").raz==="C"&&/Izračun je za zonu koju si odabrao \(M11\)/.test(tx())&&/nije potvrđena službenim vektorskim slojem/.test(tx()),"735/76 C: odabrana M11 je korisnički scenarij (C); tlocrt i GBP su C, uz napomenu da zona nije potvrđena");
+  // odgovor na vrhu čita i izračun za Krk: premala čestica (višestambena u M11) nije »može«; iznimka (obiteljska, slobodnostojeća) ostaje uz provjere
+  {const od=async(tip,oblik)=>{ E("KRK_TIP").tip=tip; E("KRK_TIP").oblik=oblik; E("renderKrk")(d); await tick(150); E("sazetakUpdate")(); const o=w.document.getElementById("odgovor"); return o?[o.dataset.odgovor,[...o.querySelectorAll(".odg-n>div")].map(x=>x.textContent).join("|"),(w.document.querySelector('details[data-k="krkCalc"]>summary>b')||{}).textContent||""]:null; };
+   const a=await od("stamb","slob"), b=await od("obit","slob");
+   ok(a&&/premala/.test(a[2])&&a[0]==="zapreka"&&/^Čestica ?premala/.test(a[1])&&b&&!/premala/.test(b[2])&&b[0]==="uvjetno"&&/Najveći tlocrt/.test(b[1]),"735/76 odgovor na vrhu (Krk): premala čestica daje »zapreka« ("+(a&&a[1])+"), iznimka ostaje »uz provjere«");}
   // šest scenarija samo po površini (405 m²), isti kao u neovisnom nalazu v0.24.22
   const S=Object.fromEntries((E("window.__tipCmp")||[]).map(r=>[r.key,r.stanje])), ocek={"krk|obit|slob":"izn","krk|obit|dvoj":"ok","krk|obit|ugr":"ok","krk|visobit|slob":"mala","krk|visobit|dvoj":"ok","krk|stamb|slob":"mala"};
   ok(Object.keys(ocek).every(k=>S[k]===ocek[k])&&Object.keys(S).length===6,"735/76: šest scenarija po površini (obiteljska slob. samo iznimno; dvojna i ugrađena da; višeobiteljska slob. ne, dvojna da; stambena ne): "+JSON.stringify(S));
@@ -3558,6 +3562,18 @@ async function presudaTests(){
     ok(E('OPEN.has("pres")')&&d2&&d2.open,"Ocjena: otvoreno stanje se pamti i nakon ponovnog iscrtavanja sažetka");
     const cl=E("rptClean")($(w,"presuda"));
     ok(cl&&!cl.querySelector("details,summary")&&/\d+\/100/.test(cl.textContent)&&!/Ocjena i obrazloženje/.test(cl.textContent)&&cl.querySelector(".pres-top .pres-oc")&&cl.querySelector(".pres-sub")&&cl.querySelectorAll("tr[data-kr]").length===6,"Izvještaj: blok ocjene zadržava bodove, stanje i rečenicu (nije sveden na naslov)");}
+   // gradovi bez sloja namjene: brojevi samo uz izričit uvjet, naslov ostaje »nije potvrđena«
+   {const el=h=>{const x=w.document.createElement("div"); x.innerHTML=h; return x.firstElementChild;}, c="čestica dovoljna · tlocrt do 250 m² · GBP do 900 m²", Pk={status:"žuta",kriticne:[],rizici:[]};
+    const o1=el(OH(Pk,{namjena:"warn",zapreke:[]},c,true)), o2=el(OH(Pk,{namjena:"warn",zapreke:[]},c,false)), o4=el(OH(Pk,{namjena:"warn",zapreke:[]},"",true)), o5=el(OH(Pk,{namjena:"info",zapreke:[]},c,true));
+    ok(o1.dataset.odgovor==="ograniceno"&&o1.querySelector(".odg-h").textContent===TX.ograniceno[0]&&/ako namjena dopušta gradnju/.test(o1.querySelector(".odg-uvj").textContent)&&o1.querySelectorAll(".odg-n>div").length===3&&!o2.querySelector(".odg-n")&&!o2.querySelector(".odg-uvj")&&!o4.querySelector(".odg-uvj")&&!o4.querySelector(".odg-n")&&!o5.querySelector(".odg-uvj"),"Odgovor (gradovi bez sloja namjene): brojevi odabranog pravila samo uz uvjet »ako namjena dopušta gradnju«");}
+   // gumb „Sve provjere i uvjeti” otvara i pokazuje popis provjera; ispis privremeno otvara ocjenu
+   {const cilj=w.document.querySelector("#sheet .prek")||w.document.querySelector("#sec-uvjeti"), pred=[]; for(let p=cilj;p;p=p.parentElement) if(p.tagName==="DETAILS"){ p.open=false; pred.push(p); }
+    let zvan=null; const pg=E("pogIdi"); w.pogIdi=el=>{ zvan=el; return pg(el); };
+    $(w,"odgovor").querySelector(".odg-b").dispatchEvent(new w.MouseEvent("click",{bubbles:true})); await tick(60); w.pogIdi=pg;
+    ok(cilj&&pred.length>0&&pred.every(p=>p.open)&&zvan===cilj,"Odgovor: gumb „Sve provjere i uvjeti” otvara odjeljak i vodi na popis provjera");
+    const dp=()=>w.document.querySelector("#presuda details.pres-d"); dp().open=false; dp().dispatchEvent(new w.Event("toggle")); await tick(20);
+    w.dispatchEvent(new w.Event("beforeprint")); const u=dp().open; dp().dispatchEvent(new w.Event("toggle")); w.dispatchEvent(new w.Event("afterprint")); await tick(30);
+    ok(u===true&&dp().open===false&&!E('OPEN.has("pres")'),"Ispis: ocjena se otvara samo za ispis i nakon njega vraća u sklopljeno stanje");}
    // stvarni prikaz: posebna namjena (upozorenje u retku „Smije li se graditi?”) ne smije dati »može«
    {const d3=data(w,A,"2.2."); d3.rows[0].p.Analitika="Posebna"; d3.rows[0].p.Namjena="Posebna"; d3.envelope=E("buildEnvelope")(A,d3.rows,d3.up); w.__env=d3.envelope; E("render")(d3); await tick(120);
     const o3=$(w,"odgovor"), r0=E("window.__sazRows")[0];

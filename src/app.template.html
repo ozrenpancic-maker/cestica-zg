@@ -338,7 +338,7 @@ details.saz-d>summary .eyebrow{margin:0}
 .odg-s{margin:0 0 10px;color:var(--muted);font-size:14px}
 .odg-n{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;margin:0 0 10px}.odg-n>div{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg)}
 .odg-n small{display:block;color:var(--muted);font-size:12px;line-height:1.2;margin-bottom:2px}.odg-n b{font-size:16px;line-height:1.2}
-.odg-n0{margin:0 0 10px;color:var(--muted);font-size:14px}
+.odg-uvj{margin-bottom:6px!important}.odg-n0{margin:0 0 10px;color:var(--muted);font-size:14px}
 .odg-r h4,#odgovor .pres-kn h4{margin:0 0 4px;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}.odg-r ul{margin:0 0 8px;padding-left:18px}.odg-r li{margin:2px 0}
 .odg-b{appearance:none;border:0;background:none;color:var(--accent);font-weight:700;font-size:14px;padding:4px 0;min-height:44px;cursor:pointer}
 .pres-d>summary{list-style:none;cursor:pointer}.pres-d>summary::-webkit-details-marker{display:none}.pres-hint{margin-left:auto;color:var(--accent);font-weight:700;font-size:13px}.pres-d[open] .pres-hint em{display:inline-block;transform:rotate(180deg)}
@@ -9978,10 +9978,12 @@ function odgovorBrojevi(c){ const out=[]; for(const d of String(c||"").split(" �
     else if((m=d.match(/^kis (nije propisan.*)$/i))) out.push(["Koeficijent iskoristivosti (kis)",m[1]]); }
   return out.slice(0,3); }
 // brojevi izračuna prikazuju se samo kad namjena predviđa gradnju (inače bi veličina kuće stajala uz odgovor da gradnja nije potvrđena)
-function odgovorHtml(Pz,U,calc){ const kod=odgovorKod(Pz,U,calc), T=ODG_TXT[kod], N=["da","uvjetno","zapreka"].includes(kod)&&U.namjena==="info"?odgovorBrojevi(calc):null, kn=Pz.kriticne||[];
+// U gradovima bez digitalnog sloja namjene (Split, Zadar, Osijek) namjena se ne može potvrditi, a izračun slijedi pravilo koje je korisnik
+// odabrao: brojevi se tada prikazuju uz jasan uvjet (uvjetno=true), a naslov ostaje „Gradnja kuće ovdje nije potvrđena”.
+function odgovorHtml(Pz,U,calc,uvjetno){ const kod=odgovorKod(Pz,U,calc), T=ODG_TXT[kod], uvj=kod==="ograniceno"&&uvjetno&&odgovorBrojevi(calc).length>0, N=(["da","uvjetno","zapreka"].includes(kod)&&U.namjena==="info")||uvj?odgovorBrojevi(calc):null, kn=Pz.kriticne||[];
   const riz=(Pz.rizici||[]).filter(x=>x&&!/^Podaci nisu dostupni$/.test(x)).slice(0,3);
   return `<section id="odgovor" class="odg odg-${kod}" data-odgovor="${kod}" aria-label="Može li se graditi"><p class="odg-h" role="heading" aria-level="3">${esc(T[0])}</p><p class="odg-s">${esc(T[1])}</p>`+
-    (!N?"":N.length?`<div class="odg-n">${N.map(([a,b])=>`<div><small>${esc(a)}</small><b>${esc(b)}</b></div>`).join("")}</div>`:`<p class="odg-n0">Izračun veličine kuće još nije dostupan.</p>`)+
+    (uvj?`<p class="odg-n0 odg-uvj">Prema pravilu koje si odabrao, ako namjena dopušta gradnju:</p>`:"")+(!N?"":N.length?`<div class="odg-n">${N.map(([a,b])=>`<div><small>${esc(a)}</small><b>${esc(b)}</b></div>`).join("")}</div>`:`<p class="odg-n0">Izračun veličine kuće još nije dostupan.</p>`)+
     (kn.length?`<div class="pres-kn"><h4>Kritične napomene (neovisno o ocjeni)</h4><ul>${kn.map(x=>`<li class="pres-kn-${x.tezina}">${esc(x.tekst)}</li>`).join("")}</ul></div>`:"")+
     (riz.length?`<div class="odg-r"><h4>Na što paziti</h4><ul>${riz.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`:"")+
     `<button type="button" class="odg-b" data-saz=".prek, #sec-uvjeti">Sve provjere i uvjeti ›</button></section>`; }
@@ -10030,7 +10032,7 @@ function sazetakUpdate(){
    else if(T&&sheet.querySelector('details[data-k="ptn"]'))
      rows.push({src:["ppv","ptn"],st:T.S.zad||pp?"info":"?",q:"Koliko vrijedi zemljište?",a:tl?tl+(T.S.zad?" (medijan: cijeli grad ili općina, ne ova čestica)":""):"za ovaj grad ili općinu medijan nije objavljen",go:'details[data-k="ptn"]'});}
   window.__sazRows=rows;
-  let presH=""; try{ const U=presudaUlaz(rows,d), Pz=presudaIzracun(U); window.__presuda=Pz; presH=odgovorHtml(Pz,U,sumB("calc")||sumB("krkCalc"))+presudaHtml(Pz); an("ocjena",window.__cur&&window.__cur.key); }catch(e){ console.error(e); }
+  let presH=""; try{ const U=presudaUlaz(rows,d), Pz=presudaIzracun(U); window.__presuda=Pz; presH=odgovorHtml(Pz,U,sumB("calc")||sumB("krkCalc"),!!sumB("krkCalc")&&/nije dostupna kao digitalni sloj/.test(tx(g.querySelector(".verdict"))))+presudaHtml(Pz); an("ocjena",window.__cur&&window.__cur.key); }catch(e){ console.error(e); }
   const C=[...PZREG.items.values()].filter(x=>x.raz==="C").length, ic={ok:"✓",warn:"!",no:"✕","?":"?",info:"i"};
   const srcOf=r=>{ if(r.srcTxt) return r.srcTxt; const its=(r.src||[]).map(id=>PZREG.items.get(id)).filter(Boolean); if(!its.length) return "";
     const seen=new Set(); return its.map(it=>{const t=(it.izvor||it.razlog||"").replace(/\s+/g," ").slice(0,90); const k=t+it.raz; if(seen.has(k)) return null; seen.add(k); return `${t}${it.datum?", "+it.datum.split("-").reverse().join(". ")+".":""} (${it.raz})`;}).filter(Boolean).join(" · "); };
@@ -10271,7 +10273,8 @@ function rptDone(){ if(!document.body.classList.contains("print-report")) return
   const R=document.getElementById("report"); if(R) R.remove(); const st=document.getElementById("rptPage"); if(st) st.remove(); }
 window.addEventListener("afterprint",()=>setTimeout(rptDone,100));
 // obični ispis preglednika: ocjena se ispisuje cijela (sklopljeni dio se inače ne bi ispisao)
-window.addEventListener("beforeprint",()=>{const d=document.querySelector("details.pres-d"); if(d) d.open=true;});
+window.addEventListener("beforeprint",()=>{const d=document.querySelector("details.pres-d"); if(d&&!d.open){ d.open=true; window.__presIspis=true; }});
+window.addEventListener("afterprint",()=>{ if(!window.__presIspis) return; window.__presIspis=false; OPEN.delete("pres"); const d=document.querySelector("details.pres-d"); if(d) d.open=false; setTimeout(()=>OPEN.delete("pres"),0); });
 
 // --- spremljene čestice (samo u ovom pregledniku)
 const favKey=(parcel,ll)=>parcel?`${parcel.properties.KATASTARSKA_OPCINA}|${parcel.properties.KATASTARSKA_CESTICA}`:`${ll.lat.toFixed(5)},${ll.lng.toFixed(5)}`;
