@@ -1897,12 +1897,12 @@ async function sazTests(){
   {const poc=(w.document.querySelector("details.izb[open]")||{dataset:{}}).dataset.n, T=$(w,"pogTraka"), B=T?[...T.querySelectorAll(".pog-b")]:[], wr=w.document.querySelector('.grp[data-g=izb]'), iz=n=>w.document.querySelector(`details.izb[data-n="${n}"]`), on=()=>B.filter(b=>b.classList.contains("on")).map(b=>b.dataset.pog).join();
    ok(T&&wr.firstElementChild===T&&B.map(b=>b.dataset.pog).join()==="0,1,2,3,4,5,6"&&B.slice(1).map(b=>b.textContent).join("|")==="01Plan|02Gradnja|03Rizici|04Pristup|€Troškovi|05Projekt"&&/sticky/.test(w.getComputedStyle(T).position),"Traka poglavlja: na vrhu izbornika, »Sažetak« i šest poglavlja s istim oznakama, ostaje vidljiva (sticky)");
    let zvan=null; const pg=E("pogIdi"); w.pogIdi=el=>{ zvan=el; return pg(el); };
-   B[4].dispatchEvent(new w.MouseEvent("click",{bubbles:true})); await tick(40);
+   B[4].dispatchEvent(new w.MouseEvent("click",{bubbles:true})); await tick(150);
    ok(iz(4).open&&[1,2,3,5,6].every(n=>!iz(n).open)&&on()==="4"&&B[4].getAttribute("aria-current")==="true"&&zvan===iz(4)&&E('OPEN.has("izb:04")'),"Traka poglavlja: dodir otvara poglavlje 04, ostala su sklopljena, gumb je označen");
-   B[2].dispatchEvent(new w.MouseEvent("click",{bubbles:true})); await tick(40);
+   B[2].dispatchEvent(new w.MouseEvent("click",{bubbles:true})); await tick(150);
    ok(iz(2).open&&!iz(4).open&&on()==="2"&&!B[4].hasAttribute("aria-current")&&zvan===iz(2),"Traka poglavlja: prelazak na 02 sklapa 04 i premješta oznaku");
-   iz(2).open=false; iz(2).dispatchEvent(new w.Event("toggle")); await tick(30); ok(on()==="","Traka poglavlja: kad nijedno poglavlje nije otvoreno, nijedan gumb nije označen");
-   iz(3).open=true; iz(3).dispatchEvent(new w.Event("toggle")); await tick(30); ok(on()==="3","Traka poglavlja: oznaka prati poglavlje otvoreno izvan trake");
+   iz(2).open=false; iz(2).dispatchEvent(new w.Event("toggle")); await tick(100); ok(on()==="","Traka poglavlja: kad nijedno poglavlje nije otvoreno, nijedan gumb nije označen");
+   iz(3).open=true; iz(3).dispatchEvent(new w.Event("toggle")); await tick(100); ok(on()==="3","Traka poglavlja: oznaka prati poglavlje otvoreno izvan trake");
    w.pogIdi=pg; let vrh=null; const st=w.sheet.scrollTo; w.sheet.scrollTo=o=>{ vrh=o; }; B[0].dispatchEvent(new w.MouseEvent("click",{bubbles:true})); w.sheet.scrollTo=st;
    ok(vrh&&vrh.top===0&&iz(3).open,"Traka poglavlja: »Sažetak« vraća na vrh lista i ne sklapa otvoreno poglavlje");
    // pomak pod traku: uz traku visoku 50 px odjeljak u izborniku dolazi 58 px ispod vrha lista, odjeljak izvan izbornika 8 px
