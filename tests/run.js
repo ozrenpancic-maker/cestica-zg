@@ -3626,6 +3626,8 @@ async function presudaTests(){
    btn("nova").dispatchEvent(new w.MouseEvent("click",{bubbles:true})); await tick(20); ok(w.document.activeElement===btn("nova"),"Što planiraš: nakon odabira fokus je na odabranom gumbu");
    // plan i zahvat iz izračuna: proturječje se kaže
    {const zs=w.document.querySelector("#sheet #zahvatSel"); if(zs){ const v0=zs.value; zs.value="dogr"; E('planPostavi("nova")'); const t1=PL().querySelector(".plan-z"); zs.value="nova"; E('planPostavi("postojeca")'); const t2=PL().querySelector(".plan-z"); E('planPostavi("nova")'); const t3=PL().querySelector(".plan-z"); zs.value=v0;
+     E('planPostavi("postojeca")'); const nm=PL().querySelector(".plan-n").textContent; E('planPostavi("nova")'); const nn=PL().querySelector(".plan-n").textContent;
+     ok(/ukupna investicija i dalje uključuje/.test(nm)&&!/ukupna investicija/.test(nn),"Što planiraš: napomena o ukupnoj investiciji samo kad je skriven odjeljak s iznosom (zemljište, priprema, okućnica)");
      ok(t1&&/»dogradnja«/.test(t1.textContent)&&t2&&/»nova gradnja«/.test(t2.textContent)&&!t3,"Što planiraš: kad se plan i zahvat u izračunu ne slažu, piše koji zahvat izračun slijedi");} else ok(false,"Što planiraš: list nema izbornik zahvata");}
    // vrijednost iz localStorage koja nije plan (i imena svojstava objekta) daje »Sve«
    ok(["constructor","toString","__proto__","xyz",""].every(v=>!E("planIma")(v))&&E("planIma")("kupnja"),"Što planiraš: samo poznati planovi (ne i svojstva objekta) prolaze provjeru");
