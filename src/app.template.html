@@ -358,6 +358,12 @@ details.pazi>summary>span{flex:1 1 auto}details.pazi>summary>b{font:500 12px/1.3
 .pazi-i.pazi-no{border-left-color:var(--no)}.pazi-i.pazi-warn{border-left-color:var(--warn)}.pazi-i b{display:block;font-size:14px;line-height:1.3}.pazi-i span{display:block;font-size:13px;color:var(--muted);margin-top:2px}.pazi-i small{display:block;font-size:12px;color:var(--accent);margin-top:3px}
 .pazi-i:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .pazi-cilj{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px;transition:outline-color .3s}
+.plan{margin:0 0 10px}.plan-q{margin:0 0 6px;font-weight:700;font-size:15px}
+.plan-b{display:flex;flex-wrap:wrap;gap:6px}
+.plan-o{font:inherit;font-size:14px;font-weight:600;min-height:44px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--fg);cursor:pointer}
+.plan-o.on{background:var(--accent);border-color:var(--accent);color:var(--panel)}.plan-o:focus-visible,.plan-sve:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.plan-n{margin:6px 0 0;font-size:13px;color:var(--muted)}.plan-sve{appearance:none;border:0;background:none;padding:0 2px;min-height:32px;font:inherit;font-weight:700;color:var(--accent);cursor:pointer}
+@media print{.plan{display:none}}
 .odg-b{appearance:none;border:0;background:none;color:var(--accent);font-weight:700;font-size:14px;padding:4px 0;min-height:44px;cursor:pointer}
 .pres-d>summary{list-style:none;cursor:pointer}.pres-d>summary::-webkit-details-marker{display:none}.pres-hint{margin-left:auto;color:var(--accent);font-weight:700;font-size:13px}.pres-d[open] .pres-hint em{display:inline-block;transform:rotate(180deg)}
 #presuda details.pres-d{margin-top:0;border-top:0;padding-top:0;font-size:inherit}#presuda summary.pres-top{color:inherit;font-weight:inherit}
@@ -9299,7 +9305,7 @@ function scrollRestore(A){
   const top=sheet.getBoundingClientRect().top, r=e.getBoundingClientRect(); if(!r.height) return; sheet.scrollTop+=(r.top-top)-A.a.off;
 }
 // otvori odjeljak (i sve iznad njega) i pomakni se do njega
-function pogIdi(el){ if(!el) return; if(modSkriven(el)) modPostavi(true); for(let p=el;p;p=p.parentElement) if(p.tagName==="DETAILS") p.open=true;
+function pogIdi(el){ if(!el) return; if(modSkriven(el)) modPostavi(true); if(planSkriven(el)) planPostavi("sve"); for(let p=el;p;p=p.parentElement) if(p.tagName==="DETAILS") p.open=true;
   const kz=el.closest("details.izb"), n=kz?+kz.dataset.n:0, tab=kz?(IZB_TR.has(n)?"troskovi":"analiza"):(UI.tab==="troskovi"?"troskovi":"analiza"); if(isMobile()&&UI.tab!==tab) setTab(tab,{scrollTo:"__none"});
   if(isMobile()&&UI.state!=="full") setState("full");
   setTimeout(()=>{const r=el.getBoundingClientRect(), sr=sheet.getBoundingClientRect(); sheet.scrollTop+=r.top-sr.top-8-pogTrakaVisina(el);},isMobile()?260:30); }
@@ -9827,6 +9833,27 @@ function kredUpdate(){
 }
 sheet.addEventListener("input",e=>{ const t=e.target, k={kVl:"vl",kGod:"god",kKam:"kam"}[t&&t.id]; if(!k) return; const S=kredGet(), v=parseFloat(String(t.value).replace(",","."));
   if(Number.isFinite(v)) S[k]=v; else delete S[k]; kredSet(S); clearTimeout(KRED.tt); KRED.tt=setTimeout(kredUpdate,400); });
+// ================= ŠTO PLANIRAŠ? =================
+// Prvo pitanje na listu čestice. Odgovor samo SKRIVA odjeljke koji se ne tiču tog plana (CSS na body.plan-…, unutar #sheet);
+// izračuni, upozorenja, sažetak i popis „Na što paziti” ostaju isti, a izvještaj i ispis sadrže sve. Kad dodir (sažetak, popis,
+// prečac) vodi na skriveni odjeljak, prikaz se vraća na „Sve”. Odabir se pamti samo u ovom pregledniku.
+const PLANOVI=[["sve","Sve",""],["nova","Nova kuća","gradnja na praznoj ili očišćenoj čestici"],["postojeca","Postojeća kuća","dogradnja, rekonstrukcija ili obnova"],["kupnja","Prije kupnje","provjera zemljišta prije kupnje"]];
+const PLAN_SKR={nova:["kuca1968","bezDozvole","poticaji"],
+  postojeca:["buy","cklist","tipcmp","gp","mat","oku","skica","isk","prep","pogled","osun","scen"],
+  kupnja:["bezDozvole","poticaji","mat","ene","kis","pv","oku","skica","isk","prep","osun","pogled","sun"]};
+let PLAN=(()=>{try{const v=localStorage.getItem("plan"); return PLAN_SKR[v]?v:"sve";}catch(e){return "sve";}})();
+function planCss(){ return Object.entries(PLAN_SKR).map(([p,L])=>L.map(k=>`body.plan-${p} #sheet details[data-k="${k}"],body.plan-${p} #sheet .izb-c[data-izb-go='details[data-k="${k}"]']`).join(",\n")+"{display:none!important}").join("\n")+"\n@media print{"+Object.keys(PLAN_SKR).map(p=>`body.plan-${p} #sheet details[data-k]`).join(",")+"{display:revert!important}}"; }
+function planAktivan(){ return !window.__slobodno&&PLAN_SKR[PLAN]?PLAN:"sve"; }
+function planPrimijeni(){ const a=planAktivan(); for(const p of Object.keys(PLAN_SKR)) document.body.classList.toggle("plan-"+p,p===a); }
+// odjeljci koje odabrani plan stvarno skriva na ovom listu (samo oni koji postoje i nisu već skriveni osnovnim načinom)
+function planSkriveno(){ const a=planAktivan(); if(a==="sve") return []; return PLAN_SKR[a].filter(k=>{ const e=sheet.querySelector(`details[data-k="${k}"]`); return e&&!modSkriven(e); }); } // ono što osnovni način već skriva ne broji se
+function planSkriven(el){ const a=planAktivan(); if(a==="sve"||!el) return false; for(let p=el;p&&p!==document.body;p=p.parentElement) if(p.dataset&&p.dataset.k&&PLAN_SKR[a].includes(p.dataset.k)) return true; return false; }
+function planPostavi(v){ PLAN=PLAN_SKR[v]?v:"sve"; try{localStorage.setItem("plan",PLAN)}catch(e){} planPrimijeni(); try{sazetakUpdate()}catch(e){} }
+function planHtml(){ const a=planAktivan(), n=planSkriveno().length;
+  return `<div class="plan" role="group" aria-label="Što planiraš?"><p class="plan-q">Što planiraš?</p><div class="plan-b">${PLANOVI.map(([v,t,o])=>`<button type="button" class="plan-o${v===a?" on":""}" data-plan="${v}" aria-pressed="${v===a}"${o?` title="${esc(o)}"`:""}>${esc(t)}</button>`).join("")}</div>`+
+    (a!=="sve"?`<p class="plan-n">${n?`Skriveno ${n} ${n===1?"odjeljak koji se ne odnosi":n<5?"odjeljka koja se ne odnose":"odjeljaka koji se ne odnose"} na to; njihova upozorenja ostaju u popisu „Sva upozorenja na jednom mjestu”. `:"Na ovom listu nema odjeljaka za skrivanje. "}<button type="button" class="plan-sve" data-plan="sve">Prikaži sve</button></p>`:"")+`</div>`; }
+document.addEventListener("click",e=>{ const b=e.target&&e.target.closest&&e.target.closest("[data-plan]"); if(!b) return; planPostavi(b.dataset.plan); });
+(()=>{ const st=document.createElement("style"); st.id="planCss"; st.textContent=planCss(); document.head.appendChild(st); planPrimijeni(); })();
 // ================= OSNOVNI I NAPREDNI NAČIN =================
 // Pri svakom pokretanju aplikacija je u osnovnom načinu; prekidač „Napredno” u zaglavlju prikazuje sve napredne alate.
 // Osnovni način samo SKRIVA prikaz (CSS na body.osnovno): izračuni, unosi i spremanje rade jednako, pa ukupni trošak
@@ -10073,6 +10100,7 @@ sheet.addEventListener("toggle",e=>{ const d=e.target; if(!d.matches||!d.matches
 // ================= SAŽETAK NA VRHU ANALIZE =================
 // Pet kratkih odgovora; dodir otvara odgovarajući odjeljak. Svaki odgovor je preuzet iz odjeljka ispod (isti izvor i oznaka).
 function sazetakUpdate(){
+  try{planPrimijeni()}catch(e){}
   if(window.__slobodno){ const b=document.getElementById("sazetak"); if(b) b.remove(); return; } // besplatni pregled: bez ocjene i sažetka
   const g=sheet.querySelector('.grp[data-g=sum]'), d=curData(); if(!g||!d||!d.parcel) return;
   let box=document.getElementById("sazetak");
@@ -10123,7 +10151,7 @@ function sazetakUpdate(){
   // na mobitelu je sažetak sklopljen u jedan redak sa stanjima; dodir ga proširuje (stanje se pamti)
   const kratko={"Smije li se graditi?":"Gradnja","Koliko velika kuća?":"Kuća","Ima li tereta?":"Tereti","Pristup i komunalije":"Pristup","Koliko bi koštalo?":"Trošak","Priroda i poplave":"Priroda","Koliko vrijedi zemljište?":"Vrijednost"};
   const sOpen=OPEN.has("saz")||(!isMobile()&&!OPEN.has("saz-zatv")), mini=rows.map(r=>`<span class="saz-m saz-${r.st==="?"?"q":r.st}"><i aria-hidden="true">${ic[r.st]}</i>${esc(kratko[r.q]||r.q)}</span>`).join("");
-  const h=presH+`<details class="saz-d" data-k="saz"${sOpen?" open":""}><summary><span class="eyebrow">Sažetak čestice</span><span class="saz-hint">${sOpen?"Sakrij ▴":"Prikaži odgovore ▾"}</span><span class="saz-mini">${mini}</span><em aria-hidden="true">▾</em></summary><ul class="saz-l">${rows.map(r=>`<li class="saz-${r.st==="?"?"q":r.st}"><button type="button" class="saz-b" data-saz="${esc(r.go)}"><i aria-hidden="true">${ic[r.st]}</i><span><b>${esc(r.q)}</b><small>${esc(r.a)}</small>${srcOf(r)?`<small class="saz-src">${esc(srcOf(r))}</small>`:""}</span><em aria-hidden="true">›</em></button></li>`).join("")}</ul>`+
+  const h=planHtml()+presH+`<details class="saz-d" data-k="saz"${sOpen?" open":""}><summary><span class="eyebrow">Sažetak čestice</span><span class="saz-hint">${sOpen?"Sakrij ▴":"Prikaži odgovore ▾"}</span><span class="saz-mini">${mini}</span><em aria-hidden="true">▾</em></summary><ul class="saz-l">${rows.map(r=>`<li class="saz-${r.st==="?"?"q":r.st}"><button type="button" class="saz-b" data-saz="${esc(r.go)}"><i aria-hidden="true">${ic[r.st]}</i><span><b>${esc(r.q)}</b><small>${esc(r.a)}</small>${srcOf(r)?`<small class="saz-src">${esc(srcOf(r))}</small>`:""}</span><em aria-hidden="true">›</em></button></li>`).join("")}</ul>`+
     (C?`<button type="button" class="saz-c" data-saz="#sec-pouzdanost">Prije kupnje provjeri ${C} ${C===1?"stavku označenu":"stavki označenih"} s C ›</button>`:"")+`</details>`;
   if(box.dataset.h!==h){keepPos(()=>{box.innerHTML=h; box.dataset.h=h;});}
   const cards=g.querySelector(".cards"); if(cards) cards.style.display="none"; // stare kartice sažetka zamijenio je ovaj sažetak
@@ -10149,7 +10177,7 @@ function rptClean(src,bez){
   // odgovori sažetka su gumbi (vode na odjeljak): u izvještaju ostaje sadržaj, bez gumba
   n.querySelectorAll("button.saz-b").forEach(b=>{ const d=document.createElement("div"); d.className=b.className; [...b.childNodes].forEach(c=>d.appendChild(c)); b.replaceWith(d); });
   // isto što ispis skriva (@media print), jer PDF iz preglednika (html2canvas) koristi pravila za zaslon; i dijelovi sučelja
-  n.querySelectorAll("details.pazi,details.vise>summary,details.izb>summary,.pog-t,.izb-chips,.izb-topw,.izb-back,.pr-box,.pr-zak,#prMail,#prBox,#dosjeProg,.t-handle,a.ib,.saz-hint,.saz-mini,.saz-c").forEach(e=>e.remove());
+  n.querySelectorAll(".plan,details.pazi,details.vise>summary,details.izb>summary,.pog-t,.izb-chips,.izb-topw,.izb-back,.pr-box,.pr-zak,#prMail,#prBox,#dosjeProg,.t-handle,a.ib,.saz-hint,.saz-mini,.saz-c").forEach(e=>e.remove());
   n.querySelectorAll("button,.actions,.noprint,input[type=file],.spin,#printMap,#printHead,.cards,script,.lgd-wrap,.retry").forEach(e=>e.remove());
   n.querySelectorAll("input,select,textarea").forEach(el=>{ let v="", muted=false;
     if(el.tagName==="SELECT"){const opt=el.options[el.selectedIndex]; v=opt?opt.textContent:"";}

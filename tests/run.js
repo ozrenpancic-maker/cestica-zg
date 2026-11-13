@@ -3552,7 +3552,7 @@ async function presudaTests(){
   w.fetch=()=>Promise.reject(new Error("bez mreže u testu"));
   w.__env=d.envelope; E("render")(d); await tick(120);
   const S=$(w,"sazetak"), pr=$(w,"presuda");
-  {const od=S.firstElementChild, kod=od&&od.dataset.odgovor, P0=E("window.__presuda");
+  {const od=S.firstElementChild&&S.firstElementChild.classList.contains("plan")?S.firstElementChild.nextElementSibling:null, kod=od&&od.dataset.odgovor, P0=E("window.__presuda");
    ok(od&&od.id==="odgovor"&&od.nextElementSibling===pr&&kod==="uvjetno"&&od.querySelector(".odg-h").textContent.trim()===E("ODG_TXT")[kod][0],"Odgovor na vrhu: prva kartica sažetka, odmah iznad ocjene, s naslovom za stanje »"+kod+"«");
    const n=[...od.querySelectorAll(".odg-n>div")].map(x=>x.textContent), c=(w.document.querySelector('details[data-k="calc"]>summary>b')||{}).textContent||"";
    ok(n.length>=1&&n.length<=3&&n.every(x=>c.includes(x.replace(/^(Čestica|Najveći tlocrt|Ukupna površina \(GBP\))/,"").trim()))&&/^Čestica/.test(n[0])&&/^Najveći tlocrtdo \d+ m²$/.test(n[1])&&/^Ukupna površina \(GBP\)do \d+ m²$/.test(n[2]),"Odgovor: brojevi su preuzeti iz sažetka izračuna ("+n.join(" | ")+")");
@@ -3599,6 +3599,29 @@ async function presudaTests(){
     const o3=$(w,"odgovor"), r0=E("window.__sazRows")[0];
     ok(r0.st==="warn"&&o3&&o3.dataset.odgovor==="ograniceno"&&!/Može se graditi/.test(o3.textContent)&&!o3.querySelector(".odg-n"),"Odgovor u aplikaciji: posebna namjena (upozorenje) daje »Gradnja kuće ovdje nije potvrđena«, bez brojeva kuće");
     w.__env=d.envelope; E("render")(d); await tick(120);}}
+  // „Što planiraš?”: prvo pitanje na listu; odabir samo skriva odjeljke koji se ne tiču plana, upozorenja i izračuni ostaju
+  {const PL=()=>$(w,"sazetak").querySelector(".plan"), btn=v=>PL().querySelector(`[data-plan="${v}"]`), vis=k=>{const e=w.document.querySelector(`#sheet details[data-k="${k}"]`); return e?w.getComputedStyle(e).display!=="none":null;}, SKR=E("PLAN_SKR"), cnt=()=>(E("window.__pazi")||[]).length;
+   E('planPostavi("sve")'); const n0=cnt(), calc0=(w.document.querySelector('details[data-k="calc"]>summary>b')||{}).textContent;
+   ok(PL()&&$(w,"sazetak").firstElementChild===PL()&&[...PL().querySelectorAll("[data-plan]")].map(b=>b.dataset.plan).join()==="sve,nova,postojeca,kupnja"&&btn("sve").classList.contains("on")&&btn("sve").getAttribute("aria-pressed")==="true"&&!PL().querySelector(".plan-n"),"Što planiraš: prvo pitanje na vrhu sažetka, četiri odgovora, zadano »Sve« bez skrivanja");
+   const prisutni=Object.fromEntries(Object.entries(SKR).map(([p,L])=>[p,L.filter(k=>w.document.querySelector(`#sheet details[data-k="${k}"]`))]));
+   ok(prisutni.postojeca.length>=3&&prisutni.kupnja.length>=3,"Što planiraš: na testnom listu postoje odjeljci za skrivanje ("+prisutni.postojeca.join(",")+" | "+prisutni.kupnja.join(",")+")");
+   btn("postojeca").dispatchEvent(new w.MouseEvent("click",{bubbles:true})); await tick(30);
+   ok(w.document.body.classList.contains("plan-postojeca")&&btn("postojeca").classList.contains("on")&&prisutni.postojeca.every(k=>vis(k)===false)&&["calc","zk","build","total"].filter(k=>vis(k)!==null).every(k=>vis(k)===true)&&(()=>{const nv=prisutni.postojeca.filter(k=>!E("modSkriven")(w.document.querySelector(`#sheet details[data-k="${k}"]`))).length; return nv>0&&nv<prisutni.postojeca.length&&new RegExp("Skriveno "+nv+" ").test(PL().querySelector(".plan-n").textContent);})()&&PL().querySelector(".plan-n .plan-sve"),"Što planiraš: »Postojeća kuća« skriva odjeljke nove gradnje i kupnje ("+prisutni.postojeca.length+"), izračun, ZK, rizici i troškovi ostaju; piše koliko je skriveno i nudi »Prikaži sve«");
+   ok(cnt()===n0&&((w.document.querySelector('details[data-k="calc"]>summary>b')||{}).textContent===calc0)&&$(w,"odgovor"),"Što planiraš: popis upozorenja, izračun i odgovor na vrhu ne mijenjaju se");
+   const ch=w.document.querySelector(`.izb-c[data-izb-go='details[data-k="${prisutni.postojeca[0]}"]']`); ok(!ch||w.getComputedStyle(ch).display==="none","Što planiraš: prečac na skriveni odjeljak je skriven");
+   // dodir koji vodi na skriveni odjeljak vraća prikaz na »Sve«
+   E("pogIdi")(w.document.querySelector(`#sheet details[data-k="${prisutni.postojeca[0]}"]`)); await tick(30);
+   ok(!w.document.body.classList.contains("plan-postojeca")&&E("PLAN")==="sve"&&vis(prisutni.postojeca[0])===true&&btn("sve").classList.contains("on"),"Što planiraš: dodir na skriveni odjeljak vraća prikaz na »Sve«");
+   btn("kupnja").dispatchEvent(new w.MouseEvent("click",{bubbles:true})); await tick(30);
+   let ls=null; try{ls=w.localStorage.getItem("plan")}catch(e){}
+   ok(prisutni.kupnja.every(k=>vis(k)===false)&&ls==="kupnja","Što planiraš: »Prije kupnje« skriva svoje odjeljke; odabir se pamti u pregledniku");
+   E("render")(d); await tick(120); ok(w.document.body.classList.contains("plan-kupnja")&&PL()&&btn("kupnja").classList.contains("on"),"Što planiraš: odabir ostaje nakon ponovnog prikaza lista");
+   // izvještaj i ispis sadrže sve
+   {const rp=w.document.createElement("div"); rp.appendChild(E("rptClean")(w.document.querySelector("#sheet .grp[data-g=izb]")||sheet)); w.document.body.appendChild(rp); const k=prisutni.kupnja[0], e=rp.querySelector(`[data-k="${k}"],.rpt-sub`);
+    const css=w.document.getElementById("planCss").textContent; ok(!rp.querySelector(".plan")&&/@media print\{[^}]*body\.plan-kupnja #sheet details\[data-k\][^}]*\{display:revert!important\}\}/.test(css)&&[...css.matchAll(/body\.plan-\w+ ([^,{]+)/g)].every(m=>m[1].startsWith("#sheet ")),"Što planiraš: pravila skrivanja vrijede samo unutar lista (ne u izvještaju), u ispisu je sve prikazano"); rp.remove();}
+   // slobodni prikaz: bez pitanja i bez skrivanja
+   w.__slobodno=true; E("planPrimijeni")(); ok(!w.document.body.classList.contains("plan-kupnja")&&E("planSkriveno")().length===0,"Što planiraš: u slobodnom prikazu se ništa ne skriva"); w.__slobodno=false;
+   E('planPostavi("sve")'); await tick(20); ok(!/plan-/.test(w.document.body.className)&&!PL().querySelector(".plan-n"),"Što planiraš: »Sve« prikazuje sve");}
   // „Sva upozorenja na jednom mjestu”: popis skuplja ono što već piše u odjeljcima, po težini, i vodi na mjesto stavke
   {const SK=E("paziSkupi"), PH=E("paziHtml"), od=()=>$(w,"odgovor"), pz=()=>od().querySelector("details.pazi"), red={no:0,warn:1,nep:2}, tx=e=>e.textContent.replace(/\s+/g," ").trim();
    E('OPEN.delete("pazi")'); E("sazetakUpdate")(); let L=E("window.__pazi");
