@@ -1104,7 +1104,7 @@ function piSazetakHtml(ids,opt){
     const sukob=(x.lanac||[]).some(k=>k.uskladenost==="sukob"), vl=o.zasto.filter(z=>!zaj.some(k=>z.startsWith(k.karika+":")||z.startsWith(k.karika+" ")));
     const upoz=x.blokada?kratko(x.blokada):otv.length?kratko(otv[0]):(o.zasto.find(z=>!zaj.some(k=>z.startsWith(k.karika+":")))||(o.razina==="uvjetno"?"ovisi o nepotvrđenim zajedničkim ulazima":o.zasto[0]||""));
     for(const t of otv) provjeri.push(t);
-    h+=`<details class="pis-r" role="row" data-pi-id="${esc(x.id)}"><summary><span role="cell"><b>${esc(x.naziv.replace(/ \((teorijski[^)]*|[^)]*kuća[^)]*|[^)]*građevina[^)]*)\)/,""))}</b></span><span role="cell">${esc(x.sazetak||x.vrijednost||(sukob?"nerazriješen sukob pravila":x.blokada?"ne računa se":"–"))}</span><span role="cell">${piStTag(x)} ${pzTag(x)}</span><small class="fx pis-u">${esc(upoz)}</small></summary><div class="pis-b">`;
+    h+=`<details class="pis-r" role="row" data-pi-id="${esc(x.id)}"${x.blokada?` data-pi-blok="${esc(x.blokada)}"`:""}><summary><span role="cell"><b>${esc(x.naziv.replace(/ \((teorijski[^)]*|[^)]*kuća[^)]*|[^)]*građevina[^)]*)\)/,""))}</b></span><span role="cell">${esc(x.sazetak||x.vrijednost||(sukob?"nerazriješen sukob pravila":x.blokada?"ne računa se":"–"))}</span><span role="cell">${piStTag(x)} ${pzTag(x)}</span><small class="fx pis-u">${esc(upoz)}</small></summary><div class="pis-b">`;
     if(vlastite.length) h+=`<ol class="zi">${vlastite.map(piKarikaLi).join("")}</ol>`;
     if(x.metoda) h+=`<p class="meta" style="margin:2px 0">Izračun: ${esc(x.metoda)}</p>`;
     if(x.uvjeti&&x.uvjeti.length) h+=`<p class="meta" style="margin:2px 0">Uvjeti i iznimke: ${esc(x.uvjeti.map(u=>u.tekst+(u.razrijeseno?" (razriješeno)":" (otvoreno)")).join("; "))}</p>`;
@@ -1527,7 +1527,7 @@ function krkRulesHtml(d,S0){
   const sel=(id,opts,v)=>`<select id="${id}" class="bsel">${opts.map(o=>`<option value="${o[0]}"${o[0]===v?" selected":""}>${esc(o[1])}</option>`).join("")}</select>`;
   if(isUpu||RS.zone){
     h+=`<div class="kd" style="margin:6px 0"><label for="krkZona">${esc(RS.zonaLabel||"Zona u UPU-u")}</label>${sel("krkZona",[["","— odaberi zonu —"],...RS.zone],zona)}</div>${uzUvjetiBox()}<p class="flag" data-zona-nepotvrdena="1"><b>Zona čestice nije automatski potvrđena.</b> Izračun je za zonu koju si odabrao (${esc(zona)}). Detaljna zona nije potvrđena službenim vektorskim slojem ni lokacijskom informacijom (to je odvojeno od pravne aktualnosti plana).</p><p class="meta">${esc(RS.zonaNapomena)}</p>`+(RS.upozorenja||[]).map(n=>`<p class="flag">${esc(n)}</p>`).join("");
-    if(zona==="druga"){h+=`<p class="hint">${esc(RS.drugaZona||"Za ovu zonu uvjeti za obiteljske i višeobiteljske kuće nisu obrađeni.")}</p>`; piBlok("blok-uvjeti","Uvjeti gradnje (izračun)","za odabranu zonu uvjeti za kuće nisu obrađeni",[...piBase(RS,I),piK("detaljna zona",PZREG.items.get("zona-korisnik"))]); return h;}
+    if(zona==="druga"){h+=`<p class="hint">${esc(RS.drugaZona||"Za ovu zonu uvjeti za obiteljske i višeobiteljske kuće nisu obrađeni.")}</p>`; piBlok("blok-uvjeti","Uvjeti gradnje (izračun)",RS.drugaZona||"za odabranu zonu uvjeti za kuće nisu obrađeni",[...piBase(RS,I),piK("detaljna zona",PZREG.items.get("zona-korisnik"))]); return h;}
     const ZS=RS.simulator&&RS.simulator.zastita;
     if(ZS){const zv=krkZastGet();
       h+=`<div class="kd" style="margin:6px 0"><label for="krkZast">Zona zaštite (karta ${esc(ZS.karta)})</label>${sel("krkZast",ZS.opcije,zv)}</div>`;
@@ -10027,7 +10027,8 @@ const PAZI_NEP=/nisu dostupn|nije dostup|nije odgovori|ne odgovara|nije dohvać|
 const PAZI_UPUTA=/^(?:[^:]{0,30}:\s*)?(odaberi|upiši|izaberi|postavi|unesi)\b/i; // upute sučelja nisu upozorenja o čestici
 const PAZI_KRAT=/(?:^|[\s(„»"])(čl|st|toč|npr|tj|br|str|sl|tzv|odn|usp|ul|kč|max|min|cca|tel|k\.\s?o|k\.\s?č|d\.\s?o\.\s?o)\.$|(?:čl|st|toč|br|str)\.\s?\d+[a-z]?\.$/i;
 // razlog blokade koji je zabrana iz plana (a ne nedostajući podatak): stavka je zapreka
-const PAZI_ZABRANA=/ne predviđa|nije dozvoljen|nije dopušten|zabranjen|nije u građevinskom području|ovdje ne vrijede|tek nakon izrade/i;
+// (fraze iz poruka aplikacije i iz teksta pravila u rules_krk.json: drugaZona, neizgrađeni dio; „izračun nije moguć / nije obrađen” nije zabrana)
+const PAZI_ZABRANA=/ne predviđa|nije predviđen|nije dozvoljen|nije dopušten|zabranjen|nije u građevinskom području|ne vrijede|ne primjenjuju|ne mogu se ishoditi|nije moguće planirati|tek (?:nakon|prema|uz|kroz)|posrednom primjenom|upućuje na urbanistički|samo (?:u|na) izgrađen|samo kroz plan|samo u zon|ne navodi ovu zonu/i;
 const PAZI_GR=[["no","Zapreke i potvrđena ograničenja"],["warn","Upozorenja"],["nep","Nije provjereno ili podaci nisu dostupni"]];
 // prva rečenica: kraj je točka, uskličnik ili upitnik iza kojeg slijedi veliko slovo ili navodnik, a ispred nije kratica (čl., npr., k.o. …)
 function paziPrva(t,n){ let r=t; const re=/[.!?](?=\s+[A-ZČĆŽŠĐ„»(])/g; let m; while((m=re.exec(t))){ const do_=t.slice(0,m.index+1); if(PAZI_KRAT.test(do_)) continue; r=do_; break; }
@@ -10054,7 +10055,7 @@ function paziSkupi(){ const out=[], seen=new Set(), tx=e=>(e?e.textContent:"").r
     else if(el.matches("summary>b.bad")) add(el.closest("details"),"no",modul(el),prva(tx(el),170));
     // pokazatelj koji se ne računa (blokiran nedostajućim ili nepotvrđenim ulazom): neprovjereno, s nazivom pokazatelja i razlogom
     else if(el.matches("em.kind[data-pi=blokirano]")){ const r=el.closest("details.pis-r"), sm=r.querySelector(":scope>summary"), c=sm.querySelectorAll(":scope>span[role=cell]");
-      const rz=tx(sm.querySelector(".pis-u")); add(r,PAZI_ZABRANA.test(rz)?"no":"nep",tx(c[0]&&c[0].querySelector("b")||c[0])+": "+tx(c[1]),prva(rz,170)); }
+      const rz=tx(sm.querySelector(".pis-u")); add(r,PAZI_ZABRANA.test(r.dataset.piBlok||rz)?"no":"nep",tx(c[0]&&c[0].querySelector("b")||c[0])+": "+tx(c[1]),prva(rz,170)); }
     else { const t=bez(el,"button,a"); if(!t) continue; if(el.classList.contains("flag")&&PAZI_UPUTA.test(t)) continue; poruka(el,PAZI_NEP.test(t)?"nep":"warn",t); } }
   // ocjene korisnikove kuće iz simulatora, spremljenih scenarija i poticaja ovise o onome što je korisnik upisao, ne o čestici: najviše upozorenje
   for(const x of out) if(x.tez==="no"&&x.el.closest('details[data-k="tloc"],details[data-k="scen"],#potOut')) x.tez="warn";
