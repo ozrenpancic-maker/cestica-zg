@@ -3601,6 +3601,7 @@ async function presudaTests(){
     w.__env=d.envelope; E("render")(d); await tick(120);}}
   // „Što planiraš?”: prvo pitanje na listu; odabir samo skriva odjeljke koji se ne tiču plana, upozorenja i izračuni ostaju
   {const PL=()=>$(w,"sazetak").querySelector(".plan"), btn=v=>PL().querySelector(`[data-plan="${v}"]`), vis=k=>{const e=w.document.querySelector(`#sheet details[data-k="${k}"]`); return e?w.getComputedStyle(e).display!=="none":null;}, SKR=E("PLAN_SKR"), cnt=()=>(E("window.__pazi")||[]).length;
+   ok(JSON.stringify(SKR)===JSON.stringify({nova:["kuca1968","bezDozvole","poticaji"],postojeca:["buy","cklist","mat","oku","skica","isk","prep","pogled","osun","scen"],kupnja:["poticaji","mat","kis","pv","oku","skica","isk","prep"]}),"Što planiraš: popis skrivanja je dogovoreni (postojeća kuća zadržava teorijski prostor i usporedbu tipova; kupac zadržava sunce, pogled i energiju)");
    E('planPostavi("sve")'); const n0=cnt(), calc0=(w.document.querySelector('details[data-k="calc"]>summary>b')||{}).textContent;
    ok(PL()&&$(w,"sazetak").firstElementChild===PL()&&[...PL().querySelectorAll("[data-plan]")].map(b=>b.dataset.plan).join()==="sve,nova,postojeca,kupnja"&&btn("sve").classList.contains("on")&&btn("sve").getAttribute("aria-pressed")==="true"&&!PL().querySelector(".plan-n"),"Što planiraš: prvo pitanje na vrhu sažetka, četiri odgovora, zadano »Sve« bez skrivanja");
    const prisutni=Object.fromEntries(Object.entries(SKR).map(([p,L])=>[p,L.filter(k=>w.document.querySelector(`#sheet details[data-k="${k}"]`))]));
@@ -3617,8 +3618,17 @@ async function presudaTests(){
    ok(prisutni.kupnja.every(k=>vis(k)===false)&&ls==="kupnja","Što planiraš: »Prije kupnje« skriva svoje odjeljke; odabir se pamti u pregledniku");
    E("render")(d); await tick(120); ok(w.document.body.classList.contains("plan-kupnja")&&PL()&&btn("kupnja").classList.contains("on"),"Što planiraš: odabir ostaje nakon ponovnog prikaza lista");
    // izvještaj i ispis sadrže sve
-   {const rp=w.document.createElement("div"); rp.appendChild(E("rptClean")(w.document.querySelector("#sheet .grp[data-g=izb]")||sheet)); w.document.body.appendChild(rp); const k=prisutni.kupnja[0], e=rp.querySelector(`[data-k="${k}"],.rpt-sub`);
-    const css=w.document.getElementById("planCss").textContent; ok(!rp.querySelector(".plan")&&/@media print\{[^}]*body\.plan-kupnja #sheet details\[data-k\][^}]*\{display:revert!important\}\}/.test(css)&&[...css.matchAll(/body\.plan-\w+ ([^,{]+)/g)].every(m=>m[1].startsWith("#sheet ")),"Što planiraš: pravila skrivanja vrijede samo unutar lista (ne u izvještaju), u ispisu je sve prikazano"); rp.remove();}
+   {const rp=E("rptClean")($(w,"sazetak")), css=w.document.getElementById("planCss").textContent;
+    ok(/Što planiraš/.test($(w,"sazetak").textContent)&&!/Što planiraš/.test(rp.textContent)&&!rp.querySelector(".plan")&&/^@media screen\{/.test(css)&&!/print|revert/.test(css)&&[...css.matchAll(/body\.plan-\w+ ([^,{]+)/g)].every(m=>m[1].startsWith("#sheet ")),"Što planiraš: pitanja nema u izvještaju; skrivanje vrijedi samo na zaslonu i samo unutar lista (ispis je isti kao uz »Sve«)");}
+   // gumbi koji vode u skriveni odjeljak bez pogIdi (materijal iz simulatora) vraćaju prikaz na »Sve«
+   {const tm=$(w,"tMat"); if(tm){ E('planPostavi("postojeca")'); tm.disabled=false; tm.dispatchEvent(new w.MouseEvent("click",{bubbles:true})); await tick(40); ok(E("PLAN")==="sve","Što planiraš: »Izračunaj materijal« iz simulatora vraća prikaz na »Sve« (materijal je inače skriven)"); E('planPostavi("kupnja")'); await tick(20);} else ok(true,"Što planiraš: simulator bez gumba za materijal");}
+   // fokus ostaje na odabranom gumbu nakon ponovnog slaganja
+   btn("nova").dispatchEvent(new w.MouseEvent("click",{bubbles:true})); await tick(20); ok(w.document.activeElement===btn("nova"),"Što planiraš: nakon odabira fokus je na odabranom gumbu");
+   // plan i zahvat iz izračuna: proturječje se kaže
+   {const zs=w.document.querySelector("#sheet #zahvatSel"); if(zs){ const v0=zs.value; zs.value="dogr"; E('planPostavi("nova")'); const t1=PL().querySelector(".plan-z"); zs.value="nova"; E('planPostavi("postojeca")'); const t2=PL().querySelector(".plan-z"); E('planPostavi("nova")'); const t3=PL().querySelector(".plan-z"); zs.value=v0;
+     ok(t1&&/»dogradnja«/.test(t1.textContent)&&t2&&/»nova gradnja«/.test(t2.textContent)&&!t3,"Što planiraš: kad se plan i zahvat u izračunu ne slažu, piše koji zahvat izračun slijedi");} else ok(false,"Što planiraš: list nema izbornik zahvata");}
+   // vrijednost iz localStorage koja nije plan (i imena svojstava objekta) daje »Sve«
+   ok(["constructor","toString","__proto__","xyz",""].every(v=>!E("planIma")(v))&&E("planIma")("kupnja"),"Što planiraš: samo poznati planovi (ne i svojstva objekta) prolaze provjeru");
    // slobodni prikaz: bez pitanja i bez skrivanja
    w.__slobodno=true; E("planPrimijeni")(); ok(!w.document.body.classList.contains("plan-kupnja")&&E("planSkriveno")().length===0,"Što planiraš: u slobodnom prikazu se ništa ne skriva"); w.__slobodno=false;
    E('planPostavi("sve")'); await tick(20); ok(!/plan-/.test(w.document.body.className)&&!PL().querySelector(".plan-n"),"Što planiraš: »Sve« prikazuje sve");}
