@@ -353,7 +353,8 @@ details.pazi>summary{list-style:none;display:flex;align-items:center;gap:8px;fle
 details.pazi>summary>span{flex:1 1 auto}details.pazi>summary>b{font:500 12px/1.3 var(--f-mono);color:var(--muted)}details.pazi>summary>em{font-style:normal;color:var(--muted)}details.pazi[open]>summary>em{transform:rotate(180deg)}
 .pazi-b{padding:0 10px 8px}.pazi-h{margin:10px 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.04em}.pazi-h.pazi-no{color:var(--no)}.pazi-h.pazi-warn{color:var(--warn)}.pazi-h.pazi-nep{color:var(--muted)}
 .pazi-l{list-style:none;margin:0;padding:0}.pazi-l li{margin:4px 0}
-.pazi-i{appearance:none;display:block;width:100%;text-align:left;font:inherit;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:8px;padding:7px 10px;min-height:44px;cursor:pointer}
+@media print{details.pazi{display:none}}
+.pazi-i{overflow-wrap:anywhere;appearance:none;display:block;width:100%;text-align:left;font:inherit;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:8px;padding:7px 10px;min-height:44px;cursor:pointer}
 .pazi-i.pazi-no{border-left-color:var(--no)}.pazi-i.pazi-warn{border-left-color:var(--warn)}.pazi-i b{display:block;font-size:14px;line-height:1.3}.pazi-i span{display:block;font-size:13px;color:var(--muted);margin-top:2px}.pazi-i small{display:block;font-size:12px;color:var(--accent);margin-top:3px}
 .pazi-i:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .pazi-cilj{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px;transition:outline-color .3s}
@@ -10022,24 +10023,35 @@ function odgovorHtml(Pz,U,calc,uvjetno,paziH){ const kod=odgovorKod(Pz,U,calc), 
 // Popis ne računa ništa novo: skuplja upozorenja koja su već ispisana u odjeljcima lista (zapreke i upozorenja iz provjera, nalazi
 // rizika, ocjene u modulima, poruke o nedostupnim podacima), reda ih po težini i svaku stavku veže na mjesto gdje je objašnjena.
 // Težina: "no" zapreka ili potvrđeno ograničenje, "warn" upozorenje, "nep" nije provjereno ili podaci nisu dostupni.
-const PAZI_NEP=/nisu dostupn|nije dostup|nije odgovori|nije dohvać|nisu dohvać|nije moguće provjeriti|nisu provjeren|nije provjeren|se učitava|nije poznat|nisu poznat/i;
+const PAZI_NEP=/nisu dostupn|nije dostup|nije odgovori|ne odgovara|nije dohvać|nisu dohvać|nije moguće provjeriti|nisu provjeren|nije provjeren|se učitava|nije poznat|nisu poznat/i;
+const PAZI_UPUTA=/^(?:[^:]{0,30}:\s*)?(odaberi|upiši|izaberi|postavi|unesi)\b/i; // upute sučelja nisu upozorenja o čestici
+const PAZI_KRAT=/(?:^|[\s(„»"])(čl|st|toč|npr|tj|br|str|sl|tzv|odn|usp|ul|kč|max|min|cca|tel|k\.\s?o|k\.\s?č|d\.\s?o\.\s?o)\.$|(?:čl|st|toč|br|str)\.\s?\d+[a-z]?\.$/i;
 const PAZI_GR=[["no","Zapreke i potvrđena ograničenja"],["warn","Upozorenja"],["nep","Nije provjereno ili podaci nisu dostupni"]];
-function paziSkupi(){ const out=[], seen=new Set(), tx=e=>(e?e.textContent:"").replace(/\s+/g," ").trim();
-  const bez=(e,sel)=>{ const c=e.cloneNode(true); c.querySelectorAll(sel).forEach(x=>x.remove()); return tx(c); }, prva=(t,n)=>{ const r=t.split(/(?<=[.!?])\s/)[0]||t; return r.length>n?r.slice(0,n-1).trimEnd()+"…":r; };
-  const modul=el=>{ const m=el.closest("details.acc[data-k],details.phase-d[data-k]"); return m?tx(m.querySelector(":scope>summary>span")||m.querySelector(":scope>summary")).replace(/\s*\(\d+\)$/,""):""; };
-  // poruka bez vlastitog naslova unutar modula: naslov je ime modula, poruka je opis (više poruka istog modula ostaju zasebne stavke)
-  const poruka=(el,tez,t)=>{ const mn=modul(el); if(mn) add(el,tez,mn,prva(t,170),mn+" "+t); else add(el,tez,prva(t,140),""); };
-  const add=(el,tez,nas,opis,kljuc)=>{ nas=(nas||"").trim(); if(!nas) return; const k=(kljuc||nas).toLowerCase().replace(/\(.*?\)/g," ").replace(/[^a-zčćžšđ0-9]+/g," ").trim().slice(0,90); if(!k||seen.has(k)) return; seen.add(k);
+// prva rečenica: kraj je točka, uskličnik ili upitnik iza kojeg slijedi veliko slovo ili navodnik, a ispred nije kratica (čl., npr., k.o. …)
+function paziPrva(t,n){ let r=t; const re=/[.!?](?=\s+[A-ZČĆŽŠĐ„»(])/g; let m; while((m=re.exec(t))){ const do_=t.slice(0,m.index+1); if(PAZI_KRAT.test(do_)) continue; r=do_; break; }
+  return r.length>n?r.slice(0,n-1).trimEnd()+"…":r; }
+function paziSkupi(){ const out=[], seen=new Set(), tx=e=>(e?e.textContent:"").replace(/\s+/g," ").trim(), prva=paziPrva;
+  const bez=(e,sel)=>{ const c=e.cloneNode(true); c.querySelectorAll(sel).forEach(x=>x.remove()); return tx(c); };
+  const modul=el=>{ const m=el.closest("details.acc[data-k],details.phase-d[data-k]"); return m?bez(m.querySelector(":scope>summary>span")||m.querySelector(":scope>summary"),"b,em").replace(/\s*\(\d+\)$/,""):""; };
+  // stavka bez vlastitog naslova unutar modula: naslov je ime modula, poruka je opis
+  const poruka=(el,tez,t)=>{ const mn=modul(el); if(mn) add(el,tez,mn,prva(t,170)); else add(el,tez,prva(t,140),""); };
+  // dvostruke: isti naslov i isti opis (isti nalaz ispisan na dva mjesta); isti naslov s drugim sadržajem ostaje zasebna stavka
+  const add=(el,tez,nas,opis)=>{ nas=(nas||"").trim(); opis=opis&&opis!==nas?opis:""; if(!nas) return; const k=(nas+" | "+opis).toLowerCase().replace(/[^a-zčćžšđ0-9|]+/g," ").trim(); if(seen.has(k)) return; seen.add(k);
     const z=el.closest("details.izb"), mn=modul(el);
-    out.push({el,tez,nas,opis:opis&&opis!==nas?opis:"",gdje:[z?IZB_OZN[+z.dataset.n]+" "+IZB_KR[+z.dataset.n]:"",mn!==nas?mn:""].filter(Boolean).join(" · ")}); };
-  for(const el of sheet.querySelectorAll("#trakaBox,.chk-no,.chk-warn,ul.risk>li,.verdict.v-no,.verdict.v-warn,.flag")){
+    out.push({el,tez,nas,opis,gdje:[z?IZB_OZN[+z.dataset.n]+" "+IZB_KR[+z.dataset.n]:"",mn!==nas?mn:""].filter(Boolean).join(" · ")}); };
+  for(const el of sheet.querySelectorAll("#trakaBox,.chk-no,.chk-warn,ul.risk>li,.verdict.v-no,.verdict.v-warn,.flag,p.err,details.acc>summary>b.bad,.row .bad,em.kind.st-no")){
     if(el.closest("#sazetak,[hidden]")||!tx(el)) continue;
     if(el.id==="trakaBox") add(el,el.dataset.traka==="katastar"?"no":"warn",prva(tx(el),140),"");
-    else if(el.classList.contains("chk")){ const b=el.querySelector(":scope>b"), sp=el.querySelector(":scope>span"), bt=b?bez(b,"em"):"", ik=bt.charAt(0), o=sp?prva(bez(sp,".kd,a,button"),170):"";
-      add(el,el.classList.contains("chk-no")?"no":ik==="?"||PAZI_NEP.test(o)?"nep":"warn",bt.replace(/^[✓✕!?]\s*/,""),o); }
+    else if(el.classList.contains("chk")){ const b=el.querySelector(":scope>b"), sp=el.querySelector(":scope>span"), bt=b?bez(b,"em"):"", ik=bt.charAt(0), o=sp?prva(bez(sp,".kd,a,button"),170):"", no=el.classList.contains("chk-no");
+      if(!no&&PAZI_UPUTA.test(o)) continue; if(b) add(el,no?"no":ik==="?"||PAZI_NEP.test(o)?"nep":"warn",bt.replace(/^[✓✕!?]\s*/,""),o); else poruka(el,no?"no":PAZI_NEP.test(o)?"nep":"warn",bez(el,".kd,a,button")); }
     else if(el.matches("ul.risk>li")){ const sp=el.querySelector(":scope>span"); add(el,el.classList.contains("risk-no")?"no":el.classList.contains("risk-warn")?"warn":"nep",tx(el.querySelector("b")),sp?prva(tx(sp),170):""); }
-    else if(el.classList.contains("verdict")){ if(el.querySelector("ul")) continue; const t=tx(el); poruka(el,el.classList.contains("v-no")?"no":PAZI_NEP.test(t)?"nep":"warn",t); }
-    else { const t=tx(el); poruka(el,PAZI_NEP.test(t)?"nep":"warn",t); } }
+    else if(el.classList.contains("verdict")){ const no=el.classList.contains("v-no"), li=[...el.querySelectorAll("ul>li")];
+      // popis „što još provjeriti”: svaka stavka popisa je zasebna stavka (neprovjereno; uz crvenu ocjenu zapreka)
+      if(li.length){ for(const x of li) if(tx(x)) add(x,no?"no":"nep",prva(tx(x),140),""); continue; }
+      const t=tx(el); poruka(el,no?"no":PAZI_NEP.test(t)?"nep":"warn",t); }
+    else if(el.matches("summary>b.bad")) add(el.closest("details"),"no",modul(el),prva(tx(el),170));
+    else if(el.matches(".row .bad")||el.matches("em.kind.st-no")){ if(el.closest("ul.risk,.tipb,button")) continue; const r=el.closest(".row,tr,li,p")||el.parentElement; add(r,"no",prva([...r.childNodes].map(n=>n.textContent).join(" ").replace(/\s+/g," ").trim(),140),""); }
+    else { const t=tx(el); if(el.classList.contains("flag")&&PAZI_UPUTA.test(t)) continue; poruka(el,PAZI_NEP.test(t)?"nep":"warn",t); } }
   const red={no:0,warn:1,nep:2}; return out.map((x,i)=>[x,i]).sort((a,b)=>red[a[0].tez]-red[b[0].tez]||a[1]-b[1]).map(x=>x[0]); }
 function paziPotpis(L){ return L.map(x=>x.tez+":"+x.nas+":"+x.opis).join("|"); }
 function paziHtml(L){ if(!L||!L.length) return ""; const n=t=>L.filter(x=>x.tez===t).length, br=(k,a,b,c)=>k+" "+(k%10===1&&k%100!==11?a:k%10>=2&&k%10<=4&&(k%100<10||k%100>=20)?b:c);
