@@ -3067,6 +3067,26 @@ async function napTests(){
   ok(P[0].vid[90]&&!P[0].vid[0]&&P[0].stupnjeva===360-2*Math.round(0)-P[0].vid.filter(x=>!x).length*2,"pogled: more na jugu vidljivo, na sjeveru zaklonjeno brdom");
   ok(Math.round(P[0].smjer/10)*10===180||Math.abs(P[0].smjer-180)<30,"pogled: glavni smjer pogleda prema jugu: "+P[0].smjer);
   const Pz=E("pogIzracun")(zf,5,[1.6],[{az:[90],d:10,top:40}],25); ok(!Pz[0].vid[90]&&Pz[0].vid[89],"pogled: bliska visoka zgrada zaklanja svoj smjer");
+  // panorama: isti teren (brdo na sjeveru 200–300 m, more južno od 500 m) i planina 1000 m na sjeveru na 30 km u daljem modelu
+  {const tick=ms=>new Promise(r=>setTimeout(r,ms)), PI_=E("panIzracun"), far=(x,y)=>Math.hypot(x,y+30000)<4000?1000*(1-Math.hypot(x,y+30000)/4000):zf(x,y), zN=(x,y)=>Math.hypot(x,y)>8000?NaN:zf(x,y);
+   const P1=PI_(zN,far,5+1.6,[{az:[45],d:10,top:20}]), P0=PI_(zN,()=>NaN,5+1.6,[]), col=(P,az)=>P.cols[az*2];
+   ok(P1.cols.length===720&&col(P1,180).seg.some(x=>x[3]==="more")&&!col(P1,0).seg.some(x=>x[3]==="more"),"panorama: 720 smjerova; more vidljivo na jugu, na sjeveru ga zaklanja brdo");
+   ok(col(P1,180).seg.some(x=>x[3]==="kopno"&&x[2]>25000)&&!col(P0,180).seg.some(x=>x[2]>8000)&&col(P1,180).hor>col(P0,180).hor+1,"panorama: dalja planina preko mora (30 km južno) vidi se samo s daljim modelom i podiže obzor");
+   ok(col(P1,90).seg.some(x=>x[3]==="zgrada"&&x[2]===10)&&!col(P0,90).seg.some(x=>x[3]==="zgrada"),"panorama: bliska zgrada u svom smjeru");
+   const hs=col(P1,150).hor; ok(hs<0&&hs>-0.3,"panorama: obzor na otvorenom moru malo ispod vodoravnog (zakrivljenost Zemlje): "+hs.toFixed(3)+"°");
+   // izlazak i zalazak iza obzora
+   const ravno={cols:Array.from({length:720},()=>({seg:[],hor:-0.1}))}, brdo={cols:Array.from({length:720},()=>({seg:[],hor:8}))}, S=E("panSunce");
+   const r0=S(ravno,"2026-06-21",45.1,14.6), r1=S(brdo,"2026-06-21",45.1,14.6);
+   ok(Math.abs(r0.za-r0.astZa)<0.07&&Math.abs(r0.iz-r0.astIz)<0.07,"panorama: uz ravan obzor izlazak i zalazak iza obzora jednaki su astronomskima (±4 min)");
+   ok(r1.za<r0.za-0.5&&r1.iz>r0.iz+0.5&&r1.pts.length>600,"panorama: obzor od 8° pomiče zalazak ranije i izlazak kasnije za više od 30 min");
+   // prikaz u odjeljku: model visina zamijenjen sintetičkim
+   const mod={izvor:"test model",piksel:30,vis:(lon,lat)=>{const c=E("TL").center, mx=111320*Math.cos(c[1]*Math.PI/180); return zf((lon-c[0])*mx,(lat-c[1])*110540);}};
+   const iMT=E("iskModelTiles"); w.iskModelTiles=async(c,R,o)=>({...mod,piksel:o&&o.zooms&&o.zooms[0]===9?100:30}); E("POGL.mKey=null; PAN.fKey=null; PAN.et=null"); E("OPEN").add("pogled");
+   await E("pogUpdate")(); await tick(200);
+   const B=$(w,"panBox"), bt=B?[...B.querySelectorAll("[data-pan-et]")]:[];
+   ok(B&&bt.length>=1&&bt[bt.length-1].classList.contains("on")&&/21\. 6\./.test(txt(w,"panTxt"))&&/21\. 12\./.test(txt(w,"panTxt"))&&/dalje do 55 km grublji model/.test(txt(w,"panTxt"))&&!/NaN|undefined/.test(txt(w,"panTxt"))&&E("PAN.res").cols.length===720,"panorama: odjeljak s izborom etaže (zadano najviša), izlaskom i zalaskom za 21. 6., 21. 12. i danas");
+   if(bt.length>1){ bt[0].dispatchEvent(new w.MouseEvent("click",{bubbles:true})); await tick(120); ok(E("PAN.et")===0&&bt[0].getAttribute("aria-pressed")==="true"&&E("PAN.res").cols.length===720,"panorama: odabir etaže ponovno računa panoramu"); }
+   w.iskModelTiles=iMT;}
   // promjene: spremi, promijeni namjenu, ponovno izračunaj
   w.localStorage.removeItem("favs"); E("saveCurrent")(); const f0=E("favs")()[0]; ok(f0&&f0.snap&&f0.snap.polja,"promjene: pri spremanju se sprema snimka stanja");
   const a=E("favs")(); a[0].snap.polja.namjena="Stara namjena"; E("setFavs")(a); E("promUpdate")();
