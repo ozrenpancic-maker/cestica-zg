@@ -5679,7 +5679,7 @@ function sunTimes(ymd,lat,lon){ // izlazak i zalazak (visina −0,833°), traže
   for(let m=180;m<=1380;m+=2){const h=m/60, a=solarPos(zgDate(ymd,h),lat,lon).alt; if(prev!=null){const f=(-0.833-prev)/(a-prev), x=ph+(h-ph)*f; if(prev<-0.833&&a>=-0.833) rise=x; if(prev>=-0.833&&a<-0.833) set=x;} prev=a; ph=h;}
   return {rise,set};
 }
-const hhmm=h=>h==null?"–":String(Math.floor(h)).padStart(2,"0")+":"+String(Math.round((h%1)*60)).padStart(2,"0");
+const hhmm=h=>{ if(h==null) return "–"; const m=Math.round(h*60); return String(Math.floor(m/60)%24).padStart(2,"0")+":"+String(m%60).padStart(2,"0"); };
 const SUN={ymd:null,hour:12,hN:7,nb:null,layer:null,on:false};
 function shadowPoly(feat,alt,az,h){
   if(alt<=0.5) return null;
@@ -7841,8 +7841,10 @@ async function pogUpdate(){
   if(!imaMora) h+=`<p class="meta">Model u krugu od 8 km ne vidi more ni s jedne etaže.</p>`;
   h+=`</div></div><p class="meta">Visina očiju 1,6 m iznad poda svake etaže (visina etaže ${dec(TL.fh)} m), tlo kuće prema modelu oko ${dec(z0.toFixed(0))} m n. m. Model: ${esc(M.izvor)}, piksel oko ${dec(M.piksel.toFixed(0))} m. ${zg.length?`Uključene su okolne zgrade do 150 m (${zg.length}).`:"Okolne zgrade za ovo područje nisu uključene."} Drveće, ograde i nove zgrade nisu uključeni; pogled može biti manji. Pogled se ne smatra pravom: susjed može graditi u skladu s planom.</p>`;
   if(PAN.et==null||PAN.et>=oci.length) PAN.et=oci.length-1; h+=panHtml(naz,PAN.et);
-  o.innerHTML=h; window.__panR0={oci,naz,zg,res:R}; setTimeout(()=>{ panUpdate(window.__panR0).catch(err=>console.error(err)); },30);
+  o.innerHTML=h; window.__panR0={oci,naz,zg,res:R};
   const s=document.getElementById("pogSum"); if(s) s.textContent=imaMora?`${vrh.stupnjeva}° s ${naz[naz.length-1]=="prizemlje"?"prizemlja":naz[naz.length-1]==="potkrovlje"?"potkrovlja":naz[naz.length-1].replace(" kat"," kata")}`:"more se ne vidi";
+  // panorama (dosje čeka i nju): dalji model i izračun u dijelovima
+  try{ await panUpdate(window.__panR0); }catch(err){ console.error(err); }
 }
 // ================= PANORAMA S PROZORA =================
 // Iz sredine kuće, na visini očiju odabrane etaže, teren se prati u 720 smjerova (svakih 0,5°): do 8 km bliži model (z11),
@@ -7853,17 +7855,21 @@ async function pogUpdate(){
 // visine se ne ispisuju, crta se samo slika.
 const PAN={far:null,fKey:null,res:null,et:null,t:0}, PAN_R=55000, PAN_KOL=720;
 // čisti izračun: zN/zF(e,n) visina u lokalnim metrima (NaN izvan modela), oko = apsolutna visina očiju, zgrade [{az:[2° razredi],d,top}]
-function panIzracun(zN,zF,oko,zgrade,o){
-  o=o||{}; const R=o.R||PAN_R, Rn=o.Rn||POGL_R, kZ=(1-0.13)/(2*6371000), D=180/Math.PI, cols=[];
-  for(let c=0;c<PAN_KOL;c++){ const az=c*0.5, a=az/D, ux=Math.sin(a), uy=Math.cos(a), seg=[]; let mx=-90, b2=Math.floor(az/2)%180;
+function panIzracun(zN,zF,oko,zgrade,o){ const cols=[]; for(let c=0;c<PAN_KOL;c++) cols.push(panKol(c,zN,zF,oko,zgrade,o)); return {cols}; }
+// isto, u dijelovima od 40 smjerova da sučelje ne zastaje; stop() prekida zastarjeli izračun (vraća null)
+async function panIzracunPostupno(zN,zF,oko,zgrade,o,stop){ const cols=[];
+  for(let c=0;c<PAN_KOL;c++){ cols.push(panKol(c,zN,zF,oko,zgrade,o)); if(c%40===39){ await new Promise(r=>setTimeout(r,0)); if(stop&&stop()) return null; } } return {cols}; }
+function panKol(c,zN,zF,oko,zgrade,o){
+  o=o||{}; const R=o.R||PAN_R, Rn=o.Rn||POGL_R, kZ=(1-0.13)/(2*6371000), D=180/Math.PI;
+  { const az=c*0.5, a=az/D, ux=Math.sin(a), uy=Math.cos(a), seg=[]; let mx=-90, b2=Math.floor(az/2)%180;
     const zgs=(zgrade||[]).filter(Z=>Z.az.includes(b2)).sort((x,y)=>x.d-y.d); let zi=0;
     const dodaj=(ang,d,tip)=>{ if(ang>mx){ const L=seg[seg.length-1]; if(L&&L[3]===tip&&Math.abs(L[2]-d)<d*0.15) L[1]=ang; else seg.push([mx,ang,d,tip]); mx=ang; } };
     for(let s=15;s<=R;){ while(zi<zgs.length&&zgs[zi].d<=s){ const Z=zgs[zi++]; dodaj(Math.atan2(Z.top-oko,Z.d)*D,Z.d,"zgrada"); }
-      const zt=s<=Rn?zN(s*ux,s*uy):zF(s*ux,s*uy); if(!isFinite(zt)){ if(s<=Rn){ s=Rn+1; continue; } break; }
+      let zt=s<=Rn?zN(s*ux,s*uy):zF(s*ux,s*uy); if(!isFinite(zt)&&s<=Rn) zt=zF(s*ux,s*uy); // rub bližeg modela: dalji model
+      if(!isFinite(zt)){ if(s<=Rn){ s=Rn+1; continue; } break; }
       const more=zt<=0.5; dodaj(Math.atan2((more?0:zt)-s*s*kZ-oko,s)*D,s,more?"more":"kopno");
       s+=s<=Rn?20:Math.max(60,s*0.004); }
-    cols.push({seg,hor:mx}); }
-  return {cols};
+    return {seg,hor:mx}; }
 }
 // izlazak i zalazak sunca iza obzora: prvi trenutak (korak 2 min) kad je sunce iznad, odnosno ispod, obzora u svom smjeru
 function panSunce(P,ymd,lat,lon){
@@ -7876,7 +7882,8 @@ function panBoja(tip,d){ const t=Math.max(0,Math.min(1,Math.log(Math.max(d,50)/5
 function panCrtaj(cv,P,S,o){
   const W=PAN_KOL*2, H=240, dpr=Math.min(2,window.devicePixelRatio||1); cv.width=W*dpr; cv.height=H*dpr; cv.style.width=W+"px"; cv.style.height=H+"px";
   let g=null; try{ g=cv.getContext&&cv.getContext("2d"); }catch(e){} if(!g||typeof g.createLinearGradient!=="function"||!g.createLinearGradient(0,0,0,1)) return false; g.scale(dpr,dpr);
-  const maxH=Math.max(...P.cols.map(c=>c.hor)), aT=Math.max(12,maxH+5), aB=-4, y=a=>(aT-a)/(aT-aB)*H;
+  // okomito: od −4° do obzora (95. percentil, da bliska zgrada u nekoliko smjerova ne stisne sliku) + 5°, najmanje 12°, najviše 40°
+  const hs=P.cols.map(c=>c.hor).sort((a,b)=>a-b), aT=panVrh(P), aB=-4, y=a=>(aT-a)/(aT-aB)*H;
   const sky=g.createLinearGradient(0,0,0,y(0)); sky.addColorStop(0,"#5d9bd5"); sky.addColorStop(1,"#e6f1f8"); g.fillStyle=sky; g.fillRect(0,0,W,H);
   P.cols.forEach((c,i)=>{ for(const [a0,a1,d,tip] of c.seg){ const y0=y(Math.max(a0,aB-1)), y1=y(a1); if(y1>=H||y0<=y1) continue; g.fillStyle=`rgb(${panBoja(tip,d)})`; g.fillRect(i*2,y1,2,y0-y1+0.6); } });
   // putanje sunca: 21. 6. (žuto), 21. 12. (narančasto), danas (bijelo)
@@ -7885,27 +7892,41 @@ function panCrtaj(cv,P,S,o){
   g.setLineDash([]);
   for(const s of S){ const r=s.r; for(const h of [r.iz,r.za]){ if(h==null) continue; const p=r.pts.find(q=>Math.abs(q.h-h)<0.02); if(!p) continue; g.fillStyle=s.boja; g.strokeStyle="#333"; g.lineWidth=1; g.beginPath(); g.arc(p.az*4,y(p.alt),5,0,2*Math.PI); g.fill(); g.stroke(); } }
   g.font="600 12px system-ui,sans-serif"; g.textAlign="center";
+  // vodoravna crta (0°) i oznake kuta svakih 5° na početku svake četvrtine
+  g.strokeStyle="rgba(0,0,0,.25)"; g.setLineDash([2,4]); g.beginPath(); g.moveTo(0,y(0)); g.lineTo(W,y(0)); g.stroke(); g.setLineDash([]);
+  g.font="11px system-ui,sans-serif"; g.textAlign="left"; for(const x0 of [6,366,726,1086]) for(let a=0;a<=aT-2;a+=5){ g.fillStyle="rgba(255,255,255,.8)"; g.fillRect(x0-2,y(a)-12,a?26:30,13); g.fillStyle="#223"; g.fillText(a?`+${a}°`:"0°",x0,y(a)-2); }
+  g.font="600 12px system-ui,sans-serif"; g.textAlign="center";
   for(const [t,a] of [["S",0],["SI",45],["I",90],["JI",135],["J",180],["JZ",225],["Z",270],["SZ",315],["S",360]]){ const x=Math.min(W-8,Math.max(8,a*4)); g.fillStyle="rgba(255,255,255,.85)"; g.fillRect(x-14,4,28,18); g.fillStyle="#223"; g.fillText(t,x,17); g.fillStyle="rgba(0,0,0,.35)"; g.fillRect(a*4-0.5,22,1,8); }
   return true;
 }
+function panVrh(P){ const hs=P.cols.map(c=>c.hor).sort((a,b)=>a-b); return Math.max(12,Math.min(40,hs[Math.floor(hs.length*0.95)]+5)); }
 function panHtml(naz,et){ return `<div class="pan" id="panBox"><p class="eyebrow" style="margin-top:12px">Panorama s prozora</p><div class="pan-et" role="group" aria-label="Etaža">${naz.map((n,i)=>`<button type="button" class="pan-b${i===et?" on":""}" data-pan-et="${i}" aria-pressed="${i===et}">${esc(n)}</button>`).join("")}</div><div class="pan-v" id="panView"><p class="hint"><span class="spin"></span>Računam panoramu…</p></div><div id="panTxt"></div></div>`; }
+// dalji model: jedan dohvat po mjestu (i za usporedne pozive); neuspjeh se ne pamti, pa se sljedeći put pokuša ponovno
+function panFar(c){ const mk=c.map(x=>x.toFixed(2)).join(","); if(PAN.fKey===mk&&PAN.fP) return PAN.fP;
+  PAN.fKey=mk; PAN.fP=iskModelTiles(c,PAN_R,{zooms:[9,8]}).catch(e=>{ if(PAN.fKey===mk){ PAN.fKey=null; PAN.fP=null; } return null; }); return PAN.fP; }
 async function panUpdate(R0){
   const v=document.getElementById("panView"), tx=document.getElementById("panTxt"), d=curData(); if(!v||!d||!TL.center||!POGL.model) return;
-  const key=window.__cur&&window.__cur.key, c=TL.center, mk=c.map(x=>x.toFixed(2)).join(",");
-  if(PAN.fKey!==mk){ try{ PAN.far=await iskModelTiles(c,PAN_R,{zooms:[9,8]}); PAN.fKey=mk; }catch(e){ PAN.far=null; PAN.fKey=mk; } }
-  if((window.__cur&&window.__cur.key)!==key||!document.getElementById("panView")) return;
-  const M=POGL.model, F=PAN.far, mx=111320*Math.cos(c[1]*Math.PI/180), my=110540, zN=(e,n)=>M.vis(c[0]+e/mx,c[1]+n/my), zF=F?(e,n)=>F.vis(c[0]+e/mx,c[1]+n/my):()=>NaN;
-  const et=PAN.et, z0=zN(0,0), P=panIzracun(zN,zF,z0+R0.oci[et],R0.zg,{Rn:POGL_R}); PAN.res=P;
+  const gen=PAN.gen=(PAN.gen||0)+1, key=window.__cur&&window.__cur.key, c=TL.center.slice(), et=PAN.et, M=POGL.model;
+  // zastarjelo: novi poziv, druga čestica, pomaknuta kuća ili zamijenjen odjeljak
+  const staro=()=>gen!==PAN.gen||(window.__cur&&window.__cur.key)!==key||!TL.center||TL.center[0]!==c[0]||TL.center[1]!==c[1]||PAN.et!==et||!document.getElementById("panView");
+  const F=await panFar(c); if(staro()) return;
+  const mx=111320*Math.cos(c[1]*Math.PI/180), my=110540, zN=(e,n)=>M.vis(c[0]+e/mx,c[1]+n/my), zF=F?(e,n)=>F.vis(c[0]+e/mx,c[1]+n/my):()=>NaN;
+  const z0=zN(0,0), P=await panIzracunPostupno(zN,zF,z0+R0.oci[et],R0.zg,{Rn:POGL_R},staro); if(!P||staro()) return; PAN.res=P;
   const god=new Date().getFullYear(), danas=new Date(), ymdD=`${danas.getFullYear()}-${String(danas.getMonth()+1).padStart(2,"0")}-${String(danas.getDate()).padStart(2,"0")}`;
   const S=[{ime:"21. 6.",ymd:god+"-06-21",boja:"#f9c80e"},{ime:"21. 12.",ymd:god+"-12-21",boja:"#f37021"},{ime:"danas",ymd:ymdD,boja:"#ffffff",crt:true}].map(x=>({...x,r:panSunce(P,x.ymd,c[1],c[0])}));
-  v.innerHTML=`<canvas id="panCv" role="img" aria-label="Panorama s ${esc(R0.naz[et])}: obzor u svim smjerovima, more, kopno i putanja sunca"></canvas>`; const cv=document.getElementById("panCv"), ok=panCrtaj(cv,P,S);
-  if(!ok) v.innerHTML=`<p class="meta">Preglednik ne može nacrtati panoramu.</p>`;
-  else{ const sm=R0.res[et]&&R0.res[et].smjer!=null?R0.res[et].smjer:180; v.scrollLeft=Math.max(0,sm*4-v.clientWidth/2); }
-  const ln=x=>`<tr><th><span class="pan-k" style="background:${x.boja}"></span>${x.ime}</th><td>${x.r.iz!=null?`sunce se pojavi iznad obzora u <b>${hhmm(x.r.iz)}</b>`:"sunce ne izlazi iznad obzora"}${x.r.astIz!=null&&x.r.iz!=null&&x.r.iz-x.r.astIz>=0.1?` <small class="fx">(izlazak ${hhmm(x.r.astIz)})</small>`:""}; ${x.r.za!=null?`nestaje iza obzora u <b>${hhmm(x.r.za)}</b>`:"ne zalazi iza obzora"}${x.r.astZa!=null&&x.r.za!=null&&x.r.astZa-x.r.za>=0.1?` <small class="fx">(zalazak ${hhmm(x.r.astZa)}, ${fmt(Math.round((x.r.astZa-x.r.za)*60))} min ranije zbog terena)</small>`:""}</td></tr>`;
-  tx.innerHTML=`<table class="rp"><tbody>${S.map(ln).join("")}</tbody></table><p class="isk-leg"><span class="pan-k" style="background:rgb(${panBoja("more",500)})"></span>more <span class="pan-k" style="background:rgb(${panBoja("kopno",200)})"></span>bliže kopno <span class="pan-k" style="background:rgb(${panBoja("kopno",30000)})"></span>daleko kopno <span class="pan-k" style="background:rgb(${panBoja("zgrada",80)})"></span>okolne zgrade; krug na putanji sunca: izlazak ili zalazak iza obzora. Povuci panoramu vodoravno za sve smjerove.</p>`+
-    `<p class="meta">Pogled s visine očiju (1,6 m iznad poda) na etaži „${esc(R0.naz[et])}” iz sredine kuće u simulatoru. Teren do 8 km: ${esc(M.izvor)}, piksel oko ${dec(M.piksel.toFixed(0))} m; ${F?`dalje do 55 km grublji model (piksel oko ${dec(F.piksel.toFixed(0))} m)`:"dalji teren (8–55 km) nije učitan, pa udaljene planine nedostaju"}. Drveće, ograde i zgrade bez podataka nisu uključeni, a stvarni pogled može biti manji. Vrijeme je po lokalnom vremenu; prikaz je ilustracija, ne mjerenje.</p>`;
+  const vV=document.getElementById("panView"), tX=document.getElementById("panTxt"); if(!vV||!tX) return;
+  vV.innerHTML=`<canvas id="panCv" role="img" aria-label="Panorama, ${esc(R0.naz[et])}: obzor u svim smjerovima, more, kopno i putanja sunca; vremena izlaska i zalaska su u tablici ispod"></canvas>`; const cv=document.getElementById("panCv"), ok=panCrtaj(cv,P,S);
+  if(!ok) vV.innerHTML=`<p class="meta">Preglednik ne može nacrtati panoramu.</p>`;
+  else{ const sm=R0.res[et]&&R0.res[et].smjer!=null?R0.res[et].smjer:180; vV.scrollLeft=Math.max(0,sm*4-vV.clientWidth/2); }
+  const uv=(240/(panVrh(P)+4))/4;
+  const ln=x=>{ const r=x.r; let t;
+    if(r.iz==null&&r.za==null) t="sunce cijeli dan ostaje iza obzora";
+    else t=`sunce se pojavi iznad obzora u <b>${hhmm(r.iz)}</b>${r.astIz!=null&&r.iz-r.astIz>=0.1?` <small class="fx">(izlazak ${hhmm(r.astIz)}, ${fmt(Math.round((r.iz-r.astIz)*60))} min kasnije zbog obzora)</small>`:""}, a nestaje iza obzora u <b>${hhmm(r.za)}</b>${r.astZa!=null&&r.astZa-r.za>=0.1?` <small class="fx">(zalazak ${hhmm(r.astZa)}, ${fmt(Math.round((r.astZa-r.za)*60))} min ranije zbog obzora)</small>`:""}`;
+    return `<tr><th><span class="pan-k" style="background:${x.boja}"></span>${x.ime}</th><td>${t}</td></tr>`; };
+  tX.innerHTML=`<table class="rp"><tbody>${S.map(ln).join("")}</tbody></table><p class="isk-leg"><span class="pan-k" style="background:rgb(${panBoja("more",500)})"></span>more <span class="pan-k" style="background:rgb(${panBoja("kopno",200)})"></span>bliže kopno <span class="pan-k" style="background:rgb(${panBoja("kopno",30000)})"></span>daleko kopno <span class="pan-k" style="background:rgb(${panBoja("zgrada",80)})"></span>okolne zgrade; krug na putanji sunca: izlazak ili zalazak iza obzora. Povuci panoramu vodoravno za sve smjerove. Okomito mjerilo je uvećano oko ${dec(uv.toFixed(1))} puta da bi se obzor bolje vidio, pa su brda strmija nego u stvarnosti; kutovi su označeni na rubu (0° je vodoravno).</p>`+
+    `<p class="meta">Pogled s visine očiju (1,6 m iznad poda) na etaži „${esc(R0.naz[et])}” iz sredine kuće u simulatoru. Teren do 8 km: ${esc(M.izvor)}, piksel oko ${dec(M.piksel.toFixed(0))} m; ${F?`dalje do 55 km grublji model (piksel oko ${dec(F.piksel.toFixed(0))} m)`:"dalji teren (8–55 km) nije učitan, pa udaljene planine nedostaju"}. Obzor čine teren i okolne zgrade s podacima; drveće, ograde i zgrade bez podataka nisu uključeni, a stvarni pogled može biti manji. Vrijeme je po lokalnom vremenu, točnost nekoliko minuta; prikaz je ilustracija, ne mjerenje.</p>`;
 }
-sheet.addEventListener("click",e=>{ const b=e.target.closest("[data-pan-et]"); if(!b) return; PAN.et=+b.dataset.panEt; document.querySelectorAll("[data-pan-et]").forEach(x=>{const on=x===b; x.classList.toggle("on",on); x.setAttribute("aria-pressed",String(on));}); const v=document.getElementById("panView"); if(v) v.innerHTML=`<p class="hint"><span class="spin"></span>Računam panoramu…</p>`; setTimeout(()=>{ if(window.__panR0) panUpdate(window.__panR0).catch(err=>console.error(err)); },20); });
+sheet.addEventListener("click",e=>{ const b=e.target.closest("[data-pan-et]"); if(!b) return; PAN.et=+b.dataset.panEt; document.querySelectorAll("[data-pan-et]").forEach(x=>{const on=x===b; x.classList.toggle("on",on); x.setAttribute("aria-pressed",String(on));}); const v=document.getElementById("panView"); if(v) v.innerHTML=`<p class="hint"><span class="spin"></span>Računam panoramu…</p>`; setTimeout(()=>{ if(window.__panR0&&document.getElementById("panView")) panUpdate(window.__panR0).catch(err=>console.error(err)); },20); });
 function pogSoon(){ const d=document.querySelector('details[data-k="pogled"]'); if(!d||!d.open) return; clearTimeout(POGL.t); POGL.t=setTimeout(()=>{pogUpdate().catch(e=>console.error(e))},400); }
 sheet.addEventListener("toggle",e=>{ if(e.target.dataset&&e.target.dataset.k==="pogled"&&e.target.open) pogUpdate().catch(err=>console.error(err)); },true);
 // ================= PROMJENE NA SPREMLJENOJ ČESTICI I PODACI ZA USPOREDBU =================
