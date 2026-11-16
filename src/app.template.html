@@ -1923,7 +1923,7 @@ async function zkUlFetch(k,force){
 sheet.addEventListener("toggle",e=>{const d=e.target; if(!(d.matches&&d.matches('details[data-k="zk"]'))) return; const k=window.__zkK; window.__zkOpen=d.open?k:null; if(d.open&&k) zkUlFetch(k);},true);
 async function krkOssFetch(P,area){
   if(!P||P.cid==null) return; const k=String(P.cid);
-  const upd=()=>{ if(KRK_CUR&&(KRK_CUR.region==="hr"||(KRK_CUR.parcel&&KRK_CUR.parcel.properties.hr))&&KRK_CUR.parcel&&String(KRK_CUR.parcel.properties.cid)===k&&!P.ko){const o=OSSZK.get(k); if(o&&o.st==="ok"&&o.d.ko){P.ko=o.d.ko; renderKrk(KRK_CUR); return;}} const el=document.getElementById("krkArea"); if(el&&KRK_CUR&&KRK_CUR.parcel&&String(KRK_CUR.parcel.properties.cid)===k){keepPos(()=>{el.innerHTML=krkAreaHtml(P,area); areaCmpRefresh();}); zkOssRefresh(k);}};
+  const upd=()=>{ if(KRK_CUR&&(KRK_CUR.region==="hr"||(KRK_CUR.parcel&&KRK_CUR.parcel.properties.hr))&&KRK_CUR.parcel&&String(KRK_CUR.parcel.properties.cid)===k&&!P.ko){const o=OSSZK.get(k); if(o&&o.st==="ok"&&o.d.ko){P.ko=o.d.ko; renderKrk(KRK_CUR); return;}} const el=document.getElementById("krkArea"); if(el&&KRK_CUR&&KRK_CUR.parcel&&String(KRK_CUR.parcel.properties.cid)===k){keepPos(()=>{el.innerHTML=krkAreaHtml(P,area); areaCmpRefresh();}); zkOssRefresh(k); try{sazetakUpdate()}catch(e){}}};
   try{const c=turf.pointOnFeature(KRK_CUR.parcel).geometry.coordinates; katwFetchInto(k,c[1],c[0],upd);}catch(e){}
   return ossFetchInto(k,P,null,upd);
 }
@@ -3167,7 +3167,7 @@ function zgAreaP(parcel,key){
 function zgOssFetch(parcel,key,area){
   if(!SRC_KRK.oss||!parcel) return; let c; try{c=turf.pointOnFeature(parcel).geometry.coordinates}catch(e){return}
   const P0=zgAreaP(parcel,key), k=P0.cid;
-  const upd=()=>{const el=document.getElementById("zgArea"); if(el&&window.__cur&&window.__cur.key===key){keepPos(()=>{el.innerHTML=krkAreaHtml(zgAreaP(parcel,key),area); areaCmpRefresh();}); zkOssRefresh(k);}};
+  const upd=()=>{const el=document.getElementById("zgArea"); if(el&&window.__cur&&window.__cur.key===key){keepPos(()=>{el.innerHTML=krkAreaHtml(zgAreaP(parcel,key),area); areaCmpRefresh();}); zkOssRefresh(k); try{sazetakUpdate()}catch(e){}}};
   return katwFetchInto(k,c[1],c[0],upd).then(async()=>{
     let w=KATW.get(k);
     // gradski sloj čestica (2023.) i katastar DGU nisu uvijek jednaki: na prvoj točki može biti susjedna čestica, pa se probaju druge točke unutar čestice
@@ -3216,9 +3216,13 @@ function krkAreaHtml(P,area){
   h+=`</dl>`;
   if(kat&&zk&&!isti) h+=`<p class="flag">Katastar (${fmt(kat.a)} m²) i zemljišna knjiga (${fmt(zk.a)} m²) se ne slažu, razlika ${fmt(Math.abs(kat.a-zk.a))} m². To znači da podaci dviju evidencija nisu usklađeni, što je čest slučaj. Prije kupnje provjeri u zemljišnoknjižnom odjelu ili s geodetom koja je površina točna.</p>`;
   const up=zk||kat;
-  if(up){const r=(up.a-g)/g*100;
-    h+=`<p class="${Math.abs(r)>5?"flag":"meta"}">Razlika ${zk?"upisane u zemljišnoj knjizi":"upisane u katastru"} i grafičke: ${r>0?"+":""}${dec(r.toFixed(1))} % (${fmt(Math.abs(up.a-g))} m²). ${Math.abs(r)>5?"Razlika je veća od 5 %. ":""}Grafička površina izračunata je iz katastarskog plana, koji je često digitaliziran sa starih planova, a upisana površina potječe iz ${zk?"zemljišne knjige":"katastarskog operata"}; zato se često razlikuju. Nijedna nije nužno stvarna površina na terenu: točnu daje geodetska izmjera (elaborat). Kod veće razlike, prije kupnje ili gradnje, provjeri s ovlaštenim geodetom.</p>`;}
-  else h+=`<p class="meta">Grafička i upisana površina često se razlikuju; nijedna nije nužno stvarna površina na terenu.</p>`;
+  // savjet geodeta: kad se grafička i upisana površina ne podudaraju (ili upisana nije poznata), prvi korak je obilježavanje međa
+  const GEOD="Prvi korak prije kupnje ili projekta: ovlašteni geodet koji utvrdi i obilježi međe na terenu (obilježavanje granica čestice); kad se katastarski plan ne slaže sa stanjem na terenu, stvarnu površinu daje geodetska izmjera.";
+  // razlika kao što je prikazana (cijeli m²), da „601 m²” i „600 m²” ne budu „podudaraju se”
+  if(up){const r=g>0?(up.a-g)/g*100:0, raz=Math.round(up.a)!==Math.round(g);
+    h+=`<p class="${raz?"flag":"meta"}" data-povrsina="${raz?"razlika":"ista"}">${raz?`Grafička i upisana površina se ne podudaraju: razlika ${fmt(Math.abs(up.a-g))} m² (${r>0?"+":""}${dec(r.toFixed(1))} %, ${zk?"upisana u zemljišnoj knjizi":"upisana u katastru"} prema grafičkoj). ${GEOD} `:"Grafička i upisana površina se podudaraju. "}Grafička površina izračunata je iz katastarskog plana, koji je često digitaliziran sa starih planova, a upisana potječe iz ${zk?"zemljišne knjige":"katastarskog operata"}. Nijedna nije nužno stvarna površina na terenu: točnu daje geodetska izmjera (elaborat). Granice čestice i grafička površina u aplikaciji su iz katastarskog plana, ne s terena.</p>`;}
+  else if(os&&os.st==="load") h+=`<p class="meta" data-povrsina="ceka">Usporedba grafičke i upisane površine bit će ovdje kad stigne podatak iz OSS-a.</p>`;
+  else h+=`<p class="flag" data-povrsina="nepoznato">${os&&os.st==="err"?"Upisana površina nije dohvaćena (OSS ne odgovara)":"Upisana površina nije poznata"}, pa razlika prema grafičkoj nije provjerena; upiši je iz izvatka. Grafička površina iz katastarskog plana često se razlikuje od upisane i od stvarne površine na terenu. ${GEOD}</p>`;
   {const S=areaSel(P,area); h+=`<p class="meta">Uvjeti gradnje ispod računaju se s površinom: ${esc(S.naziv)} (${fmt(S.a)} m²)${S.fallback?", jer odabrana još nije dostupna":""}. Površinu za izračun biraš u „Izračunu za ovu česticu”.</p>`;}
   return h;
 }
@@ -10776,8 +10780,8 @@ function analyzeZK(text,ctx){
     let zkA=null; for(const l of lines){const m=l.match(/(\d{1,3}(?:\.\d{3})+|\d+)\s*(?:m2|m²)?\s*$/); if(m&&!l.trim().endsWith(ctx.kc)){zkA=parseInt(m[1].replace(/\./g,"")); break}}
     out.zkA=zkA||null;
     if(zkA&&ctx.area){ const d=Math.abs(zkA-ctx.area)/ctx.area;
-      if(d>0.05) out.flags.push(["warn",`Površina u zemljišnoj knjizi (${fmt(zkA)} m²) razlikuje se od katastra (${fmt(ctx.area)} m²) za ${Math.round(d*100)} %. Provjeri s geodetom prije kupnje.`]);
-      else out.ok.push(`Površina u zemljišnoj knjizi (${fmt(zkA)} m²) odgovara katastru.`); }
+      if(Math.round(zkA)!==Math.round(ctx.area)) out.flags.push(["warn",`Površina u zemljišnoj knjizi (${fmt(zkA)} m²) razlikuje se od grafičke površine iz katastarskog plana (${fmt(ctx.area)} m²) za ${fmt(Math.abs(Math.round(zkA)-Math.round(ctx.area)))} m² (${dec((d*100).toFixed(1))} %). Prvi korak prije kupnje: geodet koji utvrdi i obilježi međe.`]);
+      else out.ok.push(`Površina u zemljišnoj knjizi (${fmt(zkA)} m²) jednaka je grafičkoj površini iz katastarskog plana.`); }
     if(!lines.length) out.flags.push(["warn",`Čestica ${ctx.kc} nije nađena u A listu. Je li izvadak za pravu česticu?`]);
   }
   if(iA==null&&iB==null&&iC==null) out.flags.push(["warn","Ne prepoznajem strukturu izvatka (A, B, C list). Je li to zemljišnoknjižni izvadak?"]);

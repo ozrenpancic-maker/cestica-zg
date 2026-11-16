@@ -1015,7 +1015,7 @@ async function krkTests(){
   // ručni unos upisane površine: obje vrijednosti i razlika
   $(w,"krkZkIn").value="642"; $(w,"krkZkOk").dispatchEvent(new w.Event("click",{bubbles:true}));
   let tz=txt(w,"sheet");
-  ok(/Grafička površina ?600 m²/.test(tz)&&/Upisana u zemljišnoj knjizi ?642 m²/.test(tz)&&/\+7,0 % \(42 m²\)/.test(tz)&&/veća od 5 %/.test(tz)&&/geodetska izmjera/.test(tz),"Krk: grafička 600 i upisana 642 m², razlika +7 % uz objašnjenje");
+  ok(/Grafička površina ?600 m²/.test(tz)&&/Upisana u zemljišnoj knjizi ?642 m²/.test(tz)&&/razlika 42 m² \(\+7,0 %/.test(tz)&&/utvrdi i obilježi međe/.test(tz)&&/geodetska izmjera/.test(tz),"Krk: grafička 600 i upisana 642 m², razlika +7 % uz objašnjenje");
   ok(/računaju se s površinom: grafička \((599|600) m²\)/.test(tz)&&Math.abs(E("KRK_CUR").area-600)<1.5,"Krk: izračun prema zadanom s grafičkom površinom");
   ok(/ZK izvadak/.test(tz)&&!!$(w,"zkFile"),"Krk: odjeljak za ZK izvadak s učitavanjem PDF-a");
   $(w,"krkZkDel").dispatchEvent(new w.Event("click",{bubbles:true}));
@@ -1073,11 +1073,25 @@ async function krkTests(){
   E("renderKrk")(E("KRK_CUR")); await tick(5); ok(/ZK uložak 5126/.test(txt(w,"zkOss"))&&/tereti: 1 \(OSS\)/.test(txt(w,"zkSum")),"Krk OSS: uložak ostaje prikazan i nakon ponovnog prikaza čestice");
   // kad se dohvat ponovi (npr. nakon isteka) i traje, već prikazani uložak ne nestaje
   {const k="1", v=E("OSSZK").get(k); E("OSSZK").set(k,{st:"load"}); E("renderKrk")(E("KRK_CUR")); await tick(5); ok(/ZK uložak 5126/.test(txt(w,"zkOss")),"Krk OSS: uložak ostaje vidljiv dok traje ponovni dohvat"); E("OSSZK").set(k,v); E("renderKrk")(E("KRK_CUR")); await tick(5);}
-  ok(calls.includes("https://oss-test.example/?id=1")&&/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&/ZK uložak 5126/.test(to)&&/neslužbeni javni podatak/.test(to)&&/\+7,0 % \(42 m²\)/.test(to),"Krk OSS: upisana površina 642 m² dohvaćena automatski, s uloškom i razlikom");
+  ok(calls.includes("https://oss-test.example/?id=1")&&/Upisana u zemljišnoj knjizi ?642 m²/.test(to)&&/ZK uložak 5126/.test(to)&&/neslužbeni javni podatak/.test(to)&&/razlika 42 m² \(\+7,0 %/.test(to),"Krk OSS: upisana površina 642 m² dohvaćena automatski, s uloškom i razlikom");
   ok(/Upisana u katastru ?640 m²/.test(to)&&/kuća: 85 m² · dvorište: 557 m²/.test(to)&&Math.abs(E("KRK_CUR").area-600)<1.5,"Krk OSS: površina iz posjedovnog lista i dijelovi čestice; izračun ostaje na grafičkoj");
   ok(/Katastar \(640 m²\) i zemljišna knjiga \(642 m²\) se ne slažu, razlika 2 m²/.test(to),"Krk OSS: kad se katastar i zemljišna knjiga ne slažu, prikazuju se obje površine i upozorenje");
   {E("OSSZK").set("x1",{st:"ok",d:{ok:true,broj:"1/1",katastar:660,zk:[{broj:"1/1",povrsina:660,ulozak:"9"}],dijelovi:[]}}); const h2=E("krkAreaHtml")({cid:"x1",broj:"1/1"},655);
-   ok(/Upisana površina/.test(h2)&&/katastar \(posjedovni list\) i zemljišna knjiga se slažu/.test(h2)&&!/Upisana u katastru/.test(h2)&&!/se ne slažu/.test(h2),"Kad se katastar i zemljišna knjiga slažu, prikazuje se jedan redak „Upisana površina”"); E("OSSZK").delete("x1");}
+   ok(/Upisana površina/.test(h2)&&/katastar \(posjedovni list\) i zemljišna knjiga se slažu/.test(h2)&&!/Upisana u katastru/.test(h2)&&!/se ne slažu/.test(h2),"Kad se katastar i zemljišna knjiga slažu, prikazuje se jedan redak „Upisana površina”");
+   // savjet geodeta: i mala razlika grafičke i upisane, i kad upisana nije dohvaćena (npr. OSS ne radi); kad se podudaraju, bez upozorenja
+   const el=h=>{const x=w.document.createElement("div"); x.innerHTML=h; return x.querySelector("[data-povrsina]");}, e2=el(h2), e3=el(E("krkAreaHtml")({cid:"x1",broj:"1/1"},660));
+   E("OSSZK").set("x2",{st:"err",e:"HTTP 502"}); const e4=el(E("krkAreaHtml")({cid:"x2",broj:"2/1"},500)); E("OSSZK").delete("x2");
+   ok(e2&&e2.classList.contains("flag")&&e2.dataset.povrsina==="razlika"&&/razlika 5 m²/.test(e2.textContent)&&/geodet koji utvrdi i obilježi međe na terenu/.test(e2.textContent)&&/ne s terena/.test(e2.textContent),"Površina: i razlika od 5 m² (0,8 %) je upozorenje sa savjetom za geodeta i obilježavanje međa");
+   ok(e3&&!e3.classList.contains("flag")&&e3.dataset.povrsina==="ista"&&!/geodet i obilježavanje/.test(e3.textContent),"Površina: kad se grafička i upisana podudaraju, nema upozorenja");
+   E("OSSZK").set("x3",{st:"load"}); const e5=el(E("krkAreaHtml")({cid:"x3",broj:"3/1"},500)); E("OSSZK").delete("x3");
+   E("OSSZK").set("x4",{st:"ok",d:{ok:true,broj:"4/1",katastar:600,zk:[{broj:"4/1",povrsina:600,ulozak:"9"}],dijelovi:[]}}); const e6=el(E("krkAreaHtml")({cid:"x4",broj:"4/1"},600.4)), e7=el(E("krkAreaHtml")({cid:"x4",broj:"4/1"},600.9)); E("OSSZK").delete("x4");
+   ok(e5&&!e5.classList.contains("flag")&&e5.dataset.povrsina==="ceka"&&e6.dataset.povrsina==="ista"&&e7.dataset.povrsina==="razlika"&&/razlika 1 m²/.test(e7.textContent),"Površina: dok OSS radi, nema upozorenja; razlika se gleda kako je prikazana (600,4 i 600 isto, 601 i 600 razlika 1 m²)");
+   ok(/OSS ne odgovara/.test(e4.textContent)&&!/tek tada se zna|iskolčenje/.test(e2.textContent+e4.textContent),"Površina: kad OSS ne odgovara, to piše; savjet ne obećava površinu iz obilježavanja");
+   ok(e4&&e4.classList.contains("flag")&&e4.dataset.povrsina==="nepoznato"&&/Upisana površina nije dohvaćena/.test(e4.textContent)&&/utvrdi i obilježi međe/.test(e4.textContent),"Površina: kad upisana nije dohvaćena (OSS ne radi), upozorenje da razlika nije provjerena, sa savjetom za geodeta");
+   // PDF izvadak: ista mjera razlike kao gore (svaka razlika u cijelim m², savjet o međama)
+   {const A1=E("analyzeZK")("A list\n1. 2345/6 KUĆA I DVORIŠTE 615\n",{kc:"2345/6",area:600}), A2=E("analyzeZK")("A list\n1. 2345/6 KUĆA I DVORIŠTE 600\n",{kc:"2345/6",area:600.3});
+    ok(A1.zkA===615&&A1.flags.some(f=>/razlikuje se od grafičke površine iz katastarskog plana \(600 m²\) za 15 m²/.test(f[1])&&/obilježi međe/.test(f[1]))&&!A1.ok.some(x=>/jednaka/.test(x))&&A2.ok.some(x=>/jednaka je grafičkoj/.test(x))&&!A2.flags.some(f=>/razlikuje/.test(f[1])),"PDF izvadak: razlika od 15 m² (2,5 %) je upozorenje sa savjetom o međama; ista površina je potvrda");}
+   E("OSSZK").delete("x1");}
   $(w,"krkZkMan").dispatchEvent(new w.Event("click",{bubbles:true})); ok(!!$(w,"krkZkIn"),"Krk OSS: može se upisati druga površina");
   $(w,"krkZkIn").value="650"; $(w,"krkZkOk").dispatchEvent(new w.Event("click",{bubbles:true}));
   ok(/Upisana u zemljišnoj knjizi ?650 m²/.test(txt(w,"sheet"))&&/upisao si ručno/.test(txt(w,"sheet")),"Krk OSS: ručni unos ima prednost");
@@ -1132,7 +1146,7 @@ async function krkTests(){
   mode="ok"; E("SRC_KRK").oss=""; E("OSSZK").clear(); E("renderKrk")(E("KRK_CUR"));
   // izravno iz katastarskog sloja karte (bez posrednika): površina upisana u katastar
   mode="wms"; E("KATW").clear(); E("renderKrk")(E("KRK_CUR")); await tick(20); {const tw=txt(w,"sheet");
-   ok(calls.some(u=>u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/ows2-m/wms?")&&/REQUEST=GetFeatureInfo/.test(u))&&/Upisana u katastru ?615 m²/.test(tw)&&/posjedovni list \(DGU, katastarski sloj\)/.test(tw)&&/Razlika upisane u katastru i grafičke: \+2,5 %/.test(tw),"Krk: površina upisana u katastar izravno iz katastarskog sloja karte, bez posrednika");}
+   ok(calls.some(u=>u.startsWith("https://wms1-gs-oss.uredjenazemlja.hr/ows2-m/wms?")&&/REQUEST=GetFeatureInfo/.test(u))&&/Upisana u katastru ?615 m²/.test(tw)&&/posjedovni list \(DGU, katastarski sloj\)/.test(tw)&&/\(\+2,5 %, upisana u katastru prema grafičkoj\)/.test(tw),"Krk: površina upisana u katastar izravno iz katastarskog sloja karte, bez posrednika");}
   {const r=E("geoParcelExport")(), f=r&&r.fc.features[0], pr=f&&f.properties, c0=f&&f.geometry.coordinates[0][0], x=E("tmInv")(ring[0][0],ring[0][1]);
    ok(!!$(w,"geoDl")&&r.name==="kornic_cestica_2345_6.geojson"&&f.geometry.type==="Polygon"&&pr.broj_cestice==="2345/6"&&pr.katastarska_opcina==="KORNIĆ"&&pr.ko_maticni_broj==="315907"&&pr.ko_id_dgu===1239&&pr.cestica_id_dgu===1&&/WMS oss:BZP_CESTICE/.test(pr.izvor)&&/EPSG:3765/.test(pr.izvorni_crs)&&/EPSG:4326/.test(pr.crs)&&Math.abs(c0[0]-x[0])<1e-7&&Math.abs(c0[1]-x[1])<1e-7&&Math.abs(pr.povrsina_iz_koordinata_m2-600)<1.5,"GeoJSON Krk: izvorna DGU geometrija iz katastarskog sloja, EPSG:4326, broj, k.o. i izvor");}
   mode="ok"; E("KATW").clear(); E("renderKrk")(E("KRK_CUR"));
