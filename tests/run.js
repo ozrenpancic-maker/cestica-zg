@@ -3573,6 +3573,68 @@ async function linkCTests(){
   ok(!errs.some(e=>/before initialization/.test(e)),"Link ?c=: bez greške »before initialization«: "+errs.join(" | "));
 }
 
+// spajanje susjednih čestica u gradilište (scenarij): geometrija, provjere, prikaz, dodavanje i micanje
+async function spojTests(){
+  console.log("\n# spajanje susjednih čestica");
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  // tri čestice u nizu (Zagreb): A 20×30, B desno od A (dijeli među), C daleko
+  const sh=(f,dx)=>{const k=111320*Math.cos(45.84*Math.PI/180), g=JSON.parse(JSON.stringify(f)); g.geometry.coordinates[0]=g.geometry.coordinates[0].map(c=>[c[0]+dx/k,c[1]]); return g;};
+  const A=parcelRect(20,30,{KATASTARSKA_CESTICA:"10/1",KATASTARSKA_OPCINA:"REMETE"}), B={...sh(parcelRect(15,30,{}),20.02),properties:{KATASTARSKA_CESTICA:"10/2",KATASTARSKA_OPCINA:"REMETE"}}, C={...sh(parcelRect(15,30,{}),80),properties:{KATASTARSKA_CESTICA:"11",KATASTARSKA_OPCINA:"REMETE"}};
+  const AB=E("spojFeat")([A,B]), aA=w.turf.area(A.geometry), aB=w.turf.area(B.geometry);
+  ok(E("spojSusjedne")(A,B)&&!E("spojSusjedne")(A,C)&&!E("spojSusjedne")(B,C),"spajanje: susjedne su čestice sa zajedničkom međom (procjep 2 cm se zatvara), udaljene nisu");
+  ok(AB&&AB.geometry.type==="Polygon"&&Math.abs(w.turf.area(AB.geometry)-(aA+aB))<2&&AB.properties.KATASTARSKA_CESTICA==="10/1 + 10/2"&&AB.properties.spojeno.length===2&&AB.properties.spojeno[0].graf===Math.round(aA),"spajanje: jedna granica, površina jednaka zbroju (±2 m²), broj »10/1 + 10/2«, popis dijelova");
+  ok(E("spojFeat")([A,C])===null,"spajanje: čestice bez zajedničke međe ne daju jednu cjelinu");
+  {const KA={...A,properties:{cid:101,ref:"315907-1/1",broj:"1/1",ko:"KORNIĆ",koRef:"315907",povrsinaKatastar:600,izvor:"DGU DKP"}}, KB={...B,properties:{cid:102,ref:"315907-1/2",broj:"1/2",ko:"KORNIĆ",koRef:"315907",povrsinaKatastar:450,izvor:"DGU DKP"}}, K=E("spojFeat")([KA,KB]).properties;
+   ok(K.broj==="1/1 + 1/2"&&K.cid==="spoj:101+102"&&K.ref==="spoj:315907-1/1+315907-1/2"&&K.povrsinaKatastar===1050&&K.ko==="KORNIĆ"&&E("krkOssGet")(K)===null&&E("katwGet")(K)===null&&/Površina gradilišta/.test(E("krkAreaHtml")(K,1050)),"spajanje (Krk i gradovi): broj, oznaka, zbroj površina iz plana; OSS i katastarski sloj se za gradilište ne pitaju");}
+  // dodavanje dodirom: pointQuery vraća susjednu česticu, inspect je zamijenjen
+  const d=data(w,A,"2.2."); w.__env=d.envelope; E("render")(d); await tick(60);
+  const box=()=>$(w,"spojBox"); ok(box()&&/Gradilište od više čestica/.test(box().textContent)&&box().querySelector('[data-spoj="dodaj"]')&&!box().querySelector(".flag"),"spajanje: na listu čestice je ponuda »Dodaj susjednu česticu«");
+  let insp=[], pq=null; const oI=w.inspect, oP=w.pointQuery; w.inspect=ll=>{insp.push(ll);}; w.pointQuery=async(url,ll,f)=>{ if(f==="BROJ_UP") return [{properties:{BROJ_UP:"2.2."}}]; return pq?[pq]:[]; };
+  box().querySelector('[data-spoj="dodaj"]').dispatchEvent(new w.MouseEvent("click",{bubbles:true})); await tick(20);
+  ok(E("SPOJ.dodaj")===true&&/Dodirni susjednu česticu/.test(box().textContent),"spajanje: nakon »Dodaj« aplikacija traži dodir na karti");
+  pq=C; await E("spojDodaj")({lat:45.8401,lng:15.971}); await tick(20);
+  ok(!E("SPOJ.feat")&&insp.length===0&&/nema zajedničku među/.test(box().textContent),"spajanje: udaljena čestica se odbija s porukom");
+  pq=null; E("SPOJ").dodaj=true; await E("spojDodaj")({lat:45.8401,lng:15.971}); await tick(20); ok(/nema katastarske čestice/.test(box().textContent)&&!E("SPOJ.feat"),"spajanje: dodir bez čestice (cesta) se odbija");
+  pq=B; w.pointQuery=async(url,ll,f)=>{ if(f==="BROJ_UP") return [{properties:{BROJ_UP:"1.3."}}]; return [B]; }; d.up={v:[{properties:{BROJ_UP:"2.2."}}]};
+  await E("spojDodaj")({lat:45.8401,lng:15.9703}); await tick(20); ok(!E("SPOJ.feat")&&/urbanom pravilu 1\.3\./.test(box().textContent),"spajanje (Zagreb): čestica u drugom urbanom pravilu se ne spaja");
+  w.pointQuery=async(url,ll,f)=>{ if(f==="BROJ_UP") return [{properties:{BROJ_UP:"2.2."}}]; return [B]; };
+  await E("spojDodaj")({lat:45.8401,lng:15.9703}); await tick(20);
+  ok(E("SPOJ.feat")&&E("SPOJ.dijelovi.length")===2&&insp.length===1&&insp[0].lat===d.ll.lat,"spajanje: susjedna čestica s istim pravilom se spaja i analiza se ponavlja s istog mjesta");
+  // analiza za gradilište: zamjena čestice i prikaz
+  const pA=E("spojZamijeni")(A), pB=E("spojZamijeni")(B); ok(pA===E("SPOJ.feat")&&pB===E("SPOJ.feat"),"spajanje: dodir na bilo koju spojenu česticu daje cijelo gradilište");
+  const d2=data(w,E("SPOJ.feat"),"2.2."); w.__env=d2.envelope; E("render")(d2); await tick(80);
+  const ar=$(w,"zgArea"), t=ar?ar.textContent:"";
+  ok(/Površina gradilišta/.test(t)&&/10\/1/.test(t)&&/10\/2/.test(t)&&ar.querySelector('[data-povrsina="spojeno"]')&&/parcelacijski elaborat/.test(t),"spajanje: površina gradilišta, dijelovi i napomena da se upisana površina provjerava zasebno");
+  ok(/Gradilište od 2 čestice/.test(box().textContent)&&box().querySelector("[data-spoj-napomena]")&&/istom vlasništvu/.test(box().textContent)&&box().querySelectorAll("[data-spoj-makni]").length===2,"spajanje: popis spojenih čestica s micanjem i napomenom o parcelacijskom elaboratu");
+  ok($(w,"saveBtn").disabled&&$(w,"shareBtn").disabled&&(!$(w,"geoDl")||$(w,"geoDl").disabled),"spajanje: spojeno gradilište se ne sprema, ne dijeli i ne izvozi kao granica");
+  {const zm=w.document.querySelector('details[data-k="zk"]'); ok(zm&&zm.dataset.spoj==="1"&&!zm.querySelector("#zkFile")&&zm.querySelectorAll("[data-spoj-otvori]").length===2&&/za svaku česticu zasebno/.test(zm.textContent),"spajanje: ZK odjeljak umjesto izvatka nudi otvaranje svake čestice (izvadak jedne ne vrijedi za gradilište)");}
+  {const I=E("areaInfo")(E("SPOJ.feat").properties.KATASTARSKA_CESTICA?E("zgAreaP")(E("SPOJ.feat"),"x"):E("SPOJ.feat").properties,1208); w.localStorage.setItem("krkZK:"+E("window.__cur.key"),JSON.stringify({a:600,src:"izvadak"}));
+   const I2=E("areaInfo")(E("zgAreaP")(E("SPOJ.feat"),"x"),1208); ok(Object.keys(I).join()==="graf"&&Object.keys(I2).join()==="graf","spajanje: upisana površina jedne čestice ne ulazi u izračun gradilišta"); w.localStorage.removeItem("krkZK:"+E("window.__cur.key"));}
+  ok(Math.abs(E("curData()").area-(aA+aB))<2,"spajanje: izračun koristi površinu gradilišta");
+  // L-oblik s dijeljenim vrhovima (tri čestice): spajanje uspijeva
+  {const k=111320*Math.cos(45.84*Math.PI/180), R=(x0,y0,wd,ht,b)=>({type:"Feature",properties:{KATASTARSKA_CESTICA:b,KATASTARSKA_OPCINA:"REMETE"},geometry:{type:"Polygon",coordinates:[[[15.97+x0/k,45.84+y0/110540],[15.97+(x0+wd)/k,45.84+y0/110540],[15.97+(x0+wd)/k,45.84+(y0+ht)/110540],[15.97+x0/k,45.84+(y0+ht)/110540],[15.97+x0/k,45.84+y0/110540]]]}});
+   const L1=R(0,0,20,30,"1"), L2=R(20,0,20,30,"2"), L3=R(0,30,20,30,"3"), L4=R(20,30,20,30,"4"), FL=E("spojFeat")([L1,L2,L3]), F4=E("spojFeat")([L1,L2,L3,L4]);
+   ok(FL&&FL.geometry.type==="Polygon"&&Math.abs(w.turf.area(FL.geometry)-[L1,L2,L3].reduce((a,f)=>a+w.turf.area(f.geometry),0))<2&&F4&&Math.abs(w.turf.area(F4.geometry)-[L1,L2,L3,L4].reduce((a,f)=>a+w.turf.area(f.geometry),0))<2,"spajanje: L-oblik od tri čestice i blok 2×2 sa zajedničkim vrhovima spajaju se (površina = zbroj ±2 m²)");
+   const T=R(40,0,4,60,"put"); E("SPOJ").dijelovi=[L2]; const FT=E("spojFeat")([L2,T]), h=E("krkAreaHtml")(E("zgAreaP")(FT,"x"),w.turf.area(FT.geometry));
+   ok(/data-spoj-traka/.test(h)&&/put je uska izdužena/.test(h),"spajanje: uska izdužena čestica (4 × 60 m) u gradilištu dobiva upozorenje (moguće put)");}
+  // pravilo nije utvrđeno: spajanje se ne računa; korisnik u međuvremenu otvori drugu česticu: rezultat se odbacuje
+  {E("spojOcisti")(); const dd=data(w,A,"2.2."); dd.up={v:[{properties:{BROJ_UP:"2.2."}}]}; w.__env=dd.envelope; E("render")(dd); await tick(40); insp=[];
+   w.pointQuery=async(url,ll,f)=>{ if(f==="BROJ_UP") return []; return [B]; }; E("SPOJ").dodaj=true; await E("spojDodaj")({lat:45.8401,lng:15.9703}); await tick(20);
+   ok(!E("SPOJ.feat")&&/nije utvrđeno/.test(box().textContent)&&insp.length===0,"spajanje: kad urbano pravilo nove čestice nije utvrđeno, spajanje se ne računa");
+   let pusti; w.pointQuery=async(url,ll,f)=>{ if(f==="BROJ_UP") return [{properties:{BROJ_UP:"2.2."}}]; await new Promise(r=>pusti=r); return [B]; };
+   const pr=E("spojDodaj")({lat:45.8401,lng:15.9703}); await tick(10); E("clickId=clickId+1"); pusti(); await pr; await tick(20);
+   ok(!E("SPOJ.feat")&&insp.length===0,"spajanje: kad korisnik u međuvremenu otvori drugu česticu, zakašnjelo spajanje se odbacuje");
+   E("spojOcisti")(); E("SPOJ").dijelovi=[A,B]; E("SPOJ").feat=AB; E("SPOJ").ll=dd.ll; w.pointQuery=async(url,ll,f)=>{ if(f==="BROJ_UP") return [{properties:{BROJ_UP:"2.2."}}]; return [B]; };
+   const d3=data(w,AB,"2.2."); w.__env=d3.envelope; E("render")(d3); await tick(60); insp=[];}
+  // micanje: s jednom česticom spajanje prestaje i otvara se preostala
+  insp=[]; box().querySelector('[data-spoj-makni="1"]').dispatchEvent(new w.MouseEvent("click",{bubbles:true})); await tick(20);
+  ok(!E("SPOJ.feat")&&insp.length===1&&w.turf.booleanPointInPolygon(w.turf.point([insp[0].lng,insp[0].lat]),A),"spajanje: micanjem druge čestice spajanje prestaje i otvara se prva");
+  // dodir na drugu česticu izvan gradilišta zaboravlja spajanje
+  E("SPOJ").dijelovi=[A,B]; E("SPOJ").feat=AB; ok(E("spojZamijeni")(C)===C&&!E("SPOJ.feat"),"spajanje: dodir na česticu izvan gradilišta zaboravlja spajanje");
+  w.inspect=oI; w.pointQuery=oP;
+  ok(errs.length===0,"bez JS grešaka (spajanje): "+errs.join(" | "));
+}
+
 async function presudaTests(){
   console.log("\n# presuda: ocjena čestice");
   const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
@@ -3600,7 +3662,7 @@ async function presudaTests(){
   w.fetch=()=>Promise.reject(new Error("bez mreže u testu"));
   w.__env=d.envelope; E("render")(d); await tick(120);
   const S=$(w,"sazetak"), pr=$(w,"presuda");
-  {const od=S.firstElementChild&&S.firstElementChild.classList.contains("plan")?S.firstElementChild.nextElementSibling:null, kod=od&&od.dataset.odgovor, P0=E("window.__presuda");
+  {const pl0=S.firstElementChild&&S.firstElementChild.classList.contains("plan")?S.firstElementChild:null, sp0=pl0&&pl0.nextElementSibling&&pl0.nextElementSibling.id==="spojBox"?pl0.nextElementSibling:null, od=sp0?sp0.nextElementSibling:null, kod=od&&od.dataset.odgovor, P0=E("window.__presuda");
    ok(od&&od.id==="odgovor"&&od.nextElementSibling===pr&&kod==="uvjetno"&&od.querySelector(".odg-h").textContent.trim()===E("ODG_TXT")[kod][0],"Odgovor na vrhu: prva kartica sažetka, odmah iznad ocjene, s naslovom za stanje »"+kod+"«");
    const n=[...od.querySelectorAll(".odg-n>div")].map(x=>x.textContent), c=(w.document.querySelector('details[data-k="calc"]>summary>b')||{}).textContent||"";
    ok(n.length>=1&&n.length<=3&&n.every(x=>c.includes(x.replace(/^(Čestica|Najveći tlocrt|Ukupna površina \(GBP\))/,"").trim()))&&/^Čestica/.test(n[0])&&/^Najveći tlocrtdo \d+ m²$/.test(n[1])&&/^Ukupna površina \(GBP\)do \d+ m²$/.test(n[2]),"Odgovor: brojevi su preuzeti iz sažetka izračuna ("+n.join(" | ")+")");
@@ -4137,7 +4199,7 @@ async function zadarTests(){
   ok(errs.length===0,"bez JS grešaka (Zadar): "+errs.join(" | "));
 }
 
-netTests().then(skenKrkTests).then(skenSplitTests).then(postojeceTests).then(zonaOsijekTests).then(osijekTests).then(sgTests).then(zonaBojaTests).then(zadarTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(linkCTests).then(pouzdanostTests).then(()=>{
+netTests().then(skenKrkTests).then(skenSplitTests).then(postojeceTests).then(zonaOsijekTests).then(osijekTests).then(sgTests).then(zonaBojaTests).then(zadarTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(spojTests).then(linkCTests).then(pouzdanostTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
