@@ -358,6 +358,13 @@ details.pazi>summary>span{flex:1 1 auto}details.pazi>summary>b{font:500 12px/1.3
 .pazi-i.pazi-no{border-left-color:var(--no)}.pazi-i.pazi-warn{border-left-color:var(--warn)}.pazi-i b{display:block;font-size:14px;line-height:1.3}.pazi-i span{display:block;font-size:13px;color:var(--muted);margin-top:2px}.pazi-i small{display:block;font-size:12px;color:var(--accent);margin-top:3px}
 .pazi-i:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .pazi-cilj{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px;transition:outline-color .3s}
+.spoj{margin:0 0 10px;padding:8px 10px;border:1px dashed var(--line);border-radius:10px}.spoj-q{margin:0 0 6px;font-weight:700;font-size:14px}
+.spoj-l{list-style:none;margin:0 0 6px;padding:0;display:flex;flex-wrap:wrap;gap:6px}.spoj-l li{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:2px 4px 2px 10px;background:var(--panel)}.spoj-l small{color:var(--muted)}
+.spoj-x{appearance:none;border:0;background:none;font-size:18px;line-height:1;min-width:36px;min-height:36px;cursor:pointer;color:var(--muted)}
+.spoj-bb{display:flex;flex-wrap:wrap;gap:6px}.spoj-b,.spoj-b2{font:inherit;font-size:14px;font-weight:600;min-height:44px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--accent);cursor:pointer}.spoj-b2{color:var(--fg)}
+.spoj-h{margin:0;font-size:14px;font-weight:600;color:var(--accent)}.spoj-p{margin:6px 0 0;font-size:13px;color:var(--warn)}.spoj .flag{margin:8px 0 0}
+.spoj-b:focus-visible,.spoj-b2:focus-visible,.spoj-x:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+@media print{.spoj-bb,.spoj-x,.spoj-h{display:none}}
 .plan{margin:0 0 10px}.plan-q{margin:0 0 6px;font-weight:700;font-size:15px}
 .plan-b{display:flex;flex-wrap:wrap;gap:6px}
 .plan-o{font:inherit;font-size:14px;font-weight:600;min-height:44px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--fg);cursor:pointer}
@@ -905,7 +912,7 @@ let clickId=0;
 window.__lastBounds=null;
 const OPEN=new Set();
 sheet.addEventListener("toggle",e=>{const k=e.target.dataset&&e.target.dataset.k; if(k){e.target.open?OPEN.add(k):OPEN.delete(k)}},true);
-map.on("click",e=>inspect(e.latlng));
+map.on("click",e=>{ if(SPOJ.dodaj) spojDodaj(e.latlng); else inspect(e.latlng); });
 // ================= REGIJE: Grad Zagreb (puna analiza) i pilot otok Krk =================
 // Zagreb koristi gradske ArcGIS servise. Za otok Krk (pilot, Grad Krk) aplikacija koristi:
 //  - katastarske čestice: DGU, INSPIRE WFS (api.uredjenazemlja.hr), koordinate HTRS96/TM (EPSG:3765);
@@ -1802,7 +1809,7 @@ async function inspectKrk(ll){
   if(id!==clickId) return;
   // izvan Primorsko-goranske županije (npr. Istra, Lika): županijski sloj nema namjene, pa osnovni pregled za državu
   if(!(nam.v&&nam.v.length)&&!nam.e&&((ces.v&&ces.v.properties.hr)||(!ces.v&&!ces.e&&!inBox(ll,REGIJE.krk.bbox)))) return inspectHR(ll);
-  const parcel=ces.v||null, area=parcel?turf.area(parcel.geometry):null;
+  const parcel=spojZamijeni(ces.v||null), area=parcel?turf.area(parcel.geometry):null;
   let rows=(nam.v||[]).map(f=>({p:f.properties||{},share:null,geom:null}));
   if(parcel){
     const plK=L.geoJSON(parcel.geometry,{style:{color:"#111",weight:3,fill:false},interactive:false}).addTo(selLayer);
@@ -1841,7 +1848,7 @@ async function inspectHR(ll){
   sheet.innerHTML='<p class="hint"><span class="spin"></span>Tražim česticu u katastru (DGU)…</p>';
   const ces=await settle(loadParcelHR(ll));
   if(id!==clickId) return;
-  const parcel=ces.v||null, area=parcel?turf.area(parcel.geometry):null;
+  const parcel=spojZamijeni(ces.v||null), area=parcel?turf.area(parcel.geometry):null;
   if(parcel){ const plK=L.geoJSON(parcel.geometry,{style:{color:"#111",weight:3,fill:false},interactive:false}).addTo(selLayer); window.__lastBounds=plK.getBounds(); }
   const d={region:"hr",ll,parcel,area,rows:[],ces,nam:{v:[]},pl:{v:[]},slope:null,env:null};
   renderHR(d);
@@ -1861,7 +1868,7 @@ function krkZkGet(key){try{const v=JSON.parse(localStorage.getItem("krkZK:"+key)
 function krkZkSet(key,a,src){try{if(a>0) localStorage.setItem("krkZK:"+key,JSON.stringify({a:Math.round(a),src})); else localStorage.removeItem("krkZK:"+key)}catch(e){}}
 // upisana površina iz OSS-a (preko posrednika); cache po CESTICA_ID
 const OSSZK=new Map();
-function krkOssGet(P){return SRC_KRK.oss&&P&&P.cid!=null?OSSZK.get(String(P.cid))||null:null}
+function krkOssGet(P){return SRC_KRK.oss&&P&&P.cid!=null&&!P.spojeno?OSSZK.get(String(P.cid))||null:null}
 // OSS povremeno odbije upit posrednika (HTTP 403); jedan ponovni pokušaj, da se OSS ne opterećuje
 const OSS_RETRY=[3000], OSS_UL_RETRY=[3000,8000];
 async function krkOssJedan(base,P,k,q,ul){
@@ -1921,7 +1928,7 @@ async function zkUlFetch(k,force){
 }
 // odjeljak ZK otvoren: dohvati uložak trenutne čestice
 sheet.addEventListener("toggle",e=>{const d=e.target; if(!(d.matches&&d.matches('details[data-k="zk"]'))) return; const k=window.__zkK; window.__zkOpen=d.open?k:null; if(d.open&&k) zkUlFetch(k);},true);
-async function krkOssFetch(P,area){
+async function krkOssFetch(P,area){ if(P&&P.spojeno) return;
   if(!P||P.cid==null) return; const k=String(P.cid);
   const upd=()=>{ if(KRK_CUR&&(KRK_CUR.region==="hr"||(KRK_CUR.parcel&&KRK_CUR.parcel.properties.hr))&&KRK_CUR.parcel&&String(KRK_CUR.parcel.properties.cid)===k&&!P.ko){const o=OSSZK.get(k); if(o&&o.st==="ok"&&o.d.ko){P.ko=o.d.ko; renderKrk(KRK_CUR); return;}} const el=document.getElementById("krkArea"); if(el&&KRK_CUR&&KRK_CUR.parcel&&String(KRK_CUR.parcel.properties.cid)===k){keepPos(()=>{el.innerHTML=krkAreaHtml(P,area); areaCmpRefresh();}); zkOssRefresh(k); try{sazetakUpdate()}catch(e){}}};
   try{const c=turf.pointOnFeature(KRK_CUR.parcel).geometry.coordinates; katwFetchInto(k,c[1],c[0],upd);}catch(e){}
@@ -2221,7 +2228,7 @@ function katwFetchInto(k,lat,lon,onUpd){
   KATW.set(k,{st:"load",p}); return p;
 }
 // podatak iz sloja karte samo ako je za istu česticu
-function katwGet(P){const w=KATW.get(String(P.cid)); if(!w||w.st!=="ok") return null; const d=w.d;
+function katwGet(P){if(P&&P.spojeno) return null; const w=KATW.get(String(P.cid)); if(!w||w.st!=="ok") return null; const d=w.d;
   if(P.dguId!=null) return String(d.id)===String(P.dguId)?d:null; return !P.broj||d.broj===P.broj?d:null;}
 
 
@@ -3160,11 +3167,12 @@ sheet.addEventListener("click",e=>{ if(e.target.id!=="geoDl") return;
 function zgAreaP(parcel,key){
   const p=parcel.properties, k="zg:"+key, os=OSSZK.get(k), d=os&&os.st==="ok"?os.d:null, w=katwGet({cid:k,broj:p.KATASTARSKA_CESTICA||null});
   const gr=w&&w.graficka>0?w.graficka:d&&d.graficka>0?d.graficka:null;
+  if(p.spojeno) return {cid:k,broj:p.KATASTARSKA_CESTICA||null,spojeno:p.spojeno,povrsinaKatastar:null,gSrc:"zbroj spojenih čestica (gradski sloj čestica, 2023.)"};
   return {cid:k,broj:p.KATASTARSKA_CESTICA||null,povrsinaKatastar:gr,
     gSrc:gr?"iz katastarskog plana (DGU)":"iz granice u gradskom sloju čestica (2023.)",geomNote:"u gradskom sloju čestica",
     calcNote:"Uvjeti gradnje ispod računaju se s površinom iz gradskog sloja čestica"};
 }
-function zgOssFetch(parcel,key,area){
+function zgOssFetch(parcel,key,area){ if(parcel&&parcel.properties&&parcel.properties.spojeno) return;
   if(!SRC_KRK.oss||!parcel) return; let c; try{c=turf.pointOnFeature(parcel).geometry.coordinates}catch(e){return}
   const P0=zgAreaP(parcel,key), k=P0.cid;
   const upd=()=>{const el=document.getElementById("zgArea"); if(el&&window.__cur&&window.__cur.key===key){keepPos(()=>{el.innerHTML=krkAreaHtml(zgAreaP(parcel,key),area); areaCmpRefresh();}); zkOssRefresh(k); try{sazetakUpdate()}catch(e){}}};
@@ -3186,6 +3194,7 @@ function krkOssZk(d){
   return {a,n:z.length,ul,od};
 }
 function krkAreaHtml(P,area){
+  if(P&&P.spojeno) return spojAreaHtml(P,area);
   pzArea(P,area);
   const key=window.__cur&&window.__cur.key, man=key?krkZkGet(key):null, g=P.povrsinaKatastar||area;
   const os=krkOssGet(P), oz=os&&os.st==="ok"?krkOssZk(os.d):null, manual=window.__krkZkManual===key;
@@ -3448,7 +3457,7 @@ async function inspect(ll){
   }
   // u širem području Zagreba, ali izvan Grada (nema ni čestice ni namjene gradskih slojeva): osnovni pregled za državu
   if(!(ces.v&&ces.v[0])&&!ces.e&&!(nam.v&&nam.v[0])&&!nam.e) return inspectHR(ll);
-  const parcel=ces.v&&ces.v[0]?ces.v[0]:null;
+  const parcel=spojZamijeni(ces.v&&ces.v[0]?ces.v[0]:null);
   let zones=nam.v||[], area=null;
   if(parcel){
     area=turf.area(parcel.geometry);
@@ -9927,6 +9936,78 @@ function kredUpdate(){
 }
 sheet.addEventListener("input",e=>{ const t=e.target, k={kVl:"vl",kGod:"god",kKam:"kam"}[t&&t.id]; if(!k) return; const S=kredGet(), v=parseFloat(String(t.value).replace(",","."));
   if(Number.isFinite(v)) S[k]=v; else delete S[k]; kredSet(S); clearTimeout(KRED.tt); KRED.tt=setTimeout(kredUpdate,400); });
+// ================= SPAJANJE SUSJEDNIH ČESTICA U GRADILIŠTE =================
+// Korisnik na odabranu česticu doda jednu ili više susjednih (dodir na karti). Aplikacija ih spoji u jednu granicu i cijelu analizu
+// (namjena, pravilo, kig/kis, odmaci, simulator) radi kao da je to jedna građevna čestica. Ništa se ne mijenja u izvorima:
+// to je scenarij. Podaci vezani uz jednu katastarsku česticu (upisana površina, ZK, način uporabe) za spojenu se ne dohvaćaju.
+const SPOJ={dijelovi:[],feat:null,dodaj:false,ll:null,regija:null,poruka:""};
+function spojId(f){ const p=f&&f.properties||{}; return p.KATASTARSKA_CESTICA!=null?"zg:"+p.KATASTARSKA_OPCINA+"/"+p.KATASTARSKA_CESTICA:p.ref||(p.cid!=null?"c:"+p.cid:JSON.stringify(f.geometry.coordinates[0][0])); }
+function spojBroj(f){ const p=f.properties||{}; return p.KATASTARSKA_CESTICA||p.broj||"?"; }
+function spojKo(f){ const p=f.properties||{}; return p.KATASTARSKA_OPCINA||p.ko||p.koRef||""; }
+function spojOcisti(){ SPOJ.dijelovi=[]; SPOJ.feat=null; SPOJ.dodaj=false; SPOJ.ll=null; SPOJ.regija=null; SPOJ.poruka=""; }
+// zamjena čestice u analizi: ako je pogođena jedna od spojenih, analiza ide za cijelo gradilište; inače se spajanje zaboravlja
+function spojZamijeni(p){ if(!SPOJ.feat) return p; if(p&&SPOJ.dijelovi.some(x=>spojId(x)===spojId(p))) return SPOJ.feat; spojOcisti(); return p; }
+// spoj geometrija: mali pomak van i natrag zatvara procjepe digitalizacije između susjednih međa (do 5 cm)
+function spojGeom(F){ const B=F.map(f=>turf.buffer(turf.feature(f.geometry),0.05,{units:"meters"})); let u=B[0]; for(let i=1;i<B.length;i++) u=turf.union(u,B[i]); u=turf.buffer(u,-0.05,{units:"meters"}); return u&&u.geometry; }
+// susjedne: zajednička međa duža od 1 m (presjek proširene granice s drugom česticom)
+function spojSusjedne(A,B){ try{ const a=turf.buffer(turf.feature(A.geometry),0.25,{units:"meters"}), i=turf.intersect(a,turf.feature(B.geometry)); return !!i&&turf.area(i)>=0.5; }catch(e){ return false; } }
+function spojFeat(F){
+  const g=spojGeom(F); if(!g||g.type!=="Polygon") return null;
+  const b=F.map(spojBroj).join(" + "), ko=[...new Set(F.map(spojKo).filter(Boolean))].join(", "), p0=F[0].properties||{};
+  const dijelovi=F.map(f=>({broj:spojBroj(f),ko:spojKo(f),graf:Math.round(turf.area(f.geometry)),kat:(f.properties||{}).povrsinaKatastar||null}));
+  const props=p0.KATASTARSKA_CESTICA!=null?{...p0,KATASTARSKA_CESTICA:b,spojeno:dijelovi}
+    :{izvor:p0.izvor,preuzeto:p0.preuzeto,hr:p0.hr,ko:p0.ko,koRef:p0.koRef,broj:b,ref:"spoj:"+F.map(spojId).join("+"),cid:"spoj:"+F.map(f=>(f.properties||{}).cid).join("+"),spojeno:dijelovi,
+      povrsinaKatastar:dijelovi.every(x=>x.kat>0)?dijelovi.reduce((s,x)=>s+x.kat,0):null};
+  return {type:"Feature",geometry:g,properties:props};
+}
+async function spojCestica(ll){ const rg=regionOf(ll);
+  if(rg==="krk") return await loadParcelKrk(ll); if(rg==="hr") return await loadParcelHR(ll);
+  const r=await pointQuery(SRC.cestice,ll); return r&&r[0]||null; }
+async function spojDodaj(ll){
+  const d=curData(), cur=SPOJ.feat||(d&&d.parcel); SPOJ.dodaj=false;
+  const kraj=m=>{ SPOJ.poruka=m; try{sazetakUpdate()}catch(e){} };
+  if(!cur){ kraj("Prvo odaberi česticu."); return; }
+  if(regionOf(ll)!==regionOf(SPOJ.ll||(d&&d.ll)||ll)){ kraj("Čestica je u drugom području aplikacije; spajaju se samo čestice istog područja."); return; }
+  kraj("Tražim susjednu česticu…");
+  let B=null; try{ B=await spojCestica(ll); }catch(e){ kraj("Čestica na tom mjestu nije dohvaćena ("+(e.message||"greška")+")."); return; }
+  if(!B){ kraj("Na tom mjestu nema katastarske čestice (cesta, more ili javna površina)."); return; }
+  const F=SPOJ.dijelovi.length?SPOJ.dijelovi.slice():[d.parcel];
+  if(F.some(x=>spojId(x)===spojId(B))){ kraj("Ta čestica je već u gradilištu."); return; }
+  if(!F.some(x=>spojSusjedne(x,B))){ kraj(`Čestica ${spojBroj(B)} nema zajedničku među s gradilištem, pa se ne može spojiti.`); return; }
+  // Zagreb: urbano pravilo na novoj čestici mora biti isto (uvjeti gradnje računaju se po jednom pravilu)
+  if(!B.properties.hr&&B.properties.KATASTARSKA_CESTICA!=null){ try{ const c=turf.pointOnFeature(B).geometry.coordinates, u=await pointQuery(SRC.pravila,{lat:c[1],lng:c[0]},"BROJ_UP",false), u0=d.up&&d.up.v&&d.up.v[0]&&d.up.v[0].properties.BROJ_UP, u1=u&&u[0]&&u[0].properties.BROJ_UP;
+      if(u0&&u1&&u0!==u1){ kraj(`Čestica ${spojBroj(B)} je u urbanom pravilu ${u1}, a gradilište u ${u0}; spajanje čestica različitih pravila aplikacija ne računa.`); return; } }catch(e){} }
+  const N=F.concat([B]), f=spojFeat(N); if(!f){ kraj("Čestice se ne mogu spojiti u jednu cjelinu (granice se ne dodiruju dovoljno)."); return; }
+  SPOJ.dijelovi=N; SPOJ.feat=f; SPOJ.ll=SPOJ.ll||d.ll; SPOJ.regija=regionOf(SPOJ.ll); SPOJ.poruka=""; try{an("spoj",String(N.length))}catch(e){}
+  inspect(SPOJ.ll); }
+function spojMakni(i){ if(!SPOJ.feat) return; const N=SPOJ.dijelovi.filter((_,j)=>j!==i), ll=SPOJ.ll;
+  if(N.length<2){ const ost=N[0]; spojOcisti(); if(ost){ try{ const c=turf.pointOnFeature(ost).geometry.coordinates; inspect({lat:c[1],lng:c[0]}); }catch(e){ inspect(ll); } } else inspect(ll); return; }
+  // ostatak mora biti povezan
+  const f=spojFeat(N); if(!f){ SPOJ.poruka="Bez te čestice ostale se više ne dodiruju; makni najprije krajnju."; try{sazetakUpdate()}catch(e){} return; }
+  SPOJ.dijelovi=N; SPOJ.feat=f; SPOJ.poruka="";
+  // prvi dodir mora ostati unutar gradilišta
+  try{ if(!turf.booleanPointInPolygon(turf.point([ll.lng,ll.lat]),f)){ const c=turf.pointOnFeature(f).geometry.coordinates; SPOJ.ll={lat:c[1],lng:c[0]}; } }catch(e){}
+  inspect(SPOJ.ll); }
+function spojHtml(){ const d=curData(); if(!d||!d.parcel||window.__slobodno) return "";
+  const D=SPOJ.feat?SPOJ.dijelovi:[d.parcel];
+  let h=`<div class="spoj" id="spojBox"><p class="spoj-q">${SPOJ.feat?`Gradilište od ${D.length} čestica`:"Gradilište od više čestica"}</p>`;
+  if(SPOJ.feat) h+=`<ul class="spoj-l">${D.map((f,i)=>`<li><span>${esc(spojBroj(f))}${spojKo(f)?` <small>k.o. ${esc(spojKo(f))}</small>`:""}</span><button type="button" class="spoj-x" data-spoj-makni="${i}" aria-label="Makni česticu ${esc(spojBroj(f))} iz gradilišta">×</button></li>`).join("")}</ul>`;
+  h+=SPOJ.dodaj?`<p class="spoj-h">Dodirni susjednu česticu na karti. <button type="button" class="spoj-b2" data-spoj="odustani">Odustani</button></p>`
+    :`<div class="spoj-bb"><button type="button" class="spoj-b" data-spoj="dodaj">＋ Dodaj susjednu česticu</button>${SPOJ.feat?`<button type="button" class="spoj-b2" data-spoj="vrati">Vrati na jednu česticu</button>`:""}</div>`;
+  if(SPOJ.poruka) h+=`<p class="spoj-p" role="status">${esc(SPOJ.poruka)}</p>`;
+  if(SPOJ.feat) h+=`<p class="flag" data-spoj-napomena="1">Analiza je za scenarij u kojem su čestice ${esc(D.map(spojBroj).join(", "))} spojene u jednu građevnu česticu. Spajanje provodi ovlašteni geodet parcelacijskim elaboratom, a promjena se upisuje u katastar i zemljišnu knjigu; to je u pravilu moguće kad su čestice u istom vlasništvu. Vlasništvo, terete i upisanu površinu provjeri za svaku česticu zasebno.</p>`;
+  return h+`</div>`; }
+function spojAreaHtml(P,area){ const D=P.spojeno||[], zb=D.reduce((s,x)=>s+x.graf,0);
+  pzSet("pov-graf","Površina gradilišta (spojene čestice)",`${fmt(area)} m²`,pz("C",{izvor:"zbroj granica spojenih čestica iz katastarskog plana",razlog:"scenarij spajanja, nije provedeno u katastru",provjera:"parcelacijski elaborat"}));
+  return `<dl class="kv" style="margin-top:4px"><dt>Površina gradilišta</dt><dd><b>${fmt(area)} m²</b><small class="fx">spojena granica (zbroj grafičkih površina ${fmt(zb)} m²)</small></dd>`+
+    D.map(x=>`<dt>${esc(x.broj)}${x.ko?` <small>k.o. ${esc(x.ko)}</small>`:""}</dt><dd>${fmt(x.graf)} m²<small class="fx">grafička${x.kat?`, u katastarskom planu ${fmt(x.kat)} m²`:""}</small></dd>`).join("")+
+    `</dl><p class="flag" data-povrsina="spojeno">Upisana površina za spojene čestice se ne dohvaća: otvori svaku česticu zasebno i usporedi grafičku i upisanu. Prvi korak prije kupnje ili projekta: ovlašteni geodet koji utvrdi i obilježi međe na terenu i izradi parcelacijski elaborat za spajanje.</p>`; }
+document.addEventListener("click",e=>{ const b=e.target&&e.target.closest&&e.target.closest("[data-spoj],[data-spoj-makni]"); if(!b) return;
+  if(b.dataset.spojMakni!=null){ spojMakni(+b.dataset.spojMakni); return; }
+  const a=b.dataset.spoj;
+  if(a==="dodaj"){ SPOJ.dodaj=true; SPOJ.poruka=""; try{sazetakUpdate()}catch(e){} if(isMobile()&&UI.state==="full") try{setState("half")}catch(e){} }
+  else if(a==="odustani"){ SPOJ.dodaj=false; try{sazetakUpdate()}catch(e){} }
+  else if(a==="vrati"){ const p=SPOJ.dijelovi[0], ll=SPOJ.ll; spojOcisti(); try{ const c=turf.pointOnFeature(p).geometry.coordinates; inspect({lat:c[1],lng:c[0]}); }catch(err){ inspect(ll); } } });
 // ================= ŠTO PLANIRAŠ? =================
 // Prvo pitanje na listu čestice. Odgovor samo SKRIVA odjeljke koji se ne tiču tog plana (CSS na body.plan-…, unutar #sheet);
 // izračuni, upozorenja, sažetak i popis „Na što paziti” ostaju isti, a izvještaj i ispis sadrže sve. Kad dodir (sažetak, popis,
@@ -10205,6 +10286,8 @@ sheet.addEventListener("toggle",e=>{ const d=e.target; if(!d.matches||!d.matches
 // Pet kratkih odgovora; dodir otvara odgovarajući odjeljak. Svaki odgovor je preuzet iz odjeljka ispod (isti izvor i oznaka).
 function sazetakUpdate(){
   try{planPrimijeni()}catch(e){}
+  // spojeno gradilište nije jedna katastarska čestica: ne sprema se i ne dijeli (poveznica ga ne bi mogla ponovno otvoriti)
+  try{ for(const id of ["saveBtn","shareBtn"]){ const b=document.getElementById(id); if(b){ b.disabled=!!SPOJ.feat; b.title=SPOJ.feat?"Spojeno gradilište se ne sprema i ne dijeli; spremi ili podijeli pojedinačne čestice.":""; } } }catch(e){}
   if(window.__slobodno){ const b=document.getElementById("sazetak"); if(b) b.remove(); return; } // besplatni pregled: bez ocjene i sažetka
   const g=sheet.querySelector('.grp[data-g=sum]'), d=curData(); if(!g||!d||!d.parcel) return;
   let box=document.getElementById("sazetak");
@@ -10255,7 +10338,7 @@ function sazetakUpdate(){
   // na mobitelu je sažetak sklopljen u jedan redak sa stanjima; dodir ga proširuje (stanje se pamti)
   const kratko={"Smije li se graditi?":"Gradnja","Koliko velika kuća?":"Kuća","Ima li tereta?":"Tereti","Pristup i komunalije":"Pristup","Koliko bi koštalo?":"Trošak","Priroda i poplave":"Priroda","Koliko vrijedi zemljište?":"Vrijednost"};
   const sOpen=OPEN.has("saz")||(!isMobile()&&!OPEN.has("saz-zatv")), mini=rows.map(r=>`<span class="saz-m saz-${r.st==="?"?"q":r.st}"><i aria-hidden="true">${ic[r.st]}</i>${esc(kratko[r.q]||r.q)}</span>`).join("");
-  const h=planHtml()+presH+`<details class="saz-d" data-k="saz"${sOpen?" open":""}><summary><span class="eyebrow">Sažetak čestice</span><span class="saz-hint">${sOpen?"Sakrij ▴":"Prikaži odgovore ▾"}</span><span class="saz-mini">${mini}</span><em aria-hidden="true">▾</em></summary><ul class="saz-l">${rows.map(r=>`<li class="saz-${r.st==="?"?"q":r.st}"><button type="button" class="saz-b" data-saz="${esc(r.go)}"><i aria-hidden="true">${ic[r.st]}</i><span><b>${esc(r.q)}</b><small>${esc(r.a)}</small>${srcOf(r)?`<small class="saz-src">${esc(srcOf(r))}</small>`:""}</span><em aria-hidden="true">›</em></button></li>`).join("")}</ul>`+
+  const h=planHtml()+spojHtml()+presH+`<details class="saz-d" data-k="saz"${sOpen?" open":""}><summary><span class="eyebrow">Sažetak čestice</span><span class="saz-hint">${sOpen?"Sakrij ▴":"Prikaži odgovore ▾"}</span><span class="saz-mini">${mini}</span><em aria-hidden="true">▾</em></summary><ul class="saz-l">${rows.map(r=>`<li class="saz-${r.st==="?"?"q":r.st}"><button type="button" class="saz-b" data-saz="${esc(r.go)}"><i aria-hidden="true">${ic[r.st]}</i><span><b>${esc(r.q)}</b><small>${esc(r.a)}</small>${srcOf(r)?`<small class="saz-src">${esc(srcOf(r))}</small>`:""}</span><em aria-hidden="true">›</em></button></li>`).join("")}</ul>`+
     (C?`<button type="button" class="saz-c" data-saz="#sec-pouzdanost">Prije kupnje provjeri ${C} ${C===1?"stavku označenu":"stavki označenih"} s C ›</button>`:"")+`</details>`;
   if(box.dataset.h!==h){keepPos(()=>{box.innerHTML=h; box.dataset.h=h;});}
   const cards=g.querySelector(".cards"); if(cards) cards.style.display="none"; // stare kartice sažetka zamijenio je ovaj sažetak
@@ -10800,7 +10883,9 @@ sheet.addEventListener("change",async e=>{
   try{
     const txt=await pdfText(e.target.files[0]);
     if(txt.length<50) throw new Error("PDF nema teksta (možda je sken); otvori ga i provjeri ručno");
-    const r=analyzeZK(txt,{kc:c.ces,area:c.area});
+    // ista grafička površina kao u usporedbi na vrhu lista (iz katastarskog plana DGU-a kad je poznata, inače iz granice)
+    let gA=c.area; try{ const dd=curData(), pp=dd&&dd.parcel; if(pp){ const P=pp.properties&&pp.properties.KATASTARSKA_CESTICA!=null?zgAreaP(pp,c.key):pp.properties; if(P&&P.povrsinaKatastar>0) gA=P.povrsinaKatastar; } }catch(err){}
+    const r=analyzeZK(txt,{kc:c.ces,area:gA});
     const sum=r.flags.some(f=>f[0]==="no")?"ima ozbiljnih upisa":r.flags.length?"provjeri upozorenja":"bez upozorenja";
     ZK.res={key:c.key,html:zkHtml(r),sum};
     if(r.zkA&&window.__areaCtx&&window.__areaCtx.key===c.key){krkZkSet(c.key,r.zkA,"izvadak"); if((c.region==="krk"||c.region==="hr")&&KRK_CUR){renderKrk(KRK_CUR); return;} window.__areaCtx.refresh();}
