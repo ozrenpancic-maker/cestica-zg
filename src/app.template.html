@@ -3216,9 +3216,11 @@ function krkAreaHtml(P,area){
   h+=`</dl>`;
   if(kat&&zk&&!isti) h+=`<p class="flag">Katastar (${fmt(kat.a)} m²) i zemljišna knjiga (${fmt(zk.a)} m²) se ne slažu, razlika ${fmt(Math.abs(kat.a-zk.a))} m². To znači da podaci dviju evidencija nisu usklađeni, što je čest slučaj. Prije kupnje provjeri u zemljišnoknjižnom odjelu ili s geodetom koja je površina točna.</p>`;
   const up=zk||kat;
-  if(up){const r=(up.a-g)/g*100;
-    h+=`<p class="${Math.abs(r)>5?"flag":"meta"}">Razlika ${zk?"upisane u zemljišnoj knjizi":"upisane u katastru"} i grafičke: ${r>0?"+":""}${dec(r.toFixed(1))} % (${fmt(Math.abs(up.a-g))} m²). ${Math.abs(r)>5?"Razlika je veća od 5 %. ":""}Grafička površina izračunata je iz katastarskog plana, koji je često digitaliziran sa starih planova, a upisana površina potječe iz ${zk?"zemljišne knjige":"katastarskog operata"}; zato se često razlikuju. Nijedna nije nužno stvarna površina na terenu: točnu daje geodetska izmjera (elaborat). Kod veće razlike, prije kupnje ili gradnje, provjeri s ovlaštenim geodetom.</p>`;}
-  else h+=`<p class="meta">Grafička i upisana površina često se razlikuju; nijedna nije nužno stvarna površina na terenu.</p>`;
+  // savjet geodeta: kad se grafička i upisana površina ne podudaraju (ili upisana nije poznata), prvi korak je obilježavanje međa
+  const GEOD="Prvi korak prije kupnje ili projekta: ovlašteni geodet i obilježavanje (iskolčenje) međa na terenu; tek tada se zna stvarna površina i položaj granica.";
+  if(up){const r=(up.a-g)/g*100, raz=Math.abs(up.a-g)>=1;
+    h+=`<p class="${raz?"flag":"meta"}" data-povrsina="${raz?"razlika":"ista"}">${raz?`Grafička i upisana površina se ne podudaraju: razlika ${fmt(Math.abs(up.a-g))} m² (${r>0?"+":""}${dec(r.toFixed(1))} %, ${zk?"upisana u zemljišnoj knjizi":"upisana u katastru"} prema grafičkoj). ${GEOD} `:"Grafička i upisana površina se podudaraju. "}Grafička površina izračunata je iz katastarskog plana, koji je često digitaliziran sa starih planova, a upisana potječe iz ${zk?"zemljišne knjige":"katastarskog operata"}. Nijedna nije nužno stvarna površina na terenu: točnu daje geodetska izmjera (elaborat). Granice čestice i sve površine u aplikaciji su iz katastarskog plana, ne s terena.</p>`;}
+  else h+=`<p class="flag" data-povrsina="nepoznato">Upisana površina nije dohvaćena, pa razlika prema grafičkoj nije provjerena. Grafička površina iz katastarskog plana često se razlikuje od upisane i od stvarne površine na terenu. ${GEOD}</p>`;
   {const S=areaSel(P,area); h+=`<p class="meta">Uvjeti gradnje ispod računaju se s površinom: ${esc(S.naziv)} (${fmt(S.a)} m²)${S.fallback?", jer odabrana još nije dostupna":""}. Površinu za izračun biraš u „Izračunu za ovu česticu”.</p>`;}
   return h;
 }
