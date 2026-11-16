@@ -3605,9 +3605,27 @@ async function spojTests(){
   const d2=data(w,E("SPOJ.feat"),"2.2."); w.__env=d2.envelope; E("render")(d2); await tick(80);
   const ar=$(w,"zgArea"), t=ar?ar.textContent:"";
   ok(/Površina gradilišta/.test(t)&&/10\/1/.test(t)&&/10\/2/.test(t)&&ar.querySelector('[data-povrsina="spojeno"]')&&/parcelacijski elaborat/.test(t),"spajanje: površina gradilišta, dijelovi i napomena da se upisana površina provjerava zasebno");
-  ok(/Gradilište od 2 čestica/.test(box().textContent)&&box().querySelector("[data-spoj-napomena]")&&/istom vlasništvu/.test(box().textContent)&&box().querySelectorAll("[data-spoj-makni]").length===2,"spajanje: popis spojenih čestica s micanjem i napomenom o parcelacijskom elaboratu");
-  ok($(w,"saveBtn").disabled&&$(w,"shareBtn").disabled,"spajanje: spojeno gradilište se ne sprema i ne dijeli");
+  ok(/Gradilište od 2 čestice/.test(box().textContent)&&box().querySelector("[data-spoj-napomena]")&&/istom vlasništvu/.test(box().textContent)&&box().querySelectorAll("[data-spoj-makni]").length===2,"spajanje: popis spojenih čestica s micanjem i napomenom o parcelacijskom elaboratu");
+  ok($(w,"saveBtn").disabled&&$(w,"shareBtn").disabled&&(!$(w,"geoDl")||$(w,"geoDl").disabled),"spajanje: spojeno gradilište se ne sprema, ne dijeli i ne izvozi kao granica");
+  {const zm=w.document.querySelector('details[data-k="zk"]'); ok(zm&&zm.dataset.spoj==="1"&&!zm.querySelector("#zkFile")&&zm.querySelectorAll("[data-spoj-otvori]").length===2&&/za svaku česticu zasebno/.test(zm.textContent),"spajanje: ZK odjeljak umjesto izvatka nudi otvaranje svake čestice (izvadak jedne ne vrijedi za gradilište)");}
+  {const I=E("areaInfo")(E("SPOJ.feat").properties.KATASTARSKA_CESTICA?E("zgAreaP")(E("SPOJ.feat"),"x"):E("SPOJ.feat").properties,1208); w.localStorage.setItem("krkZK:"+E("window.__cur.key"),JSON.stringify({a:600,src:"izvadak"}));
+   const I2=E("areaInfo")(E("zgAreaP")(E("SPOJ.feat"),"x"),1208); ok(Object.keys(I).join()==="graf"&&Object.keys(I2).join()==="graf","spajanje: upisana površina jedne čestice ne ulazi u izračun gradilišta"); w.localStorage.removeItem("krkZK:"+E("window.__cur.key"));}
   ok(Math.abs(E("curData()").area-(aA+aB))<2,"spajanje: izračun koristi površinu gradilišta");
+  // L-oblik s dijeljenim vrhovima (tri čestice): spajanje uspijeva
+  {const k=111320*Math.cos(45.84*Math.PI/180), R=(x0,y0,wd,ht,b)=>({type:"Feature",properties:{KATASTARSKA_CESTICA:b,KATASTARSKA_OPCINA:"REMETE"},geometry:{type:"Polygon",coordinates:[[[15.97+x0/k,45.84+y0/110540],[15.97+(x0+wd)/k,45.84+y0/110540],[15.97+(x0+wd)/k,45.84+(y0+ht)/110540],[15.97+x0/k,45.84+(y0+ht)/110540],[15.97+x0/k,45.84+y0/110540]]]}});
+   const L1=R(0,0,20,30,"1"), L2=R(20,0,20,30,"2"), L3=R(0,30,20,30,"3"), L4=R(20,30,20,30,"4"), FL=E("spojFeat")([L1,L2,L3]), F4=E("spojFeat")([L1,L2,L3,L4]);
+   ok(FL&&FL.geometry.type==="Polygon"&&Math.abs(w.turf.area(FL.geometry)-[L1,L2,L3].reduce((a,f)=>a+w.turf.area(f.geometry),0))<2&&F4&&Math.abs(w.turf.area(F4.geometry)-[L1,L2,L3,L4].reduce((a,f)=>a+w.turf.area(f.geometry),0))<2,"spajanje: L-oblik od tri čestice i blok 2×2 sa zajedničkim vrhovima spajaju se (površina = zbroj ±2 m²)");
+   const T=R(40,0,4,60,"put"); E("SPOJ").dijelovi=[L2]; const FT=E("spojFeat")([L2,T]), h=E("krkAreaHtml")(E("zgAreaP")(FT,"x"),w.turf.area(FT.geometry));
+   ok(/data-spoj-traka/.test(h)&&/put je uska izdužena/.test(h),"spajanje: uska izdužena čestica (4 × 60 m) u gradilištu dobiva upozorenje (moguće put)");}
+  // pravilo nije utvrđeno: spajanje se ne računa; korisnik u međuvremenu otvori drugu česticu: rezultat se odbacuje
+  {E("spojOcisti")(); const dd=data(w,A,"2.2."); dd.up={v:[{properties:{BROJ_UP:"2.2."}}]}; w.__env=dd.envelope; E("render")(dd); await tick(40); insp=[];
+   w.pointQuery=async(url,ll,f)=>{ if(f==="BROJ_UP") return []; return [B]; }; E("SPOJ").dodaj=true; await E("spojDodaj")({lat:45.8401,lng:15.9703}); await tick(20);
+   ok(!E("SPOJ.feat")&&/nije utvrđeno/.test(box().textContent)&&insp.length===0,"spajanje: kad urbano pravilo nove čestice nije utvrđeno, spajanje se ne računa");
+   let pusti; w.pointQuery=async(url,ll,f)=>{ if(f==="BROJ_UP") return [{properties:{BROJ_UP:"2.2."}}]; await new Promise(r=>pusti=r); return [B]; };
+   const pr=E("spojDodaj")({lat:45.8401,lng:15.9703}); await tick(10); E("clickId=clickId+1"); pusti(); await pr; await tick(20);
+   ok(!E("SPOJ.feat")&&insp.length===0,"spajanje: kad korisnik u međuvremenu otvori drugu česticu, zakašnjelo spajanje se odbacuje");
+   E("spojOcisti")(); E("SPOJ").dijelovi=[A,B]; E("SPOJ").feat=AB; E("SPOJ").ll=dd.ll; w.pointQuery=async(url,ll,f)=>{ if(f==="BROJ_UP") return [{properties:{BROJ_UP:"2.2."}}]; return [B]; };
+   const d3=data(w,AB,"2.2."); w.__env=d3.envelope; E("render")(d3); await tick(60); insp=[];}
   // micanje: s jednom česticom spajanje prestaje i otvara se preostala
   insp=[]; box().querySelector('[data-spoj-makni="1"]').dispatchEvent(new w.MouseEvent("click",{bubbles:true})); await tick(20);
   ok(!E("SPOJ.feat")&&insp.length===1&&w.turf.booleanPointInPolygon(w.turf.point([insp[0].lng,insp[0].lat]),A),"spajanje: micanjem druge čestice spajanje prestaje i otvara se prva");
