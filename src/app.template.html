@@ -3104,7 +3104,7 @@ function areaCmpHtml(P,area,share,calc){
   const S=areaSel(P,area), cols=["graf","kat","zk"].map(k=>S.info[k]).filter(Boolean);
   const nm={graf:"Grafička",kat:"Katastar",zk:"Zemljišna knjiga"};
   let h=`<div id="areaCmp" class="acmp"><div class="kd" style="margin:0 0 4px"><label for="areaSel">Površina za izračun</label><select id="areaSel" class="bsel">${[["graf","grafička"],["kat","upisana u katastru"],["zk","upisana u zemljišnoj knjizi"]].map(o=>`<option value="${o[0]}"${o[0]===AREA_SRC?" selected":""}${o[0]==="graf"||S.info[o[0]]?"":" disabled"}>${o[1]}${o[0]==="graf"||S.info[o[0]]?"":" (nije dostupna)"}</option>`).join("")}</select></div>`;
-  h+=`<p class="meta" style="margin:0 0 6px">Korištena površina: <b>${fmt(S.a)} m²</b> (${esc(S.naziv)}; izvor: ${esc(S.src)})${share<0.999?`, od toga u građevinskom dijelu ${fmt(S.a*share)} m²`:""}.${S.fallback?" Odabrana površina još nije dostupna, pa se koristi grafička.":""}</p>`;
+  h+=`<p class="meta" style="margin:0 0 6px">Korištena površina: <b>${fmt(S.a)} m²</b> (${esc(S.naziv)}; izvor: ${esc(S.src)})${share<0.999?`, od toga u građevinskom dijelu ${fmt(S.a*share)} m²`:""}.${S.fallback?(S.info.graf&&/scenarij/.test(S.info.graf.src)?" Za spojeno gradilište upisana površina ne postoji, pa se koristi grafička.":" Odabrana površina još nije dostupna, pa se koristi grafička."):""}</p>`;
   if(cols.length>1){
     const R=cols.map(c=>({c,A:c.a*share,r:calc(c.a*share)}));
     const td=(x,v)=>`<td${x.c.k===S.k?' class="sel"':""}>${v}</td>`;
@@ -9951,12 +9951,14 @@ function spojZamijeni(p){ if(!SPOJ.feat){ if(!SPOJ.radi){ SPOJ.poruka=""; SPOJ.d
 // spoj geometrija: pomak 6 cm van i natrag zatvara procjepe digitalizacije između susjednih međa (do oko 12 cm); ako spajanje
 // zapne na zajedničkim vrhovima (numerička greška), pokuša se ponovno sa zaokruženim koordinatama i malo drukčijim pomakom
 function spojGeom(F){
-  for(const [b,prec] of [[0.06,null],[0.06,8],[0.07,7]]){ try{
-    const B=F.map(f=>{ let x=turf.feature(f.geometry); if(prec) x=turf.truncate(x,{precision:prec,mutate:false}); return turf.buffer(x,b,{units:"meters"}); });
+  // redoslijedi spajanja: zadani, obrnuti, po površini (numerička greška ovisi o redoslijedu)
+  const R=[F,F.slice().reverse(),F.slice().sort((a,b)=>turf.area(b.geometry)-turf.area(a.geometry))];
+  for(const [b,prec] of [[0.06,null],[0.06,8],[0.07,7],[0.08,7]]) for(const O of R){ try{
+    const B=O.map(f=>{ let x=turf.feature(f.geometry); if(prec) x=turf.truncate(x,{precision:prec,mutate:false}); return turf.buffer(x,b,{units:"meters"}); });
     let u=B[0]; for(let i=1;i<B.length;i++) u=turf.union(u,B[i]); u=turf.buffer(u,-b,{units:"meters"}); if(u&&u.geometry) return u.geometry; }catch(e){} }
   return null; }
-// susjedne: zajednička međa od oko 1 m naviše, uz procjep do 10 cm (presjek granice proširene za 10 cm s drugom česticom ≥ 0,1 m²)
-function spojSusjedne(A,B){ try{ const a=turf.buffer(turf.feature(A.geometry),0.10,{units:"meters"}), i=turf.intersect(a,turf.feature(B.geometry)); return !!i&&turf.area(i)>=0.1; }catch(e){ return false; } }
+// susjedne: zajednička međa od oko 1 m naviše, uz procjep do oko 10 cm (presjek granice proširene za 12 cm s drugom česticom ≥ 0,1 m²)
+function spojSusjedne(A,B){ try{ const a=turf.buffer(turf.feature(A.geometry),0.12,{units:"meters"}), i=turf.intersect(a,turf.feature(B.geometry)); return !!i&&turf.area(i)>=0.1; }catch(e){ return false; } }
 function spojFeat(F){
   let g=null; try{ g=spojGeom(F); }catch(e){ g=null; } if(!g||g.type!=="Polygon") return null;
   const b=F.map(spojBroj).join(" + "), ko=[...new Set(F.map(spojKo).filter(Boolean))].join(", "), p0=F[0].properties||{};
@@ -9969,14 +9971,16 @@ function spojFeat(F){
 async function spojCestica(ll){ const rg=regionOf(ll);
   if(rg==="krk") return await loadParcelKrk(ll); if(rg==="hr") return await loadParcelHR(ll);
   const r=await pointQuery(SRC.cestice,ll); return r&&r[0]||null; }
-async function spojDodaj(ll){ SPOJ.radi=true; try{ return await spojDodaj0(ll); }catch(e){ SPOJ.poruka="Spajanje nije uspjelo ("+(e.message||"greška")+")."; try{sazetakUpdate()}catch(x){} } finally{ SPOJ.radi=false; } }
+async function spojDodaj(ll){ SPOJ.radi=true; try{ return await spojDodaj0(ll); }catch(e){ SPOJ.poruka="Spajanje nije uspjelo ("+(e.message||"greška")+")."; try{sazetakUpdate()}catch(x){} }
+  finally{ SPOJ.radi=false; if(SPOJ.poruka===SPOJ_TRAZI){ SPOJ.poruka=""; try{sazetakUpdate()}catch(x){} } } }
+const SPOJ_TRAZI="Tražim susjednu česticu…";
 async function spojDodaj0(ll){
   const d=curData(), cur=SPOJ.feat||(d&&d.parcel), id0=clickId, k0=window.__cur&&window.__cur.key; SPOJ.dodaj=false;
   const zast=()=>clickId!==id0||(window.__cur&&window.__cur.key)!==k0; // korisnik je u međuvremenu otvorio drugu česticu
   const kraj=m=>{ if(zast()) return; SPOJ.poruka=m; try{sazetakUpdate()}catch(e){} };
   if(!cur){ kraj("Prvo odaberi česticu."); return; }
   if(regionOf(ll)!==regionOf(SPOJ.ll||(d&&d.ll)||ll)){ kraj("Čestica je u drugom području aplikacije; spajaju se samo čestice istog područja."); return; }
-  kraj("Tražim susjednu česticu…");
+  kraj(SPOJ_TRAZI);
   let B=null; try{ B=await spojCestica(ll); }catch(e){ kraj("Čestica na tom mjestu nije dohvaćena ("+(e.message||"greška")+")."); return; }
   if(zast()) return;
   if(!B){ kraj("Na tom mjestu nema katastarske čestice (cesta, more ili javna površina)."); return; }
@@ -9985,18 +9989,21 @@ async function spojDodaj0(ll){
   if(!F.some(x=>spojSusjedne(x,B))){ kraj(`Čestica ${spojBroj(B)} nema zajedničku među s gradilištem, pa se ne može spojiti.`); return; }
   // Zagreb: urbano pravilo na novoj čestici mora biti isto (uvjeti gradnje računaju se po jednom pravilu)
   if(!B.properties.hr&&B.properties.KATASTARSKA_CESTICA!=null){ let u1=null; const u0=d.up&&d.up.v&&d.up.v[0]&&d.up.v[0].properties.BROJ_UP;
-    try{ const c=turf.pointOnFeature(B).geometry.coordinates, u=await pointQuery(SRC.pravila,{lat:c[1],lng:c[0]},"BROJ_UP",false); u1=u&&u[0]&&u[0].properties.BROJ_UP||null; }catch(e){ u1=null; }
+    try{ const c=turf.pointOnFeature(B).geometry.coordinates, q={lat:c[1],lng:c[0]}, u=await pointQuery(SRC.pravila,q,"BROJ_UP",false); u1=u&&u[0]&&u[0].properties.BROJ_UP||null;
+      // izvan GUP-a Zagreba (Sesvete): isti put kao u inspect – urbano pravilo GUP-a Sesveta
+      if(!u1){ const se=await pointQuery(SRC.pravilaSE,q,"TextString",false), m=se&&se[0]?String(se[0].properties.TextString||"").match(/\d+\.\d+(?:\.\d+)?/):null; if(m) u1=m[0]+"."; } }catch(e){ u1=null; }
     if(zast()) return;
     if(!u0||!u1){ kraj(`Urbano pravilo za ${u0?"česticu "+spojBroj(B):"gradilište"} nije utvrđeno, pa se ne zna vrijede li isti uvjeti; spajanje se ne računa.`); return; }
     if(u0!==u1){ kraj(`Čestica ${spojBroj(B)} je u urbanom pravilu ${u1}, a gradilište u ${u0}; spajanje čestica različitih pravila aplikacija ne računa.`); return; } }
-  const N=F.concat([B]), f=spojFeat(N); if(!f){ kraj("Čestice se ne mogu spojiti u jednu cjelinu (granice se ne dodiruju dovoljno)."); return; }
+  const N=F.concat([B]), f=spojFeat(N); if(!f){ kraj("Čestice se dodiruju, ali spajanje granica nije uspjelo (računska greška na zajedničkim vrhovima ili čestica iz više dijelova); pokušaj dodati čestice drugim redom."); return; }
   if(zast()) return;
   SPOJ.dijelovi=N; SPOJ.feat=f; SPOJ.ll=SPOJ.ll||d.ll; SPOJ.regija=regionOf(SPOJ.ll); SPOJ.poruka=""; try{an("spoj",String(N.length))}catch(e){}
   inspect(SPOJ.ll); }
 function spojMakni(i){ if(!SPOJ.feat) return; const N=SPOJ.dijelovi.filter((_,j)=>j!==i), ll=SPOJ.ll;
   if(N.length<2){ const ost=N[0]; spojOcisti(); if(ost){ try{ const c=turf.pointOnFeature(ost).geometry.coordinates; inspect({lat:c[1],lng:c[0]}); }catch(e){ inspect(ll); } } else inspect(ll); return; }
   // ostatak mora biti povezan
-  const f=spojFeat(N); if(!f){ SPOJ.poruka="Bez te čestice ostale se više ne dodiruju; makni najprije krajnju."; try{sazetakUpdate()}catch(e){} return; }
+  const f=spojFeat(N); if(!f){ const pov=N.every(x=>N.some(y=>y!==x&&spojSusjedne(x,y)));
+    SPOJ.poruka=pov?"Spajanje granica preostalih čestica nije uspjelo (računska greška); vrati na jednu česticu i dodaj ih ponovno.":"Bez te čestice ostale se više ne dodiruju; makni najprije krajnju."; try{sazetakUpdate()}catch(e){} return; }
   SPOJ.dijelovi=N; SPOJ.feat=f; SPOJ.poruka="";
   // prvi dodir mora ostati unutar gradilišta
   try{ if(!turf.booleanPointInPolygon(turf.point([ll.lng,ll.lat]),f)){ const c=turf.pointOnFeature(f).geometry.coordinates; SPOJ.ll={lat:c[1],lng:c[0]}; } }catch(e){}
@@ -10020,7 +10027,7 @@ function spojAreaHtml(P,area){ const D=P.spojeno||[], zb=D.reduce((s,x)=>s+x.gra
   pzSet("pov-graf","Površina gradilišta (spojene čestice)",`${fmt(area)} m²`,pz("C",{izvor:"zbroj granica spojenih čestica iz katastarskog plana",razlog:"scenarij spajanja, nije provedeno u katastru",provjera:"parcelacijski elaborat"}));
   return `<dl class="kv" style="margin-top:4px"><dt>Površina gradilišta</dt><dd><b>${fmt(area)} m²</b><small class="fx">spojena granica (zbroj grafičkih površina ${fmt(zb)} m², ${zgS?"gradski sloj čestica 2023.":"katastarski plan"})</small></dd>`+
     D.map(x=>`<dt>${esc(x.broj)}${x.ko?` <small>k.o. ${esc(x.ko)}</small>`:""}</dt><dd>${fmt(x.graf)} m²<small class="fx">grafička${x.kat?`, u katastarskom planu ${fmt(x.kat)} m²`:""}</small></dd>`).join("")+
-    `</dl>`+(tr.length?`<p class="flag" data-spoj-traka="1">${tr.length===1?"Čestica":"Čestice"} ${esc(tr.map(x=>x.broj).join(", "))} ${tr.length===1?"je uska izdužena":"su uske izdužene"} (širina oko ${tr.map(x=>dec(x.traka)+" m").join(", ")}): moguće put, prolaz ili kanal, koji se u pravilu ne može pripojiti građevnoj čestici. Otvori je zasebno i provjeri način uporabe u katastru.</p>`:"")+`<p class="flag" data-povrsina="spojeno">Upisana površina za spojene čestice se ne dohvaća: otvori svaku česticu zasebno i usporedi grafičku i upisanu. Prvi korak prije kupnje ili projekta: ovlašteni geodet koji utvrdi i obilježi međe na terenu i izradi parcelacijski elaborat za spajanje.</p>`; }
+    `</dl>`+(tr.length?`<p class="flag" data-spoj-traka="1">${tr.length===1?"Čestica":"Čestice"} ${esc(tr.map(x=>x.broj).join(", "))} ${tr.length===1?"je uska izdužena":"su uske izdužene"} (širina oko ${tr.map(x=>dec(x.traka)+" m").join(", ")}). Ako je to put, prolaz ili kanal, u pravilu se ne može pripojiti građevnoj čestici; otvori je zasebno i provjeri način uporabe u katastru.</p>`:"")+`<p class="flag" data-povrsina="spojeno">Upisana površina za spojene čestice se ne dohvaća: otvori svaku česticu zasebno i usporedi grafičku i upisanu. Prvi korak prije kupnje ili projekta: ovlašteni geodet koji utvrdi i obilježi međe na terenu i izradi parcelacijski elaborat za spajanje.</p>`; }
 document.addEventListener("click",e=>{ const b=e.target&&e.target.closest&&e.target.closest("[data-spoj],[data-spoj-makni]"); if(!b) return;
   if(b.dataset.spojMakni!=null){ spojMakni(+b.dataset.spojMakni); return; }
   const a=b.dataset.spoj;
