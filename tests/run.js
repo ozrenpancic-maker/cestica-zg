@@ -1166,6 +1166,14 @@ async function krkTests(){
     ok(cP===1&&pp.slojevi[0].name==="x","Štednja: kad OSS odbije glavni posrednik, poplave i kulturna dobra i dalje idu preko njega");
     E("pmOcisti")(); cA=cD=0; await Promise.all(["31","32","33","34","35"].map(id=>E("krkOssOnce")({broj:"1/1"},id,null,false)));
     ok(cD===2&&E("pmStoji")("https://oss2-test.example/"),"Štednja: pet istodobnih upita dok rezervni vraća 429 bez JSON-a – rezervni dobije samo dva (jedan po jedan), zatim pauza ("+cD+")");
+    // istek roka na upitu prema OSS-u (spori OSS) ne gasi glavni posrednik; oba odbijena (blok) – rezervni dobije najviše dva od pet istodobnih
+    {E("pmOcisti")(); const f5=w.fetch; let cB2=0; w.fetch=(u,o)=>{u=String(u); if(u.startsWith("https://oss-test.example/?id=")){ const e=new Error("abort"); e.name="AbortError"; return Promise.reject(e); }
+       if(u.startsWith("https://oss2-test.example/")){cB2++; return Promise.resolve({ok:false,status:503,json:()=>Promise.resolve({ok:false,greska:"OSS je odbio upit (HTTP 403)",blok:true})});} return f5(u,o);};
+     await E("krkOssOnce")({broj:"1/1"},"51",null,false); await E("krkOssOnce")({broj:"1/1"},"52",null,false);
+     ok(!E("pmStoji")("https://oss-test.example/"),"Štednja: istek roka kod sporog OSS-a ne isključuje glavni posrednik (rizici i dalje idu preko njega)");
+     E("pmOcisti")(); cB2=0; w.fetch=(u,o)=>{u=String(u); if(u.startsWith("https://oss-test.example/?id=")) return Promise.resolve({ok:false,status:503,json:()=>Promise.resolve({ok:false,greska:"OSS je odbio upit (HTTP 403)",blok:true})}); return w.fetch0(u,o);}; w.fetch0=(u,o)=>{u=String(u); if(u.startsWith("https://oss2-test.example/")){cB2++; return Promise.resolve({ok:false,status:503,json:()=>Promise.resolve({ok:false,greska:"OSS je odbio upit (HTTP 403)",blok:true})});} return f5(u,o);};
+     await Promise.all(["61","62","63","64","65"].map(id=>E("krkOssOnce")({broj:"1/1"},id,null,false)));
+     ok(cB2<=2,"Štednja: kad OSS odbija i rezervni posrednik, od pet istodobnih upita rezervni dobije najviše dva ("+cB2+")"); w.fetch=f5; delete w.fetch0;}
     // jedan uspjeh između resetira brojač neuspjeha
     E("pmOcisti")(); E("pmPao")("https://x.example/"); E("pmRadi")("https://x.example/"); E("pmPao")("https://x.example/"); ok(!E("pmStoji")("https://x.example/"),"Štednja: uspješan odgovor između dva neuspjeha poništava brojanje");
     w.fetch=f3;}
