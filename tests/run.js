@@ -1157,6 +1157,23 @@ async function krkTests(){
    const rr=await E("krkOssOnce")({broj:"2345/6"},"13",null,false); ok(rr.st==="ok"&&cA===1,"Štednja: nakon brisanja pauza (»Pokušaj ponovno«) glavni posrednik se opet pita");
    // stari zapis (stariji od 3 dana) se ne koristi
    const kk="pm1:oss:id=13", v=JSON.parse(w.localStorage.getItem(kk)); v.t-=4*864e5; w.localStorage.setItem(kk,JSON.stringify(v)); cA=0; await E("krkOssOnce")({broj:"2345/6"},"13",null,false); ok(cA===1,"Štednja: zapis stariji od 3 dana se ne koristi");
+   // odbijanje OSS-a ne isključuje posrednika za rizike; rezervni bez JSON-a (429) ulazi u pauzu; istodobni upiti na rezervni idu jedan po jedan
+   {E("pmOcisti")(); let cP=0, cD=0, dKod=429; const f3=w.fetch; w.fetch=(u)=>{u=String(u);
+      if(u.startsWith("https://oss-test.example/?poplave")){cP++; return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({ok:true,slojevi:[{name:"x"}]})});}
+      if(u.startsWith("https://oss-test.example/")){cA++; return Promise.resolve({ok:false,status:503,json:()=>Promise.resolve({ok:false,greska:"OSS je odbio upit (HTTP 403)",blok:true})});}
+      if(u.startsWith("https://oss2-test.example/")){cD++; return Promise.resolve({ok:false,status:dKod,json:()=>Promise.reject(new SyntaxError("nije JSON"))});} return f3(u);};
+    cA=0; await E("krkOssOnce")({broj:"1/1"},"21",null,false); const pp=await E("posrednikUpit")("poplave=45.1,14.6");
+    ok(cP===1&&pp.slojevi[0].name==="x","Štednja: kad OSS odbije glavni posrednik, poplave i kulturna dobra i dalje idu preko njega");
+    E("pmOcisti")(); cA=cD=0; await Promise.all(["31","32","33","34","35"].map(id=>E("krkOssOnce")({broj:"1/1"},id,null,false)));
+    ok(cD===2&&E("pmStoji")("https://oss2-test.example/"),"Štednja: pet istodobnih upita dok rezervni vraća 429 bez JSON-a – rezervni dobije samo dva (jedan po jedan), zatim pauza ("+cD+")");
+    // jedan uspjeh između resetira brojač neuspjeha
+    E("pmOcisti")(); E("pmPao")("https://x.example/"); E("pmRadi")("https://x.example/"); E("pmPao")("https://x.example/"); ok(!E("pmStoji")("https://x.example/"),"Štednja: uspješan odgovor između dva neuspjeha poništava brojanje");
+    w.fetch=f3;}
+   // zapamćeni odgovor s drugim brojem čestice ne koristi se; tuđi ključevi se ne diraju; prevelik zapis se ne sprema
+   {E("pmOcisti")(); E("pmSet")("oss:id=41",{ok:true,broj:"9/9",katastar:1}); w.localStorage.setItem("tudji","x"); let cX=0; const f4=w.fetch; w.fetch=(u)=>{u=String(u); if(u.startsWith("https://oss-test.example/")){cX++; return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({ok:true,broj:"1/1",katastar:500,zk:[],dijelovi:[]})});} return f4(u);};
+    const rb=await E("krkOssOnce")({broj:"1/1"},"41",null,false); ok(cX===1&&rb.d.broj==="1/1","Štednja: zapamćeni odgovor za drugi broj čestice se ne koristi");
+    E("pmSet")("velik",{x:"a".repeat(70000)}); ok(!w.localStorage.getItem("pm1:velik"),"Štednja: zapis veći od 60 KB se ne sprema");
+    E("pmOcisti")(); ok(w.localStorage.getItem("tudji")==="x","Štednja: brisanje dira samo vlastite zapise"); w.localStorage.removeItem("tudji"); w.fetch=f4;}
    E("pmOcisti")(); E("SRC_KRK").oss2=""; w.fetch=f0;}
   mode="ok"; E("SRC_KRK").oss=""; E("OSSZK").clear(); E("renderKrk")(E("KRK_CUR"));
   // izravno iz katastarskog sloja karte (bez posrednika): površina upisana u katastar
@@ -3225,7 +3242,7 @@ async function rizTests(){
    ok(seq.join()==="p1,p2"&&q.posrednik==="deno","Posrednik: prvo Cloudflare; kad ne zna odgovoriti (stara verzija), Deno Deploy");
    seq=[]; prviOk=true; E("pmOcisti")(); q=await E("posrednikUpit")("poplave=45.8,15.9"); ok(seq.join()==="p1"&&q.slojevi[0].name==="x","Posrednik: kad Cloudflare odgovori, Deno Deploy se ne pita (štedi mjesečni promet)");
    seq=[]; q=await E("posrednikUpit")("poplave=45.8,15.9"); ok(seq.length===0&&q.izUredjaja===true&&q.slojevi[0].name==="x","Štednja: poplave za istu točku drugi put dolaze s uređaja (bez upita)");
-   seq=[]; q=await E("posrednikUpit")("poplave=45.8,15.9&dijag=1"); ok(seq.join()==="p1","Štednja: dijagnostički upit se ne pamti"); E("pmOcisti")();
+   seq=[]; q=await E("posrednikUpit")("poplave=45.8,15.9&dijag=1"); q=await E("posrednikUpit")("poplave=45.8,15.9&dijag=1"); ok(seq.join()==="p1,p1","Štednja: dijagnostički upit se ne pamti (dva upita, dva poziva)"); E("pmOcisti")();
    E("SRC_KRK").oss=""; w.fetch=f0;}
   const I=await E("loadInternet")(parcel); ok(I.nepokretna.length===1&&I.nepokretna[0].sloj===93&&I.pokretna[0].sloj===99&&!calls.some(u=>/\?internet=/.test(u)),"Rizici: HAKOM se pita izravno (9 slojeva), bez posrednika");
   hakomOk=false; E("NET").cache.clear(); for(const k of Object.keys(w.localStorage)) if(k.startsWith("nc1:")) w.localStorage.removeItem(k); const I2=await E("loadInternet")(parcel); ok(I2.nepokretna[0].sloj===95&&calls.some(u=>/\?internet=/.test(u)),"Rizici: kad preglednik ne može izravno do HAKOM-a, ide preko posrednika");

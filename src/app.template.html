@@ -1881,15 +1881,25 @@ function pmKljucevi(){ const K=[]; try{ for(let i=0;i<localStorage.length;i++){ 
 function pmSmanji(n){ const K=pmKljucevi().map(k=>{ let t=0; try{ t=JSON.parse(localStorage.getItem(k)).t||0; }catch(e){} return [k,t]; }).sort((a,b)=>a[1]-b[1]); for(const [k] of K.slice(0,Math.max(0,K.length-n))) try{localStorage.removeItem(k)}catch(e){} }
 function pmSet(k,d){ const v=JSON.stringify({t:Date.now(),d}); if(v.length>60000) return; try{ localStorage.setItem(PM_PREF+k,v); if(pmKljucevi().length>PM_MAX) pmSmanji(Math.floor(PM_MAX*0.75)); }catch(e){ try{ pmSmanji(Math.floor(PM_MAX/2)); localStorage.setItem(PM_PREF+k,v); }catch(x){} } }
 function pmOcisti(){ for(const k of pmKljucevi()) try{localStorage.removeItem(k)}catch(e){} PM_STOP.clear(); PM_PAD.clear(); }
+// dvije vrste pauze: „blok:” – OSS je odbio posrednika (vrijedi samo za upite prema OSS-u; rizici i dalje idu na taj posrednik),
+// i adresa posrednika – posrednik sam ne odgovara (vrijedi za sve upite)
 function pmStoji(b){ return (PM_STOP.get(b)||0)>Date.now(); }
+function pmOssStoji(b){ return pmStoji(b)||pmStoji("blok:"+b); }
 function pmZaustavi(b,ms){ PM_STOP.set(b,Date.now()+ms); }
-// nedostupan posrednik (mreža, greška poslužitelja bez njegova odgovora): pauza tek nakon dva neuspjeha zaredom, da kratki prekid veze ne isključi posrednik
+// nedostupan posrednik (mreža, istek vremena, odgovor bez njegova JSON-a): pauza tek nakon dva neuspjeha zaredom, da kratki prekid veze ne isključi posrednik
 const PM_PAD=new Map();
 function pmPao(b){ const n=(PM_PAD.get(b)||0)+1; PM_PAD.set(b,n); if(n>=2){ PM_PAD.set(b,0); pmZaustavi(b,900000); } }
 function pmRadi(b){ PM_PAD.set(b,0); }
+// rezervni posrednik (besplatni plan s mjesečnom kvotom): upiti idu jedan po jedan, da pauza nakon dva neuspjeha zaustavi i one koji čekaju
+let PM_RED=Promise.resolve();
+function pmRezervni(fn){ const p=PM_RED.then(fn,fn); PM_RED=p.catch(()=>{}); return p; }
+async function pmFetchRez(b,fn){ if(b!==SRC_KRK.oss2) return fn(); return pmRezervni(()=>pmStoji(b)?Promise.reject(Object.assign(new Error("pauza"),{pauza:true})):fn()); }
 // OSS povremeno odbije upit posrednika (HTTP 403); jedan ponovni pokušaj, da se OSS ne opterećuje
 const OSS_RETRY=[3000], OSS_UL_RETRY=[3000,8000];
 async function krkOssJedan(base,P,k,q,ul){
+  if(base===SRC_KRK.oss2) return pmRezervni(()=>pmStoji(base)?{st:"err",e:"rezervni posrednik je u pauzi",retry:false,rez:false,pauza:true}:krkOssJedan0(base,P,k,q,ul));
+  return krkOssJedan0(base,P,k,q,ul); }
+async function krkOssJedan0(base,P,k,q,ul){
   const ac=new AbortController(), t=setTimeout(()=>ac.abort(),20000);
   // posrednik šalje „max-age=3600”: bez no-store preglednik bi sat vremena vraćao isti (i neuspjeli) odgovor
   // „ulozak=1”: posrednik uz površinu vraća i sažetak ZK uloška (A I, A II, udjeli bez osoba, teretovnica, plomba), ako to podržava
@@ -1899,9 +1909,9 @@ async function krkOssJedan(base,P,k,q,ul){
     // kad OSS odbija posrednika (blok, 403), automatski ponovni pokušaj samo produžuje odbijanje: tada samo gumb „Pokušaj ponovno”
     const blok=!!(j&&j.blok)||/403/.test(j&&j.greska||"");
     // odbijen (blok): pauza 2 min; posrednik koji ne vraća svoj JSON (ugašen, greška poslužitelja): pauza 15 min
-    if(blok) pmZaustavi(base,120000); else if(!j&&r.status>=500) pmPao(base); else pmRadi(base);
+    if(blok) pmZaustavi("blok:"+base,120000); else if(!j) pmPao(base); else pmRadi(base);
     return {st:"err",e:(j&&j.greska)||("HTTP "+r.status),http:r.status,retry:r.status!==404&&r.status!==400&&!blok,rez:r.status!==400,blok};}
-  catch(e){ if(e.name!=="AbortError") pmPao(base); // posrednik nedostupan (npr. ugašen ili bez dopuštenja CORS)
+  catch(e){ pmPao(base); // posrednik nedostupan (ugašen, bez dopuštenja CORS) ili ne odgovara u roku
     return {st:"err",e:e.name==="AbortError"?"OSS ne odgovara":"mreža ili posrednik nedostupan",retry:true,rez:true}}
   finally{clearTimeout(t)}
 }
@@ -1918,12 +1928,12 @@ async function krkOssOnce(P,k,q,ul){
   return r0;
 }
 async function krkOssOnce0(P,k,q,ul){
-  const s1=pmStoji(SRC_KRK.oss), s2=!SRC_KRK.oss2||pmStoji(SRC_KRK.oss2);
-  // oba posrednika u pauzi: bez upita; poruka kao kod odbijanja (gumb „Pokušaj ponovno” briše pauze)
-  if(s1&&s2) return {st:"err",e:"OSS trenutno odbija upite posrednika (403) ili posrednik nije dostupan; pokušaj ponovno za nekoliko minuta",retry:false,rez:false,blok:true,pauza:true};
+  const s1=pmOssStoji(SRC_KRK.oss), s2=!SRC_KRK.oss2||pmOssStoji(SRC_KRK.oss2);
+  // oba posrednika u pauzi: bez upita (gumb „Pokušaj ponovno” briše pauze)
+  if(s1&&s2) return {st:"err",e:"posrednici prema OSS-u trenutno nisu dostupni (odbijeni ili ne odgovaraju); pokušaj ponovno za nekoliko minuta",retry:false,rez:false,pauza:true};
   if(s1) return krkOssJedan(SRC_KRK.oss2,P,k,q,ul);
   let r=await krkOssJedan(SRC_KRK.oss,P,k,q,ul);
-  if(r.st==="err"&&r.rez&&SRC_KRK.oss2&&!s2){const r2=await krkOssJedan(SRC_KRK.oss2,P,k,q,ul); if(r2.st==="ok") return r2;
+  if(r.st==="err"&&r.rez&&SRC_KRK.oss2&&!pmOssStoji(SRC_KRK.oss2)){const r2=await krkOssJedan(SRC_KRK.oss2,P,k,q,ul); if(r2.st==="ok") return r2;
     if(r.http===404) return r2.http===404?r:r2; // rezervni zna više (npr. održavanje OSS-a)
     if(r2.http===404) r={...r,e:r.e+"; ni rezervni posrednik nije dobio podatke"};}
   return r;
@@ -2010,9 +2020,11 @@ async function posrednikUpit(qs){
   const pamti=!/dijag=/.test(qs), pk="riz:"+qs; if(pamti){ const d=pmGet(pk,PM_RIZ); if(d) return {...d,izUredjaja:true}; }
   const bases=sve.filter(b=>!pmStoji(b)); let last=bases.length?"posrednik ne odgovara":"posrednik nije dostupan (pauza nakon greške; pokušaj ponovno za nekoliko minuta)";
   for(const b of bases){ const ac=new AbortController(), t=setTimeout(()=>ac.abort(),b===bases[0]&&bases.length>1?20000:25000); // prvi nešto kraće, da rezerva stigne na red
-    try{ const r=await fetch(b+"?"+qs,{signal:ac.signal,cache:"no-store"}), j=await r.json().catch(()=>null);
-      if(j) pmRadi(b); if(r.ok&&j&&j.ok){ if(pamti) pmSet(pk,j); return j; } last=(j&&j.greska)||("HTTP "+r.status); if(!j&&r.status>=500) pmPao(b); }
-    catch(e){ last=e.name==="AbortError"?"posrednik ne odgovara":"posrednik nije dostupan"; if(e.name!=="AbortError") pmPao(b); } finally{ clearTimeout(t); } }
+    try{ const r=await pmFetchRez(b,()=>fetch(b+"?"+qs,{signal:ac.signal,cache:"no-store"})), j=await r.json().catch(()=>null);
+      if(j) pmRadi(b); else pmPao(b);
+      // pamti se samo odgovor s podacima (slojevi poplava, kulturna dobra, internet)
+      if(r.ok&&j&&j.ok){ if(pamti&&((Array.isArray(j.slojevi)&&j.slojevi.length)||Array.isArray(j.dobra)||Array.isArray(j.nepokretna))) pmSet(pk,j); return j; } last=(j&&j.greska)||("HTTP "+r.status); }
+    catch(e){ if(e.pauza){ last="posrednik nije dostupan (pauza nakon greške; pokušaj ponovno za nekoliko minuta)"; continue; } last=e.name==="AbortError"?"posrednik ne odgovara":"posrednik nije dostupan"; pmPao(b); } finally{ clearTimeout(t); } }
   throw new Error(last);
 }
 async function loadPoplave(parcel){ const c=rizTocka(parcel); if(!c) throw new Error("nema točke unutar čestice"); const j=await posrednikTocka("poplave",c[1],c[0]);
