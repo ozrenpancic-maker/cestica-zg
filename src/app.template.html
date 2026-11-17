@@ -2711,7 +2711,10 @@ async function rkStart(ctx){
   RK_CTX=ctx&&key?{...ctx,key}:null;
   if(!key||!parcel||!K||RKAT.has(key)) return;
   const S={st:"load",K,dan:pzDan(),prazni:new Set()}; RKAT.set(key,S); rkUpd();
-  if(KK.length>1&&ctx.region==="hr"){ const z=await rkZupanija(ll); if(z){ KK=rkKatalozi(ll,z); S.K=KK[0]; S.zup=z; rkUpd(); } }
+  // županija: na Krku i u ostatku PGŽ-a (pilot) poznata je; drugdje iz adrese. Kad je poznata, pitaju se samo katalozi te županije:
+  // list susjedne županije može prekrivati i ovu točku (npr. Lakmartin na Krku i list Ličko-senjske županije), ali to nije njezin plan
+  if(KK.length>1&&(ctx.region==="hr"||ctx.region==="krk")){ const z=ctx.region==="krk"?"Primorsko-goranska županija":await rkZupanija(ll);
+    if(z){ const zk=rkZupKljuc(z), L=rkKatalozi(ll,z), samo=L.filter(k=>rkZupKljuc(k.zup)===zk); KK=samo.length?samo:L; S.K=KK[0]; S.zup=z; rkUpd(); } }
   // uz granicu županija prvi katalog može biti susjedni: pita se sljedeći dok jedan ne nađe list (greška jednog ne prekida ostale)
   let c; try{ c=turf.pointOnFeature(parcel).geometry.coordinates; }catch(e){ c=[ll.lng,ll.lat]; } const [E,N]=tmFwd(c[0],c[1]); let prva=null, gr=null;
   for(const Ki of KK){ try{const r=await RK_TIPOVI[Ki.tip].query(Ki,E,N,{lat:c[1],lng:c[0]}); if(!prva) prva={Ki,r}; if(r.items.length){ prva={Ki,r}; break; } }catch(e){ if(!gr) gr={Ki,e}; } }
