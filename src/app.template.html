@@ -2711,7 +2711,12 @@ async function rkStart(ctx){
   RK_CTX=ctx&&key?{...ctx,key}:null;
   if(!key||!parcel||!K||RKAT.has(key)) return;
   const S={st:"load",K,dan:pzDan(),prazni:new Set()}; RKAT.set(key,S); rkUpd();
-  if(KK.length>1&&ctx.region==="hr"){ const z=await rkZupanija(ll); if(z){ KK=rkKatalozi(ll,z); S.K=KK[0]; S.zup=z; rkUpd(); } }
+  // županija: na Krku i u ostatku PGŽ-a (pilot) poznata je; drugdje iz adrese. Kad je poznata, pitaju se samo katalozi te županije:
+  // list susjedne županije može prekrivati i ovu točku (npr. Lakmartin na Krku i list Ličko-senjske županije), ali to nije njezin plan
+  // „krk” znači PGŽ samo kad je županijski sloj namjene ili evidencija planova PGŽ-a stvarno pogođen (ctx.pgz); ako taj servis nije
+  // odgovorio, županija se utvrđuje iz adrese kao drugdje
+  if(KK.length>1&&(ctx.region==="hr"||ctx.region==="krk")){ const z=ctx.region==="krk"&&ctx.pgz?"Primorsko-goranska županija":await rkZupanija(ll);
+    if(z){ const zk=rkZupKljuc(z), L=rkKatalozi(ll,z), samo=L.filter(k=>rkZupKljuc(k.zup)===zk); KK=samo.length?samo:L; S.K=KK[0]; S.zup=z; rkUpd(); } }
   // uz granicu županija prvi katalog može biti susjedni: pita se sljedeći dok jedan ne nađe list (greška jednog ne prekida ostale)
   let c; try{ c=turf.pointOnFeature(parcel).geometry.coordinates; }catch(e){ c=[ll.lng,ll.lat]; } const [E,N]=tmFwd(c[0],c[1]); let prva=null, gr=null;
   for(const Ki of KK){ try{const r=await RK_TIPOVI[Ki.tip].query(Ki,E,N,{lat:c[1],lng:c[0]}); if(!prva) prva={Ki,r}; if(r.items.length){ prva={Ki,r}; break; } }catch(e){ if(!gr) gr={Ki,e}; } }
@@ -3411,7 +3416,7 @@ function renderKrk(d){
   sheet.querySelectorAll("details[data-k]").forEach(dd=>{if(OPEN.has(dd.dataset.k)) dd.open=true});
   sheetPost(); scrollRestore(keepScroll); krkKdUpdate();
   if(parcel){ window.__areaCtx={key:window.__cur.key,refresh:()=>renderKrk(KRK_CUR),retry:()=>{OSSZK.delete(String(P.cid)); KATW.delete(String(P.cid)); krkOssFetch(P,area);}};
-    try{finUpdate()}catch(err){console.error(err)} if(TL.layer){TL.zones=null; tDraw();} if(OPEN.has("sun")) sunDraw(); krkOssFetch(P,area); zkOssRefresh(String(P.cid)); okolisStart(parcel,window.__cur.key); rkStart({parcel,ll,region:"krk",pl}); }
+    try{finUpdate()}catch(err){console.error(err)} if(TL.layer){TL.zones=null; tDraw();} if(OPEN.has("sun")) sunDraw(); krkOssFetch(P,area); zkOssRefresh(String(P.cid)); okolisStart(parcel,window.__cur.key); rkStart({parcel,ll,region:"krk",pl,pgz:!!((nam&&nam.v&&nam.v.length)||(pl&&pl.v&&pl.v.length))}); }
   else window.__areaCtx=null;
   try{PWA.loadedAt=Date.now(); if(parcel) pwaRememberParcel(); pwaNetUI();}catch(e){}
   if(isMobile()){ if(!UI.hadParcel&&parcel){UI.hadParcel=true; if(UI.state==="peek") setState("half"); else setState(UI.state,{keepScroll:true});} else setState(UI.state,{keepScroll:true}); }
