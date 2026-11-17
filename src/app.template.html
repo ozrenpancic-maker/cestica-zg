@@ -1892,8 +1892,11 @@ function pmPao(b){ const n=(PM_PAD.get(b)||0)+1; PM_PAD.set(b,n); if(n>=2){ PM_P
 function pmRadi(b){ PM_PAD.set(b,0); }
 // rezervni posrednik (besplatni plan s mjesečnom kvotom): najviše dva upita istodobno, da pauza nakon dva neuspjeha zaustavi one koji čekaju
 const PM_RED={n:0,q:[]};
-function pmRezervni(fn){ return new Promise((res,rej)=>{ const kreni=()=>{ PM_RED.n++; Promise.resolve().then(fn).then(res,rej).finally(()=>{ PM_RED.n--; const x=PM_RED.q.shift(); if(x) x(); }); };
-  if(PM_RED.n<2) kreni(); else PM_RED.q.push(kreni); }); }
+// nakon jednog neuspjeha samo jedan upit istodobno: sljedeći čeka da i drugi završi (i možda postavi pauzu)
+const pmRedMjesta=()=>(PM_PAD.get(SRC_KRK.oss2)||0)>=1?1:2;
+function pmRezervni(fn){ return new Promise((res,rej)=>{ const kreni=()=>{ PM_RED.n++; Promise.resolve().then(fn).then(res,rej).finally(()=>{ PM_RED.n--; pmRedDalje(); }); };
+  if(PM_RED.n<pmRedMjesta()) kreni(); else PM_RED.q.push(kreni); }); }
+function pmRedDalje(){ while(PM_RED.q.length&&PM_RED.n<pmRedMjesta()) PM_RED.q.shift()(); }
 // fn dobiva signal s rokom koji počinje tek kad upit stvarno krene (ne dok čeka u redu)
 async function pmFetchRez(b,fn,ms){ const poz=()=>{ const ac=new AbortController(), t=setTimeout(()=>ac.abort(),ms); return Promise.resolve(fn(ac.signal)).finally(()=>clearTimeout(t)); };
   if(b!==SRC_KRK.oss2) return poz(); return pmRezervni(()=>pmStoji(b)?Promise.reject(Object.assign(new Error("pauza"),{pauza:true})):poz()); }
@@ -1914,7 +1917,8 @@ async function krkOssJedan0(base,P,k,q,ul){
     // odbijen (blok): pauza 2 min; posrednik koji ne vraća svoj JSON (ugašen, greška poslužitelja): pauza 15 min
     if(blok) pmZaustavi("blok:"+base,120000); else if(!j) pmPao(base); else pmRadi(base);
     return {st:"err",e:(j&&j.greska)||("HTTP "+r.status),http:r.status,retry:r.status!==404&&r.status!==400&&!blok,rez:r.status!==400,blok};}
-  catch(e){ if(e.name!=="AbortError") pmPao(base); // posrednik nedostupan (ugašen, bez dopuštenja CORS); istek roka ovdje je obično spori OSS, ne posrednik
+  // posrednik nedostupan (ugašen, bez dopuštenja CORS); istek roka na glavnom je obično spori OSS, pa se ne broji, a na rezervnom (kvota) broji
+  catch(e){ if(e.name!=="AbortError"||base===SRC_KRK.oss2) pmPao(base);
     return {st:"err",e:e.name==="AbortError"?"OSS ne odgovara":"mreža ili posrednik nedostupan",retry:true,rez:true}}
   finally{clearTimeout(t)}
 }

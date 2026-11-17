@@ -1164,8 +1164,14 @@ async function krkTests(){
       if(u.startsWith("https://oss2-test.example/")){cD++; return Promise.resolve({ok:false,status:dKod,json:()=>Promise.reject(new SyntaxError("nije JSON"))});} return f3(u);};
     cA=0; await E("krkOssOnce")({broj:"1/1"},"21",null,false); const pp=await E("posrednikUpit")("poplave=45.1,14.6");
     ok(cP===1&&pp.slojevi[0].name==="x","Štednja: kad OSS odbije glavni posrednik, poplave i kulturna dobra i dalje idu preko njega");
+    // odgovori stižu s kašnjenjem (kao na mreži): pauza mora zaustaviti i upite koji čekaju u redu
+    const f3b=w.fetch; w.fetch=(u,o)=>new Promise(r=>setTimeout(r,String(u).startsWith("https://oss2-test.example/")?15+Math.random()*30:5)).then(()=>f3b(u,o));
     E("pmOcisti")(); cA=cD=0; await Promise.all(["31","32","33","34","35"].map(id=>E("krkOssOnce")({broj:"1/1"},id,null,false)));
     ok(cD===2&&E("pmStoji")("https://oss2-test.example/"),"Štednja: pet istodobnih upita dok rezervni vraća 429 bez JSON-a – rezervni dobije samo dva (jedan po jedan), zatim pauza ("+cD+")");
+    // rezervni koji visi (istek roka) ulazi u pauzu i u putu prema OSS-u
+    E("pmOcisti")(); cD=0; w.fetch=(u,o)=>{ if(String(u).startsWith("https://oss2-test.example/")){cD++; const e=new Error("abort"); e.name="AbortError"; return Promise.reject(e);} return f3b(u,o); };
+    for(const id of ["36","37","38"]) await E("krkOssOnce")({broj:"1/1"},id,null,false); ok(cD===2&&E("pmStoji")("https://oss2-test.example/"),"Štednja: rezervni koji ne odgovara u roku ulazi u pauzu nakon dva isteka");
+    w.fetch=f3b;
     // istek roka na upitu prema OSS-u (spori OSS) ne gasi glavni posrednik; oba odbijena (blok) – rezervni dobije najviše dva od pet istodobnih
     {E("pmOcisti")(); const f5=w.fetch; let cB2=0; w.fetch=(u,o)=>{u=String(u); if(u.startsWith("https://oss-test.example/?id=")){ const e=new Error("abort"); e.name="AbortError"; return Promise.reject(e); }
        if(u.startsWith("https://oss2-test.example/")){cB2++; return Promise.resolve({ok:false,status:503,json:()=>Promise.resolve({ok:false,greska:"OSS je odbio upit (HTTP 403)",blok:true})});} return f5(u,o);};
