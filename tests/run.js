@@ -3862,8 +3862,12 @@ async function ispuZupTests(){
   ok(S&&S.st==="ok"&&S.K.id==="ispu-z18"&&pit[0]==="pgz"&&pit.includes("ispu-z18"),"ISPU županije: kad prvi katalog nema lista, uzima se sljedeći koji ga ima");
   // Krk (Lakmartin): PGŽ nema lista na točki, a list Ličko-senjske županije je prekriva – ne smije se ponuditi plan druge županije
   w.__cur={key:"krk:lakmartin"}; pit.length=0; E("RK_TIPOVI.wms").query=async(K)=>{pit.push(K.id); return K.id==="ispu-z09"?{items:[{id:"HR_ISPU_PPZ_00009_R01_KN_1_1",plan:"PPŽ Ličko-senjske",karta:"KN_1_1",vrsta:"namjena"}],host:K.hosts[0]}:{items:[]};};
-  E("RKAT").clear(); await E("rkStart")({parcel:P,ll:{lng:14.64,lat:45.11},region:"krk"}); S=E("RKAT").get("krk:lakmartin");
+  E("RKAT").clear(); await E("rkStart")({parcel:P,ll:{lng:14.64,lat:45.11},region:"krk",pgz:true}); S=E("RKAT").get("krk:lakmartin");
   ok(S&&S.st==="none"&&S.K.id==="pgz"&&!pit.includes("ispu-z09")&&/Primorsko/.test(S.zup),"ISPU županije: na Krku se pita samo katalog PGŽ; list Ličko-senjske županije koji prekriva točku se ne nudi");
+  // region „krk” bez potvrde PGŽ-a (servis namjene nije odgovorio), npr. Senj: županija iz adrese, ispravan plan Ličko-senjske
+  w.__cur={key:"krk:senj"}; pit.length=0; w.__ptnGeoHook=()=>({address:{county:"Ličko-senjska županija"}}); E("RK_TIPOVI.wms").query=async(K)=>{pit.push(K.id); return K.id==="ispu-z09"?{items:[{id:"HR_ISPU_PPUG_00009_R01_KN_1_1",plan:"PPUG Senj",karta:"KN_1_1",vrsta:"namjena"}],host:K.hosts[0]}:{items:[]};};
+  E("RKAT").clear(); await E("rkStart")({parcel:P,ll:{lng:14.905,lat:44.99},region:"krk",pgz:false}); S=E("RKAT").get("krk:senj");
+  ok(S&&S.st==="ok"&&S.K.id==="ispu-z09"&&!pit.includes("pgz"),"ISPU županije: točka u okviru PGŽ-a kad servis PGŽ-a nije potvrdio županiju (Senj) dobiva plan svoje županije iz adrese");
   // kad je županija iz adrese poznata, katalog susjedne županije se ne pita
   w.__cur={key:"hr:gospic"}; pit.length=0; w.__ptnGeoHook=()=>({address:{county:"Ličko-senjska županija"}}); E("RK_TIPOVI.wms").query=async(K)=>{pit.push(K.id); return {items:[]};};
   E("RKAT").clear(); await E("rkStart")({parcel:P,ll:{lng:15.0,lat:44.9},region:"hr"}); S=E("RKAT").get("hr:gospic");
