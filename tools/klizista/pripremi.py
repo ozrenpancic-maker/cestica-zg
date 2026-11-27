@@ -27,7 +27,9 @@ out = root / "data/klizista"; out.mkdir(parents=True, exist_ok=True)
 t = tifffile.TiffFile(src / "rizik_klizista_RH_3765.tif"); p = t.pages[0]
 sc, tp = p.tags["ModelPixelScaleTag"].value, p.tags["ModelTiepointTag"].value
 gk = p.tags["GeoKeyDirectoryTag"].value
-assert 3765 in gk, "očekivan HTRS96/TM (EPSG:3765)"
+keys = {gk[i]: gk[i + 3] for i in range(4, 4 + 4 * gk[3], 4)}
+assert keys.get(3072) == 3765, "očekivan HTRS96/TM (ProjectedCSTypeGeoKey = EPSG:3765)"
+assert keys.get(1025, 1) == 1, "očekivan RasterPixelIsArea (tiepoint = gornji lijevi kut ćelije)"
 assert sc[0] == sc[1] and float(sc[0]).is_integer() and tp[0] == 0 and tp[1] == 0
 a = p.asarray(); H, W = a.shape
 assert set(np.unique(a)) <= {0, 1, 2, 3}

@@ -4303,6 +4303,14 @@ async function klizTests(){
   const t=txt(w,"sheet");
   ok(/Rizik od klizišta: visok rizik/.test(t)&&/1:100 000/.test(t)&&/geotehnički izvještaj/.test(t)&&/Bernat Gazibara/.test(t)&&/dopuštenje autora/.test(t),"Klizišta: čestica u crvenoj zoni → upozorenje „visok rizik”, mjerilo, geotehnički izvještaj i navod autora");
   ok(klzUpit===1,"Klizišta: karta se učitava jednom ("+klzUpit+")");
+  {const [lo,la]=E("tmInv")(492375,4868925), V=await E("loadKlizista")({type:"Feature",geometry:{type:"Polygon",coordinates:[[[lo-0.00005,la-0.00005],[lo+0.00005,la-0.00005],[lo+0.00005,la+0.00005],[lo-0.00005,la-0.00005]]]},properties:{}});
+   ok(V.r===1&&V.rMax===2,"Klizišta: zelena ćelija uz žutu → razred 1, u krugu od 300 m najviši 2");
+   const st=E("OKO").get(w.__cur.key); st.kliz={st:"ok",v:V}; let h=E("okolisInner()");
+   ok(/nizak rizik/.test(h)&&/zona srednjeg rizika\./.test(h)&&!/srednjiog/.test(h)&&/ne znači nužno stabilan teren/.test(h),"Klizišta: nizak rizik s napomenom o zoni srednjeg rizika u okolini (genitiv) i da nizak rizik ne znači stabilan teren");
+   st.kliz={st:"ok",v:{r:0,rMax:3,R:300,izvor:"x"}}; h=E("okolisInner()");
+   ok(/Podaci nisu dostupni: na ovom mjestu karta nema razreda/.test(h)&&/najviši je visok rizik/.test(h),"Klizišta: razred 0 → „Podaci nisu dostupni”, uz najviši razred u okolini");
+   st.kliz={st:"ok",v:{r:2,rMax:2,R:300,izvor:"x"}}; h=E("okolisInner()");
+   ok(/Rizik od klizišta: srednji rizik/.test(h)&&/chk-warn"><b>! Rizik od klizišta/.test(h),"Klizišta: srednji rizik je upozorenje");}
   // nedostupna karta → „Podaci nisu dostupni”
   E("KLZ.p=null"); klzOk=false; let e=null; try{ await E("loadKlizista")({type:"Feature",geometry:{type:"Polygon",coordinates:[[[lon,lat],[lon+0.0002,lat],[lon+0.0002,lat+0.0002],[lon,lat]]]},properties:{}}); }catch(x){ e=x; }
   ok(e&&/HTTP 404/.test(e.message)&&E("KLZ.p")===null,"Klizišta: nedostupna datoteka → greška, ponovni pokušaj moguć");

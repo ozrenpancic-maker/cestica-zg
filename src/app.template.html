@@ -832,7 +832,7 @@ document.getElementById("lyrKat").onchange=e=>katSet(e.target.checked);
 let klzLayer=null;
 function klzSet(on){
   if(on){ if(!klzLayer){ if(!map.getPane("klzPane")){const pn=map.createPane("klzPane"); pn.style.zIndex=340; pn.style.pointerEvents="none";}
-      klzLayer=L.tileLayer("data/klizista/t/{z}/{x}/{y}.png",{minZoom:5,maxNativeZoom:10,maxZoom:22,opacity:.45,pane:"klzPane",bounds:[[42.33,13.41],[46.58,19.55]],attribution:"Rizik od klizišta: RGN, PRI-MJER 2023."}); }
+      klzLayer=L.tileLayer("data/klizista/t/{z}/{x}/{y}.png",{minZoom:5,maxNativeZoom:10,maxZoom:22,opacity:.45,pane:"klzPane",bounds:[[42.33,13.41],[46.58,19.55]],attribution:"Rizik od klizišta: RGN, PRI-MJER 2023.",errorTileUrl:"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"}); }
     klzLayer.addTo(map); }
   else if(klzLayer) map.removeLayer(klzLayer);
   try{localStorage.setItem("lyrKliz",on?"1":"0")}catch(e){}
@@ -2087,7 +2087,7 @@ function hgiUrl(o){ return HGI_WFS+"?"+new URLSearchParams(Object.assign({SERVIC
 // rizik od klizišta: Karta zoniranja rizika od klizišta RH M 1:100 000 (Bernat Gazibara, Krkač, Mihalić Arbanas; RGN, projekt PRI-MJER, 2023.),
 // GIS rekonstrukcija iz objavljene karte uz dopuštenje autora (data/klizista/rizik.bin, tools/klizista/pripremi.py). Mreža 150 m u HTRS96/TM;
 // razred 0 bez podataka, 1 nizak, 2 srednji, 3 visok. Rizik kombinira podložnost klizanju i gustoću naseljenosti.
-const KLZ={url:"data/klizista/rizik.bin",p:null,raz:["bez podataka","nizak","srednji","visok"],
+const KLZ={url:"data/klizista/rizik.bin",p:null,raz:["bez podataka","nizak","srednji","visok"],razG:["","niskog","srednjeg","visokog"],
   izvor:"Karta zoniranja rizika od klizišta RH M 1:100 000 (Bernat Gazibara, Krkač, Mihalić Arbanas; RGN, projekt PRI-MJER, 2023.), GIS rekonstrukcija uz dopuštenje autora"};
 function klzUcitaj(){ if(!KLZ.p) KLZ.p=fetch(KLZ.url).then(r=>{ if(!r.ok) throw new Error("HTTP "+r.status); return r.arrayBuffer(); }).then(b=>{ const v=new DataView(b);
     if(b.byteLength<24||String.fromCharCode(v.getUint8(0),v.getUint8(1),v.getUint8(2),v.getUint8(3))!=="KLZ1") throw new Error("neispravna datoteka karte");
@@ -2189,15 +2189,15 @@ function okolisInner(){
     const p=pzSet("oko-geo","Geološka podloga",tx,pz("C",{izvor:V.izvor,obuhvat:"točka unutar čestice; karta mjerila 1:300 000",datum:pzDan(),razlog:"pregledna karta 1:300 000 (granice jedinica i rasjeda točne na stotine metara)",provjera:"geotehnički istražni radovi na lokaciji"}));
     h+=`<li class="chk chk-ok"><b>i Geološka podloga ${pzTag(p)}</b><span>${esc(tx.charAt(0).toUpperCase()+tx.slice(1))}. Pregledna karta mjerila 1:300 000 služi samo za orijentaciju; nosivost tla, podzemnu vodu i način temeljenja određuje geotehnički izvještaj za lokaciju.</span></li>`; }
   // rizik od klizišta (PRI-MJER, M 1:100 000)
-  const KL=st.kliz||{st:"load"}, klNap=" Karta je regionalna (izvorno mjerilo 1:100 000) i kombinira podložnost klizanju s gustoćom naseljenosti; granice zona točne su na oko 200 m. Stabilnost terena za gradnju potvrđuje geotehnički izvještaj.";
+  const KL=st.kliz||{st:"load"}, klNap=" Karta je regionalna (izvorno mjerilo 1:100 000) i kombinira podložnost klizanju s gustoćom naseljenosti; granice zona mogu odstupati 200 do 300 m i više. Stabilnost terena za gradnju potvrđuje geotehnički izvještaj.";
   if(KL.st==="load") h+=`<li class="chk chk-warn"><b>Rizik od klizišta</b><span><span class="spin"></span>provjeravam kartu rizika od klizišta…</span></li>`;
   else if(KL.st==="err"){ pzSet("oko-kliz","Rizik od klizišta (regionalno)",null,pz("C",{razlog:"karta rizika od klizišta nije učitana ("+KL.e+")",provjera:"geotehnički istražni radovi na lokaciji; karte klizišta iz prostornog plana"}));
     h+=`<li class="chk chk-warn"><b>? Rizik od klizišta</b><span>Podaci nisu dostupni (${esc(KL.e)}).</span></li>`; }
-  else { const V=KL.v, okol=V.rMax>V.r&&V.r>0?` U krugu od oko ${V.R} m ima i zona ${KLZ.raz[V.rMax]}og rizika.`:"";
+  else { const V=KL.v, okol=V.rMax>V.r&&V.r>0?` U krugu od oko ${V.R} m ima i zona ${KLZ.razG[V.rMax]} rizika.`:"";
     if(!V.r){ pzSet("oko-kliz","Rizik od klizišta (regionalno)",null,pz("C",{izvor:V.izvor,razlog:"točka je izvan karte ili na mjestu bez podataka (more, crte na karti)",provjera:"geotehnički istražni radovi na lokaciji"}));
       h+=`<li class="chk chk-warn"><b>? Rizik od klizišta</b><span>Podaci nisu dostupni: na ovom mjestu karta nema razreda (izvan karte ili ispod crte na karti).${V.rMax?` U krugu od oko ${V.R} m najviši je ${KLZ.raz[V.rMax]} rizik.`:""}${klNap}</span></li>`; }
-    else { const tx=KLZ.raz[V.r]+" rizik", p=pzSet("oko-kliz","Rizik od klizišta (regionalno)",tx,pz("C",{izvor:V.izvor,obuhvat:"točka unutar čestice; ćelija 150 m",datum:pzDan(),razlog:"regionalna karta 1:100 000, rekonstruirana iz objavljene karte (odstupanje granica oko 200 m)",provjera:"geotehnički istražni radovi na lokaciji"}));
-      const opis=V.r===3?"zona visokog rizika: srednja do visoka podložnost klizanju u naseljenom području":V.r===2?"zona srednjeg rizika: srednja podložnost uz veću gustoću naseljenosti ili visoka podložnost u rijetko naseljenom području":"zona niskog rizika: rijetko naseljeno područje male do srednje podložnosti klizanju, pa nizak rizik ne znači nužno stabilan teren";
+    else { const tx=KLZ.raz[V.r]+" rizik", p=pzSet("oko-kliz","Rizik od klizišta (regionalno)",tx,pz("C",{izvor:V.izvor,obuhvat:"točka unutar čestice; ćelija 150 m",datum:pzDan(),razlog:"regionalna karta 1:100 000, rekonstruirana iz objavljene karte (granice mogu odstupati 200 do 300 m i više)",provjera:"geotehnički istražni radovi na lokaciji"}));
+      const opis=V.r===3?"zona visokog rizika: srednja do visoka podložnost klizanju u gušće naseljenom području (više od 100 st./km²)":V.r===2?"zona srednjeg rizika: srednja podložnost klizanju uz gustoću naseljenosti od 10 st./km² naviše ili visoka podložnost uz gustoću do 100 st./km²":"zona niskog rizika: mala podložnost klizanju ili rijetka naseljenost uz malu do srednju podložnost; nizak rizik ne znači nužno stabilan teren";
       h+=`<li class="chk ${V.r===1?"chk-ok":"chk-warn"}"><b>${V.r===1?"i":"!"} Rizik od klizišta: ${esc(tx)} ${pzTag(p)}</b><span>${esc(opis.charAt(0).toUpperCase()+opis.slice(1))}.${okol}${klNap}</span></li>`; } }
   h+=`</ul><p class="meta">Kulturna dobra: Registar kulturnih dobara Republike Hrvatske (Ministarstvo kulture i medija), upit preko posrednika aplikacije. Geologija: Hrvatski geološki institut, Osnovna geološka karta RH 1:300 000 (INSPIRE servis u NIPP-u). Rizik od klizišta: S. Bernat Gazibara, M. Krkač, S. Mihalić Arbanas, Karta zoniranja rizika od klizišta Republike Hrvatske M 1:100 000 (Rudarsko-geološko-naftni fakultet Sveučilišta u Zagrebu, projekt PRI-MJER, 2023., <a href="https://urn.nsk.hr/urn:nbn:hr:169:282558" target="_blank" rel="noopener">izvorni zapis</a>); u aplikaciji je GIS rekonstrukcija objavljene karte, uz dopuštenje autora. Poplave: Hrvatske vode, karte opasnosti od poplava (servis servisi.voda.hr, upit preko posrednika aplikacije); karte su izrađene u okviru Plana upravljanja rizicima od poplava i nisu prilagođene drugim namjenama, a na njima nisu prikazani svi mogući scenariji plavljenja. Internet: HAKOM, eKarta. Zaštićena područja: Bioportal (Ministarstvo zaštite okoliša i zelene tranzicije). Natura 2000: Europska agencija za okoliš (EEA), granice područja koje dostavlja Republika Hrvatska${N.st==="ok"&&N.v[0]&&N.v[0].datum?", stanje "+esc(new Date(N.v[0].datum).toLocaleDateString("hr-HR")):""}. Pregled na <a href="https://www.bioportal.hr/gis/" target="_blank" rel="noopener">Bioportalu</a>.</p>`;
   return h;
@@ -3504,7 +3504,7 @@ function renderHR(d){
   else if(parcel&&!env) h+=`<p class="hint"><span class="spin"></span>Učitavam teren, pristup i infrastrukturu…</p>`;
   if(parcel) h+=`<div id="okolisBox">${okolisInner()}</div>`+povHtml()+ptnHtml()+vjetHtml();
   if(parcel&&rkKatalog(ll)) h+=`<h2 id="sec-upu">${esc(rkKatalog(ll).naslov)}</h2><div id="rkBox">${rkInner()}</div>`;
-  h+=naHtml("Namjena, klizišta i druga ograničenja iz plana","Za područja izvan Grada Zagreba i otoka Krka aplikacija još ne provjerava slojeve plana (kulturna dobra iz Registra i geološka podloga provjeravaju se iznad). Namjenu i ograničenja provjeri u ISPU-u (ispu.mgipu.hr) i u prostornom planu općine ili grada.");
+  h+=naHtml("Namjena, klizišta i druga ograničenja iz plana","Za područja izvan Grada Zagreba i otoka Krka aplikacija još ne provjerava slojeve plana (kulturna dobra iz Registra, geološka podloga i regionalni rizik od klizišta provjeravaju se iznad). Namjenu i ograničenja provjeri u ISPU-u (ispu.mgipu.hr) i u prostornom planu općine ili grada.");
   h+=env?envHtml(env):envHtml(null);
   const HG=parcel?hrGrad(ll):null;
   if(HG) hrZonaStart(key,parcel,HG);
