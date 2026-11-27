@@ -1656,7 +1656,7 @@ async function ispuTests(){
   const run=async()=>{E("WMS_CAPS").clear(); E("RKAT").clear(); calls.length=0; const d=data(w,parcelRect(30,25),"2.2."); E("render")(d); for(let i=0;i<40&&!/Pouzdanost|Podaci nisu|nema lista|Prikazano je/.test(txt(w,"rkBox"));i++) await tick(25); await tick(30); return {d,t:txt(w,"rkBox")};};
   let {d,t}=await run();
   const S=()=>E("RKAT").get(w.__cur.key), it=()=>S().items[S().sel];
-  ok(/Karte prostornog plana \(GUP\/UPU\)/.test(txt(w,"sheet"))&&calls[0]&&/^https:\/\/gis2\.mgipu\.hr\/srv1\/PPRasterZ21_Public\/wms\?.*GetCapabilities/.test(calls[0]),"ISPU: Zagreb pita gis2 (potvrđeni poslužitelj) za GetCapabilities");
+  ok(/Karte prostornog plana \(GUP\/UPU\)/.test(txt(w,"sheet"))&&calls.find(u=>/mgipu/.test(u))&&/^https:\/\/gis2\.mgipu\.hr\/srv1\/PPRasterZ21_Public\/wms\?.*GetCapabilities/.test(calls.find(u=>/mgipu/.test(u))),"ISPU: Zagreb pita gis2 (potvrđeni poslužitelj) za GetCapabilities");
   ok(S().items.length===4&&!S().items.some(x=>/UPU7/.test(x.id))&&it().id==="HR_ISPU_GUP1_01333_R10_KN_1","ISPU: pronađena 4 lista čiji okvir obuhvaća česticu; odabran list namjene GUP-a s najvišom oznakom revizije");
   const opts=[...$(w,"rkSel").options].map(o=>o.textContent).join(" | ");
   ok(/R09 · starija inačica/.test(opts)&&/Prometna i ulična mreža \(promet i komunalna infrastruktura\)/.test(opts)&&/Prostorni plan Grada Zagreba · 1\. Korištenje i namjena prostora/.test(opts),"ISPU: izbor karata s vrstom, oznakom revizije i starijom inačicom");
@@ -4284,7 +4284,40 @@ async function zelinaTests(){
   ok(errs.length===0,"bez JS grešaka (Zelina): "+errs.join(" | "));
 }
 
-netTests().then(skenKrkTests).then(skenSplitTests).then(postojeceTests).then(zonaOsijekTests).then(osijekTests).then(sgTests).then(zonaBojaTests).then(zadarTests).then(zelinaTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(spojTests).then(linkCTests).then(pouzdanostTests).then(()=>{
+// Rizik od klizišta (PRI-MJER, RGN 2023., M 1:100 000): razred iz data/klizista/rizik.bin; očekivane vrijednosti iz izvornog GeoTIFF-a (središta ćelija, HTRS96/TM)
+async function klizTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  const bin=fs.readFileSync(path.join(ROOT,"data/klizista/rizik.bin")), ab=bin.buffer.slice(bin.byteOffset,bin.byteOffset+bin.byteLength);
+  let klzUpit=0, klzOk=true;
+  const [lon,lat]=E("tmInv")(499125,5015775), [E0,N0]=E("tmFwd")(lon,lat), ring=[[E0-10,N0-10],[E0+10,N0-10],[E0+10,N0+10],[E0-10,N0+10],[E0-10,N0-10]];
+  w.fetch=(u)=>{u=String(u); const r=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b),text:()=>Promise.resolve("")});
+    if(/data\/klizista\/rizik\.bin/.test(u)){ klzUpit++; return klzOk?Promise.resolve({ok:true,status:200,arrayBuffer:()=>Promise.resolve(ab.slice(0))}):Promise.resolve({ok:false,status:404}); }
+    if(/wms1-gs-oss\.uredjenazemlja\.hr/.test(u)&&/GetFeatureInfo/.test(u)) return r({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{CESTICA_ID:444001,BROJ_CESTICE:"77/1",MATICNI_BROJ_KO:999002,POVRSINA_GRAFICKA:400,POVRSINA_ATRIBUTNA:400}}]});
+    return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null),text:()=>Promise.resolve("")}); };
+  const G=await E("klzUcitaj()");
+  ok(G.W===3132&&G.H===3110&&G.x0===263400&&G.y0===5159100&&G.c===150&&G.off[G.H]===G.run.length,"Klizišta: zaglavlje karte (3132 × 3110 ćelija od 150 m, HTRS96/TM)");
+  const ocek=[[287325,4712175,0],[692625,4836375,0],[281475,4811325,0],[479925,4866975,1],[607125,5048625,1],[458175,4896825,1],[403125,4966125,2],[411825,4896525,2],[560475,5055975,2],[477975,5112975,3],[499125,5015775,3],[584775,5012625,3]];
+  ok(ocek.every(([x,y,v])=>E("klzRazred")(G,x,y)===v),"Klizišta: razredi u 12 kontrolnih ćelija jednaki izvornom GeoTIFF-u (0 bez podataka, 1 nizak, 2 srednji, 3 visok)");
+  ok(E("klzRazred")(G,100000,5000000)===0&&E("klzRazred")(G,263400+150*3132+10,5000000)===0,"Klizišta: izvan karte razred 0 (bez podataka)");
+  await E("inspect")({lat,lng:lon}); for(let i=0;i<20&&!/Rizik od klizišta: visok/.test(txt(w,"sheet"));i++) await tick(100);
+  const t=txt(w,"sheet");
+  ok(/Rizik od klizišta: visok rizik/.test(t)&&/1:100 000/.test(t)&&/geotehnički izvještaj/.test(t)&&/Bernat Gazibara/.test(t)&&/dopuštenje autora/.test(t),"Klizišta: čestica u crvenoj zoni → upozorenje „visok rizik”, mjerilo, geotehnički izvještaj i navod autora");
+  ok(klzUpit===1,"Klizišta: karta se učitava jednom ("+klzUpit+")");
+  {const [lo,la]=E("tmInv")(492375,4868925), V=await E("loadKlizista")({type:"Feature",geometry:{type:"Polygon",coordinates:[[[lo-0.00005,la-0.00005],[lo+0.00005,la-0.00005],[lo+0.00005,la+0.00005],[lo-0.00005,la-0.00005]]]},properties:{}});
+   ok(V.r===1&&V.rMax===2,"Klizišta: zelena ćelija uz žutu → razred 1, u krugu od 300 m najviši 2");
+   const st=E("OKO").get(w.__cur.key); st.kliz={st:"ok",v:V}; let h=E("okolisInner()");
+   ok(/nizak rizik/.test(h)&&/zona srednjeg rizika\./.test(h)&&!/srednjiog/.test(h)&&/ne znači nužno stabilan teren/.test(h),"Klizišta: nizak rizik s napomenom o zoni srednjeg rizika u okolini (genitiv) i da nizak rizik ne znači stabilan teren");
+   st.kliz={st:"ok",v:{r:0,rMax:3,R:300,izvor:"x"}}; h=E("okolisInner()");
+   ok(/Podaci nisu dostupni: na ovom mjestu karta nema razreda/.test(h)&&/najviši je visok rizik/.test(h),"Klizišta: razred 0 → „Podaci nisu dostupni”, uz najviši razred u okolini");
+   st.kliz={st:"ok",v:{r:2,rMax:2,R:300,izvor:"x"}}; h=E("okolisInner()");
+   ok(/Rizik od klizišta: srednji rizik/.test(h)&&/chk-warn"><b>! Rizik od klizišta/.test(h),"Klizišta: srednji rizik je upozorenje");}
+  // nedostupna karta → „Podaci nisu dostupni”
+  E("KLZ.p=null"); klzOk=false; let e=null; try{ await E("loadKlizista")({type:"Feature",geometry:{type:"Polygon",coordinates:[[[lon,lat],[lon+0.0002,lat],[lon+0.0002,lat+0.0002],[lon,lat]]]},properties:{}}); }catch(x){ e=x; }
+  ok(e&&/HTTP 404/.test(e.message)&&E("KLZ.p")===null,"Klizišta: nedostupna datoteka → greška, ponovni pokušaj moguć");
+  ok(errs.length===0,"bez JS grešaka (klizišta): "+errs.join(" | "));
+}
+
+netTests().then(skenKrkTests).then(skenSplitTests).then(postojeceTests).then(zonaOsijekTests).then(osijekTests).then(sgTests).then(zonaBojaTests).then(zadarTests).then(zelinaTests).then(klizTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(spojTests).then(linkCTests).then(pouzdanostTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
