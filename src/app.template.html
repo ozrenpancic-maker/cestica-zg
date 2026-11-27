@@ -642,6 +642,7 @@ ul.risk small{color:var(--muted)}
         <label><input type="checkbox" id="lyrSat"> Satelit</label>
         <label><input type="checkbox" id="lyrDof"> Ortofoto DGU <small id="lyrDofH" class="meta"></small></label>
         <label><input type="checkbox" id="lyrKat"> Granice čestica (DGU) <small id="lyrKatH" class="meta"></small></label>
+        <label><input type="checkbox" id="lyrKliz"> Rizik od klizišta (1:100 000)</label>
         <label><input type="checkbox" id="lyrNam" checked> Namjena</label>
         <label><input type="checkbox" id="lyrInf" checked> Vodovi iz GUP-a</label>
         <label><input type="checkbox" id="lyrSki"> Najbliži vodovi (DGU)</label>
@@ -827,6 +828,17 @@ document.getElementById("lyrDof").onchange=e=>dofSet(e.target.checked);
 map.on("zoomend",dofHint);
 try{if(localStorage.getItem("lyrDof")==="1"){document.getElementById("lyrDof").checked=true; dofSet(true)}}catch(e){}
 document.getElementById("lyrKat").onchange=e=>katSet(e.target.checked);
+// rizik od klizišta (PRI-MJER) kao prozirne pločice iz aplikacije (data/klizista/t, razine 5–10; dalje se pločice uvećavaju)
+let klzLayer=null;
+function klzSet(on){
+  if(on){ if(!klzLayer){ if(!map.getPane("klzPane")){const pn=map.createPane("klzPane"); pn.style.zIndex=340; pn.style.pointerEvents="none";}
+      klzLayer=L.tileLayer("data/klizista/t/{z}/{x}/{y}.png",{minZoom:5,maxNativeZoom:10,maxZoom:22,opacity:.45,pane:"klzPane",bounds:[[42.33,13.41],[46.58,19.55]],attribution:"Rizik od klizišta: RGN, PRI-MJER 2023."}); }
+    klzLayer.addTo(map); }
+  else if(klzLayer) map.removeLayer(klzLayer);
+  try{localStorage.setItem("lyrKliz",on?"1":"0")}catch(e){}
+}
+document.getElementById("lyrKliz").onchange=e=>klzSet(e.target.checked);
+try{if(localStorage.getItem("lyrKliz")==="1"){document.getElementById("lyrKliz").checked=true; klzSet(true)}}catch(e){}
 map.on("zoomend",katHint);
 try{if(localStorage.getItem("lyrKat")==="1"){document.getElementById("lyrKat").checked=true; katSet(true)}}catch(e){}
 document.getElementById("lyrNam").onchange=e=>{if(e.target.checked){namLayer.addTo(map);loadView()}else map.removeLayer(namLayer)};
@@ -2072,6 +2084,21 @@ const hgiZadnji=u=>decodeURIComponent(String(u||"")).split(/[\/#=]/).pop();
 const hgiLit=u=>{ const k=hgiZadnji(u); return HGI_LIT[k]||k.replace(/_/g," "); };
 const hgiDob=u=>{ const k=hgiZadnji(u); return HGI_DOB[k]||k.replace(/([a-z])([A-Z])/g,"$1 $2").toLowerCase(); };
 function hgiUrl(o){ return HGI_WFS+"?"+new URLSearchParams(Object.assign({SERVICE:"WFS",VERSION:"2.0.0",REQUEST:"GetFeature",OUTPUTFORMAT:"application/geo+json"},o)).toString(); }
+// rizik od klizišta: Karta zoniranja rizika od klizišta RH M 1:100 000 (Bernat Gazibara, Krkač, Mihalić Arbanas; RGN, projekt PRI-MJER, 2023.),
+// GIS rekonstrukcija iz objavljene karte uz dopuštenje autora (data/klizista/rizik.bin, tools/klizista/pripremi.py). Mreža 150 m u HTRS96/TM;
+// razred 0 bez podataka, 1 nizak, 2 srednji, 3 visok. Rizik kombinira podložnost klizanju i gustoću naseljenosti.
+const KLZ={url:"data/klizista/rizik.bin",p:null,raz:["bez podataka","nizak","srednji","visok"],
+  izvor:"Karta zoniranja rizika od klizišta RH M 1:100 000 (Bernat Gazibara, Krkač, Mihalić Arbanas; RGN, projekt PRI-MJER, 2023.), GIS rekonstrukcija uz dopuštenje autora"};
+function klzUcitaj(){ if(!KLZ.p) KLZ.p=fetch(KLZ.url).then(r=>{ if(!r.ok) throw new Error("HTTP "+r.status); return r.arrayBuffer(); }).then(b=>{ const v=new DataView(b);
+    if(b.byteLength<24||String.fromCharCode(v.getUint8(0),v.getUint8(1),v.getUint8(2),v.getUint8(3))!=="KLZ1") throw new Error("neispravna datoteka karte");
+    const W=v.getUint16(4,true), H=v.getUint16(6,true); return {W,H,x0:v.getInt32(8,true),y0:v.getInt32(12,true),c:v.getUint16(16,true),off:new Uint32Array(b,20,H+1),run:new Uint16Array(b,20+4*(H+1))}; })
+    .catch(e=>{ KLZ.p=null; throw e; }); return KLZ.p; }
+function klzRazred(G,E,N){ const col=Math.floor((E-G.x0)/G.c), row=Math.floor((G.y0-N)/G.c); if(col<0||row<0||col>=G.W||row>=G.H) return 0;
+  let x=0; for(let i=G.off[row];i<G.off[row+1];i++){ const r=G.run[i], n=r&0x3FFF; if(col<x+n) return r>>14; x+=n; } return 0; }
+async function loadKlizista(parcel){ const c=rizTocka(parcel); if(!c) throw new Error("nema točke unutar čestice");
+  const G=await klzUcitaj(), [E,N]=tmFwd(c[0],c[1]), r=klzRazred(G,E,N), R=300; let rMax=0;
+  for(let dx=-R;dx<=R;dx+=G.c/2) for(let dy=-R;dy<=R;dy+=G.c/2) if(dx*dx+dy*dy<=R*R) rMax=Math.max(rMax,klzRazred(G,E+dx,N+dy));
+  return {r,rMax,R,izvor:KLZ.izvor}; }
 async function loadGeologija(parcel){
   const H=window.__hgiHook||(u=>getJSON(u,{},15000)), c=rizTocka(parcel); if(!c) throw new Error("nema točke unutar čestice");
   const bb=(d,dy)=>[c[1]-dy,c[0]-d,c[1]+dy,c[0]+d].map(v=>v.toFixed(6)).join(",")+",urn:ogc:def:crs:EPSG::4326";
@@ -2090,7 +2117,7 @@ async function loadGeologija(parcel){
 }
 const POPL_RAZD=t=>/velik/i.test(t)?"povratno razdoblje oko 25 godina":/srednj/i.test(t)?"oko 100 godina":/mal[aei]?\b/i.test(t)?"oko 1000 godina; uključuje i moguće rušenje nasipa i visokih brana":"";
 function okolisStart(parcel,key){
-  if(!parcel||!key||OKO.has(key)) return; const st={natura:{st:"load"},zast:{st:"load"},popl:{st:"load"},net:{st:"load"},kult:{st:"load"},geo:{st:"load"}}; OKO.set(key,st);
+  if(!parcel||!key||OKO.has(key)) return; const st={natura:{st:"load"},zast:{st:"load"},popl:{st:"load"},net:{st:"load"},kult:{st:"load"},geo:{st:"load"},kliz:{st:"load"}}; OKO.set(key,st);
   const fail=()=>setTimeout(()=>{if(OKO.get(key)===st) OKO.delete(key)},30000);
   loadNatura(parcel).then(v=>{st.natura={st:"ok",v}}).catch(e=>{st.natura={st:"err",e:e.message||"servis ne odgovara"}; fail();}).finally(okolisRefresh);
   loadZasticena(parcel).then(v=>{st.zast={st:"ok",v}}).catch(e=>{st.zast={st:"err",e:e.message||"servis ne odgovara"}; fail();}).finally(okolisRefresh);
@@ -2098,6 +2125,7 @@ function okolisStart(parcel,key){
   loadInternet(parcel).then(v=>{st.net={st:"ok",v}}).catch(e=>{st.net={st:"err",e:e.message||"servis ne odgovara"}; fail();}).finally(okolisRefresh);
   loadKultura(parcel).then(v=>{st.kult={st:"ok",v}}).catch(e=>{st.kult={st:"err",e:e.message||"servis ne odgovara"}; fail();}).finally(okolisRefresh);
   loadGeologija(parcel).then(v=>{st.geo={st:"ok",v}}).catch(e=>{st.geo={st:"err",e:e.message||"servis ne odgovara"}; fail();}).finally(okolisRefresh);
+  loadKlizista(parcel).then(v=>{st.kliz={st:"ok",v}}).catch(e=>{st.kliz={st:"err",e:e.message||"karta nije učitana"}; fail();}).finally(okolisRefresh);
 }
 const ZAST_KAT=s=>String(s||"").replace(/\b([A-ZČĆĐŠŽ])([A-ZČĆĐŠŽ]+)\b/g,(m,a,b)=>a+b.toLowerCase());
 function okolisInner(){
@@ -2160,7 +2188,18 @@ function okolisInner(){
   else { const V=GE.v, J=V.jedinica, tx=(J?`${J.sastav.length?J.sastav.join(", "):"sastav nije naveden"}${J.dob?" ("+J.dob+")":""}`:"jedinica na karti nije pronađena")+(V.rasjedM!=null?` · rasjed s karte na oko ${fmt(Math.round(V.rasjedM/10)*10)} m`:` · bez rasjeda s karte u krugu od ${V.radijus} m`);
     const p=pzSet("oko-geo","Geološka podloga",tx,pz("C",{izvor:V.izvor,obuhvat:"točka unutar čestice; karta mjerila 1:300 000",datum:pzDan(),razlog:"pregledna karta 1:300 000 (granice jedinica i rasjeda točne na stotine metara)",provjera:"geotehnički istražni radovi na lokaciji"}));
     h+=`<li class="chk chk-ok"><b>i Geološka podloga ${pzTag(p)}</b><span>${esc(tx.charAt(0).toUpperCase()+tx.slice(1))}. Pregledna karta mjerila 1:300 000 služi samo za orijentaciju; nosivost tla, podzemnu vodu i način temeljenja određuje geotehnički izvještaj za lokaciju.</span></li>`; }
-  h+=`</ul><p class="meta">Kulturna dobra: Registar kulturnih dobara Republike Hrvatske (Ministarstvo kulture i medija), upit preko posrednika aplikacije. Geologija: Hrvatski geološki institut, Osnovna geološka karta RH 1:300 000 (INSPIRE servis u NIPP-u). Poplave: Hrvatske vode, karte opasnosti od poplava (servis servisi.voda.hr, upit preko posrednika aplikacije); karte su izrađene u okviru Plana upravljanja rizicima od poplava i nisu prilagođene drugim namjenama, a na njima nisu prikazani svi mogući scenariji plavljenja. Internet: HAKOM, eKarta. Zaštićena područja: Bioportal (Ministarstvo zaštite okoliša i zelene tranzicije). Natura 2000: Europska agencija za okoliš (EEA), granice područja koje dostavlja Republika Hrvatska${N.st==="ok"&&N.v[0]&&N.v[0].datum?", stanje "+esc(new Date(N.v[0].datum).toLocaleDateString("hr-HR")):""}. Pregled na <a href="https://www.bioportal.hr/gis/" target="_blank" rel="noopener">Bioportalu</a>.</p>`;
+  // rizik od klizišta (PRI-MJER, M 1:100 000)
+  const KL=st.kliz||{st:"load"}, klNap=" Karta je regionalna (izvorno mjerilo 1:100 000) i kombinira podložnost klizanju s gustoćom naseljenosti; granice zona točne su na oko 200 m. Stabilnost terena za gradnju potvrđuje geotehnički izvještaj.";
+  if(KL.st==="load") h+=`<li class="chk chk-warn"><b>Rizik od klizišta</b><span><span class="spin"></span>provjeravam kartu rizika od klizišta…</span></li>`;
+  else if(KL.st==="err"){ pzSet("oko-kliz","Rizik od klizišta (regionalno)",null,pz("C",{razlog:"karta rizika od klizišta nije učitana ("+KL.e+")",provjera:"geotehnički istražni radovi na lokaciji; karte klizišta iz prostornog plana"}));
+    h+=`<li class="chk chk-warn"><b>? Rizik od klizišta</b><span>Podaci nisu dostupni (${esc(KL.e)}).</span></li>`; }
+  else { const V=KL.v, okol=V.rMax>V.r&&V.r>0?` U krugu od oko ${V.R} m ima i zona ${KLZ.raz[V.rMax]}og rizika.`:"";
+    if(!V.r){ pzSet("oko-kliz","Rizik od klizišta (regionalno)",null,pz("C",{izvor:V.izvor,razlog:"točka je izvan karte ili na mjestu bez podataka (more, crte na karti)",provjera:"geotehnički istražni radovi na lokaciji"}));
+      h+=`<li class="chk chk-warn"><b>? Rizik od klizišta</b><span>Podaci nisu dostupni: na ovom mjestu karta nema razreda (izvan karte ili ispod crte na karti).${V.rMax?` U krugu od oko ${V.R} m najviši je ${KLZ.raz[V.rMax]} rizik.`:""}${klNap}</span></li>`; }
+    else { const tx=KLZ.raz[V.r]+" rizik", p=pzSet("oko-kliz","Rizik od klizišta (regionalno)",tx,pz("C",{izvor:V.izvor,obuhvat:"točka unutar čestice; ćelija 150 m",datum:pzDan(),razlog:"regionalna karta 1:100 000, rekonstruirana iz objavljene karte (odstupanje granica oko 200 m)",provjera:"geotehnički istražni radovi na lokaciji"}));
+      const opis=V.r===3?"zona visokog rizika: srednja do visoka podložnost klizanju u naseljenom području":V.r===2?"zona srednjeg rizika: srednja podložnost uz veću gustoću naseljenosti ili visoka podložnost u rijetko naseljenom području":"zona niskog rizika: rijetko naseljeno područje male do srednje podložnosti klizanju, pa nizak rizik ne znači nužno stabilan teren";
+      h+=`<li class="chk ${V.r===1?"chk-ok":"chk-warn"}"><b>${V.r===1?"i":"!"} Rizik od klizišta: ${esc(tx)} ${pzTag(p)}</b><span>${esc(opis.charAt(0).toUpperCase()+opis.slice(1))}.${okol}${klNap}</span></li>`; } }
+  h+=`</ul><p class="meta">Kulturna dobra: Registar kulturnih dobara Republike Hrvatske (Ministarstvo kulture i medija), upit preko posrednika aplikacije. Geologija: Hrvatski geološki institut, Osnovna geološka karta RH 1:300 000 (INSPIRE servis u NIPP-u). Rizik od klizišta: S. Bernat Gazibara, M. Krkač, S. Mihalić Arbanas, Karta zoniranja rizika od klizišta Republike Hrvatske M 1:100 000 (Rudarsko-geološko-naftni fakultet Sveučilišta u Zagrebu, projekt PRI-MJER, 2023., <a href="https://urn.nsk.hr/urn:nbn:hr:169:282558" target="_blank" rel="noopener">izvorni zapis</a>); u aplikaciji je GIS rekonstrukcija objavljene karte, uz dopuštenje autora. Poplave: Hrvatske vode, karte opasnosti od poplava (servis servisi.voda.hr, upit preko posrednika aplikacije); karte su izrađene u okviru Plana upravljanja rizicima od poplava i nisu prilagođene drugim namjenama, a na njima nisu prikazani svi mogući scenariji plavljenja. Internet: HAKOM, eKarta. Zaštićena područja: Bioportal (Ministarstvo zaštite okoliša i zelene tranzicije). Natura 2000: Europska agencija za okoliš (EEA), granice područja koje dostavlja Republika Hrvatska${N.st==="ok"&&N.v[0]&&N.v[0].datum?", stanje "+esc(new Date(N.v[0].datum).toLocaleDateString("hr-HR")):""}. Pregled na <a href="https://www.bioportal.hr/gis/" target="_blank" rel="noopener">Bioportalu</a>.</p>`;
   return h;
 }
 // --- povijest lokacije: digitalni ortofoto DGU iz više godina (servisi „za anonimne korisnike”, bez naknade; provjereno 24. 10. 2026.).
