@@ -929,7 +929,11 @@ const REGIJE={
 const PGZ_BBOX=[14.15,44.45,15.55,45.65]; // Primorsko-goranska županija (okvir; točna pripadnost iz županijskog sloja namjene)
 const HR_ZG_BBOX=[15.60,45.55,16.50,46.05]; // šire područje Grada Zagreba (do njegovih rubova); ostatak države ide u osnovni pregled
 const inBox=(ll,b)=>ll.lng>=b[0]&&ll.lng<=b[2]&&ll.lat>=b[1]&&ll.lat<=b[3];
-function regionOf(ll){ return inBox(ll,REGIJE.krk.bbox)||inBox(ll,PGZ_BBOX)?"krk":inBox(ll,HR_ZG_BBOX)?"zg":"hr"; }
+// točka u poligonu (prsten [[lng,lat],…]), zraka prema istoku
+function uPoli(ll,r){ let c=false; for(let i=0,j=r.length-1;i<r.length;j=i++){ const [xi,yi]=r[i],[xj,yj]=r[j]; if((yi>ll.lat)!==(yj>ll.lat)&&ll.lng<(xj-xi)*(ll.lat-yi)/(yj-yi)+xi) c=!c; } return c; }
+// grad s obrađenim planom i granicom (rules_krk.json → hrGradovi.*.granica) unutar okvira Zagreba (npr. Sv. Ivan Zelina) ide u osnovni pregled za državu
+function hrGradGranica(ll){ const G=RULES_KRK&&RULES_KRK.hrGradovi||{}; for(const g of Object.values(G)) if(g.granica&&g.obuhvat&&inBox(ll,g.obuhvat)&&uPoli(ll,g.granica)) return true; return false; }
+function regionOf(ll){ return inBox(ll,REGIJE.krk.bbox)||inBox(ll,PGZ_BBOX)?"krk":inBox(ll,HR_ZG_BBOX)&&!hrGradGranica(ll)?"zg":"hr"; }
 const PGZ="https://gisportal.pgz.hr/server/rest/services/STANJE/";
 const SRC_KRK={
   namjena:PGZ+"NAMJENA_POVRSINA_NOVO/FeatureServer/0/query",
@@ -3423,9 +3427,9 @@ function renderKrk(d){
 }
 
 // gradovi izvan Zagreba i PGŽ-a s obrađenim GUP-om (rules_krk.json → hrGradovi): obuhvat po okviru, urbano pravilo bira korisnik
-function hrGrad(ll){ const G=RULES_KRK&&RULES_KRK.hrGradovi||{}; for(const [k,g] of Object.entries(G)) if(g.obuhvat&&inBox(ll,g.obuhvat)) return {k,...g}; return null; }
+function hrGrad(ll){ const G=RULES_KRK&&RULES_KRK.hrGradovi||{}; for(const [k,g] of Object.entries(G)) if(g.obuhvat&&inBox(ll,g.obuhvat)&&(!g.granica||uPoli(ll,g.granica))) return {k,...g}; return null; }
 function hrGradState(G){ const notes=[]; if(G.upozorenje) notes.push(G.upozorenje);
-  return {st:"provjera",msg:"Obuhvat GUP-a određen je približnim okvirom grada; provjeri je li čestica u obuhvatu plana i u građevinskom području.",RS:G,izgr:[{share:1,p:{}}],notes,grupa:null}; }
+  return {st:"provjera",msg:G.obuhvatNapomena||"Obuhvat GUP-a određen je približnim okvirom grada; provjeri je li čestica u obuhvatu plana i u građevinskom području.",RS:G,izgr:[{share:1,p:{}}],notes,grupa:null}; }
 function renderHR(d){
   if(prZaklj()) return renderSlobodno(d,"hr"); window.__slobodno=false;
   KRK_CUR=d;

@@ -4259,7 +4259,32 @@ async function zadarTests(){
   ok(errs.length===0,"bez JS grešaka (Zadar): "+errs.join(" | "));
 }
 
-netTests().then(skenKrkTests).then(skenSplitTests).then(postojeceTests).then(zonaOsijekTests).then(osijekTests).then(sgTests).then(zonaBojaTests).then(zadarTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(spojTests).then(linkCTests).then(pouzdanostTests).then(()=>{
+// Sv. Ivan Zelina: PPUG (Zelinske novine 20/2024), granica grada iz OSM-a unutar okvira Zagreba, parcela 30 x 24 m = 720 m²
+async function zelinaTests(){
+  const {w,errs}=boot(); const E=x=>w.eval(x), tick=ms=>new Promise(r=>setTimeout(r,ms));
+  const lon=16.2430, lat=45.9590, [E0,N0]=E("tmFwd")(lon,lat), ring=[[E0-15,N0-12],[E0+15,N0-12],[E0+15,N0+12],[E0-15,N0+12],[E0-15,N0-12]];
+  let zgUpit=0;
+  w.fetch=(u)=>{u=String(u); const r=b=>Promise.resolve({ok:true,status:200,json:()=>Promise.resolve(b),text:()=>Promise.resolve("")});
+    if(/wms1-gs-oss\.uredjenazemlja\.hr/.test(u)&&/GetFeatureInfo/.test(u)) return r({type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Polygon",coordinates:[ring]},properties:{CESTICA_ID:555001,BROJ_CESTICE:"1234/1",MATICNI_BROJ_KO:999001,POVRSINA_GRAFICKA:720,POVRSINA_ATRIBUTNA:720}}]});
+    if(/zagreb\.hr|geoportal\.zagreb/.test(u)) zgUpit++;
+    return Promise.resolve({ok:false,status:404,json:()=>Promise.resolve(null),text:()=>Promise.resolve("")}); };
+  const G=E("RULES_KRK").hrGradovi.ZELINA;
+  ok(E("hrGrad")({lat,lng:lon}).k==="ZELINA"&&E("regionOf")({lat,lng:lon})==="hr","Zelina: točka u gradu prepoznata (PPUG Zelina), osnovni pregled za državu umjesto Zagreba");
+  ok(E("hrGrad")({lat:45.86,lng:16.17})===null&&E("regionOf")({lat:45.86,lng:16.17})==="zg"&&E("regionOf")({lat:45.815,lng:15.982})==="zg","Zelina: točka u okviru, ali izvan granice grada nije Zelina (ostaje Zagreb); središte Zagreba ostaje Zagreb");
+  ok(G.granica.length>100&&G.granica[0][0]===G.granica[G.granica.length-1][0]&&/OpenStreetMap/.test(G.granicaIzvor)&&G.izvor.pravna_provjera.status==="NIJE_POTVRDENO"&&/22\/2024/.test(G.izvor.status),"Zelina: granica je zatvoren prsten iz OSM-a; pravila nisu pravno potvrđena; ispravak 22/2024 označen kao neprovjeren");
+  await E("inspect")({lat,lng:lon}); await tick(200);
+  ok(/PPUG Sv\. Ivan Zelina/.test(txt(w,"sheet"))&&w.__krkCalc===null&&/Vrsta područja/.test(txt(w,"sheet"))&&zgUpit===0,"Zelina: vrsta područja nije odabrana, nema izračuna, slojevi Zagreba se ne pitaju");
+  setv(w,"krkZona","GP","change"); let C=w.__krkCalc, t=txt(w,"sheet");
+  ok(C&&C.plan==="PPUG Sv. Ivan Zelina"&&Math.abs(C.tl-0.4*C.A)<0.6&&C.gbpN==null&&/10,5 m/.test(t)&&/20 %/.test(t)&&/kis nije propisan|ne propisuje koeficijent iskorištenosti/.test(t),"Zelina GP, samostojeća (čl. 47., 56., 63., 75.): kig 0,4, kis nije propisan (GBP se ne računa), visina 10,5 m, zelenilo 20 %");
+  {const T=G.zoneSet.GP.tipovi.kuca; ok(T.slob.minC===400&&T.dvoj.minC===300&&T.dvoj.izg===0.4&&!T.ugr&&G.zoneSet.GP.meda.min===3&&G.zoneSet.GP.regulacija.ostale===5,"Zelina: najmanje čestice 400 / 300 m², bez ugrađenih, 3 m od međe, 5 m od regulacije (čl. 46., 56., 57., 59.)");}
+  setv(w,"krkTip","niza","change"); ok(/7 m/.test(txt(w,"sheet"))&&/ne kaže kada se koja primjenjuje/.test(txt(w,"sheet")),"Zelina GP, niža zgrada: 7 m i napomena da čl. 47. ne određuje kada vrijedi koja mogućnost");
+  setv(w,"krkZona","vrtace","change"); C=w.__krkCalc; ok(C&&Math.abs(C.tl-100)<0.6&&/4,5 m/.test(txt(w,"sheet")),"Zelina Vrtače (čl. 73.a): tlocrt najviše 100 m², visina 4,5 m");
+  setv(w,"krkZona","prezden","change"); ok(w.__krkCalc===null&&/čl\. 368\./.test(txt(w,"sheet")),"Zelina Prezden: obavezan UPU, nema izračuna");
+  setv(w,"krkZona","izvan","change"); ok(w.__krkCalc===null&&/Podaci nisu dostupni/.test(txt(w,"sheet")),"Zelina izvan GP-a: nema izračuna, „Podaci nisu dostupni”");
+  ok(errs.length===0,"bez JS grešaka (Zelina): "+errs.join(" | "));
+}
+
+netTests().then(skenKrkTests).then(skenSplitTests).then(postojeceTests).then(zonaOsijekTests).then(osijekTests).then(sgTests).then(zonaBojaTests).then(zadarTests).then(zelinaTests).then(splitTests).then(dkpwTests).then(primjerTests).then(pkatTests).then(krovTests).then(ispuZupTests).then(tri3dTests).then(montazneTests).then(piTests).then(uzTests).then(krkBrojTests).then(infraTests).then(zgOssTests).then(hrTests).then(pgzTests).then(ispuTests).then(krkTests).then(aiTests).then(projTests).then(investTests).then(gpTests).then(sazTests).then(adrTests).then(pristTests).then(okuTests).then(zg3dTests).then(skicaTests).then(katTests).then(ai2Tests).then(sunTests).then(pvLiveTests).then(svTests).then(rizTests).then(arTests).then(iskTests).then(optTests).then(modTests).then(ptnTests).then(ppvTests).then(ighTests).then(skenTests).then(pravnaTests).then(formulaTests).then(geoTests).then(k73576Tests).then(upu2PravnaTests).then(napTests).then(izvTests).then(dosTests).then(pristupTests).then(presudaTests).then(spojTests).then(linkCTests).then(pouzdanostTests).then(()=>{
   console.log(`\n${pass} prošlo, ${fail} palo`);
   if(fails.length){console.log("PALO:\n - "+fails.join("\n - ")); process.exit(1)}
 });
